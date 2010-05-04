@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<form-beans>
+	</form-beans>
+
+	<global-forwards type="org.apache.struts.action.ActionForward">
+	</global-forwards>
+
+	<action-mappings>
+
+	</action-mappings>
+  
+    <controller processorClass="org.kuali.rice.kns.web.struts.action.KualiRequestProcessor"/>
+</struts-config>
