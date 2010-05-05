@@ -251,4 +251,29 @@
         </constructor-arg>
     </bean>
 
+
+    <bean id="timeModuleConfiguration" class="org.kuali.rice.kns.bo.ModuleConfiguration">
+        <property name="namespaceCode" value="TK"/>
+        <property name="initializeDataDictionary" value="true"/>
+        <property name="dataDictionaryPackages">
+            <list>
+                <value>classpath:org/kuali/hr/time/datadictionary/ClockLocationRule.xml</value>
+            </list>
+        </property>
+        <property name="databaseRepositoryFilePaths">
+            <list>
+				<value>OJB-repository-time.xml</value>
+            </list>
+        </property>
+        <property name="packagePrefixes">
+            <list>
+				<value>org.kuali.hr.time.domain</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean class="org.kuali.rice.kns.service.impl.ModuleServiceBase">
+        <property name="moduleConfiguration" ref="timeModuleConfiguration" />
+    </bean>
+
 </beans>

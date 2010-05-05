@@ -110,5 +110,9 @@
     <param name="log.performance.time.ignore">100</param>
     <param name="log.performance.services">true</param>
 	<!-- end performance logging params -->
+	
+	<!--  crazy stuff -->
+	<param name="filter.login.class">org.kuali.rice.kew.web.DummyLoginFilter</param>
+	<param name="filtermapping.login.1">/*</param>
 
 </config>
