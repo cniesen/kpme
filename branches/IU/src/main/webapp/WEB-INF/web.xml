@@ -4,6 +4,12 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:SpringBeans.xml</param-value>
 	</context-param>
+	 <context-param>
+      <param-name>kew.bootstrap.spring.file</param-name>
+      <param-value>SpringBeans.xml</param-value>
+    </context-param>
+    
+    
 	<!-- -->
 	<listener>
 		<listener-class>org.kuali.hr.time.ApplicationInitializeListener</listener-class>
@@ -79,6 +85,32 @@
         <servlet-name>export</servlet-name>
         <url-pattern>/export/*</url-pattern>
     </servlet-mapping>
+    
+
+ <filter>
+    <filter-name>BootstrapFilter</filter-name>
+    <filter-class>org.kuali.rice.kew.web.BootstrapFilter</filter-class>
+  </filter>
+  
+	<filter>
+		<filter-name>UserLoginFilter</filter-name>
+		<filter-class>org.kuali.rice.kew.web.UserLoginFilter</filter-class>
+	</filter>
+
+
+     <filter-mapping>
+      <filter-name>BootstrapFilter</filter-name>
+      <servlet-name>action</servlet-name>
+    </filter-mapping>
+  
+  	<filter-mapping>
+		<filter-name>UserLoginFilter</filter-name>
+		<servlet-name>action</servlet-name>
+	</filter-mapping>
+    
+
+  
  
+
    
 </web-app>
