@@ -45,18 +45,6 @@
 	</servlet-mapping>
 	
 	<!-- rice -->
-    <servlet>
-        <servlet-name>dwr-invoker</servlet-name>
-        <servlet-class>org.kuali.rice.kns.web.servlet.KualiDWRServlet</servlet-class>
-        <init-param>
-            <param-name>debug</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>springpath</param-name>
-            <param-value>true</param-value>
-        </init-param>
-    </servlet>
 
     <servlet>
         <servlet-name>export</servlet-name>
@@ -80,10 +68,6 @@
         <url-pattern>*.do</url-pattern>
     </servlet-mapping>
 
-    <servlet-mapping>
-        <servlet-name>dwr-invoker</servlet-name>
-        <url-pattern>/dwr/*</url-pattern>
-    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>export</servlet-name>

@@ -190,8 +190,6 @@
     	</property>
     </bean>
 	-->
-     <!-- begin rice override -->
-    <bean id="dateTimeService" class="org.kuali.rice.kns.service.impl.DateTimeServiceImpl" />
 
 	<!--  This is the service that KIM will look for to authenticate the user, we need something identified by this bean ID.  I'm
 	not sure about the other authentication services. 
@@ -257,7 +255,7 @@
         <property name="initializeDataDictionary" value="true"/>
         <property name="dataDictionaryPackages">
             <list>
-                <value>classpath:org/kuali/hr/time/datadictionary/ClockLocationRule.xml</value>
+                <value>classpath:org/kuali/hr/time/datadictionary</value>
             </list>
         </property>
         <property name="databaseRepositoryFilePaths">

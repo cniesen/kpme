@@ -416,3 +416,17 @@ CREATE TABLE `krns_sesn_doc_t` (
   KEY `KRNS_SESN_DOC_TI1` (`LAST_UPDT_DT`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+
+---
+---
+---
+
+DROP TABLE IF EXISTS `krns_maint_lock_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `krns_maint_lock_s` (
+  `id` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2000 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
