@@ -15,6 +15,10 @@
 		<listener-class>org.kuali.hr.time.ApplicationInitializeListener</listener-class>
 	</listener>
 	
+	<listener>
+        <listener-class>org.kuali.rice.kns.web.listener.JstlConstantsInitListener</listener-class>
+    </listener>
+	
 	<servlet>
 		<servlet-name>action</servlet-name>
 		<servlet-class>org.apache.struts.action.ActionServlet</servlet-class>
@@ -98,7 +102,7 @@
 	</filter>
 
 
-     <filter-mapping>
+   	<filter-mapping>
       <filter-name>BootstrapFilter</filter-name>
       <servlet-name>action</servlet-name>
     </filter-mapping>
