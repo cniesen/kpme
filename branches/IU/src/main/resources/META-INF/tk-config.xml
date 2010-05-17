@@ -5,6 +5,8 @@
 	<param name="app.context.name">${app.code}-${environment}</param>
 	<param name="restricted.env.list">prd</param>
 	<param name="config.dir">${user.home}/kuali/main/${environment}/settings/${module.name}</param>
+	<param name="kns.test.port">8090</param>
+	<param name="temp.dir">/temp</param>
 		
 	<param name="encryption.key">7IC64w6ksLU</param>
     <!-- <param name="security.dir">${user.home}/kuali/main/${environment}/security/${module.name}</param>-->

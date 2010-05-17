@@ -16,8 +16,9 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger log = Logger.getLogger(ClockLocationRule.class);
+	private static final Logger LOG = Logger.getLogger(ClockLocationRule.class);
 
+	private Long id;
 	private String department;
 	private BigDecimal workArea;
 	private String principalId;
@@ -117,5 +118,13 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setJobNumber(BigDecimal jobNumber) {
 		this.jobNumber = jobNumber;
+	}
+
+	public Long getId() {
+	    return id;
+	}
+
+	public void setId(Long id) {
+	    this.id = id;
 	}
 }
