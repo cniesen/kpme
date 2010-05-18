@@ -4,12 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.StringReader;
 import java.net.URL;
+import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 import org.kuali.rice.core.config.ConfigContext;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class HtmlUnitUtil {
@@ -19,6 +23,8 @@ public class HtmlUnitUtil {
     public static HtmlPage gotoPageAndLogin(String url) throws Exception {
 	LOG.debug("URL: " + url);
 	final WebClient webClient = new WebClient(BrowserVersion.INTERNET_EXPLORER_6_0);
+	webClient.setJavaScriptEnabled(false);
+
 	HtmlPage loginPage = (HtmlPage) webClient.getPage(new URL(url));
 
 	return loginPage;
@@ -31,7 +37,7 @@ public class HtmlUnitUtil {
     public static String getBaseURL() {
 	return "http://localhost:" + getPort() + "/tk-dev";
     }
-    
+
     public static String getTempDir() {
 	return ConfigContext.getCurrentContextConfig().getProperty("temp.dir");
     }
@@ -63,4 +69,20 @@ public class HtmlUnitUtil {
 	} catch (Exception e) {
 	}
     }
+
+    @SuppressWarnings("unchecked")
+    public static HtmlInput getInputContainingText(HtmlForm form, String text) throws Exception {
+	for (Iterator iterator = form.getAllHtmlChildElements(); iterator.hasNext();) {
+	    HtmlElement element = (HtmlElement) iterator.next();
+	    if (element instanceof HtmlInput) {
+		HtmlInput i = (HtmlInput) element;
+		if (element.toString().contains(text)) {
+		    return i;
+		}
+	    }
+
+	}
+	return null;
+    }
+
 }
