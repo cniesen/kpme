@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN" "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<struts-config>
+	<form-beans>
+    	<form-bean name="TranslateMaintenanceLookupForm" type="edu.iu.uis.hr.tk.client.TranslateMaintenanceLookupForm"/>
+    	<form-bean name="RoleMaintenanceForm" type="edu.iu.uis.hr.tk.directory.client.RoleMaintenanceForm"/>
+    	<form-bean name="TranslateMaintenanceForm" type="edu.iu.uis.hr.tk.client.TranslateMaintenanceForm"/>
+		<form-bean name="ShiftDifferentialRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.ShiftDifferentialRuleMaintenanceLookupForm"/>
+		<form-bean name="ShiftDifferentialRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.ShiftDifferentialRuleMaintenanceForm"/>
+		<form-bean name="DailyOvertimeRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.DailyOvertimeRuleMaintenanceLookupForm"/>
+		<form-bean name="DailyOvertimeRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.DailyOvertimeRuleMaintenanceForm"/>
+		<form-bean name="WeeklyOvertimeRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.WeeklyOvertimeRuleMaintenanceForm"/>
+		<form-bean name="SystemLunchRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.SystemLunchRuleMaintenanceForm"/>
+		<form-bean name="GracePeriodRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.GracePeriodRuleMaintenanceForm"/>
+		<form-bean name="DepartmentMaintenanceLookupForm" type="edu.iu.uis.hr.tk.department.client.DepartmentMaintenanceLookupForm"/>
+		<form-bean name="DepartmentLunchRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.DepartmentLunchRuleMaintenanceLookupForm"/>
+		<form-bean name="DepartmentLunchRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.DepartmentLunchRuleMaintenanceForm"/>
+		<form-bean name="BreakRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.BreakRuleMaintenanceLookupForm"/>
+		<form-bean name="BreakRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.BreakRuleMaintenanceForm"/>
+		<form-bean name="HourlyHoursRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.HourlyHoursRuleMaintenanceLookupForm"/>
+		<form-bean name="HourlyHoursRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.HourlyHoursRuleMaintenanceForm"/>
+		<form-bean name="ClockLocationRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.ClockLocationRuleMaintenanceLookupForm"/>
+		<form-bean name="ClockLocationRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.ClockLocationRuleMaintenanceForm"/>
+		<form-bean name="TimeCollectionRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.TimeCollectionRuleMaintenanceLookupForm"/>
+		<form-bean name="TimeCollectionRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.TimeCollectionRuleMaintenanceForm"/>
+		<form-bean name="DepartmentMaintenanceForm" type="edu.iu.uis.hr.tk.department.client.DepartmentMaintenanceForm"/>
+		<form-bean name="PayrollExtractScheduleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.extract.client.PayrollExtractScheduleMaintenanceLookupForm"/>
+		<form-bean name="PayrollExtractScheduleMaintenanceForm" type="edu.iu.uis.hr.tk.extract.client.PayrollExtractScheduleMaintenanceForm"/>
+		<form-bean name="PayrollExtractRunForm" type="edu.iu.uis.hr.tk.extract.client.PayrollExtractRunForm"/>
+		<form-bean name="TimeApproverNotificationForm" type="edu.iu.uis.hr.tk.client.TimeApproverNotificationForm"/>
+		<form-bean name="TimesheetDocumentForm" type="edu.iu.uis.hr.tk.timesheet.client.TimesheetDocumentForm"/>		
+		<form-bean name="WorkAreaStatusInquiryForm" type="edu.iu.uis.hr.tk.client.WorkAreaStatusInquiryForm"/>
+		<form-bean name="UserPreferenceForm" type="edu.iu.uis.hr.tk.client.UserPreferenceForm"/>		
+		<form-bean name="OtherTimesheetsLookupForm" type="edu.iu.uis.hr.tk.client.OtherTimesheetsLookupForm"/>		
+		<form-bean name="NotifySupervisorLookupForm" type="edu.iu.uis.hr.tk.client.NotifySupervisorLookupForm"/>		
+		<form-bean name="DocumentLockMaintenanceLookupForm" type="edu.iu.uis.hr.tk.timesheet.client.DocumentLockMaintenanceLookupForm"/>				
+		<form-bean name="DocumentLockMaintenanceForm" type="edu.iu.uis.hr.tk.timesheet.client.DocumentLockMaintenanceForm"/>
+		<form-bean name="DocumentHeaderMaintenanceLookupForm" type="edu.iu.uis.hr.tk.timesheet.client.DocumentHeaderMaintenanceLookupForm"/>				
+		<form-bean name="DocumentHeaderMaintenanceForm" type="edu.iu.uis.hr.tk.timesheet.client.DocumentHeaderMaintenanceForm"/>
+		<form-bean name="PayrollExtractReportLookupForm" type="edu.iu.uis.hr.tk.client.PayrollExtractReportLookupForm"/>
+        <form-bean name="TimeBlockHistoryInquiryForm" type="edu.iu.uis.hr.tk.timesheet.client.TimeBlockHistoryInquiryForm"/>
+        <form-bean name="ActualTimeInquiryForm" type="edu.iu.uis.hr.tk.timesheet.client.ActualTimeInquiryForm"/>
+        <form-bean name="BatchMessageInquiryForm" type="edu.iu.uis.hr.tk.report.client.BatchMessageInquiryForm"/>		
+		<form-bean name="HolidayIncentiveRuleMaintenanceLookupForm" type="edu.iu.uis.hr.tk.rule.client.HolidayIncentiveRuleMaintenanceLookupForm"/>
+		<form-bean name="HolidayIncentiveRuleMaintenanceForm" type="edu.iu.uis.hr.tk.rule.client.HolidayIncentiveRuleMaintenanceForm"/>
+        <form-bean name="RoleAuditInquiryForm" type="edu.iu.uis.hr.tk.directory.client.RoleAuditInquiryForm"/>		
+		<form-bean name="ClockLogMaintenanceLookupForm" type="edu.iu.uis.hr.tk.timesheet.client.ClockLogMaintenanceLookupForm"/>				
+		<form-bean name="ClockLogMaintenanceForm" type="edu.iu.uis.hr.tk.timesheet.client.ClockLogMaintenanceForm"/>
+		<form-bean name="TimeBlockMaintenanceLookupForm" type="edu.iu.uis.hr.tk.timesheet.client.TimeBlockMaintenanceLookupForm"/>
+        <form-bean name="TimeBlockMaintenanceForm" type="edu.iu.uis.hr.tk.timesheet.client.TimeBlockMaintenanceForm"/>
+        <form-bean name="TKBatchJobForm" type="edu.iu.uis.hr.tk.batch.web.TKBatchJobForm"/>
+        <form-bean name="TKDataPoolForm" type="edu.iu.uis.hr.tk.pool.web.TKDataPoolForm"/>
+        
+        <!-- refactored out rk -->
+        
+        
+        <!--  end refactored out rk -->
+        
+        <!-- core form-beans -->
+    	<form-bean name="IncidentReportForm" type="edu.iu.uis.hr.client.IncidentReportForm"/>
+    	<form-bean name="HelpForm" type="edu.iu.uis.hr.client.HelpForm"/>
+       	<form-bean name="PositionLookupForm" type="edu.iu.uis.hr.position.client.PositionLookupForm"/>		    	
+    	<form-bean name="JobcodeLookupForm" type="edu.iu.uis.hr.position.client.JobcodeLookupForm"/>
+		<form-bean name="GradeLookupForm" type="edu.iu.uis.hr.position.client.GradeLookupForm"/>    			    	
+    	<form-bean name="DepartmentLookupForm" type="edu.iu.uis.hr.position.client.DepartmentLookupForm"/>
+    	<form-bean name="SalaryPlanLookupForm" type="edu.iu.uis.hr.position.client.SalaryPlanLookupForm"/>
+    	<form-bean name="CensusCodeLookupForm" type="edu.iu.uis.hr.position.client.CensusCodeLookupForm"/>
+    	<form-bean name="JobFamilyLookupForm" type="edu.iu.uis.hr.position.client.JobFamilyLookupForm"/>
+    	<form-bean name="HelpMaintenanceLookupForm" type="edu.iu.uis.hr.help.client.HelpMaintenanceLookupForm"/>
+    	<form-bean name="HelpMaintenanceForm" type="edu.iu.uis.hr.help.client.HelpMaintenanceForm"/>
+    	<form-bean name="AccountLookupForm" type="edu.iu.uis.hr.job.funding.client.AccountLookupForm"/>
+    	<form-bean name="SubAccountLookupForm" type="edu.iu.uis.hr.job.funding.client.SubAccountLookupForm"/>
+    	<form-bean name="OrganizationLookupForm" type="edu.iu.uis.hr.job.funding.client.OrganizationLookupForm"/>
+    	<form-bean name="ProjectLookupForm" type="edu.iu.uis.hr.job.funding.client.ProjectLookupForm"/>
+    	<form-bean name="SubObjectLookupForm" type="edu.iu.uis.hr.job.funding.client.SubObjectLookupForm"/>
+    	<form-bean name="EarnCodeLookupForm" type="edu.iu.uis.hr.job.funding.client.EarnCodeLookupForm"/>
+    	<form-bean name="EarnProgramLookupForm" type="edu.iu.uis.hr.job.funding.client.EarnProgramLookupForm"/>
+    	<form-bean name="EmployeeRecordLookupForm" type="edu.iu.uis.hr.job.client.EmployeeRecordLookupForm"/>
+    	<form-bean name="MassJobLookupForm" type="edu.iu.uis.hr.job.client.MassJobLookupForm"/>
+    	<form-bean name="WorkAreaLookupForm" type="edu.iu.uis.hr.job.funding.client.WorkAreaLookupForm"/>
+    	<form-bean name="TaskLookupForm" type="edu.iu.uis.hr.job.funding.client.TaskLookupForm"/>
+		<form-bean name="PersonLookupForm" type="edu.iu.uis.hr.person.client.PersonLookupForm"/>
+		<form-bean name="UniversityIdLookupForm" type="edu.iu.uis.hr.person.client.UniversityIdLookupForm"/>
+		<form-bean name="AdministrativePostEmployeeLookupForm" type="edu.iu.uis.hr.job.administrativeposts.client.AdministrativePostEmployeeLookupForm"/>
+		<form-bean name="AdministrativePostLookupForm" type="edu.iu.uis.hr.job.administrativeposts.client.AdministrativePostLookupForm"/>
+		<form-bean name="VoucherCodeLookupForm" type="edu.iu.uis.hr.job.funding.client.VoucherCodeLookupForm"/>
+    	<form-bean name="FinalApprovalWorkgroupMaintenanceLookupForm" type="edu.iu.uis.hr.workflow.client.FinalApprovalWorkgroupMaintenanceLookupForm"/>
+    	<form-bean name="FinalApprovalWorkgroupMaintenanceForm" type="edu.iu.uis.hr.workflow.client.FinalApprovalWorkgroupMaintenanceForm"/>
+    	<form-bean name="TKPerformInfoForm" type="edu.iu.uis.hr.tk.log.web.TKPerformInfoForm"/>
+    	<form-bean name="TKBatchAdminForm" type="edu.iu.uis.hr.tk.batch.web.TKBatchAdminForm"/>
+    	<form-bean name="TKRunReportForm" type="edu.iu.uis.hr.tk.report.web.TKRunReportForm"/>
+    	<form-bean name="CacheAdministrationActionForm" type="edu.iu.uis.hredoc.administration.TKCacheAdministratorForm" />
+		<form-bean name="TKDocumentAdministrationForm" type="edu.iu.uis.hredoc.administration.TKDocumentAdministrationForm" />
+		<form-bean name="LogoutForm" type="edu.iu.uis.hr.tk.web.LogoutForm" />
+		
+		<!-- Non-rice forms -->
+		<form-bean name="DeptEarncdMaintenanceForm" type="edu.iu.uis.hr.tk.maintenance.web.DeptEarncdMaintenanceForm"/>
+		<form-bean name="TKBatchAdminForm" type="edu.iu.uis.hr.tk.batch.web.TKBatchAdminForm"/>
+    	<form-bean name="TKRunReportForm" type="edu.iu.uis.hr.tk.report.web.TKRunReportForm"/>
+    	
+	</form-beans>
+	
+	<global-exceptions>
+    	<exception  type="java.lang.Exception" handler="edu.iu.uis.hr.tk.client.StrutsExceptionHandler" key="whyisthisrequired"/>
+	</global-exceptions>
+	
+	<action-mappings>
+		<action path="/TimeApproverNotification" name="TimeApproverNotificationForm" type="edu.iu.uis.hr.tk.client.SupervisorNotificationAction" input="/jsp/SupervisorNotification.jsp" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/SupervisorNotification.jsp"/>
+		</action>	
+		<action path="/TimesheetDocument" name="TimesheetDocumentForm" type="edu.iu.uis.hr.tk.timesheet.client.TimesheetDocumentAction" input="/jsp/document/TimesheetDocument.jsp" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/document/TimesheetDocument.jsp" />
+			<forward name="hourDistribution" path="/WEB-INF/jsp/document/HourDistribution.jsp"/>
+			<forward name="hourDetailCopy" path="/WEB-INF/jsp/document/TimesheetHourDetailCopy.jsp"/>
+			<forward name="clockOnly" path="/WEB-INF/jsp/document/ClockOnlyTimesheetDocument.jsp" />
+		</action>
+		
+		<action path="/BatchJob" name="TKBatchJobForm" type="edu.iu.uis.hr.tk.batch.web.TKBatchJobAction" scope="request" validate="false" parameter="method">
+		  <forward name="default" path="/WEB-INF/jsp/BatchJob.jsp" />
+		</action>		
+		
+		<action path="/Logout" name="LogoutForm" type="edu.iu.uis.hr.tk.web.LogOutAction" scope="request" validate="false" parameter="method" >
+			<forward name="sessionExpired" path="/WEB-INF/jsp/sessionInvalidate.jsp"/>
+		</action>		
+		 
+		<action path="/UserPreference" name="UserPreferenceForm" type="edu.iu.uis.hr.tk.client.UserPreferenceAction" input="/jsp/portal/UserPreference.jsp" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/portal/UserPreference.jsp"/>
+		</action>		
+		<action path="/*Channel" name="TemporaryIndexForm" type="edu.iu.uis.hr.client.TemporaryIndexAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/portal/{1}Channel.jsp"/>
+		</action>
+		<action path="/UserRolesAjaxLookup" name="RoleMaintenanceForm" type="edu.iu.uis.hr.client.MaintenanceAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/lookup/UserRolesAjaxLookup.jsp"/>
+		</action>
+		<action path="/DocumentHeaderApproveAction" name="DocumentHeaderMaintenanceForm" type="edu.iu.uis.hr.tk.timesheet.client.DocumentHeaderApproveAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/maintenance/DocumentHeaderMaintenance.jsp"/>
+		</action>
+		<action path="/IncidentReport" name="IncidentReportForm" type="edu.iu.uis.hr.client.IncidentReportAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/IncidentReport.jsp"/>
+		</action>
+		<action path="/Help" name="HelpForm" type="edu.iu.uis.hr.client.HelpAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/Help.jsp"/>
+		</action>
+		
+		<action path="/Log" name="TKPerformInfoForm" type="edu.iu.uis.hr.tk.log.web.TKPerformInfoAction" scope="request" validate="false">
+			<forward name="default" path="/WEB-INF/jsp/PerformanceLog.jsp"/>
+		</action>	
+		
+		<action path="/BatchAdmin" name="TKBatchAdminForm" type="edu.iu.uis.hr.tk.batch.web.TKBatchAdminAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/BatchAdmin.jsp"/>
+		</action>
+		
+		<action path="/RunReport" name="TKRunReportForm" type="edu.iu.uis.hr.tk.report.web.TKRunReportAction" scope="request" validate="false" parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/RunReport.jsp"/>
+		</action>
+		
+		<action path="/TKDocumentAdministration" name="TKDocumentAdministrationForm" type="edu.iu.uis.hredoc.administration.TKDocumentAdministratorAction" scope="request"  parameter="method">
+			<forward name="default" path="/WEB-INF/jsp/BatchList.jsp"/>
+		</action>
+		
+		<action path="/CacheAdministration" name="CacheAdministrationActionForm" scope="request" input="/WEB-INF/jsp/cache.jsp" type="edu.iu.uis.hredoc.administration.TKCacheAdministratorAction" parameter="methodToCall" validate="true" attribute="KualiForm">
+            <forward name="basic" path="/WEB-INF/jsp/cache.jsp" />
+        </action>
+        
+		<action path="/Pool" name="TKDataPoolForm" scope="request" type="edu.iu.uis.hr.tk.pool.web.TKDataPoolAction" validate="true" parameter="method">
+            <forward name="default" path="/WEB-INF/jsp/pool.jsp" />
+        </action>
+        
+		<action path="/DeptEarncdMaintenance" name="DeptEarncdMaintenanceForm" scope="request" type="edu.iu.uis.hr.tk.maintenance.web.DeptEarncdMaintenanceAction" validate="false" parameter="method">
+            <forward name="default" path="/WEB-INF/jsp/DeptEarncdMaintenance.jsp" />
+        </action>        
+        
+	</action-mappings>
+	
+</struts-config>

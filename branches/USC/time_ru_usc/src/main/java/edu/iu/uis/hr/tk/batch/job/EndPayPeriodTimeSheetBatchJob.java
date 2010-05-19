@@ -1,0 +1,205 @@
+package edu.iu.uis.hr.tk.batch.job;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
+import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.springframework.dao.DataAccessException;
+
+import edu.iu.uis.hr.TimelessDate;
+import edu.iu.uis.hr.job.funding.entity.PayCalendar;
+import edu.iu.uis.hr.tk.TKServiceLocator;
+import edu.iu.uis.hr.tk.batch.TKBatchJobPopulator;
+import edu.iu.uis.hr.tk.batch.TKBatchRunnable;
+import edu.iu.uis.hr.tk.batch.job.runnables.EndPayPeriodRunnable;
+import edu.iu.uis.hr.tk.timesheet.entity.ClockLog;
+import edu.iu.uis.hr.tk.timesheet.entity.DocumentHeader;
+import edu.iu.uis.hr.tk.timesheet.entity.DocumentLock;
+import edu.iu.uis.hr.tk.util.TkConstants;
+
+
+//This batch job will close any open clock log (clock actions with codes "CI" or "LI" EXCLUSIVELY from previous pay period.
+public class EndPayPeriodTimeSheetBatchJob extends TKBatchJobPopulator {
+	
+	private static final Logger LOG = Logger.getLogger(EndPayPeriodTimeSheetBatchJob.class);
+
+//	private static final BigDecimal ELEVEN = new BigDecimal(11);
+//	private static final BigDecimal TWELVE = new BigDecimal(12);
+//	private static final BigDecimal FIFTYNINE = new BigDecimal(59);
+//	private static final BigDecimal ZERO = new BigDecimal(0);
+//	private static final String PM = "PM";
+//	private static final String AM = "AM";
+	private static final String DOCUMENT_ID_OBJECT_FIELD = "documentId";
+	private static final String PAY_END_DT_OBJECT_FIELD = "payEndDate";
+	private static final String DOCUMENT_ID_DATABASE_FIELD = "DOCUMENT_ID";
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<TKBatchRunnable> getTKBatchRunnables() {
+		LOG.info("Executing EndPayPeriodTimeSheetBatchJob ");
+		PayCalendar payCalendar = TKServiceLocator.getPayCalendarService().getPayCalendar(new TimelessDate(new Date()).getDate());
+		unlockDocumentsForPayPeriod(payCalendar);
+		List<ClockLog> openClockLogs = (List<ClockLog>)TKServiceLocator.getClockLogDataAccess().getOpenClockLogs();
+		
+		try {
+			sendKickOffEmail(openClockLogs.size());
+		}catch (Exception e){
+			LOG.error("Error sending email from " + getName() + ": " + e);
+		}
+		
+		LOG.info("Processing EndPayPeriodTimeSheetBatch Job with " + openClockLogs.size() + " open clock logs");
+		
+		List<TKBatchRunnable> batchRunnables = new ArrayList<TKBatchRunnable>();
+		for (ClockLog clockLog : openClockLogs) {
+			batchRunnables.add(new EndPayPeriodRunnable(clockLog));
+		}
+		
+		return batchRunnables;
+	}
+	
+	private void unlockDocumentsForPayPeriod(PayCalendar payCalendar) {
+		// set up sub query - need all locked docs in pay period
+		ReportQueryByCriteria subQuery;
+		Criteria subCriteria = new Criteria();
+		subCriteria.addEqualTo(PAY_END_DT_OBJECT_FIELD, new java.sql.Timestamp(payCalendar.getPayEndDate().getTime()));
+		subQuery = QueryFactory.newReportQuery(DocumentHeader.class, subCriteria);
+		subQuery.setAttributes(new String[] { DOCUMENT_ID_DATABASE_FIELD });
+
+		Criteria criteria = new Criteria();
+		criteria.addIn(DOCUMENT_ID_OBJECT_FIELD, subQuery);
+		Query query = QueryFactory.newQuery(DocumentLock.class, criteria);
+		try {
+			TKServiceLocator.getDocumentLockDataAccess().deleteByQuery(query);
+		} catch (DataAccessException e) {
+			LOG.error("Document lock delete query error " + e.toString());
+		}
+	}
+	
+	@Override
+	public String getType() {
+		return TkConstants.BatchJobTypes.ClockLog;
+	}
+
+	@Override
+	public String getName() {
+		return "EndPayPeriodTimeSheetBatchJob";
+	}
+		
+	
+	
+	
+//	public EndPayPeriodTimeSheetBatchJob() {
+//		setName("EndPayPeriodTimeSheetBatchJob");
+//	}
+//
+//	@SuppressWarnings("unchecked")
+//	@Override
+//	protected BatchJobDescription setupJobs() {
+//		LOG.info("Executing EndPayPeriodTimeSheetBatchJob ");
+//		PayCalendar payCalendar = TKServiceLocator.getPayCalendarService().getPayCalendar(new TimelessDate(new Date()).getDate());
+//		unlockDocumentsForPayPeriod(payCalendar);
+//		List openClockLogs = TKServiceLocator.getClockLogDataAccess().getOpenClockLogs();
+//		sendKickOffEmail(openClockLogs.size());
+//		LOG.info("Processing EndPayPeriodTimeSheetBatch Job with " + openClockLogs.size() + " open clock logs");
+//		return new BatchJobDescription(getName(), new java.sql.Timestamp(System.currentTimeMillis()), null, openClockLogs);
+//	}
+//
+
+//
+////	public static class EndPayPeriodTimeSheetBatchRunnable extends BatchRunnable {
+////		private static final long serialVersionUID = -23392624306596763L;
+////
+////		
+////		@Override
+////		protected String getDataId() {
+////			return ((ClockLog) getObject()).getUniversityId();
+////		}
+////
+////
+////		@Override
+////		protected void doWork() {
+////			
+////			ClockLog openClockLog = (ClockLog) getObject();
+////			Calendar cal = new GregorianCalendar();
+////			TimelessDate today = new TimelessDate(cal.getTime());
+////			PayCalendar payCalendar = new PayCalendar();
+////			payCalendar = TKServiceLocator.getPayCalendarService().getPreviousPayCalendar(new TimelessDate(new java.util.Date()).getDate());
+////			TimelessDate  endPayPeriod = new TimelessDate(payCalendar.getPayEndDate());
+////			
+////			boolean clockedInTimeExceeded = false;
+////			Timestamp currentTime = new TimedDate(new Date()).getTimestamp();
+////			if (Clock.ON_THE_CLOCK_CODES.contains(openClockLog.getAction())){
+////				if  (Timestamp.getMillisecondDifference(currentTime, openClockLog.getClockTime()).longValue() / 3600000 > Clock.MAX_CLOCK_IN_HOURS) {
+////					clockedInTimeExceeded = true;
+////				}
+////			}
+////			
+////			payCalendar = TKServiceLocator.getPayCalendarService().getPayCalendar(new TimelessDate(new Date()).getDate());
+////			TimesheetDocument timesheetDocument = TKServiceLocator.getTimesheetService().getTimesheetDocument(openClockLog.getUniversityId(), payCalendar.getPayEndDate());
+////			Timestamp clockTime = new Timestamp();
+////			clockTime.setDate(endPayPeriod.getDate());
+////			clockTime.setHour(ELEVEN);
+////			clockTime.setMinute(FIFTYNINE);
+////			clockTime.setSecond(ZERO);
+////			clockTime.setAmPm(PM);
+////			
+////			timesheetDocument.getClock().setClockTime(clockTime);
+////			if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.CLOCK_IN)) {
+////				TKServiceLocator.getTimesheetService().clockOut(timesheetDocument);
+////				LOG.info("Employee " + openClockLog.getUniversityId() + " (Clock-out)");
+////			} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.BREAK_IN)) {
+////				TKServiceLocator.getTimesheetService().breakOut(timesheetDocument);
+////				LOG.info("Employee " + openClockLog.getUniversityId() + " (Break-out)");
+////			} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.LUNCH_IN)) {
+////				TKServiceLocator.getTimesheetService().lunchOut(timesheetDocument);
+////				LOG.info("Employee " + openClockLog.getUniversityId() + " (Lunch-out)");
+////			} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.BREAK_OUT)) {
+////				TKServiceLocator.getTimesheetService().breakIn(timesheetDocument);
+////				TKServiceLocator.getTimesheetService().clockOut(timesheetDocument);
+////				LOG.info("Employee " + openClockLog.getUniversityId() + " (Break-in and clock-out)");
+////			}
+////
+////			// checks whether the assignment is active
+////
+////			clockTime.setHour(TWELVE);
+////			clockTime.setMinute(ZERO);
+////			clockTime.setSecond(ZERO);
+////			clockTime.setAmPm(AM);
+////			clockTime.setDate(today.getDate());
+////
+////			if (!clockedInTimeExceeded && edu.iu.uis.hr.entity.logic.Utility.hasValue(timesheetDocument.getAssignment(openClockLog.getEmployeeRecord(), openClockLog.getWorkArea(), openClockLog.getTask(), clockTime))) {
+////				timesheetDocument.getClock().setClockTime(clockTime);
+////				if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.CLOCK_IN)) {
+////					TKServiceLocator.getTimesheetService().clockIn(timesheetDocument);
+////					LOG.info("Employee " + openClockLog.getUniversityId() + " (Clock-in)");
+////				} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.BREAK_IN)) {
+////					TKServiceLocator.getTimesheetService().breakIn(timesheetDocument);
+////					LOG.info("Employee " + openClockLog.getUniversityId() + " (Break-in)");
+////				} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.LUNCH_IN)) {
+////					TKServiceLocator.getTimesheetService().lunchIn(timesheetDocument);
+////					LOG.info("Employee " + openClockLog.getUniversityId() + " (Lunch-in)");
+////				} else if (StringUtils.equals(openClockLog.getAction(), edu.iu.uis.hr.tk.timesheet.entity.Clock.BREAK_OUT)) {
+////					TKServiceLocator.getTimesheetService().clockIn(timesheetDocument);
+////					TKServiceLocator.getTimesheetService().breakOut(timesheetDocument);
+////					LOG.info("Employee " + openClockLog.getUniversityId() + " (Clock-in and break-out)");
+////				}
+////			}
+////		}
+////	}
+//
+//	@Override
+//	protected BatchRunnable getBatchRunnable() {
+//		return new EndPayPeriodTimeSheetBatchRunnable();
+//	}
+//
+//	@Override
+//	protected String getType() {
+//		return TkConstants.BatchJobTypes.ClockLog;
+//	}
+}
