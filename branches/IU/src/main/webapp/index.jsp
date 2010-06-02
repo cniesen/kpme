@@ -33,7 +33,7 @@
 	          </div>
 			  <div class="portlet-content">
 			
-					<a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.domain.rule.ClockLocationRule&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888">Clock Location Rule</a>   
+					<a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.clock.location.ClockLocationRule&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888">Clock Location Rule</a>   
 			
 			   </div>    
            </div>

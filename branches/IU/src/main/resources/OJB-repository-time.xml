@@ -80,7 +80,7 @@
 		<field-descriptor name="versionNumber"          column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />						
 	</class-descriptor>
 
-	<class-descriptor class="org.kuali.hr.time.domain.rule.ClockLocationRule" table="tk_clock_location_rl_t">
+	<class-descriptor class="org.kuali.hr.time.clock.location.ClockLocationRule" table="tk_clock_location_rl_t">
 		<!-- We don't actually need an ID like the following, but as an example, we're using it -->
 		<field-descriptor name="clockLocationRuleId" column="CLOCK_LOC_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_clock_location_rl_s"/>
 		<!-- put field descriptors -->

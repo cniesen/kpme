@@ -1,4 +1,4 @@
-package org.kuali.hr.time.domain.rule;
+package org.kuali.hr.time.clock.location;
 
 import java.math.BigDecimal;
 import java.sql.Date;

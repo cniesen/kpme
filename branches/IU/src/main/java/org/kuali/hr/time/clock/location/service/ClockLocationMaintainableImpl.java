@@ -11,7 +11,7 @@ public class ClockLocationMaintainableImpl extends KualiMaintainableImpl {
 
     @Override
     public void prepareForSave() {
-	// TODO Add any custom maintenance validation here
+	// TODO Add any custom logic here
 	super.prepareForSave();
     }
 

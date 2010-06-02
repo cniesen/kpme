@@ -3,7 +3,7 @@
   <bean id="ClockLocationRule" parent="ClockLocationRule-parentBean"/>
 
   <bean id="ClockLocationRule-parentBean" abstract="true" parent="BusinessObjectEntry">
-    <property name="businessObjectClass" value="org.kuali.hr.time.domain.rule.ClockLocationRule"/>
+    <property name="businessObjectClass" value="org.kuali.hr.time.clock.location.ClockLocationRule"/>
     <property name="titleAttribute" value="id"/>
     <property name="objectLabel" value="ClockLocationRule"/>
     <property name="lookupDefinition">

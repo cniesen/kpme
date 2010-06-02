@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.kuali.hr.time.domain.rule.ClockLocationRule;
+import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TestHarnessWebBase;
 import org.kuali.rice.kns.service.BusinessObjectService;
@@ -56,7 +56,7 @@ public class ClockLocationRuleLookupTest extends TestHarnessWebBase {
     @Test
     public void testBasicFindRecordByWebLookup() throws Exception {
 	assertEquals("Database data verification failed.", 1, boService.findAll(ClockLocationRule.class).size());
-	String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/lookup.do?__login_user=admin&methodToCall=start&businessObjectClassName=org.kuali.hr.time.domain.rule.ClockLocationRule&returnLocation=http://localhost:8080/tk-dev/portal.do&hideReturnLink=true&docFormKey=88888888";	
+	String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/lookup.do?__login_user=admin&methodToCall=start&businessObjectClassName=org.kuali.hr.time.clock.location.ClockLocationRule&returnLocation=http://localhost:8080/tk-dev/portal.do&hideReturnLink=true&docFormKey=88888888";	
 	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
 	assertNotNull(page);
 	assertTrue("Could not find text 'Clock Location Rule Lookup' in page.", StringUtils.contains(page.asText(), "Clock Location Rule Lookup"));

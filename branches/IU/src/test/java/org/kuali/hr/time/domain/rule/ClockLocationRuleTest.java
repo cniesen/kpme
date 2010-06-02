@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.test.TestHarnessWebBase;
 import org.kuali.rice.kns.service.BusinessObjectService;
 import org.kuali.rice.kns.service.KNSServiceLocator;
