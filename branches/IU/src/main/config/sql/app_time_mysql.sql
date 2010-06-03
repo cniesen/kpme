@@ -61,7 +61,7 @@ DROP TABLE IF EXISTS `tk_clock_location_rl_s`;
 CREATE TABLE `tk_clock_location_rl_s` (
   `id` bigint(19) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2080 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,8 +72,7 @@ DROP TABLE IF EXISTS `tk_clock_location_rl_t`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_clock_location_rl_t` (
-  `CLOCK_LOC_RULE_ID` bigint(19) DEFAULT NULL,
-  `DEPTID` varchar(7) COLLATE utf8_bin DEFAULT NULL,
+  `CLOCK_LOC_RULE_ID` bigint(19) NOT NULL,
   `WORK_AREA_ID` decimal(10,0) DEFAULT NULL,
   `PRINCIPALID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `JOB_NUMBER` decimal(3,0) DEFAULT NULL,
@@ -83,7 +82,8 @@ CREATE TABLE `tk_clock_location_rl_t` (
   `USER_PRINCIPALID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
-  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
+  `department_id` bigint(19) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -133,10 +133,12 @@ DROP TABLE IF EXISTS `tk_dept_t`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_dept_t` (
-  `DEPTID` varchar(7) COLLATE utf8_bin DEFAULT NULL,
+  `dept_name` varchar(7) COLLATE utf8_bin DEFAULT NULL,
   `DESCRIPTION` varchar(30) COLLATE utf8_bin DEFAULT NULL,
   `ORG` varchar(10) COLLATE utf8_bin DEFAULT NULL,
-  `CHART` varchar(10) COLLATE utf8_bin DEFAULT NULL
+  `CHART` varchar(10) COLLATE utf8_bin DEFAULT NULL,
+  `dept_id` bigint(19) NOT NULL,
+  PRIMARY KEY (`dept_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -175,4 +177,4 @@ CREATE TABLE `tk_time_block_t` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-01 16:21:39
+-- Dump completed on 2010-06-03 16:44:32
