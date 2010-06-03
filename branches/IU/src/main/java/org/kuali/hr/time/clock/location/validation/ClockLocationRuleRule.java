@@ -23,7 +23,7 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 	Matcher matcher = REGEX_IP_ADDRESS_PATTERN.matcher(ip);
 	valid = matcher.matches();
 	if (!valid) {
-	    this.putFieldError("ipAddress", "error.invalid.ipaddress", ip);
+	    this.putFieldError("ipAddress", "ipaddress.invalid.format", ip);
 	}
 
 	return valid;

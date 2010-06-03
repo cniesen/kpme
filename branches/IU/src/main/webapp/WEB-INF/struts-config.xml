@@ -26,5 +26,6 @@
 	</action-mappings>
 
     <controller processorClass="org.kuali.hr.time.web.TKRequestProcessor"/>
-    <message-resources factory="org.kuali.rice.kns.web.struts.action.KualiPropertyMessageResourcesFactory" parameter="" />
+    <message-resources factory="org.kuali.rice.kns.web.struts.action.KualiPropertyMessageResourcesFactory" parameter="KR-ApplicationResources,org.kuali.rice.kew.ApplicationResources,org.kuali.rice.ksb.messaging.ApplicationResources,KIM-ApplicationResources,ApplicationResources" />
+
 </struts-config>
