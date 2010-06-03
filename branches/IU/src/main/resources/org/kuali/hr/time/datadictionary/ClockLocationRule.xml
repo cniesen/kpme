@@ -11,7 +11,7 @@
     </property>
     <property name="attributes">
       <list>
-        <ref bean="ClockLocationRule-department"/>
+        <ref bean="ClockLocationRule-departmentId"/>
         <ref bean="ClockLocationRule-workArea"/>
         <ref bean="ClockLocationRule-principalId"/>
         <ref bean="ClockLocationRule-jobNumber"/>
@@ -21,29 +21,37 @@
         <ref bean="ClockLocationRule-userPrincipalId"/>
       </list>
     </property>
+    <property name="relationships">
+  		<list>
+            <bean parent="RelationshipDefinition">
+              <property name="objectAttributeName" value="department"/>
+              <property name="primitiveAttributes">
+                <list>
+                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="departmentId" p:targetName="departmentId"/>
+                </list>
+              </property>
+            </bean>
+        </list>
+    </property>        
   </bean>
 
   <!-- Attribute Definitions -->
 
-  <bean id="ClockLocationRule-department" parent="ClockLocationRule-department-parentBean"/>
-
-  <bean id="ClockLocationRule-department-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Dept"/>
+  <bean id="ClockLocationRule-departmentId" parent="ClockLocationRule-departmentId-parentBean"/>
+  <bean id="ClockLocationRule-departmentId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Department"/>
     <property name="maxLength" value="7"/>
     <property name="validationPattern">
-      <bean parent="AnyCharacterValidationPattern">
-      	<property name="allowWhitespace" value="true"/>
-      </bean>
+                <bean parent="NumericValidationPattern"/>
     </property>
     <property name="control">
       <bean parent="TextControlDefinition" p:size="7"/>
     </property>
-    <property name="name" value="department"/>
-    <property name="label" value="Department"/>
+    <property name="name" value="departmentId"/>
+    <property name="label" value="Department Id"/>
   </bean>
-  
+    
   <bean id="ClockLocationRule-workArea" parent="ClockLocationRule-workArea-parentBean"/>
-
   <bean id="ClockLocationRule-workArea-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Work Area"/>
     <property name="maxLength" value="10"/>
@@ -193,7 +201,7 @@
   <bean id="ClockLocationRule-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
     <property name="lookupFields">
       <list>
-        <bean parent="FieldDefinition" p:attributeName="department"/>
+        <bean parent="FieldDefinition" p:attributeName="departmentId"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
         <bean parent="FieldDefinition" p:attributeName="jobNumber"/>
@@ -201,7 +209,7 @@
     </property>
     <property name="resultFields">
       <list>
-        <bean parent="FieldDefinition" p:attributeName="department"/>
+        <bean parent="FieldDefinition" p:attributeName="departmentId"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
         <bean parent="FieldDefinition" p:attributeName="jobNumber"/>

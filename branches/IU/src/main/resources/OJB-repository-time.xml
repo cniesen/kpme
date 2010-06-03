@@ -84,17 +84,29 @@
 		<!-- We don't actually need an ID like the following, but as an example, we're using it -->
 		<field-descriptor name="clockLocationRuleId" column="CLOCK_LOC_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_clock_location_rl_s"/>
 		<!-- put field descriptors -->
-		<field-descriptor name="department" column="deptid" jdbc-type="VARCHAR" length="7" nullable="false" primarykey="false" />
-		<field-descriptor name="workArea" column="work_area_id" jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="principalId" column="principalid" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
-		<field-descriptor name="jobNumber" column="job_number" jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="effectiveDate" column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
-		<field-descriptor name="active" column="eff_status"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
-		<field-descriptor name="ipAddress" column="ip_address"	jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
+		<field-descriptor name="departmentId"    column="department_id" jdbc-type="BIGINT" />
+		<field-descriptor name="workArea"        column="work_area_id"  jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="principalId"     column="principalid"   jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="jobNumber"       column="job_number"    jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="effectiveDate"   column="effdt"         jdbc-type="DATE" nullable="false" primarykey="false"/>
+		<field-descriptor name="active"          column="eff_status"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
+		<field-descriptor name="ipAddress"       column="ip_address"	jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
 		<field-descriptor name="userPrincipalId" column="user_principalid"	jdbc-type="VARCHAR" length="10" nullable="false" />
-		<field-descriptor name="timestamp" column="timestamp" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
-		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
-		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
+		<field-descriptor name="timestamp"       column="timestamp"         jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
+		<field-descriptor name="objectId"        column="obj_id"            jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber"   column="ver_nbr"           jdbc-type="BIGINT" locking="true" />
+		
+		<reference-descriptor name="department" class-ref="org.kuali.hr.time.department.Department" auto-retrieve="true" auto-delete="false" auto-update="false">
+			<foreignkey field-ref="departmentId"/>
+		</reference-descriptor>					
 	</class-descriptor>
+	
+    <class-descriptor class="org.kuali.hr.time.department.Department" table="tk_dept_t">
+        <field-descriptor name="departmentId" column="dept_id"     jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_dept_s"/>
+        <field-descriptor name="name"         column="dept_name"   jdbc-type="VARCHAR" length="7" nullable="false" primarykey="false" />
+        <field-descriptor name="description"  column="description" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
+        <field-descriptor name="org"          column="org"         jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+        <field-descriptor name="chart"        column="chart"       jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+    </class-descriptor>     	
 	
 </descriptor-repository>

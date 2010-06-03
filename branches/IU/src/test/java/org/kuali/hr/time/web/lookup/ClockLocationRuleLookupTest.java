@@ -30,7 +30,7 @@ public class ClockLocationRuleLookupTest extends TestHarnessWebBase {
 	
 	ClockLocationRule clr = new ClockLocationRule();
 	clr.setActive(true);
-	clr.setDepartment("12345");
+	//clr.setDepartment("12345");
 	clr.setIpAddress("ipaddress");
 	
 	boService.save(clr);

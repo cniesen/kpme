@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.time.department.Department;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class ClockLocationRule extends PersistableBusinessObjectBase {
@@ -12,7 +13,10 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	private static final long serialVersionUID = 1L;
 
 	private Long clockLocationRuleId;
-	private String department;
+
+	private Long departmentId;
+	private Department department;
+	
 	private BigDecimal workArea;
 	private String principalId;
 	private BigDecimal jobNumber;
@@ -30,14 +34,6 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 		toStringMap.put("principalId", principalId);
 		
 		return toStringMap;
-	}
-
-	public String getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(String department) {
-		this.department = department;
 	}
 
 	public BigDecimal getWorkArea() {
@@ -110,5 +106,21 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setClockLocationRuleId(Long clockLocationRuleId) {
 	    this.clockLocationRuleId = clockLocationRuleId;
+	}
+
+	public Long getDepartmentId() {
+	    return departmentId;
+	}
+
+	public void setDepartmentId(Long departmentId) {
+	    this.departmentId = departmentId;
+	}
+
+	public Department getDepartment() {
+	    return department;
+	}
+
+	public void setDepartment(Department department) {
+	    this.department = department;
 	}
 }
