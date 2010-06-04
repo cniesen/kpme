@@ -1,4 +1,4 @@
-package org.kuali.hr.time.domain.base;
+package org.kuali.hr.time.assignment;
 
 import java.math.BigDecimal;
 import java.sql.Date;

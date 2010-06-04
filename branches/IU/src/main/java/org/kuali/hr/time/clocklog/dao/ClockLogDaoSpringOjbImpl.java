@@ -3,7 +3,7 @@ package org.kuali.hr.time.clocklog.dao;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.kuali.hr.time.domain.base.ClockLog;
+import org.kuali.hr.time.clocklog.ClockLog;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 public class ClockLogDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements ClockLogDao {

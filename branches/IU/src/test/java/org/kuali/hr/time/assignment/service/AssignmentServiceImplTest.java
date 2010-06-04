@@ -9,8 +9,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
-import org.kuali.hr.time.domain.base.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.TestHarnessWebBase;
 

@@ -32,7 +32,7 @@
 		<connection-pool maxActive="150"/>
 	</jdbc-connection-descriptor>
 
-	<class-descriptor class="org.kuali.hr.time.domain.base.Assignment" table="tk_assignment_t">
+	<class-descriptor class="org.kuali.hr.time.assignment.Assignment" table="tk_assignment_t">
 		<field-descriptor name="assignmentId" 			column="assignment_id" 		jdbc-type="BIGINT" 	primarykey="true" autoincrement="true" sequence-name="tk_assignment_s"/>
 		<field-descriptor name="principalId"            column="principal_id"		jdbc-type="VARCHAR" length="40" nullable="false" primarykey="false" />
 		<field-descriptor name="jobNumber" 				column="job_number" 		jdbc-type="INTEGER" nullable="false" primarykey="false" />
@@ -64,7 +64,7 @@
 		<field-descriptor name="versionNumber" 			column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />								
 	</class-descriptor>
 
-	<class-descriptor class="org.kuali.hr.time.domain.base.ClockLog" table="tk_clock_log_t">
+	<class-descriptor class="org.kuali.hr.time.clocklog.ClockLog" table="tk_clock_log_t">
 		<field-descriptor name="clockLogId" 					column="clock_log_id" 		jdbc-type="BIGINT" 	primarykey="true" autoincrement="true" sequence-name="tk_clock_log_s"/>
 		<field-descriptor name="principalId"            column="principal_id"		jdbc-type="VARCHAR" length="40" nullable="false" primarykey="false" />
 		<field-descriptor name="jobNumber"              column="job_number" 		jdbc-type="INTEGER" nullable="false" primarykey="false" />

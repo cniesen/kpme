@@ -11,8 +11,8 @@ import org.apache.ojb.broker.PersistenceBrokerFactory;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
-import org.kuali.hr.time.domain.base.Assignment;
 import org.kuali.rice.kns.service.BusinessObjectService;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 

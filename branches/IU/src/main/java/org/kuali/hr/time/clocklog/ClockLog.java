@@ -1,12 +1,9 @@
-package org.kuali.hr.time.domain.base;
+package org.kuali.hr.time.clocklog;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashMap;
-import java.util.TimeZone;
 
-import org.kuali.hr.time.exceptions.InvalidTimezoneException;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class ClockLog extends PersistableBusinessObjectBase {

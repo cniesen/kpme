@@ -1,7 +1,7 @@
 package org.kuali.hr.time.clocklog.service;
 
+import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.clocklog.dao.ClockLogDao;
-import org.kuali.hr.time.domain.base.ClockLog;
 import org.kuali.rice.kns.service.BusinessObjectService;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 

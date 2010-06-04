@@ -3,7 +3,7 @@ package org.kuali.hr.time.assignment.dao;
 import java.sql.Date;
 import java.util.List;
 
-import org.kuali.hr.time.domain.base.Assignment;
+import org.kuali.hr.time.assignment.Assignment;
 
 public interface AssignmentDao {
 

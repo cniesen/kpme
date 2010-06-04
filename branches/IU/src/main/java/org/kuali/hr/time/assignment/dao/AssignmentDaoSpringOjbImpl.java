@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.kuali.hr.time.domain.base.Assignment;
+import org.kuali.hr.time.assignment.Assignment;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 public class AssignmentDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements AssignmentDao {

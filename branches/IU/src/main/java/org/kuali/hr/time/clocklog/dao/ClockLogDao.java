@@ -2,7 +2,7 @@ package org.kuali.hr.time.clocklog.dao;
 
 import java.util.List;
 
-import org.kuali.hr.time.domain.base.ClockLog;
+import org.kuali.hr.time.clocklog.ClockLog;
 
 public interface ClockLogDao {
 
