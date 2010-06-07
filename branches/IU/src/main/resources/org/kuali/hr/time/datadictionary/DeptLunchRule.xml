@@ -21,7 +21,7 @@
         <ref bean="DeptLunchRule-effectiveSeq"/>
         <ref bean="DeptLunchRule-active"/>
   		<ref bean="DeptLunchRule-userEmpl"/>
-
+		<ref bean="DeptLunchRule-timestamp"/>
  
       </list>
     </property>
@@ -198,15 +198,10 @@
   <bean id="DeptLunchRule-timestamp-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Timestamp"/>
     <property name="maxLength" value="15"/>
-    <property name="validationPattern">
-      <bean parent="TimeDateValidationPattern">
-      	<property name="allowWhitespace" value="false"/>
-      </bean>
-    </property>
     <property name="control">
-      <bean parent="ReadonlyControlDefinition" p:size="15"/>
+      <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
     </property>
-    <property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter"/>
+    <property name="formatterClass" value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter"/>
     <property name="name" value="timestamp"/>
     <property name="label" value="Time Stamp"/>
   </bean>
