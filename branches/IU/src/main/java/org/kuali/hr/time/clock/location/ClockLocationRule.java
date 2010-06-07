@@ -16,6 +16,7 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	private Long departmentId;
 	private Department department;
+	private String departmentName;
 	
 	private BigDecimal workArea;
 	private String principalId;
@@ -122,5 +123,13 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setDepartment(Department department) {
 	    this.department = department;
+	}
+
+	public String getDepartmentName() {
+	    return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+	    this.departmentName = departmentName;
 	}
 }

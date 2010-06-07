@@ -12,6 +12,7 @@
     <property name="attributes">
       <list>
         <ref bean="ClockLocationRule-departmentId"/>
+        <ref bean="ClockLocationRule-departmentName"/>
         <ref bean="ClockLocationRule-workArea"/>
         <ref bean="ClockLocationRule-principalId"/>
         <ref bean="ClockLocationRule-jobNumber"/>
@@ -27,7 +28,7 @@
               <property name="objectAttributeName" value="department"/>
               <property name="primitiveAttributes">
                 <list>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="departmentId" p:targetName="departmentId"/>
+                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="departmentName" p:targetName="name"/>
                 </list>
               </property>
             </bean>
@@ -50,6 +51,24 @@
     <property name="name" value="departmentId"/>
     <property name="label" value="Department Id"/>
   </bean>
+  
+  
+  <bean id="ClockLocationRule-departmentName" parent="ClockLocationRule-departmentName-parentBean"/>
+  <bean id="ClockLocationRule-departmentName-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Department Name"/>
+    <property name="maxLength" value="21"/>
+    <property name="validationPattern">
+      <bean parent="AnyCharacterValidationPattern">
+      	<property name="allowWhitespace" value="false"/>
+      </bean>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="21"/>
+    </property>
+    <property name="name" value="departmentName"/>
+    <property name="label" value="Department Name"/>
+  </bean>
+  
     
   <bean id="ClockLocationRule-workArea" parent="ClockLocationRule-workArea-parentBean"/>
   <bean id="ClockLocationRule-workArea-parentBean" abstract="true" parent="AttributeDefinition">
@@ -202,6 +221,7 @@
     <property name="lookupFields">
       <list>
         <bean parent="FieldDefinition" p:attributeName="departmentId"/>
+        <bean parent="FieldDefinition" p:attributeName="departmentName"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
         <bean parent="FieldDefinition" p:attributeName="jobNumber"/>
@@ -210,6 +230,7 @@
     <property name="resultFields">
       <list>
         <bean parent="FieldDefinition" p:attributeName="departmentId"/>
+        <bean parent="FieldDefinition" p:attributeName="departmentName"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
         <bean parent="FieldDefinition" p:attributeName="jobNumber"/>
