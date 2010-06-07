@@ -30,7 +30,6 @@
     <property name="title" value="Clock Location Rule Maintenance"/>
     <property name="maintainableItems">
       <list>
-      	<bean parent="MaintainableFieldDefinition" p:name="departmentId" p:required="true"/>
       	<bean parent="MaintainableFieldDefinition" p:name="departmentName" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="workArea" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="principalId" p:required="true"/>

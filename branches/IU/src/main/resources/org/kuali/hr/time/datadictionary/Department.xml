@@ -17,7 +17,6 @@
     <property name="titleAttribute" value="name" />
     <property name="attributes" >
       <list>
-      	<ref bean="Department-departmentId" />
         <ref bean="Department-name" />
         <ref bean="Department-description" />
         <ref bean="Department-org" />
@@ -29,26 +28,7 @@
 
 <!-- Attribute Definitions -->
 
-  <bean id="Department-departmentId" parent="Department-departmentId-parentBean"/>
-
-  <bean id="Department-departmentId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Department Id"/>
-    <property name="maxLength" value="7"/>
-    <property name="validationPattern">
- 		<bean parent="NumericValidationPattern"/>
-    </property>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="7"/>
-    </property>
-    <property name="name" value="departmentId"/>
-    <property name="label" value="Department Id"/>
-  </bean>
-
-
-
-
   <bean id="Department-name" parent="Department-name-parentBean" />
-
   <bean id="Department-name-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="forceUppercase" value="true" />
 
@@ -61,8 +41,9 @@
     <property name="label" value="Name" />
     <property name="description" value="Name" />
   </bean>
+  
+  
   <bean id="Department-description" parent="Department-description-parentBean" />
-
   <bean id="Department-description-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="forceUppercase" value="true" />
 
@@ -75,8 +56,9 @@
     <property name="label" value="Description" />
     <property name="description" value="Description" />
   </bean>
-    <bean id="Department-org" parent="Department-org-parentBean" />
-
+  
+  
+  <bean id="Department-org" parent="Department-org-parentBean" />
   <bean id="Department-org-parentBean" abstract="true" parent="AttributeDefinition">
  	<property name="forceUppercase" value="true" />
 
@@ -90,8 +72,9 @@
     <property name="description" value="Org" />
   
   </bean>
+  
+  
   <bean id="Department-chart" parent="Department-chart-parentBean" />
-
   <bean id="Department-chart-parentBean" abstract="true" parent="AttributeDefinition">
       <property name="forceUppercase" value="true" />
 	  <property name="maxLength" value="10" />
@@ -107,7 +90,6 @@
 
 
   <bean id="Department-inquiryDefinition" parent="Department-inquiryDefinition-parentBean" />
-
   <bean id="Department-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition">
     <property name="inquirySections" >
       <list>
@@ -139,14 +121,12 @@
     </property>
     <property name="lookupFields" >
       <list>
-      	<bean parent="FieldDefinition" p:attributeName="departmentId" />
         <bean parent="FieldDefinition" p:attributeName="name" />
         <bean parent="FieldDefinition" p:attributeName="description" />
       </list>
     </property>
     <property name="resultFields" >
       <list>
-      	<bean parent="FieldDefinition" p:attributeName="departmentId" />
         <bean parent="FieldDefinition" p:attributeName="name" p:forceInquiry="true" />
         <bean parent="FieldDefinition" p:attributeName="description" />
       </list>

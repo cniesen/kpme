@@ -11,7 +11,6 @@
     </property>
     <property name="attributes">
       <list>
-        <ref bean="ClockLocationRule-departmentId"/>
         <ref bean="ClockLocationRule-departmentName"/>
         <ref bean="ClockLocationRule-workArea"/>
         <ref bean="ClockLocationRule-principalId"/>
@@ -37,21 +36,6 @@
   </bean>
 
   <!-- Attribute Definitions -->
-
-  <bean id="ClockLocationRule-departmentId" parent="ClockLocationRule-departmentId-parentBean"/>
-  <bean id="ClockLocationRule-departmentId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Department"/>
-    <property name="maxLength" value="7"/>
-    <property name="validationPattern">
-                <bean parent="NumericValidationPattern"/>
-    </property>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="7"/>
-    </property>
-    <property name="name" value="departmentId"/>
-    <property name="label" value="Department Id"/>
-  </bean>
-  
   
   <bean id="ClockLocationRule-departmentName" parent="ClockLocationRule-departmentName-parentBean"/>
   <bean id="ClockLocationRule-departmentName-parentBean" abstract="true" parent="AttributeDefinition">
@@ -220,7 +204,6 @@
   <bean id="ClockLocationRule-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
     <property name="lookupFields">
       <list>
-        <bean parent="FieldDefinition" p:attributeName="departmentId"/>
         <bean parent="FieldDefinition" p:attributeName="departmentName"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
@@ -229,7 +212,6 @@
     </property>
     <property name="resultFields">
       <list>
-        <bean parent="FieldDefinition" p:attributeName="departmentId"/>
         <bean parent="FieldDefinition" p:attributeName="departmentName"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
         <bean parent="FieldDefinition" p:attributeName="principalId"/>
