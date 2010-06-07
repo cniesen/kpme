@@ -178,3 +178,24 @@ CREATE TABLE `tk_time_block_t` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2010-06-03 16:44:32
+
+ DROP TABLE IF EXISTS `tk_grace_period_rl_t`;
+
+ CREATE TABLE tk_grace_period_rl_t
+  (   GRACE_PERIOD_RULE_ID bigint(19) DEFAULT NULL,
+  	  EFFDT date DEFAULT NULL,
+      EFF_STATUS VARCHAR(1),
+      GRACE_MINS decimal(2,0) DEFAULT NULL,
+      HOUR_FACTOR decimal(2,2),
+      USER_EMPLID VARCHAR(10),
+      TIMESTAMP timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+      OBJ_ID varchar(36) COLLATE utf8_bin NOT NULL,
+   	  VER_NBR decimal(8,0) NOT NULL DEFAULT '1'
+   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
+
+DROP TABLE IF EXISTS `tk_grace_period_rl_s`;
+
+CREATE TABLE tk_grace_period_rl_s (
+  ID bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (ID)
+) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
