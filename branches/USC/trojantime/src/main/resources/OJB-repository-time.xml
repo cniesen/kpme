@@ -109,4 +109,17 @@
         <field-descriptor name="chart"        column="chart"       jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
     </class-descriptor>     	
 	
+		<!-- add grace period rule -->
+	<class-descriptor class="org.kuali.hr.time.rule.GracePeriodRule" table="TK_GRACE_PERIOD_RL_T">
+		<field-descriptor name="gracePeriodRuleId" column="GRACE_PERIOD_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_grace_period_rl_s"/>
+		<field-descriptor name="graceMins" column="GRACE_MINS" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="hourFactor" column="HOUR_FACTOR" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+ 		<field-descriptor name="effDt" column="EFFDT" jdbc-type="DATE" primarykey="false" />
+		<field-descriptor name="effStatus" column="EFF_STATUS" jdbc-type="VARCHAR" length="1" nullable="false" primarykey="false" />
+		<field-descriptor name="userEmplId" column="USER_EMPLID" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="timestamp" column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false"/>
+		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
+	</class-descriptor>
+	
 </descriptor-repository>
