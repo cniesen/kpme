@@ -2,8 +2,6 @@ package org.kuali.hr.time.clocklog.service;
 
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.clocklog.dao.ClockLogDao;
-import org.kuali.rice.kns.service.BusinessObjectService;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class ClockLogServiceImpl implements ClockLogService {
 
@@ -20,5 +18,12 @@ public class ClockLogServiceImpl implements ClockLogService {
     public void setClockLogDao(ClockLogDao clockLogDao) {
         this.clockLogDao = clockLogDao;
     }
+
+    @Override
+    public ClockLog getLastClockLog(String principalId) {
+	return clockLogDao.getLastClockLog(principalId);
+    }
+    
+    
 
 }

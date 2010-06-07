@@ -5,9 +5,11 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.clock.location.ClockLocationRule;
+import org.kuali.hr.time.department.Department;
 import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 
@@ -19,6 +21,7 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
     protected boolean validateIpAddress(String ip) {
 	boolean valid = false;
 
+	//TODO: Actual IP address validation requires validation for wildcards as well.
 	LOG.debug("Validating IP address: " + ip);
 	Matcher matcher = REGEX_IP_ADDRESS_PATTERN.matcher(ip);
 	valid = matcher.matches();
@@ -34,7 +37,17 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
     }
 
     protected boolean validateDepartment(ClockLocationRule clr) {
-	return true;
+	boolean valid = false;
+	LOG.debug("Validating department: " + clr.getDepartmentName());
+	//TODO: We may need a full DAO that handles bo lookups at some point, but we can use the provided one:
+	Department dept = KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Department.class, clr.getDepartmentName());
+	if (dept != null) {
+	    valid = true;
+	    LOG.debug("found department.");
+	} else {
+	    this.putFieldError("departmentName", "error.existence", "department '" + clr.getDepartmentName() + "'");
+	}
+	return valid;
     }
 
     protected boolean validateJobNumber(ClockLocationRule clr) {

@@ -6,5 +6,15 @@
       <parent>RiceDocument</parent>
       <label>ClockLocationRuleDocument</label>
     </documentType>
+    <documentType>
+      <name>DeptLunchRuleDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>DeptLunchRuleDocument</label>
+    </documentType>
+    <documentType>
+      <name>GracePeriodRuleDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>GracePeriodRuleDocument</label>
+    </documentType>        
   </documentTypes>
 </data>
