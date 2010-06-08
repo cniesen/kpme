@@ -15,9 +15,8 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	private Long clockLocationRuleId;
 
-	private Long departmentId;
 	private Department department;
-	private String departmentName;
+	private String deptId;
 	
 	private Long workArea;
 	private String principalId;
@@ -114,28 +113,12 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	    this.clockLocationRuleId = clockLocationRuleId;
 	}
 
-	public Long getDepartmentId() {
-	    return departmentId;
-	}
-
-	public void setDepartmentId(Long departmentId) {
-	    this.departmentId = departmentId;
-	}
-
 	public Department getDepartment() {
 	    return department;
 	}
 
 	public void setDepartment(Department department) {
 	    this.department = department;
-	}
-
-	public String getDepartmentName() {
-	    return departmentName;
-	}
-
-	public void setDepartmentName(String departmentName) {
-	    this.departmentName = departmentName;
 	}
 	
 	public WorkArea getWorkAreaObj() {
@@ -144,5 +127,13 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setWorkAreaObj(WorkArea workAreaObj) {
 	    this.workAreaObj = workAreaObj;
+	}
+
+	public String getDeptId() {
+	    return deptId;
+	}
+
+	public void setDeptId(String deptId) {
+	    this.deptId = deptId;
 	}
 }

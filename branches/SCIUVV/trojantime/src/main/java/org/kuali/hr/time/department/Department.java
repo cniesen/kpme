@@ -11,8 +11,7 @@ public class Department extends PersistableBusinessObjectBase {
      */
     private static final long serialVersionUID = 1L;
     
-    private Long   departmentId;
-    private String name;
+    private String deptId;
     private String description;
     private String chart;
     private String org;
@@ -22,22 +21,6 @@ public class Department extends PersistableBusinessObjectBase {
     protected LinkedHashMap toStringMapper() {
 	// TODO Auto-generated method stub
 	return null;
-    }
-
-    public Long getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Long departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getDescription() {
@@ -62,6 +45,14 @@ public class Department extends PersistableBusinessObjectBase {
 
     public void setOrg(String org) {
         this.org = org;
+    }
+
+    public String getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 
 }

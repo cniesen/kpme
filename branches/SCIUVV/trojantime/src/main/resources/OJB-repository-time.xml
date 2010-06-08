@@ -84,7 +84,7 @@
 		<!-- We don't actually need an ID like the following, but as an example, we're using it -->
 		<field-descriptor name="clockLocationRuleId" column="CLOCK_LOC_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_clock_location_rl_s"/>
 		<!-- put field descriptors -->
-		<field-descriptor name="departmentName"  column="department_org_chart_name" jdbc-type="VARCHAR" length="21"/>
+		<field-descriptor name="deptId"          column="dept_id"       jdbc-type="VARCHAR" length="21"/>
 		<field-descriptor name="workArea"        column="work_area_id"  jdbc-type="BIGINT" precision="10" scale="0" nullable="false" primarykey="false" />
 		<field-descriptor name="principalId"     column="principalid"   jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
 		<field-descriptor name="jobNumber"       column="job_number"    jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
@@ -104,10 +104,10 @@
 	</class-descriptor>
 	
     <class-descriptor class="org.kuali.hr.time.department.Department" table="tk_dept_t">
-        <field-descriptor name="name"         column="dept_name"   jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
-        <field-descriptor name="description"  column="description" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
-        <field-descriptor name="org"          column="org"         jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
-        <field-descriptor name="chart"        column="chart"       jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+        <field-descriptor name="deptId"         column="deptId"      jdbc-type="VARCHAR" length="21" nullable="false" primarykey="true" />
+        <field-descriptor name="description"    column="description" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
+        <field-descriptor name="org"            column="org"         jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+        <field-descriptor name="chart"          column="chart"       jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
     </class-descriptor>    
 
 		<!-- add grace period rule -->
