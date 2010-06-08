@@ -13,14 +13,13 @@ public class WorkArea extends PersistableBusinessObjectBase {
     
     private Long workAreaId;
     private Date effectiveDate;
-    private BigDecimal effectiveSeq;
     private boolean active;          // eff_status
     private String descr;
     private String department;
     private String emplType;
     private String overtimePreference;
     private String adminDescr;
-    private String userEmplId;
+    private String userPrincipalId;
     
     private Timestamp timestamp;
     
@@ -53,14 +52,7 @@ public class WorkArea extends PersistableBusinessObjectBase {
     }
 
 
-    public BigDecimal getEffectiveSeq() {
-        return effectiveSeq;
-    }
 
-
-    public void setEffectiveSeq(BigDecimal effectiveSeq) {
-        this.effectiveSeq = effectiveSeq;
-    }
 
 
     public boolean isActive() {
@@ -124,13 +116,16 @@ public class WorkArea extends PersistableBusinessObjectBase {
     }
 
 
-    public String getUserEmplId() {
-        return userEmplId;
+
+
+
+    public String getUserPrincipalId() {
+        return userPrincipalId;
     }
 
 
-    public void setUserEmplId(String userEmplId) {
-        this.userEmplId = userEmplId;
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
     }
 
 
