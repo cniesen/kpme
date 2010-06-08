@@ -3,7 +3,7 @@
   <bean id="GracePeriodRule" parent="GracePeriodRule-parentBean"/>
 
   <bean id="GracePeriodRule-parentBean" abstract="true" parent="BusinessObjectEntry">
-    <property name="businessObjectClass" value="org.kuali.hr.time.rule.GracePeriodRule"/>
+    <property name="businessObjectClass" value="org.kuali.hr.time.graceperiod.rule.GracePeriodRule"/>
     <property name="titleAttribute" value="id"/>
     <property name="objectLabel" value="GracePeriodRule"/>
  
@@ -15,8 +15,8 @@
          <ref bean="GracePeriodRule-graceMins"/>
         <ref bean="GracePeriodRule-hourFactor"/>
         <ref bean="GracePeriodRule-effDt"/>
-        <ref bean="GracePeriodRule-effStatus"/>
-        <ref bean="GracePeriodRule-userEmplId"/>
+        <ref bean="GracePeriodRule-active"/>
+        <ref bean="GracePeriodRule-userPrincipalId"/>
         <ref bean="GracePeriodRule-timestamp"/>
       </list>
     </property>
@@ -71,37 +71,33 @@
     <property name="label" value="Effective Date"/>
   </bean>
   
-  <bean id="GracePeriodRule-effStatus" parent="GracePeriodRule-effStatus-parentBean"/>
+  <bean id="GracePeriodRule-active" parent="GracePeriodRule-active-parentBean"/>
 
-  <bean id="GracePeriodRule-effStatus-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Eff Sequence"/>
-    <property name="maxLength" value="1"/>
+  <bean id="GracePeriodRule-active-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Active"/>
+    <property name="control">
+      <bean parent="CheckboxControlDefinition"/>
+    </property>
+    <property name="name" value="active"/>
+    <property name="label" value="Active"/>
+  </bean>
+ 
+ 
+  <bean id="GracePeriodRule-userPrincipalId" parent="GracePeriodRule-userPrincipalId-parentBean"/>
+
+  <bean id="GracePeriodRule-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="User Principal Id"/>
+    <property name="maxLength" value="10"/>
     <property name="validationPattern">
- 		<bean parent="AnyCharacterValidationPattern"/>
+      <bean parent="AnyCharacterValidationPattern">
+      	<property name="allowWhitespace" value="false"/>
+      </bean>
     </property>
     <property name="control">
       <bean parent="TextControlDefinition" p:size="10"/>
     </property>
-    <property name="name" value="effStatus"/>
-    <property name="label" value="Effective Sequence"/>
-  </bean>
- 
- 
-  <bean id="GracePeriodRule-userEmplId" parent="GracePeriodRule-userEmplId-parentBean"/>
-
-  <bean id="GracePeriodRule-userEmplId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Empl Id"/>
-    <property name="maxLength" value="10"/>
-    <property name="validationPattern">
- 		<bean parent="AnyCharacterValidationPattern">
-       		<property name="allowWhitespace" value="false"/>
-       	</bean>
-    </property>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="10"  />
-    </property>
-    <property name="name" value="userEmplId"/>
-    <property name="label" value="User University Id"/>
+    <property name="name" value="userPrincipalId"/>
+    <property name="label" value="User Principal Id"/>
   </bean>
 
    <bean id="GracePeriodRule-timestamp" parent="GracePeriodRule-timestamp-parentBean"/>
@@ -128,8 +124,8 @@
       <list>
           <bean parent="FieldDefinition" p:attributeName="graceMins"/>
         <bean parent="FieldDefinition" p:attributeName="effDt"/>
-        <bean parent="FieldDefinition" p:attributeName="effStatus"/>
-        <bean parent="FieldDefinition" p:attributeName="userEmplId"/>
+        <bean parent="FieldDefinition" p:attributeName="hourFactor"/>
+        <bean parent="FieldDefinition" p:attributeName="userPrincipalId"/>
       </list>
     </property>
     <property name="resultFields">
@@ -137,8 +133,8 @@
          <bean parent="FieldDefinition" p:attributeName="graceMins"/>
         <bean parent="FieldDefinition" p:attributeName="hourFactor"/>
         <bean parent="FieldDefinition" p:attributeName="effDt"/>
-        <bean parent="FieldDefinition" p:attributeName="effStatus"/>
-        <bean parent="FieldDefinition" p:attributeName="userEmplId"/>
+        <bean parent="FieldDefinition" p:attributeName="active"/>
+        <bean parent="FieldDefinition" p:attributeName="userPrincipalId"/>
         <bean parent="FieldDefinition" p:attributeName="timestamp"/>
       </list>
     </property>
