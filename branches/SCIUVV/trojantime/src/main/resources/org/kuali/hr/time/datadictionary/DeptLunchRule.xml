@@ -13,14 +13,13 @@
       <list>
         <ref bean="DeptLunchRule-department"/>
         <ref bean="DeptLunchRule-workArea"/>
-        <ref bean="DeptLunchRule-emplId"/>
-        <ref bean="DeptLunchRule-emplRcd"/>
+        <ref bean="DeptLunchRule-principalId"/>
+        <ref bean="DeptLunchRule-jobNumber"/>
         <ref bean="DeptLunchRule-requiredClockFl"/>
         <ref bean="DeptLunchRule-maxMins"/>
         <ref bean="DeptLunchRule-effectiveDate"/>
-        <ref bean="DeptLunchRule-effectiveSeq"/>
         <ref bean="DeptLunchRule-active"/>
-  		<ref bean="DeptLunchRule-userEmpl"/>
+  		<ref bean="DeptLunchRule-userPrincipalId"/>
   		<ref bean="DeptLunchRule-timestamp"/>
 
  
@@ -66,9 +65,9 @@
   
    -->
   
-  <bean id="DeptLunchRule-emplId" parent="DeptLunchRule-emplId-parentBean"/>
+  <bean id="DeptLunchRule-principalId" parent="DeptLunchRule-principalId-parentBean"/>
 
-  <bean id="DeptLunchRule-emplId-parentBean" abstract="true" parent="AttributeDefinition">
+  <bean id="DeptLunchRule-principalId-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Employee Id"/>
     <property name="maxLength" value="10"/>
     <property name="validationPattern">
@@ -79,13 +78,13 @@
     <property name="control">
       <bean parent="TextControlDefinition" p:size="10"/>
     </property>
-    <property name="name" value="emplId"/>
-    <property name="label" value="Employee Id"/>
+    <property name="name" value="principalId"/>
+    <property name="label" value="Principal Id"/>
   </bean>
 
-  <bean id="DeptLunchRule-emplRcd" parent="DeptLunchRule-emplRcd-parentBean"/>
+  <bean id="DeptLunchRule-jobNumber" parent="DeptLunchRule-jobNumber-parentBean"/>
 
-  <bean id="DeptLunchRule-emplRcd-parentBean" abstract="true" parent="AttributeDefinition">
+  <bean id="DeptLunchRule-jobNumber-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Empl Rcd"/>
     <property name="maxLength" value="3"/>
     <property name="validationPattern">
@@ -94,8 +93,8 @@
     <property name="control">
       <bean parent="TextControlDefinition" p:size="3"/>
     </property>
-    <property name="name" value="emplRcd"/>
-    <property name="label" value="Empl Rcd"/>
+    <property name="name" value="jobNumber"/>
+    <property name="label" value="Job Number"/>
   </bean>
   
   
@@ -150,20 +149,7 @@
   </bean>
  
 
-  <bean id="DeptLunchRule-effectiveSeq" parent="DeptLunchRule-effectiveSeq-parentBean"/>
-
-  <bean id="DeptLunchRule-effectiveSeq-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="Effective Sequence"/>
-    <property name="maxLength" value="3"/>
-    <property name="validationPattern">
- 		<bean parent="NumericValidationPattern"/>
-    </property>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="3"/>
-    </property>
-    <property name="name" value="effectiveSeq"/>
-    <property name="label" value="Effective Sequence"/>
-  </bean>
+ 
   
   <bean id="DeptLunchRule-active" parent="DeptLunchRule-active-parentBean"/>
 
@@ -177,10 +163,10 @@
   </bean>
 
 
- <bean id="DeptLunchRule-userEmpl" parent="DeptLunchRule-userEmpl-parentBean"/>
+ <bean id="DeptLunchRule-userPrincipalId" parent="DeptLunchRule-userPrincipalId-parentBean"/>
 
-  <bean id="DeptLunchRule-userEmpl-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="shortLabel" value="User University Id"/>
+  <bean id="DeptLunchRule-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="User Principal Id"/>
     <property name="maxLength" value="10"/>
     <property name="validationPattern">
       <bean parent="AnyCharacterValidationPattern">
@@ -190,8 +176,8 @@
     <property name="control">
       <bean parent="TextControlDefinition" p:size="10"/>
     </property>
-    <property name="name" value="userEmpl"/>
-    <property name="label" value="User Univerity Id"/>
+    <property name="name" value="userPrincipalId"/>
+    <property name="label" value="User Principal Id"/>
   </bean>
   
  <bean id="DeptLunchRule-timestamp" parent="DeptLunchRule-timestamp-parentBean"/>
@@ -199,23 +185,18 @@
   <bean id="DeptLunchRule-timestamp-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Timestamp"/>
     <property name="maxLength" value="15"/>
-    
-    <property name="validationPattern">
- 		<bean parent="DateValidationPattern"/>
-    </property>
+
     <property name="control">
-      <bean parent="TextControlDefinition" p:size="15"/>
+      <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
     </property>
-    <property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter"/>
+     
     <property name="name" value="timestamp"/>
     <property name="label" value="Time Stamp"/>
   </bean>
-  
- 
- 
-  
+   
   <!-- 
-  
+  I took this conversion out from timestamp then it compiles, it doesn't like this.
+  <property name="formatterClass" value="org.kuali.rice.kns.web.format.TimeStampAMPMFormatter"/>
    -->
   
 
@@ -231,16 +212,16 @@
       <list>
         <bean parent="FieldDefinition" p:attributeName="department"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
-        <bean parent="FieldDefinition" p:attributeName="emplId"/>
-		<bean parent="FieldDefinition" p:attributeName="emplRcd"/>
+        <bean parent="FieldDefinition" p:attributeName="principalId"/>
+		<bean parent="FieldDefinition" p:attributeName="jobNumber"/>
       </list>
     </property>
     <property name="resultFields">
       <list>
         <bean parent="FieldDefinition" p:attributeName="department"/>
         <bean parent="FieldDefinition" p:attributeName="workArea"/>
-        <bean parent="FieldDefinition" p:attributeName="emplId"/>
-        <bean parent="FieldDefinition" p:attributeName="emplRcd"/>
+        <bean parent="FieldDefinition" p:attributeName="principalId"/>
+        <bean parent="FieldDefinition" p:attributeName="jobNumber"/>
                
         <bean parent="FieldDefinition" p:attributeName="effectiveDate"/>
         <bean parent="FieldDefinition" p:attributeName="active"/>
