@@ -83,12 +83,12 @@
 		<field-descriptor name="clockLocationRuleId" column="CLOCK_LOC_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_clock_location_rl_s"/>
 		<field-descriptor name="deptId"          column="dept_id"       jdbc-type="VARCHAR" length="21"/>
 		<field-descriptor name="workArea"        column="work_area_id"  jdbc-type="BIGINT" precision="10" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="principalId"     column="principalid"   jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="principalId"     column="principal_id"   jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
 		<field-descriptor name="jobNumber"       column="job_number"    jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
 		<field-descriptor name="effectiveDate"   column="effdt"         jdbc-type="DATE" nullable="false" primarykey="false"/>
 		<field-descriptor name="active"          column="eff_status"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
 		<field-descriptor name="ipAddress"       column="ip_address"	jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
-		<field-descriptor name="userPrincipalId" column="user_principalid"	jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="userPrincipalId" column="user_principal_id"	jdbc-type="VARCHAR" length="10" nullable="false" />
 		<field-descriptor name="timestamp"       column="timestamp"         jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
 		<field-descriptor name="objectId"        column="obj_id"            jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber"   column="ver_nbr"           jdbc-type="BIGINT" locking="true" />
@@ -101,7 +101,7 @@
 	</class-descriptor>
 	
     <class-descriptor class="org.kuali.hr.time.department.Department" table="tk_dept_t">
-        <field-descriptor name="deptId"         column="deptId"      jdbc-type="VARCHAR" length="21" nullable="false" primarykey="true" />
+        <field-descriptor name="deptId"         column="dept_id"      jdbc-type="VARCHAR" length="21" nullable="false" primarykey="true" />
         <field-descriptor name="description"    column="description" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
         <field-descriptor name="org"            column="org"         jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
         <field-descriptor name="chart"          column="chart"       jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
@@ -110,14 +110,14 @@
 		<!-- add grace period rule -->
 	<class-descriptor class="org.kuali.hr.time.graceperiod.rule.GracePeriodRule" table="TK_GRACE_PERIOD_RL_T">
 		<field-descriptor name="gracePeriodRuleId" column="GRACE_PERIOD_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_grace_period_rl_s"/>
-		<field-descriptor name="graceMins" column="GRACE_MINS" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="hourFactor" column="HOUR_FACTOR" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
- 		<field-descriptor name="effDt" column="EFFDT" jdbc-type="DATE" primarykey="false" />
-		<field-descriptor name="effStatus" column="EFF_STATUS" jdbc-type="VARCHAR" length="1" nullable="false" primarykey="false" />
-		<field-descriptor name="userPrincipalId" column="USER_principalid" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
-		<field-descriptor name="timestamp" column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false"/>
-		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
-		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
+		<field-descriptor name="graceMins"         column="GRACE_MINS"           jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="hourFactor"        column="HOUR_FACTOR"          jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+ 		<field-descriptor name="effDt"             column="EFFDT"                jdbc-type="DATE" primarykey="false" />
+		<field-descriptor name="effStatus"         column="EFF_STATUS"           jdbc-type="VARCHAR" length="1" nullable="false" primarykey="false" />
+		<field-descriptor name="userPrincipalId"   column="user_principal_id"    jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="timestamp"         column="TIMESTAMP"            jdbc-type="TIMESTAMP" nullable="false" primarykey="false"/>
+		<field-descriptor name="objectId"          column="obj_id"               jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber"     column="ver_nbr"              jdbc-type="BIGINT" locking="true" />					
 	</class-descriptor>
 	
 	<!--  Added for Department Lunch Table-->
@@ -126,39 +126,38 @@
 		<!-- We don't actually need an ID like the following, but as an example, we're using it -->
 		<field-descriptor name="deptLunchRuleId" column="DEPT_LUNCH_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_dept_lunch_rl_s"/>
 		<!-- put field descriptors -->
-		<field-descriptor name="deptId" column="deptid" jdbc-type="VARCHAR" length="9" nullable="false" primarykey="false" />
-		<field-descriptor name="workArea"   column="work_area_id" jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="principalId"     column="principalid" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
-		<field-descriptor name="jobNumber"    column="job_number" jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="effectiveDate" column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
-		<field-descriptor name="active" column="eff_status"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
+		<field-descriptor name="deptId"          column="dept_id" jdbc-type="VARCHAR" length="9" nullable="false" primarykey="false" />
+		<field-descriptor name="workArea"        column="work_area_id" jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="principalId"     column="principal_id" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="jobNumber"       column="job_number" jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="effectiveDate"   column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
+		<field-descriptor name="active"          column="eff_status"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
 		<field-descriptor name="requiredClockFl" column="required_clock_fl"	jdbc-type="VARCHAR" length="3" nullable="false" />
-		<field-descriptor name="maxMins" column="max_mins"	jdbc-type="NUMERIC" length="2" nullable="false" />
-		<field-descriptor name="userPrincipalId" column="user_principalid"	jdbc-type="VARCHAR" length="10" nullable="false" />		
+		<field-descriptor name="maxMins"         column="max_mins"	jdbc-type="NUMERIC" length="2" nullable="false" />
+		<field-descriptor name="userPrincipalId" column="user_principal_id"	jdbc-type="VARCHAR" length="10" nullable="false" />		
 
-		<field-descriptor name="timestamp" column="timestamp" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
-		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
-		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
+		<field-descriptor name="timestamp"       column="timestamp" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
+		<field-descriptor name="objectId"        column="obj_id" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber"   column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
 	</class-descriptor>	
 	
 	<!--  Added for Work Area Table -->
 
 	<class-descriptor class="org.kuali.hr.time.workarea.WorkArea" table="tk_work_area_t">
-		<!-- We don't actually need an ID like the following, but as an example, we're using it -->
-		<field-descriptor name="workAreaId" column="WORK_AREA_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_dept_lunch_rl_s"/>
+		<field-descriptor name="workAreaId"         column="WORK_AREA_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_dept_lunch_rl_s"/>
 		<!-- put field descriptors -->
-		<field-descriptor name="effectiveDate" column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
-		<field-descriptor name="active" column="active"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"/>
-		<field-descriptor name="description" column="descr" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
-		<field-descriptor name="deptId" column="deptid" jdbc-type="VARCHAR" length="9" nullable="false" primarykey="false" />
-		<field-descriptor name="emplType" column="empl_type" jdbc-type="VARCHAR"  length="5" nullable="false" primarykey="false" />
+		<field-descriptor name="effectiveDate"      column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
+		<field-descriptor name="active"             column="active"	jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"/>
+		<field-descriptor name="description"        column="descr" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
+		<field-descriptor name="deptId"             column="dept_id" jdbc-type="VARCHAR" length="9" nullable="false" primarykey="false" />
+		<field-descriptor name="emplType"           column="empl_type" jdbc-type="VARCHAR"  length="5" nullable="false" primarykey="false" />
 		<field-descriptor name="overtimePreference" column="overtime_preference" jdbc-type="VARCHAR"  length="3" nullable="false" primarykey="false" />
-		<field-descriptor name="adminDescr" column="admin_descr"	jdbc-type="VARCHAR" length="30" nullable="false" />
-		<field-descriptor name="userPrincipalId" column="user_principal_id"	jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="adminDescr"         column="admin_descr"	jdbc-type="VARCHAR" length="30" nullable="false" />
+		<field-descriptor name="userPrincipalId"    column="user_principal_id"	jdbc-type="VARCHAR" length="10" nullable="false" />
 		
-		<field-descriptor name="timestamp" column="timestamp" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
-		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
-		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
+		<field-descriptor name="timestamp"          column="timestamp" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
+		<field-descriptor name="objectId"           column="obj_id" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber"      column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
 	</class-descriptor>		 	
 	
 </descriptor-repository>
