@@ -15,10 +15,10 @@ public class GracePeriodRule extends PersistableBusinessObjectBase {
 
 	private Long gracePeriodRuleId;
 	private Date effDt;
-	private String effStatus;
+	private boolean active;
 	private BigDecimal graceMins;
 	private BigDecimal hourFactor;
-	private String userEmplId;
+	private String userPrincipalId;
 	private Timestamp timestamp; 
 	
 	protected LinkedHashMap<String,Object> toStringMapper() {
@@ -50,13 +50,15 @@ public class GracePeriodRule extends PersistableBusinessObjectBase {
 	    this.effDt = effDt;
 	}
 
-	public String getEffStatus() {
-	    return effStatus;
+	public boolean isActive() {
+	    return active;
 	}
 
-	public void setEffStatus(String effStatus) {
-	    this.effStatus = effStatus;
+
+	public void setActive(boolean active) {
+	    this.active = active;
 	}
+
 
 	public BigDecimal getGraceMins() {
 	    return graceMins;
@@ -74,13 +76,16 @@ public class GracePeriodRule extends PersistableBusinessObjectBase {
 	    this.hourFactor = hourFactor;
 	}
 
-	public String getUserEmplId() {
-	    return userEmplId;
+
+	public String getUserPrincipalId() {
+	    return userPrincipalId;
 	}
 
-	public void setUserEmplId(String userEmplId) {
-	    this.userEmplId = userEmplId;
+
+	public void setUserPrincipalId(String userPrincipalId) {
+	    this.userPrincipalId = userPrincipalId;
 	}
+
 
 	public Timestamp getTimestamp() {
 	    return timestamp;
