@@ -46,6 +46,7 @@ CREATE TABLE `tk_assignment_t` (
   `PERCENT` decimal(5,2) DEFAULT NULL,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
+  `active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`ASSIGNMENT_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -76,7 +77,7 @@ CREATE TABLE `tk_clock_location_rl_t` (
   `PRINCIPAL_ID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `JOB_NUMBER` decimal(3,0) DEFAULT NULL,
   `EFFDT` date DEFAULT NULL,
-  `EFF_STATUS` bit(1) DEFAULT NULL,
+  `active` bit(1) DEFAULT NULL,
   `IP_ADDRESS` varchar(15) COLLATE utf8_bin DEFAULT NULL,
   `USER_PRINCIPAL_ID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -212,13 +213,13 @@ DROP TABLE IF EXISTS `tk_grace_period_rl_t`;
 CREATE TABLE `tk_grace_period_rl_t` (
   `GRACE_PERIOD_RULE_ID` bigint(19) DEFAULT NULL,
   `EFFDT` date DEFAULT NULL,
-  `EFF_STATUS` varchar(1) COLLATE utf8_bin DEFAULT NULL,
   `GRACE_MINS` decimal(2,0) DEFAULT NULL,
   `HOUR_FACTOR` decimal(2,2) DEFAULT NULL,
   `user_principal_id` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
-  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
+  `active` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -249,15 +250,13 @@ CREATE TABLE `tk_dept_lunch_rl_t` (
   `principal_id` varchar(10) COLLATE utf8_bin NOT NULL DEFAULT '',
   `job_number` decimal(3,0) DEFAULT NULL,
   `EFFDT` date NOT NULL,
-  `EFFSEQ` decimal(3,0) DEFAULT NULL,
-  `EFF_STATUS` varchar(1) COLLATE utf8_bin DEFAULT NULL,
   `REQUIRED_CLOCK_FL` varchar(3) COLLATE utf8_bin DEFAULT NULL,
   `MAX_MINS` decimal(2,0) DEFAULT NULL,
   `user_principal_id` varchar(10) COLLATE utf8_bin DEFAULT NULL,
-  `ACTIVE_IND` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT '',
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
-  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
+  `active` bit(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -283,4 +282,4 @@ CREATE TABLE `tk_dept_lunch_rl_s` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-08 13:27:02
+-- Dump completed on 2010-06-08 13:45:58

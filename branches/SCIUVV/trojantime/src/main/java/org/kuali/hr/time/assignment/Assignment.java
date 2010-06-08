@@ -22,6 +22,7 @@ public class Assignment extends PersistableBusinessObjectBase {
     private Integer workAreaId;
     private Integer taskId;
     private BigDecimal percent;
+    private boolean active;
     
     public Assignment() {
 	
@@ -117,5 +118,13 @@ public class Assignment extends PersistableBusinessObjectBase {
 
     public void setAssignmentId(Long assignmentId) {
         this.assignmentId = assignmentId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

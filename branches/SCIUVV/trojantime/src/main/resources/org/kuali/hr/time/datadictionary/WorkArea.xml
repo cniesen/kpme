@@ -102,7 +102,7 @@
     </property>
 
     <property name="name" value="deptId" />
-    <property name="label" value="Department Name" />
+    <property name="label" value="Department Id" />
     <property name="description" value="deptId" />
   </bean>
   
