@@ -61,7 +61,7 @@ DROP TABLE IF EXISTS `tk_clock_location_rl_s`;
 CREATE TABLE `tk_clock_location_rl_s` (
   `id` bigint(19) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2080 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2083 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -83,7 +83,8 @@ CREATE TABLE `tk_clock_location_rl_t` (
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
-  `department_id` bigint(19) DEFAULT NULL
+  `department_id` bigint(19) DEFAULT NULL,
+  `department_org_chart_name` varchar(21) COLLATE utf8_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -133,13 +134,26 @@ DROP TABLE IF EXISTS `tk_dept_t`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_dept_t` (
-  `dept_name` varchar(7) COLLATE utf8_bin DEFAULT NULL,
+  `dept_name` varchar(21) COLLATE utf8_bin NOT NULL,
   `DESCRIPTION` varchar(30) COLLATE utf8_bin DEFAULT NULL,
   `ORG` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `CHART` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `dept_id` bigint(19) NOT NULL,
-  PRIMARY KEY (`dept_id`)
+  PRIMARY KEY (`dept_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_dept_s`
+--
+
+DROP TABLE IF EXISTS `tk_dept_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_dept_s` (
+  `id` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=2092 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,67 +181,27 @@ CREATE TABLE `tk_time_block_t` (
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+--
+-- Table structure for table `tk_work_area_s`
+--
 
--- Dump completed on 2010-06-03 16:44:32
+DROP TABLE IF EXISTS `tk_work_area_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_work_area_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1000 DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-DROP TABLE IF EXISTS `tk_grace_period_rl_t`;
+--
+-- Table structure for table `tk_work_area_t`
+--
 
- CREATE TABLE tk_grace_period_rl_t
-  (   GRACE_PERIOD_RULE_ID bigint(19) DEFAULT NULL,
-  	  EFFDT date DEFAULT NULL,
-   	  EFF_STATUS bit(1) DEFAULT NULL,
-      GRACE_MINS decimal(2,0) DEFAULT NULL,
-      HOUR_FACTOR decimal(2,2),
-   	  USER_PRINCIPALID varchar(10) COLLATE utf8_bin DEFAULT NULL,
-      TIMESTAMP timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-      OBJ_ID varchar(36) COLLATE utf8_bin NOT NULL,
-   	  VER_NBR decimal(8,0) NOT NULL DEFAULT '1'
-   )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin ;
-
-DROP TABLE IF EXISTS `tk_grace_period_rl_s`;
-
-CREATE TABLE tk_grace_period_rl_s (
-  ID bigint(19) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (ID)
-) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-
-
-
-
-CREATE TABLE `tk_dept_lunch_rl_t` (
-`DEPT_LUNCH_RULE_ID` BIGINT(19) NOT NULL,
-`DEPTID` VARCHAR(10),
-`WORK_AREA_ID` DECIMAL(10,0),
-`EMPLID` VARCHAR(10) NOT NULL DEFAULT '',
-`EMPL_RCD` DECIMAL(3,0),
-`EFFDT` DATE NOT NULL,
-`EFFSEQ` decimal(3,0) DEFAULT NULL,
-`EFF_STATUS` VARCHAR(1),
-`REQUIRED_CLOCK_FL` VARCHAR(3),
-`MAX_MINS` DECIMAL(2),
-`USER_EMPL` VARCHAR(10),
-`ACTIVE_IND` VARCHAR(1) NOT NULL DEFAULT '',
-`TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-`OBJ_ID` VARCHAR(36) NOT NULL,
-`VER_NBR` DECIMAL(8,0) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-CREATE TABLE `tk_dept_lunch_rl_s` (
-  ID bigint(19) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (ID)
-) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
-
-
+DROP TABLE IF EXISTS `tk_work_area_t`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_work_area_t` (
   `WORK_AREA_ID` decimal(19,0) DEFAULT NULL,
   `EFFDT` date NOT NULL,
@@ -241,12 +215,88 @@ CREATE TABLE `tk_work_area_t` (
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
+--
+-- Table structure for table `tk_grace_period_rl_t`
+--
 
+DROP TABLE IF EXISTS `tk_grace_period_rl_t`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_grace_period_rl_t` (
+  `GRACE_PERIOD_RULE_ID` bigint(19) DEFAULT NULL,
+  `EFFDT` date DEFAULT NULL,
+  `EFF_STATUS` varchar(1) COLLATE utf8_bin DEFAULT NULL,
+  `GRACE_MINS` decimal(2,0) DEFAULT NULL,
+  `HOUR_FACTOR` decimal(2,2) DEFAULT NULL,
+  `user_principalid` varchar(10) COLLATE utf8_bin DEFAULT NULL,
+  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
-CREATE TABLE `tk_work_area_s` (
-  `ID` BIGINT(19) NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY  (`ID`)
-) ENGINE=MyISAM AUTO_INCREMENT=1000 DEFAULT CHARSET=latin1;
-SET character_set_client = @saved_cs_client;
+--
+-- Table structure for table `tk_grace_period_rl_s`
+--
+
+DROP TABLE IF EXISTS `tk_grace_period_rl_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_grace_period_rl_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_dept_lunch_rl_t`
+--
+
+DROP TABLE IF EXISTS `tk_dept_lunch_rl_t`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_dept_lunch_rl_t` (
+  `DEPT_LUNCH_RULE_ID` bigint(19) NOT NULL,
+  `DEPTID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
+  `WORK_AREA_ID` decimal(10,0) DEFAULT NULL,
+  `principalid` varchar(10) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `job_number` decimal(3,0) DEFAULT NULL,
+  `EFFDT` date NOT NULL,
+  `EFFSEQ` decimal(3,0) DEFAULT NULL,
+  `EFF_STATUS` varchar(1) COLLATE utf8_bin DEFAULT NULL,
+  `REQUIRED_CLOCK_FL` varchar(3) COLLATE utf8_bin DEFAULT NULL,
+  `MAX_MINS` decimal(2,0) DEFAULT NULL,
+  `user_principalid` varchar(10) COLLATE utf8_bin DEFAULT NULL,
+  `ACTIVE_IND` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT '',
+  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_dept_lunch_rl_s`
+--
+
+DROP TABLE IF EXISTS `tk_dept_lunch_rl_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_dept_lunch_rl_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2079 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2010-06-08 11:17:33
