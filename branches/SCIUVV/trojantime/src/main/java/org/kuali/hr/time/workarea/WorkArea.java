@@ -14,7 +14,7 @@ public class WorkArea extends PersistableBusinessObjectBase {
     private Date effectiveDate;
     private boolean active;
     private String description;
-    private String deptName;
+    private String deptId;
     private String emplType;
     private String overtimePreference;
     private String adminDescr;
@@ -106,15 +106,6 @@ public class WorkArea extends PersistableBusinessObjectBase {
     public void setUserPrincipalId(String userPrincipalId) {
         this.userPrincipalId = userPrincipalId;
     }  
-    
-    public String getDeptName() {
-        return deptName;
-    }
-
-
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
 
     public String getDescription() {
         return description;
@@ -123,5 +114,15 @@ public class WorkArea extends PersistableBusinessObjectBase {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+
+    public String getDeptId() {
+        return deptId;
+    }
+
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 }
