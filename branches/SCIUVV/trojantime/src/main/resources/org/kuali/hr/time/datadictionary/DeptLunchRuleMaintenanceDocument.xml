@@ -32,14 +32,13 @@
       <list>
       	<bean parent="MaintainableFieldDefinition" p:name="department" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="workArea" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="emplId" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="emplRcd" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="principalId" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="jobNumber" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="requiredClockFl" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="maxMins" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="effectiveDate" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="effectiveSeq" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="active" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="userEmpl" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="userPrincipalId" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="timestamp" p:required="false"/>
 
 
