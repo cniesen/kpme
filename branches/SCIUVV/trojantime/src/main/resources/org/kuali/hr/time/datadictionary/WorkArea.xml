@@ -21,7 +21,7 @@
         <ref bean="WorkArea-effectiveDate" />
         <ref bean="WorkArea-active" />
         <ref bean="WorkArea-description" />
-        <ref bean="WorkArea-deptName" />
+        <ref bean="WorkArea-deptId" />
         <ref bean="WorkArea-emplType" />
         <ref bean="WorkArea-overtimePreference" />
         <ref bean="WorkArea-adminDescr" />
@@ -91,9 +91,9 @@
     <property name="description" value="Description" />
   </bean>  
   
-  <bean id="WorkArea-deptName" parent="WorkArea-deptName-parentBean" />
+  <bean id="WorkArea-deptId" parent="WorkArea-deptId-parentBean" />
 
-  <bean id="WorkArea-deptName-parentBean" abstract="true" parent="AttributeDefinition">
+  <bean id="WorkArea-deptId-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="forceUppercase" value="true" />
 
     <property name="maxLength" value="7" />
@@ -101,9 +101,9 @@
       <bean parent="TextControlDefinition" p:size="7" />
     </property>
 
-    <property name="name" value="deptName" />
+    <property name="name" value="deptId" />
     <property name="label" value="Department Name" />
-    <property name="description" value="deptName" />
+    <property name="description" value="deptId" />
   </bean>
   
   <bean id="WorkArea-emplType" parent="WorkArea-emplType-parentBean" />
@@ -192,7 +192,7 @@
             <list>
               <bean parent="FieldDefinition" p:attributeName="workAreaId" />
               <bean parent="FieldDefinition" p:attributeName="description" />
-              <bean parent="FieldDefinition" p:attributeName="deptName" />
+              <bean parent="FieldDefinition" p:attributeName="deptId" />
             </list>
           </property>
           <property name="title" value="WorkArea" />
@@ -216,13 +216,13 @@
       <list>
       	<bean parent="FieldDefinition" p:attributeName="workAreaId" />
         <bean parent="FieldDefinition" p:attributeName="description" />
-        <bean parent="FieldDefinition" p:attributeName="deptName" />
+        <bean parent="FieldDefinition" p:attributeName="deptId" />
       </list>
     </property>
     <property name="resultFields" >
       <list>
       	<bean parent="FieldDefinition" p:attributeName="workAreaId" />
-        <bean parent="FieldDefinition" p:attributeName="deptName" p:forceInquiry="true" />
+        <bean parent="FieldDefinition" p:attributeName="deptId" p:forceInquiry="true" />
         <bean parent="FieldDefinition" p:attributeName="description" />
       </list>
     </property>
