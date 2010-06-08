@@ -96,10 +96,11 @@
 		<field-descriptor name="objectId"        column="obj_id"            jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber"   column="ver_nbr"           jdbc-type="BIGINT" locking="true" />
 	
+		 <!--  
 		<reference-descriptor name="department" class-ref="org.kuali.hr.time.department.Department" auto-retrieve="true" auto-delete="false" auto-update="false">
 			<foreignkey field-ref="departmentName"/>
 		</reference-descriptor>
-					
+			 	-->	
 	</class-descriptor>
 	
     <class-descriptor class="org.kuali.hr.time.department.Department" table="tk_dept_t">
@@ -110,16 +111,16 @@
     </class-descriptor>    
 
 		<!-- add grace period rule -->
-	<class-descriptor class="org.kuali.hr.time.graceperiod.rule.GracePeriodRule" table="tk_grace_period_rl_t">
-		<field-descriptor name="gracePeriodRuleId" 	column="grace_period_rule_id" 	jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_grace_period_rl_s"/>
-		<field-descriptor name="graceMins" 			column="grace_mins" 			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
-		<field-descriptor name="hourFactor" 		column="hour_factor" 			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
- 		<field-descriptor name="effDt" 				column="effdt" 					jdbc-type="DATE" primarykey="false" />
-		<field-descriptor name="active"          	column="eff_status"				jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
-		<field-descriptor name="userPrincipalId" 	column="user_principalid" 		jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
-		<field-descriptor name="timestamp" 			column="timestamp" 				jdbc-type="TIMESTAMP" nullable="false" primarykey="false"/>
-		<field-descriptor name="objectId" 			column="obj_id" 				jdbc-type="VARCHAR" index="true" />
-		<field-descriptor name="versionNumber" 		column="ver_nbr" 				jdbc-type="BIGINT" locking="true" />					
+	<class-descriptor class="org.kuali.hr.time.graceperiod.rule.GracePeriodRule" table="TK_GRACE_PERIOD_RL_T">
+		<field-descriptor name="gracePeriodRuleId" column="GRACE_PERIOD_RULE_ID" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_grace_period_rl_s"/>
+		<field-descriptor name="graceMins" column="GRACE_MINS" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+		<field-descriptor name="hourFactor" column="HOUR_FACTOR" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
+ 		<field-descriptor name="effDt" column="EFFDT" jdbc-type="DATE" primarykey="false" />
+		<field-descriptor name="effStatus" column="EFF_STATUS" jdbc-type="VARCHAR" length="1" nullable="false" primarykey="false" />
+		<field-descriptor name="userEmplId" column="USER_EMPLID" jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="timestamp" column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false"/>
+		<field-descriptor name="objectId" column="obj_id" jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" column="ver_nbr" jdbc-type="BIGINT" locking="true" />					
 	</class-descriptor>
 	
 	<!--  Added for Department Lunch Table-->

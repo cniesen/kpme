@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
 import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class ClockLocationRule extends PersistableBusinessObjectBase {

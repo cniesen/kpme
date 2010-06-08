@@ -11,7 +11,7 @@
   <bean id="DeptLunchRuleMaintenanceDocument" parent="DeptLunchRuleMaintenanceDocument-parentBean"/>
 
   <bean id="DeptLunchRuleMaintenanceDocument-parentBean" abstract="true" parent="MaintenanceDocumentEntry" 
-  		p:businessObjectClass="org.kuali.hr.time.clock.location.DeptLunchRule"
+  		p:businessObjectClass="org.kuali.hr.time.dept.lunch.DeptLunchRule"
  
   		p:maintainableClass="org.kuali.hr.time.clock.location.service.DeptLunchMaintainableImpl">
     <property name="maintainableSections">
@@ -40,8 +40,6 @@
         <bean parent="MaintainableFieldDefinition" p:name="active" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="userPrincipalId" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="timestamp" p:required="false"/>
-
-
       </list>
     </property>
   </bean>

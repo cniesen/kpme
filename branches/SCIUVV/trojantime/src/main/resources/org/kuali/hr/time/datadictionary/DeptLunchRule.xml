@@ -3,7 +3,7 @@
   <bean id="DeptLunchRule" parent="DeptLunchRule-parentBean"/>
 
   <bean id="DeptLunchRule-parentBean" abstract="true" parent="BusinessObjectEntry">
-    <property name="businessObjectClass" value="org.kuali.hr.time.clock.location.DeptLunchRule"/>
+    <property name="businessObjectClass" value="org.kuali.hr.time.dept.lunch.DeptLunchRule"/>
     <property name="titleAttribute" value="id"/>
     <property name="objectLabel" value="DeptLunchRule"/>
     <property name="lookupDefinition">

@@ -14,14 +14,13 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     private Long deptLunchRuleId;
     private String department;
     private BigDecimal workArea;
-    private String emplId;         // like principal id
-    private BigDecimal emplRcd;    // like job number
+    private String principalId;         // like principal id
+    private BigDecimal jobNumber;    // like job number
     private Date effectiveDate;
-    private BigDecimal effectiveSeq;
-    private boolean active;          // eff_status
+    private boolean active;      
     private String requiredClockFl;
     private BigDecimal maxMins;
-    private String userEmpl;
+    private String userPrincipalId;
     
     private Timestamp timestamp;
     
@@ -30,9 +29,8 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     protected LinkedHashMap toStringMapper() {
 	// TODO Auto-generated method stub	
 	LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
-		toStringMap.put("emplId", emplId);
+		toStringMap.put("principalId", principalId);
 		return toStringMap;
-
     }
 
 
@@ -66,26 +64,6 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     }
 
 
-    public String getEmplId() {
-        return emplId;
-    }
-
-
-    public void setEmplId(String emplId) {
-        this.emplId = emplId;
-    }
-
-
-    public BigDecimal getEmplRcd() {
-        return emplRcd;
-    }
-
-
-    public void setEmplRcd(BigDecimal emplRcd) {
-        this.emplRcd = emplRcd;
-    }
-
-
     public Date getEffectiveDate() {
         return effectiveDate;
     }
@@ -94,17 +72,6 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     public void setEffectiveDate(Date effectiveDate) {
         this.effectiveDate = effectiveDate;
     }
-
-
-    public BigDecimal getEffectiveSeq() {
-        return effectiveSeq;
-    }
-
-
-    public void setEffectiveSeq(BigDecimal effectiveSeq) {
-        this.effectiveSeq = effectiveSeq;
-    }
-
 
     public boolean isActive() {
         return active;
@@ -126,8 +93,6 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     }
 
 
- 
-
 
     public BigDecimal getMaxMins() {
         return maxMins;
@@ -136,16 +101,6 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
 
     public void setMaxMins(BigDecimal maxMins) {
         this.maxMins = maxMins;
-    }
-
-
-    public String getUserEmpl() {
-        return userEmpl;
-    }
-
-
-    public void setUserEmpl(String userEmpl) {
-        this.userEmpl = userEmpl;
     }
 
 
@@ -159,9 +114,32 @@ public class DeptLunchRule extends PersistableBusinessObjectBase {
     }
 
 
- 
-    
-    
-    
+    public String getPrincipalId() {
+        return principalId;
+    }
 
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
+
+
+    public BigDecimal getJobNumber() {
+        return jobNumber;
+    }
+
+
+    public void setJobNumber(BigDecimal jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+
+
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
+
+
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 }

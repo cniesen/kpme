@@ -42,7 +42,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 	Date date_now = new Date(System.currentTimeMillis());
 
 	//clr.setDepartment("TEST");
-	clr.setWorkArea(BigDecimal.TEN);
+	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
 	clr.setJobNumber(BigDecimal.ZERO);
 	clr.setActive(true);
@@ -71,7 +71,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 
 	ClockLocationRule clr = new ClockLocationRule();
 	//clr.setDepartment("TEST");
-	clr.setWorkArea(BigDecimal.TEN);
+	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
 	clr.setJobNumber(BigDecimal.ZERO);
 	clr.setActive(true);
@@ -84,7 +84,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 
 	clr = new ClockLocationRule();
 	//clr.setDepartment("TEST");
-	clr.setWorkArea(BigDecimal.TEN);
+	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
 	clr.setJobNumber(BigDecimal.ZERO);
 	clr.setActive(false);
