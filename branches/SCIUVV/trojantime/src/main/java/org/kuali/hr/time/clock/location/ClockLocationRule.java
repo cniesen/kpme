@@ -18,7 +18,7 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	private Department department;
 	private String departmentName;
 	
-	private BigDecimal workArea;
+	private Long workArea;
 	private String principalId;
 	private BigDecimal jobNumber;
 	
@@ -28,6 +28,10 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	private String userPrincipalId;
 	private Timestamp timestamp;
 	
+	private WorkArea workAreaObj;
+	
+
+
 	@Override
 	protected LinkedHashMap<String,Object> toStringMapper() {
 		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
@@ -37,11 +41,11 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 		return toStringMap;
 	}
 
-	public BigDecimal getWorkArea() {
+	public Long getWorkArea() {
 		return workArea;
 	}
 
-	public void setWorkArea(BigDecimal workArea) {
+	public void setWorkArea(Long workArea) {
 		this.workArea = workArea;
 	}
 
@@ -131,5 +135,13 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setDepartmentName(String departmentName) {
 	    this.departmentName = departmentName;
+	}
+	
+	public WorkArea getWorkAreaObj() {
+	    return workAreaObj;
+	}
+
+	public void setWorkAreaObj(WorkArea workAreaObj) {
+	    this.workAreaObj = workAreaObj;
 	}
 }
