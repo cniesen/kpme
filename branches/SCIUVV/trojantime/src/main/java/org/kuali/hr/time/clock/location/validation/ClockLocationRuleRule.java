@@ -13,7 +13,9 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 
-    private static final String REGEX_IP_ADDRESS_STRING = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b";
+    //private static final String WILDCARD_CHARACTER = "\\*|%";
+    private static final String WILDCARD_CHARACTER = "%";
+    private static final String REGEX_IP_ADDRESS_STRING = "(?:(?:"+WILDCARD_CHARACTER+"|25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:"+WILDCARD_CHARACTER+"|25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)";
     private static final Pattern REGEX_IP_ADDRESS_PATTERN = Pattern.compile(REGEX_IP_ADDRESS_STRING);
 
     private static Logger LOG = Logger.getLogger(ClockLocationRuleRule.class);
@@ -21,7 +23,6 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
     protected boolean validateIpAddress(String ip) {
 	boolean valid = false;
 
-	//TODO: Actual IP address validation requires validation for wildcards as well.
 	LOG.debug("Validating IP address: " + ip);
 	Matcher matcher = REGEX_IP_ADDRESS_PATTERN.matcher(ip);
 	valid = matcher.matches();
@@ -91,5 +92,4 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
     protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 	return super.processCustomRouteDocumentBusinessRules(document);
     }
-
 }
