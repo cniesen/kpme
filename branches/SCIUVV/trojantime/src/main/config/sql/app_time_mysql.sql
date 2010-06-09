@@ -282,4 +282,31 @@ CREATE TABLE `tk_dept_lunch_rl_s` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
+<<<<<<< .mine
+-- Dump completed on 2010-06-08 13:00:27
+
+DROP TABLE IF EXISTS `hr_job_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `hr_job_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+CREATE TABLE `hr_job_t` (
+  `JOB_ID` bigint(19) NOT NULL,
+  `PRINCIPAL_ID` varchar(40) COLLATE utf8_bin DEFAULT NULL,
+  `JOB_NUMBER` decimal(3,0) DEFAULT NULL,
+  `EFFDT` date NOT NULL DEFAULT '0000-00-00',
+  `DEPT_NAME` varchar(7) COLLATE utf8_bin DEFAULT NULL,
+  `PY_CALENDAR_ID` bigint(19) NOT NULL,
+  `TK_RULE_GROUP` varchar(7) COLLATE utf8_bin DEFAULT NULL,  
+  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `ACTIVE` bit(1) DEFAULT NULL,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`JOB_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+=======
 -- Dump completed on 2010-06-08 13:45:58
+>>>>>>> .r103

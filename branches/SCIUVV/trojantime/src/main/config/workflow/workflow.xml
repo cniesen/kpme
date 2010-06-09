@@ -15,6 +15,11 @@
       <name>GracePeriodRuleDocumentType</name>
       <parent>RiceDocument</parent>
       <label>GracePeriodRuleDocument</label>
-    </documentType>        
+    </documentType>  
+    <documentType>
+      <name>DepartmentMaintenanceDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>DepartmentMaintenanceDocument</label>
+    </documentType>       
   </documentTypes>
 </data>

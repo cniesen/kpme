@@ -1,10 +1,10 @@
 package org.kuali.hr.time.clock.location;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.job.Job;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
@@ -20,7 +20,7 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	
 	private Long workArea;
 	private String principalId;
-	private BigDecimal jobNumber;
+	private Integer jobNumber;
 	
 	private Date effectiveDate;
 	private boolean active;
@@ -29,8 +29,7 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 	private Timestamp timestamp;
 	
 	private WorkArea workAreaObj;
-	
-
+	private Job job;
 
 	@Override
 	protected LinkedHashMap<String,Object> toStringMapper() {
@@ -97,11 +96,11 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 		this.userPrincipalId = userPrincipalId;
 	}
 
-	public BigDecimal getJobNumber() {
+	public Integer getJobNumber() {
 		return jobNumber;
 	}
 
-	public void setJobNumber(BigDecimal jobNumber) {
+	public void setJobNumber(Integer jobNumber) {
 		this.jobNumber = jobNumber;
 	}
 
@@ -135,5 +134,13 @@ public class ClockLocationRule extends PersistableBusinessObjectBase {
 
 	public void setDeptId(String deptId) {
 	    this.deptId = deptId;
+	}
+
+	public Job getJob() {
+	    return job;
+	}
+
+	public void setJob(Job job) {
+	    this.job = job;
 	}
 }
