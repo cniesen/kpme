@@ -20,6 +20,11 @@
       <name>DepartmentMaintenanceDocumentType</name>
       <parent>RiceDocument</parent>
       <label>DepartmentMaintenanceDocument</label>
-    </documentType>       
+    </documentType> 
+    <documentType>
+      <name>JobMaintenanceDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>JobMaintenanceDocumentType</label>
+    </documentType>             
   </documentTypes>
 </data>

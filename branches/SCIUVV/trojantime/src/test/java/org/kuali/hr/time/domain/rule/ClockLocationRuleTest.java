@@ -1,6 +1,5 @@
 package org.kuali.hr.time.domain.rule;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -44,7 +43,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 	//clr.setDepartment("TEST");
 	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
-	clr.setJobNumber(BigDecimal.ZERO);
+	clr.setJobNumber(new Integer(0));
 	clr.setActive(true);
 	clr.setTimestamp(ts_now);
 	clr.setEffectiveDate(date_now);
@@ -73,7 +72,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 	//clr.setDepartment("TEST");
 	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
-	clr.setJobNumber(BigDecimal.ZERO);
+	clr.setJobNumber(new Integer(0));
 	clr.setActive(true);
 	clr.setTimestamp(ts_now);
 	clr.setEffectiveDate(date_now);
@@ -86,7 +85,7 @@ public class ClockLocationRuleTest extends TestHarnessWebBase {
 	//clr.setDepartment("TEST");
 	//clr.setWorkArea(BigDecimal.TEN);
 	clr.setPrincipalId("12345");
-	clr.setJobNumber(BigDecimal.ZERO);
+	clr.setJobNumber(new Integer(0));
 	clr.setActive(false);
 	clr.setTimestamp(ts_now);
 	clr.setEffectiveDate(date_now);
