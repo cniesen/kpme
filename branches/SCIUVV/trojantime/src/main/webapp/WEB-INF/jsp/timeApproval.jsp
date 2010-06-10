@@ -7,7 +7,7 @@
 
 		<table id="approvals-table">
 			<tr>
-				<td colspan="17" align="center" style="border:none;">
+				<td colspan="18" align="center" style="border:none;">
 					<span style="font-weight: bold; font-size: 1.5em;">Aaron Neal</span>
 				<span style="clear:both; float: right;">Pay Period:
 					<select>
@@ -23,24 +23,25 @@
 					</span>
 				</td>
 			</tr>
-			<tr class="ui-widget-header" style="border:none;">
+			<tr class="ui-widget-header" style="border:none; white-space: nowrap;">
 				<td style="border: none; background: #EEEEEE;"></td>
-				<td>5/2</td>
-				<td>5/3</td>
-				<td>5/4</td>
-				<td>5/5</td>
-				<td>5/6</td>
-				<td>5/7</td>
-				<td>5/8</td>
-				<td>5/9</td>
-				<td>5/10</td>
-				<td>5/11</td>
-				<td>5/12</td>
-				<td>5/13</td>
-				<td>5/14</td>
-				<td>5/15</td>
-				<td>5/16</td>
-				<td align="center" style="white-space: nowrap;">Select all / none<br/><input type="checkbox" id="selectAll"/></td>
+				<td>5/2 Sun</td>
+				<td>5/3 Mon</td>
+				<td>5/4 Tue</td>
+				<td>5/5 Wed</td>
+				<td>5/6 Thu</td>
+				<td>5/7 Fri</td>
+				<td>5/8 Sat</td>
+				<td>5/9 Sun</td>
+				<td>5/10 Mon</td>
+				<td>5/11 Tue</td>
+				<td>5/12 Wed</td>
+				<td>5/13 Thu</td>
+				<td>5/14 Fri</td>
+				<td>5/15 Sat</td>
+				<td>5/16 Sun</td>
+				<td>Total Hours</td>
+				<td align="center">Select all / none<br/><input type="checkbox" id="selectAll"/></td>
 			</tr>
 
 			<tr>
@@ -60,6 +61,7 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
+				<td>52</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
@@ -80,6 +82,7 @@
 				<td>RGN: 4</td>
 				<td></td>
 				<td>RGN: 4</td>
+				<td>52</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
@@ -100,6 +103,7 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
+				<td>52</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
@@ -120,9 +124,10 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
+				<td>52</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
-			<tr><td colspan="17" align="center" style="border:none;"><input type="button" class="button" value="Approve" name="Approve"></td></tr>
+			<tr><td colspan="18" align="center" style="border:none;"><input type="button" class="button" value="Approve" name="Approve"></td></tr>
 		</table>
 	</div>
 

@@ -59,8 +59,9 @@ $(document).ready(function() {
 						}]
 			});
 
+ 
 	// datepicker
-	$('#timesheet-date').datepicker({
+	$('#timesheet-beginDate, #timesheet-endDate').datepicker({
 				changeMonth : true,
 				changeYear : true,
 				showOn : 'button',
@@ -69,11 +70,10 @@ $(document).ready(function() {
                 buttonImageOnly : true,
 				buttonText : 'Choose a date',
 				showButtonPanel : true,
-				numberOfMonths : 1,
+				numberOfMonths :2,
 				// set default month based on the current browsing month
 				// appendText : '<br/>format: mm/dd/yyyy',
 				constrainInput : false,
-				yearRange : '-1:+1',
                 minDate: -7,
                 maxDate: +7
 			});
