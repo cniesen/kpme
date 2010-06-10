@@ -1,6 +1,5 @@
 package org.kuali.hr.time.assignment;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 
@@ -18,25 +17,21 @@ public class Assignment extends PersistableBusinessObjectBase {
     private Integer jobNumber;
     private Date effectiveDate;
     private String earnCode;
-    private Integer effectiveSequence;
-    private Integer workAreaId;
+    private Long workArea;
     private Integer taskId;
-    private BigDecimal percent;
     private boolean active;
     
     public Assignment() {
 	
     }
     
-    public Assignment(String principalId, Integer jobNumber, Date effectiveDate, String earnCode, Integer effectiveSequence, Integer workAreaId, Integer taskId, BigDecimal percent) {
+    public Assignment(String principalId, Integer jobNumber, Date effectiveDate, String earnCode, Long workArea, Integer taskId) {
 	this.principalId = principalId;
 	this.jobNumber = jobNumber;
 	this.effectiveDate = effectiveDate;
 	this.earnCode = earnCode;
-	this.effectiveSequence = effectiveSequence;
-	this.workAreaId = workAreaId;
+	this.workArea = workArea;
 	this.taskId = taskId;
-	this.percent = percent;
     }
     
     @SuppressWarnings("unchecked")
@@ -80,36 +75,12 @@ public class Assignment extends PersistableBusinessObjectBase {
         this.earnCode = earnCode;
     }
 
-    public Integer getEffectiveSequence() {
-        return effectiveSequence;
-    }
-
-    public void setEffectiveSequence(Integer effectiveSequence) {
-        this.effectiveSequence = effectiveSequence;
-    }
-
-    public Integer getWorkAreaId() {
-        return workAreaId;
-    }
-
-    public void setWorkAreaId(Integer workAreaId) {
-        this.workAreaId = workAreaId;
-    }
-
     public Integer getTaskId() {
         return taskId;
     }
 
     public void setTaskId(Integer taskId) {
         this.taskId = taskId;
-    }
-
-    public BigDecimal getPercent() {
-        return percent;
-    }
-
-    public void setPercent(BigDecimal percent) {
-        this.percent = percent;
     }
 
     public Long getAssignmentId() {
@@ -126,5 +97,13 @@ public class Assignment extends PersistableBusinessObjectBase {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Long getWorkArea() {
+        return workArea;
+    }
+
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
     }
 }

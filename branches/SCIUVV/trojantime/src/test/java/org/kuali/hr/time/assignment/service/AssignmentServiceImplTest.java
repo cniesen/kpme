@@ -1,6 +1,5 @@
 package org.kuali.hr.time.assignment.service;
 
-import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,25 +55,25 @@ public class AssignmentServiceImplTest extends TestHarnessWebBase {
 	cal.set(Calendar.MONTH, Calendar.JANUARY);
 	cal.set(Calendar.DAY_OF_MONTH, 1);
 
-	Assignment a = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", 0, 1, 1, new BigDecimal("100") );
+	Assignment a = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", new Long(1), 1);
 	assignmentList.add(a);
 
 	cal.set(Calendar.MONTH, Calendar.FEBRUARY);
 	cal.set(Calendar.DAY_OF_MONTH, 1);
 	
-	Assignment b = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", 0, 1, 1, new BigDecimal("100") );
+	Assignment b = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", new Long(1), 1);
 	assignmentList.add(b);
 	
 	cal.set(Calendar.MONTH, Calendar.MARCH);
 	cal.set(Calendar.DAY_OF_MONTH, 1);
 	
-	Assignment c = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", 0, 1, 1, new BigDecimal("100") );
+	Assignment c = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", new Long(1), 1);
 	assignmentList.add(c);
 	
 	cal.set(Calendar.MONTH, Calendar.MARCH);
 	cal.set(Calendar.DAY_OF_MONTH, 1);
 	
-	Assignment d = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", 1, 1, 1, new BigDecimal("100") );
+	Assignment d = new Assignment("12345", 1, new Date(cal.getTimeInMillis()), "ERN", new Long(1), 1);
 	assignmentList.add(d);
 	
 	assignmentDao.saveOrUpdate(assignmentList);
