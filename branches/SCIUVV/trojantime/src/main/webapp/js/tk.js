@@ -42,7 +42,7 @@ $(document).ready(function() {
 				aspectRatio : 5, // the value here is just to match the height with the add time block panel
 				allDaySlot : false,
 				header : {
-					left : 'prev,next today',
+					left : 'prev, today',
 					center : 'title',
 					right : 'payPeriod'
 				},
@@ -59,7 +59,7 @@ $(document).ready(function() {
 						}]
 			});
 
- 
+
 	// datepicker
 	$('#timesheet-beginDate, #timesheet-endDate').datepicker({
 				changeMonth : true,
@@ -104,4 +104,10 @@ $(document).ready(function() {
             $(this).parent().parent().removeClass("ui-state-focus");
         }
     });
+
+    // clock
+    var options = {
+        format: '%I:%M:%S %p'
+    };
+    $(".jClock").jclock(options);
 });

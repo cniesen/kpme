@@ -12,19 +12,49 @@
 				</tr>
 				<tr>
 					<td>Begin Date:</td>
-					<td><input type="text" id="timesheet-beginDate"/></td>
+					<td><input type="text" id="timesheet-beginDate" size="10"/></td>
 				</tr>
 				<tr>
 					<td>End Date:</td>
-					<td><input type="text" id="timesheet-endDate"/></td>
+					<td><input type="text" id="timesheet-endDate" size="10"/></td>
 				</tr>
 				<tr>
 					<td>Begin Time:</td>
-					<td><input type="text"/></td>
+					<td>
+						<select>
+							<c:forEach var="i" begin="1" end="12" step="1">
+								<option>${i}</option>
+							</c:forEach>
+						</select> :
+						<select>
+							<c:forEach var="i" begin="1" end="60" step="1">
+								<option>${i}</option>
+							</c:forEach>
+						</select>
+						<select>
+							<option>am</option>
+							<option>pm</option>
+						</select>
+					</td>
 				</tr>
 				<tr>
 					<td>End Time:</td>
-					<td><input type="text"/></td>
+					<td>
+						<select>
+							<c:forEach var="i" begin="1" end="12" step="1">
+								<option>${i}</option>
+							</c:forEach>
+						</select> :
+						<select>
+							<c:forEach var="i" begin="1" end="60" step="1">
+								<option>${i}</option>
+							</c:forEach>
+						</select>
+						<select>
+							<option>am</option>
+							<option>pm</option>
+						</select>
+					</td>
 				</tr>
 				<tr>
 					<td></td>
@@ -59,7 +89,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="cal" style="margin-top: 20px; float:left; width:75%;">
+		<div id="cal" style="margin-top: 20px; float:left; width:74%; font-size:.9em;">
 
 			<div id="timesheet-summary">
 			<table>

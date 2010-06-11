@@ -14,16 +14,10 @@
 						<option>5/2 - 5/16</option>
 						<option>5/6 - 5/20</option>
 					</select>
-					&nbsp;&nbsp;Approval types:
-					<select>
-						<option>Time</option>
-						<option>Leave</option>
-					</select>
-
 					</span>
 				</td>
 			</tr>
-			<tr class="ui-widget-header" style="border:none; white-space: nowrap;">
+			<tr class="ui-widget-header" style="border:none;">
 				<td style="border: none; background: #EEEEEE;"></td>
 				<td>5/2 Sun</td>
 				<td>5/3 Mon</td>
@@ -45,7 +39,7 @@
 			</tr>
 
 			<tr>
-				<td style="border: none; white-space: nowrap;">Kenneth Lee (assignment #1)</td>
+				<td style="border: none;">Kenneth Lee (assignment #1)</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
@@ -66,7 +60,7 @@
 			</tr>
 
 			<tr>
-				<td style="border: none; white-space: nowrap;">Kenneth Lee (assignment #2)</td>
+				<td style="border: none;">Kenneth Lee (assignment #2)</td>
 				<td>RGN: 3</td>
 				<td>RGN: 4</td>
 				<td>RGN: 2</td>
@@ -87,7 +81,7 @@
 			</tr>
 
 			<tr>
-				<td style="border: none; white-space: nowrap;">Allen Fox (assignment #1)</td>
+				<td style="border: none;">Allen Fox (assignment #1)</td>
 				<td>RGN: 3</td>
 				<td>RGN: 4</td>
 				<td>RGN: 5</td>
@@ -108,7 +102,7 @@
 			</tr>
 
 			<tr>
-				<td style="border: none; white-space: nowrap;">Damion Junk (assignment #1)</td>
+				<td style="border: none;">Damion Junk (assignment #1)</td>
 				<td>RGN: 7</td>
 				<td>RGN: 4</td>
 				<td>RGN: 6</td>

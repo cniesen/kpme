@@ -1,14 +1,33 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 
+<c:set var="Form" value="${ClockActionForm}" scope="request"/>
+
+<c:out value="${ClockActionForm}"/>
 
 <tk:tkHeader tabId="clock">
-	<c:set var="Form" value="${ClockActionForm}" scope="request"/>
+
+	Principal ID: ${principalId}
+	<br/>
+	Assignments : ${assignments}
+
+	<c:choose>
+		<c:when test="">
+		</c:when>
+		<c:otherwise>
+		</c:otherwise>
+	</c:choose>
+
+
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
 
 	<div id="clock">
 		<table>
 			<tr class="header"><td colspan="2">Clock</td></tr>
+			<tr>
+				<td class="sub-header">Current Time : </td>
+				<td><div class="jClock"></div></td>
+			</tr>
 			<tr>
 				<td class="sub-header">Work Status : </td>
 				<td>Clocked Out since 10/15/2009 05:12 AM</td>
