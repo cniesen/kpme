@@ -3,12 +3,6 @@
 
 <tk:tkHeader tabId="clock">
 	<c:set var="Form" value="${ClockActionForm}" scope="request"/>
-
-	Principal ID: ${principalId}
-	<br/>
-	Assignments : ${assignments}
-	
-
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
 
@@ -22,14 +16,10 @@
 			<tr>
 				<td class="sub-header">Clock Assignment : </td>
 				<td>
-					<!--  iterate over the assignments for realllz -->
 					<select>
-						<option>
-						<logic:iterate id="element" name="assignments">
-							<bean:write name="element" property="clockText"/>
-						</logic:iterate>
-						</option>
-						<option>HRMS Java Development: $20/hr Rcd#4 UA-VPIT</option>
+							<option>Operations/AIS</option>
+							<option>AIS Technical & User Support</option>
+							<option>System Support Services</option>
 					</select>
 				</td>
 			</tr>
@@ -48,8 +38,8 @@
 var current_date = new Date();
 var current_timezone = current_date.getTimezoneOffset();
 
-document.write("Your time zone is " + current_timezone + " minutes from GMT<br/>");
-document.write("Your time zone is " + current_timezone/60 + " hours from GMT");
+//document.write("Your time zone is " + current_timezone + " minutes from GMT<br/>");
+//document.write("Your time zone is " + current_timezone/60 + " hours from GMT");
 
 //-->
 </script>

@@ -34,9 +34,9 @@
 					<td>Assignment: </td>
 					<td>
 						<select>
-							<option>assignment #1</option>
-							<option>assignment #2</option>
-							<option>assignment #3</option>
+							<option>Operations/AIS</option>
+							<option>AIS Technical & User Support</option>
+							<option>System Support Services</option>
 						</select>
 					</td>
 				</tr>
@@ -44,8 +44,13 @@
 					<td>Earn code: </td>
 					<td>
 						<select>
-							<option>Regular (RGN)</option>
-							<option>Vacation (VAC)</option>
+							<option>RGH: Regular Hourly</option>
+							<option>WEP: Emergency Weather Premium</option>
+							<option>HAZ: Hazard Pay - 1.50</option>
+							<option>HIP: Holiday Incentive</option>
+							<option>OC1: On Call - 1.50</option>
+							<option>OC2: On Call - 2.00</option>
+							<option>PRM: Premium</option>
 						</select>
 					</td>
 				</tr>
