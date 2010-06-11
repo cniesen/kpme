@@ -26,7 +26,15 @@ public class ClockAction extends KualiAction {
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	    String principalId = TKContext.getUser().getPrincipalId();
     	    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getCurrentlyValidActiveAssignments(principalId);
-    	    ((ClockActionForm)form).setAssignments(assignments);
+    	    //((ClockActionForm)form).setPrincipalId(principalId);
+    	    //((ClockActionForm)form).setAssignments(assignments);
+    	    
+    	    request.setAttribute("principalId", principalId);
+    	    
+    	    if (assignments.size() == 0) {
+    		assignments.add(new Assignment());
+    	    }
+    	    request.setAttribute("assignments", assignments);
     	 
     	    return super.execute(mapping, form, request, response);
     	}

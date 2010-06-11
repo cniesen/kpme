@@ -1,7 +1,13 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 
+
 <tk:tkHeader tabId="clock">
-	<c:set var="Form" value="${ClockActionForm}"/>
+	<c:set var="Form" value="${ClockActionForm}" scope="request"/>
+
+	Principal ID: ${principalId}
+	<br/>
+	Assignments : ${assignments}
+	
 
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
@@ -16,7 +22,13 @@
 			<tr>
 				<td class="sub-header">Clock Assignment : </td>
 				<td>
+					<!--  iterate over the assignments for realllz -->
 					<select>
+						<option>
+						<logic:iterate id="element" name="assignments">
+							<bean:write name="element" property="clockText"/>
+						</logic:iterate>
+						</option>
 						<option>HRMS Java Development: $20/hr Rcd#4 UA-VPIT</option>
 					</select>
 				</td>

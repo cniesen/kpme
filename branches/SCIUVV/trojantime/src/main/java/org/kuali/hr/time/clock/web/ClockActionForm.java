@@ -5,17 +5,18 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts.action.ActionErrors;
-import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.base.web.TkForm;
 
-public class ClockActionForm extends ActionForm {
+public class ClockActionForm extends TkForm {
 
     /**
      * 
      */
     private static final long serialVersionUID = -3843074202863670372L;
     
+    private String principalId;
     private List<Assignment> assignments;
 
     @Override
@@ -34,6 +35,14 @@ public class ClockActionForm extends ActionForm {
 
     public void setAssignments(List<Assignment> assignments) {
         this.assignments = assignments;
+    }
+
+    public String getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
     }
 
     

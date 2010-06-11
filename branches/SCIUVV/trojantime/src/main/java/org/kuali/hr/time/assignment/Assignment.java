@@ -127,4 +127,14 @@ public class Assignment extends PersistableBusinessObjectBase {
     public void setWorkArea(WorkArea workArea) {
         this.workArea = workArea;
     }
+    
+    /**
+     * Provides us with the text to display to the user for clock actions on this assignment.
+     * @return
+     */
+    public String getClockText() {
+	StringBuilder sb = new StringBuilder("example assignment clock text");
+	
+	return sb.toString();
+    }
 }
