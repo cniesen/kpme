@@ -43,17 +43,21 @@
 
 #timesheet-panel {
 	border: 1px solid #ccc;
-	clear:both;
 	float:left;
 	width:20%;
 	margin: 20px 20px 0 2%;
 	font-size: .8em;
 	background-color: #FBF9EE;
-	height:413px;
 }
 
 #timesheet-panel table {
 	margin: 0 auto 0 auto;
+	padding: 0;
+	border-collapse: collapse;
+}
+
+#timesheet-panel table tr td{
+	padding: 5px;
 }
 
 #timesheet-panel .timesheet-panel-title {

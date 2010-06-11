@@ -21,6 +21,10 @@
 				<tr>
 					<td>Begin Time:</td>
 					<td>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
 						<select>
 							<c:forEach var="i" begin="1" end="12" step="1">
 								<option>${i}</option>
@@ -36,10 +40,15 @@
 							<option>pm</option>
 						</select>
 					</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>End Time:</td>
 					<td>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
 						<select>
 							<c:forEach var="i" begin="1" end="12" step="1">
 								<option>${i}</option>
@@ -55,24 +64,35 @@
 							<option>pm</option>
 						</select>
 					</td>
+					<td>
+					</td>
 				</tr>
 				<tr>
+					<td colspan="2"><input type="checkbox"/> Apply hours to each day</td>
 					<td></td>
-					<td><input type="checkbox"/> Apply hours to each day</td>
 				</tr>
 				<tr>
 					<td>Assignment: </td>
 					<td>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
 						<select>
 							<option>Operations/AIS</option>
 							<option>AIS Technical & User Support</option>
 							<option>System Support Services</option>
 						</select>
 					</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td>Earn code: </td>
 					<td>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2">
 						<select>
 							<option>RGN: Regular</option>
 							<option>WEP: Emergency Weather Premium</option>
@@ -83,6 +103,7 @@
 							<option>PRM: Premium</option>
 						</select>
 					</td>
+					<td></td>
 				</tr>
 				<tr>
 					<td colspan="2" align="center"><input type="button" class="button" value="Submit" name="Submit"></td>
