@@ -95,7 +95,7 @@
 					<td colspan="2">
 						<select>
 							<option>RGN: Regular</option>
-							<option>WEP: Emergency Weather Premium</option>
+							<option>WEP: Emergency Weather</option>
 							<option>HAZ: Hazard Pay - 1.50</option>
 							<option>HIP: Holiday Incentive</option>
 							<option>OC1: On Call - 1.50</option>
