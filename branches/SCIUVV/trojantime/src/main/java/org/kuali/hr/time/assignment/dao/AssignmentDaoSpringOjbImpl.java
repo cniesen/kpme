@@ -18,6 +18,24 @@ public class AssignmentDaoSpringOjbImpl extends PersistenceBrokerDaoSupport impl
 
     @SuppressWarnings("unchecked")
     @Override
+    public List<Assignment> findCurrentlyValidActiveAssignments(String principalId) {
+	List<Assignment> list = new LinkedList<Assignment>();
+	
+	Criteria crit = new Criteria();
+	crit.addEqualTo("active", true);
+	crit.addEqualTo("principalId", principalId);
+	
+	Query query = QueryFactory.newQuery(Assignment.class, crit);
+	Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+	if (c != null) {
+	    list.addAll(c);
+	}
+	
+	return list;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
     public List<Assignment> findAssignmentsOnOrAfter(Date date) {
 	List<Assignment> list = new LinkedList<Assignment>();
 	Criteria crit = new Criteria();
@@ -77,4 +95,5 @@ public class AssignmentDaoSpringOjbImpl extends PersistenceBrokerDaoSupport impl
 	LOG.warn("Deleting all Assignments");
 	this.getPersistenceBrokerTemplate().deleteByQuery(query);
     }
+
 }

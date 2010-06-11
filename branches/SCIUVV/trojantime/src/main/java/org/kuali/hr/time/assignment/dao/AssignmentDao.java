@@ -16,6 +16,13 @@ public interface AssignmentDao {
     public List<Assignment> findAssignmentsOnOrAfter(Date date);
     public List<Assignment> findAllAssignments();
     
+    /**
+     * Returns a list of the currently valid active assignments for the provided principal ID.
+     * @param principalId
+     * @return
+     */
+    public List<Assignment> findCurrentlyValidActiveAssignments(String principalId);
+    
     public void saveOrUpdate(Assignment assignment);
     public void saveOrUpdate(List<Assignment> assignments);
     

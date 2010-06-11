@@ -1,12 +1,12 @@
 package org.kuali.hr.time.clock.web;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -19,13 +19,21 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.web.struts.action.KualiAction;
 
 public class ClockAction extends KualiAction {
-    	
+    
+    	private static final Logger LOG = Logger.getLogger(ClockAction.class);
+    		
     	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	    String principalId = TKContext.getUser().getPrincipalId();
+    	    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getCurrentlyValidActiveAssignments(principalId);
+    	    ((ClockActionForm)form).setAssignments(assignments);
+    	 
     	    return super.execute(mapping, form, request, response);
     	}
     	
     	public ActionForward clockIn(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	    LOG.info("Clock IN");
+    	    String principalId = TKContext.getUser().getPrincipalId();    
     	    ClockLog cl = new ClockLog();
     	    cl.setPrincipalId(TKContext.getUser().getPrincipalId());
     	    cl.setClockAction(TkConstants.CLOCK_IN);
@@ -42,8 +50,10 @@ public class ClockAction extends KualiAction {
     	    //TODO grab assignment off of finished form and place data correctly
     	    cl.setWorkAreaId(0);
     	    cl.setTaskId(0);
-    	    cl.setUserPrincipalId(TKContext.getUser().getPrincipalId());
-    	    List<Assignment> assigns = TkServiceLocator.getAssignmentService().getAssignmentsOnOrAfter(new java.sql.Date(System.currentTimeMillis()));
+    	    cl.setUserPrincipalId(principalId);
+    	    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getCurrentlyValidActiveAssignments(principalId);
+    	    
+    	    
     	    
     	    TkServiceLocator.getClockLogService().saveClockAction(cl);
     	    return mapping.findForward("basic");

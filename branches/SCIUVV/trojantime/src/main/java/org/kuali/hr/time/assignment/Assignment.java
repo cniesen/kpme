@@ -3,6 +3,8 @@ package org.kuali.hr.time.assignment;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.time.task.Task;
+import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class Assignment extends PersistableBusinessObjectBase {
@@ -17,20 +19,23 @@ public class Assignment extends PersistableBusinessObjectBase {
     private Integer jobNumber;
     private Date effectiveDate;
     private String earnCode;
-    private Long workArea;
-    private Integer taskId;
+    private Long workAreaId;
+    private Long taskId;
     private boolean active;
+    
+    private Task task;
+    private WorkArea workArea;
     
     public Assignment() {
 	
     }
     
-    public Assignment(String principalId, Integer jobNumber, Date effectiveDate, String earnCode, Long workArea, Integer taskId) {
+    public Assignment(String principalId, Integer jobNumber, Date effectiveDate, String earnCode, Long workAreaId, Long taskId) {
 	this.principalId = principalId;
 	this.jobNumber = jobNumber;
 	this.effectiveDate = effectiveDate;
 	this.earnCode = earnCode;
-	this.workArea = workArea;
+	this.workAreaId = workAreaId;
 	this.taskId = taskId;
     }
     
@@ -75,11 +80,11 @@ public class Assignment extends PersistableBusinessObjectBase {
         this.earnCode = earnCode;
     }
 
-    public Integer getTaskId() {
+    public Long getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(Integer taskId) {
+    public void setTaskId(Long taskId) {
         this.taskId = taskId;
     }
 
@@ -99,11 +104,27 @@ public class Assignment extends PersistableBusinessObjectBase {
         this.active = active;
     }
 
-    public Long getWorkArea() {
+    public Long getWorkAreaId() {
+        return workAreaId;
+    }
+
+    public void setWorkAreaId(Long workAreaId) {
+        this.workAreaId = workAreaId;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public WorkArea getWorkArea() {
         return workArea;
     }
 
-    public void setWorkArea(Long workArea) {
+    public void setWorkArea(WorkArea workArea) {
         this.workArea = workArea;
     }
 }
