@@ -44,7 +44,7 @@
 					<td>Earn code: </td>
 					<td>
 						<select>
-							<option>RGH: Regular Hourly</option>
+							<option>RGN: Regular</option>
 							<option>WEP: Emergency Weather Premium</option>
 							<option>HAZ: Hazard Pay - 1.50</option>
 							<option>HIP: Holiday Incentive</option>
