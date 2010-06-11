@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class ClockLog extends PersistableBusinessObjectBase {
@@ -13,7 +14,7 @@ public class ClockLog extends PersistableBusinessObjectBase {
      */
     private static final long serialVersionUID = -2499666820628979901L;
     
-    private Long clockLogId;
+    private Long clockLogId = null;
     private String principalId;
     private Integer jobNumber;
     private Integer workAreaId;
@@ -119,6 +120,32 @@ public class ClockLog extends PersistableBusinessObjectBase {
 
     public void setClockLogId(Long clockLogId) {
         this.clockLogId = clockLogId;
+    }
+    
+    /**
+     * TODO: Fix this - may need to return multiple actions, depending on how we want the system to work.
+     * @return
+     */
+    public String getNextValidClockAction() {
+	String ret = "";
+
+	if (this.getClockAction().equals(TkConstants.CLOCK_IN)) {
+	    ret = TkConstants.CLOCK_OUT;
+	} else if (this.getClockAction().equals(TkConstants.CLOCK_OUT)) {
+	    ret = TkConstants.CLOCK_IN;
+	} else if (this.getClockAction().equals(TkConstants.LUNCH_IN)) {
+	    ret = TkConstants.LUNCH_OUT;
+	} else if (this.getClockAction().equals(TkConstants.LUNCH_OUT)) {
+	    ret = TkConstants.LUNCH_IN;
+	} else if (this.getClockAction().equals(TkConstants.BREAK_IN)) {
+	    ret = TkConstants.BREAK_OUT;
+	} else if (this.getClockAction().equals(TkConstants.BREAK_OUT)) {
+	    ret = TkConstants.BREAK_IN;
+	} else {
+	    ret = TkConstants.CLOCK_IN;
+	}
+	
+	return ret;
     }
         
 }

@@ -1,7 +1,9 @@
 package org.kuali.hr.time.clock.web;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,51 +23,47 @@ import org.kuali.rice.kns.web.struts.action.KualiAction;
 public class ClockAction extends KualiAction {
     
     	private static final Logger LOG = Logger.getLogger(ClockAction.class);
+    	public static final SimpleDateFormat SDF =  new SimpleDateFormat("EEE, MMMM d yyyy HH:mm:ss, zzzz");
     		
     	@Override
 	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	    LOG.debug("Calling execute.");
     	    String principalId = TKContext.getUser().getPrincipalId();
     	    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getCurrentlyValidActiveAssignments(principalId);
-    	    //((ClockActionForm)form).setPrincipalId(principalId);
-    	    //((ClockActionForm)form).setAssignments(assignments);
+    	    ClockLog clockLog = TkServiceLocator.getClockLogService().getLastClockLog(principalId);
+    	    
+    	    ((ClockActionForm)form).setPrincipalId(principalId);
+    	    ((ClockActionForm)form).setAssignments(assignments);
+    	    ((ClockActionForm)form).setClockAction(clockLog.getNextValidClockAction());
+    	    
+    	    Calendar calendar = clockLog.getClockTimestamp();
+    	    ((ClockActionForm)form).setLastClockActionTimestampFormatted(SDF.format(calendar.getTime()));
     	    
     	    request.setAttribute("principalId", principalId);
-    	    
-    	    if (assignments.size() == 0) {
-    		assignments.add(new Assignment());
-    	    }
     	    request.setAttribute("assignments", assignments);
     	 
     	    return super.execute(mapping, form, request, response);
     	}
     	
-    	public ActionForward clockIn(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	    LOG.info("Clock IN");
-    	    String principalId = TKContext.getUser().getPrincipalId();    
+    	public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	    ClockActionForm caf = (ClockActionForm)form;
+    	    
+    	    LOG.debug("Clock action: " + caf.getClockAction());
+    	    // TODO: Validate that clock action is valid for this user
+    	    
+    	    String principalId = TKContext.getUser().getPrincipalId();
     	    ClockLog cl = new ClockLog();
-    	    cl.setPrincipalId(TKContext.getUser().getPrincipalId());
-    	    cl.setClockAction(TkConstants.CLOCK_IN);
-    	    //TODO Underlying objects actually store time in GMT, we just need to make sure
-    	    // it gets to the database as GMT.
+    	    cl.setClockAction(caf.getClockAction());
+    	    cl.setPrincipalId(principalId);
     	    cl.setClockTimestamp(Calendar.getInstance(TkConstants.GMT_TIME_ZONE));
-    	    //TODO Make sure the getTimeZone() method pulls the correct values.
-    	    // We're likely going to have to use Javascript and set a form value, possibly augmented by dropdown somewhere
-    	    // in the application.
     	    cl.setClockTimestampTimezone(TKUtils.getTimeZone());
     	    cl.setIpAddress(request.getRemoteAddr());
-    	    //TODO add job to user and put it on the clock log here
     	    cl.setJobNumber(0);
-    	    //TODO grab assignment off of finished form and place data correctly
     	    cl.setWorkAreaId(0);
     	    cl.setTaskId(0);
     	    cl.setUserPrincipalId(principalId);
-    	    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getCurrentlyValidActiveAssignments(principalId);
-    	    
-    	    
     	    
     	    TkServiceLocator.getClockLogService().saveClockAction(cl);
     	    return mapping.findForward("basic");
     	}
-    
-    
 }

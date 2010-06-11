@@ -14,7 +14,8 @@ public class TkConfiguration {
     }
 
     public static void setTimeZone() {
-	TimeZone.setDefault(TkConstants.GMT_TIME_ZONE);
+	// TODO: Fix this -- For now we are using default system time zone.
+	//TimeZone.setDefault(TkConstants.GMT_TIME_ZONE);
     }
 
     public static void configureInitialLogging() {

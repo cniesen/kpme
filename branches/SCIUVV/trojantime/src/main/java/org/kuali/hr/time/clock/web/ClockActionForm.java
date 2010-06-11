@@ -18,6 +18,10 @@ public class ClockActionForm extends TkForm {
     
     private String principalId;
     private List<Assignment> assignments;
+    private String clockAction;
+    private String lastClockActionTimestampFormatted;
+    
+    
 
     @Override
     public void reset(ActionMapping mapping, HttpServletRequest request) {
@@ -43,6 +47,22 @@ public class ClockActionForm extends TkForm {
 
     public void setPrincipalId(String principalId) {
         this.principalId = principalId;
+    }
+
+    public String getClockAction() {
+        return clockAction;
+    }
+
+    public void setClockAction(String clockAction) {
+        this.clockAction = clockAction;
+    }
+
+    public String getLastClockActionTimestampFormatted() {
+        return lastClockActionTimestampFormatted;
+    }
+
+    public void setLastClockActionTimestampFormatted(String lastClockActionTimestampFormatted) {
+        this.lastClockActionTimestampFormatted = lastClockActionTimestampFormatted;
     }
 
     

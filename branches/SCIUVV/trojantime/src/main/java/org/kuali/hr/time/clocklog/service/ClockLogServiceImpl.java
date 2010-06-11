@@ -12,7 +12,7 @@ public class ClockLogServiceImpl implements ClockLogService {
     
     @Override
     public void saveClockAction(ClockLog clockLog) {
-
+	clockLogDao.saveOrUpdate(clockLog);
     }
 
     public void setClockLogDao(ClockLogDao clockLogDao) {

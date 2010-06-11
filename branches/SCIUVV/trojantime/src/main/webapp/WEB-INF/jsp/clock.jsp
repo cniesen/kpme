@@ -1,25 +1,22 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 
 <c:set var="Form" value="${ClockActionForm}" scope="request"/>
-
-<c:out value="${ClockActionForm}"/>
-
+<c:choose>
+	<c:when test="${Form.clockAction eq 'CI'}">
+		<c:set var="clockActionDescription" value="Clock In"/>
+		<c:set var="lastClockActionMessage" value="Clocked out since ${Form.lastClockActionTimestampFormatted}"/>
+	</c:when>
+	<c:otherwise>
+		<c:set var="clockActionDescription" value="Clock Out"/>
+		<c:set var="lastClockActionMessage" value="Clocked in since ${Form.lastClockActionTimestampFormatted}"/>
+	</c:otherwise>
+</c:choose>
 <tk:tkHeader tabId="clock">
-
-	Principal ID: ${principalId}
-	<br/>
-	Assignments : ${assignments}
-
-	<c:choose>
-		<c:when test="">
-		</c:when>
-		<c:otherwise>
-		</c:otherwise>
-	</c:choose>
 
 
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
+	<html:hidden property="clockAction"/>
 
 	<div id="clock">
 		<table>
@@ -30,7 +27,7 @@
 			</tr>
 			<tr>
 				<td class="sub-header">Work Status : </td>
-				<td>Clocked Out since 10/15/2009 05:12 AM</td>
+				<td>${lastClockActionMessage}</td>
 			</tr>
 			<tr>
 				<td class="sub-header">Clock Assignment : </td>
@@ -43,7 +40,7 @@
 				</td>
 			</tr>
 			<tr class="footer">
-				<td colspan="2" align="center"><input type="button" class="button" value="Clock In" name="clockIn" onclick="this.form.methodToCall.value='clockIn'; this.form.submit();"></td>
+				<td colspan="2" align="center"><input type="button" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction'; this.form.submit();"></td>
 			</tr>
 		</table>
 	</div>
