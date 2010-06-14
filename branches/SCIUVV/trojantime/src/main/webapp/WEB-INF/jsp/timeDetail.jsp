@@ -26,12 +26,12 @@
 				<tr>
 					<td colspan="2">
 						<select>
-							<c:forEach var="i" begin="1" end="12" step="1">
+							<c:forEach var="i" begin="0" end="12" step="1">
 								<option>${i}</option>
 							</c:forEach>
 						</select> :
 						<select>
-							<c:forEach var="i" begin="1" end="60" step="1">
+							<c:forEach var="i" begin="0" end="59" step="1">
 								<option>${i}</option>
 							</c:forEach>
 						</select>
@@ -50,12 +50,12 @@
 				<tr>
 					<td colspan="2">
 						<select>
-							<c:forEach var="i" begin="1" end="12" step="1">
+							<c:forEach var="i" begin="0" end="12" step="1">
 								<option>${i}</option>
 							</c:forEach>
 						</select> :
 						<select>
-							<c:forEach var="i" begin="1" end="60" step="1">
+							<c:forEach var="i" begin="0" end="59" step="1">
 								<option>${i}</option>
 							</c:forEach>
 						</select>
