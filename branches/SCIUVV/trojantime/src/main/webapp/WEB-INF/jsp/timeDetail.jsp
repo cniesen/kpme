@@ -154,6 +154,11 @@
 						<td></td>
 						<td></td>
 					</tr>
+					<tr>
+						<td>Total Hours</td>
+						<td colspan="8">8</td>
+						<td colspan="6"></td>
+					</tr>
 				</tbody>
 			</table>
 			</div>
