@@ -41,22 +41,32 @@ $(document).ready(function() {
 				theme : true,
 				aspectRatio : 5, // the value here is just to match the height with the add time block panel
 				allDaySlot : false,
+                editable: true,
 				header : {
 					left : 'prev, today',
 					center : 'title',
 					right : 'payPeriod'
 				},
 				events : [{
-							title : 'RGN',
-							start : new Date(y, m, d, 08, 00),
+							title : 'HRMS Java developer: RGN',
+							start : new Date(y, m, d, 8, 00),
 							end : new Date(y, m, d, 17, 00),
 							allDay : false
-						}, {
-							title : 'Lunch',
+						}
+                        , {
+							title : 'HRMS PS developer: RGN',
 							start : new Date(y, m, d, 12, 0),
 							end : new Date(y, m, d, 13, 0),
 							allDay : false
-						}]
+						}
+                        , {
+                            title : 'HRMS Happy developer: RGN',
+                            start : new Date(y, m, d, 12, 0),
+                            end : new Date(y, m, d, 13, 0),
+                            allDay : false
+                        }
+
+                        ]
 			});
 
 
@@ -110,4 +120,10 @@ $(document).ready(function() {
         format: '%I:%M:%S %p'
     };
     $(".jClock").jclock(options);
+
+    // time picker
+    // $("#beginTime").timepickr();
+    $("#beginTime").AnyTime_picker({
+        format: "%l:%i %p"
+    });
 });

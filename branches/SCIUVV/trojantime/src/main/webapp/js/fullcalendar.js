@@ -1083,7 +1083,6 @@ function Grid(element, options, methods) {
         if (!tbody) { // first time, build all cells from scratch
 
             var table = $("<table/>").appendTo(element);
-
             s = "<thead><tr>";
             for (i=0; i<colCnt; i++) {
                 s += "<th class='fc-" +
@@ -1459,19 +1458,24 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
             right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxLeft;
         }
         html +=
-            "<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;left:"+left+"px'>" +
-                "<a" + (event.url ? " href='" + htmlEscape(event.url) + "'" : '') + ">" +
-                    (!event.allDay && seg.isStart ?
-                        "<span class='fc-event-time'>" +
-                            htmlEscape(formatDates(event.start, event.end, view.option('timeFormat'), options)) +
-                        "</span>"
-                    :'') +
-                    "<span class='fc-event-title'>" + htmlEscape(event.title) + "</span>" +
-                "</a>" +
-                ((event.editable || event.editable == undefined && options.editable) && !options.disableResizing && $.fn.resizable ?
-                    "<div class='ui-resizable-handle ui-resizable-" + (rtl ? 'w' : 'e') + "'></div>"
-                    : '') +
+            "<div class='" + className + event.className.join(' ') + "' style='position:absolute;left:"+left+"px'>" +
+            "<table style='font-size:0.7em;'><tr><td colspan='2' align='center'>" + htmlEscape(event.title) + "</td></tr>" +
+            "<tr><td align='center'>8:45a</td><td align='center'>11:00a</td></tr>" +
+            "<tr><td align='center'>12:00p</td><td align='center'>4:00p</td></tr>" +
+            "</table>" +
+//                "<a" + (event.url ? " href='" + htmlEscape(event.url) + "'" : '') + ">" +
+//                    (!event.allDay && seg.isStart ?
+//                        "<span class='fc-event-time'>" +
+//                            htmlEscape(formatDates(event.start, event.end, view.option('timeFormat'), options)) +
+//                        "</span>"
+//                    :'') +
+//                    "<span class='fc-event-title'>" + htmlEscape(event.title) + "</span>" +
+//                "</a>" +
+//                ((event.editable || event.editable == undefined && options.editable) && !options.disableResizing && $.fn.resizable ?
+//                    "<div class='ui-resizable-handle ui-resizable-" + (rtl ? 'w' : 'e') + "'></div>"
+//                    : '') +
             "</div>";
+
         seg.left = left;
         seg.outerWidth = right - left;
     }

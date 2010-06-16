@@ -4,7 +4,7 @@
 <tk:tkHeader tabId="timeDetail">
 	<html:hidden property="methodToCall" value=""/>
 
-	<div style="height:500px;" class="ui-widget-content">
+	<div style="height:550px;" class="ui-widget-content">
 		<div class="ui-widget" id="timesheet-panel">
 			<table>
 				<tr>
@@ -21,6 +21,7 @@
 				<tr>
 					<td>Begin Time:</td>
 					<td>
+						<input id="beginTime" type="text"/>
 					</td>
 				</tr>
 				<tr>
@@ -110,7 +111,7 @@
 				</tr>
 			</table>
 		</div>
-		<div id="cal" style="margin-top: 20px; float:left; width:74%; font-size:.9em;">
+		<div id="cal" style="margin-top: 20px; float:left; width:83%; font-size:.9em;">
 
 			<div id="timesheet-summary">
 			<table>
