@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
+<%@include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 
 <c:set var="Form" value="${ClockActionForm}" scope="request"/>
 <c:choose>
@@ -17,6 +17,7 @@
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
 	<html:hidden property="clockAction"/>
+	<html:hidden property="lastClockedInTime" value="${Form.lastClockActionTimestamp}" styleId="lastClockedInTime"/>
 
 	<div id="clock">
 		<table>
@@ -28,6 +29,20 @@
 			<tr>
 				<td class="sub-header">Work Status : </td>
 				<td>${lastClockActionMessage}</td>
+			</tr>
+			<tr>
+				<td class="sub-header">Elapsed Clocked In Time : </td>
+
+				<td>
+					<c:choose>
+						<c:when test="${Form.clockAction eq 'CO'}">
+							<span class="elapsedTime"></span>
+						</c:when>
+						<c:otherwise>
+							00:00:00
+						</c:otherwise>
+					</c:choose>
+				</td>
 			</tr>
 			<tr>
 				<td class="sub-header">Clock Assignment : </td>

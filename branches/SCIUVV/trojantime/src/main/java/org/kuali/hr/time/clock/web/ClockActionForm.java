@@ -12,16 +12,17 @@ import org.kuali.hr.time.base.web.TkForm;
 public class ClockActionForm extends TkForm {
 
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -3843074202863670372L;
-    
+
     private String principalId;
     private List<Assignment> assignments;
     private String clockAction;
+    private String lastClockActionTimestamp;
     private String lastClockActionTimestampFormatted;
-    
-    
+
+
 
     @Override
     public void reset(ActionMapping mapping, HttpServletRequest request) {
@@ -65,5 +66,13 @@ public class ClockActionForm extends TkForm {
         this.lastClockActionTimestampFormatted = lastClockActionTimestampFormatted;
     }
 
-    
+    public String getLastClockActionTimestamp() {
+        return lastClockActionTimestamp;
+    }
+
+    public void setLastClockActionTimestamp(String lastClockActionTimestamp) {
+        this.lastClockActionTimestamp = lastClockActionTimestamp;
+    }
+
+
 }

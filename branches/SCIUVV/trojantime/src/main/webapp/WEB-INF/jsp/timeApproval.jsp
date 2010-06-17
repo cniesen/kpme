@@ -7,7 +7,7 @@
 
 		<table id="approvals-table">
 			<tr>
-				<td colspan="18" align="center" style="border:none;">
+				<td colspan="19" align="center" style="border:none;">
 					<span style="font-weight: bold; font-size: 1.5em;">Aaron Neal</span>
 				<span style="clear:both; float: right;">Pay Period:
 					<select>
@@ -35,11 +35,12 @@
 				<td>5/15 Sat</td>
 				<td>5/16 Sun</td>
 				<td>Total Hours</td>
+				<td>Status</td>
 				<td align="center">Select all / none<br/><input type="checkbox" id="selectAll"/></td>
 			</tr>
 
 			<tr>
-				<td style="border: none;">Kenneth Lee (assignment #1)</td>
+				<td style="border: none;">Kenneth Lee <br/> (assignment #1)</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
@@ -56,11 +57,12 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>52</td>
+				<td>A</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
 			<tr>
-				<td style="border: none;">Kenneth Lee (assignment #2)</td>
+				<td style="border: none;">Kenneth Lee <br/> (assignment #2)</td>
 				<td>RGN: 3</td>
 				<td>RGN: 4</td>
 				<td>RGN: 2</td>
@@ -77,11 +79,12 @@
 				<td></td>
 				<td>RGN: 4</td>
 				<td>52</td>
+				<td></td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
 			<tr>
-				<td style="border: none;">Allen Fox (assignment #1)</td>
+				<td style="border: none;">Allen Fox <br/> (assignment #1)</td>
 				<td>RGN: 3</td>
 				<td>RGN: 4</td>
 				<td>RGN: 5</td>
@@ -98,11 +101,12 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>52</td>
+				<td>P</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
 
 			<tr>
-				<td style="border: none;">Damion Junk (assignment #1)</td>
+				<td style="border: none;">Damion Junk <br/> (assignment #1)</td>
 				<td>RGN: 7</td>
 				<td>RGN: 4</td>
 				<td>RGN: 6</td>
@@ -119,9 +123,15 @@
 				<td>RGN: 4</td>
 				<td>RGN: 4</td>
 				<td>52</td>
+				<td>D</td>
 				<td align="center"><input type="checkbox" name="selectedEmpl" /></td>
 			</tr>
-			<tr><td colspan="18" align="center" style="border:none;"><input type="button" class="button" value="Approve" name="Approve"></td></tr>
+			<tr>
+				<td colspan="19" align="center" style="border:none;">
+					<input type="button" class="button" value="Approve" name="Approve">
+					<input type="button" class="button" value="Disapprove" name="Disapprove">
+				</td>
+			</tr>
 		</table>
 	</div>
 

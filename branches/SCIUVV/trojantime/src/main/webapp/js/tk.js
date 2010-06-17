@@ -31,6 +31,13 @@ $(document).ready(function() {
 	// buttons
 	$("input:button").button();
 
+    $("button").button({
+	    icons: {
+	        primary: 'ui-icon-help'
+	    },
+        text: false
+    });
+
 	var date = new Date();
 	var d = date.getDate();
 	var m = date.getMonth();
@@ -41,7 +48,6 @@ $(document).ready(function() {
 				theme : true,
 				aspectRatio : 5, // the value here is just to match the height with the add time block panel
 				allDaySlot : false,
-                editable: true,
 				header : {
 					left : 'prev, today',
 					center : 'title',
@@ -121,9 +127,15 @@ $(document).ready(function() {
     };
     $(".jClock").jclock(options);
 
-    // time picker
-    // $("#beginTime").timepickr();
-    $("#beginTime").AnyTime_picker({
-        format: "%l:%i %p"
+    // elapsed time
+    // http://keith-wood.name/countdown.html
+
+    var lastClockedInTime = $("#lastClockedInTime").val();
+    var startTime = new Date(lastClockedInTime);
+    $('.elapsedTime').countdown({
+        since: startTime,
+        compact: true,
+        format: 'dHMS',
+        description: ''
     });
 });

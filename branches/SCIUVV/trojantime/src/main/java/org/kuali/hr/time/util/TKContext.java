@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 public class TKContext {
 
     private static final String USER_KEY = "_USER_KEY";
+    private static final String BACKDOOR_USER_KEY = "_BACKDOOR_USER";
 
     private static final ThreadLocal<Map<String, Object>> STORAGE_MAP = new ThreadLocal<Map<String, Object>>() {
 	@Override
@@ -30,7 +31,7 @@ public class TKContext {
 
     public static void clearFormsFromSession() {
 	if (getHttpServletRequest() != null) {
-	    
+
 	}
     }
 
@@ -66,6 +67,15 @@ public class TKContext {
 	if (getHttpServletRequest() != null) {
 	    TKSessionState tkSessionState = new TKSessionState(TKContext.getHttpServletRequest().getSession());
 	    tkSessionState.setBackdoorUser(backdoorUser);
+	}
+    }
+
+    public static void clearBackdoorUser() {
+	if (getHttpServletRequest() != null) {
+	    TKUser tkUser = (TKUser)TKContext.getHttpServletRequest().getSession().getAttribute(BACKDOOR_USER_KEY);
+	    if (tkUser != null && tkUser.getBackdoorPerson() != null) {
+		setBackdoorUser(null);
+	    }
 	}
     }
 
