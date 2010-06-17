@@ -19,6 +19,7 @@ public class Task extends PersistableBusinessObjectBase {
     private String description;
     private String adminDescription;
     private Timestamp timestamp;
+    private boolean active;
     
     @SuppressWarnings("unchecked")
     @Override
@@ -73,6 +74,14 @@ public class Task extends PersistableBusinessObjectBase {
 
     public void setTimestamp(Timestamp timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
 }
