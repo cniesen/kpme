@@ -43,7 +43,7 @@ CREATE TABLE `tk_assignment_t` (
   `ERNCD` varchar(3) COLLATE utf8_bin DEFAULT NULL,
   `WORK_AREA_ID` bigint(19) DEFAULT NULL,
   `TASK_ID` bigint(19) DEFAULT NULL,
-  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
   `active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`ASSIGNMENT_ID`)
@@ -96,7 +96,7 @@ DROP TABLE IF EXISTS `tk_clock_log_s`;
 CREATE TABLE `tk_clock_log_s` (
   `id` bigint(19) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2092 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2148 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,8 +197,8 @@ CREATE TABLE `tk_work_area_t` (
   `ADMIN_DESCR` varchar(30) COLLATE utf8_bin DEFAULT NULL,
   `USER_PRINCIPAL_ID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
-  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
+  `VER_NBR` decimal(8,0) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -284,15 +284,28 @@ CREATE TABLE `hr_job_t` (
   `PRINCIPAL_ID` varchar(40) COLLATE utf8_bin DEFAULT NULL,
   `JOB_NUMBER` decimal(3,0) DEFAULT NULL,
   `EFFDT` date NOT NULL DEFAULT '0000-00-00',
-  `DEPT_NAME` varchar(7) COLLATE utf8_bin DEFAULT NULL,
+  `dept_id` varchar(21) COLLATE utf8_bin DEFAULT NULL,
   `PY_CALENDAR_ID` bigint(19) NOT NULL,
   `TK_RULE_GROUP` varchar(7) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `ACTIVE` bit(1) DEFAULT NULL,
-  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
   PRIMARY KEY (`JOB_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `hr_job_s`
+--
+
+DROP TABLE IF EXISTS `hr_job_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `hr_job_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=1000 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -323,7 +336,7 @@ DROP TABLE IF EXISTS `tk_earn_code_s`;
 CREATE TABLE `tk_earn_code_s` (
   `ID` bigint(19) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`ID`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -334,16 +347,16 @@ DROP TABLE IF EXISTS `tk_task_t`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_task_t` (
-  `taskId` bigint(19) NOT NULL,
-  `workAreaId` bigint(19) NOT NULL,
-  `effectiveDate` date DEFAULT NULL,
+  `task_id` bigint(19) NOT NULL,
+  `work_area_id` bigint(19) NOT NULL,
+  `effdt` date DEFAULT NULL,
   `descr` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `admin_descr` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `timestamp` timestamp NULL DEFAULT NULL,
   `active` bit(1) DEFAULT b'1',
   `obj_id` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `ver_nbr` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`taskId`)
+  PRIMARY KEY (`task_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -369,4 +382,4 @@ CREATE TABLE `tk_task_s` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-11  9:30:18
+-- Dump completed on 2010-06-17 10:29:33

@@ -16,7 +16,7 @@ public class Job  extends PersistableBusinessObjectBase {
     private String principalId;
     private Integer jobNumber;
     private Date effectiveDate;
-    private String deptName;
+    private String deptId;
     private Long payCalendarId;
     private String tkRuleGroup;
     private Timestamp timestamp;
@@ -71,17 +71,7 @@ public class Job  extends PersistableBusinessObjectBase {
     public void setEffectiveDate(Date effectiveDate) {
         this.effectiveDate = effectiveDate;
     }
-
-
-    public String getDeptName() {
-        return deptName;
-    }
-
-
-    public void setDeptName(String deptName) {
-        this.deptName = deptName;
-    }
-
+    
 
     public Long getPayCalendarId() {
         return payCalendarId;
@@ -119,6 +109,16 @@ public class Job  extends PersistableBusinessObjectBase {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+
+    public String getDeptId() {
+        return deptId;
+    }
+
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 
 }

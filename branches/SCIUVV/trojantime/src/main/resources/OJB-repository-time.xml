@@ -51,8 +51,7 @@
 		</reference-descriptor>
 		<reference-descriptor name="workArea" class-ref="org.kuali.hr.time.workarea.WorkArea" auto-retrieve="true" auto-delete="false" auto-update="false">
 			<foreignkey field-ref="workAreaId"/>
-		</reference-descriptor>
-										
+		</reference-descriptor>								
 	</class-descriptor>
 
 	<class-descriptor class="org.kuali.hr.time.domain.base.TimeBlock" table="tk_time_block_t">
@@ -175,7 +174,7 @@
 		<field-descriptor name="principalId"            column="principal_id"		jdbc-type="VARCHAR" length="40" nullable="false" primarykey="false" />
 		<field-descriptor name="jobNumber" 				column="job_number" 		jdbc-type="INTEGER" nullable="false" primarykey="false" />
 		<field-descriptor name="effectiveDate" 			column="effdt" 				jdbc-type="DATE"    nullable="false" primarykey="false" />
-		<field-descriptor name="deptName" 				column="dept_name" 			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="false" />
+		<field-descriptor name="deptId" 				column="dept_id" 			jdbc-type="VARCHAR" length="21" nullable="false" primarykey="false" />
 		<field-descriptor name="payCalendarId" 			column="py_calendar_id" 	jdbc-type="BIGINT"  nullable="false" primarykey="false" />
 		<field-descriptor name="tkRuleGroup" 			column="tk_rule_group" 		jdbc-type="VARCHAR" length="7" nullable="false" primarykey="false" />		
 		<field-descriptor name="timestamp" 				column="timestamp" 			jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" />
@@ -194,7 +193,7 @@
 	</class-descriptor>	
 
 	<class-descriptor class="org.kuali.hr.time.task.Task" table="tk_task_t">
-		<field-descriptor name="taskId"         	column="taskId"       jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_task_s"/>
+		<field-descriptor name="taskId"         	column="task_id"       jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="tk_task_s"/>
 		<field-descriptor name="workAreaId"         column="work_area_id" jdbc-type="BIGINT" nullable="false" primarykey="false" />
 		<field-descriptor name="effectiveDate"      column="effdt" jdbc-type="DATE" nullable="false" primarykey="false"/>
 		<field-descriptor name="description"        column="descr" jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
