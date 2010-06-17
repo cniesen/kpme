@@ -21,7 +21,7 @@
         <ref bean="Job-principalId" />
         <ref bean="Job-jobNumber" />
         <ref bean="Job-effectiveDate" />
-        <ref bean="Job-deptName" />
+        <ref bean="Job-deptId" />
         <ref bean="Job-payCalendarId" />
         <ref bean="Job-tkRuleGroup" />
         <ref bean="Job-timestamp" />
@@ -92,9 +92,9 @@
     <property name="label" value="Effective Date"/>
   </bean>  
   
-  <bean id="Job-deptName" parent="Job-deptName-parentBean" />
+  <bean id="Job-deptId" parent="Job-deptId-parentBean" />
 
-  <bean id="Job-deptName-parentBean" abstract="true" parent="AttributeDefinition">
+  <bean id="Job-deptId-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="forceUppercase" value="true" />
 
     <property name="maxLength" value="7" />
@@ -102,9 +102,9 @@
       <bean parent="TextControlDefinition" p:size="7" />
     </property>
 
-    <property name="name" value="deptName" />
+    <property name="name" value="deptId" />
     <property name="label" value="Department Name" />
-    <property name="description" value="deptName" />
+    <property name="description" value="deptId" />
   </bean> 
   
   <bean id="Job-payCalendarId" parent="Job-payCalendarId-parentBean"/>
