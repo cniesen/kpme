@@ -1,10 +1,9 @@
-
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 
 <tk:tkHeader tabId="timeDetail">
 	<html:hidden property="methodToCall" value=""/>
 
-	<div style="height:750px;" class="ui-widget-content">
+	<div style="height: 600px;" class="ui-widget-content">
 		<div class="ui-widget" id="timesheet-panel">
 			<table>
 				<tr>
@@ -14,7 +13,9 @@
 					<td>Clocked In:</td>
 					<td>
 						<input name="beginTime" id="beginTimeField" type="text" size="10" onblur="magicTime(this)" onfocus="if (this.className != 'error') this.select()"/>
-						<button style="width:20px; height:20px; vertical-align: text-top">help</button>
+						 <button tabindex="-1" style="width:20px; height:20px; vertical-align: text-top"
+						 title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530"
+						 id="help">help</button>
 						<div id="beginTimeField-messages"></div>
 					</td>
 				</tr>
@@ -43,7 +44,7 @@
 					<td>Clocked Out:</td>
 					<td>
 						<input name="endTime" id="endTimeField" type="text" size="10" onblur="magicTime(this)" onfocus="if (this.className != 'error') this.select()"/>
-						<button style="width:20px; height:20px; vertical-align: text-top">help</button>
+						<!-- <button style="width:20px; height:20px; vertical-align: text-top" title="test 2" id="help">help</button>  -->
 						<div id="endTimeField-messages"></div>
 					</td>
 				</tr>
@@ -212,21 +213,18 @@
 						<td style="font-size: .9em;">HRMS PS developer</td>
 					</tr>
 					 --%>
-					<tr style="background-color: #FBF9EE; font-weight:bold;">
+					<tr style="font-weight:bold;">
 						<td rowspan="2" style="vertical-align: middle;">Total</td>
 						<td>HRMS Java developer</td>
 						<td colspan="14">8 RGN, 4 VAC</td>
 					</tr>
-					<tr style="background-color: #FBF9EE; font-weight:bold;">
+					<tr style="font-weight:bold;">
 						<td>HRMS PS developer</td>
 						<td colspan="14">8 RGN, 4 VAC</td>
 					</tr>
 				</tbody>
 			</table>
 			</div>
-
 		</div>
-
-
 	</div>
 </tk:tkHeader>

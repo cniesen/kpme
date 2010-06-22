@@ -17,7 +17,8 @@
 		<c:when test="${form.user.backdoorPerson ne null}">
 			<c:set var="person" value="${form.user.backdoorPerson}" />
 			<c:set var="prefix" value="Backdoor" />
-			<c:set var="error" value="ui-state-error" />
+			<c:set var="highlight" value="ui-state-highlight" />
+			<c:set var="backdoor" value="backdoor" />
 		</c:when>
 		<c:otherwise>
 			<c:set var="person" value="${form.user.actualPerson}" />
@@ -26,17 +27,17 @@
 
 <input type="hidden" id="tabId" value="${tabId}"/>
 	<div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
-		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-corner-all ui-header ${error}">
-			<span class="title">
-			<img src="images/usc_logo.gif" style="width:2em; height:2em; vertical-align: middle"/>
+		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-corner-all ui-header ${highlight}">
+			<span class="title ${backdoor}" >
+			<img src="images/usc_logo.gif" style="width:2em; height:2em; vertical-align: middle" />
 				Trojan Time
 			</span>
 
 			<div class="person-info" style="float:right">
-				<table>
+				<table class="${backdoor}">
 					<tr>
 						<td align="right">${prefix} Employee Name:</td>
-						<td>${person.principalName}</td>
+						<td><a href="<%=request.getContextPath() %>/PersonInfo.do?methodToCall=showInfo">${person.principalName}</a></td>
 					</tr>
 					<tr>
 						<td align="right">${prefix} Employee Id:</td>
@@ -55,14 +56,14 @@
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 			<li id="admin" class="ui-state-default ui-corner-top"><a href="Admin.do">Admin</a></li>
 			<li id="approvals" class="ui-state-default ui-corner-top"><a href="TimeApproval.do">Approvals</a></li>
+			<li id="timesheet" class="ui-state-default ui-corner-top"><a href="Timesheet.do">Historical Timesheets</a></li>
 			<li id="timeDetail" class="ui-state-default ui-corner-top"><a href="TimeDetail.do">Time Detail</a></li>
 			<li id="clock" class="ui-state-default ui-corner-top"><a href="Clock.do">Clock</a></li>
 		</ul>
 
 		<jsp:doBody />
+	<tk:note/>
 	</div>
-
 	<tk:tkFooter/>
-
 	</body>
 </html>

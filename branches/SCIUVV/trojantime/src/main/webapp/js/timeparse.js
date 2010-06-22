@@ -39,6 +39,33 @@ function padAZero(s) {
     }
 }
 
+/**
+ * Helper function to format the time
+ *
+ */
+
+function formatDate(d) {
+
+    var a_p = "";
+    var h = d.getHours();
+
+    if (h < 12) {
+		a_p = "AM";
+	} else {
+		a_p = "PM";
+	}
+	if (h == 0) {
+		h = 12;
+	}
+	if (h > 12) {
+		h = h - 12;
+	}
+
+    var m = d.getMinutes();
+
+    return padAZero(h) + ":" + padAZero(m) + " " + a_p;
+}
+
 
 /**
  * Array of objects, each has:
@@ -134,9 +161,7 @@ var timeParsePatterns = [
 //            d.setSeconds(parseInt(s, 10));
             return d;
         }
-    },
-
-
+    }
 ];
 
 /**
@@ -192,13 +217,20 @@ function magicTime(input) {
     var messagespan = input.id + '-messages';
     try {
         var d = parseTimeString(input.value);
-        input.value = getReadable(d);
+
+        // this came with the original source code which generates the military time format
+        // input.value = getReadable(d);
+        input.value = formatDate(d);
         input.className = '';
         try {
             // Human readable time
             el = document.getElementById(messagespan);
-//            el.firstChild.nodeValue = d.toTimeString();
-            el.innerHTML = d.toTimeString();
+
+            // el.firstChild.nodeValue = d.toTimeString();
+            // el.innerHTML = d.toTimeString();
+
+            // the line below will generate the text in the message div
+            el.innerHTML = formatDate(d);
             el.className = 'normal';
         }
         catch (e) {
@@ -217,6 +249,8 @@ function magicTime(input) {
             }
             el.firstChild.nodeValue = message;
             el.className = 'error';
-        } catch (e){el.innerHTML = "Invalid format";} // no message div
+        } catch (e){
+//            el.innerHTML = "Invalid format";
+        }
     }
 }

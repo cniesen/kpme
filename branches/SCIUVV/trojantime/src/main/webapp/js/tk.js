@@ -29,7 +29,7 @@ $(document).ready(function() {
 	// end of tab
 
 	// buttons
-	$("input:button").button();
+	$(".button").button();
 
     $("button").button({
 	    icons: {
@@ -38,12 +38,12 @@ $(document).ready(function() {
         text: false
     });
 
-	var date = new Date();
-	var d = date.getDate();
-	var m = date.getMonth();
-	var y = date.getFullYear();
-
 	// calendar
+    var date = new Date();
+    var d = date.getDate();
+    var m = date.getMonth();
+    var y = date.getFullYear();
+
 	$('#cal').fullCalendar({
 				theme : true,
 				aspectRatio : 5, // the value here is just to match the height with the add time block panel
@@ -138,4 +138,28 @@ $(document).ready(function() {
         format: 'dHMS',
         description: ''
     });
+
+    // tooltip
+    $("#help").tooltip({
+
+	    // place tooltip on the right edge
+	    position: "center right",
+
+	    // a little tweaking of the position
+	    offset: [-2, 10],
+
+	    // use the built-in fadeIn/fadeOut effect
+	    effect: "fade",
+
+	    // custom opacity setting
+	    opacity: 0.7
+
+    });
+
+   // note
+   $("#note").accordion({
+    collapsible: true,
+    active: 2
+   });
+
 });

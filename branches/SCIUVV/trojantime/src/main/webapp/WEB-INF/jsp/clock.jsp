@@ -31,7 +31,7 @@
 				<td>${lastClockActionMessage}</td>
 			</tr>
 			<tr>
-				<td class="sub-header">Elapsed Clocked In Time : </td>
+				<td class="sub-header">Elapsed Time : </td>
 
 				<td>
 					<c:choose>
@@ -45,6 +45,10 @@
 				</td>
 			</tr>
 			<tr>
+				<td class="sub-header">Last Clocked Hours : </td>
+				<td>3.2</td>
+			</tr>
+			<tr>
 				<td class="sub-header">Clock Assignment : </td>
 				<td>
 					<select>
@@ -55,7 +59,10 @@
 				</td>
 			</tr>
 			<tr class="footer">
-				<td colspan="2" align="center"><input type="button" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction'; this.form.submit();"></td>
+				<td colspan="2" align="center">
+					<input type="button" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction'; this.form.submit();"/>
+					<input type="button" class="button" value="Skip Entry" name="skipEntry"/>
+				</td>
 			</tr>
 		</table>
 	</div>

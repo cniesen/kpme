@@ -2,12 +2,17 @@
 .ui-state-focus {
 	font-weight: normal !important;
 }
+/* end of jQuery style override */
+
+.backdoor {
+	color: #990000 !important;
+}
 
 .ui-header {
 	background-color: #990000;
 }
 
-.person-info table {
+.person-info table, .person-detail table {
 	border-collapse: collapse;
 	color: white;
 	font-size: .8em;
@@ -15,6 +20,33 @@
 
 .person-info table td{
 	padding:3px;
+}
+
+.person-info a {
+	color:white;
+}
+
+.person-detail table {
+	color: black;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+}
+
+.person-detail table td {
+	padding: 5px;
+	border: 1px solid #CCC;
+}
+
+.person-detail .header {
+	border:none;
+	text-align: center;
+	font-size: 1.5em;
+	font-weight: bold;
+}
+
+.person-detail .sub-header {
+	font-weight:bold;
 }
 
 #tabs .title, .sub-title {
@@ -80,13 +112,16 @@
 }
 
 #timesheet-summary {
-	margin-top: 20px;
+	margin-top: 5px;
 }
 
 #timesheet-summary table{
+	margin-top: 5px;
+	margin-bottom: 5px;
 	font-size: .9em;
 	width: 100%;
 	text-align: center;
+	border-collapse: collapse;
 }
 
 #timesheet-summary .header {
@@ -151,4 +186,24 @@
 
 .approvals .header{
 	background-color: #FBF9EE
+}
+
+#note {
+	font-size: .8em;
+}
+
+.tooltip {
+	background-color:#000;
+	border:1px solid #fff;
+	padding:10px 15px;
+	width:200px;
+	display:none;
+	color:#fff;
+	text-align:left;
+	font-size: .8em;
+	font-family: "Trebuchet MS",Tahoma,Verdana,Arial,sans-serif;
+
+	/* outline radius for mozilla/firefox only */
+	-moz-box-shadow:0 0 10px #000;
+	-webkit-box-shadow:0 0 10px #000;
 }
