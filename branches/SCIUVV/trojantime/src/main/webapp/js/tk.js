@@ -65,12 +65,12 @@ $(document).ready(function() {
 							end : new Date(y, m, d, 13, 0),
 							allDay : false
 						}
-                        , {
-                            title : 'HRMS Happy developer: RGN',
-                            start : new Date(y, m, d, 12, 0),
-                            end : new Date(y, m, d, 13, 0),
-                            allDay : false
-                        }
+//                        , {
+//                            title : 'HRMS Happy developer: RGN',
+//                            start : new Date(y, m, d+1, 12, 0),
+//                            end : new Date(y, m, d+2, 13, 0),
+//                            allDay : false
+//                        }
 
                         ]
 			});
@@ -140,7 +140,7 @@ $(document).ready(function() {
     });
 
     // tooltip
-    $("#help").tooltip({
+    $("#beginTimeHelp, #endTimeHelp").tooltip({
 
 	    // place tooltip on the right edge
 	    position: "center right",

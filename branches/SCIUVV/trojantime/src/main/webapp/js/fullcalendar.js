@@ -1461,6 +1461,7 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
             "<div class='" + className + event.className.join(' ') + "' style='position:absolute;left:"+left+"px'>" +
             "<table style='font-size:0.7em;'><tr><td colspan='2' align='center'>" + htmlEscape(event.title) + "</td></tr>" +
             "<tr><td align='center'>8:45a</td><td align='center'>11:00a</td></tr>" +
+            "<tr><td align='center' style='color:black;'>L: 11:00a</td><td align='center' style='color:black;'>L: 12:00p</td></tr>" +
             "<tr><td align='center'>12:00p</td><td align='center'>4:00p</td></tr>" +
             "</table>" +
 //                "<a" + (event.url ? " href='" + htmlEscape(event.url) + "'" : '') + ">" +

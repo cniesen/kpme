@@ -15,7 +15,7 @@
 						<input name="beginTime" id="beginTimeField" type="text" size="10" onblur="magicTime(this)" onfocus="if (this.className != 'error') this.select()"/>
 						 <button tabindex="-1" style="width:20px; height:20px; vertical-align: text-top"
 						 title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530"
-						 id="help">help</button>
+						 id="beginTimeHelp">help</button>
 						<div id="beginTimeField-messages"></div>
 					</td>
 				</tr>
@@ -44,7 +44,8 @@
 					<td>Clocked Out:</td>
 					<td>
 						<input name="endTime" id="endTimeField" type="text" size="10" onblur="magicTime(this)" onfocus="if (this.className != 'error') this.select()"/>
-						<!-- <button style="width:20px; height:20px; vertical-align: text-top" title="test 2" id="help">help</button>  -->
+						<button style="width:20px; height:20px; vertical-align: text-top" id="endTimeHelp"
+						title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530">help</button>
 						<div id="endTimeField-messages"></div>
 					</td>
 				</tr>
