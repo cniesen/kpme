@@ -41,10 +41,9 @@ CREATE TABLE `tk_assignment_t` (
   `JOB_NUMBER` decimal(3,0) DEFAULT NULL,
   `EFFDT` date NOT NULL DEFAULT '0000-00-00',
   `ERNCD` varchar(3) COLLATE utf8_bin DEFAULT NULL,
-  `WORK_AREA_ID` decimal(10,0) DEFAULT NULL,
-  `TASK_ID` decimal(10,0) DEFAULT NULL,
-  `PERCENT` decimal(5,2) DEFAULT NULL,
-  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
+  `WORK_AREA_ID` bigint(19) DEFAULT NULL,
+  `TASK_ID` bigint(19) DEFAULT NULL,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
   `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1',
   `active` bit(1) DEFAULT NULL,
   PRIMARY KEY (`ASSIGNMENT_ID`)
@@ -97,7 +96,7 @@ DROP TABLE IF EXISTS `tk_clock_log_s`;
 CREATE TABLE `tk_clock_log_s` (
   `id` bigint(19) NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=2092 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=MyISAM AUTO_INCREMENT=2167 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,8 +197,8 @@ CREATE TABLE `tk_work_area_t` (
   `ADMIN_DESCR` varchar(30) COLLATE utf8_bin DEFAULT NULL,
   `USER_PRINCIPAL_ID` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  `OBJ_ID` varchar(36) COLLATE utf8_bin NOT NULL,
-  `VER_NBR` decimal(8,0) NOT NULL DEFAULT '1'
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
+  `VER_NBR` decimal(8,0) DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -272,6 +271,79 @@ CREATE TABLE `tk_dept_lunch_rl_s` (
   PRIMARY KEY (`ID`)
 ) ENGINE=MyISAM AUTO_INCREMENT=2079 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_py_calendar_t`
+--
+
+DROP TABLE IF EXISTS `tk_py_calendar_t`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_py_calendar_t` (
+  `tk_py_calendar_id` bigint(20) NOT NULL,
+  `calendar_group` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `chart` varchar(45) COLLATE utf8_bin DEFAULT NULL,
+  `begin_date` date DEFAULT NULL,
+  `begin_time` time DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `initiate_date` date DEFAULT NULL,
+  `initiate_time` time DEFAULT NULL,
+  `end_pay_period_date` date DEFAULT NULL,
+  `end_pay_period_time` time DEFAULT NULL,
+  `employee_approval_date` date DEFAULT NULL,
+  `employee_approval_time` time DEFAULT NULL,
+  `supervisor_approval_date` date DEFAULT NULL,
+  `supervisor_approval_time` time DEFAULT NULL,
+  `pay_period_end_date` date DEFAULT NULL,
+  `pay_period_end_time` time DEFAULT NULL,
+  PRIMARY KEY (`tk_py_calendar_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_py_calendar_s`
+--
+
+DROP TABLE IF EXISTS `tk_py_calendar_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_py_calendar_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_py_calendar_dates_t`
+--
+
+DROP TABLE IF EXISTS `tk_py_calendar_dates_t`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_py_calendar_dates_t` (
+  `tk_py_calendar_dates_id` bigint(20) NOT NULL,
+  `tk_py_calendar_id` bigint(20) NOT NULL,
+  `begin_period_date` date DEFAULT NULL,
+  `begin_period_time` time DEFAULT NULL,
+  `end_period_date` date DEFAULT NULL,
+  `end_period_time` time DEFAULT NULL,
+  PRIMARY KEY (`tk_py_calendar_dates_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `tk_py_calendar_dates_s`
+--
+
+DROP TABLE IF EXISTS `tk_py_calendar_dates_s`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tk_py_calendar_dates_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=2078 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -282,4 +354,4 @@ CREATE TABLE `tk_dept_lunch_rl_s` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2010-06-08 13:45:58
+-- Dump completed on 2010-06-22 15:12:38
