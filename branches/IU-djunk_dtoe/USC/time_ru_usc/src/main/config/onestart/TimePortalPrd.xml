@@ -1,0 +1,651 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<portal xmlns="https://onestart.iu.edu" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://onestart.iu.edu 
+
+xmlportlet.xsd">
+    
+    <!-- Common variables -->
+    <variable name="methodLoad" value="method=load"/>
+    <variable name="methodOpen" value="method=open"/>
+    <variable name="methodAdvanced" value="&amp;methodToCall=advanced"/>
+
+    <!-- TK1PRD on Onestart PRD -->
+    <variable name="baseJavaUrl"                        value="https://uisapp2.iu.edu/"/>
+    <variable name="timeBase"                           value="${baseJavaUrl}tk-prd/"/>
+    <variable name="enBase"                             value="${baseJavaUrl}en-prd/"/>
+
+    <!-- Timesheet on Onestart PRD-->
+    <variable name="currentTimesheet" value="${timeBase}TimesheetDocument.do?${methodOpen}&amp;liteMode=1"/>
+    <variable name="allTimesheet"                       
+
+value="${enBase}DocumentSearch.do?docTypeFullName=Timesheet&amp;initiator=${user.iu.networkId}&amp;headerBarEnabled=false&amp;searchCrit
+
+eriaEnabled=false&amp;methodToCall=doDocSearch"/>
+    <variable name="routeLog"                           value="${enBase}RouteLog.do?routeHeaderId="/>
+    <variable name="otherTimesheets"                    value="${enBase}DocHandler.do?command=displayDocSearchView&amp;docId=" 
+
+test="$[onestartPageId] = $[tk1trnPageId]"/>
+    <variable name="otherTimesheets"                    value="${enBase}DocHandler.do?command=displayDocSearchView&amp;docId=" 
+
+test="$[onestartPageId] = $[tk1untPageId]"/>
+    <variable name="otherTimesheets"                    value="${enBase}DocHandler.do?command=displayDocSearchView&amp;docId=" 
+
+test="$[onestartPageId] = $[tk1untOnestartuntPageId]"/>
+    <variable name="otherTimesheets"                    value="${enBase}DocHandler.do?command=displayDocSearchView&amp;docId=" 
+
+test="$[onestartPageId] = $[tk1prdPageId]" />
+
+
+    <!-- User preference -->
+    <variable name="userPreference"                     value="${timeBase}UserPreference.do?${methodLoad}"/>
+
+    <!-- Administration -->
+    <variable name="Portal"                             value="${timeBase}TemporaryIndex.do"/>
+
+    <!-- Rules -->
+    <variable name="ClockLocation"                      value="${timeBase}ClockLocationRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="DailyOvertime"                      value="${timeBase}DailyOvertimeRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="DepartmentLunch"                    value="${timeBase}DepartmentLunchRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="GracePeriod"                        value="${timeBase}GracePeriodRuleMaintenance.do?${methodLoad}"/>
+    <variable name="HourlyHours"                        value="${timeBase}HourlyHoursRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="ShiftDifferential"                  value="${timeBase}ShiftDifferentialRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="SystemLunch"                        value="${timeBase}SystemLunchRuleMaintenance.do?${methodLoad}"/>
+    <variable name="TimeCollection"                     value="${timeBase}TimeCollectionRuleMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="WeeklyOvertime"                     value="${timeBase}WeeklyOvertimeRuleMaintenance.do?${methodLoad}"/>
+
+    <!-- Maintenance -->
+    <variable name="DepartmentWorkArea"                 
+
+value="${timeBase}DepartmentMaintenanceLookup.do?${methodLoad}&amp;searchCategory=maintenance&amp;clientFieldsToReturn=department&amp;clientNestingPath=department&amp;clientReturnUrl=https://uisapp2.iu.edu/tk-prd/DepartmentMaintenance.do?${methodLoad}"/>
+    <variable name="DocumentLock"                       value="${timeBase}DocumentLockMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="UserRole"                           
+
+value="${timeBase}UniversityIdLookup.do?${methodLoad}&amp;searchCategory=maintenance&amp;clientFieldsToReturn=universityId&amp;clientNestingPath=userRoles&amp;clientReturnUrl=https://uisapp2.iu.edu/tk-prd/RoleMaintenance.do?${methodLoad}"/>
+    <variable name="ClockLog"                           value="${timeBase}ClockLogMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="DocumentHeader"                     value="${timeBase}DocumentHeaderMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="Timeblock"                     value="${timeBase}TimeBlockMaintenanceLookup.do?${methodLoad}"/>
+    <variable name="TimesheetApprovalDelegation"        value="${enBase}RuleQuickLinks.do?rootDocTypeName=TKDocument"/>
+
+    <!-- Inquiry -->
+    <variable name="ActualTime"                         value="${timeBase}ActualTimeInquiry.do?${methodLoad}"/>
+    <variable name="TimeBlockHistory"                   value="${timeBase}TimeBlockHistoryInquiry.do?${methodLoad}"/>
+    <variable name="UserRoleAudit"                      value="${timeBase}RoleAuditInquiry.do?${methodLoad}"/>
+    <variable name="WorkAreaStatus"                     value="${timeBase}WorkAreaStatusInquiry.do?${methodLoad}"/>
+    <variable name="FindTimesheets"                     value="${enBase}DocumentSearch.do?docTypeFullName=Timesheet${methodAdvanced}"/>
+    <variable name="ApproveTimesheets"                  value="${enBase}ActionList.do?docType=Timesheet"/>
+    <variable name="TimeWebSite"                        value="http://www.fms.indiana.edu/time/"/>
+
+    <!-- Processes -->
+    <variable name="PayrollExtractRun"                  value="${timeBase}BatchAdmin.do"/>
+    <!--  DEAD variable name="PayrollExtractReportLookup"         value="${timeBase}PayrollExtractReportLookup.do?${methodLoad}"/ -->
+    <variable name="BatchMessageInquiry"                value="${timeBase}BatchMessageInquiry.do?${methodLoad}"/>
+
+    <!-- Notify Approver -->
+    <variable name="NotifyApprover"                     value="${timeBase}TimeApproverNotification.do?supervisorNotification.assignment="/>
+
+<!-- ============================================================================= -->
+    <!-- debug mode -->
+    
+    
+    <!-- Permission setting -->
+    <permission name="administrator">
+    <![CDATA[
+        <or>            
+            <group key="BL-UITS-HRMS-JAVA-TEAM"/>
+            <group key="TK_INTERFACE_MANAGER"/>
+            <personAttribute key="user.iu.networkId" value="mlt1"/>
+            <personAttribute key="user.iu.networkId" value="mikewhit"/>
+        </or>
+    ]]>
+    </permission>
+    
+    <variable name="isAdministrator" value="no"/>
+    <variable name="isAdministrator" value="yes" permission="administrator"/>
+    
+    <!-- End of the permission setting -->
+
+    <!-- Dataset settings -->
+    <dataset name="ds_countCurrentTimesheet" datasource="hrms_tk1prd" query="
+        SELECT COUNT(*) as document FROM TK_DOCUMENT_HEADER_T WHERE PAY_END_DT = (SELECT MAX(PAY_END_DT) 
+        FROM TK_DOCUMENT_HEADER_T 
+        WHERE PAY_END_DT >= trunc(sysdate)) AND EMPLID = '${user.iu.emplId}'"
+        cache-minutes="5" cache-type="user"/>
+    
+    <dataset name="ds_countOtherTimesheets" datasource="hrms_tk1prd" query="
+        SELECT count(*) as document
+        FROM TK_DOCUMENT_HEADER_T 
+        WHERE EMPLID = '${user.iu.emplId}'" 
+        cache-minutes="5" cache-type="user"/>
+  
+    <dataset name="ds_countAllTimesheet" datasource="hrms_tk1prd" query="
+        SELECT count(*) as document
+        FROM TK_DOCUMENT_HEADER_T 
+        WHERE EMPLID = '${user.iu.emplId}'
+        ORDER BY pay_end_dt" 
+        cache-minutes="5" cache-type="user"/>
+        
+    <dataset name="ds_countAllAssignment" datasource="hrms_tk1prd" query="
+        SELECT DISTINCT COUNT(*) as assignment
+        FROM (hre.HRE_TK_ASSIGNMENT_T a LEFT JOIN tk.TK_WORK_AREA_T d on a.work_area_id = d.work_area_id)
+        WHERE a.emplid = '${user.iu.emplId}' 
+        AND a.emplid IN (
+        SELECT DISTINCT emplid FROM hre.HRE_TK_ASSIGNMENT_T) AND 
+        EXISTS (SELECT emplid FROM hre.HRE_TK_JOB_T b WHERE a.emplid=b.emplid AND
+              a.empl_rcd=b.empl_rcd AND a.effdt=b.effdt AND a.effseq=b.effseq AND
+              b.effdt=(select max(effdt) FROM hre.HRE_TK_JOB_T c WHERE c.emplid=b.emplid AND
+                c.empl_rcd=b.empl_rcd AND effdt &lt;= sysdate) AND 
+              b.effseq=(select max(effseq) FROM hre.HRE_TK_JOB_T c WHERE c.emplid=b.emplid AND
+                c.empl_rcd=b.empl_rcd AND c.effdt=b.effdt)  AND
+              b.empl_status='A')"
+        cache-minutes="5" cache-type="user"/>        
+
+    <dataset name="ds_countUserPreference" datasource="hrms_tk1prd" query="SELECT count(*) as user_preference FROM 
+
+TK.TK_USER_PREFERENCE_T WHERE emplId = '${user.iu.emplId}'"/>
+    
+    <!-- only interface managers and reviewers can access to the admin tab -->
+    <!-- check if the logged in user is an interface manager" -->
+    <dataset name="ds_countInterfaceManager" datasource="hrms_gen2prd" query="
+        SELECT COUNT(*) AS role FROM EN_WRKGRP_T a WHERE a.WRKGRP_NM LIKE 'TK_INTERFACE%' 
+        AND a.WRKGRP_VER_NBR = 
+        (SELECT MAX(b.wrkgrp_ver_nbr) FROM EN_WRKGRP_T b WHERE a.WRKGRP_ID = b.WRKGRP_ID)
+        AND a.WRKGRP_ID = (SELECT DISTINCT e.WRKGRP_ID FROM EN_USR_T d, EN_WRKGRP_MBR_T e
+        WHERE d.PRSN_NTWRK_ID = ? AND d.PRSN_EN_ID = e.WRKGRP_MBR_PRSN_EN_ID AND e.WRKGRP_ID = a.WRKGRP_ID)"        
+    cache-minutes="5" cache-type="user">
+        <dataset-bind-param index="1" type="string">
+            <person attribute="user.iu.networkId" />
+        </dataset-bind-param>
+    </dataset>
+     
+    <variable name="interfaceManager_number" dataset="ds_countInterfaceManager" xpath="data/rows/row/role" />
+    <variable name="isInterfaceManager" value="yes" test="$[interfaceManager_number] > 0"/>
+    
+    <!-- check if the logged in user is a reviewer -->
+    <dataset name="ds_countReviewer" datasource="hrms_gen2prd" query="
+        SELECT COUNT(*) AS role FROM EN_WRKGRP_T a 
+        WHERE (a.WRKGRP_NM LIKE 'TK_INTERFACE%' OR a.WRKGRP_NM LIKE 'TK_SUPER%' OR a.WRKGRP_NM LIKE 
+
+'TK_PAYROLL%' OR a.WRKGRP_NM LIKE 'TK_SYSTEM%' OR a.WRKGRP_NM LIKE 'TK_SUPERVISOR%')
+        AND a.WRKGRP_VER_NBR = 
+        (SELECT MAX(b.wrkgrp_ver_nbr) FROM EN_WRKGRP_T b WHERE a.WRKGRP_ID = b.WRKGRP_ID)
+        AND a.WRKGRP_ID = (SELECT DISTINCT e.WRKGRP_ID FROM EN_USR_T d, EN_WRKGRP_MBR_T e
+        WHERE d.PRSN_NTWRK_ID = ? AND d.PRSN_EN_ID = e.WRKGRP_MBR_PRSN_EN_ID AND e.WRKGRP_ID = a.WRKGRP_ID)"
+    cache-minutes="5" cache-type="user">
+        <dataset-bind-param index="1" type="string">
+            <person attribute="user.iu.networkId" />
+        </dataset-bind-param>
+    </dataset>
+    
+    <variable name="reviewer_number" dataset="ds_countReviewer" xpath="data/rows/row/role" />
+    <variable name="isReviewer" value="yes" test="$[reviewer_number] > 0"/>
+    
+    <!-- list the workareas for a supervisor or a payroll processor -->
+    <!--<dataset name="ds_listWorkArea -->
+          
+    <!-- 
+
+=============================================================================================================
+
+==== -->            
+    <dataset name="ds_otherTimesheets" datasource="hrms_tk1prd" query="
+        SELECT T.document_id as documentid, to_char(T.pay_end_dt, 'MM/DD/YYYY') as paydate, DECODE(T.document_status, 'F', 'Approved', 'Pending') 
+
+as status
+        FROM tk.tk_document_header_t T 
+        WHERE T.document_status IN ('R','F') AND
+                T.pay_end_dt > (trunc(sysdate) - 40) AND
+                T.emplid = '${user.iu.emplId}'
+        UNION SELECT
+                T1.document_id as documentid,
+                to_char(T1.pay_end_dt, 'MM/DD/YYYY') as paydate,
+                'Future' as status
+        FROM    tk.tk_document_header_t T1 
+        WHERE   T1.document_status = 'S' AND
+                T1.pay_end_dt > (trunc(sysdate) + 13) AND
+                T1.emplid = '${user.iu.emplId}'
+        UNION SELECT
+                T2.document_id as documentid,
+                to_char(T2.pay_end_dt, 'MM/DD/YYYY') as paydate,
+                'Current' as status
+        FROM    tk.tk_document_header_t T2
+        WHERE   T2.document_status = 'S' AND
+                ( T2.pay_end_dt &lt; trunc(sysdate) + 14 AND
+                T2.pay_end_dt >= trunc(sysdate)) AND
+                T2.emplid = '${user.iu.emplId}'
+    ORDER BY 1 DESC"
+        cache-minutes="5" cache-type="user"/>
+    
+    <dataset name="ds_assignments" datasource="hrms_tk1prd" query="
+        SELECT DISTINCT a.emplid as col_emplid, a.empl_rcd as col_empl_rcd, a.effdt as col_effdt, a.effseq as col_effseq, a.work_area_id as 
+
+col_work_area_id, d.deptid as col_deptid, d.descr as col_descr
+        FROM (hre.HRE_TK_ASSIGNMENT_T a LEFT JOIN tk.TK_WORK_AREA_T d on a.work_area_id = d.work_area_id)
+        WHERE a.emplid = '${user.iu.emplId}' 
+        AND a.emplid IN (
+        SELECT DISTINCT emplid FROM hre.HRE_TK_ASSIGNMENT_T) AND 
+        EXISTS (SELECT emplid FROM hre.HRE_TK_JOB_T b WHERE a.emplid=b.emplid AND
+              a.empl_rcd=b.empl_rcd AND a.effdt=b.effdt AND a.effseq=b.effseq AND
+              b.effdt=(select max(effdt) FROM hre.HRE_TK_JOB_T c WHERE c.emplid=b.emplid AND
+                c.empl_rcd=b.empl_rcd AND effdt &lt;= sysdate) AND 
+              b.effseq=(select max(effseq) FROM hre.HRE_TK_JOB_T c WHERE c.emplid=b.emplid AND
+                c.empl_rcd=b.empl_rcd AND c.effdt=b.effdt)  AND
+             b.empl_status='A')
+        ORDER BY col_effdt DESC" 
+        cache-minutes="5" cache-type="user"> 
+    </dataset>
+ 
+    <dataset name="ds_userPreference" datasource="hrms_tk1prd" query="SELECT * FROM TK.TK_USER_PREFERENCE_T WHERE emplId = 
+
+'${user.iu.emplId}'"/>
+            
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <!-- End of dataset settings -->
+    
+    <!-- Data write -->
+    <data-write name="dw_userPreference" datasource="hrms_tk1prd">
+        <sql-query name="mySelect" group="1"  type="select" sql="SELECT * FROM TK.TK_USER_PREFERENCE_T WHERE emplid = ?" 
+
+/>
+        <sql-query name="myInsert" group="1"  type="new" sql="INSERT INTO TK.TK_USER_PREFERENCE_T (emplid, 
+
+preference_code) VALUES (?, ?)"/>        
+        <sql-query name="myUpdate" group="1"  type="update" sql="UPDATE TK.TK_USER_PREFERENCE_T SET preference_code = ? WHERE emplid 
+
+= ? AND preference_code = ?" />
+        <sql-query name="myDelete" group="1"  type="delete" sql="DELETE FROM TK.TK_USER_PREFERENCE_T WHERE emplid = ? 
+
+AND preference_code = ?" />
+    </data-write>
+    <!-- End of data write -->
+    
+    <variable name="allPreference_number" dataset="ds_countUserPreference" xpath="data/rows/row/user_preference" />
+    <variable name="allAssignment_number" dataset="ds_countAllAssignment" xpath="data/rows/row/assignment" />
+    <variable name="currentTimesheet_number" dataset="ds_countCurrentTimesheet" xpath="data/rows/row/document" />
+    <variable name="otherTimesheet_number" dataset="ds_countOtherTimesheets" xpath="data/rows/row/document" />
+    <variable name="allTimesheet_number" dataset="ds_countAllTimesheet" xpath="data/rows/row/document" />
+
+    <menu name="myMenu">
+        <menu-item content-page-number="1" title="Timesheet" />
+        <menu-item content-page-number="2" title="User Preferences" />                
+        <menu-item content-page-number="3" title="Support Links" />
+        <menu-item content-page-number="4" title="Notify Approver" />
+        <if test="$[isReviewer] = 'yes' or $[isAdministrator] = 'yes'">
+            <menu-item content-page-number="5" title="Administration" />
+        </if>
+    </menu>
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <!-- Timesheet -->
+    <content-page content-page-number="1" menu-name="myMenu" padding="true">    
+        <!-- <if test="$[allTimesheet_number] != 0"> -->
+            <newline/>
+            <table>
+                <row>
+                    <cell>
+                        <image location="https://docs.onestart.iu.edu/dav/HRMS/onestart/administrative/time_logo_white.gif" />
+                    </cell>
+                    <cell>
+                        <newline/>
+                        <newline/>
+                        <paragraph>
+                        <if test="$[allAssignment_number] != 0">
+                            <link url="${currentTimesheet}" title="Open Current Timesheet" />
+                        </if>
+                        <if test="$[allAssignment_number] = 0">                     
+                            You do not have an active TIME assignment.  Please contact your supervisor if you believe that you should have a timesheet.
+                        </if>
+                        </paragraph>
+                    </cell>
+                </row>
+            </table>
+        
+            <if test="$[otherTimesheet_number] != 0">
+                <newline/>            
+                <data-table name="dt_oldTimesheet" dataset="ds_otherTimesheets" page-size="10">
+                    <data-column header="docId" name="documentid" visible="false"/>
+                    <data-column header="Doc Id" id="documentid">
+                        <data-column-text >
+                            <link url="${otherTimesheets}${dt_oldTimesheet.documentid}&amp;ignoreClockOnlyStatus=true&amp;clearLiteMode=true&amp;liteMode=0" title="${dt_oldTimesheet.documentid}" />                        
+                        </data-column-text>
+                    </data-column>
+                    <data-column header="Pay End Date" name="paydate" />
+                    <data-column header="Status" name="status" />
+                </data-table>           
+            </if>
+            <if test="$[otherTimesheet_number] = 0">
+                You do not have any other timesheets.
+            </if>
+
+            <if test="$[allTimesheet_number] != 0">
+                <paragraph>
+                    <link url="${allTimesheet}" title="Find All Timesheets" /> for ${user.iu.fullName}
+                </paragraph>
+            </if>
+        <!-- </if> -->
+        <!--
+        <if test="$[allTimesheet_number] = 0">
+            <paragraph>You do not have any timesheets.</paragraph>             
+        </if>
+        -->
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->    
+    <!-- User Preference -->
+    <content-page content-page-number="2" menu-name="myMenu" padding="true">
+        <newline/>        
+         <!-- <if test="$[allPreference_number] != 0"> -->
+            <paragraph>
+                <link url="${userPreference}" title="Change User Preferences" />
+            </paragraph>
+            <paragraph><bold>Current Preference Settings:</bold></paragraph>
+            <data-table name="dt_userPreference" dataset="ds_userPreference" page-size="5">
+                <data-column header="Empl Id" name="emplid" visible="false"/>
+                <data-column header="Preference Code" name="preference_code" visible="false"/>
+                <data-column header="Description" id="description">
+                    <data-column-text test="${dt_userPreference.preference_code eq 'WR'}">
+                        Weekly reminder to enter or verify hours                      
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'BR'}">
+                        Biweekly pay period end reminder
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'IN'}">
+                        Opt out of timesheet change notifications                     
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L1'}">
+                        Location: Bloomington Campus                      
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L2'}">
+                        Location: East Campus
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L3'}">
+                        Location: Fort Wayne Campus
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L4'}">
+                        Location: Indianapolis Campus
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L5'}">
+                        Location: Kokomo Campus
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L6'}">
+                        Location: Northwest Campus                   
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L7'}">
+                        Location: South Bend Campus
+                    </data-column-text>
+                    <data-column-text test="${dt_userPreference.preference_code eq 'L8'}">
+                        Location: Southeast Campus
+                    </data-column-text>
+                </data-column>
+            </data-table>
+        <!--
+        </if>
+        <if test="$[allPreference_number] = 0">
+            You do not have any TIME User Preferences set.
+        </if>
+        -->
+    </content-page>
+     <!-- 
+
+=============================================================================================================
+
+==== -->    
+     <!-- Links -->
+    <content-page content-page-number="3" menu-name="myMenu" padding="true">
+        <table width="100%">
+            <row>
+                <cell>
+                    <heading text="TIME Support &amp; Training" />
+                    <list ordered="false">
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/support/support_form.asp" title="TIME Support Form (FMS)"/>
+                        </list-item>
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/time/training.asp" title="TIME Training"/>
+                        </list-item>
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/time/faqs.asp" title="TIME FAQs"/>
+                        </list-item>
+                    </list>
+                </cell>
+                <cell>
+                    <paragraph>
+                        <image location="https://docs.onestart.iu.edu/dav/HRMS/onestart/administrative/clear_20.gif" width="10px" height="10px"/>
+                    </paragraph>
+                </cell>
+                <cell>
+                    <heading text="TIME Documentation" />
+                    <list ordered="false">
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/time/implementation.asp" title="Implementation (new departments)" />
+                        </list-item>
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/time/documentation.asp" title="Documentation (supervisors and administrators)" />
+                        </list-item>
+                        <list-item>
+                            <link url="http://www.fms.indiana.edu/time/guides.asp" title="Employee Guides " />
+                        </list-item>
+                    </list>
+                </cell>
+            </row>
+        </table>
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <!-- Nofity Approver -->
+    <content-page content-page-number="4" menu-name="myMenu" padding="true">
+        <newline/>   
+        <if test="$[allAssignment_number] != 0">
+            <data-table name="dt_assignment" dataset="ds_assignments" page-size="5">
+                    <data-column header="Empl Id" name="col_emplid" visible="false"/>
+                    <data-column header="Empl Rec" name="col_empl_rcd" visible="false"/>
+                    <data-column header="Work Area" name="col_work_area_id" visible="false"/>
+                    <data-column header="Effective Seq" name="col_effseq" visible="false"/>
+                    <data-column header="Dept Id" name="col_deptid" visible="false"/>
+                    <data-column header="Descr" name="col_descr" visible="false"/>
+                    <data-column header="Assignment" id="assignment">
+                        <data-column-text>${dt_assignment.col_deptid}: ${dt_assignment.col_descr} (${dt_assignment.col_work_area_id})</data-column-text>
+                    </data-column>
+                    <data-column header="Action" id="action">                         
+                        <data-column-text>
+                            <link url="${NotifyApprover}${dt_assignment.col_emplid},${dt_assignment.col_empl_rcd},${dt_assignment.col_work_area_id},${dt_assignment.col_effseq}&amp;supervisorNotification.networkId=${user.iu.networkId}&amp;${methodLoad}" title="Notify Approver"/>
+                        </data-column-text>
+                    </data-column>
+            </data-table>
+        </if>
+        <if test="$[allAssignment_number] = 0">
+            You do not have an active TIME assignment.  Please contact your supervisor if you believe that you should have a timesheet.
+        </if>
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->        
+    <!-- Administration -->
+    <content-page content-page-number="5" menu-name="myMenu" padding="true">
+        <table width="100%">
+            <row>
+                <cell>
+                    <heading text="Rules" />
+                    <list ordered="false">
+                         <list-item><link url="${ClockLocation}" title="Clock Location"/></list-item>
+                         <list-item><link url="${DailyOvertime}" title="Daily Overtime"/></list-item>
+                         <list-item><link url="${DepartmentLunch}" title="Department Lunch"/></list-item>
+                         <if test="$[isInterfaceManager] = 'yes' or $[isAdministrator] = 'yes'">
+                            <list-item><link url="${GracePeriod}" title="Grace Period"/></list-item>
+                         </if>
+                         <list-item><link url="${HourlyHours}" title="Hourly Hours"/></list-item>
+                         <list-item><link url="${ShiftDifferential}" title="Shift Differential"/></list-item>
+                         <if test="$[isInterfaceManager] = 'yes' or $[isAdministrator] = 'yes'">
+                            <list-item><link url="${SystemLunch}" title="System Lunch"/></list-item>
+                         </if>
+                         <list-item><link url="${TimeCollection}" title="Time Collection"/></list-item>
+                         <list-item><link url="${WeeklyOvertime}" title="Weekly Overtime"/></list-item>
+                    </list>
+               </cell>
+
+               <cell>
+                    <heading text="Maintenance" />
+                    <list ordered="false">
+                         <list-item><link url="${DepartmentWorkArea}" title="Department - Work Area"/></list-item>
+                         <list-item><link url="${DocumentLock}" title="Document Lock"/></list-item>
+                         <list-item><link url="${UserRole}" title="User Role"/></list-item>
+                         <list-item><link url="${ClockLog}" title="Clock Log"/></list-item>
+                         <list-item><link url="${DocumentHeader}" title="Document Header"/></list-item>
+                         <if test="$[isInterfaceManager] = 'yes' or $[isAdministrator] = 'yes'">
+                            <list-item><link url="${Timeblock}" title="Time Block"/></list-item>
+                         </if>
+                         <list-item><link url="${TimesheetApprovalDelegation}" title="Timesheet Approval Delegation"/></list-item>
+                    </list>
+               </cell>
+
+               <cell>
+                    <heading text="Inquiry" />
+                    <list ordered="false">
+                         <list-item><link url="${ActualTime}" title="Actual Time"/></list-item>
+                         <list-item><link url="${TimeBlockHistory}" title="Time Block History"/></list-item>
+                         <list-item><link url="${UserRoleAudit}" title="User Role Audit"/></list-item>
+                         <list-item><link url="${WorkAreaStatus}" title="Work Area Status"/></list-item>
+                         <list-item><link url="${FindTimesheets}" title="Find Timesheets"/></list-item>
+                         <list-item><link url="${ApproveTimesheets}" title="Approve Timesheets"/></list-item>
+                         <list-item><link url="${TimeWebSite}" title="Time Website"/></list-item>
+                    </list>
+               </cell>
+               <if test="$[isInterfaceManager] = 'yes' or $[isAdministrator] = 'yes'">
+               <cell>
+                    <heading text="Processes" />
+                    <list ordered="false">
+                         <list-item><link url="${PayrollExtractRun}" title="Payroll Extract Run"/></list-item>
+                         <list-item><link url="${BatchMessageInquiry}" title="Batch Message Inquiry"/></list-item>
+                    </list>
+               </cell>
+               
+                   <cell>
+                        <heading text="Portal" />
+                        <list ordered="false">
+                             <list-item><link url="${Portal}" title="TK index page"/></list-item>
+                        </list>
+                   </cell>
+               </if>
+            </row>
+        </table>
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <content-page content-page-number="8" padding="true">
+        <form action="save" data-write="dw_userPreference" content-page-number-success="3" content-page-number-failure="10" id="saveForm">
+            <!--
+             <data-write name="dw_userPreference" datasource="hrms_tk1prd">
+                <sql-query name="mySelect" group="1"  type="select" sql="SELECT * FROM TK.TK_USER_PREFERENCE_T 
+
+WHERE emplid = ?" />
+                <sql-query name="myInsert" group="1"  type="new" sql="INSERT INTO TK.TK_USER_PREFERENCE_T 
+
+(emplid, preference_code) VALUES (?, ?)"/>       
+                <sql-query name="myUpdate" group="1"  type="update" sql="UPDATE TK.TK_USER_PREFERENCE_T SET 
+
+preference_code = ? WHERE emplid = ? AND preference_code = ?" />
+                <sql-query name="myDelete" group="1"  type="delete" sql="DELETE FROM TK.TK_USER_PREFERENCE_T 
+
+WHERE emplid = ? AND preference_code = ?" />
+            </data-write>
+            -->
+            <refresh-dataset-cache dataset="ds_userPreference"/>
+            
+            <paragraph>Preferences:</paragraph>                     
+            
+            <hidden name="currentEmplId" value="${user.iu.emplId}">                
+                <bind-query query-name="myUpdate" bind-param-index="2" database-type="string" primary-key="true" 
+
+database-column="emplid" />
+                <bind-query query-name="mySelect" bind-param-index="1" database-type="string" primary-key="true" database-column="emplid" />
+
+            </hidden>
+            
+            <textbox name="newEmplId" default="${user.iu.emplId}" size="10">
+                <bind-query query-name="myInsert" bind-param-index="1" database-type="string" primary-key="true" 
+
+database-column="emplid" />
+                <bind-query query-name="myUpdate" bind-param-index="2" database-type="string" primary-key="true" database-column="emplid" />
+            </textbox>
+            
+            
+            <textbox name="newPreferenceCode" size="2">
+                <bind-query query-name="myUpdate" bind-param-index="1" database-type="string" database-column="preference_code" 
+
+primary-key="true"/>
+                <bind-query query-name="myInsert" bind-param-index="2" database-type="string" database-column="preference_code" 
+
+primary-key="true"/>
+            </textbox>
+
+            <hidden name="currentPreferenceCode">
+                <bind-query query-name="myUpdate" bind-param-index="3" database-type="string" database-column="preference_code" 
+
+primary-key="true"/>
+                <!-- <bind-query query-name="myInsert" bind-param-index="2" database-type="string" 
+
+database-column="preference_code" primary-key="true"/> -->
+                <bind-query query-name="mySelect" database-type="string" database-column="preference_code" primary-key="true"/>
+            </hidden>
+
+            <image name="imageSave" button-name="save" submit="true"/>
+            <link content-page-number="3" image-button-name="cancel" />
+        </form>
+
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <content-page content-page-number="9" padding="true">
+        <form action="delete" data-write="dw_userPreference" content-page-number-success="3" content-page-number-failure="10" id="deleteForm">
+            
+            <refresh-dataset-cache dataset="ds_userPreference"/>
+            <paragraph>Are you sure to cancel this setting?</paragraph>     
+            <hidden name="emplId">                
+                <bind-query query-name="mySelect" bind-param-index="1" database-type="string" primary-key="true" database-column="emplid" />
+                <bind-query query-name="myDelete" bind-param-index="1" database-type="string" primary-key="false" database-column="emplid" />
+            </hidden>
+            <hidden name="preferenceCode">          
+                <bind-query query-name="myDelete" bind-param-index="2" database-type="string" primary-key="false" database-column="preference_code" 
+
+/>
+            </hidden>
+            
+            <newline/>
+            <image name="imageDelete" button-name="delete" submit="true"/>
+            <link content-page-number="3" image-button-name="cancel" />
+        </form>
+
+    </content-page>
+    <!-- 
+
+=============================================================================================================
+
+==== -->
+    <!-- db failed page --> 
+    <content-page content-page-number="10" padding="true">
+        <newline />
+        An error has occurred.
+        <newline />
+        <link content-page-number="1" title="Return to the main menu" />
+    </content-page>
+</portal>

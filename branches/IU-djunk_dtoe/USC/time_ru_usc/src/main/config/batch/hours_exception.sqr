@@ -1,0 +1,1071 @@
+!***********************************************************************
+!  HOURS_EXCEPTION.SQR -- Populate exception tables with timesheet
+!                         exceptions.
+!***********************************************************************
+!  Programmer  :  Jim Nelson
+!  Date        :  2006-JUN-06
+!  Project Name:
+!  Description :
+!  Notes       :
+!
+!
+!***********************************************************************
+!  INDIANA UNIVERSITY MODIFICATION HISTORY
+!***********************************************************************
+!  Programmer  :
+!  Date        :
+!  Description :
+!
+!***********************************************************************
+
+!x AWO - Approaching Overtime: When an employee’s total hours from earn programs “TK-BW1 Regular Pay” (T19) and “TK-Hourly Attendance” (T20) exceed 32 hours in a single week add the following information for each of that employee’s assignments:  Week Begin Date, Actual Hours.
+!x AMD - Approaching Maximum Daily Hours: When hours for an hourly job fall within 1 hour of the daily maximum established by the Hourly Expected Hours rule add Shift Begin Date, Actual Hours, Maximum Daily Hours.
+!x EMD - Exceeded Maximum Daily Hours: When hours for an hourly job exceed the daily limit established by the Hourly Expected Hours rule add Shift Begin Date, Actual Hours, Maximum Daily Hours.
+!x AMW - Approaching Maximum Weekly Hours: When hours for an hourly job fall within 8 hours of the weekly maximum established by the Hourly Expected Hours rule add Week Begin Date, Actual Hours, Maximum Weekly Hours.
+!x BMD - Below Minimum Daily Hours: When hours for an hourly job fall below the weekly minimum established by the Hourly Expected Hours rule add Shift Begin Date, Actual Hours, Minimum Daily Hours.
+!x BMW - Below Minimum Weekly Hours: When hours for an hourly job are below the daily minimum established by the Hourly Expected Hours rule add Week Begin Date, Actual Hours, Minimum Weekly Hours.
+!x EMW - Exceeded Maximum Weekly Hours:  When hours for an hourly job exceed the weekly limit established by the Hourly Expected Hours rule add Week Begin Date, Actual Hours, Maximum Weekly Hours.
+!x BEH - Below Expected Hours (new) : When the hours for a BW1 job do not meet the expected hours add the Week Begin Date, Actual Hours, Expected Hours. This exception will not be generated nightly, generate every Sunday and Monday for the week that just ended.
+!x EEH - Exceeded Expected Hours (new): When regular attendance hours for a BW1 job exceed the expected hours add Week Begin Date, Actual Hours, Expected Hours.
+!x ELB - Exceeded Leave Balances (new):  When an employee exceeds current leave balances add Pay Period , Leave Balance Earn Code, Actual Hours, Available Hours.
+
+
+!***********************************************************************
+begin-report
+  do Main
+end-report
+!***********************************************************************
+
+
+!***********************************************************************
+! Procedure Name : Main
+! Description    : Variable initialization performed here
+!***********************************************************************
+begin-procedure Main
+
+BEGIN-SELECT
+to_char(SYSDATE-1,'YYYYMMDD') &yesterday
+to_char(SYSDATE,  'YYYYMMDD') &today
+to_char(SYSDATE,  'DY') &day
+to_char(SYSDATE-7,'YYYYMMDD') &sunday7
+to_char(SYSDATE-8,'YYYYMMDD') &sunday8
+
+  let $yesterday = &yesterday
+  let $today     = &today
+  let $day       = &day
+  let $last_sunday   = &day ! doesn't really matter what we initialize to
+  
+  !DEBUG
+  !let $day           = 'SUN'
+
+  if ($day = 'SUN')
+    let $perform_weekly_exception_check = 'Y'
+    let $last_sunday = &sunday7
+  end-if  
+  
+  if ($day = 'MON')
+    let $perform_weekly_exception_check = 'Y'
+    let $last_sunday = &sunday8
+  end-if
+
+  !ALL DEBUG
+!  let $yesterday     = '20060624'
+!  let $today         = '20060625'
+!  let $last_sunday   = '20060618'
+
+!  show 'yesterday     ' $yesterday
+!  show 'today         ' $today
+!  show 'day           ' $day
+!  show 'last_sunday   ' $last_sunday
+
+
+  let $daily_min_earliest_time_block_start = $yesterday || ' 00:00:00'
+  let $daily_max_latest_time_block_end = $yesterday || ' 23:59:59'
+
+  ! Determine start/stop times for weekly exceptions
+  let $weekly_min_earlist_time_block_start = $last_sunday || ' 00:00:00'
+  let $weekly_max_latest_time_block_end = $yesterday || ' 23:59:59'
+
+FROM DUAL
+END-SELECT
+
+! Determine pay_end_dt
+do Get-Pay-End-Dt
+  
+!DEBUG
+!let $pay_end_dt = '20060701' 
+
+! show 'daily_min_earliest_time_block_start  ' $daily_min_earliest_time_block_start
+! show 'daily_max_latest_time_block_end      ' $daily_max_latest_time_block_end
+! show 'perform_weekly_exception_check       ' $perform_weekly_exception_check
+! show 'weekly_min_earlist_time_block_start  ' $weekly_min_earlist_time_block_start
+! show 'weekly_max_latest_time_block_end     ' $weekly_max_latest_time_block_end
+! show 'pay_end_dt                           ' $pay_end_dt
+
+
+!asn ! A. Neal - Code added for Testing                                              !asn
+!asn                                                                                 !asn    
+!asn let $asn_date       = '20061009'                                                !asn
+!asn let $pay_end_dt = '20061021'                                                    !asn
+!asn                                                                                 !asn
+!asn while 1=1                                                                       !asn
+!asn   add 1 to #i                                                                   !asn
+!asn   if #i > 14                                                                    !asn
+!asn     break                                                                       !asn
+!asn   end-if                                                                        !asn
+!asn                                                                                 !asn
+!asn begin-select                                                                    !asn
+!asn to_char((to_date($asn_date,'yyyymmdd') - 1),'yyyymmdd') &asn_yesterday          !asn
+!asn to_char(to_date($asn_date,'yyyymmdd'),'yyyymmdd') &asn_today                    !asn
+!asn to_char(to_date($asn_date,'yyyymmdd'),'DY') &asn_day                            !asn
+!asn to_char((to_date($asn_date,'yyyymmdd') - 7),'yyyymmdd') &asn_sunday7            !asn
+!asn to_char((to_date($asn_date,'yyyymmdd') - 8),'yyyymmdd') &asn_sunday8            !asn
+!asn to_char((to_date($asn_date,'yyyymmdd') + 1),'yyyymmdd') &asn_tomorrow           !asn
+!asn from dual                                                                       !asn
+!asn end-select                                                                      !asn
+!asn                                                                                 !asn
+!asn   let $yesterday = &asn_yesterday                                               !asn
+!asn   let $today     = &asn_today                                                   !asn
+!asn   let $day       = &asn_day                                                     !asn
+!asn   let $last_sunday   = &asn_day ! doesn't really matter what we initialize to   !asn
+!asn   Let $asn_date  = &asn_tomorrow                                                !asn
+!asn   let $perform_weekly_exception_check = 'N'                                     !asn
+!asn                                                                                 !asn
+!asn   if ($day = 'SUN')                                                             !asn
+!asn     let $perform_weekly_exception_check = 'Y'                                   !asn
+!asn     let $last_sunday = &asn_sunday7                                             !asn
+!asn   end-if                                                                        !asn
+!asn                                                                                 !asn
+!asn   if ($day = 'MON')                                                             !asn
+!asn     let $perform_weekly_exception_check = 'Y'                                   !asn
+!asn     let $last_sunday = &asn_sunday8                                             !asn
+!asn   end-if                                                                        !asn
+!asn                                                                                 !asn
+!asn   let $daily_min_earliest_time_block_start = $yesterday || ' 00:00:00'          !asn
+!asn   let $daily_max_latest_time_block_end = $yesterday || ' 23:59:59'              !asn
+!asn                                                                                 !asn
+!asn   ! Determine start/stop times for weekly exceptions                            !asn
+!asn   let $weekly_min_earlist_time_block_start = $last_sunday || ' 00:00:00'        !asn
+!asn   let $weekly_max_latest_time_block_end = $yesterday || ' 23:59:59'             !asn
+
+  show 'yesterday     ' $yesterday                                                      
+  show 'today         ' $today                                                          
+  show 'day           ' $day                                                            
+  show 'last_sunday   ' $last_sunday                                                    
+  show 'daily_min_earliest_time_block_start  ' $daily_min_earliest_time_block_start     
+  show 'daily_max_latest_time_block_end      ' $daily_max_latest_time_block_end         
+  show 'perform_weekly_exception_check       ' $perform_weekly_exception_check          
+  show 'weekly_min_earlist_time_block_start  ' $weekly_min_earlist_time_block_start     
+  show 'weekly_max_latest_time_block_end     ' $weekly_max_latest_time_block_end        
+  show 'pay_end_dt                           ' $pay_end_dt                              
+
+
+! Do daily exceptions
+let $start_time = $daily_min_earliest_time_block_start
+let $end_time   = $daily_max_latest_time_block_end
+let $exception_suffix = 'D'
+do Get-Distinct-Time-Block-Empls-Thru-Work-Area
+
+if ($perform_weekly_exception_check = 'Y')
+  ! Do weekly exceptions
+  let $start_time = $weekly_min_earlist_time_block_start
+  let $end_time   = $weekly_max_latest_time_block_end
+  let $exception_suffix = 'W'
+  do Get-Distinct-Time-Block-Empls-Thru-Work-Area
+  do Check-Overtime-Exception
+  do Check-Workstudy-Overtime-Exception
+  do Check-Leave-Exception
+end-if
+
+!asn begin-sql                                                                       !asn
+!asn commit                                                                          !asn
+!asn end-sql                                                                         !asn
+!asn                                                                                 !asn 
+!asn end-while                                                                       !asn
+!asn 
+
+
+end-procedure ! Main
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Distinct-Time-Block-Empls-Thru-Work-Area
+! Description    : Hours Rule Exceptions are define by emplid/empl_rcd/
+!                  work_area_id/dept. Get a distinct list of those
+!                  values from the time block, within the reporting range
+!                  of interest. This list will then be used to find
+!                  the appropriate hours rules (if they exist).
+!***********************************************************************
+begin-procedure Get-Distinct-Time-Block-Empls-Thru-Work-Area
+
+!show 'In Get-Distinct-Time-Block-Empls-Thru-Work-Area'
+!show 'start_time ' $start_time
+!show 'end_time   ' $end_time
+
+BEGIN-SELECT DISTINCT
+DH.EMPLID
+TB_TWA.EMPL_RCD
+to_char(J.EFFDT,'yyyymmdd') &J.EFFDT
+TB_TWA.WORK_AREA_ID
+WAT.DEPTID
+J.PAYGROUP
+
+  let $emplid       = &DH.EMPLID
+  let #empl_rcd     = &TB_TWA.EMPL_RCD
+  let #work_area_id = &TB_TWA.WORK_AREA_ID
+  let $deptid       = &WAT.DEPTID
+  let $paygroup     = &J.PAYGROUP
+  let $job_effdt    = &J.EFFDT
+
+  do Find-Best-Match-Hours-Rule
+
+FROM TK_TIME_BLOCK_T TB_TWA,
+  TK_WORK_AREA_T WAT,
+  TK_DOCUMENT_HEADER_T DH,
+  HRE.HRE_TK_JOB_T J
+WHERE TB_TWA.BEGIN_TS >= TO_DATE($start_time,'YYYYMMDD hh24:mi:ss')
+ AND TB_TWA.END_TS <= TO_DATE($end_time,'YYYYMMDD hh24:mi:ss')
+ AND WAT.WORK_AREA_ID = TB_TWA.WORK_AREA_ID
+ AND TB_TWA.DOCUMENT_ID = DH.DOCUMENT_ID
+ AND J.EMPLID = DH.EMPLID
+ AND J.EMPL_RCD = TB_TWA.EMPL_RCD
+ AND J.EFFDT = (SELECT MAX(JD.EFFDT)
+                FROM HRE.HRE_TK_JOB_T JD
+                WHERE JD.EMPLID = J.EMPLID
+                AND JD.EMPL_RCD = J.EMPL_RCD
+                AND JD.EFFDT <= TO_DATE($start_time,'YYYYMMDD hh24:mi:ss'))
+AND J.EFFSEQ = (SELECT MAX(JS.EFFSEQ)
+                FROM HRE.HRE_TK_JOB_T JS
+                WHERE JS.EMPLID = J.EMPLID
+                AND JS.EMPL_RCD = J.EMPL_RCD
+                AND JS.EFFDT = J.EFFDT)
+AND WAT.EFFDT = (SELECT MAX(WATD.EFFDT)
+                 FROM TK_WORK_AREA_T WATD
+                 WHERE WATD.WORK_AREA_ID = WAT.WORK_AREA_ID
+                 AND WATD.EFFDT <= TO_DATE($start_time,'YYYYMMDD hh24:mi:ss'))
+AND WAT.EFFSEQ = (SELECT MAX(WATS.EFFSEQ)
+                  FROM TK_WORK_AREA_T WATS
+                  WHERE WATS.WORK_AREA_ID = WAT.WORK_AREA_ID
+                  AND WATS.EFFDT = WAT.EFFDT)
+AND WAT.EFF_STATUS = 'A'
+
+ORDER BY DH.EMPLID,
+  TB_TWA.EMPL_RCD,
+  TB_TWA.WORK_AREA_ID
+END-SELECT
+
+end-procedure ! Get-Distinct-Time-Block-Empls-Thru-Work-Area
+
+
+
+!***********************************************************************
+! Procedure Name : Find-Best-Match-Hours-Rule
+! Description    : Part of finding a rule is to find the most closely
+!                  matching rule. We'll build successfully less-restrictive
+!                  WHERE clauses until we find a matching rule (or don't
+!                  find one at all, which is fine)
+!***********************************************************************
+begin-procedure Find-Best-Match-Hours-Rule
+
+let $found_matching_rule = 'N'
+let #max_hrs = 0
+let #min_hrs = 0
+let #approaching = 0
+let #rule_work_area_id = #work_area_id
+
+!Most selective rule uses emplid/empl_rcd/work_area_id/deptid
+let $where_clause = 'AND HRT.EMPLID = ''' || $emplid || ''' AND HRT.EMPL_RCD = ' || to_char(#empl_rcd) || ' AND HRT.WORK_AREA_ID = ' || to_char(#work_area_id) || ' AND HRT.DEPTID = ''' || $deptid || ''''
+do Find-Hours-Rule
+
+if ($found_matching_rule = 'N')
+  !no luck, so look based on empld/work_area_id/deptid (-1 is empl_rcd wildcard)
+  let $where_clause = 'AND HRT.EMPLID = ''' || $emplid || ''' AND HRT.EMPL_RCD = -1 AND HRT.WORK_AREA_ID = ' || to_char(#work_area_id) || ' AND HRT.DEPTID = ''' || $deptid || ''''
+  do Find-Hours-Rule
+end-if
+
+if ($found_matching_rule = 'N')
+  !no luck, so look based on work_area_id/deptid (@ is emplid wildcard, -1 is empl_rcd wildcard)
+  let $where_clause = 'AND HRT.EMPLID = ''@'' AND HRT.EMPL_RCD = -1 AND HRT.WORK_AREA_ID = ' || to_char(#work_area_id) || ' AND HRT.DEPTID = ''' || $deptid || ''''
+  do Find-Hours-Rule
+end-if
+
+if ($found_matching_rule = 'N')
+  !no luck, so look based on deptid (@ is emplid wildcard, -1 is empl_rcd wildcard, -1 is work_area_id wildcard)
+  let $where_clause = 'AND HRT.EMPLID = ''@'' AND HRT.EMPL_RCD = -1 AND HRT.WORK_AREA_ID = -1 AND HRT.DEPTID = ''' || $deptid || ''''
+  let #rule_work_area_id = -1
+  do Find-Hours-Rule
+end-if
+
+if ($perform_weekly_exception_check = 'Y')
+  let #rule_work_area_id = -1
+  do Calculate-Max-Min-Hours
+  do Calculate-Expected-Hours
+end-if
+
+end-procedure   ! Find-Best-Match-Hours-Rule
+
+
+
+!***********************************************************************
+! Procedure Name : Find-Hours-Rule
+! Description    : Get the details of an hours rule and apply the rule
+!                  to the clock log
+!***********************************************************************
+begin-procedure Find-Hours-Rule
+
+!show 'In Find-Hours-Rule with '  $where_clause ' ' $start_time
+
+BEGIN-SELECT
+HRT.DAILY_MAX_HRS
+HRT.DAILY_MIN_HRS
+HRT.WKLY_MAX_HRS
+HRT.WKLY_MIN_HRS
+
+  let $found_matching_rule            = 'Y'
+  let #daily_max_hrs                  = &HRT.DAILY_MAX_HRS
+  let #daily_min_hrs                  = &HRT.DAILY_MIN_HRS
+  let #wkly_max_hrs                   = &HRT.WKLY_MAX_HRS
+  let #wkly_min_hrs                   = &HRT.WKLY_MIN_HRS
+
+!  show 'Found a rule:'
+!  show '  #daily_max_hrs = ' #daily_max_hrs
+!  show '  #daily_min_hrs = ' #daily_min_hrs
+!  show '  #wkly_max_hrs  = ' #wkly_max_hrs
+!  show '  #wkly_min_hrs  = ' #wkly_min_hrs
+
+  do Calculate-Max-Min-Hours
+  do Max-Min-Hours
+
+FROM TK.TK_HOURLY_HRS_RL_T HRT
+WHERE HRT.EFFDT = (SELECT MAX(HRTD.EFFDT)
+                   FROM TK_HOURLY_HRS_RL_T HRTD
+                   WHERE HRTD.DEPTID = HRT.DEPTID
+                     AND HRTD.WORK_AREA_ID = HRT.WORK_AREA_ID
+                     AND HRTD.EMPLID = HRT.EMPLID
+                     AND HRTD.EMPL_RCD = HRT.EMPL_RCD
+                     AND HRTD.EFFDT <= to_date($start_time,'yyyymmdd hh24:mi:ss'))
+  AND HRT.EFFSEQ = (SELECT MAX(HRTS.EFFSEQ)
+                    FROM TK_HOURLY_HRS_RL_T HRTS
+                    WHERE HRTS.DEPTID = HRT.DEPTID
+                      AND HRTS.WORK_AREA_ID = HRT.WORK_AREA_ID
+                      AND HRTS.EMPLID = HRT.EMPLID
+                      AND HRTS.EMPL_RCD = HRT.EMPL_RCD
+                      AND HRTS.EFFDT = HRT.EFFDT)
+   AND HRT.EFF_STATUS = 'A'
+   [$where_clause]
+END-SELECT
+
+end-procedure ! Find-Hours-Rule
+
+
+
+!***********************************************************************
+! Procedure Name : Calculate-Max-Min-Hours
+! Description    :
+!***********************************************************************
+begin-procedure Calculate-Max-Min-Hours
+
+!show 'In Calculate-Max-Min-Hours'
+!show $emplid
+!show #empl_rcd
+!show $pay_end_dt
+!show #work_area_id
+!show $daily_min_earliest_time_block_start
+!show $daily_max_latest_time_block_end
+
+let #total_work_hours = 0
+let $task_id = ''
+
+if (#rule_work_area_id = -1)
+  let $max_min_where = ' 1=1'
+else
+  let $max_min_where =   ' BLOCK.WORK_AREA_ID = ''' || to_char(#work_area_id) || ''''
+end-if
+
+BEGIN-SELECT
+to_char(BLOCK.BEGIN_TS,'yyyymmdd hh24:mi:ss') &begin_ts
+to_char(BLOCK.END_TS,'yyyymmdd hh24:mi:ss') &end_ts
+nvl(BLOCK.TASK_ID,'') &task_id
+
+  ! show 'found data'
+  let #total_work_hours = #total_work_hours + datediff(strtodate(&end_ts,'yyyymmdd hh24:mi:ss'),strtodate(&begin_ts,'yyyymmdd hh24:mi:ss'),'hour')
+  let $task_id = to_char(round(&task_id,0))
+
+FROM TK.TK_DOCUMENT_HEADER_T DOC,
+     TK.TK_TIME_BLOCK_T BLOCK
+WHERE DOC.DOCUMENT_ID = BLOCK.DOCUMENT_ID
+  AND DOC.EMPLID = $emplid
+  AND BLOCK.EMPL_RCD = #empl_rcd
+  AND DOC.PAY_END_DT = to_date($pay_end_dt,'yyyymmdd')
+  AND BLOCK.BEGIN_TS >= to_date($start_time,'yyyymmdd hh24:mi:ss')
+  AND BLOCK.END_TS <= to_date($end_time,'yyyymmdd hh24:mi:ss')
+  AND [$max_min_where]
+END-SELECT
+
+if ($perform_weekly_exception_check = 'Y')
+  let #max_hrs = #wkly_max_hrs
+  let #min_hrs = #wkly_min_hrs
+  let #approaching = #max_hrs - 8
+else
+  let #max_hrs = #daily_max_hrs
+  let #min_hrs = #daily_min_hrs
+  let #approaching = #max_hrs - 1
+end-if
+
+end-procedure ! Calculate-Max-Min-Hours
+
+
+!***********************************************************************
+! Procedure Name : Max-Min-Hours
+! Description    :
+!***********************************************************************
+begin-procedure Max-Min-Hours
+
+
+if (#total_work_hours > #max_hrs)
+  !insert Exceeded Maximum Hours
+  let $exception_type = 'EM' || $exception_suffix
+  let #actual_hours = #total_work_hours
+  let #rule_hours = #max_hrs
+  do Insert-Hours-Exception
+else
+  if (#total_work_hours > #approaching)
+    !insert Approaching Maximum Hours
+    let $exception_type = 'AM' || $exception_suffix
+    let #actual_hours = #total_work_hours
+    let #rule_hours = #max_hrs
+    do Insert-Hours-Exception
+  end-if
+end-if
+
+if (#total_work_hours < #min_hrs)
+  !insert Below Minimum Hours
+  let $exception_type = 'BM' || $exception_suffix
+  let #actual_hours = #total_work_hours
+  let #rule_hours = #min_hrs
+  do Insert-Hours-Exception
+end-if
+
+let #actual_hours = #total_work_hours !DEBUG - PROBABLY NEED TO WRAP THIS IN A CHECK FOR WEEKLY EXCEPTIONS, AS WELL AS MAYBE MAKE SURE WE REACH THIS CODE EVEN WHEN NO RULES ARE FOUND
+
+
+end-procedure ! Max-Min-Hours
+
+
+
+!***********************************************************************
+! Procedure Name : Insert-Hours-Exception
+! Description    : SQL to insert an exception
+!***********************************************************************
+begin-procedure Insert-Hours-Exception
+
+if $task_id = ''
+  let $task_id = '0'
+end-if 
+
+BEGIN-SQL   ON-ERROR=SQL_Error 
+INSERT INTO TK.TK_EXPECTED_HRS_EXCEPTION_T
+(
+EXCEPTION_DT,
+EXCEPTION_TYPE,
+EMPLID,
+EMPL_RCD,
+EFFDT,
+EFFSEQ,
+WORK_AREA_ID,
+TASK_ID,
+ACTUAL_HOURS,
+RULE_HOURS
+)
+VALUES
+(
+to_date($today,'yyyymmdd'),
+$exception_type,
+$emplid,
+#empl_rcd,
+TO_DATE($job_effdt,'yyyymmdd'),
+#effseq,
+to_char(#work_area_id),
+$task_id,
+#actual_hours,
+#rule_hours
+)
+END-SQL
+
+end-procedure ! Insert-Hours-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Pay-End-Dt
+! Description    : Determine pay end date of the currently open payroll
+!***********************************************************************
+begin-procedure Get-Pay-End-Dt
+
+let $pay_end_dt = ''
+BEGIN-SELECT
+to_char(CAL.PAY_END_DT,'YYYYMMDD') &pay_end_dt
+
+  let $pay_end_dt = &pay_end_dt
+
+FROM
+    SYSADM.PS_PAY_CALENDAR CAL
+WHERE
+    CAL.COMPANY='IU' AND
+    CAL.PAYGROUP='BW1' AND
+    CAL.RUN_ID<>' ' AND
+    CAL.PAY_OFF_CYCLE_CAL='N' AND
+    CAL.PAY_CONFIRM_RUN='N' AND
+    CAL.PAY_END_DT = (  SELECT
+                            MIN(CALD.PAY_END_DT)
+                        FROM
+                            SYSADM.PS_PAY_CALENDAR CALD
+                        WHERE
+                            CALD.COMPANY=CAL.COMPANY AND
+                            CALD.PAYGROUP=CAL.PAYGROUP AND
+                            CALD.RUN_ID<>' ' AND
+                            CALD.PAY_OFF_CYCLE_CAL=CAL.PAY_OFF_CYCLE_CAL AND
+                            CALD.PAY_CONFIRM_RUN='N'
+    )
+END-SELECT
+
+end-procedure ! Get-Pay-End-Dt
+
+
+
+!***********************************************************************
+! Procedure Name : Calculate-Expected-Hours
+! Description    :
+!***********************************************************************
+begin-procedure Calculate-Expected-Hours
+
+let #expected_hours = 0
+
+BEGIN-SELECT
+HJT.POSITION_NBR &hjt.position_nbr
+HJT.EMPL_TYPE &hjt.empl_type
+HJT.STD_HOURS &hjt.std_hours
+TO_CHAR(HJT.EFFDT,'yyyymmdd') &hjt.effdt
+HJT.EFFSEQ &hjt.effseq
+
+  let $position_nbr = &hjt.position_nbr
+  let $empl_type = &hjt.empl_type
+  let $job_effdt = &hjt.effdt
+  let #job_effseq = &hjt.effseq
+  let #std_hours = &hjt.std_hours
+  let $std_hrs_freq = ''
+  do Get-Std-Hrs-Freq
+
+  if ($empl_type = 'H')
+    let #expected_hours = 0
+  else
+    if ($empl_type = 'E')
+      let #pay_freq_annl_factor = 52
+      do Get-Std-Hrs-Freq-Annl-Factor
+      do Get-Reg-Earnings-Distribution-Pct
+      let #expected_hours = (#std_hrs_freq_annl_factor / #pay_freq_annl_factor) * #std_hours * (#reg_dist_pct / 100)
+    end-if
+  end-if
+
+FROM HRE.HRE_TK_JOB_T HJT
+WHERE HJT.EMPLID = $emplid
+AND HJT.EMPL_RCD = #empl_rcd
+AND HJT.EFFDT = (SELECT MAX(HJTD.EFFDT) FROM HRE.HRE_TK_JOB_T HJTD WHERE HJTD.EMPLID = HJT.EMPLID AND HJTD.EMPL_RCD = HJT.EMPL_RCD AND HJTD.EFFDT <= TO_DATE($start_time,'yyyymmdd hh24:mi:ss'))
+AND HJT.EFFSEQ = (SELECT MAX(HJTS.EFFSEQ) FROM HRE.HRE_TK_JOB_T HJTS WHERE HJTS.EMPLID = HJT.EMPLID AND HJTS.EMPL_RCD = HJT.EMPL_RCD AND HJTS.EFFDT = HJT.EFFDT)
+END-SELECT
+
+if (#actual_hours < #expected_hours)
+  let #rule_hours = #expected_hours
+  let $exception_type = 'BEH'
+  do Insert-Hours-Exception
+end-if
+
+if (#actual_hours > #expected_hours)
+  let #rule_hours = #expected_hours
+  let $exception_type = 'EEH'
+  do Insert-Hours-Exception
+end-if
+
+end-procedure ! Calculate-Expected-Hours
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Std-Hrs-Freq
+! Description    :
+!***********************************************************************
+begin-procedure Get-Std-Hrs-Freq
+
+BEGIN-SELECT
+POSDTA.STD_HRS_FREQUENCY
+
+  let $std_hrs_freq = &POSDTA.STD_HRS_FREQUENCY
+
+FROM SYSADM.PS_POSITION_DATA POSDTA
+WHERE POSDTA.POSITION_NBR= $position_nbr
+  AND POSDTA.EFFDT = (SELECT MAX(POSDTAD.EFFDT) FROM SYSADM.PS_POSITION_DATA POSDTAD WHERE POSDTAD.POSITION_NBR=POSDTA.POSITION_NBR AND POSDTA.EFFDT <=TO_DATE($effdt,'yyyymmdd'))
+  and POSDTA.EFF_STATUS = 'A'
+END-SELECT
+
+end-procedure ! Get-Std-Hrs-Freq
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Std-Hrs-Freq-Annl-Factor
+! Description    :
+!***********************************************************************
+begin-procedure Get-Std-Hrs-Freq-Annl-Factor
+
+let #std_hrs_freq_annl_factor = 0
+
+BEGIN-SELECT
+FT.FREQ_ANNUAL_FACTOR &ft.freq_annual_factor
+
+  let #std_hrs_freq_annl_factor = &ft.freq_annual_factor
+
+FROM SYSADM.PS_FREQUENCY_TBL FT ! DEBUG, AND TWO LINES BELOW FOR TABLE NAME AS WELL
+WHERE FT.FREQUENCY_ID = $std_hrs_freq
+AND FT.EFFDT = (SELECT MAX(FTD.EFFDT) FROM SYSADM.PS_FREQUENCY_TBL FTD WHERE FTD.FREQUENCY_ID = FT.FREQUENCY_ID AND FTD.EFFDT <= TO_DATE($start_time,'yyyymmdd hh24:mi:ss'))
+AND FT.EFF_STATUS = 'A'
+END-SELECT
+
+end-procedure ! Get-Std-Hrs-Freq-Annl-Factor
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Reg-Earnings-Distribution-Pct
+! Description    :
+!***********************************************************************
+begin-procedure Get-Reg-Earnings-Distribution-Pct
+
+let #reg_dist_pct = 100
+
+BEGIN-SELECT
+JED.DIST_PCT &jed.dist_pct
+
+  let #reg_dist_pct = &jed.dist_pct
+
+FROM HRE.HRE_TK_JOB_EARNS_DIST_T JED
+WHERE JED.EMPLID = $emplid
+AND JED.EMPL_RCD = #empl_rcd
+AND JED.EFFDT = TO_DATE($job_effdt,'yyyymmdd')
+AND JED.EFFSEQ = #job_effseq
+AND JED.ERNCD = 'RGN' ! DEBUG - CAN WE HARDCODE RGN?
+END-SELECT
+
+end-procedure ! Get-Reg-Earnings-Distribution-Pct
+
+
+
+
+!***********************************************************************
+! Procedure Name : Check-Overtime-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Check-Overtime-Exception
+
+let $exception_type = 'AWO'
+
+BEGIN-SELECT
+TBDH.EMPLID
+SUM(TB.HOURS + TB.OVERTIME_HOURS) &TBDH.HOURS
+
+  let $emplid = &TBDH.EMPLID
+  let #total_hours = &TBDH.HOURS
+  do Get-Empl-Assignments
+
+FROM TK_TIME_BLOCK_T TB, TK_DOCUMENT_HEADER_T TBDH
+WHERE TB.BEGIN_TS BETWEEN to_date($weekly_min_earlist_time_block_start,'yyyymmdd hh24:mi:ss') AND to_date($weekly_max_latest_time_block_end,'yyyymmdd hh24:mi:ss')
+AND TB.ERNCD IN (SELECT DISTINCT EPD.ERNCD
+                  FROM SYSADM.PS_ERN_PROGRAM_DEF EPD
+                  WHERE EPD.ERN_PROGRAM IN ('T19','T20')
+                    AND EPD.EFFDT = (SELECT MAX(EPDD.EFFDT) FROM SYSADM.PS_ERN_PROGRAM_DEF EPDD WHERE EPDD.ERN_PROGRAM=EPD.ERN_PROGRAM AND EPDD.EFFDT <= TB.BEGIN_TS)
+                    )
+AND TBDH.DOCUMENT_ID = TB.DOCUMENT_ID
+GROUP BY TBDH.EMPLID
+HAVING SUM(TB.HOURS + TB.OVERTIME_HOURS) > 32
+END-SELECT
+
+end-procedure ! Check-Overtime-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Empl-Assignments
+! Description    :
+!***********************************************************************
+begin-procedure Get-Empl-Assignments
+
+BEGIN-SELECT DISTINCT
+JBEA.EMPL_RCD
+TBEA.WORK_AREA_ID
+TBEA.TASK_ID
+to_char(JBEA.EFFDT,'yyyymmdd') &JBEA.EFFDT
+JBEA.EFFSEQ
+
+  let #empl_rcd = &JBEA.EMPL_RCD
+  let $effdt = &JBEA.EFFDT
+  let #effseq = &JBEA.EFFSEQ
+  let #work_area_id = &TBEA.WORK_AREA_ID
+  let $task_id = to_char(round(&TBEA.TASK_ID,0))
+  
+  do Insert-Overtime-Exception
+
+FROM TK_TIME_BLOCK_T TBEA, TK_DOCUMENT_HEADER_T TDEA, HRE.HRE_TK_JOB_T JBEA
+WHERE TDEA.DOCUMENT_ID = TBEA.DOCUMENT_ID
+  AND TBEA.BEGIN_TS BETWEEN to_date($weekly_min_earlist_time_block_start,'yyyymmdd hh24:mi:ss') AND to_date($weekly_max_latest_time_block_end,'yyyymmdd hh24:mi:ss')
+  AND JBEA.EMPLID = TDEA.EMPLID
+  AND JBEA.EFFDT = (SELECT MAX(JBEAD.EFFDT) FROM HRE.HRE_TK_JOB_T JBEAD WHERE JBEAD.EMPLID=JBEA.EMPLID AND JBEAD.EMPL_RCD=JBEA.EMPL_RCD AND JBEAD.EFFDT <= to_date($weekly_min_earlist_time_block_start,'yyyymmdd hh24:mi:ss'))
+  AND JBEA.EFFSEQ = (SELECT MAX(JBEAS.EFFSEQ) FROM HRE.HRE_TK_JOB_T JBEAS WHERE JBEAS.EMPLID=JBEA.EMPLID AND JBEAS.EMPL_RCD=JBEA.EMPL_RCD AND JBEAS.EFFDT=JBEA.EFFDT)
+  AND TDEA.EMPLID = $emplid
+  AND JBEA.EMPL_STATUS = 'A'
+END-SELECT
+
+end-procedure ! Get-Empl-Assignments
+
+
+
+!***********************************************************************
+! Procedure Name : Check-Workstudy-Overtime-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Check-Workstudy-Overtime-Exception
+
+BEGIN-SELECT
+DH_CWO.EMPLID &DH_CWO.EMPLID
+TB_CWO.EMPL_RCD &TB_CWO.EMPL_RCD
+to_char(J_CWO.EFFDT,'yyyymmdd') &J_CWO.EFFDT
+J_CWO.EFFSEQ &J_CWO.EFFSEQ
+TB_CWO.WORK_AREA_ID &TB_CWO.WORK_AREA_ID
+TB_CWO.TASK_ID &TB_CWO.TASK_ID
+SUM(TB_CWO.OVERTIME_HOURS) &OVT
+!using SUM function to bypass group by error
+
+  let $exception_type = 'WSO'
+  let $emplid = &DH_CWO.EMPLID
+  let #empl_rcd = &TB_CWO.EMPL_RCD
+  let $effdt = &J_CWO.EFFDT
+  let #effseq = &J_CWO.EFFSEQ
+  let #work_area_id = &TB_CWO.WORK_AREA_ID
+  let $task_id = &TB_CWO.TASK_ID
+  let #ovt_hrs = &OVT
+
+  do Insert-Workstudy-Overtime-Exception
+
+FROM TK.TK_TIME_BLOCK_T TB_CWO,
+  TK.TK_DOCUMENT_HEADER_T DH_CWO,
+  HRE.HRE_TK_JOB_T J_CWO
+WHERE TB_CWO.BEGIN_TS BETWEEN to_date($start_time,'YYYYMMDD hh24:mi:ss') AND to_date($end_time,'YYYYMMDD hh24:mi:ss')
+ AND TB_CWO.DOCUMENT_ID = DH_CWO.DOCUMENT_ID
+ AND J_CWO.EMPLID = DH_CWO.EMPLID
+ AND J_CWO.EMPL_RCD = TB_CWO.EMPL_RCD
+ AND J_CWO.EFFDT =
+  (SELECT MAX(JD_CWO.EFFDT)
+   FROM HRE.HRE_TK_JOB_T JD_CWO
+   WHERE JD_CWO.EMPLID = J_CWO.EMPLID
+   AND JD_CWO.EMPL_RCD = J_CWO.EMPL_RCD
+   AND JD_CWO.EFFDT <= TB_CWO.BEGIN_TS)
+AND J_CWO.EFFSEQ =
+  (SELECT MAX(JS_CWO.EFFSEQ)
+   FROM HRE.HRE_TK_JOB_T JS_CWO
+   WHERE JS_CWO.EMPLID = J_CWO.EMPLID
+   AND JS_CWO.EMPL_RCD = J_CWO.EMPL_RCD
+   AND JS_CWO.EFFDT = J_CWO.EFFDT)
+AND J_CWO.PAYGROUP='HRW'
+AND TB_CWO.OVERTIME_ERNCD='OVT'
+GROUP BY DH_CWO.EMPLID,
+  TB_CWO.EMPL_RCD,
+  J_CWO.EFFDT,
+  J_CWO.EFFSEQ,
+  TB_CWO.WORK_AREA_ID,
+  TB_CWO.TASK_ID
+END-SELECT
+
+end-procedure ! Check-Workstudy-Overtime-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Insert-Workstudy-Overtime-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Insert-Workstudy-Overtime-Exception
+
+if $task_id = ''
+  let $task_id = '0'
+end-if 
+
+
+BEGIN-SQL  ON-ERROR=SQL_Error 
+INSERT INTO TK_WRKSTDY_OVT_EXCEPTION_T
+(
+EXCEPTION_DT,
+EXCEPTION_TYPE,
+EMPLID,
+EMPL_RCD,
+EFFDT,
+EFFSEQ,
+WORK_AREA_ID,
+TASK_ID,
+OVT_HOURS
+)
+VALUES
+(
+to_date($today,'yyyymmdd'),
+$exception_type,
+$emplid,
+#empl_rcd,
+to_date($effdt,'yyyymmdd'),
+#effseq,
+to_char(#work_area_id),
+$task_id,
+#ovt_hrs
+)
+END-SQL
+
+end-procedure ! Insert-Workstudy-Overtime-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Check-Leave-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Check-Leave-Exception
+
+BEGIN-SELECT DISTINCT
+CLTBDH.EMPLID
+
+  let $emplid = &CLTBDH.EMPLID
+  do Get-Leave-Exception-Empls
+
+FROM TK_TIME_BLOCK_T CLTB, TK_DOCUMENT_HEADER_T CLTBDH, HRE.HRE_TK_JOB_T CLEJ
+WHERE CLTB.BEGIN_TS BETWEEN to_date($start_time,'YYYYMMDD hh24:mi:ss') AND to_date($end_time,'YYYYMMDD hh24:mi:ss')
+AND CLTBDH.DOCUMENT_ID = CLTB.DOCUMENT_ID
+AND CLTBDH.EMPLID = CLEJ.EMPLID
+AND CLTB.EMPL_RCD = CLEJ.EMPL_RCD
+AND CLEJ.EMPL_TYPE = 'E'
+AND CLEJ.EFFDT = (SELECT MAX(EFFDT) FROM HRE.HRE_TK_JOB_T CLEJ1
+                   WHERE CLEJ.EMPLID = CLEJ1.EMPLID
+                     AND CLEJ.EMPL_RCD = CLEJ1.EMPL_RCD
+                     AND CLEJ1.EFFDT <= to_date($end_time,'YYYYMMDD hh24:mi:ss'))
+AND CLEJ.EFFSEQ = (SELECT MAX(EFFSEQ) FROM HRE.HRE_TK_JOB_T CLEJ2
+                    WHERE CLEJ.EMPLID = CLEJ2.EMPLID
+                      AND CLEJ.EMPL_RCD = CLEJ2.EMPL_RCD
+                      AND CLEJ.EFFDT = CLEJ2.EFFDT)                     
+END-SELECT
+
+end-procedure ! Check-Leave-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Get-Leave-Exception-Empls
+! Description    :
+!***********************************************************************
+begin-procedure Get-Leave-Exception-Empls
+
+show 'emplid ' $emplid
+!the sql in here is a little funky.
+!documented sql for determining leave balances
+!can return more than one row per plan, with
+!one of the rows have a null value for date.
+!we want the row with a non-null date in that case.
+!we're using a lot of the oracle nvl function to
+!essentially set null back to 01/01/1901 for the purposes
+!of determining the desired row. The alternative is to
+!use the documented sql and keep track in code of what
+!plans have/have not been processed, which is bit 
+!clumsy to do in sqr.
+
+
+BEGIN-SELECT
+A.PLAN_TYPE
+(A.HRS_CARRYOVER + A.HRS_EARNED_YTD - A.HRS_TAKEN_YTD + A.HRS_ADJUST_YTD + A.HRS_BOUGHT_YTD - A.HRS_SOLD_YTD - A.HRS_TAKEN_UNPROC + A.HRS_ADJUST_UNPROC + A.HRS_BOUGHT_UNPROC - A.HRS_SOLD_UNPROC) &A.BALANCE
+
+  let $plan_type = &A.PLAN_TYPE
+  if  &A.BALANCE < 0
+    let #balance = 0
+  else    
+    let #balance = &A.BALANCE
+  end-if
+
+  let #leave_hours = 0
+  let $leave_erncd = ' '
+  do Get-Leave-Hours
+
+!  show 'plan type ' $plan_type
+!  show 'balance ' #balance
+!  show 'leave hours ' #leave_hours
+
+  if (#balance < #leave_hours)
+    let $exception_type = 'ELB'
+    do Insert-Leave-Exception
+  end-if
+
+FROM SYSADM.PS_LEAVE_ACCRUAL A
+WHERE A.EMPLID = $emplid
+ AND A.EMPL_RCD = 0
+ AND A.COMPANY = 'IU'
+ AND (NVL(A.ACCRUAL_PROC_DT,TO_DATE('19010101','YYYYMMDD')) =
+  (SELECT MAX(NVL(B.ACCRUAL_PROC_DT,TO_DATE('19010101','YYYYMMDD')))
+   FROM SYSADM.PS_LEAVE_ACCRUAL B
+   WHERE A.EMPLID = B.EMPLID
+   AND A.EMPL_RCD = B.EMPL_RCD
+   AND A.COMPANY = B.COMPANY
+   AND A.PLAN_TYPE = B.PLAN_TYPE
+   AND NVL(B.ACCRUAL_PROC_DT,TO_DATE('19010101','YYYYMMDD')) <= to_date($start_time,'YYYYMMDD hh24:mi:ss')))
+END-SELECT
+
+end-procedure ! Get-Leave-Exception-Empls
+
+
+!***********************************************************************
+! Procedure Name : Get-Leave-Hours
+! Description    :
+!***********************************************************************
+begin-procedure Get-Leave-Hours
+
+
+BEGIN-SELECT
+P.ERNCD
+SUM(TBLH.HOURS - TBLH.OVERTIME_HOURS) &P.HOURS
+
+  let $leave_erncd = &P.ERNCD
+  let #leave_hours = &P.HOURS
+
+FROM TK.TK_TIME_BLOCK_T TBLH,
+  TK.TK_DOCUMENT_HEADER_T TBDHLH,
+  SYSADM.PS_EARNINGS_ACCRL P
+WHERE EMPLID = $emplid
+ AND TBLH.BEGIN_TS BETWEEN to_date($start_time,'YYYYMMDD hh24:mi:ss') AND to_date($end_time,'YYYYMMDD hh24:mi:ss')
+ AND TBLH.ERNCD = P.ERNCD
+ AND TBDHLH.DOCUMENT_ID = TBLH.DOCUMENT_ID
+ AND P.ERNCD = TBLH.ERNCD
+ AND P.PLAN_TYPE = $plan_type
+ AND P.EFFDT = (SELECT MAX(PD.EFFDT)
+   FROM SYSADM.PS_EARNINGS_ACCRL PD
+   WHERE PD.ERNCD = P.ERNCD
+   AND PD.PLAN_TYPE = P.PLAN_TYPE
+   AND PD.EFFDT <= to_date($start_time,'YYYYMMDD hh24:mi:ss'))
+AND P.HRS_TAKEN_ADD = 'Y'
+GROUP BY TBDHLH.EMPLID,
+  P.ERNCD
+END-SELECT
+
+end-procedure ! Get-Leave-Hours
+
+
+
+!***********************************************************************
+! Procedure Name : Insert-Leave-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Insert-Leave-Exception
+
+if $task_id = ''
+  let $task_id = '0'
+end-if 
+
+
+BEGIN-SQL  ON-ERROR=SQL_Error 
+INSERT INTO TK_LEAVE_BALANCE_EXCEPTION_T 
+(
+EXCEPTION_DT,
+EXCEPTION_TYPE,
+EMPLID,
+PLAN_TYPE,
+ERNCD,
+PAY_END_DT,
+AVAILABLE_HOURS,
+ACTUAL_HOURS
+)
+VALUES
+(
+to_date($today,'yyyymmdd'),
+$exception_type,
+$emplid,
+$plan_type,
+$leave_erncd,
+to_date($pay_end_dt,'yyyymmdd'),
+#balance,
+#leave_hours
+)
+END-SQL
+
+end-procedure ! Insert-Leave-Exception
+
+
+
+!***********************************************************************
+! Procedure Name : Insert-Overtime-Exception
+! Description    :
+!***********************************************************************
+begin-procedure Insert-Overtime-Exception
+
+
+!show '----------------------------'
+!show $exception_type 
+!show $emplid         
+!show #empl_rcd       
+!show $effdt          
+!show #effseq         
+!show #work_area_id   
+!show $task_id        
+!show $week_begin_dt
+!show #total_hours    
+!show '----------------------------'
+
+if $task_id = ''
+  let $task_id = '0'
+end-if 
+
+
+BEGIN-SQL  ON-ERROR=SQL_Error 
+INSERT INTO TK_APPROACH_OVT_EXCEPTION_T 
+(
+EXCEPTION_DT,
+EXCEPTION_TYPE,
+EMPLID,
+EMPL_RCD,
+EFFDT,
+EFFSEQ,
+WORK_AREA_ID,
+TASK_ID,
+WEEK_BEGIN_DT,
+ACTUAL_HOURS
+)
+VALUES
+(
+to_date($today,'yyyymmdd'),
+$exception_type,
+$emplid,
+#empl_rcd,
+to_date($effdt,'yyyymmdd'),
+#effseq,
+to_char(#work_area_id),
+$task_id,
+to_date($weekly_min_earlist_time_block_start,'yyyymmdd hh24:mi:ss'),
+#total_hours
+)
+END-SQL
+
+
+end-procedure ! Insert-Overtime-Exception
+
+
+begin-procedure SQL_error
+
+if substr($sql-error,1,9) = 'ORA-00001'
+   ! ignore unique constraints
+else
+   Show 'SQL Error: ' $sql-error
+   Show 'SQL Status: ' #sql-status
+   stop
+end-if
+
+end-Procedure ! SQL_Error
+
