@@ -1,0 +1,992 @@
+<descriptor-repository version="1.0"
+	isolation-level="read-uncommitted">
+
+	<jdbc-connection-descriptor jcd-alias="hreDataSource"
+		default-connection="false" platform="Oracle" jdbc-level="3.0"
+		batch-mode="false" useAutoCommit="1"
+		ignoreAutoCommitExceptions="false">
+		<sequence-manager
+			class="org.apache.ojb.broker.util.sequence.SequenceManagerNextValImpl" />
+	</jdbc-connection-descriptor>
+	<jdbc-connection-descriptor jcd-alias="tkDataSource"
+		default-connection="true" platform="Oracle" jdbc-level="3.0"
+		batch-mode="false" useAutoCommit="1"
+		ignoreAutoCommitExceptions="false">
+		<!--  <sequence-manager class="org.apache.ojb.broker.util.sequence.SequenceManagerNextValImpl" /> -->
+		<sequence-manager
+			className="org.apache.ojb.broker.util.sequence.SequenceManagerNextValImpl">
+			<attribute attribute-name="seq.start" attribute-value="1" />
+			<attribute attribute-name="autoNaming"
+				attribute-value="false" />
+		</sequence-manager>
+			<connection-pool
+            maxActive="150"/>
+	</jdbc-connection-descriptor>
+	<jdbc-connection-descriptor jcd-alias="hrSudsDataSource"
+		default-connection="false" platform="Oracle" jdbc-level="3.0"
+		batch-mode="false" useAutoCommit="1"
+		ignoreAutoCommitExceptions="false">
+		<sequence-manager
+			class="org.apache.ojb.broker.util.sequence.SequenceManagerNextValImpl" />
+				<connection-pool
+            maxActive="150"/>
+	</jdbc-connection-descriptor>
+
+	
+	<class-descriptor
+		class="edu.iu.uis.hr.workflow.entity.FinalApprovalWorkgroup"
+		table="hre.hre_farm_workgroup_t">
+		<field-descriptor name="location" column="location"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="positionType" column="iu_position_type"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="documentType" column="document_type"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="salaryPlan" column="sal_admin_plan"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="workgroup" column="workgroup_id"
+			jdbc-type="NUMERIC" precision="14" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.job.funding.entity.WorkArea"
+		table="tk_work_area_t">
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" autoincrement="true"
+			sequence-name="TK_WORK_AREA_ID_SEQUENCE" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="description" column="descr"
+			jdbc-type="VARCHAR" length="30" nullable="false" />
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" />
+		<field-descriptor name="employeeType" column="empl_type"
+			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="overtimePreference"
+			column="overtime_preference" jdbc-type="VARCHAR" length="3" />
+		<field-descriptor name="adminDescription" column="admin_descr"
+			jdbc-type="VARCHAR" length="30" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<collection-descriptor name="tasks"
+			element-class-ref="edu.iu.uis.hr.job.funding.entity.Task"
+			proxy="true" auto-update="object" auto-delete="object" auto-retrieve="true">
+			<inverse-foreignkey field-ref="workArea" />
+			<inverse-foreignkey field-ref="effectiveDate" />
+			<inverse-foreignkey field-ref="effectiveSequence" />
+		</collection-descriptor>
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.job.funding.entity.Task"
+		table="tk_task_t">
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" access="anonymous" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			access="anonymous"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" access="anonymous" />
+		<field-descriptor name="task" column="task_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" autoincrement="true"
+			sequence-name="TK_TASK_ID_SEQUENCE" />
+		<field-descriptor name="description" column="descr"
+			jdbc-type="VARCHAR" length="30" nullable="false" />
+		<field-descriptor name="adminDescription" column="admin_descr"
+			jdbc-type="VARCHAR" length="30" />
+		<reference-descriptor name="workArea"
+			class-ref="edu.iu.uis.hr.job.funding.entity.WorkArea">
+			<foreignkey field-ref="workArea" />
+			<foreignkey field-ref="effectiveDate" />
+			<foreignkey field-ref="effectiveSequence" />
+		</reference-descriptor>
+	</class-descriptor>
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.ShiftDifferentialRule"
+		table="tk_shift_differential_rl_t">
+		<field-descriptor name="location" column="location"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="salaryPlan" column="sal_admin_plan"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="grade" column="grade"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="earnCode" column="erncd"
+			primarykey="true" jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="beginTime" column="begin_ts"
+			jdbc-type="VARCHAR" length="8" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTime2SqlVarcharFieldConversion" />
+		<field-descriptor name="endTime" column="end_ts"
+			jdbc-type="VARCHAR" length="8" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTime2SqlVarcharFieldConversion" />
+		<field-descriptor name="minHours" column="min_hrs"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="applicableToSunday" column="sun"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToMonday" column="mon"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToTuesday" column="tue"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToWednesday" column="wed"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToThursday" column="thu"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToFriday" column="fri"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="applicableToSaturday" column="sat"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="maxGap" column="max_gap"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.DailyOvertimeRule"
+		table="tk_daily_overtime_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="task" column="task_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="maxGap" column="max_gap"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="shiftHours" column="shift_hours"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="overtimePreference"
+			column="overtime_preference" jdbc-type="VARCHAR" length="3"
+			nullable="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.GracePeriodRule"
+		table="tk_grace_period_rl_t">
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="graceMinutes" column="grace_mins"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="hourFactor" column="hour_factor"
+			jdbc-type="NUMERIC" precision="2" scale="2" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.SystemLunchRule"
+		table="tk_system_lunch_rl_t">
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="blockHours" column="block_hrs"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="minMinutes" column="min_mins"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.entity.Translate"
+		table="tk_translate_t">
+		<field-descriptor name="fieldName" column="fieldname"
+			jdbc-type="VARCHAR" primarykey="true" length="50" nullable="false" />
+		<field-descriptor name="fieldValue" column="fieldvalue"
+			jdbc-type="VARCHAR" primarykey="true" length="4" nullable="false" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="description" column="descr"
+			jdbc-type="VARCHAR" length="30" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.TimeCollectionRule"
+		table="tk_time_collection_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="clockUseRequired"
+			column="clock_users_fl" jdbc-type="VARCHAR" length="1"
+			nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="hoursDistributionAllowed"
+			column="hrs_distribution_fl" jdbc-type="VARCHAR" length="1"
+			nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.rule.entity.BreakRule"
+		table="tk_break_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="blockHours" column="block_hrs"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="maxMinutes" column="max_mins"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="numberOfBreaks"
+			column="number_of_breaks" jdbc-type="NUMERIC" precision="2" scale="0"
+			nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.DepartmentLunchRule"
+		table="tk_dept_lunch_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="clockUseRequired"
+			column="required_clock_fl" jdbc-type="VARCHAR" length="1"
+			nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="maxMinutes" column="max_mins"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.ClockLocationRule"
+		table="tk_clock_location_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="ipAddress" column="ip_address"
+			jdbc-type="VARCHAR" length="15" nullable="false" primarykey="true" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.HourlyHoursRule"
+		table="tk_hourly_hrs_rl_t">
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="dailyMaxHours" column="daily_max_hrs"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="dailyMinHours" column="daily_min_hrs"
+			jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
+		<field-descriptor name="weeklyMaxHours" column="wkly_max_hrs"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" />
+		<field-descriptor name="weeklyMinHours" column="wkly_min_hrs"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.WeeklyOvertimeRule"
+		table="tk_weekly_overtime_rl_t">
+		<field-descriptor name="maxHoursEarnProgram"
+			column="max_hrs_ern_program" jdbc-type="VARCHAR" length="3"
+			nullable="false" primarykey="true" />
+		<field-descriptor name="convertFromEarnProgram"
+			column="convert_from_ern_program" jdbc-type="VARCHAR" length="3"
+			nullable="false" primarykey="true" />
+		<field-descriptor name="convertToEarnCode"
+			column="convert_to_erncd" jdbc-type="VARCHAR" length="3"
+			nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="step" column="step" jdbc-type="NUMERIC"
+			precision="2" scale="0" nullable="false" />
+		<field-descriptor name="maxHours" column="max_hrs"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.extract.entity.PayrollExtractSchedule"
+		table="tk_extract_schedule_t">
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="status" column="extract_status"
+			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="scheduledBeginTime"
+			column="schd_extract_begin_ts" jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="actualBeginTime"
+			column="actual_extract_begin_ts" jdbc-type="TIMESTAMP"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.DocumentHeader"
+		table="tk_document_header_t" refresh="true">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="documentStatus" column="document_status"
+			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<reference-descriptor name="documentLock"
+			class-ref="edu.iu.uis.hr.tk.timesheet.entity.DocumentLock" auto-retrieve="true">
+			<foreignkey field-ref="documentId" />
+		</reference-descriptor>
+		<collection-descriptor name="timeBlocks"
+			element-class-ref="edu.iu.uis.hr.tk.timesheet.entity.TimeBlock"
+			proxy="true" refresh="true" auto-update="object" auto-retrieve="true"
+			auto-delete="object">
+			<inverse-foreignkey field-ref="documentId" />
+		</collection-descriptor>
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.DocumentHeaderLight"
+		table="tk_document_header_t" refresh="true">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="documentStatus" column="document_status"
+			jdbc-type="VARCHAR" length="1" nullable="false" />
+	</class-descriptor>
+
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.DocumentLock"
+		table="tk_document_lock_t">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<!--
+		PRIMARY KEY ("DOCUMENT_ID", "EMPL_RCD", "WORK_AREA_ID", "TASK_ID", "ERNCD", "BEGIN_TS", "END_TS", "TIMESTAMP")
+	-->
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.TimeBlock"
+		table="tk_time_block_t" refresh="true">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="task" column="task_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="earnCode" column="erncd"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="beginTime" column="begin_ts"
+			jdbc-type="TIMESTAMP" nullable="false" primarykey="true"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="beginTsTz" column="begin_ts_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="endTsTz" column="end_ts_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="endTime" column="end_ts"
+			jdbc-type="TIMESTAMP" nullable="false" primarykey="true"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="createdByClock"
+			column="clock_created_fl" jdbc-type="VARCHAR" length="1"
+			nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="hours" column="hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="overtimeEarnCode"
+			column="overtime_erncd" jdbc-type="VARCHAR" length="3"
+			nullable="true" />
+		<field-descriptor name="overtimeHours" column="overtime_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="shiftEarnCode" column="shift_erncd"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+		<field-descriptor name="shiftHours" column="shift_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="premiumEarnCode" column="premium_erncd"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+		<field-descriptor name="premiumHours" column="premium_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" primarykey="false" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="timestampTz" column="timestamp_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.TimeBlockHistory"
+		table="tk_time_block_ht">
+		<field-descriptor name="recordId" column="record_id"
+			jdbc-type="DECIMAL" nullable="false" primarykey="true"
+			autoincrement="true" sequence-name="tk_time_block_ht_seq"
+			length="22" />
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" />
+		<field-descriptor name="task" column="task_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false" />
+		<field-descriptor name="earnCode" column="erncd"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="beginTime" column="begin_ts"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="endTime" column="end_ts"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="createdByClock"
+			column="clock_created_fl" jdbc-type="VARCHAR" length="1"
+			nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlYesNoFieldConversion" />
+		<field-descriptor name="hours" column="hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="overtimeEarnCode"
+			column="overtime_erncd" jdbc-type="VARCHAR" length="3"
+			nullable="true" />
+		<field-descriptor name="overtimeHours" column="overtime_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="shiftEarnCode" column="shift_erncd"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+		<field-descriptor name="shiftHours" column="shift_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="premiumEarnCode" column="premium_erncd"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+		<field-descriptor name="premiumHours" column="premium_hours"
+			jdbc-type="NUMERIC" precision="5" scale="2" nullable="true" />
+		<field-descriptor name="actionHistory" column="action_history"
+			jdbc-type="VARCHAR" length="10" nullable="true" />
+		<field-descriptor name="modifiedByUniversityId"
+			column="modified_by_emplid" jdbc-type="VARCHAR" length="10"
+			nullable="true" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestampOriginal"
+			column="timestamp_original" jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="beginTsTz" column="begin_ts_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="endTsTz" column="end_ts_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="timestampTz" column="timestamp_tz"
+			jdbc-type="VARCHAR" length="3" nullable="false" />
+		<field-descriptor name="timestampOriginalTz"
+			column="timestamp_original_tz" jdbc-type="VARCHAR" length="3"
+			nullable="false" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.timesheet.entity.ClockLog"
+		table="tk_clock_log_t" refresh="true" >
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="workArea" column="work_area_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="task" column="task_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="clockTime" column="clock_ts"
+			jdbc-type="TIMESTAMP" nullable="false" primarykey="true"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="action" column="clock_action_cd"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="ipAddress" column="ip_address"
+			jdbc-type="VARCHAR" length="15" nullable="true" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion"
+			primarykey="true" />
+		<field-descriptor name="timeZone" column="clock_ts_tz"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+		<!--
+		<collection-descriptor name="translates"
+			element-class-ref="edu.iu.uis.hr.tk.entity.Translate" auto-retrieve="false"
+			auto-update="false" auto-delete="false" proxy="false">
+			<inverse-foreignkey field-ref="fieldValue" target-field-ref="code" />
+			<query-customizer
+				class="edu.iu.uis.hr.tk.dataaccess.TranslateQueryCustomizer">
+				<attribute attribute-name="fieldName" attribute-value="CLOCK_ACTION_CD" />
+			</query-customizer>
+		</collection-descriptor>
+		-->
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.entity.Preference"
+		table="tk_preference_t">
+		<field-descriptor name="preferenceCode" column="preference_code"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="role" column="role" jdbc-type="VARCHAR"
+			length="30" nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="preferenceGroup"
+			column="preference_group" jdbc-type="VARCHAR" length="30"
+			nullable="false" />
+		<field-descriptor name="description" column="descr"
+			jdbc-type="VARCHAR" length="50" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.entity.UserPreference"
+		table="tk_user_preference_t">
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="preferenceCode" column="preference_code"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<collection-descriptor name="preferences"
+			element-class-ref="edu.iu.uis.hr.tk.entity.Preference" auto-retrieve="true"
+			auto-update="none" auto-delete="none">
+			<inverse-foreignkey field-ref="preferenceCode"
+				target-field-ref="preferenceCode" />
+		</collection-descriptor>
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.extract.entity.TkPayrollInterface"
+		table="tk_iu_pyfnd_intrfc">
+		<field-descriptor name="company" column="company"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="paygroup" column="paygroup"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="employeeRecord" column="empl_rcd"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="earnsBeginDate" column="earns_begin_dt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="earnsEndDate" column="earns_end_dt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="earnCode" column="erncd"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="chartOfAccounts" column="iu_fin_coa_cd"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="account" column="iu_account_nbr"
+			jdbc-type="VARCHAR" length="7" nullable="false" primarykey="true" />
+		<field-descriptor name="subAccount" column="iu_sub_acct_nbr"
+			jdbc-type="VARCHAR" length="5" nullable="false" primarykey="true" />
+		<field-descriptor name="object" column="iu_fin_object_cd"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="subObject" column="iu_fin_sub_obj_cd"
+			jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
+		<field-descriptor name="project" column="iu_project_cd"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="organizationReferenceId"
+			column="iu_org_ref_id" jdbc-type="VARCHAR" length="8"
+			nullable="false" primarykey="true" />
+		<field-descriptor name="hoursForPeriod" column="iu_hrs_for_prd"
+			jdbc-type="NUMERIC" precision="7" scale="2" nullable="false" />
+		<field-descriptor name="payfundInterfaceId"
+			column="iu_pyfnd_intrfc_id" jdbc-type="VARCHAR" length="16"
+			nullable="false" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.timesheet.entity.DocumentHeaderSnapshot"
+		table="tk_document_header_snap_t">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="documentStatus" column="document_status"
+			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="snapshotDate" column="snap_dt"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.rule.entity.HolidayIncentiveRule"
+		table="tk_holiday_incentive_rl_t">
+		<field-descriptor name="location" column="location"
+			jdbc-type="VARCHAR" length="2" nullable="false" primarykey="true" />
+		<field-descriptor name="salaryPlan" column="sal_admin_plan"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.directory.entity.RoleAudit"
+		table="tk_role_audit_t">
+		<field-descriptor name="roleAuditId" column="role_audit_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" autoincrement="true"
+			sequence-name="ROLE_AUDIT_ID_SEQ" length="22" />
+		<field-descriptor name="userUniversityId"
+			column="modified_by_emplid" jdbc-type="VARCHAR" length="10"
+			nullable="true" />
+		<field-descriptor name="roleUniversityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="department" column="deptid"
+			jdbc-type="VARCHAR" length="7" nullable="true" />
+		<field-descriptor name="timestamp" column="tk_time"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<field-descriptor name="role" column="tk_role"
+			jdbc-type="VARCHAR" length="50" nullable="false" />
+		<field-descriptor name="operation" column="operation"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="location" column="location"
+			jdbc-type="VARCHAR" length="3" nullable="true" />
+	</class-descriptor>
+
+	<class-descriptor
+		class="edu.iu.uis.hr.tk.report.entity.BatchMessage"
+		table="tk_batch_message_t">
+		<field-descriptor name="messageId" column="message_id"
+			jdbc-type="NUMERIC" precision="10" scale="0" nullable="false"
+			primarykey="true" autoincrement="true"
+			sequence-name="tk_message_id_seq" length="22" />
+		<field-descriptor name="processName" column="process_name"
+			jdbc-type="VARCHAR" length="50" nullable="false" />
+		<field-descriptor name="processDate" column="process_date"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="true" />
+		<field-descriptor name="message" column="message"
+			jdbc-type="VARCHAR" length="255" nullable="false" />
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.tk.timesheet.entity.DailyNotification"
+		table="TK_DAILY_NOTIFICATION_V" refresh="true">
+		<field-descriptor name="documentId" column="document_id"
+			jdbc-type="VARCHAR" length="14" nullable="false" primarykey="true" />
+		<field-descriptor name="universityId" column="emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" primarykey="true" />
+		<field-descriptor name="modifiedByUniversityId"
+			column="modified_by_emplid" jdbc-type="VARCHAR" length="10"
+			nullable="true" />
+		<field-descriptor name="payEndDate" column="pay_end_dt"
+			jdbc-type="DATE" nullable="false"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false" primarykey="true"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+	</class-descriptor>
+
+
+	<class-descriptor class="edu.iu.uis.hr.help.entity.Help"
+		table="tk_help_t">
+		<field-descriptor name="helpType" column="help_type"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="resourceKey" column="resource_key"
+			jdbc-type="VARCHAR" length="500" nullable="false" primarykey="true" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="active" column="eff_status"
+			jdbc-type="VARCHAR" length="1" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaBoolean2SqlActiveInactiveFieldConversion" />
+		<field-descriptor name="text" column="text" jdbc-type="VARCHAR"
+			length="4000" nullable="false" />
+		<field-descriptor name="userUniversityId" column="user_emplid"
+			jdbc-type="VARCHAR" length="10" nullable="false" />
+		<field-descriptor name="timestamp" column="timestamp"
+			jdbc-type="TIMESTAMP" nullable="false"
+			conversion="edu.iu.uis.hr.dataaccess.JavaTimestamp2SqlTimestampFieldConversion" />
+		<collection-descriptor name="helpDetails"
+			element-class-ref="edu.iu.uis.hr.help.entity.HelpDetail" auto-retrieve="true"
+			auto-update="object" auto-delete="object" orderby="detail_order">
+			<inverse-foreignkey field-ref="helpType" />
+			<inverse-foreignkey field-ref="resourceKey" />
+			<inverse-foreignkey field-ref="effectiveDate" />
+			<inverse-foreignkey field-ref="effectiveSequence" />
+		</collection-descriptor>
+	</class-descriptor>
+
+	<class-descriptor class="edu.iu.uis.hr.help.entity.HelpDetail"
+		table="tk_help_detail_t">
+		<field-descriptor name="helpType" column="help_type"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true"
+			access="anonymous" />
+		<field-descriptor name="resourceKey" column="resource_key"
+			jdbc-type="VARCHAR" length="50" nullable="false" primarykey="true"
+			access="anonymous" />
+		<field-descriptor name="effectiveDate" column="effdt"
+			jdbc-type="DATE" nullable="false" primarykey="true"
+			access="anonymous"
+			conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlDateFieldConversion" />
+		<field-descriptor name="effectiveSequence" column="effseq"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" access="anonymous" />
+		<field-descriptor name="detailType" column="detail_type"
+			jdbc-type="VARCHAR" length="4" nullable="false" primarykey="true" />
+		<field-descriptor name="order" column="detail_order"
+			jdbc-type="NUMERIC" precision="3" scale="0" nullable="false"
+			primarykey="true" />
+		<field-descriptor name="text" column="text" jdbc-type="VARCHAR"
+			length="1000" nullable="false" />
+		<reference-descriptor name="help"
+			class-ref="edu.iu.uis.hr.help.entity.Help">
+			<foreignkey field-ref="helpType" />
+			<foreignkey field-ref="resourceKey" />
+			<foreignkey field-ref="effectiveDate" />
+			<foreignkey field-ref="effectiveSequence" />
+		</reference-descriptor>
+	</class-descriptor>
+
+</descriptor-repository>

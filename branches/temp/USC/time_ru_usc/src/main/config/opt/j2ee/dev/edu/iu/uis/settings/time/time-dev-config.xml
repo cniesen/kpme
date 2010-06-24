@@ -1,0 +1,33 @@
+<!-- TIME dev environment configuration -->
+
+<config>
+	
+	<!-- dev overrides -->
+	<param name="override.finalapprover">true</param>	
+	<param name="local.workflow">true</param>
+	<param name="no.save.document.on.create">false</param>
+	<param name="dev.mode">true</param>
+	<param name="message.persistence">false</param>
+	<param name="message.delivery">asynchronous</param>
+	<!-- end dev overrides -->
+	
+	<param name="ps.url">https://es-ps-env3.uits.indiana.edu/login/login?cassvc=PS8&amp;instance=PS3TST&amp;url=https://es-ps-env3.uits.indiana.edu/psc/PS3TST_newwin/IU/HRMS/c/ADMINISTER_WORKFORCE_(GBL).IU_HREDOC_SAVE.GBL?&amp;IU_EDOC_ID=XXX</param>
+	<param name="http.url">http://localhost:8080</param>
+	<param name="application.url">${http.url}/${app.context.name}</param>	
+	<param name="workflow.url">${application.url}/en/</param>
+	<param name="serviceServletUrl">http://${http.url}/hredoc-${environment}/remoting/</param>
+	
+	<!-- database params -->
+	<param name="tk.datasource.url">jdbc:oracle:thin:@esdb15.uits.indiana.edu:1521:TK1UNT</param>
+	<param name="tk.datasource.username">tk</param>
+
+	<param name="hre.datasource.url">jdbc:oracle:@esdb19.uits.indiana.edu:1521:PS3STG</param>
+	<param name="hre.datasource.username">hr1</param>
+    
+ 	<param name="eden.datasource.url">jdbc:oracle:thin:@esdb15.uits.indiana.edu:1521:TK1UNT</param>	
+	<param name="eden.datasource.username">tk</param>
+	
+	<param name="suds.datasource.url">jdbc:oracle:thin:@esdb16.uits.indiana.edu:1521:WAS1TST</param>
+	<param name="suds.datasource.username">hr_proxy</param>
+
+</config>

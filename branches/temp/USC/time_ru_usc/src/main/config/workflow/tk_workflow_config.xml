@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<data xmlns="ns:workflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ns:workflow resource:WorkflowData">
+  <ruleAttributes xmlns="ns:workflow/RuleAttribute" xsi:schemaLocation="ns:workflow/RuleAttribute resource:RuleAttribute">
+    <ruleAttribute>
+      <name>TimesheetWorkareaSearchAttribute</name>
+      <className>edu.iu.uis.eden.docsearch.xml.StandardGenericXMLSearchableAttribute</className>
+      <label>TimesheetWorkareaSearchAttribute</label>
+      <description>TimesheetWorkareaSearchAttribute</description>
+      <type>SearchableXmlAttribute</type>
+      <searchingConfig>
+        <fieldDef name="workarea" title="Work Area">
+          <display>
+            <type>text</type>
+          </display>
+          <fieldEvaluation>
+            <xpathexpression>//WORKAREA/@value</xpathexpression>
+          </fieldEvaluation>
+        </fieldDef>
+      </searchingConfig>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetSalaryPlanSearchAttribute</name>
+      <className>edu.iu.uis.eden.docsearch.xml.StandardGenericXMLSearchableAttribute</className>
+      <label>TimesheetSalaryPlanSearchAttribute</label>
+      <description>TimesheetSalaryPlanSearchAttribute</description>
+      <type>SearchableXmlAttribute</type>
+      <searchingConfig>
+        <fieldDef name="salaryPlan" title="Salary Plan">
+          <display>
+            <type>select</type>
+            <values title="" />
+            <values title="CL: Clerical Support Staff">CL</values>
+            <values title="GS: Non-Exempt General Supervisor">GS</values>
+            <values title="HA: Hourly - AmeriCorps">HA</values>
+            <values title="HO: Overtime Only Hourly">HO</values>
+            <values title="HP: PERF Hourly">HP</values>
+            <values title="HR: Regular Hourly">HR</values>
+            <values title="HS: Student Hourly">HS</values>
+            <values title="HX: Occasional and Sporadic Hourly">HX</values>
+            <values title="NU: Nurse">NU</values>
+            <values title="PAO: Prof Staff - OT Elig">PAO</values>
+            <values title="PAU: Prof Staff - Wkly Sal-OT Elig">PAU</values>
+            <values title="PN: Practical Nurse">PN</values>
+            <values title="RA: Resident Appointee">RA</values>
+            <values title="RS: Research Tech">RS</values>
+            <values title="SM: Service/Maintenance Staff">SM</values>
+            <values title="SS: Non-Exempt Support Staff">SS</values>
+            <values title="TE: Technical Support Staff">TE</values>
+            <values title="WSU: WorkStudy Undergraduate">WSU</values>
+          </display>
+          <fieldEvaluation>
+            <xpathexpression>//SALARYPLAN/@value</xpathexpression>
+          </fieldEvaluation>
+        </fieldDef>
+      </searchingConfig>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>SupervisorPayrollProcessorAttribute</name>
+      <className>edu.iu.uis.hr.tk.workflow.SupervisorPayrollProcessorRoleAttribute</className>
+      <label>Supervisor and Payroll Processor Attribute</label>
+      <description>Supervisor and Payroll Processor Attribute</description>
+      <type>RuleAttribute</type>
+      <messageEntity>TK</messageEntity>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetDelegationAttribute</name>
+      <className>edu.iu.uis.hr.tk.workflow.DelegationAttribute</className>
+      <label>Timesheet Delegation Attribute</label>
+      <description>Timesheet Delegation Attribute for Supervisors and Payroll Processors</description>
+      <type>RuleAttribute</type>
+      <messageEntity>TK</messageEntity>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetDepartmentSearchAttribute</name>
+      <className>edu.iu.uis.eden.docsearch.xml.StandardGenericXMLSearchableAttribute</className>
+      <label>TimesheetDepartmentSearchAttribute</label>
+      <description>TimesheetDepartmentSearchAttribute</description>
+      <type>SearchableXmlAttribute</type>
+      <searchingConfig>
+        <fieldDef name="department" title="Department">
+          <display>
+            <type>text</type>
+          </display>
+          <searchDefinition autoWildcardLocation="suffixonly" />
+          <fieldEvaluation>
+            <xpathexpression>//DEPARTMENT/@value</xpathexpression>
+          </fieldEvaluation>
+        </fieldDef>
+      </searchingConfig>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetEmployeeTypeSearchAttribute</name>
+      <className>edu.iu.uis.eden.docsearch.xml.StandardGenericXMLSearchableAttribute</className>
+      <label>TimesheetEmployeeTypeSearchAttribute</label>
+      <description>TimesheetEmployeeTypeSearchAttribute</description>
+      <type>SearchableXmlAttribute</type>
+      <searchingConfig>
+        <fieldDef name="employeeType" title="Employee Type">
+          <display>
+            <type>select</type>
+            <values title="" />
+            <values title="E: Biweekly Staff">E</values>
+            <values title="H: Hourly">H</values>
+          </display>
+          <fieldEvaluation>
+            <xpathexpression>//EMPLOYEETYPE/@value</xpathexpression>
+          </fieldEvaluation>
+        </fieldDef>
+      </searchingConfig>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetPayEndDateSearchAttribute</name>
+      <className>edu.iu.uis.eden.docsearch.xml.StandardGenericXMLSearchableAttribute</className>
+      <label>TimesheetPayEndDateSearchAttribute</label>
+      <description>TimesheetPayEndDateSearchAttribute</description>
+      <type>SearchableXmlAttribute</type>
+      <searchingConfig>
+        <fieldDef name="payEndDate" title="Pay End Date">
+          <display>
+            <type>text</type>
+          </display>
+          <searchDefinition autoWildcardLocation="suffixonly" />
+          <fieldEvaluation>
+            <xpathexpression>//PAYENDDATEELEMENT/@value</xpathexpression>
+          </fieldEvaluation>
+        </fieldDef>
+      </searchingConfig>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetActionListAttribute</name>
+      <className>edu.iu.uis.hr.tk.workflow.CustomActionListAttribute</className>
+      <label>Timesheet Action List Attribute</label>
+      <description>Timesheet Action List Attribute</description>
+      <type>ActionListAttribute</type>
+      <messageEntity>TK</messageEntity>
+    </ruleAttribute>
+    <ruleAttribute>
+      <name>TimesheetNoteAttribute</name>
+      <className>edu.iu.uis.hr.tk.workflow.CustomNoteAttribute</className>
+      <label>Timesheet Note Attribute</label>
+      <description>Timesheet Note Attribute</description>
+      <type>NoteAttribute</type>
+      <messageEntity>TK</messageEntity>
+    </ruleAttribute>
+  </ruleAttributes>
+  <ruleTemplates xmlns="ns:workflow/RuleTemplate" xsi:schemaLocation="ns:workflow/RuleTemplate resource:RuleTemplate">
+    <ruleTemplate allowOverwrite="true">
+      <name>TimesheetDelegationTemplate</name>
+      <description>Rule Template for Timesheet Delegation</description>
+      <attributes>
+        <attribute>
+          <name>TimesheetDelegationAttribute</name>
+          <required>true</required>
+        </attribute>
+      </attributes>
+    </ruleTemplate>
+    <ruleTemplate allowOverwrite="true">
+      <name>PayrollProcessorRuleTemplate</name>
+      <description>Rule Template for Payroll Processor Routing</description>
+      <delegationTemplate>TimesheetDelegationTemplate</delegationTemplate>
+      <attributes>
+        <attribute>
+          <name>SupervisorPayrollProcessorAttribute</name>
+          <required>true</required>
+        </attribute>
+      </attributes>
+    </ruleTemplate>
+    <ruleTemplate allowOverwrite="true">
+      <name>SupervisorRuleTemplate</name>
+      <description>Rule Template for Supervisor Routing</description>
+      <delegationTemplate>TimesheetDelegationTemplate</delegationTemplate>
+      <attributes>
+        <attribute>
+          <name>SupervisorPayrollProcessorAttribute</name>
+          <required>true</required>
+        </attribute>
+      </attributes>
+    </ruleTemplate>
+  </ruleTemplates>
+  <documentTypes xmlns="ns:workflow/DocumentType" xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
+    <documentType>
+      <name>TKDocument</name>
+      <description>Timekeeping Parent Document</description>
+      <label>Timekeeping Parent Document</label>
+      <messageEntity>TK</messageEntity>
+      <postProcessorName>none</postProcessorName>
+      <superUserWorkgroupName>TimeSystemSuperusers</superUserWorkgroupName>
+      <blanketApproveWorkgroupName>TimeBlanketApprovers</blanketApproveWorkgroupName>
+      <docHandler>none</docHandler>
+      <active>true</active>
+      <policies>
+        <policy>
+          <name>DEFAULT_APPROVE</name>
+          <value>false</value>
+        </policy>
+        <policy>
+          <name>PRE_APPROVE</name>
+          <value>false</value>
+        </policy>
+      </policies>
+      <security>
+        <routeLogAuthenticated>true</routeLogAuthenticated>
+        <workgroup>TK_REVIEWER</workgroup>
+        <role allowed="true">STAFF-ANY</role>
+      </security>
+      <routingVersion>2</routingVersion>
+    </documentType>
+    <documentType>
+      <name>Timesheet</name>
+      <parent>TKDocument</parent>
+      <description>Timesheet Document</description>
+      <label>Timesheet Document</label>
+      <postProcessorName>edu.iu.uis.hr.tk.workflow.PostProcessor</postProcessorName>
+      <superUserWorkgroupName>TimeSystemSuperusers</superUserWorkgroupName>
+      <blanketApproveWorkgroupName>TimeBlanketApprovers</blanketApproveWorkgroupName>
+      <defaultExceptionWorkgroupName>TK_EXCEPTION_ROUTING</defaultExceptionWorkgroupName>
+      <docHandler>${TK.DocHandlerPrefix}/TimesheetDocument.do?method=open</docHandler>
+      <notificationFromAddress>fmscustr@indiana.edu</notificationFromAddress>
+      <active>true</active>
+      <attributes>
+        <attribute>
+          <name>TimesheetDepartmentSearchAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetWorkareaSearchAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetEmployeeTypeSearchAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetPayEndDateSearchAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetSalaryPlanSearchAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetActionListAttribute</name>
+        </attribute>
+        <attribute>
+          <name>TimesheetNoteAttribute</name>
+        </attribute>
+      </attributes>
+      <routingVersion>2</routingVersion>
+      <routePaths>
+        <routePath>
+          <start name="Employee" nextNode="Supervisor" />
+          <requests name="Supervisor" nextNode="PayrollProcessor" />
+          <requests name="PayrollProcessor" />
+        </routePath>
+      </routePaths>
+      <routeNodes>
+        <start name="Employee">
+          <activationType>P</activationType>
+          <mandatoryRoute>false</mandatoryRoute>
+          <finalApproval>false</finalApproval>
+        </start>
+        <requests name="Supervisor">
+          <activationType>P</activationType>
+          <ruleTemplate>SupervisorRuleTemplate</ruleTemplate>
+          <mandatoryRoute>true</mandatoryRoute>
+          <finalApproval>false</finalApproval>
+        </requests>
+        <requests name="PayrollProcessor">
+          <activationType>P</activationType>
+          <ruleTemplate>PayrollProcessorRuleTemplate</ruleTemplate>
+          <mandatoryRoute>true</mandatoryRoute>
+          <finalApproval>true</finalApproval>
+        </requests>
+      </routeNodes>
+    </documentType>
+  </documentTypes>
+</data>
