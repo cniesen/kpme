@@ -194,7 +194,13 @@
 		<field-descriptor name="supervisorApprovalDate" column="supervisor_approval_date"	jdbc-type="DATE"/>
 		<field-descriptor name="supervisorApprovalTime" column="supervisor_approval_time"	jdbc-type="TIME"/>
 
-		<collection-descriptor name="payCalendarDates" element-class-ref="org.kuali.hr.time.paycalendar.PayCalendarDates">
+		<collection-descriptor 
+			name="payCalendarDates" 
+			element-class-ref="org.kuali.hr.time.paycalendar.PayCalendarDates"
+			auto-retrieve="true"
+			auto-update="object"
+			auto-delete="object"
+			>
 			<inverse-foreignkey field-ref="payCalendarId"/>
 		</collection-descriptor>
 	</class-descriptor>

@@ -8,15 +8,14 @@ public class TkForm extends KualiForm {
      * 
      */
     private static final long serialVersionUID = -3945893347262537122L;
-    
+
     private String methodToCall;
 
     public String getMethodToCall() {
-        return methodToCall;
+	return methodToCall;
     }
 
     public void setMethodToCall(String methodToCall) {
-        this.methodToCall = methodToCall;
+	this.methodToCall = methodToCall;
     }
-
 }

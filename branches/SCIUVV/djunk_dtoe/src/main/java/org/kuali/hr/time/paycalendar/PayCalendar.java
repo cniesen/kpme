@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import oracle.jdbc.driver.OracleConnection;
@@ -18,7 +19,8 @@ import org.joda.time.DateTimeZone;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class PayCalendar extends PersistableBusinessObjectBase {
-
+    
+    
     /**
      * 
      */
@@ -47,7 +49,7 @@ public class PayCalendar extends PersistableBusinessObjectBase {
     private Date supervisorApprovalDate;
     private Time supervisorApprovalTime;
 
-    private List<PayCalendarDates> payCalendarDates;
+    private List<PayCalendarDates> payCalendarDates = new LinkedList<PayCalendarDates>();
 
     public PayCalendar() {
 

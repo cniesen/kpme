@@ -6,6 +6,7 @@
         <form-bean name="ClockActionForm" type="org.kuali.hr.time.clock.web.ClockActionForm"/>
         <form-bean name="TimeDetailActionForm" type="org.kuali.hr.time.detail.web.TimeDetailActionForm"/>
         <form-bean name="TimeApprovalActionForm" type="org.kuali.hr.time.approval.web.TimeApprovalActionForm"/>
+        <form-bean name="PayCalendarActionForm" type="org.kuali.hr.time.paycalendar.web.PayCalendarActionForm"/>
     </form-beans>
 
     <global-forwards type="org.apache.struts.action.ActionForward">
@@ -22,6 +23,10 @@
 
         <action path="/TimeApproval" name="TimeApprovalActionForm" scope="request" input="/WEB-INF/jsp/timeApproval.jsp" type="org.kuali.hr.time.approval.web.TimeApprovalAction" parameter="methodToCall" validate="false" attribute="KualiForm">
             <forward name="basic" path="/WEB-INF/jsp/timeApproval.jsp" />
+        </action>
+        
+        <action path="/PayCalendarMaintenance" name="PayCalendarActionForm" scope="session" input="/WEB-INF/jsp/payCalendar.jsp" type="org.kuali.hr.time.paycalendar.web.PayCalendarAction" parameter="methodToCall" validate="true" attribute="KualiForm">
+        	<forward name="basic" path="/WEB-INF/jsp/payCalendar.jsp" />
         </action>
 	</action-mappings>
 

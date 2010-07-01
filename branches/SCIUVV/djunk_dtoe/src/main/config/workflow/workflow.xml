@@ -24,6 +24,7 @@
     <documentType>
       <name>PayCalendarDocumentType</name>
       <parent>RiceDocument</parent>
+      <docHandler>/MaintainRoleDocument.do?methodToCall=docHandler</docHandler>
       <label>PayCalendarDocument</label>
     </documentType>                                            
   </documentTypes>

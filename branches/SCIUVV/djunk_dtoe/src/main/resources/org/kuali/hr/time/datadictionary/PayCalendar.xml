@@ -28,7 +28,12 @@
         <ref bean="PayCalendar-supervisorApprovalDate"/>
         <ref bean="PayCalendar-supervisorApprovalTime"/>
       </list>
-    </property>    
+    </property>
+    <property name="collections">
+      <list>
+        <bean parent="CollectionDefinition" p:name="payCalendarDates" p:label="Pay Calendar Dates" p:shortLabel="Pay Calendar Dates" p:summary="Pay Calendar Dates" p:description="Pay Calendar Dates"/>
+      </list>
+    </property>        
   </bean>
 
   <!-- Attribute Definitions -->
@@ -276,6 +281,7 @@
 
   <bean id="PayCalendar-lookupDefinition" parent="PayCalendar-lookupDefinition-parentBean"/>
   <bean id="PayCalendar-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+    <!--  property name="lookupableID" value="payCalendarLookupable"/ -->
     <property name="lookupFields">
       <list>
         <bean parent="FieldDefinition" p:attributeName="payCalendarId"/>
@@ -295,7 +301,7 @@
         <bean parent="FieldDefinition" p:attributeName="beginDate"/>
         <bean parent="FieldDefinition" p:attributeName="beginTime"/>
         <bean parent="FieldDefinition" p:attributeName="endDate"/>
-        <bean parent="FieldDefinition" p:attributeName="endTime"/>
+        <bean parent="FieldDefinition" p:attributeName="endTime"/> 
       </list>
     </property>
     <property name="title" value="Pay Calendar Lookup"/>
