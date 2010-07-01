@@ -13,7 +13,6 @@
 </c:choose>
 <tk:tkHeader tabId="clock">
 
-
 	<html:form action="/Clock" method="post">
 	<html:hidden property="methodToCall" value=""/>
 	<html:hidden property="clockAction"/>
@@ -21,17 +20,17 @@
 
 	<div id="clock">
 		<table>
-			<tr class="header"><td colspan="2">Clock</td></tr>
+			<tr class="header"><td colspan="2"><bean:message key="clock.title"/></td></tr>
 			<tr>
-				<td class="sub-header">Current Time : </td>
+				<td class="sub-header"><bean:message key="clock.currentTime"/> : </td>
 				<td><div class="jClock"></div></td>
 			</tr>
 			<tr>
-				<td class="sub-header">Work Status : </td>
+				<td class="sub-header"><bean:message key="clock.workStatus"/> : </td>
 				<td>${lastClockActionMessage}</td>
 			</tr>
 			<tr>
-				<td class="sub-header">Elapsed Time : </td>
+				<td class="sub-header"><bean:message key="clock.elapsedTime"/> : </td>
 
 				<td>
 					<c:choose>
@@ -45,11 +44,11 @@
 				</td>
 			</tr>
 			<tr>
-				<td class="sub-header">Last Clocked Hours : </td>
+				<td class="sub-header"><bean:message key="clock.lastClockedHours"/> : </td>
 				<td>3.2</td>
 			</tr>
 			<tr>
-				<td class="sub-header">Clock Assignment : </td>
+				<td class="sub-header"><bean:message key="clock.clockAssignment"/> : </td>
 				<td>
 					<select>
 							<option>Operations/AIS</option>

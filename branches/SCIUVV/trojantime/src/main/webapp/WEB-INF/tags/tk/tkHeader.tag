@@ -36,11 +36,11 @@
 			<div class="person-info" style="float:right">
 				<table class="${backdoor}">
 					<tr>
-						<td align="right">${prefix} Employee Name:</td>
+						<td align="right">${prefix} <bean:message key="person.info.employeeName"/>:</td>
 						<td><a href="<%=request.getContextPath() %>/PersonInfo.do?methodToCall=showInfo">${person.principalName}</a></td>
 					</tr>
 					<tr>
-						<td align="right">${prefix} Employee Id:</td>
+						<td align="right">${prefix} <bean:message key="person.info.employeeId"/>:</td>
 						<td>${person.principalId}</td>
 					</tr>
 					<c:if test="${form.user.backdoorPerson ne null}">
@@ -55,6 +55,7 @@
 		</ul>
 		<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
 			<li id="admin" class="ui-state-default ui-corner-top"><a href="Admin.do">Admin</a></li>
+			<li id="personInfo" class="ui-state-default ui-corner-top"><a href="PersonInfo.do">Person Info</a></li>
 			<li id="approvals" class="ui-state-default ui-corner-top"><a href="TimeApproval.do">Approvals</a></li>
 			<li id="timesheet" class="ui-state-default ui-corner-top"><a href="Timesheet.do">Historical Timesheets</a></li>
 			<li id="timeDetail" class="ui-state-default ui-corner-top"><a href="TimeDetail.do">Time Detail</a></li>

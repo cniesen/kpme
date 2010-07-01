@@ -34,9 +34,9 @@
 				<td>5/14 Fri</td>
 				<td>5/15 Sat</td>
 				<td>5/16 Sun</td>
-				<td>Total Hours</td>
-				<td>Status</td>
-				<td align="center">Select all / none<br/><input type="checkbox" id="selectAll"/></td>
+				<td><bean:message key="approval.totalHours"/></td>
+				<td><bean:message key="approval.status"/></td>
+				<td align="center"><bean:message key="approval.selectAllNone"/><br/><input type="checkbox" id="selectAll"/></td>
 			</tr>
 
 			<tr>
