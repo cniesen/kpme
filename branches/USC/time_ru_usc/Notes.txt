@@ -1,2 +1,0 @@
-Removed the core of TK due to Peoplesoft dependencies/datastructures
-Removed peoplesoft tables from ojb-repository.xml.
