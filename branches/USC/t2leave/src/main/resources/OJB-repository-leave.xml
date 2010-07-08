@@ -30,7 +30,7 @@
 	</jdbc-connection-descriptor>
 
 	<class-descriptor class="org.kuali.hr.leave.document.Document" table="EPTO_DOCUMENT_T">
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="documentStatus" column="DOCUMENT_STATUS" jdbc-type="VARCHAR" />
 		<field-descriptor name="documentClass" column="DOCUMENT_CLASS" jdbc-type="VARCHAR" />
 		<field-descriptor name="employeeId" column="EMPLID" jdbc-type="VARCHAR" />
@@ -40,7 +40,7 @@
 		<!--
 		<reference-descriptor name="documentHeader" class-ref="org.kuali.core.bo.DocumentHeader" 
             auto-retrieve="true" auto-update="object" auto-delete="object">
-            <foreignkey field-ref="documentNumber" />
+            <foreignkey field-ref="documentId" />
         </reference-descriptor>	
 		-->
 	</class-descriptor>
@@ -62,7 +62,7 @@
 		<field-descriptor name="statusInd" column="STATUS" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
 		<field-descriptor name="hours" column="HOURS" jdbc-type="NUMERIC" precision="8" scale="4" nullable="false" primarykey="false" />
 		<field-descriptor name="applyToYtdUsedInd" column="APPLY_TO_YTD_USED" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="employeeIdActivated" column="EMPLID_ACTIVATED" jdbc-type="VARCHAR" length="50" nullable="false" primarykey="false" />
 		<field-descriptor name="employeeIdInactivated" column="EMPLID_INACTIVATED" jdbc-type="VARCHAR" length="50" primarykey="false" />
 		<field-descriptor name="timestampActivated" column="TIMESTAMP_ACTIVATED" jdbc-type="DATE" nullable="false" primarykey="false" />
@@ -88,7 +88,7 @@
 		<field-descriptor name="campusCode" column="CAMPUS_CD" jdbc-type="VARCHAR" />
 		<field-descriptor name="planType" column="PLAN_TYPE" jdbc-type="VARCHAR" />
 		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" length="255" nullable="false" primarykey="false" />
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="previousDocumentId" column="PREVIOUS_DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="false" />
 		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="DATE" nullable="false" primarykey="false"/>
 		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"/>
@@ -99,7 +99,7 @@
  	<class-descriptor class="org.kuali.hr.leave.accrualcategory.rule.AccrualCategoryRule" table="EPTO_ACCRUAL_CATEGORY_RULE_T">
 		<field-descriptor name="id" column="ACCRUAL_CATEGORY_RULE_PSK" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EPTO_ACCRUAL_CATEGORY_RULE_S"/>
 		<field-descriptor name="accrualCategoryPseudoKey" column="ACCRUAL_CATEGORY_PSEUDO_KEY" jdbc-type="BIGINT"/>				
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="startMonths" column="START_MONTHS" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" primarykey="false" />
 		<field-descriptor name="endMonths" column="END_MONTHS" jdbc-type="NUMERIC" precision="5" scale="0" nullable="true" primarykey="false" />
 		<field-descriptor name="maxTaken" column="MAX_TAKEN" jdbc-type="NUMERIC" precision="5" scale="0" nullable="true" primarykey="false" />
@@ -120,7 +120,7 @@
 		<field-descriptor name="prorationInd" column="PRORATION" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />	
 		<field-descriptor name="showOnGridInd" column="SHOW_ON_GRID" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />	
 		<field-descriptor name="defaultAccrualCategoryInd" column="DEFAULT_ACCRUAL_CAT" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />	
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="previousDocumentId" column="PREVIOUS_DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="false" />
 		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="DATE" nullable="false" primarykey="false"/>
 		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
@@ -135,7 +135,7 @@
 		<field-descriptor name="role" column="ROLE" jdbc-type="VARCHAR"/>	
 		<field-descriptor name="targetEmployeeId" column="TARGET_EMPLID" jdbc-type="VARCHAR"/>	
 		<field-descriptor name="expirationDate" column="EXPDT" jdbc-type="DATE" nullable="false" primarykey="false"/>					
-		<field-descriptor name="documentNumber" column="doc_hdr_id" jdbc-type="VARCHAR" primarykey="true" />
+		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="true" />
 		<field-descriptor name="previousDocumentId" column="PREVIOUS_DOCUMENT_ID" jdbc-type="VARCHAR" primarykey="false" />
 		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="DATE" nullable="false" primarykey="false"/>
 		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"/>
@@ -162,7 +162,7 @@
 		<field-descriptor name="basicInd" column="BASIC" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
 		<field-descriptor name="advanceInd" column="ADVANCE" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />
 		<field-descriptor name="validationClass" column="VALIDATION_CLASS" jdbc-type="VARCHAR" nullable="false" />
-		<field-descriptor name="effdt" column="EFFDT" jdbc-type="date" nullable="false" />
+		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="date" nullable="false" />
 		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"  />
 		<field-descriptor name="timestamp"  column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
  		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
@@ -178,7 +178,7 @@
   		<field-descriptor name="description" column="DESCRIPTION" jdbc-type="VARCHAR" nullable="false" />
   		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" nullable="false" />
   		<field-descriptor name="previousDocumentId" column="PREVIOUS_DOCUMENT_ID" jdbc-type="VARCHAR" nullable="true" />
-  		<field-descriptor name="effdt" column="EFFDT" jdbc-type="date" nullable="false" />
+  		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="date" nullable="false" />
   		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"  />
 		<field-descriptor name="timestamp"  column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
  		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
@@ -207,9 +207,9 @@
 	
 	<class-descriptor class="org.kuali.hr.leave.pschange.PsChange" table="epto_ps_change_t">
 		<field-descriptor name="id" 		   column="PS_CHANGE_PSEUDO_KEY" jdbc-type="BIGINT" length="19" primarykey="true" autoincrement="true" sequence-name="epto_ps_change_s" />
-		<field-descriptor name="employeeId"    column="EMPLID"        jdbc-type="VARCHR"  length="50" primarykey="true" />
-		<field-descriptor name="emplRcd"       column="empl_rcd"      jdbc-type="NUMERIC"  precision="2" scale="0" nullable="false" />
-		<field-descriptor name="emplStatus"    column="empl_status"   jdbc-type="VARCHAR"  nullable="false" primarykey="false"/>
+		<field-descriptor name="employeeId"    column="EMPLID"        jdbc-type="VARCHAR"  length="50" primarykey="true" />
+		<field-descriptor name="employeeRcd"    column="empl_rcd"      jdbc-type="NUMERIC"  precision="2" scale="0" nullable="false" />
+		<field-descriptor name="employeeStatus" column="empl_status"   jdbc-type="VARCHAR"  nullable="false" primarykey="false"/>
 		<field-descriptor name="stdHours"      column="std_hours"     jdbc-type="NUMERIC"  precision="2" scale="0" nullable="false" />
 		<field-descriptor name="serviceDate"   column="service_dt"    jdbc-type="DATE"     nullable="false" primarykey="false"/>
 	    <field-descriptor name="leavePercent"  column="leave_percent" jdbc-type="NUMERIC"  precision="15" scale="0" nullable="false" />
@@ -223,7 +223,7 @@
 	
 	<class-descriptor class="org.kuali.hr.leave.transfer.Transfer" table="epto_transfer_t">
 		<field-descriptor name="id" 					   column="EPTO_TRANSFER_PSEUDO_KEY" jdbc-type="BIGINT" length="19" primarykey="true" autoincrement="true" sequence-name="epto_transfer_s" />
-		<field-descriptor name="employeeId"                column="EMPLID"            jdbc-type="VARCHR" length="50" primarykey="true" />
+		<field-descriptor name="employeeId"                column="EMPLID"            jdbc-type="VARCHAR" length="50" primarykey="true" />
 		<field-descriptor name="month"                     column="month"             jdbc-type="NUMERIC" precision="2" scale="0" nullable="false" />
 		<field-descriptor name="year"                      column="year"              jdbc-type="NUMERIC" precision="4" scale="0" nullable="false" primarykey="false"/>
 		<field-descriptor name="documentId"                column="document_id"       jdbc-type="VARCHAR" nullable="false" />
@@ -235,19 +235,18 @@
 		<field-descriptor name="versionNumber"             column="ver_nbr"           jdbc-type="BIGINT" locking="true" />
 	</class-descriptor>	
 
-	<class-descriptor class="org.kuali.hr.leave.overriderow.EmplOverrideRow" table="epto_empl_override_row_t">
+	<class-descriptor class="org.kuali.hr.leave.emploverriderow.EmplOverrideRow" table="epto_empl_override_row_t">
 		<field-descriptor name="id" 				      column="EMPL_OVR_ROW_PSEUDO_KEY" jdbc-type="BIGINT" length="19" primarykey="true" autoincrement="true" sequence-name="epto_empl_override_row_t" />
-		<field-descriptor name="emplOvrPseudoKey"         column="empl_ovr_pseudo_key"      jdbc-type="NUMERIC"  precision="15" scale="0" nullable="false"	 />
-		<field-descriptor name="maxCarryover"             column="max_carryover"       		jdbc-type="NUMVRIC"  precision="5" scale="0" nullable="false" primarykey="false"/>		
+		<field-descriptor name="maxCarryover"             column="max_carryover"       		jdbc-type="NUMERIC"  precision="5" scale="0" nullable="false" primarykey="false"/>		
 		<field-descriptor name="maxTaken"                 column="max_taken"         jdbc-type="NUMERIC"  precision="5" scale="0" nullable="false" primarykey="false"/>
 		<field-descriptor name="maxTransfer"              column="max_transfer"      jdbc-type="NUMERIC"  precision="5" scale="0" nullable="false" primarykey="false"/>
-		<field-descriptor name="flexSchedule"             column="flex_schedule"	 jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />					
+		<field-descriptor name="flexScheduleInd"          column="flex_schedule"	 jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />					
 		<field-descriptor name="documentId"               column="document_Id"       jdbc-type="VARCHAR"  nullable="false" primarykey="false" />
-		<field-descriptor name="fmlaOverride"             column="fmla_override"	 jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
-		<field-descriptor name="injOverride"              column="inj_override"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
-		<field-descriptor name="milOverride"              column="mil_override"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
+		<field-descriptor name="fmlaOverrideInd"          column="fmla_override"	 jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
+		<field-descriptor name="injOverrideInd"           column="inj_override"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
+		<field-descriptor name="milOverrideInd"           column="mil_override"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
 		<field-descriptor name="effectiveDate"            column="effdt"             jdbc-type="DATE" nullable="false" primarykey="false"/>
-		<field-descriptor name="active"                   column="active_ind"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
+		<field-descriptor name="activeInd"                column="active_ind"	     jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion" />		
 		<field-descriptor name="timestamp"                column="timestamp"         jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
 		<field-descriptor name="objectId"                 column="obj_id"            jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber"            column="ver_nbr"           jdbc-type="BIGINT" locking="true" />	
@@ -255,27 +254,26 @@
 
  	<class-descriptor class="org.kuali.hr.leave.emploverride.EmplOverride" table="EPTO_EMPL_OVERRIDE_T" >
  		<field-descriptor name="id" column="SCHED_TIME_OFF_PSEUDO_KEY" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EPTO_EMPL_OVERRIDE_S"/>
- 		<field-descriptor name="emplOvrPseudoKey column="EMPL_OVR_PSEUDO_KEY" jdbc-type="BIGINT" nullable="false" primarykey="true" />
  		<field-descriptor name="employeeId" column="EMPLID" jdbc-type="VARCHAR" nullable="false" />
  		<field-descriptor name="expirationDate" column="EXPIRATION_DATE" jdbc-type="date" nullable="true"/>
   		<field-descriptor name="documentId" column="DOCUMENT_ID" jdbc-type="VARCHAR" nullable="true" />
   		<field-descriptor name="previousDocumentId" column="PREVIOUS_DOCUMENT_ID" jdbc-type="VARCHAR" nullable="true" />
-  		<field-descriptor name="effdt" column="EFFDT" jdbc-type="date" nullable="false" />
+  		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="date" nullable="false" />
   		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"  />
 		<field-descriptor name="timestamp"  column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
  		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
  	    <field-descriptor name="versionNumber" column="VER_NBR" jdbc-type="BIGINT" locking="true" />
  	</class-descriptor>
 
- 	<class-descriptor class="org.kuali.hr.leave.reporting.ReportingHierarchy" table="EPTO_REPORTING_HIERARCHY_T" >
+ 	<class-descriptor class="org.kuali.hr.leave.reportinghierarchy.ReportingHierarchy" table="EPTO_REPORTING_HIERARCHY_T" >
  		<field-descriptor name="id" column="REPORTING_HIERARCHY_PSEUDO_KEY" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="EPTO_REPORTING_HIERARCHY_T"/>
- 		<field-descriptor name="positionNbr column="POSITION_NBR" jdbc-type="VARCHAR" nullable="false" primarykey="true" />
+ 		<field-descriptor name="positionNbr" column="POSITION_NBR" jdbc-type="VARCHAR" nullable="false" primarykey="true" />
  		<field-descriptor name="employeeId" column="EMPLID" jdbc-type="VARCHAR" nullable="false" />
- 		<field-descriptor name="emplRcd" column="EMPL_RCD" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false"/>
- 		<field-descriptor name="emplStatus" column="EMPL_STATUS" jdbc-type="VARCHAR" nullable="false"/>
+ 		<field-descriptor name="employeeRcd" column="EMPL_RCD" jdbc-type="NUMERIC" precision="2" scale="0" nullable="false"/>
+ 		<field-descriptor name="employeeStatus" column="EMPL_STATUS" jdbc-type="VARCHAR" nullable="false"/>
  		<field-descriptor name="campus" column="CAMPUS" jdbc-type="VARCHAR" nullable="false"/>
- 		<field-descriptor name="deptid" column="DEPTID" jdbc-type="VARCHAR" nullable="true"/>
-  		<field-descriptor name="effdt" column="EFFDT" jdbc-type="date" nullable="false" />
+ 		<field-descriptor name="departmentId" column="DEPTID" jdbc-type="VARCHAR" nullable="true"/>
+  		<field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="date" nullable="false" />
   		<field-descriptor name="activeInd" column="ACTIVE_IND" jdbc-type="BIT" length="1" nullable="false"	conversion="org.apache.ojb.broker.accesslayer.conversions.Boolean2IntFieldConversion"  />
 		<field-descriptor name="timestamp"  column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
  		<field-descriptor name="objectId" column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
