@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<data xmlns="ns:workflow" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="ns:workflow resource:WorkflowData">
+  <documentTypes xmlns="ns:workflow/DocumentType" xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
+    <documentType>
+      <name>LeaveAccrualRuleDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>LeaveAccrualRuleMaintenanceDocument</label>
+    </documentType>   
+    <documentType>
+      <name>T2AccrualFreqDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2AccrualFreqMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2AccrualTypeDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2AccrualTypeMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2LeaveTypeDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2LeaveTypeMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2EmplTypeDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2EmplTypeMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2JobDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2JobMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2PayTypeDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2PayTypeMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2UnionDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2UnionMaintenanceDocument</label>
+    </documentType>
+    <documentType>
+      <name>T2WorkScheduleDocumentType</name>
+      <parent>RiceDocument</parent>
+      <label>T2WorkScheduleMaintenanceDocument</label>
+    </documentType>
+  </documentTypes>
+</data>
