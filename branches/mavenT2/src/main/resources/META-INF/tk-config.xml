@@ -46,6 +46,10 @@
 	<param name="tk.datasource.pool.maxWait">30000</param>
 	<param name="tk.datasource.pool.minSize">10</param>
 	<param name="tk.datasource.pool.maxSize">150</param>
+	
+	<param name="tk.datasource.url">jdbc:mysql://localhost:3306/tk</param>
+	<param name="tk.datasource.username">kuldemo</param>
+	<param name="tk.datasource.password">kuldemo</param>
 	<!-- end time database params -->
 
    	<!-- workflow database params -->
@@ -56,6 +60,10 @@
 	<param name="kr.datasource.pool.maxWait">30000</param>
 	<param name="kr.datasource.pool.minSize">10</param>
 	<param name="kr.datasource.pool.maxSize">100</param>
+	
+	<param name="kr.datasource.url">jdbc:mysql://localhost:3306/kuldemo</param>
+	<param name="kr.datasource.username">kuldemo</param>
+	<param name="kr.datasource.password">kuldemo</param>
    	<!-- end workflow database params -->
 
    	<!-- rice related params -->
