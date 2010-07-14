@@ -107,6 +107,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
+				<version>2.0</version>
 				<configuration>
 					<tagBase>https://ais-svn.usc.edu/svn/T2/tags</tagBase>
 				</configuration>
@@ -123,8 +124,8 @@
 	</repositories>
 	
 	<scm>
-		<connection>https://ais-svn.usc.edu/svn/T2/branches/mavenT2</connection>
-		<developerConnection>https://ais-svn.usc.edu/svn/T2/branches/mavenT2</developerConnection>
+		<connection>scm:svn:https://ais-svn.usc.edu/svn/T2/branches/mavenT2</connection>
+		<developerConnection>scm:svn:https://ais-svn.usc.edu/svn/T2/branches/mavenT2</developerConnection>
 		<url>https://ais-svn.usc.edu/svn/T2/branches/mavenT2</url>
 	</scm>
 
