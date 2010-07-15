@@ -17,8 +17,8 @@
 	<artifactId>trojan-time</artifactId>
 	<packaging>war</packaging>
 	<name>trojan-time</name>
-	<description>Kuali's Tojan Time</description>
-	<version>0.2-SNAPSHOT</version>
+	<description>Kuali's Trojan Time</description>
+	<version>0.1-SNAPSHOT</version>
 
 	<dependencies>
 		<dependency>
@@ -120,11 +120,13 @@
 			<id>kuali</id>
 			<name>Kuali Repository</name>
 			<url>scp://test.kuali.org/maven</url>
+			<uniqueVersion>true</uniqueVersion>
 		</repository>
 		<snapshotRepository>
 			<id>kuali</id>
 			<name>Kuali Repository</name>
 			<url>scp://test.kuali.org/maven</url>
+			<uniqueVersion>true</uniqueVersion>
 		</snapshotRepository>
 	</distributionManagement>
 	
