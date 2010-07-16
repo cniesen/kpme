@@ -1,0 +1,74 @@
+.container { background-color: #ffffff; width: 1095px;}
+
+
+
+#Xt2_content_body { min-width: 860px; max-width: 100%; width: 1280px; }
+#t2_content_body { width: 1024px; }
+
+#t2_leave_page_header  { height: 200px; background-color:#ffffff; border:solid 3px #990000; }
+
+#t2_leave-entry { margin-top: 90px;  }
+
+.add-date-header { display: none; }
+.add-date-body { text-align:right; border: solid 1px #999999; -moz-border-radius:7px; -webkit-border-radius:7px; }
+.add-date-content { padding: 0px; padding-right:20px; }
+
+
+.add-date-range-tab li { margin: 0px -5px -5px 10px; padding: 2px 3px 7px 3px;  -moz-border-radius:7px; -webkit-border-radius:7px; }
+
+
+.pto-calendar-td { width:80px; }
+
+.pto-calendar td { vertical-align:top; margin:0px; padding:0px; } 
+.pto-calendar td .day-header-generic { padding-left:2px; }
+
+.t2_calendar td { vertical-align:top; margin:0px; padding:0px; } 
+.day-header-generic, .t2_calendar td .day-header { padding-left: 2px; background-color:#ffffcc; font-weight: bold; }
+.day-field-generic { height: auto; }
+
+
+.day-leave-approved, .day-leave-pending, .day-leave-disapproved, .day-leave-unavailable 
+	{ width: 100%;margin-top: 1px; padding-left: 2px; } 
+
+.day-leave-approved { background-color: #99ff99; } 
+.day-leave-pending { background-color: #ffff99; } 
+.day-leave-disapproved { background-color: #ff9999; font-weight:bold;  } 
+.day-leave-unavailable { background-color: #cccccc; } 
+
+
+
+
+
+#t2_calendar_container { float:right; min-width: 560px; max-width: 1280px; width:79%; margin:auto; background-color:#ffffff;}
+.t2_calendar { position: relative: width: 100%; margin-top: 10px; }
+.t2_calendar th, .t2_calendar td { border:solid 1px #999999; width:14%; }
+.t2_calendar th { background-color: #ffcc00; }
+.t2_calendar th { text-align: center;} 
+.t2_calendar td { height: 100px; } 
+
+
+.tabs div { font-size: .95em; margin:-2px; }
+.tabs div labelx { font-weight:normal; color: #000000; margin-right: 20px; }
+.tabs div inputx { font-size: 1em; font-family:verdana, arial, sans-serif; margin-left: 2px; }
+
+
+.tabs labelX { display: block; font-weight:normal; color: #000000; margin-right: 20px; }
+.tabs inputX { font-size: 1em; font-family:verdana, arial, sans-serif; margin-left: 2px; }
+.tabs .datePicker { display:block; float:right; margin-right:-100px; margin-top:-22px; width:6px; padding:0px 5px; border: solid 1px #aaaaaa; background-color: #cccccc;  }
+
+
+.tabs label1 { display: block; font-weight:normal; color: #000000; margin-right: 100px; margin-bottom:5px; }
+.tabs input2 { display: block; float:right; font-size: 1em; font-family:verdana, arial, sans-serif; margin-left: 2px; margin-right: 20px; margin-top:-22px; }
+
+.tabs label { clear:both; display:block; float:left; text-align: right; width: 70px; margin: 0px; padding: 0px 0px 10px 0px; font-weight:normal; color: #000000; font-size: 11px;  }
+.tabs input, .tabs select, .tabs textarea { display: block; float:right; width:75px; margin: 0px; font-size: 1em; font-family:verdana, arial, sans-serif; }
+
+.tabs select, .tabs select option { margin:0px -14px 0px 0px; padding:0px; width:90px; }
+.tabs textarea { margin-right: -15px; width:150px; height:65px; }
+
+
+.tabs fieldset { padding:10px; border:solid 1px #999999; -moz-border-radius:7px; -webkit-border-radius:7px; background-color: #efefef; }
+.add-date-body { text-align:right; border: none; -moz-border-radius:7px; -webkit-border-radius:7px;  }
+
+
+.tabs .datePicker { display:block; float:right; margin-right:-100px; margin-top:3px; width:6px; padding:0px 5px; border: solid 1px #aaaaaa; background-color: #cccccc;  }

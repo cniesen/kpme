@@ -240,8 +240,11 @@
     	<property name="jcdAlias" value="tkDataSource"/>
     </bean>
 	-->
+    <bean id="calendarService" class="org.kuali.hr.leave.calendar.services.CalendarServiceImpl" />
+    <bean id="t2ServiceLocator" class="org.kuali.hr.leave.util.T2ServiceLocator" />
 
     <bean id="tkServiceLocator" class="org.kuali.hr.leave.service.base.TkServiceLocator">
     </bean>
+
 
 </beans>

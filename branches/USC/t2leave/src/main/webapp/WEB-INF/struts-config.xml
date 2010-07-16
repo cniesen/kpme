@@ -9,6 +9,9 @@
         <form-bean name="AdminActionForm" type="org.kuali.hr.time.admin.web.AdminActionForm"/>
         <form-bean name="PersonInfoActionForm" type="org.kuali.hr.time.base.web.PersonInfoActionForm"/>
         <form-bean name="TimesheetActionForm" type="org.kuali.hr.time.timesheet.web.TimesheetActionForm"/>
+        
+        <form-bean name="CalendarForm" type="org.kuali.hr.leave.calendar.web.CalendarForm" />
+        
     </form-beans>
 
     <global-forwards type="org.apache.struts.action.ActionForward">
@@ -39,9 +42,23 @@
             <forward name="basic" path="/WEB-INF/jsp/timesheet.jsp" />
         </action>
 
+
+        <action path="/ViewCalendar" name="CalendarForm" scope="session" input="/WEB-INF/jsp/calendar.jsp"
+            type="org.kuali.hr.leave.calendar.web.CalendarAction" parameter="methodToCall" validate="true">
+            <forward name="basic" path="/WEB-INF/jsp/calendar.jsp" />
+            <forward name="balanceTransfer" path="/BalanceTransfer.do?methodToCall=start" />
+            <forward name="systemAdmin" path="/SystemAdmin.do" />
+            <forward name="eptoAdmin" path="/EptoAdmin.do" />
+            <forward name="delegate" path="/Delegate.do" />
+            <forward name="staffReport" path="/StaffReportApproval.do" />
+            <forward name="viewOnly" path="/ViewOnly.do" />
+            <forward name="unauthorizedUser" path="/UnauthorizedUser.do?methodToCall=unauthorizedUser" />
+        </action>
+
 	</action-mappings>
 
-    <controller processorClass="org.kuali.hr.time.web.TKRequestProcessor"/>
+    <controller processorClass="org.kuali.hr.leave.web.TKRequestProcessor"/> 
+    
     <message-resources factory="org.kuali.rice.kns.web.struts.action.KualiPropertyMessageResourcesFactory" parameter="KR-ApplicationResources,org.kuali.rice.kew.ApplicationResources,org.kuali.rice.ksb.messaging.ApplicationResources,KIM-ApplicationResources,ApplicationResources" />
 
 </struts-config>

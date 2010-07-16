@@ -39,6 +39,8 @@
 					<br/><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.graceperiod.rule.GracePeriodRule&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888">Grace Period Rule</a>   
 					<br/><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.earncode.EarnCode&returnLocation=${ConfigProperties.application.url}/portal.do&hideReturnLink=true&docFormKey=88888888">Earn Code</a>
 			   		-->
+			   		<a href="${ConfigProperties.application.url}/ViewCalendar.do?methodToCall=docHandler&command=initiate">Leave Request</a><br/>
+			   		
 			   </div>    
            </div>
            <div class="portlet">
