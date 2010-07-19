@@ -433,6 +433,40 @@ CREATE TABLE `tk_task_t` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+DROP TABLE IF EXISTS `tk_accrual_categories_t`;
+CREATE TABLE `tk_accrual_categories_t` (
+  `TK_ACCRUAL_CATEGORY_ID` bigint(19) NOT NULL PRIMARY KEY,
+  `ACCRUAL_CATEGORY` VARCHAR(3) NOT NULL,
+  `DESC` VARCHAR(30) NOT NULL,
+  `effdt` date DEFAULT NULL,
+  `OBJ_ID` varchar(36) COLLATE utf8_bin DEFAULT NULL,
+  `VER_NBR` decimal(8,0) NOT NULL DEFAULT 1,
+  `ACTIVE` bit(1) DEFAULT NULL
+);
+
+DROP TABLE IF EXISTS `tk_accrual_categories_s`;
+CREATE TABLE `tk_accrual_categories_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DROP TABLE IF EXISTS `tk_holiday_calendar_dates_t`;
+CREATE TABLE tk_holiday_calendar_dates_t
+(
+  HOLIDAY_CALENDAR_DATES_ID bigint(19) NOT NULL PRIMARY KEY,
+  HOLIDAY_DATE DATE NOT NULL,
+  HOLIDAY_DESC VARCHAR(30) NOT NULL,
+  OBJ_ID varchar(36) COLLATE utf8_bin DEFAULT NULL,
+  VER_NBR decimal(8,0) NOT NULL DEFAULT '1'
+)
+
+DROP TABLE IF EXISTS `tk_holiday_calendar_dates_s`;
+CREATE TABLE `tk_holiday_calendar_dates_s` (
+  `ID` bigint(19) NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`ID`)
+) ENGINE=MyISAM AUTO_INCREMENT=161 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+
 --
 -- Table structure for table `tk_task_s`
 --
