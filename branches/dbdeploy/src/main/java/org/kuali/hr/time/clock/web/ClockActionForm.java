@@ -1,0 +1,78 @@
+package org.kuali.hr.time.clock.web;
+
+import java.sql.Timestamp;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts.action.ActionErrors;
+import org.apache.struts.action.ActionMapping;
+import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
+
+public class ClockActionForm extends TimesheetActionForm {
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -3843074202863670372L;
+
+    private String principalId;
+    private String currentClockAction;
+    private String nextClockAction;    
+    private Timestamp lastClockAction;
+    private List<String> assignmentFormatted;
+
+
+
+    @Override
+    public void reset(ActionMapping mapping, HttpServletRequest request) {
+	super.reset(mapping, request);
+    }
+
+    @Override
+    public ActionErrors validate(ActionMapping mapping, HttpServletRequest request) {
+	return super.validate(mapping, request);
+    }
+
+    public String getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
+
+    public String getCurrentClockAction() {
+        return currentClockAction;
+    }
+
+    public void setCurrentClockAction(String currentClockAction) {
+        this.currentClockAction = currentClockAction;
+    }
+
+	public String getNextClockAction() {
+		return nextClockAction;
+	}
+
+	public void setNextClockAction(String nextClockAction) {
+		this.nextClockAction = nextClockAction;
+	}
+
+	public List<String> getAssignmentFormatted() {
+		return assignmentFormatted;
+	}
+
+	public void setAssignmentFormatted(List<String> assignmentFormatted) {
+		this.assignmentFormatted = assignmentFormatted;
+	}
+
+	public Timestamp getLastClockAction() {
+		return lastClockAction;
+	}
+
+	public void setLastClockAction(Timestamp lastClockAction) {
+		this.lastClockAction = lastClockAction;
+	}
+
+
+}
