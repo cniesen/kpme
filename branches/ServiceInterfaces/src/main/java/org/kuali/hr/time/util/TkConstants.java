@@ -64,4 +64,9 @@ public class TkConstants {
     public static final String EARN_CODE_RGH = "RGN";
     public static final String ASSIGNMENT_KEY_DELIMITER = "_";
     
+    //for WebService result
+    public static final String SUCCESSFUL_XML_DOC_UPLOAD = "SUCCESS";
+    public static final String FAILURE_XML_DOC_UPLOAD = "FAILURE";
+    
+    
 }
