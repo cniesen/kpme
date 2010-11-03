@@ -29,10 +29,11 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 
 import com.thoughtworks.xstream.XStream;
 
-public class UploadXMLDocAndProcessServiceImpl implements
-		UploadXMLDocAndProcessService {
+public class UploadWorkAreaServiceImpl implements
+		UploadWorkAreaService {
 	//set it to WorkArea.xsd location
-	private final static String workAreaXSD = "d:\\WorkArea.xsd";
+	private final static String WORK_AREA_XSD = UploadWorkAreaServiceImpl.class.getResource("/xsd/WorkArea.xsd").toString();
+	
 
 	@Override
 	public String uploadXMLDocAndProcess(XMLDoc xmlDoc) {
@@ -43,6 +44,9 @@ public class UploadXMLDocAndProcessServiceImpl implements
 		FileOutputStream fos = null;
 		File tempFile = null;
 		System.out.println("Length =" + xmlDoc.getData().length);
+		System.out.println("---------------------");		
+		System.out.println(WORK_AREA_XSD);
+		System.out.println("---------------------");
 		try {
 			tempFile = File.createTempFile("workarea", ".xml");
 			fos = new FileOutputStream(tempFile);
@@ -50,7 +54,7 @@ public class UploadXMLDocAndProcessServiceImpl implements
 			fos.write(xmlDoc.getData());
 			// validate the incoming file against schema
 			WebServiceUtil.validateXMLwithXSD(tempFile.getAbsolutePath(),
-					workAreaXSD);
+					WORK_AREA_XSD);
 			// it works ! now lets parse it.
 			is = new ByteArrayInputStream(xmlDoc.getData());
 

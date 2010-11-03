@@ -4,7 +4,7 @@ import org.kuali.hr.time.webservices.workarea.model.XMLDoc;
 import org.kuali.hr.time.workarea.service.WorkAreaService;
 import org.kuali.hr.time.workarea.service.WorkAreaServiceImpl;
 
-public interface UploadXMLDocAndProcessService {
+public interface UploadWorkAreaService {
    
   public String uploadXMLDocAndProcess(XMLDoc xmlDoc);
 }
