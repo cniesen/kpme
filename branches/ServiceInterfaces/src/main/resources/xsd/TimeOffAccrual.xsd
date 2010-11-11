@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="timeOffAccruals">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="timeoffaccrual" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="laAccrualId" type="xsd:long" minOccurs="0"></xsd:element>
+                                        <xsd:element name="principalId" type="xsd:string"></xsd:element>
+                                        <xsd:element name="accrualCategory" type="xsd:string"></xsd:element>
+                                        <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
+                                        <xsd:element name="hoursAccrued" type="xsd:int"></xsd:element>
+                                        <xsd:element name="hoursTaken" type="xsd:int"></xsd:element>
+                                        <xsd:element name="hoursAdjust" type="xsd:int"></xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

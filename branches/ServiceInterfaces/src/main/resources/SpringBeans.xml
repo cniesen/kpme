@@ -107,7 +107,7 @@
 		<property name="nonTransactionalDataSource" ref="nonTransDataSource" />
 	</bean>
    	
-   	<bean id="uploadWorkAreaService" class="org.kuali.hr.time.webservices.workarea.service.UploadWorkAreaServiceImpl"/>
+   	<bean id="uploadXMLService" class="org.kuali.hr.time.webservices.xml.service.UploadXMLServiceImpl"/>
 
 	<bean id="rice" class="org.kuali.rice.core.config.RiceConfigurer">
 		<property name="dataSource" ref="tkDataSource" />
@@ -150,20 +150,20 @@
 							<property name="retryAttempts" value="1" />
 							<property name="busSecurity" value="false"/>
 							<property name="service">							
-								<ref bean="uploadWorkAreaService" />
+								<ref bean="uploadXMLService" />
 							</property>
 							<property name="serviceInterface">
-								<value>org.kuali.hr.time.webservices.workarea.service.UploadWorkAreaService</value>
+								<value>org.kuali.hr.time.webservices.xml.service.UploadXMLService</value>
 							</property>
 							
                         
 							<property name="serviceEndPoint">
 								<bean class="java.net.URL">
 									<constructor-arg type="java.lang.String"									
-										value="http://localhost:8080/tk-dev/remoting/uploadWorkAreaService" />
+										value="http://localhost:8080/tk-dev/remoting/uploadXMLService" />
 								</bean>
 							</property>
-							<property name="localServiceName" value="uploadWorkAreaService" />
+							<property name="localServiceName" value="uploadXMLService" />
 						</bean>
 					</list>
 				</property>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="jobs">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="job" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="hrJobId" type="xsd:long" minOccurs="0"></xsd:element>
+                                        <xsd:element name="location" type="xsd:string"></xsd:element>
+                                        <xsd:element name="hrPayType" type="xsd:string"></xsd:element>
+                                        <xsd:element name="fte" type="xsd:boolean"></xsd:element>
+                                        <xsd:element name="payGrade" type="xsd:string"></xsd:element>
+                                        <xsd:element name="standardHours" type="xsd:float"></xsd:element>                                        
+                                        <xsd:element name="principalId" type="xsd:string"></xsd:element>
+                                        <xsd:element name="jobNumber" type="xsd:long"></xsd:element>
+                                        <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
+                                        <xsd:element name="dept" type="xsd:string"></xsd:element>
+                                        <xsd:element name="tkSalGroup" type="xsd:string"></xsd:element>																				
+                                        <xsd:element name="active" type="xsd:boolean"></xsd:element>
+										<xsd:element name="compRate" type="xsd:float"></xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>

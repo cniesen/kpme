@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
+    <xsd:element name="root">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="accrualCategories">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="accrualcategory" maxOccurs="unbounded">
+                                <xsd:complexType>
+                                    <xsd:sequence>
+                                        <xsd:element name="laAccrualCategoryId" type="xsd:long" minOccurs="0"></xsd:element>
+                                        <xsd:element name="accrualCategory" type="xsd:string"></xsd:element>
+                                        <xsd:element name="descr" type="xsd:string"></xsd:element>
+                                        <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
+                                        <xsd:element name="active" type="xsd:boolean"></xsd:element>
+                                    </xsd:sequence>
+                                </xsd:complexType>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
