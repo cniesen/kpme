@@ -10,14 +10,18 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
+import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentAccount;
 import org.kuali.hr.time.assignment.validation.AssignmentRule;
+import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.hr.time.webservices.util.WebServiceUtil;
 import org.kuali.hr.time.webservices.xml.model.AccrualCategoryWrapper;
 import org.kuali.hr.time.webservices.xml.model.AssignmentAccountWrapper;
 import org.kuali.hr.time.webservices.xml.model.AssignmentWrapper;
@@ -25,10 +29,13 @@ import org.kuali.hr.time.webservices.xml.model.JobWrapper;
 import org.kuali.hr.time.webservices.xml.model.TimeOffAccrualWrapper;
 import org.kuali.hr.time.webservices.xml.model.WorkAreaWrapper;
 import org.kuali.hr.time.webservices.xml.model.XMLDoc;
+import org.kuali.hr.time.webservices.xml.util.WebServiceUtil;
+import org.kuali.hr.time.webservices.xml.validation.AssignmentAccountRule;
+import org.kuali.hr.time.webservices.xml.validation.JobRule;
+import org.kuali.hr.time.webservices.xml.validation.TimeOffAccrualRule;
+import org.kuali.hr.time.webservices.xml.validation.WorkAreaRule;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-
-
 
 public class UploadXMLServiceImpl implements UploadXMLService {
 
@@ -53,11 +60,11 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	@Override
 	public String uploadWorkArea(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadWorkArea");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
-		File tempFile = null;		
+		File tempFile = null;
 		try {
 			tempFile = File.createTempFile("workarea", ".xml");
 			fos = new FileOutputStream(tempFile);
@@ -71,30 +78,45 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 
 			WorkAreaWrapper workAreaWrapper = (WorkAreaWrapper) WebServiceUtil
 					.parseXml(is, WorkAreaWrapper.class, WorkArea.class);
+
+			// validating data
+			WorkAreaRule workAreaRule = new WorkAreaRule();
+			for (WorkArea workArea : workAreaWrapper.getWorkAreas()) {
+				if (!workAreaRule.validateWorkAreaObject(workArea)) {
+					throw new IllegalArgumentException(
+							"invalid data for workarea");
+				}
+			}
+			// save / update data
+
 			for (WorkArea workArea : workAreaWrapper.getWorkAreas()) {
 				if (workArea.getTkWorkAreaId() != null) {
 					WorkArea oldWorkArea = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
 									WorkArea.class, workArea.getTkWorkAreaId());
 					oldWorkArea.setActive(Boolean.FALSE);
-					oldWorkArea.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+					oldWorkArea.setTimestamp(new Timestamp(Calendar
+							.getInstance().getTimeInMillis()));
 					KNSServiceLocator.getBusinessObjectService().save(
 							oldWorkArea);
 				}
 				workArea.setTkWorkAreaId(null);
-				workArea.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+				workArea.setTimestamp(new Timestamp(Calendar.getInstance()
+						.getTimeInMillis()));
 				KNSServiceLocator.getBusinessObjectService().save(workArea);
 
 				// System.out.println("" + p1.getTkWorkAreaId());
 			}
-			tempFile.deleteOnExit();
+
 		} catch (Exception ex) {
-			
+
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
+
 		}
 		return result;
 	}
@@ -102,12 +124,12 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	@Override
 	public String uploadAssignmentAccount(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadAssignmentAccount");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
 		File tempFile = null;
-		
+
 		try {
 			tempFile = File.createTempFile("assignmentAccount", ".xml");
 			fos = new FileOutputStream(tempFile);
@@ -122,29 +144,41 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 			AssignmentAccountWrapper assignmentAccountWrapper = (AssignmentAccountWrapper) WebServiceUtil
 					.parseXml(is, AssignmentAccountWrapper.class,
 							AssignmentAccount.class);
+			AssignmentAccountRule assignmentAccountRule = new AssignmentAccountRule();
+			// validating all data
+			for (AssignmentAccount assignmentAccount : assignmentAccountWrapper
+					.getAssignmentAccounts()) {
+				if (!assignmentAccountRule
+						.validateAssignmentAccountObject(assignmentAccount)) {
+					throw new IllegalArgumentException(
+							"Invalid data for assignmentAccount");
+				}
+			}
+			// saving all data
 			for (AssignmentAccount assignmentAccount : assignmentAccountWrapper
 					.getAssignmentAccounts()) {
 				if (assignmentAccount.getTkAssignAcctId() != null) {
 					AssignmentAccount oldAssignmentAccount = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
-									AssignmentAccount.class, assignmentAccount.getTkAssignAcctId());
+									AssignmentAccount.class,
+									assignmentAccount.getTkAssignAcctId());
 					oldAssignmentAccount.setActive(Boolean.FALSE);
-				
 					KNSServiceLocator.getBusinessObjectService().save(
 							oldAssignmentAccount);
 				}
-				assignmentAccount.setTkAssignAcctId(null);				
-				KNSServiceLocator.getBusinessObjectService().save(assignmentAccount);
+				assignmentAccount.setTkAssignAcctId(null);
+				KNSServiceLocator.getBusinessObjectService().save(
+						assignmentAccount);
 			}
-			tempFile.deleteOnExit();
 
 		} catch (Exception ex) {
-		
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
+
 		}
 		return result;
 	}
@@ -152,11 +186,11 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	@Override
 	public String uploadJob(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadJob");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
-		File tempFile = null;		
+		File tempFile = null;
 		try {
 			tempFile = File.createTempFile("job", ".xml");
 			fos = new FileOutputStream(tempFile);
@@ -170,26 +204,35 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 
 			JobWrapper jobWrapper = (JobWrapper) WebServiceUtil.parseXml(is,
 					JobWrapper.class, Job.class);
+			JobRule jobRule = new JobRule();
+			// validating all Jobs
+			for (Job job : jobWrapper.getJobs()) {
+				if (!jobRule.validateJobObject(job)) {
+					throw new IllegalArgumentException("invalid data for job");
+				}
+			}
+			// save / update jobs
 			for (Job job : jobWrapper.getJobs()) {
 				if (job.getHrJobId() != null) {
 					Job oldJob = KNSServiceLocator
-							.getBusinessObjectService().findBySinglePrimaryKey(
-									Job.class, job.getHrJobId());
+							.getBusinessObjectService()
+							.findBySinglePrimaryKey(Job.class, job.getHrJobId());
 					oldJob.setActive(Boolean.FALSE);
-					oldJob.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-					KNSServiceLocator.getBusinessObjectService().save(
-							oldJob);
+					oldJob.setTimestamp(new Timestamp(Calendar.getInstance()
+							.getTimeInMillis()));
+					KNSServiceLocator.getBusinessObjectService().save(oldJob);
 				}
 				job.setHrJobId(null);
-				job.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+				job.setTimestamp(new Timestamp(Calendar.getInstance()
+						.getTimeInMillis()));
 				KNSServiceLocator.getBusinessObjectService().save(job);
 			}
-			tempFile.deleteOnExit();
 
-		} catch (Exception ex) {			
+		} catch (Exception ex) {
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
 		}
@@ -200,7 +243,7 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	@Override
 	public String uploadTimeOffAccrual(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadTimeOfAccural");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
@@ -219,38 +262,45 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 			TimeOffAccrualWrapper timeOfAccuralWrapper = (TimeOffAccrualWrapper) WebServiceUtil
 					.parseXml(is, TimeOffAccrualWrapper.class,
 							TimeOffAccrual.class);
+			TimeOffAccrualRule timeOffAccrualRule = new TimeOffAccrualRule();
+			// validate TimeOffArrcuals
 			for (TimeOffAccrual timeOffAccrual : timeOfAccuralWrapper
 					.getTimeOffAccruals()) {
-				// temporarily set to null ,update case will be taken care later
-				timeOffAccrual.setLaAccrualId(null);				
+				if (!timeOffAccrualRule
+						.validateTimeOffAccrualObject(timeOffAccrual)) {
+					throw new IllegalArgumentException(
+							"Invalid data for timeOffAccrual");
+				}
+			}
+			// save / update TimeOffAccrual
+			for (TimeOffAccrual timeOffAccrual : timeOfAccuralWrapper
+					.getTimeOffAccruals()) {
+				timeOffAccrual.setLaAccrualId(null);
 				KNSServiceLocator.getBusinessObjectService().save(
 						timeOffAccrual);
-
 			}
-			tempFile.deleteOnExit();
 
 		} catch (Exception ex) {
 			System.out.println("IOException : " + ex);
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
 		}
 		return result;
 	}
 
-	
-
 	@Override
 	public String uploadAssignment(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadAssignment");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
 		File tempFile = null;
-		
+
 		try {
 			tempFile = File.createTempFile("assignment", ".xml");
 			fos = new FileOutputStream(tempFile);
@@ -261,32 +311,43 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 					ASSIGNMENT_XSD);
 			// it works ! now lets parse it.
 			is = new ByteArrayInputStream(xmlDoc.getData());
-			 
+
 			AssignmentWrapper assignmentWrapper = (AssignmentWrapper) WebServiceUtil
 					.parseXml(is, AssignmentWrapper.class, Assignment.class);
+			org.kuali.hr.time.webservices.xml.validation.AssignmentRule assignmentRule = new org.kuali.hr.time.webservices.xml.validation.AssignmentRule();
+			// validating xml data
+			for (Assignment assignment : assignmentWrapper.getAssignments()) {
+				if (!assignmentRule.validateAssignmentObject(assignment)) {
+					throw new IllegalArgumentException(
+							"Invalid data for Assignment");
+				}
+			}
+			// save /update
 			for (Assignment assignment : assignmentWrapper.getAssignments()) {
 				if (assignment.getTkAssignmentId() != null) {
 					Assignment oldAssignment = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
-									Assignment.class, assignment.getTkAssignmentId());
+									Assignment.class,
+									assignment.getTkAssignmentId());
 					oldAssignment.setActive(Boolean.FALSE);
-					oldAssignment.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-				
+					oldAssignment.setTimestamp(new Timestamp(Calendar
+							.getInstance().getTimeInMillis()));
+
 					KNSServiceLocator.getBusinessObjectService().save(
 							oldAssignment);
 				}
-		
-				assignment.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+
+				assignment.setTimestamp(new Timestamp(Calendar.getInstance()
+						.getTimeInMillis()));
 				assignment.setTkAssignmentId(null);
 				KNSServiceLocator.getBusinessObjectService().save(assignment);
 			}
-			tempFile.deleteOnExit();
 
 		} catch (Exception ex) {
-		
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
 		}
@@ -296,7 +357,7 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	@Override
 	public String uploadAccrualCategory(XMLDoc xmlDoc) {
 		System.out.println("Inside uploadAccrualCategory");
-		String result = TkConstants.SUCCESSFUL_XML_DOC_UPLOAD;
+		String result = TkConstants.SUCCESS_XML_CODE;
 		FileOutputStream os = null;
 		InputStream is = null;
 		FileOutputStream fos = null;
@@ -315,38 +376,44 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 			AccrualCategoryWrapper accrualCategoryWrapper = (AccrualCategoryWrapper) WebServiceUtil
 					.parseXml(is, AccrualCategoryWrapper.class,
 							AccrualCategory.class);
+			// save / update accrualCategory
 			for (AccrualCategory accrualCategory : accrualCategoryWrapper
 					.getAccrualCategories()) {
 				if (accrualCategory.getLaAccrualCategoryId() != null) {
 					AccrualCategory oldAccrualCategory = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
-									AccrualCategory.class, accrualCategory.getLaAccrualCategoryId());
-					oldAccrualCategory.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
+									AccrualCategory.class,
+									accrualCategory.getLaAccrualCategoryId());
+					oldAccrualCategory.setTimestamp(new Timestamp(Calendar
+							.getInstance().getTimeInMillis()));
 					oldAccrualCategory.setActive(Boolean.FALSE);
 					KNSServiceLocator.getBusinessObjectService().save(
 							oldAccrualCategory);
 				}
 				accrualCategory.setLaAccrualCategoryId(null);
-				accrualCategory.setTimestamp(new Timestamp(Calendar.getInstance().getTimeInMillis()));
-				KNSServiceLocator.getBusinessObjectService().save(accrualCategory);
+				accrualCategory.setTimestamp(new Timestamp(Calendar
+						.getInstance().getTimeInMillis()));
+				KNSServiceLocator.getBusinessObjectService().save(
+						accrualCategory);
 			}
-			tempFile.deleteOnExit();
 
 		} catch (Exception ex) {
-	
+
 			ex.printStackTrace();
-			result = TkConstants.FAILURE_XML_DOC_UPLOAD + ex.getMessage();
+			result = TkConstants.FAILURE_XML_CODE + " : " + ex.getMessage();
 		} finally {
+			tempFile.delete();
 			close(fos);
 			close(is);
 		}
 		return result;
 
 	}
-	
+
 	public void flush(Flushable flushable) {
-		if (flushable == null)
+		if (flushable == null) {
 			return;
+		}
 		try {
 			flushable.flush();
 		} catch (IOException e) {
@@ -356,8 +423,9 @@ public class UploadXMLServiceImpl implements UploadXMLService {
 	}
 
 	public void close(Closeable closable) {
-		if (closable == null)
+		if (closable == null) {
 			return;
+		}
 		try {
 			closable.close();
 		} catch (IOException e) {
