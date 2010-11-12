@@ -11,8 +11,20 @@
                                 <xsd:complexType>
                                     <xsd:sequence>
                                         <xsd:element name="laAccrualId" type="xsd:long" minOccurs="0"></xsd:element>
-                                        <xsd:element name="principalId" type="xsd:string"></xsd:element>
-                                        <xsd:element name="accrualCategory" type="xsd:string"></xsd:element>
+                                        <xsd:element name="principalId">
+                                             <xsd:simpleType>
+                                                <xsd:restriction base="xsd:string">
+                                                    <xsd:maxLength value="21"/>
+                                                </xsd:restriction>
+                                            </xsd:simpleType>
+                                        </xsd:element>
+                                        <xsd:element name="accrualCategory">
+                                             <xsd:simpleType>
+                                                <xsd:restriction base="xsd:string">
+                                                    <xsd:maxLength value="3"/>
+                                                </xsd:restriction>
+                                            </xsd:simpleType>
+                                        </xsd:element>
                                         <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
                                         <xsd:element name="hoursAccrued" type="xsd:int"></xsd:element>
                                         <xsd:element name="hoursTaken" type="xsd:int"></xsd:element>

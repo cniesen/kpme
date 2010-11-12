@@ -11,7 +11,13 @@
                                 <xsd:complexType>
                                     <xsd:sequence>
                                         <xsd:element name="tkAssignmentId" type="xsd:long" minOccurs="0"></xsd:element>
-                                        <xsd:element name="principalId" type="xsd:string"></xsd:element>
+                                        <xsd:element name="principalId">
+                                            <xsd:simpleType>
+                                                <xsd:restriction base="xsd:string">
+                                                    <xsd:maxLength value="40"/>
+                                                </xsd:restriction>
+                                            </xsd:simpleType>
+                                        </xsd:element>
                                         <xsd:element name="jobNumber" type="xsd:long"></xsd:element>
                                         <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
                                         <xsd:element name="workArea" type="xsd:long"></xsd:element>
