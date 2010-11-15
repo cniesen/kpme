@@ -24,7 +24,7 @@
 		</property>
 	</bean>
 
-	<bean name="springContext" class="org.kuali.hr.sys.context.SpringContext" />
+	<bean name="springContext" class="org.kuali.hr.sys.context.SpringContext"></bean>
 
 	<bean id="jotm" class="org.springframework.transaction.jta.JotmFactoryBean">
 		<property name="defaultTimeout" value="3600" />
@@ -106,8 +106,7 @@
 		<property name="dataSource" ref="tkDataSource" />
 		<property name="nonTransactionalDataSource" ref="nonTransDataSource" />
 	</bean>
-   	
-   	<bean id="uploadXMLService" class="org.kuali.hr.time.webservices.xml.service.UploadXMLServiceImpl"/>
+
 
 	<bean id="rice" class="org.kuali.rice.core.config.RiceConfigurer">
 		<property name="dataSource" ref="tkDataSource" />
@@ -135,35 +134,24 @@
 				<property name="exceptionMessagingScheduler" ref="ksbScheduler" />
 
 				<property name="webModuleConfigurationFiles" value="/ksb/WEB-INF/struts-config.xml" />
-
-
-
-
 				<property name="services">
 					<list>
-						<bean class="org.kuali.rice.ksb.messaging.SOAPServiceDefinition">
-							<property name="messageExceptionHandler" value="affe" />
-							<property name="millisToLive" value="360000000" />
-							<property name="priority" value="1" />
-							<property name="serviceNameSpaceURI" value="testNameSpace" />							
-							<property name="queue" value="true" />
-							<property name="retryAttempts" value="1" />
-							<property name="busSecurity" value="false"/>
-							<property name="service">							
-								<ref bean="uploadXMLService" />
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="holidayCalendarService" />
 							</property>
 							<property name="serviceInterface">
-								<value>org.kuali.hr.time.webservices.xml.service.UploadXMLService</value>
+								<value>org.kuali.hr.time.holidaycalendar.service.HolidayCalendarService
+								</value>
 							</property>
-							
-                        
+
 							<property name="serviceEndPoint">
 								<bean class="java.net.URL">
-									<constructor-arg type="java.lang.String"									
-										value="http://localhost:8080/tk-dev/remoting/uploadXMLService" />
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/holidayCalendarServiceSOAP" />
 								</bean>
 							</property>
-							<property name="localServiceName" value="uploadXMLService" />
+							<property name="localServiceName" value="holidayCalendarServiceSOAP" />
 						</bean>
 					</list>
 				</property>
@@ -198,6 +186,18 @@
 				<value>classpath:KEWOverrideSpringBeans.xml</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="webServiceParentBean" class="org.kuali.rice.ksb.messaging.SOAPServiceDefinition"
+		abstract="true">
+		<property name="jaxWsService" value="true"></property>
+		<property name="messageExceptionHandler" value="ServiceException" />
+		<property name="millisToLive" value="360000000" />
+		<property name="priority" value="1" />
+		<property name="serviceNameSpaceURI" value="tk" />
+		<property name="queue" value="true" />
+		<property name="retryAttempts" value="0" />
+		<property name="busSecurity" value="false" />
 	</bean>
 
 	<!--
@@ -415,6 +415,11 @@
 		class="org.kuali.hr.time.dept.lunch.dao.DepartmentLunchRuleDaoImpl">
 		<property name="jcdAlias" value="tkDataSource" />
 	</bean>
+
+	<bean id="holidayCalendarDao"
+		class="org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDaoImpl">
+		<property name="jcdAlias" value="tkDataSource" />
+	</bean>
 	<!-- Time Services for Business Logic -->
 
 	<bean id="deptLunchRuleService"
@@ -516,8 +521,8 @@
 	</bean>
 
 	<bean id="timesheetService"
-		class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl" />
-
+		class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl">
+	</bean>
 
 	<bean id="deptEarnCodeService"
 		class="org.kuali.hr.time.dept.earncode.service.DepartmentEarnCodeServiceImpl">
@@ -541,8 +546,12 @@
 	<bean id="timeSummaryService"
 		class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl" />
 
-	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
+	<bean id="holidayCalendarService"
+		class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl" />
 
+
+	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator">
+	</bean>
 
 	<bean id="tkRuleControllerService" class="org.kuali.hr.time.rule.TkRuleControllerServiceImpl" />
 
