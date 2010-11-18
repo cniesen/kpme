@@ -4,8 +4,17 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.kuali.hr.time.util.jaxb.TimestampAdapter;
+import org.kuali.rice.core.jaxb.SqlDateAdapter;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class EarnCode extends PersistableBusinessObjectBase {
 
 	/**
@@ -13,14 +22,27 @@ public class EarnCode extends PersistableBusinessObjectBase {
      */
 	private static final long serialVersionUID = 1L;
 
-	private Long tkEarnCodeId;
+	
+	private Long tkEarnCodeId;	
+	@XmlElement
 	private String earnCode;
+	@XmlElement
 	private String description;
+	@XmlElement
 	private Boolean recordHours;
+	@XmlElement
 	private Boolean recordTime;
+	@XmlElement
 	private Boolean recordAmount;
+	
+	@XmlJavaTypeAdapter(value = TimestampAdapter.class, type = Timestamp.class)
+	@XmlElement
 	private Timestamp timestamp;
+	
+	@XmlJavaTypeAdapter(value = SqlDateAdapter.class, type = Date.class)
+	@XmlElement
 	private Date effectiveDate;
+	@XmlElement
 	private boolean active;
 
 	@SuppressWarnings("unchecked")
