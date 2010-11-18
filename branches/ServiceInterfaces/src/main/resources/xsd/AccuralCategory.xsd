@@ -1,39 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
-    <xsd:element name="root">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="accrualCategories">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="accrualcategory" maxOccurs="unbounded">
-                                <xsd:complexType>
-                                    <xsd:sequence>
-                                        <xsd:element name="laAccrualCategoryId" type="xsd:long" minOccurs="0"></xsd:element>
-                                        <xsd:element name="accrualCategory">
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="3"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="descr">
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="30"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
-                                        <xsd:element name="active" type="xsd:boolean"></xsd:element>
-                                    </xsd:sequence>
-                                </xsd:complexType>
-                            </xsd:element>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-</xsd:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="/tk" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lm="/tk">
+  <xs:element name="addAccrualCategories">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="accrualCategories">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="laAccrualCategoryId" type="xs:long"/>
+              <xs:element name="accrualCategory" type="xs:string"/>
+              <xs:element name="descr" type="xs:string"/>
+              <xs:element name="effectiveDate" type="xs:date" nillable="false"/>              
+              <xs:element name="active" type="xs:boolean"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

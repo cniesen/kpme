@@ -1,19 +1,17 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx" 
 	xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 
 	<aop:aspectj-autoproxy />
-
+	<tx:annotation-driven />
 	<!-- Properties  10/20/08   -->
-	<bean
-		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="properties" ref="configProperties" />
 	</bean>
-	<bean id="configProperties"
-		class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+	<bean id="configProperties" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
 		<property name="targetObject" ref="config" />
 		<property name="targetMethod" value="getProperties" />
 	</bean>
@@ -25,7 +23,7 @@
 		</property>
 	</bean>
 
-	<bean name="springContext" class="org.kuali.hr.sys.context.SpringContext"></bean>
+	<bean name="springContext" class="org.kuali.hr.sys.context.SpringContext" />
 
 	<bean id="jotm" class="org.springframework.transaction.jta.JotmFactoryBean">
 		<property name="defaultTimeout" value="3600" />
@@ -88,8 +86,7 @@
 		destroy-method="stop" lazy-init="true">
 		<property name="jobListeners">
 			<list>
-				<bean
-					class="org.kuali.rice.ksb.messaging.quartz.MessageServiceExecutorJobListener" />
+				<bean class="org.kuali.rice.ksb.messaging.quartz.MessageServiceExecutorJobListener" />
 			</list>
 		</property>
 		<property name="quartzProperties">
@@ -115,8 +112,7 @@
 		<property name="transactionManager" ref="jotm" />
 		<property name="userTransaction" ref="jotm" />
 		<property name="rootResourceLoader">
-			<bean
-				class="org.kuali.rice.core.resourceloader.SpringBeanFactoryResourceLoader" />
+			<bean class="org.kuali.rice.core.resourceloader.SpringBeanFactoryResourceLoader" />
 		</property>
 
 		<property name="rootConfig" ref="config" />
@@ -133,17 +129,16 @@
 					<ref local="enWorkflowDataSource" />
 				</property>
 				<property name="exceptionMessagingScheduler" ref="ksbScheduler" />
-
 				<property name="webModuleConfigurationFiles" value="/ksb/WEB-INF/struts-config.xml" />
 				<property name="services">
-					<list>
+					<list>						
+						<!-- HolidayCalendar -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
 								<ref bean="holidayCalendarService" />
 							</property>
 							<property name="serviceInterface">
-								<value>org.kuali.hr.time.holidaycalendar.service.HolidayCalendarService
-								</value>
+								<value>org.kuali.hr.time.holidaycalendar.service.HolidayCalendarService</value>
 							</property>
 
 							<property name="serviceEndPoint">
@@ -154,6 +149,111 @@
 							</property>
 							<property name="localServiceName" value="holidayCalendarServiceSOAP" />
 						</bean>
+						<!-- Assignment -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="assignmentService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.assignment.service.AssignmentService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/assignmentServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="assignmentServiceSOAP" />
+						</bean>
+						<!-- AssignmentAccount -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="assignmentAccountService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.assignment.service.AssignmentAccountService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/assignmentAccountServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="assignmentAccountServiceSOAP" />
+						</bean>
+						<!-- Job -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="jobService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.job.service.JobService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/jobServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="jobServiceSOAP" />
+						</bean>
+
+						<!-- TimeOffAccrual-->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="timeOffAccrualService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.accrual.service.TimeOffAccrualService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/timeOffAccrualServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="timeOffAccrualServiceSOAP" />
+						</bean>
+						<!-- AccrualCategory -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="accrualCategoryService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.accrual.service.AccrualCategoryService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/accrualCategoryServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="accrualCategoryServiceSOAP" />
+						</bean>
+								<!-- WorkArea-->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="workAreaService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.workarea.service.WorkAreaService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/workAreaServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="workAreaServiceSOAP" />
+						</bean>
+						
+				
 					</list>
 				</property>
 			</bean>
@@ -191,7 +291,7 @@
 
 	<bean id="webServiceParentBean" class="org.kuali.rice.ksb.messaging.SOAPServiceDefinition"
 		abstract="true">
-		<property name="jaxWsService" value="true"></property>
+		<property name="jaxWsService" value="true" />
 		<property name="messageExceptionHandler" value="ServiceException" />
 		<property name="millisToLive" value="360000000" />
 		<property name="priority" value="1" />
@@ -220,8 +320,6 @@
 			<ref local="jotm" />
 		</property>
 	</bean>
-
-	<tx:annotation-driven/>
 
 	<bean id="matchAllWithPropReqCheckedException"
 		class="org.springframework.transaction.interceptor.MatchAlwaysTransactionAttributeSource"
@@ -477,9 +575,7 @@
 	</bean>
 
 	<bean id="assignmentService"
-		class="org.kuali.hr.time.assignment.service.AssignmentServiceImpl">
-		<property name="assignmentDao" ref="assignmentDao" />
-	</bean>
+		class="org.kuali.hr.time.assignment.service.AssignmentServiceImpl"></bean>
 
 	<bean id="timeBlockService"
 		class="org.kuali.hr.time.timeblock.service.TimeBlockServiceImpl">
@@ -491,9 +587,7 @@
 		<property name="timeBlockHistoryDao" ref="timeBlockHistoryDao" />
 	</bean>
 
-	<bean id="jobService" class="org.kuali.hr.job.service.JobServiceImpl">
-		<property name="jobDao" ref="jobDao" />
-	</bean>
+	<bean id="jobService" class="org.kuali.hr.job.service.JobServiceImpl"></bean>
 
 	<bean id="payTypeService" class="org.kuali.hr.time.paytype.service.PayTypeServiceImpl">
 		<property name="payCalendarService" ref="payCalendarService" />
@@ -519,13 +613,18 @@
 		<property name="timesheetDocumentHeaderDao" ref="timesheetDocumentHeaderDao" />
 	</bean>
 
-	<bean id="workAreaService" class="org.kuali.hr.time.workarea.service.WorkAreaServiceImpl">
-		<property name="workAreaDao" ref="workAreaDao" />
-	</bean>
+	<bean id="workAreaService" class="org.kuali.hr.time.workarea.service.WorkAreaServiceImpl"></bean>
+
+	<bean id="assignmentAccountService" class="org.kuali.hr.time.assignment.service.AssignmentAccountServiceImpl" />
+	<bean id="timeOffAccrualService"
+		class="org.kuali.hr.time.accrual.service.TimeOffAccrualServiceImpl" />
+	<bean id="accrualCategoryService"
+		class="org.kuali.hr.time.accrual.service.AccrualCategoryServiceImpl" />
+
 
 	<bean id="timesheetService"
-		class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl">
-	</bean>
+		class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl" />
+
 
 	<bean id="deptEarnCodeService"
 		class="org.kuali.hr.time.dept.earncode.service.DepartmentEarnCodeServiceImpl">
@@ -550,11 +649,13 @@
 		class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl" />
 
 	<bean id="holidayCalendarService"
-		class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl" />
+		class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl" />	
+
+	
 
 
-	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator">
-	</bean>
+	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
+
 
 	<bean id="tkRuleControllerService" class="org.kuali.hr.time.rule.TkRuleControllerServiceImpl" />
 

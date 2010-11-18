@@ -1,18 +1,26 @@
 package org.kuali.hr.time.assignment;
 
 import java.sql.Date;
+
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.dept.lunch.DeptLunchRule;
 import org.kuali.hr.time.util.TKUtils;
+import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class Assignment extends PersistableBusinessObjectBase {
 
 	/**
@@ -20,14 +28,23 @@ public class Assignment extends PersistableBusinessObjectBase {
      */
 	private static final long serialVersionUID = -3408305833805778653L;
 
+	@XmlElement
 	private Long tkAssignmentId;
+	@XmlElement
 	private String principalId;
+	@XmlElement
 	private Long jobNumber;
-	private Job job;
+	@XmlElement(required = true, nillable = false)
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date effectiveDate;
+	@XmlElement
 	private Long workArea;
+	@XmlElement
 	private Long task;
+	@XmlElement
 	private boolean active;
+
+	private Job job;
 	private Timestamp timestamp;
 	private TimeCollectionRule timeCollectionRule;
 	private DeptLunchRule deptLunchRule;
@@ -42,8 +59,9 @@ public class Assignment extends PersistableBusinessObjectBase {
 	public void setAssignmentAccounts(List<AssignmentAccount> assignmentAccounts) {
 		this.assignmentAccounts = assignmentAccounts;
 	}
-	
-	public Assignment(){}
+
+	public Assignment() {
+	}
 
 	public Assignment(String principalId, Long jobNumber, Date effectiveDate,
 			String earnCode, Long workAreaId, Long taskId) {
@@ -136,7 +154,7 @@ public class Assignment extends PersistableBusinessObjectBase {
 	public void setTask(Long task) {
 		this.task = task;
 	}
-	
+
 	public WorkArea getWorkAreaObj() {
 		return workAreaObj;
 	}
@@ -176,5 +194,5 @@ public class Assignment extends PersistableBusinessObjectBase {
 	public String getAssignmentDescription() {
 		return TKUtils.getAssignmentString(this);
 	}
-	
+
 }

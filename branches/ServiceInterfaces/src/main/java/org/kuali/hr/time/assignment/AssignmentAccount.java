@@ -3,26 +3,43 @@ package org.kuali.hr.time.assignment;
 import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 
-import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class AssignmentAccount extends PersistableBusinessObjectBase {
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@XmlElement
 	private Long tkAssignAcctId;
+	@XmlElement
 	private String finCoaCd;
+	@XmlElement
 	private String accountNbr;
+	@XmlElement
 	private String subAcctNbr;
+	@XmlElement
 	private String finObjectCd;
+	@XmlElement
 	private String finSubObjCd;
+	@XmlElement
 	private String projectCd;
+	@XmlElement
 	private String orgRefId;
+	@XmlElement
 	private BigDecimal percent;
+	@XmlElement
 	private boolean active;
+	@XmlElement
 	private String earnCode;
+	@XmlElement(required=true,nillable=false)
 	private Long tkAssignmentId;
+	
 	private Assignment assignmentObj;
 	
 	

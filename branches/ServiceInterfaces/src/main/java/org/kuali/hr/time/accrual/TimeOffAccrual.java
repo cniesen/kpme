@@ -3,22 +3,43 @@ package org.kuali.hr.time.accrual;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.rice.kim.bo.Person;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class TimeOffAccrual extends PersistableBusinessObjectBase {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	@XmlElement
 	private Long laAccrualId;
+	
+	@XmlElement
 	private String principalId;
+	
+	@XmlElement
 	private String accrualCategory;
+	
+	@XmlElement(required=true, nillable=false)
+    @XmlJavaTypeAdapter(DateAdapter.class)
 	private Date effectiveDate;
-	private Integer hoursAccrued;
-	private Integer hoursTaken;
-	private Integer hoursAdjust;
+	
+	@XmlElement
+	private Long hoursAccrued;
+	
+	@XmlElement
+	private Long hoursTaken;
+	
+	@XmlElement
+	private Long hoursAdjust;
 
 	private AccrualCategory accrualCategoryObj;
 
@@ -39,7 +60,7 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 		this.principalId = principalId;
 	}
 
-	public String getAccrualCategory() {
+	public String getAccrualCategory() {		
 		return accrualCategory;
 	}
 
@@ -55,29 +76,36 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 		this.effectiveDate = effectiveDate;
 	}
 
-	public Integer getHoursAccrued() {
+	
+	public Long getHoursAccrued() {
 		return hoursAccrued;
 	}
 
-	public void setHoursAccrued(Integer hoursAccrued) {
+
+	public void setHoursAccrued(Long hoursAccrued) {
 		this.hoursAccrued = hoursAccrued;
 	}
 
-	public Integer getHoursTaken() {
+
+	public Long getHoursTaken() {
 		return hoursTaken;
 	}
 
-	public void setHoursTaken(Integer hoursTaken) {
+
+	public void setHoursTaken(Long hoursTaken) {
 		this.hoursTaken = hoursTaken;
 	}
 
-	public Integer getHoursAdjust() {
+
+	public Long getHoursAdjust() {
 		return hoursAdjust;
 	}
 
-	public void setHoursAdjust(Integer hoursAdjust) {
+
+	public void setHoursAdjust(Long hoursAdjust) {
 		this.hoursAdjust = hoursAdjust;
 	}
+
 
 	public void setAccrualCategoryObj(AccrualCategory accrualCategoryObj) {
 		this.accrualCategoryObj = accrualCategoryObj;

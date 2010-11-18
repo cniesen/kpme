@@ -3,21 +3,34 @@ package org.kuali.hr.time.accrual;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class AccrualCategory extends PersistableBusinessObjectBase {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	@XmlElement
 	private Long laAccrualCategoryId;
+	@XmlElement
 	private String accrualCategory;
+	@XmlElement
 	private String descr;
+	@XmlElement(required=true, nillable=false)
+    @XmlJavaTypeAdapter(DateAdapter.class)
 	private Date effectiveDate;
-	private Timestamp timestamp;
+	@XmlElement
 	private boolean active;
+	
+	private Timestamp timestamp;
+	
 	
 	
 	

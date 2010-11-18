@@ -5,24 +5,40 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.task.Task;
+import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class WorkArea extends PersistableBusinessObjectBase {
-
     private static final long serialVersionUID = 1L;
-
+    
+    @XmlElement
     private Long tkWorkAreaId;
+    @XmlElement(required=true, nillable=false)
     private Long workArea;
+    
+    @XmlElement(required=true, nillable=false)
+    @XmlJavaTypeAdapter(DateAdapter.class)
     private Date effectiveDate;
+    @XmlElement
     private boolean active = false;
+    @XmlElement
     private String description;
+    @XmlElement
     private String dept;
+    @XmlElement
     private String defaultOvertimePreference;
+    @XmlElement
     private String adminDescr;
+    @XmlElement
     private String userPrincipalId;
+    
     private Timestamp timestamp;
 
     private transient List<TkRole> roles = new ArrayList<TkRole>();

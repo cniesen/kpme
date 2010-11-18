@@ -1,71 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="1.0">
-    <xsd:element name="root">
-        <xsd:complexType>
-            <xsd:sequence>
-                <xsd:element name="jobs">
-                    <xsd:complexType>
-                        <xsd:sequence>
-                            <xsd:element name="job" maxOccurs="unbounded">
-                                <xsd:complexType>
-                                    <xsd:sequence>
-                                        <xsd:element name="hrJobId" type="xsd:long" minOccurs="0"></xsd:element>
-                                        <xsd:element name="location">
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="45"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="hrPayType" >
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="5"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="fte" type="xsd:boolean"></xsd:element>
-                                        <xsd:element name="payGrade" >
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="3"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="standardHours" type="xsd:float"></xsd:element>
-                                        <xsd:element name="principalId" >
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="40"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="jobNumber" type="xsd:long"></xsd:element>
-                                        <xsd:element name="effectiveDate" type="xsd:date"></xsd:element>
-                                        <xsd:element name="dept">
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="21"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="tkSalGroup" >
-                                            <xsd:simpleType>
-                                                <xsd:restriction base="xsd:string">
-                                                    <xsd:maxLength value="10"/>
-                                                </xsd:restriction>
-                                            </xsd:simpleType>
-                                        </xsd:element>
-                                        <xsd:element name="active" type="xsd:boolean"></xsd:element>
-                                        <xsd:element name="compRate" type="xsd:float"></xsd:element>
-                                    </xsd:sequence>
-                                </xsd:complexType>
-                            </xsd:element>
-                        </xsd:sequence>
-                    </xsd:complexType>
-                </xsd:element>
-            </xsd:sequence>
-        </xsd:complexType>
-    </xsd:element>
-</xsd:schema>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="/tk" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lm="/tk">
+  <xs:element name="addJobs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="jobs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="location" type="xs:string"/>
+              <xs:element name="hrPayType" type="xs:string"/>
+              <xs:element name="fte" type="xs:boolean"/>
+              <xs:element name="payGrade" type="xs:string"/>
+              <xs:element name="standardHours" type="xs:int"/>
+              <xs:element name="hrJobId" type="xs:long"/>
+              <xs:element name="principalId" type="xs:string"/>
+			  <xs:element name="jobNumber" type="xs:long"/>
+			  <xs:element name="effectiveDate" type="xs:date" nillable="false"/>
+			  <xs:element name="dept" type="xs:string" nillable="false"/>
+			  <xs:element name="tkSalGroup" type="xs:string"/> 
+			  <xs:element name="active" type="xs:boolean"/>                           
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>
