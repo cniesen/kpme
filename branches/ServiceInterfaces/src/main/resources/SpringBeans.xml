@@ -149,24 +149,7 @@
 							</property>
 							<property name="localServiceName" value="holidayCalendarServiceSOAP" />
 						</bean>
-						
-						<bean parent="webServiceParentBean">
-							<property name="service">
-								<ref bean="payTypeService" />
-							</property>
-							<property name="serviceInterface">
-								<value>org.kuali.hr.time.paytype.service.PayTypeService</value>
-							</property>
-
-							<property name="serviceEndPoint">
-								<bean class="java.net.URL">
-									<constructor-arg type="java.lang.String"
-										value="http://localhost:8080/tk-dev/remoting/payTypeServiceSOAP" />
-								</bean>
-							</property>
-							<property name="localServiceName" value="payTypeServiceSOAP" />
-						</bean>
-						
+					
 						<!-- Assignment -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
@@ -644,7 +627,7 @@
 
 	<bean id="payTypeService" class="org.kuali.hr.time.paytype.service.PayTypeServiceImpl">
 	</bean>
-
+	
 	<bean id="tkRoleService" class="org.kuali.hr.time.roles.service.TkRoleServiceImpl">
 		<property name="tkRoleDao" ref="tkRoleDao" />
 	</bean>
@@ -683,7 +666,6 @@
 	</bean>
 
 	<bean id="earnCodeService" class="org.kuali.hr.time.earncode.service.EarnCodeServiceImpl">
-		<property name="earnCodeDao" ref="earnCodeDao" />
 	</bean>
 
 	<bean id="earnGroupService"
@@ -701,9 +683,6 @@
 
 	<bean id="holidayCalendarService"
 		class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl" />	
-
-	
-
 
 	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
 
