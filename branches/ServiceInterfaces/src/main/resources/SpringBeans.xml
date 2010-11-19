@@ -149,6 +149,24 @@
 							</property>
 							<property name="localServiceName" value="holidayCalendarServiceSOAP" />
 						</bean>
+						
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="payTypeService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.paytype.service.PayTypeService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/payTypeServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="payTypeServiceSOAP" />
+						</bean>
+						
 						<!-- Assignment -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
@@ -270,11 +288,29 @@
 							<property name="localServiceName" value="earnCodeServiceSOAP" />
 						</bean>
 						
-				
+						   <!--  PayType - djb -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="payTypeService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.paytype.service.PayTypeService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/payTypeServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="payTypeServiceSOAP" />
+						</bean>
+	
 					</list>
 				</property>
 			</bean>
 		</property>
+		
 
 		<property name="kewConfigurer">
 			<bean class="org.kuali.rice.kew.config.KEWConfigurer">
@@ -607,8 +643,6 @@
 	<bean id="jobService" class="org.kuali.hr.job.service.JobServiceImpl"></bean>
 
 	<bean id="payTypeService" class="org.kuali.hr.time.paytype.service.PayTypeServiceImpl">
-		<property name="payCalendarService" ref="payCalendarService" />
-		<property name="payTypeDao" ref="payTypeDao" />
 	</bean>
 
 	<bean id="tkRoleService" class="org.kuali.hr.time.roles.service.TkRoleServiceImpl">
