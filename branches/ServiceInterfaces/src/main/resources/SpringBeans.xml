@@ -253,6 +253,23 @@
 							<property name="localServiceName" value="workAreaServiceSOAP" />
 						</bean>
 						
+							<!-- EarnCode - sm -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="earnCodeService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.earncode.service.EarnCodeService</value>
+							</property>
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/earnCodeServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="earnCodeServiceSOAP" />
+						</bean>
+						
 				
 					</list>
 				</property>
