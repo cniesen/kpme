@@ -32,8 +32,7 @@ public class PayTypeDaoSpringOjbImpl extends PersistenceBrokerDaoSupport
 		Criteria currentRecordCriteria = new Criteria();
 
 		currentRecordCriteria.addEqualTo("payType", payType);
-		currentRecordCriteria
-				.addLessOrEqualThan("effectiveDate", effectiveDate);
+		currentRecordCriteria.addLessOrEqualThan("effectiveDate", effectiveDate);
 		// TODO timestamp max here
 
 		return (PayType) this.getPersistenceBrokerTemplate().getObjectByQuery(
@@ -66,4 +65,5 @@ public class PayTypeDaoSpringOjbImpl extends PersistenceBrokerDaoSupport
 		return getPayType(ppt.getHrPayType(), new Date(new java.util.Date()
 				.getTime()));
 	}
+
 }
