@@ -4,10 +4,18 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.kuali.hr.time.util.jaxb.TimestampAdapter;
+import org.kuali.rice.core.jaxb.SqlDateAdapter;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.paycalendar.PayCalendar;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class PayType extends PersistableBusinessObjectBase {
 
 	/**
@@ -15,13 +23,31 @@ public class PayType extends PersistableBusinessObjectBase {
 	 */
 	private static final long serialVersionUID = 1L;
 	private Long hrPayTypeId;
+	
+	@XmlElement
 	private String payType;
+	
+	@XmlElement
 	private String descr;
+	
+	@XmlElement	
 	private String calendarGroup;
+	
+	@XmlElement
 	private String regEarnCode;
+	
+	@XmlJavaTypeAdapter(value = SqlDateAdapter.class, type = Date.class)
+	@XmlElement
 	private Date effectiveDate;
+	
+	@XmlJavaTypeAdapter(value = TimestampAdapter.class, type = Timestamp.class)
+	@XmlElement
 	private Timestamp timestamp;
+	
+	@XmlElement
 	private String holidayCalendarGroup;
+	
+	@XmlElement
 	private Boolean active;
 	
 	private HolidayCalendar holidayCalendar;
