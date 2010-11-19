@@ -1,57 +1,84 @@
 package org.kuali.hr.time.department;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.kuali.rice.core.jaxb.SqlDateAdapter;
+import org.kuali.rice.core.jaxb.SqlTimestampAdapter;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
-public class Department extends PersistableBusinessObjectBase {
+/**
+ * @author bsoohoo Add annotations for Web Services XML mapping
+ * 
+ */
+@XmlAccessorType(value = XmlAccessType.NONE)
+public class Department extends PersistableBusinessObjectBase implements
+		Serializable {
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 1L;
-    
-    private Long tkDeptId;
-    private String dept;
-    private String description;
-    private String chart;
-    private String org;
-    private Date effectiveDate;
-    private Timestamp timestamp;
-    private Boolean active;
+	private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected LinkedHashMap toStringMapper() {
-	// TODO Auto-generated method stub
-	return null;
-    }
+	private Long tkDeptId;
 
-    public String getDescription() {
-        return description;
-    }
+	@XmlElement
+	private String dept;
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	@XmlElement
+	private String description;
 
-    public String getChart() {
-        return chart;
-    }
+	@XmlElement
+	private String chart;
 
-    public void setChart(String chart) {
-        this.chart = chart;
-    }
+	@XmlElement
+	private String org;
 
-    public String getOrg() {
-        return org;
-    }
+	@XmlJavaTypeAdapter(value = SqlDateAdapter.class, type = Date.class)
+	@XmlElement
+	private Date effectiveDate;
 
-    public void setOrg(String org) {
-        this.org = org;
-    }
+	@XmlJavaTypeAdapter(value = SqlTimestampAdapter.class, type = Timestamp.class)
+	@XmlElement
+	private Timestamp timestamp;
+
+	@XmlElement
+	private Boolean active;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getChart() {
+		return chart;
+	}
+
+	public void setChart(String chart) {
+		this.chart = chart;
+	}
+
+	public String getOrg() {
+		return org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
 
 	public Long getTkDeptId() {
 		return tkDeptId;

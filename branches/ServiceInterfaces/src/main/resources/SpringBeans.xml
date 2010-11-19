@@ -288,6 +288,24 @@
 							</property>
 							<property name="localServiceName" value="payTypeServiceSOAP" />
 						</bean>
+						
+						<!-- Department -->						
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="departmentService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.department.service.DepartmentService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/departmentServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="departmentServiceSOAP" />
+						</bean>
 	
 					</list>
 				</property>
@@ -501,6 +519,8 @@
 		<property name="jcdAlias" value="tkDataSource" />
 	</bean>
 
+	<bean id="departmentDao" class="org.kuali.hr.time.department.dao.DepartmentDaoImpl">
+	</bean>
 
 	<bean id="deptEarnCodeDao"
 		class="org.kuali.hr.time.dept.earncode.dao.DepartmentEarnCodeDaoSpringOjbImpl">
@@ -659,6 +679,8 @@
 	<bean id="timesheetService"
 		class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl" />
 
+	<bean id="departmentService"
+		class="org.kuali.hr.time.department.service.DepartmentServiceImpl" />
 
 	<bean id="deptEarnCodeService"
 		class="org.kuali.hr.time.dept.earncode.service.DepartmentEarnCodeServiceImpl">
