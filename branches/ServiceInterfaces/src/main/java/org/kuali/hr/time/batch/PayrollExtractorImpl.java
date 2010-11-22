@@ -1,7 +1,6 @@
 package org.kuali.hr.time.batch;
 
 import java.util.List;
-
 import org.apache.ojb.broker.PersistenceBrokerFactory;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -9,6 +8,11 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 
+/**
+ * 
+ * @author Jigar
+ *
+ */
 public class PayrollExtractorImpl implements PayrollExtractor{
 
 	@Override
