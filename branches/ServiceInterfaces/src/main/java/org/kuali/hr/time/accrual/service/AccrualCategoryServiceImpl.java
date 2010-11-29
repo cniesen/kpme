@@ -4,7 +4,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 import javax.jws.WebService;
-import javax.jws.soap.SOAPBinding;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.accrual.validation.AccrualCategoryServiceRule;
@@ -13,8 +12,12 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-@WebService(name = "accrualCategoryServiceSOAP", targetNamespace = "/tk")
-@javax.jws.soap.SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
+/**
+ * 
+ * @author Jigar
+ *
+ */
+@WebService(endpointInterface = "org.kuali.hr.time.accrual.service.AccrualCategoryService")
 public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 	private static final Logger LOG = Logger
 			.getLogger(AccrualCategoryService.class);
@@ -32,6 +35,7 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 							"Invalid data for accrualCategory");
 				}
 			}
+			//save / update
 			for (AccrualCategory accrualCategory : accrualCategories) {
 				if (accrualCategory.getLaAccrualCategoryId() != null) {
 					AccrualCategory oldAccrualCategory = KNSServiceLocator

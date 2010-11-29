@@ -2,6 +2,8 @@ package org.kuali.hr.time.assignment.service;
 
 import java.util.List;
 
+import javax.jws.WebService;
+
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.assignment.AssignmentAccount;
 import org.kuali.hr.time.assignment.validation.AssignmentAccountServiceRule;
@@ -10,6 +12,12 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+/**
+ * 
+ * @author Jigar
+ *
+ */
+@WebService(endpointInterface="org.kuali.hr.time.assignment.service.AssignmentAccountService")
 public class AssignmentAccountServiceImpl implements AssignmentAccountService {
 	private static final Logger LOG = Logger
 			.getLogger(AssignmentAccountService.class);

@@ -20,22 +20,29 @@ public class WorkArea extends PersistableBusinessObjectBase {
     
     @XmlElement
     private Long tkWorkAreaId;
+    
     @XmlElement(required=true, nillable=false)
     private Long workArea;
     
     @XmlElement(required=true, nillable=false)
     @XmlJavaTypeAdapter(DateAdapter.class)
     private Date effectiveDate;
+    
     @XmlElement
     private boolean active = false;
+    
     @XmlElement
     private String description;
+    
     @XmlElement
     private String dept;
+    
     @XmlElement
     private String defaultOvertimePreference;
+    
     @XmlElement
     private String adminDescr;
+    
     @XmlElement
     private String userPrincipalId;
     

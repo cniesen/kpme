@@ -7,7 +7,7 @@
           <xs:complexType>
             <xs:sequence>
               <xs:element name="tkWorkAreaId" type="xs:long"/>
-              <xs:element name="workArea" type="xs:long"/>              
+              <xs:element name="workArea" type="xs:long" nillable="false"/>              
               <xs:element name="effectiveDate" type="xs:date" nillable="false"/>
               <xs:element name="active" type="xs:boolean"/>
 			  <xs:element name="description" type="xs:string"/>

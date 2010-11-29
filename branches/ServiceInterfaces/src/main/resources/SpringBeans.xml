@@ -236,7 +236,7 @@
 							</property>
 							<property name="localServiceName" value="accrualCategoryServiceSOAP" />
 						</bean>
-								<!-- WorkArea-->
+						<!-- WorkArea-->
 						<bean parent="webServiceParentBean">
 							<property name="service">
 								<ref bean="workAreaService" />
@@ -254,7 +254,7 @@
 							<property name="localServiceName" value="workAreaServiceSOAP" />
 						</bean>
 						
-							<!-- EarnCode - sm -->
+						<!-- EarnCode - sm -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
 								<ref bean="earnCodeService" />
@@ -271,7 +271,7 @@
 							<property name="localServiceName" value="earnCodeServiceSOAP" />
 						</bean>
 						
-						   <!--  PayType - djb -->
+					   <!--  PayType - djb -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
 								<ref bean="payTypeService" />
@@ -306,6 +306,24 @@
 							</property>
 							<property name="localServiceName" value="departmentServiceSOAP" />
 						</bean>
+						
+						<!-- Task -->
+						<bean parent="webServiceParentBean">
+							<property name="service">
+								<ref bean="taskService" />
+							</property>
+							<property name="serviceInterface">
+								<value>org.kuali.hr.time.task.service.TaskService</value>
+							</property>
+
+							<property name="serviceEndPoint">
+								<bean class="java.net.URL">
+									<constructor-arg type="java.lang.String"
+										value="http://localhost:8080/tk-dev/remoting/taskServiceSOAP" />
+								</bean>
+							</property>
+							<property name="localServiceName" value="taskServiceSOAP" />
+						</bean>			
 	
 					</list>
 				</property>
@@ -644,6 +662,10 @@
 	</bean>
 
 	<bean id="jobService" class="org.kuali.hr.job.service.JobServiceImpl"></bean>
+	
+	<bean id="taskService" class="org.kuali.hr.time.task.service.TaskServiceImpl"></bean>
+	
+	<bean id="payRollExtractor" class="org.kuali.hr.time.batch.PayrollExtractorImpl"></bean>	
 
 	<bean id="payTypeService" class="org.kuali.hr.time.paytype.service.PayTypeServiceImpl">
 	</bean>

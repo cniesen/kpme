@@ -9,7 +9,11 @@ import javax.jws.soap.SOAPBinding;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 
-
+/**
+ * 
+ * @author Jigar
+ *
+ */
 @WebService(name = "accrualCategoryServiceSOAP", targetNamespace = "/tk")
 @javax.jws.soap.SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface AccrualCategoryService {

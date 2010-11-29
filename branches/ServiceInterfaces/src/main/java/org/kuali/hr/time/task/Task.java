@@ -2,23 +2,33 @@ package org.kuali.hr.time.task;
 
 import java.util.LinkedHashMap;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
-
+@XmlAccessorType(value=XmlAccessType.NONE)
 public class Task extends PersistableBusinessObjectBase {
-
     /**
      *
      */
-    private static final long serialVersionUID = 1L;
-
+    
+    @XmlElement
     private Long tkTaskId;
+    @XmlElement
     private Long task;
+    @XmlElement
     private Long workArea;
+    @XmlElement(nillable=false)
     private Long tkWorkAreaId;
+    @XmlElement
     private String description;
+    @XmlElement
     private String userPrincipalId;
+    @XmlElement
     private String administrativeDescription;
-
+    
+    private static final long serialVersionUID = 1L;
 	@SuppressWarnings("unchecked")
 	@Override
 	protected LinkedHashMap toStringMapper() {

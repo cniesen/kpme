@@ -22,23 +22,23 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 	@XmlElement
 	private Long laAccrualId;
 	
-	@XmlElement
+	@XmlElement(required=true, nillable=false)
 	private String principalId;
 	
-	@XmlElement
+	@XmlElement(required=true, nillable=false)
 	private String accrualCategory;
 	
 	@XmlElement(required=true, nillable=false)
     @XmlJavaTypeAdapter(DateAdapter.class)
 	private Date effectiveDate;
 	
-	@XmlElement
+	@XmlElement(required=true, nillable=false)
 	private Long hoursAccrued;
 	
-	@XmlElement
+	@XmlElement(required=true, nillable=false)
 	private Long hoursTaken;
 	
-	@XmlElement
+	@XmlElement(required=true, nillable=false)
 	private Long hoursAdjust;
 
 	private AccrualCategory accrualCategoryObj;

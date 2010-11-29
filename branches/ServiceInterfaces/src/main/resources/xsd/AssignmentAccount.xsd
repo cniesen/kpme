@@ -17,7 +17,7 @@
 			  <xs:element name="percent" type="xs:float"/>
 			  <xs:element name="active" type="xs:boolean"/>
 			  <xs:element name="earnCode" type="xs:string"/> 
-			  <xs:element name="tkAssignmentId" type="xs:long"/>                           
+			  <xs:element name="tkAssignmentId" type="xs:long" nillable="false"/>                           
             </xs:sequence>
           </xs:complexType>
         </xs:element>

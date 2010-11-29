@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
+import javax.jws.WebService;
 import org.apache.log4j.Logger;
 import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.assignment.Assignment;
@@ -20,6 +20,7 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+@WebService(endpointInterface="org.kuali.hr.time.assignment.service.AssignmentService")
 public class AssignmentServiceImpl implements AssignmentService {
 
 	private static final Logger LOG = Logger

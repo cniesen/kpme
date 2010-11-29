@@ -4,7 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
-
+import javax.jws.WebService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.job.Job;
@@ -18,6 +18,7 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+@WebService(endpointInterface="org.kuali.hr.job.service.JobService")
 public class JobServiceImpl implements JobService {
 	private static final Logger LOG = Logger.getLogger(JobService.class);
 	 
@@ -49,6 +50,8 @@ public class JobServiceImpl implements JobService {
 
 	@Override
 	public Job getJob(String principalId, Long jobNumber, Date asOfDate) {
+		System.out.println("principalId = "+principalId+"\njobNumber = "+jobNumber+"\nasOfDate = "+asOfDate);
+		
 		Job job = SpringContext.getBean(JobDao.class).getJob(principalId, jobNumber, asOfDate);
 		if (job == null) {
 			throw new RuntimeException("No job for principal : " + principalId);
