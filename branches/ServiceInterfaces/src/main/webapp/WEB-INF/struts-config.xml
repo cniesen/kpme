@@ -9,7 +9,9 @@
         <form-bean name="AdminActionForm" type="org.kuali.hr.time.admin.web.AdminActionForm"/>
         <form-bean name="PersonInfoActionForm" type="org.kuali.hr.time.base.web.PersonInfoActionForm"/>
         <form-bean name="WorkAreaActionForm" type="org.kuali.hr.time.workarea.web.WorkAreaActionForm"/>
-        <form-bean name="CacheAdministrationActionForm" type="org.kuali.hr.time.cache.web.CacheAdministrationActionForm" />
+        <form-bean name="CacheAdministrationActionForm" type="org.kuali.hr.time.cache.web.CacheAdministrationActionForm" />        
+        <form-bean name="TimeBlockActionForm" type="org.kuali.hr.time.timeblock.web.TimeBlockActionForm" />        
+         
     </form-beans>
 
 
@@ -46,6 +48,12 @@
 		<action path="/CacheAdministration" name="CacheAdministrationActionForm" scope="request" input="/WEB-INF/jsp/cache.jsp" type="org.kuali.hr.time.cache.web.CacheAdministrationAction" parameter="methodToCall" validate="true" attribute="KualiForm">
             <forward name="basic" path="/WEB-INF/jsp/cache.jsp" />
         </action>
+
+		<action path="/TimeBlock" attribute="TimeBlockActionForm" name="TimeBlockActionForm" scope="session" input="/WEB-INF/jsp/timeBlock.jsp" type="org.kuali.hr.time.timeblock.web.TimeBlockAction" parameter="methodToCall" validate="true" >
+            <forward name="basic" path="/WEB-INF/jsp/timeBlock.jsp" />
+        </action>
+		 
+         
        
 	</action-mappings>
 

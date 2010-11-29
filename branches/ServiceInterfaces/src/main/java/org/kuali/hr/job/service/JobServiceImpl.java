@@ -49,9 +49,7 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public Job getJob(String principalId, Long jobNumber, Date asOfDate) {
-		System.out.println("principalId = "+principalId+"\njobNumber = "+jobNumber+"\nasOfDate = "+asOfDate);
-		
+	public Job getJob(String principalId, Long jobNumber, Date asOfDate) {		
 		Job job = SpringContext.getBean(JobDao.class).getJob(principalId, jobNumber, asOfDate);
 		if (job == null) {
 			throw new RuntimeException("No job for principal : " + principalId);
