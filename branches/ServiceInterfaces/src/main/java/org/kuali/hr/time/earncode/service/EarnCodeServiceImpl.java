@@ -68,8 +68,10 @@ public class EarnCodeServiceImpl implements EarnCodeService  {
 				}else{
 					oldEarnCode.setDescription (earnCode.getDescription());
 					oldEarnCode.setRecordHours (earnCode.getRecordHours());
+					oldEarnCode.setRecordTime (earnCode.getRecordTime());
+					oldEarnCode.setRecordAmount (earnCode.getRecordAmount());
 					oldEarnCode.setTimestamp   (earnCode.getTimestamp());
-					oldEarnCode.setRecordAmount(earnCode.getRecordAmount());
+					oldEarnCode.setEffectiveDate (earnCode.getEffectiveDate());
 					KNSServiceLocator.getBusinessObjectDao().save(oldEarnCode); // update existing record
 				}
 
