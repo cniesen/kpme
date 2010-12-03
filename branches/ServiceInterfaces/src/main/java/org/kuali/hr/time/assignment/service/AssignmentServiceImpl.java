@@ -17,23 +17,20 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-@WebService(endpointInterface="org.kuali.hr.time.assignment.service.AssignmentService")
+@WebService(endpointInterface = "org.kuali.hr.time.assignment.service.AssignmentService")
 public class AssignmentServiceImpl implements AssignmentService {
 
-	private static final Logger LOG = Logger
+	private static final Logger log = Logger
 			.getLogger(AssignmentServiceImpl.class);
-	
 
-	
 	@Override
 	public List<Assignment> getAssignments(String principalId, Date asOfDate) {
 		if (asOfDate == null) {
 			asOfDate = TKUtils.getCurrentDate();
 		}
-		return SpringContext.getBean(AssignmentDao.class).findAssignments(principalId, asOfDate);
+		return SpringContext.getBean(AssignmentDao.class).findAssignments(
+				principalId, asOfDate);
 	}
 
 	@Override
@@ -89,24 +86,26 @@ public class AssignmentServiceImpl implements AssignmentService {
 			}
 		}
 
-		LOG.warn("no matched assignment found");
+		log.warn("no matched assignment found");
 		return new Assignment();
 	}
+
 	
-	@Transactional	
 	public boolean addAssignments(List<Assignment> assignments)
 			throws ServiceException {
-		try {
-			AssignmentServiceRule assignmentServiceRule = new AssignmentServiceRule();
-			// validating xml data
-			for (Assignment assignment : assignments) {
+
+		AssignmentServiceRule assignmentServiceRule = new AssignmentServiceRule();
+		ServiceException serviceException = new ServiceException("Error in Assignment WebService");
+		// save /update
+		
+		for (Assignment assignment : assignments) {
+			try {
+				// validation
 				if (!assignmentServiceRule.validateAssignmentObject(assignment)) {
 					throw new IllegalArgumentException(
 							"Invalid data for Assignment");
 				}
-			}
-			// save /update
-			for (Assignment assignment : assignments) {
+
 				if (assignment.getTkAssignmentId() != null) {
 					Assignment oldAssignment = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
@@ -124,13 +123,17 @@ public class AssignmentServiceImpl implements AssignmentService {
 						.getTimeInMillis()));
 				assignment.setTkAssignmentId(null);
 				KNSServiceLocator.getBusinessObjectService().save(assignment);
-			}
 
-		} catch (Exception ex) {
-			LOG.error(ex);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			throw new ServiceException(ex);
+			} catch (Exception ex) {
+				log.error("Error with Assignment Object:"
+						+ assignment, ex);
+				serviceException.add(assignment, ex);
+			}
 		}
+		if(serviceException.hasErrors()){
+			throw serviceException;	
+		}
+		
 		return true;
 	}
 }

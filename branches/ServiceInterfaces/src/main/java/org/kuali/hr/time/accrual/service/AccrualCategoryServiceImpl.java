@@ -9,34 +9,34 @@ import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.accrual.validation.AccrualCategoryServiceRule;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * 
  * @author Jigar
- *
+ * 
  */
 @WebService(endpointInterface = "org.kuali.hr.time.accrual.service.AccrualCategoryService")
 public class AccrualCategoryServiceImpl implements AccrualCategoryService {
-	private static final Logger LOG = Logger
+	private static final Logger log = Logger
 			.getLogger(AccrualCategoryService.class);
 
-	@Transactional
 	public boolean addAccrualCategories(List<AccrualCategory> accrualCategories)
 			throws ServiceException {
-		try {
-			AccrualCategoryServiceRule accrualCategoryServiceRule = new AccrualCategoryServiceRule();
-			// validating xml data
-			for (AccrualCategory accrualCategory : accrualCategories) {
+
+		AccrualCategoryServiceRule accrualCategoryServiceRule = new AccrualCategoryServiceRule();
+		ServiceException serviceException = new ServiceException(
+				"Error in AccrualCategory WebService");
+
+		// save / update
+		for (AccrualCategory accrualCategory : accrualCategories) {
+			try {
+				// validation
 				if (!accrualCategoryServiceRule
 						.validateAccrualCategoryObject(accrualCategory)) {
 					throw new IllegalArgumentException(
 							"Invalid data for accrualCategory");
 				}
-			}
-			//save / update
-			for (AccrualCategory accrualCategory : accrualCategories) {
+
 				if (accrualCategory.getLaAccrualCategoryId() != null) {
 					AccrualCategory oldAccrualCategory = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
@@ -54,14 +54,17 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 						.getInstance().getTimeInMillis()));
 				KNSServiceLocator.getBusinessObjectService().save(
 						accrualCategory);
-			}
 
-		} catch (Exception ex) {
-			LOG.error(ex);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			throw new ServiceException(ex);
+			} catch (Exception ex) {
+				log.error("Error with AccrualCategory Object:"
+						+ accrualCategory, ex);
+				serviceException.add(accrualCategory, ex);
+
+			}
+		}
+		if (serviceException.hasErrors()) {
+			throw serviceException;
 		}
 		return true;
 	}
-
 }

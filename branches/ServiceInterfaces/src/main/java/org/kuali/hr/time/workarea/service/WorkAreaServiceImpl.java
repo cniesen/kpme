@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.util.exceptions.ServiceException;
@@ -12,24 +11,19 @@ import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workarea.dao.WorkAreaDao;
 import org.kuali.hr.time.workarea.validation.WorkAreaServiceRule;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class WorkAreaServiceImpl implements WorkAreaService {
 
-	@SuppressWarnings("unused")
-	private static final Logger LOG = Logger
-			.getLogger(WorkAreaService.class);
-
-	 
+	private static final Logger log = Logger.getLogger(WorkAreaService.class);
 
 	public WorkAreaServiceImpl() {
-		
+
 	}
 
 	@Override
 	public WorkArea getWorkArea(Long workAreaId, Date asOfDate) {
-		return SpringContext.getBean(WorkAreaDao.class).getWorkArea(workAreaId, asOfDate);
+		return SpringContext.getBean(WorkAreaDao.class).getWorkArea(workAreaId,
+				asOfDate);
 	}
 
 	@Override
@@ -37,23 +31,20 @@ public class WorkAreaServiceImpl implements WorkAreaService {
 		SpringContext.getBean(WorkAreaDao.class).saveOrUpdate(workArea);
 	}
 
-	
-
-	@Transactional
 	public boolean addWorkAreas(List<WorkArea> workAreas)
 			throws ServiceException {
 
-		try {
-			WorkAreaServiceRule workAreaServiceRule = new WorkAreaServiceRule();
-			for (WorkArea workArea : workAreas) {
+		WorkAreaServiceRule workAreaServiceRule = new WorkAreaServiceRule();
+		ServiceException serviceException = new ServiceException(
+				"Error in WorkArea WebService");
+		// save / update data
+		for (WorkArea workArea : workAreas) {
+			try {
+				// validation
 				if (!workAreaServiceRule.validateWorkAreaObject(workArea)) {
 					throw new IllegalArgumentException(
 							"invalid data for workarea");
 				}
-			}
-			// save / update data
-
-			for (WorkArea workArea : workAreas) {
 				if (workArea.getTkWorkAreaId() != null) {
 					WorkArea oldWorkArea = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
@@ -69,15 +60,15 @@ public class WorkAreaServiceImpl implements WorkAreaService {
 						.getTimeInMillis()));
 				KNSServiceLocator.getBusinessObjectService().save(workArea);
 
+			} catch (Exception ex) {
+				log.error("Error with WorkArea Object:" + workArea, ex);
+				serviceException.add(workArea, ex);
 			}
-
-		} catch (Exception ex) {
-			LOG.error(ex);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			throw new ServiceException(ex);
+		}
+		if (serviceException.hasErrors()) {
+			throw serviceException;
 		}
 		return true;
-
 	}
 
 }

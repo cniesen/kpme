@@ -1,43 +1,40 @@
 package org.kuali.hr.time.assignment.service;
 
 import java.util.List;
-
 import javax.jws.WebService;
-
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.assignment.AssignmentAccount;
 import org.kuali.hr.time.assignment.validation.AssignmentAccountServiceRule;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 /**
  * 
  * @author Jigar
- *
+ * 
  */
-@WebService(endpointInterface="org.kuali.hr.time.assignment.service.AssignmentAccountService")
+@WebService(endpointInterface = "org.kuali.hr.time.assignment.service.AssignmentAccountService")
 public class AssignmentAccountServiceImpl implements AssignmentAccountService {
-	private static final Logger LOG = Logger
+	private static final Logger log = Logger
 			.getLogger(AssignmentAccountService.class);
 
-	@Transactional
 	public boolean addAssignmentAccounts(
 			List<AssignmentAccount> assignmentAccounts) throws ServiceException {
-		try {
+		ServiceException serviceException = new ServiceException(
+				"Error in AssignmentAccount WebService");
 
-			AssignmentAccountServiceRule assignmentAccountServiceRule = new AssignmentAccountServiceRule();
-			// validating all data
-			for (AssignmentAccount assignmentAccount : assignmentAccounts) {
+		AssignmentAccountServiceRule assignmentAccountServiceRule = new AssignmentAccountServiceRule();
+
+		// saving all data
+		for (AssignmentAccount assignmentAccount : assignmentAccounts) {
+			try {
+				// validating data
 				if (!assignmentAccountServiceRule
 						.validateAssignmentAccountObject(assignmentAccount)) {
 					throw new IllegalArgumentException(
 							"Invalid data for assignmentAccount");
 				}
-			}
-			// saving all data
-			for (AssignmentAccount assignmentAccount : assignmentAccounts) {
+
 				if (assignmentAccount.getTkAssignAcctId() != null) {
 					AssignmentAccount oldAssignmentAccount = KNSServiceLocator
 							.getBusinessObjectService().findBySinglePrimaryKey(
@@ -50,14 +47,17 @@ public class AssignmentAccountServiceImpl implements AssignmentAccountService {
 				assignmentAccount.setTkAssignAcctId(null);
 				KNSServiceLocator.getBusinessObjectService().save(
 						assignmentAccount);
+
+			} catch (Exception ex) {
+				log.error("Error with AssignmentAccount Object:"
+						+ assignmentAccount, ex);
+				serviceException.add(assignmentAccount, ex);
 			}
 
-		} catch (Exception ex) {			
-			LOG.error(ex);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			throw new ServiceException(ex);
+		}
+		if (serviceException.hasErrors()) {
+			throw serviceException;
 		}
 		return true;
 	}
-
 }

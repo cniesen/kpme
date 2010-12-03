@@ -15,13 +15,10 @@ import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-@WebService(endpointInterface="org.kuali.hr.job.service.JobService")
+@WebService(endpointInterface = "org.kuali.hr.job.service.JobService")
 public class JobServiceImpl implements JobService {
-	private static final Logger LOG = Logger.getLogger(JobService.class);
-	 
+	private static final Logger log = Logger.getLogger(JobService.class);
 
 	@Override
 	public void saveOrUpdate(Job job) {
@@ -33,11 +30,10 @@ public class JobServiceImpl implements JobService {
 		SpringContext.getBean(JobDao.class).saveOrUpdate(jobList);
 	}
 
-	
-
 	@Override
 	public List<Job> getJobs(String principalId, Date asOfDate) {
-		List<Job> jobs = SpringContext.getBean(JobDao.class).getJobs(principalId, asOfDate);
+		List<Job> jobs = SpringContext.getBean(JobDao.class).getJobs(
+				principalId, asOfDate);
 
 		for (Job job : jobs) {
 			PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(
@@ -49,8 +45,9 @@ public class JobServiceImpl implements JobService {
 	}
 
 	@Override
-	public Job getJob(String principalId, Long jobNumber, Date asOfDate) {		
-		Job job = SpringContext.getBean(JobDao.class).getJob(principalId, jobNumber, asOfDate);
+	public Job getJob(String principalId, Long jobNumber, Date asOfDate) {
+		Job job = SpringContext.getBean(JobDao.class).getJob(principalId,
+				jobNumber, asOfDate);
 		if (job == null) {
 			throw new RuntimeException("No job for principal : " + principalId);
 		}
@@ -67,18 +64,16 @@ public class JobServiceImpl implements JobService {
 		return job;
 	}
 
-	@Transactional
 	public boolean addJobs(List<Job> jobs) throws ServiceException {
-		try {
-			JobServiceRule jobServiceRule = new JobServiceRule();
-			// validating all Jobs
-			for (Job job : jobs) {
+		JobServiceRule jobServiceRule = new JobServiceRule();
+		ServiceException serviceException  = new ServiceException("Error in Job WebService");
+		// save / update jobs
+		for (Job job : jobs) {
+			try {
+				// validation
 				if (!jobServiceRule.validateJobObject(job)) {
 					throw new IllegalArgumentException("invalid data for job");
 				}
-			}
-			// save / update jobs
-			for (Job job : jobs) {
 				if (job.getHrJobId() != null) {
 					Job oldJob = KNSServiceLocator
 							.getBusinessObjectService()
@@ -92,11 +87,14 @@ public class JobServiceImpl implements JobService {
 				job.setTimestamp(new Timestamp(Calendar.getInstance()
 						.getTimeInMillis()));
 				KNSServiceLocator.getBusinessObjectService().save(job);
+
+			} catch (Exception ex) {
+				log.error("Error with job Object:"+ job, ex);
+				serviceException.add(job, ex);
 			}
-		} catch (Exception ex) {
-			LOG.error(ex);
-			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			throw new ServiceException(ex);
+		}
+		if(serviceException.hasErrors()){
+			throw serviceException;
 		}
 		return true;
 	}
