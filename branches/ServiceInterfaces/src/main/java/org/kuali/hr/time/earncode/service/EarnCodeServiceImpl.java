@@ -1,3 +1,4 @@
+
 package org.kuali.hr.time.earncode.service;
 
 import java.sql.Date;
@@ -63,15 +64,22 @@ public class EarnCodeServiceImpl implements EarnCodeService  {
 				EarnCode oldEarnCode = SpringContext.getBean(EarnCodeDao.class).getEarnCode(earnCode.getEarnCode()); 
 				
 				if (oldEarnCode == null){   // Create new record
-					// SET some new fields for new record
+					// SET some new fields for new record and default to true
+					earnCode.setRecordAmount(true);
+					earnCode.setRecordTime(true);
+										
 					KNSServiceLocator.getBusinessObjectDao().save(earnCode);
 				}else{
 					oldEarnCode.setDescription (earnCode.getDescription());
+//	default			oldEarnCode.setRecordTime (earnCode.getRecordTime());
+//	default			oldEarnCode.setRecordAmount (earnCode.getRecordAmount());
 					oldEarnCode.setRecordHours (earnCode.getRecordHours());
-					oldEarnCode.setRecordTime (earnCode.getRecordTime());
-					oldEarnCode.setRecordAmount (earnCode.getRecordAmount());
+					oldEarnCode.setRecordTime (true);
+					oldEarnCode.setRecordAmount (true);
+					
 					oldEarnCode.setTimestamp   (earnCode.getTimestamp());
 					oldEarnCode.setEffectiveDate (earnCode.getEffectiveDate());
+					
 					KNSServiceLocator.getBusinessObjectDao().save(oldEarnCode); // update existing record
 				}
 
