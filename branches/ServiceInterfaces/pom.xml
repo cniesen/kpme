@@ -447,9 +447,9 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:https://ais-svn.usc.edu/svn/T2/trunk</connection>
-		<developerConnection>scm:svn:https://ais-svn.usc.edu/svn/T2/trunk</developerConnection>
-		<url>https://ais-svn.usc.edu/svn/T2/trunk</url>
+		<connection>scm:svn:https://ais-svn.usc.edu/svn/T2/branches/ServiceInterfaces</connection>
+		<developerConnection>scm:svn:https://ais-svn.usc.edu/svn/T2/branches/ServiceInterfaces</developerConnection>
+		<url>https://ais-svn.usc.edu/svn/T2/branches/ServiceInterfaces</url>
 	</scm>
 
 </project>
