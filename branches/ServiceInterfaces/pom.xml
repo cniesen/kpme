@@ -223,7 +223,7 @@
 								<argument>dbdeploy-maven</argument>
                                 <argument>-Ddb.user=${dbdeploy.user}</argument>
                                 <argument>-Ddb.password=${dbdeploy.pass}</argument>
-                                <argument>-Ddb.url=${dbdeploy.url}</argument>
+                                <argument>-Ddb.url=${dbdeploy.host}</argument>
 								<argument>-Dapp.version=${project.version}</argument>
 								<argument>-Denvironment=test</argument>
 							</arguments>
