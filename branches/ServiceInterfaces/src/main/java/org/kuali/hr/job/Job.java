@@ -4,18 +4,24 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.paytype.PayType;
-import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.rice.core.jaxb.SqlDateAdapter;
+import org.kuali.rice.kim.bo.Person;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 @XmlAccessorType(value = XmlAccessType.NONE)
 public class Job extends PersistableBusinessObjectBase {
 
+	/*
+	 * Standard field included for serialization support
+	 */
 	private static final long serialVersionUID = 1L;
 
 	@XmlElement
@@ -47,8 +53,11 @@ public class Job extends PersistableBusinessObjectBase {
 
 	private Timestamp timestamp;
 
-	private PayType payType;
 	private BigDecimal compRate = new BigDecimal(0);
+	
+	private Person principal;
+	private Department deptObj;
+	private PayType payTypeObj;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -133,14 +142,6 @@ public class Job extends PersistableBusinessObjectBase {
 		return location;
 	}
 
-	public PayType getPayType() {
-		return payType;
-	}
-
-	public void setPayType(PayType payType) {
-		this.payType = payType;
-	}
-
 	public String getHrPayType() {
 		return hrPayType;
 	}
@@ -180,5 +181,35 @@ public class Job extends PersistableBusinessObjectBase {
 	public void setCompRate(BigDecimal compRate) {
 		this.compRate = compRate;
 	}
+
+
+	public Department getDeptObj() {
+		return deptObj;
+	}
+
+	public void setDeptObj(Department deptObj) {
+		this.deptObj = deptObj;
+	}
+
+
+	public PayType getPayTypeObj() {
+		return payTypeObj;
+	}
+
+
+	public void setPayTypeObj(PayType payTypeObj) {
+		this.payTypeObj = payTypeObj;
+	}
+
+
+	public Person getPrincipal() {
+		return principal;
+	}
+
+
+	public void setPrincipal(Person principal) {
+		this.principal = principal;
+	}
+
 
 }

@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.kuali.kfs.coa.businessobject.Chart;
+import org.kuali.kfs.coa.businessobject.Organization;
 import org.kuali.rice.core.jaxb.SqlDateAdapter;
 import org.kuali.rice.core.jaxb.SqlTimestampAdapter;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
@@ -23,6 +25,9 @@ public class Department extends PersistableBusinessObjectBase implements
 		Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private Chart chartObj;
+	private Organization orgObj;
 
 	private Long tkDeptId;
 
@@ -118,6 +123,22 @@ public class Department extends PersistableBusinessObjectBase implements
 
 	public void setActive(Boolean active) {
 		this.active = active;
+	}
+
+	public Chart getChartObj() {
+		return chartObj;
+	}
+
+	public void setChartObj(Chart chartObj) {
+		this.chartObj = chartObj;
+	}
+
+	public Organization getOrgObj() {
+		return orgObj;
+	}
+
+	public void setOrgObj(Organization orgObj) {
+		this.orgObj = orgObj;
 	}
 
 }

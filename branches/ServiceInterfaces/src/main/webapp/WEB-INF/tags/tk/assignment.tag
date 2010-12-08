@@ -2,12 +2,11 @@
 
 <jsp:useBean id="tagSupport" class="org.kuali.hr.time.util.TagSupport"/>
 <%@ attribute name="assignments" required="true" type="java.util.Map"%>
-<jsp:setProperty name="tagSupport" property="assignments" value="${assignments}" />
 
 <c:choose>
 	<c:when test="${fn:length(assignments) <= 1}">
 		<c:forEach var="assignment" items="${assignments}">
-			${assignment.value}
+			<span id="assignment-value">${assignment.value}</span>
 			<input type="hidden" id="assignment" name="selectedAssignment" value="${assignment.key}"/>
 		</c:forEach>
 	</c:when>

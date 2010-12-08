@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TkTestCase;
@@ -24,7 +24,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class ShiftDifferentialRuleMaintTest extends TkTestCase{
 	private static final String TEST_CODE="_T";
 		
-	private static final BigDecimal TEST_NO=new BigDecimal(10);
+	private static final BigDecimal TEST_NO=new BigDecimal(2);
 	private static Long shiftDifferentialRuleId;
 	private static final String TEST_TIME= "11:00 PM";
 	private static final Date TEST_DATE= new Date(Calendar.getInstance().getTimeInMillis());
@@ -50,19 +50,18 @@ public class ShiftDifferentialRuleMaintTest extends TkTestCase{
 		shiftDifferentialRule.setEffectiveDate(TEST_DATE);
 		//shiftDifferentialRule.setEndTime(TEST_TIME);
 		shiftDifferentialRule.setLocation(TEST_CODE);
-		shiftDifferentialRule.setMaxGap(TEST_NO);
+		shiftDifferentialRule.setMaxGap(new BigDecimal(2));
 		shiftDifferentialRule.setMinHours(TEST_NO);
 		shiftDifferentialRule.setPayGrade(TEST_CODE);	
 		shiftDifferentialRule.setCalendarGroup("BW-CAL1");
-		shiftDifferentialRule.setDay0(true);		
-		shiftDifferentialRule.setDay1(true);
-		shiftDifferentialRule.setDay2(true);
-		shiftDifferentialRule.setDay3(true);
-		shiftDifferentialRule.setDay4(true);
-		shiftDifferentialRule.setDay5(true);
-		shiftDifferentialRule.setDay6(true);
-		
-		
+		shiftDifferentialRule.setSunday(true);	
+		shiftDifferentialRule.setMonday(true);
+		shiftDifferentialRule.setTuesday(true);
+		shiftDifferentialRule.setWednesday(true);
+		shiftDifferentialRule.setThursday(true);
+		shiftDifferentialRule.setFriday(true);
+		shiftDifferentialRule.setSaturday(true);
+		shiftDifferentialRule.setCalendarGroup("TEST");	
 		
 		KNSServiceLocator.getBusinessObjectService().save(shiftDifferentialRule);
 		shiftDifferentialRuleId = shiftDifferentialRule.getTkShiftDiffRuleId();

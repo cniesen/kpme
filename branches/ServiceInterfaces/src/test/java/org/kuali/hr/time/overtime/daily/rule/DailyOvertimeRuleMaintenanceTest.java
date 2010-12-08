@@ -22,6 +22,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 public class DailyOvertimeRuleMaintenanceTest extends TkTestCase{
 	
+	//TODO - sai remove the random and for(;;) use bootstrap data to test
+	
 	private static final String TEST_CODE="_T";	
 	private static final BigDecimal TEST_NO=new BigDecimal(10);		
 	private static final java.sql.Date TEST_DATE=new java.sql.Date(Calendar.getInstance().getTimeInMillis());
@@ -87,7 +89,7 @@ public class DailyOvertimeRuleMaintenanceTest extends TkTestCase{
 		dailyOvertimeRule.setActive(true);
 		dailyOvertimeRule.setEffectiveDate(TEST_DATE);
 		dailyOvertimeRule.setLocation(TEST_CODE);
-		dailyOvertimeRule.setMaxGap(TEST_NO);
+		dailyOvertimeRule.setMaxGap(new BigDecimal(0));
 		dailyOvertimeRule.setUserPrincipalId(TEST_CODE);
 		dailyOvertimeRule.setPaytype(TEST_CODE);
 		dailyOvertimeRule.setOvertimePref(TEST_CODE);

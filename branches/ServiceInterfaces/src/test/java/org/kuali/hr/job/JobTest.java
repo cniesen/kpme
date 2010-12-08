@@ -1,11 +1,12 @@
 package org.kuali.hr.job;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 
 import org.junit.Test;
 import org.kuali.hr.time.paycalendar.PayCalendar;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.TkTestCase;
@@ -27,6 +28,8 @@ public class JobTest extends TkTestCase {
 		payCalendar.setPayCalendarId(1L);
 		payCalendar.setCalendarGroup(CALENDAR_GROUP);
 
+		payCalendar.setFlsaBeginDay("Sun");
+		payCalendar.setFlsaBeginTime(Time.valueOf("0:00:00"));
 		KNSServiceLocator.getBusinessObjectService().save(payCalendar);
 		assertTrue(TkServiceLocator.getPayCalendarSerivce().getPayCalendar(payCalendar.getPayCalendarId()) != null);
 
@@ -34,8 +37,8 @@ public class JobTest extends TkTestCase {
 
 	@Test
 	public void testInsertPayCalendarDates() throws Exception {
-		PayCalendarDates payCalendarDates = new PayCalendarDates();
-		payCalendarDates.setPayCalendarDatesId(1L);
+		PayCalendarEntries payCalendarDates = new PayCalendarEntries();
+		payCalendarDates.setPayCalendarEntriesId(1L);
 		payCalendarDates.setPayCalendarId(1L);
 
 		Calendar cal = Calendar.getInstance();
@@ -49,7 +52,7 @@ public class JobTest extends TkTestCase {
 		payCalendarDates.setEndPeriodDateTime(new java.sql.Date(cal.getTime().getTime()));
 
 		KNSServiceLocator.getBusinessObjectService().save(payCalendarDates);
-		assertTrue(TkServiceLocator.getPayCalendarDatesSerivce().getPayCalendarDates(payCalendarDates.getPayCalendarDatesId()) != null);
+		assertTrue(TkServiceLocator.getPayCalendarDatesSerivce().getPayCalendarDates(payCalendarDates.getPayCalendarEntriesId()) != null);
 
 	}
 
@@ -59,13 +62,11 @@ public class JobTest extends TkTestCase {
 		long currentTimestamp = Calendar.getInstance().getTime().getTime();
 
 		PayType payType = new PayType();
-		payType.setHrPayTypeId(1L);
+		payType.setHrPayTypeId(1001L);
 		payType.setPayType("BW");
-		payType.setCalendarGroup(CALENDAR_GROUP);
 		payType.setRegEarnCode("RGN");
 		payType.setEffectiveDate(new java.sql.Date(currentTimestamp));
 		payType.setTimestamp(new Timestamp(currentTimestamp));
-		payType.setHolidayCalendarGroup("HOL");
 
 		KNSServiceLocator.getBusinessObjectService().save(payType);
 		assertTrue(TkServiceLocator.getPayTypeSerivce().getPayType(payType.getPayType(), payType.getEffectiveDate()) != null);

@@ -9,9 +9,8 @@ import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.base.web.TkAction;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
@@ -31,19 +30,19 @@ public class TimesheetAction extends TkAction {
 		TKUser user = TKContext.getUser();
 		Date currentDate = TKUtils.getTimelessDate(null);
 		
-		PayCalendarDates payCalendarDates = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(user.getPrincipalId(),  currentDate);
+		PayCalendarEntries payCalendarDates = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(user.getPrincipalId(),  currentDate);
 		taForm.setPayCalendarDates(payCalendarDates);
 	
 		TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument(user.getPrincipalId(), payCalendarDates);
 		taForm.setTimesheetDocument(tdoc);
 		
 		taForm.setAssignmentDescriptions(TkServiceLocator.getAssignmentService().getAssignmentDescriptions(tdoc));
-		ActionForward forward = super.execute(mapping, form, request, response);
+		
 		
 		// refetching the document because the time blocks might be changed, e.g. deleting time blocks 
-		tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument(user.getPrincipalId(), payCalendarDates);
-		taForm.setTimesheetDocument(tdoc);
-		
+		//tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument(user.getPrincipalId(), payCalendarDates);
+		//taForm.setTimesheetDocument(tdoc);
+		ActionForward forward = super.execute(mapping, form, request, response);
 		return forward;
 	
 	}

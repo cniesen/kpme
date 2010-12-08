@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class TimeBlock extends PersistableBusinessObjectBase {
@@ -28,19 +29,31 @@ public class TimeBlock extends PersistableBusinessObjectBase {
 	private Timestamp beginTimestamp;
 	private Timestamp endTimestamp;
 	private Boolean clockLogCreated;
-	private BigDecimal hours = new BigDecimal("0.00");
-	private BigDecimal amount = new BigDecimal("0.00");
+	private BigDecimal hours = TkConstants.BIG_DECIMAL_SCALED_ZERO;
+	private BigDecimal amount = TkConstants.BIG_DECIMAL_SCALED_ZERO;
 	private String userPrincipalId;
 	private Timestamp timestamp;
 	private String beginTimestampTimezone;
 	private String endTimestampTimezone;
+	private String beginTimeDisplay;
+	private String endTimeDisplay;
+	// the two variables below are used to determine if a time block needs to be visually pushed forward / backward  
+	private Boolean pushBackward = false;
 	
 	private List<TimeHourDetail> timeHourDetails = new ArrayList<TimeHourDetail>();
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected LinkedHashMap toStringMapper() {
-		return null;
+		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String, Object>();
+		toStringMap.put("tkTimeBlockId", tkTimeBlockId);
+		toStringMap.put("earnCode", earnCode);
+		toStringMap.put("hours", hours);
+		for (TimeHourDetail thd : timeHourDetails) {
+			toStringMap.put("thd:earnCode:"+thd.getEarnCode(), thd.getHours());
+			toStringMap.put("thd:earnCode:"+thd.getEarnCode(), thd.getHours());
+		}
+		return toStringMap;
 	}
 
 	public String getDocumentId() {
@@ -232,6 +245,30 @@ public class TimeBlock extends PersistableBusinessObjectBase {
 			key.append(timeHourDetail.getEarnCode()+"_"+timeHourDetail.getAmount()+"_"+timeHourDetail.getHours());
 		}
 		return HashCodeBuilder.reflectionHashCode(key);
+	}
+
+	public Boolean isPushBackward() {
+		return pushBackward;
+	}
+
+	public void setPushBackward(Boolean pushBackward) {
+		this.pushBackward = pushBackward;
+	}
+
+	public String getBeginTimeDisplay() {
+		return beginTimeDisplay;
+	}
+
+	public void setBeginTimeDisplay(String beginTimeDisplay) {
+		this.beginTimeDisplay = beginTimeDisplay;
+	}
+
+	public String getEndTimeDisplay() {
+		return endTimeDisplay;
+	}
+
+	public void setEndTimeDisplay(String endTimeDisplay) {
+		this.endTimeDisplay = endTimeDisplay;
 	}
 	
 	

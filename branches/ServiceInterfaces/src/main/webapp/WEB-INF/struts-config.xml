@@ -41,9 +41,9 @@
             <forward name="basic" path="/WEB-INF/jsp/personInfo.jsp" />
         </action>
 
-       <action attribute="KualiForm" path="/WorkAreaMaintenance" input="/WEB-INF/jsp/workAreaMaintenance.jsp" name="WorkAreaActionForm" type="org.kuali.hr.time.workarea.web.WorkAreaAction" scope="session" parameter="methodToCall">
+        <action attribute="KualiForm" path="/WorkAreaMaintenance" input="/WEB-INF/jsp/workAreaMaintenance.jsp" name="WorkAreaActionForm" type="org.kuali.hr.time.workarea.web.WorkAreaAction" scope="session" parameter="methodToCall">
        		<forward name="basic" path="/WEB-INF/jsp/workAreaMaintenance.jsp" />
-       </action>
+        </action>
 
 		<action path="/CacheAdministration" name="CacheAdministrationActionForm" scope="request" input="/WEB-INF/jsp/cache.jsp" type="org.kuali.hr.time.cache.web.CacheAdministrationAction" parameter="methodToCall" validate="true" attribute="KualiForm">
             <forward name="basic" path="/WEB-INF/jsp/cache.jsp" />
@@ -52,8 +52,10 @@
 		<action path="/TimeBlock" attribute="TimeBlockActionForm" name="TimeBlockActionForm" scope="session" input="/WEB-INF/jsp/timeBlock.jsp" type="org.kuali.hr.time.timeblock.web.TimeBlockAction" parameter="methodToCall" validate="true" >
             <forward name="basic" path="/WEB-INF/jsp/timeBlock.jsp" />
         </action>
-		 
-         
+        
+        <action path="/Logout" scope="request" type="org.kuali.hr.time.web.SimpleLogout">
+          <forward name="basic" path="/WEB-INF/jsp/loggedOut.jsp" />
+        </action>
        
 	</action-mappings>
 

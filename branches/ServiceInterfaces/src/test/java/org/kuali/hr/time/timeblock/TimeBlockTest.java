@@ -9,7 +9,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.junit.Test;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendar;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
@@ -49,7 +50,7 @@ public class TimeBlockTest extends TkTestCase {
 	
 	@Test
 	public void testTimeBlockBuilding() throws Exception {
-		PayCalendarDates payCalendarEntry = new PayCalendarDates();
+		PayCalendarEntries payCalendarEntry = new PayCalendarEntries();
 		java.util.Date beginDateTime = new java.util.Date((new DateTime(2010, 1, 1, 12, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
 		java.util.Date endDateTime = new java.util.Date((new DateTime(2010, 1, 15, 12, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
 		payCalendarEntry.setBeginPeriodDateTime(beginDateTime);
@@ -131,19 +132,21 @@ public class TimeBlockTest extends TkTestCase {
 		DateTime beginTime = new DateTime(2010, 1, 1, 12, 0, 0, 0, DateTimeZone.forID("EST"));
 		DateTime endTime = new DateTime(2010, 1, 16, 12, 0, 0, 0, DateTimeZone.forID("EST"));
 		
-		PayCalendarDates payCalendarEntry = new PayCalendarDates();
+		PayCalendar payCalendar = new PayCalendar();
+		
+		PayCalendarEntries payCalendarEntry = new PayCalendarEntries();
 		java.util.Date beginDateTime = new java.util.Date(beginTime.getMillis());
 		java.util.Date endDateTime = new java.util.Date(endTime.getMillis());
 		payCalendarEntry.setBeginPeriodDateTime(beginDateTime);
 		payCalendarEntry.setEndPeriodDateTime(endDateTime);
 		
 		List<TimeBlock> lstTimeBlocks = setupTimeBlocks(beginTime, endTime, payCalendarEntry);
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(lstTimeBlocks, payCalendarEntry);
+		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(lstTimeBlocks, payCalendarEntry, payCalendar);
 		assertTrue("Aggregate built correctly ", tkTimeBlockAggregate!= null && tkTimeBlockAggregate.getWeekTimeBlocks(0).size() == 7);
 		assertTrue("Total number of days is correct",tkTimeBlockAggregate.getDayTimeBlockList().size()==15);
 	}
 	
-	private List<TimeBlock> setupTimeBlocks(DateTime startTime, DateTime endTime, PayCalendarDates payCalendarEntry){
+	private List<TimeBlock> setupTimeBlocks(DateTime startTime, DateTime endTime, PayCalendarEntries payCalendarEntry){
 		List<Interval> dayInterval = TKUtils.getDaySpanForPayCalendarEntry(payCalendarEntry);
 		Timestamp beginTimeStamp = new Timestamp((new DateTime(2010, 1, 1, 13, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
 		Timestamp endTimeStamp = new Timestamp((new DateTime(2010, 1, 2, 14, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());

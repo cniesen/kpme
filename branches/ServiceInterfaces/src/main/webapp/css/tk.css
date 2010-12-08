@@ -17,10 +17,11 @@
 }
 
 .ui-tabs .ui-tabs-nav ul {
+    clear: right !important;
 } 
 
 .ui-tabs .ui-tabs-nav li { 
-    clear: left !important;
+    
     float: right !important;
     font-size: .8em !important;
     font-weight: bold;
@@ -46,8 +47,14 @@
     /*text-decoration: underline;*/
 }
 
-.ui-dialog-buttonpane .ui-button-text {
-	font-size: .8em !important;
+#dialog-form {
+	font-size: .8em !important;	
+}
+
+.ui-dialog-buttonpane {
+	font-size: .9em !important;
+	margin-left: auto !important;
+	margin-right: auto !important;
 }
 
 .ui-accordion-header {
@@ -58,7 +65,26 @@
     background: #ffffff url(ui-iu/images/headerback.gif) 100% 100% repeat-x;
 }
 
+.ui-datepicker {
+	font-size: .8em !important;
+}
+
 /* end of jQuery style override */
+
+/* full calendar override */
+.fc-day-number {
+	font-size: .8em !important;
+}
+/* end of full calendar override */
+.highlight {
+    /*background: #FFD20F;*/   
+    background: #FFE79F;   
+}
+
+select {
+    font-family: "Trebuchet MS",Verdana,Arial,sans-serif !important; 
+    font-size: inherit !important;
+}
 
 .backdoor {
 	color: #990000 !important;
@@ -70,8 +96,12 @@
 	height: 55px;
 }
 
-.person-info table {
+.person-info {
     float: right;
+}
+
+.person-info table {
+    margin-bottom: 5px;
 }
 
 .person-info table, .person-detail table {
@@ -82,10 +112,27 @@
 
 .person-info table td{
 	padding:3px;
+	
 }
 
 .person-info a {
 	color:black;
+}
+
+.person-detail {
+    width: 95%;
+    margin: 20px auto 20px auto;
+    font-size: .8em;
+}
+
+.person-detail ul{
+    list-style: none;
+    margin-left: -20px;
+}
+
+.person-detail li:hover {
+    background: none;
+    border: none;
 }
 
 .person-detail table {
@@ -178,16 +225,13 @@
 
 #timesheet-summary {
 	margin: 10px auto 20px auto;
-	width: 95%;
 }
 
 #timesheet-summary table{
-	margin: 0 auto 5px auto;
 	font-size: .7em;
 	text-align: center;
 	border-collapse: collapse;
-	width: 95%;
-
+	width: 100%
 }
 
 #timesheet-summary .header {
@@ -206,12 +250,12 @@
 }
 
 #clock table {
-	margin: 20px auto 20px auto;
 	background-color: #FBF9EE;
 	font-size: .9em;
 	border: 2px solid gray;
 	padding: 5px;
 	border-collapse: collapse;
+	margin: 20px auto 20px auto;
 }
 
 
@@ -243,10 +287,11 @@
 }
 
 .approvals table {
-	font-size: .8em;
-	border-collapse: collapse;
 	margin: 20px auto 20px auto;
-	width:90%;
+	font-size: .6em;
+    text-align: center;
+    border-collapse: collapse;
+    width: 95%
 }
 
 .approvals table tr td {
@@ -260,6 +305,7 @@
 
 #note {
 	font-size: .8em;
+	clear:both;
 }
 
 .tooltip {
@@ -296,7 +342,6 @@
 }
 
 .validateTips {
-	font-size: .8em;
 	padding: 0.3em;
 }
 
@@ -312,3 +357,78 @@
 	border: 2px solid red !important;
 }
 
+.expand {
+    height: 1em;
+    width: 1.2em;
+    
+}
+
+/* admin section */
+#admin-page {
+    font-size: .8em;
+}
+
+#admin-page #content {
+    float:left;
+    width: 30%;
+    margin:10px;
+}
+
+#admin-page table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#admin-page tr td {
+    border: 1px solid #999999;
+}
+
+#admin-page table ul li {
+    display: disc;
+}
+
+#admin-page table .header {
+    font-weight: bold;
+    color: #8D2C1B !important;
+    background: #ffffff url(ui-iu/images/headerback.gif) 20% 20% repeat-x;
+    padding-left:5px;
+}
+
+#admin-page li:hover {
+    background: none;
+    border: none;
+}
+
+#admin-page a:hover {
+    color: red;
+    text-decoration: underline;
+}
+
+#tab-section {
+    clear:both;
+}
+
+/* end of admin section */
+
+/* This is just a temp solution */
+
+.fran td, .frank td {
+    background-color: #EEEEEE;
+}
+
+.fran-main td, .frank-main td {
+    font-weight: bold;
+}
+
+.msg-excol {
+    width: 95%;
+    margin-top: 10px;
+    text-align: center;
+    font-size: .8em;
+    font-family: inherit;
+    color: red;
+}
+
+.left-errmsg div div{
+    display: inline !important;
+}

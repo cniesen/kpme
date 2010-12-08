@@ -1,7 +1,6 @@
 package org.kuali.hr.time.assignment;
 
 import java.sql.Date;
-
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -11,12 +10,14 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.dept.lunch.DeptLunchRule;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.kim.bo.Person;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 @XmlAccessorType(value = XmlAccessType.NONE)
@@ -48,6 +49,8 @@ public class Assignment extends PersistableBusinessObjectBase {
 	private TimeCollectionRule timeCollectionRule;
 	private DeptLunchRule deptLunchRule;
 	private WorkArea workAreaObj;
+
+	private Person principal;
 
 	private List<AssignmentAccount> assignmentAccounts = new LinkedList<AssignmentAccount>();
 
@@ -194,4 +197,11 @@ public class Assignment extends PersistableBusinessObjectBase {
 		return TKUtils.getAssignmentString(this);
 	}
 
+	public Person getPrincipal() {
+		return principal;
+	}
+
+	public void setPrincipal(Person principal) {
+		this.principal = principal;
+	}
 }

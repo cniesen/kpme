@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.kuali.hr.time.util.jaxb.TimestampAdapter;
 import org.kuali.rice.core.jaxb.SqlDateAdapter;
-import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
-import org.kuali.hr.time.paycalendar.PayCalendar;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 @XmlAccessorType(value = XmlAccessType.NONE)
@@ -29,10 +27,7 @@ public class PayType extends PersistableBusinessObjectBase {
 	
 	@XmlElement
 	private String descr;
-	
-	@XmlElement	
-	private String calendarGroup;
-	
+
 	@XmlElement
 	private String regEarnCode;
 	
@@ -45,13 +40,7 @@ public class PayType extends PersistableBusinessObjectBase {
 	private Timestamp timestamp;
 	
 	@XmlElement
-	private String holidayCalendarGroup;
-	
-	@XmlElement
 	private Boolean active;
-	
-	private HolidayCalendar holidayCalendar;
-	private PayCalendar payCalendar;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -76,13 +65,13 @@ public class PayType extends PersistableBusinessObjectBase {
 		this.descr = descr;
 	}
 
-	public String getCalendarGroup() {
-		return calendarGroup;
-	}
-
-	public void setCalendarGroup(String calendarGroup) {
-		this.calendarGroup = calendarGroup;
-	}
+//	public String getCalendarGroup() {
+//		return calendarGroup;
+//	}
+//
+//	public void setCalendarGroup(String calendarGroup) {
+//		this.calendarGroup = calendarGroup;
+//	}
 
 	public String getRegEarnCode() {
 		return regEarnCode;
@@ -108,29 +97,29 @@ public class PayType extends PersistableBusinessObjectBase {
 		return timestamp;
 	}
 
-	public void setHolidayCalendarGroup(String holidayCalendarGroup) {
-		this.holidayCalendarGroup = holidayCalendarGroup;
-	}
-
-	public String getHolidayCalendarGroup() {
-		return holidayCalendarGroup;
-	}
-
-	public HolidayCalendar getHolidayCalendar() {
-		return holidayCalendar;
-	}
-
-	public void setHolidayCalendar(HolidayCalendar holidayCalendar) {
-		this.holidayCalendar = holidayCalendar;
-	}
-
-	public PayCalendar getPayCalendar() {
-		return payCalendar;
-	}
-
-	public void setPayCalendar(PayCalendar payCalendar) {
-		this.payCalendar = payCalendar;
-	}
+//	public void setHolidayCalendarGroup(String holidayCalendarGroup) {
+//		this.holidayCalendarGroup = holidayCalendarGroup;
+//	}
+//
+//	public String getHolidayCalendarGroup() {
+//		return holidayCalendarGroup;
+//	}
+//
+//	public HolidayCalendar getHolidayCalendar() {
+//		return holidayCalendar;
+//	}
+//
+//	public void setHolidayCalendar(HolidayCalendar holidayCalendar) {
+//		this.holidayCalendar = holidayCalendar;
+//	}
+//
+//	public PayCalendar getPayCalendar() {
+//		return payCalendar;
+//	}
+//
+//	public void setPayCalendar(PayCalendar payCalendar) {
+//		this.payCalendar = payCalendar;
+//	}
 
 
 	public Long getHrPayTypeId() {

@@ -8,13 +8,17 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.Duration;
+import org.joda.time.DateTimeConstants;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.kuali.hr.job.Job;
+import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.shiftdiff.rule.ShiftDifferentialRule;
 import org.kuali.hr.time.shiftdiff.rule.dao.ShiftDifferentialRuleDao;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -27,6 +31,7 @@ import org.kuali.hr.time.util.TkTimeBlockAggregate;
 
 public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleService {
 	
+	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(ShiftDifferentialRuleServiceImpl.class);
 	/**
 	 * The maximum allowable time between timeblocks before we consider them to
@@ -34,19 +39,6 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 	 */
 	private ShiftDifferentialRuleDao shiftDifferentialRuleDao = null;
 	
-	public void setShiftDifferentialRuleDao(ShiftDifferentialRuleDao shiftDifferentialRuleDao) {
-		this.shiftDifferentialRuleDao = shiftDifferentialRuleDao;
-	}
-
-	@Override
-	public List<ShiftDifferentialRule> getShiftDifferentalRules(String location, String tkSalGroup, String payGrade, Date asOfDate) {
-		List<ShiftDifferentialRule> sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules(location, tkSalGroup, payGrade, asOfDate);
-		
-		if (sdrs == null)
-			sdrs = Collections.emptyList();
-		
-		return sdrs;
-	}
 
 	@Override
 	public void processShiftDifferentialRules(TimesheetDocument timesheetDocument, TkTimeBlockAggregate aggregate) {
@@ -54,12 +46,19 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 		
 		List<List<TimeBlock>> blockDays = aggregate.getDayTimeBlockList();
 		LocalTime periodStartTime = LocalTime.fromDateFields(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime());
+		LocalDate periodStartDate = LocalDate.fromDateFields(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime());
 		
+		PrincipalCalendar principalCal = TkServiceLocator.getPrincipalCalendarService().getPrincipalCalendar(timesheetDocument.getPrincipalId(),timesheetDocument.getAsOfDate());
 		// Create JobNumber -> Shift Rules ...
 		for (Job job : timesheetDocument.getJobs()) {
-			List<ShiftDifferentialRule> shiftDifferentialRules = getShiftDifferentalRules(job.getLocation(), job.getTkSalGroup(), 
-					job.getPayGrade(), TKUtils.getTimelessDate(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime()));
-			jobNumberToShifts.put(job.getJobNumber(), shiftDifferentialRules);
+			List<ShiftDifferentialRule> shiftDifferentialRules = getShiftDifferentalRules(
+					job.getLocation(), 
+					job.getTkSalGroup(), 
+					job.getPayGrade(),
+					principalCal.getCalendarGroup(),
+					TKUtils.getTimelessDate(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime()));
+			if (shiftDifferentialRules.size() > 0) 
+				jobNumberToShifts.put(job.getJobNumber(), shiftDifferentialRules);
 		}
 		
 		if (jobNumberToShifts.isEmpty()) {
@@ -68,7 +67,10 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 		
 		// Day By Day
 		for (int pos = 0; pos < blockDays.size(); pos++) {
-			int dayOfWeek = pos % 6; // 0 indexed
+			// Because we can support a varying start day in monthly calendars,
+			// we can use this day position added to the period start day to
+			// calculate the current actual day.
+			LocalDate currentDay = periodStartDate.plusDays(pos); 
 			List<TimeBlock> blocks = blockDays.get(pos); // Timeblocks for this day.
 			Map<Long, List<TimeBlock>> jobNumberToTimeBlocks = new HashMap<Long,List<TimeBlock>>();
 			
@@ -76,6 +78,9 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 				continue;
 			}
 			
+			// TODO : If 'pos' is 0, we need to pull previous pay period last day
+			// so we can check Max Gap
+						
 			// Builds our JobNumber to TimeBlock for Current Day List.
 			for (TimeBlock block : blocks) {
 				Long jobNumber = block.getJobNumber();
@@ -92,9 +97,10 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 			
 			// Iteration over Keyset of Job->Shift map
 			for (Long jobNumber: jobNumberToShifts.keySet()) {
-				List<ShiftDifferentialRule> shiftDifferentialRules = jobNumberToShifts.get(jobNumber);
+				List<ShiftDifferentialRule> shiftDifferentialRules = jobNumberToShifts.get(jobNumber);				
 				for (ShiftDifferentialRule rule : shiftDifferentialRules) {
-					if (dayIsRuleActive(dayOfWeek, rule)) {
+					Set<String> fromEarnGroup = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(rule.getFromEarnGroup(), TKUtils.getTimelessDate(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime()));
+					if (dayIsRuleActive(currentDay, rule)) {
 						List<TimeBlock> ruleTimeBlocks = jobNumberToTimeBlocks.get(jobNumber);
 						
 						Collections.sort(ruleTimeBlocks, new Comparator<TimeBlock>() { // Sort the Time Blocks
@@ -114,7 +120,17 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 						// Iterate over sorted list, checking time boundaries vs Shift Intervals.
 						long accumulatedMillis = 0L;
 						
+						/*
+						 * We will touch each time block and accumulate time blocks that are applicable to
+						 * the current rule we are on.  
+						 */
 						for (TimeBlock current : ruleTimeBlocks) {
+							if (!fromEarnGroup.contains(current.getEarnCode())) {
+								// The timeblock's earn code is not in the earn group list of earn codes.
+								// Move to next timeblock.
+								continue;
+							}
+							
 							Interval blockInterval = createAdjustedTimeBlockInterval(current, periodStartTime);
 							Interval overlap = shiftInterval.overlap(blockInterval);
 							if (overlap != null) {
@@ -186,8 +202,8 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 			
 			// TODO: Verify assumption about the contents of details.size...
 			// for now just to catch it while debugging, I'll throw RuntimeException.
-			if (details.size() > 0)
-				throw new RuntimeException("Should only be one entry in the details list this point <TODO: Refactor this Throw!>");
+			if (details.size() > 1 || details.size() == 0)
+				throw new RuntimeException("Should only (and at least) be one entry in the details list this point <TODO: Refactor this Throw!>");
 			
 			TimeHourDetail detail = details.get(0);
 			if (detail.getHours().compareTo(hours) > 0) {
@@ -291,39 +307,82 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 		return new Interval(dIn, dOut);
 	}
 	
-	private boolean dayIsRuleActive(int dayOfWeek, ShiftDifferentialRule sdr) {
+	public void setShiftDifferentialRuleDao(ShiftDifferentialRuleDao shiftDifferentialRuleDao) {
+		this.shiftDifferentialRuleDao = shiftDifferentialRuleDao;
+	}
+
+	@Override
+	public List<ShiftDifferentialRule> getShiftDifferentalRules(String location, String tkSalGroup, String payGrade, String calendarGroup, Date asOfDate) {
+		List<ShiftDifferentialRule> sdrs = null;
+	
+		// location, sal group, pay grade
+		if (sdrs == null)
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules(location, tkSalGroup, payGrade, calendarGroup, asOfDate);
+		
+		// location, sal group, *
+		if (sdrs == null)
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules(location, tkSalGroup, "*", calendarGroup, asOfDate);
+		
+		// location, *, pay grade
+		if (sdrs == null)
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules(location, tkSalGroup, "*", calendarGroup, asOfDate);
+		
+		// location, *, *
+		if (sdrs == null)
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules(location, "*", "*", calendarGroup, asOfDate);
+
+		// *, sal group, pay grade
+		if (sdrs == null)
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules("*", tkSalGroup, payGrade, calendarGroup, asOfDate);
+		
+		// *, sal group, *
+		if (sdrs == null) 
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules("*", tkSalGroup, "*", calendarGroup, asOfDate);
+		
+		// *, *, pay grade
+		if (sdrs == null) 
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules("*", "*", payGrade, calendarGroup, asOfDate);
+				
+		// *, *, *
+		if (sdrs == null) 
+			sdrs = shiftDifferentialRuleDao.findShiftDifferentialRules("*", "*", "*", calendarGroup, asOfDate);
+		
+		if (sdrs == null)
+			sdrs = Collections.emptyList();
+		
+		return sdrs;
+	}
+	
+	private boolean dayIsRuleActive(LocalDate currentDate, ShiftDifferentialRule sdr) {
 		boolean active = false;
 		
-		// Yeah, this is ugly, perhaps there is some clever way to do this in idiomatic java.
-		if (sdr != null && dayOfWeek >= 0 && dayOfWeek < 7) {
-			switch (dayOfWeek) {
-			case 0:
-				active = sdr.isDay0();
-				break;
-			case 1:
-				active = sdr.isDay1();
-				break;
-			case 2:
-				active = sdr.isDay2();
-				break;
-			case 3:
-				active = sdr.isDay3();
-				break;
-			case 4:
-				active = sdr.isDay4();
-				break;
-			case 5:
-				active = sdr.isDay5();
-				break;
-			case 6:
-				active = sdr.isDay6();
-				break;
-			}
+		switch (currentDate.getDayOfWeek()) {
+		case DateTimeConstants.MONDAY:
+			active = sdr.isMonday();
+			break;
+		case DateTimeConstants.TUESDAY:
+			active = sdr.isTuesday();
+			break;
+		case DateTimeConstants.WEDNESDAY:
+			active = sdr.isWednesday();
+			break;
+		case DateTimeConstants.THURSDAY:
+			active = sdr.isThursday();
+			break;
+		case DateTimeConstants.FRIDAY:
+			active = sdr.isFriday();
+			break;
+		case DateTimeConstants.SATURDAY:
+			active = sdr.isSaturday();
+			break;
+		case DateTimeConstants.SUNDAY:
+			active = sdr.isSunday();
+			break;
 		}
 		
 		return active;
 	}
-
+	
 	@Override
 	public void saveOrUpdate(List<ShiftDifferentialRule> shiftDifferentialRules) {
 		shiftDifferentialRuleDao.saveOrUpdate(shiftDifferentialRules);

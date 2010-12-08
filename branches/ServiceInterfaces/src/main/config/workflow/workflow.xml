@@ -65,9 +65,9 @@
 			<label>JobMaintenanceDocumentType</label>
 		</documentType>
 		<documentType>
-			<name>PayCalendarDatesDocumentType</name>
+			<name>PayCalendarEntriesDocumentType</name>
 			<parent>RiceDocument</parent>
-			<label>PayCalendarDatesDocument</label>
+			<label>PayCalendarEntryDocument</label>
 		</documentType>
 		<documentType>
 			<name>PayCalendarDocumentType</name>
@@ -110,9 +110,9 @@
 			<label>ClockLogDocument</label>
 		</documentType>
 		<documentType>
-			<name>ShiftDefferentialRuleDocumentType</name>
+			<name>ShiftDifferentialRuleDocumentType</name>
 			<parent>RiceDocument</parent>
-			<label>ShiftDefferentialRuleDocument</label>
+			<label>ShiftDifferentialRuleDocument</label>
 		</documentType>
 		<documentType>
 			<name>WeeklyOvertimeRuleDocumentType</name>
@@ -128,6 +128,69 @@
 			<name>PrincipalPayTypeDocumentType</name>
 			<parent>RiceDocument</parent>
 			<label>PrincipalPayTypeDocument</label>
+		</documentType>
+		<documentType>
+			<name>EarnCodeMaintenanceDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>EarnCodeMaintenanceDocument</label>
+		</documentType>
+		<documentType>
+			<name>PrincipalCalendarMaintenanceDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>PrincipalCalendarMaintenanceDocument</label>
+		</documentType>
+		<documentType>
+			<name>TimesheetDocumentHeaderDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>TimesheetDocumentHeaderDocument</label>
+		</documentType>
+		<documentType>
+			<name>TimesheetDocumentHeaderMaintenanceDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>TimesheetDocumentHeaderMaintenanceDocument</label>
+		</documentType>
+		<documentType>
+			<name>SystemLunchRuleDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>SystemLunchRuleMaintenanceDocument</label>
+		</documentType>
+		<documentType>
+			<name>ACCT</name>
+			<parent>RiceDocument</parent>
+			<label>Account</label>
+		</documentType>
+		<documentType>
+			<name>COA</name>
+			<parent>RiceDocument</parent>
+		</documentType>
+		<documentType>
+			<name>COAT</name>
+			<parent>RiceDocument</parent>
+			<label>Chart Code</label>
+		</documentType>
+		<documentType>
+			<name>OBJT</name>
+			<parent>RiceDocument</parent>
+			<label>Object Code</label>
+		</documentType>
+		<documentType>
+			<name>ORGN</name>
+			<parent>RiceDocument</parent>
+			<label>Organization</label>
+		</documentType>
+		<documentType>
+			<name>PROJ</name>
+			<parent>RiceDocument</parent>
+		</documentType>
+		<documentType>
+			<name>SACC</name>
+			<parent>RiceDocument</parent>
+			<label>Sub Account</label>
+		</documentType>
+		<documentType>
+			<name>SOBJ</name>
+			<parent>RiceDocument</parent>
+			<label>Sub Object Code</label>
 		</documentType>
 	</documentTypes>
 </data>

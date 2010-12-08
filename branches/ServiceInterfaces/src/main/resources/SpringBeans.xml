@@ -595,6 +595,18 @@
 		class="org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDaoImpl">
 		<property name="jcdAlias" value="tkDataSource" />
 	</bean>
+    
+    <bean id="principalCalendarDao" class="org.kuali.hr.time.principal.calendar.dao.PrincipalCalendarDaoImpl">
+    	<property name="jcdAlias" value="tkDataSource"/>
+    </bean>    
+    
+    <bean id="holidayCalendarDao" class="org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDaoImpl">
+    	<property name="jcdAlias" value="tkDataSource"/>
+    </bean>
+    
+    <bean id="userPrefDao" class="org.kuali.hr.time.user.pref.dao.UserPreferenceDaoImpl">
+    	<property name="jcdAlias" value="tkDataSource"/>
+    </bean>    
 	<!-- Time Services for Business Logic -->
 
 	<bean id="deptLunchRuleService"
@@ -725,25 +737,48 @@
 	<bean id="timeSummaryService"
 		class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl" />
 
-	<bean id="holidayCalendarService"
-		class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl" />	
+    <bean id="earnCodeService" class="org.kuali.hr.time.earncode.service.EarnCodeServiceImpl">
+    	<property name="earnCodeDao" ref="earnCodeDao"/>
+    </bean>
+    
+    <bean id="earnGroupService" class="org.kuali.hr.time.earngroup.service.EarnGroupServiceImpl">
+    	<property name="earnGroupDao" ref="earnGroupDao"/>
+    </bean>
+    
+    <bean id="timeHourDetailService" class="org.kuali.hr.time.timehourdetail.service.TimeHourDetailServiceImpl">
+    	<property name="timeHourDetailDao" ref="timeHourDetailDao"/>
+    </bean>
+    
+    <bean id="principalCalendarService" class="org.kuali.hr.time.principal.calendar.service.PrincipalCalendarServiceImpl">
+    	<property name="principalCalendarDao" ref="principalCalendarDao"/>
+    </bean>
+    
+    <bean id="holidayCalendarService" class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl">
+    	<property name="holidayCalendarDao" ref="holidayCalendarDao"/>
+    </bean>
+    
+    <bean id="userPrefService" class="org.kuali.hr.time.user.pref.service.UserPreferenceServiceImpl">
+    	<property name="userPrefDao" ref="userPrefDao"/>
+    </bean>    
+    
+    <bean id="timeSummaryService" class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl"/>
 
 	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
 
 
 	<bean id="tkRuleControllerService" class="org.kuali.hr.time.rule.TkRuleControllerServiceImpl" />
 
-	<bean id="workAreaQualifierRoleTypeService"
-		class="org.kuali.hr.time.workarea.web.WorkAreaQualifierRoleTypeService" />
+    <bean id="workAreaLookupableHelperService" class="org.kuali.hr.time.workarea.web.WorkAreaLookupableHelper"/>
+    <bean id="workAreaLookupable" class="org.kuali.hr.time.workarea.web.WorkAreaLookupableImpl">
+    	<property name="lookupableHelperService">
+    		<ref bean="workAreaLookupableHelperService"/>
+    	</property>
+    </bean>
+    
+    <bean id="timezoneService" class="org.kuali.hr.time.timezone.service.TimezoneServiceImpl"/>
+    
+    <!-- Scheduler configuration -->
 
-	<bean id="workAreaLookupableHelperService" class="org.kuali.hr.time.workarea.web.WorkAreaLookupableHelper" />
-	<bean id="workAreaLookupable" class="org.kuali.hr.time.workarea.web.WorkAreaLookupableImpl">
-		<property name="lookupableHelperService">
-			<ref bean="workAreaLookupableHelperService" />
-		</property>
-	</bean>
-
-	<!-- Scheduler configuration -->
 	<!-- Serializer service -->
 	<bean id="timeBlockSerializerService" class="org.kuali.hr.time.scheduler.TimeBlockSerializerService" />
 	<!-- Serializer Job Bean-->

@@ -27,15 +27,17 @@ public class HolidayCalendarServiceImpl implements HolidayCalendarService {
 	 * getHolidaysByPrincipalId(java.lang.String)
 	 */
 	@Override
-	public List<HolidayCalendarDateEntry> getHolidaysByPrincipalId(String principalId) throws TkException {
+	public List<HolidayCalendarDateEntry> getHolidaysByPrincipalId(
+			String principalId) throws TkException {
 		// get the paytype
 		PayTypeDao payTypeDao = SpringContext.getBean(PayTypeDao.class);
 		PayType payType = payTypeDao.getPayTypeByPrincipalId(principalId);
 		// get the actual calendar
-		HolidayCalendar calendar = this.getHolidayCalendarByGroup(payType
-				.getHolidayCalendarGroup());
+		// TODO: THIS HAPPENED WHEN THE MERGE CAME ... NEED TO FIX !
+		// HolidayCalendar calendar = this.getHolidayCalendarByGroup(payType
+		// .getHolidayCalendarGroup());
 		// return the list of dates
-		return calendar.getDateEntries();
+		return null;// calendar.getDateEntries();
 	}
 
 	/*

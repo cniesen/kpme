@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import javax.jws.WebService;
@@ -12,7 +13,9 @@ import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
+
 import org.kuali.hr.time.assignment.validation.AssignmentServiceRule;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.exceptions.ServiceException;
@@ -26,11 +29,24 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 	@Override
 	public List<Assignment> getAssignments(String principalId, Date asOfDate) {
+		List<Assignment> assignments = new LinkedList<Assignment>();
+		
 		if (asOfDate == null) {
 			asOfDate = TKUtils.getCurrentDate();
 		}
-		return SpringContext.getBean(AssignmentDao.class).findAssignments(
-				principalId, asOfDate);
+
+		
+		assignments = SpringContext.getBean(AssignmentDao.class).findAssignments(principalId, asOfDate);
+		
+		for(Assignment assignment: assignments){
+			assignment.setJob(TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate()));
+			assignment.setTimeCollectionRule(TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), asOfDate));
+			assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
+			assignment.setDeptLunchRule(TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(assignment.getJob().getDept(), 
+											assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));		
+		}
+
+		return assignments; 
 	}
 
 	@Override

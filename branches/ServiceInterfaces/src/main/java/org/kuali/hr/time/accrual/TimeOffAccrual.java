@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.kuali.hr.time.util.jaxb.DateAdapter;
 import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.bo.impl.PersonImpl;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 @XmlAccessorType(value = XmlAccessType.NONE)
@@ -43,7 +44,7 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 
 	private AccrualCategory accrualCategoryObj;
 
-	private Person principal;
+	protected PersonImpl principal;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -115,10 +116,6 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 		return accrualCategoryObj;
 	}
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
-
 	public Person getPrincipal() {
 		return principal;
 	}
@@ -131,6 +128,11 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 
 	public void setLaAccrualId(Long laAccrualId) {
 		this.laAccrualId = laAccrualId;
+	}
+
+
+	public void setPrincipal(PersonImpl principal) {
+		this.principal = principal;
 	}
 
 }

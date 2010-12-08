@@ -1,12 +1,13 @@
 package org.kuali.hr.time.timesheet.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
@@ -41,7 +42,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 	}
 
 	@Override
-	public TimesheetDocument openTimesheetDocument(String principalId, PayCalendarDates payCalendarDates) throws WorkflowException {
+	public TimesheetDocument openTimesheetDocument(String principalId, PayCalendarEntries payCalendarDates) throws WorkflowException {
 		TimesheetDocument timesheetDocument = null;
 
 		Date begin = payCalendarDates.getBeginPeriodDateTime();		
@@ -70,15 +71,21 @@ public class TimesheetServiceImpl implements TimesheetService {
 		String status = workflowDocument.getRouteHeader().getDocRouteStatus();
 		TimesheetDocumentHeader documentHeader = new TimesheetDocumentHeader(workflowDocument.getRouteHeaderId(), principalId, payBeginDate, payEndDate, status);
 
-		documentHeader.setDocumentNumber(workflowDocument.getRouteHeaderId().toString());
+		documentHeader.setDocumentId(workflowDocument.getRouteHeaderId());
 		documentHeader.setDocumentStatus("I");
-		documentHeader.setDocumentDescription("org.kuali.hr.time.timesheet.TimesheetDocument");
-		documentHeader.setExplanation(principalId);
 
 		TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(documentHeader);
 		timesheetDocument = new TimesheetDocument(documentHeader);
 
 		return timesheetDocument;
+	}
+	
+	public List<TimeBlock> getPrevDocumentTimeBlocks(String principalId, Long currDocumentId){
+		TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(principalId, currDocumentId);
+		if(prevTdh == null){
+			return new ArrayList<TimeBlock>();
+		}
+		return TkServiceLocator.getTimeBlockService().getTimeBlocks(prevTdh.getDocumentId());
 	}
 
 	@Override

@@ -31,6 +31,12 @@ public class TimeDetailAction extends TimesheetAction {
 		tdaf.setBeginPeriodDateTime(tdaf.getPayCalendarDates().getBeginPeriodDateTime());
 		tdaf.setEndPeriodDateTime(tdaf.getPayCalendarDates().getEndPeriodDateTime());
 		
+		// TODO: may need to revisit this:
+		// when adding / removing timeblocks, it should update the timeblocks on the timesheet document, 
+		// so that we can directly fetch the timeblocks from the document
+		List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(tdaf.getTimesheetDocument().getDocumentHeader().getDocumentId());
+		tdaf.setTimeSummary(TkServiceLocator.getTimeSummaryService().getTimeSummary(tdaf.getTimesheetDocument(), timeBlocks));
+		
 		// for visually impaired users 
 		// TimesheetDocument td = tdaf.getTimesheetDocument();
 		// List<TimeBlock> timeBlocks = td.getTimeBlocks();
@@ -57,7 +63,7 @@ public class TimeDetailAction extends TimesheetAction {
 					
 					List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assignment);
 					for(EarnCode earnCode: earnCodes) {
-						earnCodeString += "<option value='" + earnCode.getEarnCode() + "'>" + earnCode.getEarnCode() + " : " + earnCode.getDescription() + "</option>";
+						earnCodeString += "<option value='" + earnCode.getEarnCode() + "_" + earnCode.getEarnCodeType() +"'>" + earnCode.getEarnCode() + " : " + earnCode.getDescription() + "</option>";
 					}
 				}
 			}
@@ -98,7 +104,7 @@ public class TimeDetailAction extends TimesheetAction {
 		//Reset time hour details on timeblocks for rule processing
 		lstNewTimeBlocks = TkServiceLocator.getTimeBlockService().resetTimeHourDetail(lstNewTimeBlocks);
 		//apply any rules for this action
-		lstNewTimeBlocks = TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, lstNewTimeBlocks, tdaf.getPayCalendarDates());
+		lstNewTimeBlocks = TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, lstNewTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument());
 		
 		//call persist method that only saves added/deleted/changed timeblocks
 		TkServiceLocator.getTimeBlockService().saveTimeBlocks(tdaf.getTimesheetDocument().getTimeBlocks(), lstNewTimeBlocks);
@@ -118,11 +124,11 @@ public class TimeDetailAction extends TimesheetAction {
 		if(StringUtils.equals(tdaf.getAcrossDays(), "y")){
 			lstNewTimeBlocks = TkServiceLocator.getTimeBlockService().buildTimeBlocksSpanDates(assignment, 
 											tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(),new Timestamp(tdaf.getStartTime()), 
-												new Timestamp(tdaf.getEndTime()));
+												new Timestamp(tdaf.getEndTime()),tdaf.getHours());
 		} else {
 			lstNewTimeBlocks = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, 
 											tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(),new Timestamp(tdaf.getStartTime()), 
-											new Timestamp(tdaf.getEndTime()));
+											new Timestamp(tdaf.getEndTime()),tdaf.getHours());
 		}
 
 		//concat delta of timeblocks (new and original)
@@ -135,13 +141,12 @@ public class TimeDetailAction extends TimesheetAction {
 		//reset time hour details
 		lstNewTimeBlocks = TkServiceLocator.getTimeBlockService().resetTimeHourDetail(lstNewTimeBlocks);
 		//apply any rules for this action
-		lstNewTimeBlocks = TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, lstNewTimeBlocks, tdaf.getPayCalendarDates());
+		lstNewTimeBlocks = TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, lstNewTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument());
 		
 		//call persist method that only saves added/deleted/changed timeblocks
 		TkServiceLocator.getTimeBlockService().saveTimeBlocks(tdaf.getTimesheetDocument().getTimeBlocks(), lstNewTimeBlocks);
 		//call history service
 		
-
 		return mapping.findForward("basic");
 	}
 }

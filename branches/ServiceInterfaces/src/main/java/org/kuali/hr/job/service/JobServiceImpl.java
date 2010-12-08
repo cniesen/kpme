@@ -38,7 +38,7 @@ public class JobServiceImpl implements JobService {
 		for (Job job : jobs) {
 			PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(
 					job.getHrPayType(), asOfDate);
-			job.setPayType(payType);
+			job.setPayTypeObj(payType);
 		}
 
 		return jobs;
@@ -49,7 +49,7 @@ public class JobServiceImpl implements JobService {
 		Job job = SpringContext.getBean(JobDao.class).getJob(principalId,
 				jobNumber, asOfDate);
 		if (job == null) {
-			throw new RuntimeException("No job for principal : " + principalId);
+			throw new RuntimeException("No job for principal : " + principalId + " Job Number: " + jobNumber);
 		}
 		String hrPayType = job.getHrPayType();
 		if (StringUtils.isBlank(hrPayType)) {
@@ -59,7 +59,7 @@ public class JobServiceImpl implements JobService {
 				hrPayType, asOfDate);
 		if (payType == null)
 			throw new RuntimeException("No paytypes defined for this job!");
-		job.setPayType(payType);
+		job.setPayTypeObj(payType);
 
 		return job;
 	}

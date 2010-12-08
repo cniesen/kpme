@@ -5,7 +5,9 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.rule.TkRule;
+import org.kuali.hr.time.salgroup.SalGroup;
 
 public class ShiftDifferentialRule extends TkRule {
 
@@ -22,18 +24,22 @@ public class ShiftDifferentialRule extends TkRule {
 	private java.util.Date beginTime;
 	private java.util.Date endTime;
 	private BigDecimal minHours;
-	private boolean day0;
-	private boolean day1;
-	private boolean day2;
-	private boolean day3;
-	private boolean day4;
-	private boolean day5;
-	private boolean day6;
+	private boolean sunday;
+	private boolean monday;
+	private boolean tuesday;
+	private boolean wednesday;
+	private boolean thursday;
+	private boolean friday;
+	private boolean saturday;
+	private String fromEarnGroup;
 	private String calendarGroup;
 	private BigDecimal maxGap;
 	private String userPrincipalId;
 	private Timestamp timeStamp;
 	private boolean active;
+	
+	private EarnCode earnCodeObj;
+	private SalGroup salGroupObj;
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -129,62 +135,6 @@ public class ShiftDifferentialRule extends TkRule {
 		this.tkSalGroup = tkSalGroup;
 	}
 
-	public boolean isDay0() {
-		return day0;
-	}
-
-	public void setDay0(boolean day0) {
-		this.day0 = day0;
-	}
-
-	public boolean isDay1() {
-		return day1;
-	}
-
-	public void setDay1(boolean day1) {
-		this.day1 = day1;
-	}
-
-	public boolean isDay2() {
-		return day2;
-	}
-
-	public void setDay2(boolean day2) {
-		this.day2 = day2;
-	}
-
-	public boolean isDay3() {
-		return day3;
-	}
-
-	public void setDay3(boolean day3) {
-		this.day3 = day3;
-	}
-
-	public boolean isDay4() {
-		return day4;
-	}
-
-	public void setDay4(boolean day4) {
-		this.day4 = day4;
-	}
-
-	public boolean isDay5() {
-		return day5;
-	}
-
-	public void setDay5(boolean day5) {
-		this.day5 = day5;
-	}
-
-	public boolean isDay6() {
-		return day6;
-	}
-
-	public void setDay6(boolean day6) {
-		this.day6 = day6;
-	}
-
 	public String getCalendarGroup() {
 		return calendarGroup;
 	}
@@ -207,6 +157,86 @@ public class ShiftDifferentialRule extends TkRule {
 
 	public void setEndTime(java.util.Date endTime) {
 		this.endTime = endTime;
+	}
+
+	public String getFromEarnGroup() {
+		return fromEarnGroup;
+	}
+
+	public void setFromEarnGroup(String fromEarnGroup) {
+		this.fromEarnGroup = fromEarnGroup;
+	}
+
+	public boolean isSunday() {
+		return sunday;
+	}
+
+	public void setSunday(boolean sunday) {
+		this.sunday = sunday;
+	}
+
+	public boolean isMonday() {
+		return monday;
+	}
+
+	public void setMonday(boolean monday) {
+		this.monday = monday;
+	}
+
+	public boolean isTuesday() {
+		return tuesday;
+	}
+
+	public void setTuesday(boolean tuesday) {
+		this.tuesday = tuesday;
+	}
+
+	public boolean isWednesday() {
+		return wednesday;
+	}
+
+	public void setWednesday(boolean wednesday) {
+		this.wednesday = wednesday;
+	}
+
+	public boolean isThursday() {
+		return thursday;
+	}
+
+	public void setThursday(boolean thursday) {
+		this.thursday = thursday;
+	}
+
+	public boolean isFriday() {
+		return friday;
+	}
+
+	public void setFriday(boolean friday) {
+		this.friday = friday;
+	}
+
+	public boolean isSaturday() {
+		return saturday;
+	}
+
+	public void setSaturday(boolean saturday) {
+		this.saturday = saturday;
+	}
+
+	public EarnCode getEarnCodeObj() {
+		return earnCodeObj;
+	}
+
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
+		this.earnCodeObj = earnCodeObj;
+	}
+
+	public SalGroup getSalGroupObj() {
+		return salGroupObj;
+	}
+
+	public void setSalGroupObj(SalGroup salGroupObj) {
+		this.salGroupObj = salGroupObj;
 	}
 
 }

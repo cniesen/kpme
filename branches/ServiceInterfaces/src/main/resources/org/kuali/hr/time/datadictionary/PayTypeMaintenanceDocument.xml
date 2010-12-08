@@ -11,7 +11,7 @@
 
 	<bean id="PayTypeMaintenanceDocument-parentBean" abstract="true"
 		parent="MaintenanceDocumentEntry" p:businessObjectClass="org.kuali.hr.time.paytype.PayType"
-		p:maintainableClass="org.kuali.rice.kns.maintenance.KualiMaintainableImpl">
+		p:maintainableClass="org.kuali.hr.time.paytype.service.PayTypeMaintainableImpl">
 		<property name="maintainableSections">
 			<list>
 				<ref bean="PayTypeMaintenanceDocument-PayTypeMaintenance" />
@@ -36,9 +36,7 @@
 			<list>
 				<bean parent="MaintainableFieldDefinition" p:name="payType" p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="descr" p:required="false" />
-				<bean parent="MaintainableFieldDefinition" p:name="calendarGroup" p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="regEarnCode" p:required="true" />
-				<bean parent="MaintainableFieldDefinition" p:name="holidayCalendarGroup" p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="effectiveDate" p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="timestamp" p:required="true" />
 			</list>

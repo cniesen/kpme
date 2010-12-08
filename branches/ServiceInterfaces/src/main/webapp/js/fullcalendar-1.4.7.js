@@ -18,7 +18,6 @@
 
 (function($, undefined) {
 
-
 var fc = $.fullCalendar = {};
 var views = fc.views = {};
 
@@ -34,7 +33,7 @@ var defaults = {
 	header: {
 		left: 'title',
 		center: '',
-		right: 'today, prev,next'
+		right: ''
 	},
 	weekends: true,
 
@@ -313,7 +312,7 @@ $.fn.fullCalendar = function(options) {
 				    end = (end.getMonth()+1) + "/" + end.getDate() + "/" + end.getFullYear() + " " + end.getHours() + ":" + end.getMinutes() + ":" + end.getSeconds(); 
 				    
 					// update title text
-					/*header.find('h2.fc-header-title').html(view.title + "(" + begin + " - " + end +")");*/
+					// header.find('h2.fc-header-title').html(view.title + "(" + begin + " - " + end +")");
 					header.find('h2.fc-header-title').html(view.title);
 					// enable/disable 'today' button
 					var today = new Date();
@@ -439,7 +438,7 @@ $.fn.fullCalendar = function(options) {
 				if (options.cacheParam) {
 					params[options.cacheParam] = (new Date()).getTime(); // TODO: deprecate cacheParam
 				}
-				pushLoading();
+				pushLoading();				
 				$.ajax({
 					url: src,
 					dataType: 'json',
@@ -711,6 +710,9 @@ $.fn.fullCalendar = function(options) {
 
 		var header,
 			sections = options.header;
+			
+			sections.right = '';
+			
 		if (sections) {
             var ajaxIndicator = "<div id='loading' style='display:none; margin-left:10px;'><img src='images/ajax-loader.gif' alt='Loading' style='vertical-align:middle;'/></div>";
 			header = $("<table class='fc-header'/>")
@@ -721,7 +723,6 @@ $.fn.fullCalendar = function(options) {
 				.prependTo(element);
 		}
 		function buildSection(buttonStr) {
-
 
 			if (buttonStr) {
 				var tr = $("<tr/>");
@@ -1007,9 +1008,6 @@ views.month = function(element, options, viewName) {
 			addDays(visEnd, (7 - visEnd.getDay() + Math.max(options.firstDay, nwe)) % 7);
 			// row count
 			var rowCnt = Math.round((visEnd - visStart) / (DAY_MS * 7));
-            //console.log(rowCnt);
-            //console.log(options.beginPeriodDate);
-            //console.log(options.endPeriodDate);
 			if (options.weekMode == 'fixed') {
 				addDays(visEnd, (6 - rowCnt) * 7);
                 dayCnt = Math.ceil((endPeriodDate - beginPeriodDate) / (DAY_MS));
@@ -1018,7 +1016,6 @@ views.month = function(element, options, viewName) {
                 if(dayCnt % 7 == 0) {
                     rowCnt++;
                 }
-                // console.log((endPeriodDate - beginPeriodDate) / (DAY_MS * 7));
 			}
 			// title
 			this.title = formatDate(
@@ -1026,11 +1023,12 @@ views.month = function(element, options, viewName) {
 				this.option('titleFormat'),
 				options
 			);
-			// render
+			
 			this.renderGrid(
 				rowCnt, options.weekends ? 7 : 5,
 				this.option('columnFormat'),
-				true
+				//options.isShowNumber
+				$('#isVirtualWorkDay').val() != 'true'
 			);
 		}
 	}, viewName);
@@ -1141,7 +1139,7 @@ function Grid(element, options, methods, viewName) {
 		tm = options.theme ? 'ui' : 'fc';
 		nwe = options.weekends ? 0 : 1;
 		firstDay = options.firstDay;
-		if (rtl = options.isRTL) {
+		if (rtl == options.isRTL) {
 			dis = -1;
 			dit = colCnt - 1;
 		}else{
@@ -1156,9 +1154,12 @@ function Grid(element, options, methods, viewName) {
 		if (!tbody) { // first time, build all cells from scratch
 
 			var table = $("<table/>").appendTo(element);
+			var beginDateString = formatDate(new Date(options.beginPeriodDate), "ht");
+			var endDateString = formatDate(new Date(options.endPeriodDate), "ht");
 
 			s = "<thead><tr>";
 			for (i=0; i<colCnt; i++) {
+                
 				s += "<th class='fc-" +
 					dayIDs[d.getDay()] + ' ' + // needs to be first
 					tm + '-state-default' +
@@ -1170,6 +1171,9 @@ function Grid(element, options, methods, viewName) {
 				}
 			}
 			thead = $(s + "</tr></thead>").appendTo(table);
+            
+            //TODO: might need chagne the logic for the date range display. If the end pay period time is decided to set to like 11:59:59am, 
+            // the end period hour should dispaly 12p instead of 11p
 
 			s = "<tbody>";
 			d = cloneDate(view.visStart);
@@ -1184,9 +1188,15 @@ function Grid(element, options, methods, viewName) {
 						(+d == +today ?
 						' fc-today '+tm+'-state-highlight' :
 						' fc-not-today') + "'>" +
-						(showNumbers ? "<div class='fc-day-number'>" + d.getDate() + "</div>" : '') +
+						(showNumbers ? "<div class='fc-day-number'>" + d.getDate() + "</div>" : 
+                        "<div class='fc-day-number'>" + formatDate(d,"MM/dd") + " " + beginDateString + 
+                        " - " + formatDate(addDays(d,1),"MM/dd") + " " + endDateString +"</div>") +
 						"<div class='fc-day-content'><div style='position:relative'>&nbsp;</div></div></td>";
-					addDays(d, 1);
+
+                    // this is for the regular day mode
+                    if(showNumbers) {
+    					addDays(d, 1);
+                    }
 					if (nwe) {
 						skipWeekend(d);
 					}
@@ -1201,7 +1211,7 @@ function Grid(element, options, methods, viewName) {
 		}else{ // NOT first time, reuse as many cells as possible
 
 			clearEvents();
-
+			
 			var prevRowCnt = tbody.find('tr').length;
 			if (rowCnt < prevRowCnt) {
 				tbody.find('tr:gt(' + (rowCnt-1) + ')').remove(); // remove extra rows
@@ -1215,11 +1225,14 @@ function Grid(element, options, methods, viewName) {
 							dayIDs[d.getDay()] + ' ' + // needs to be first
 							tm + '-state-default fc-new fc-day' + (i*colCnt+j) +
 							(j==dit ? ' fc-leftmost' : '') + "'>" +
-							(showNumbers ? "<div class='fc-day-number'></div>" : '') +
-							"<div class='fc-day-content'><div style='position:relative'>&nbsp;</div></div>" +
-							"</td>";
-						addDays(d, 1);
-						if (nwe) {
+                            (showNumbers ? "<div class='fc-day-number'>" + d.getDate() + "</div>" : 
+                            "<div class='fc-day-number'>" + formatDate(d,"MM/dd") + " " + beginDateString + 
+                            " - " + formatDate(addDays(d,1),"MM/dd") + " " + endDateString +"</div>") +
+                            "<div class='fc-day-content'><div style='position:relative'>&nbsp;</div></div></td>";
+                        if(showNumbers) {
+        					addDays(d, 1);
+                        }
+                        if (nwe) {
 							skipWeekend(d);
 						}
 					}
@@ -1369,6 +1382,7 @@ function Grid(element, options, methods, viewName) {
 					segs.push(seg);
 				}
 			}
+			
 			addDays(d1, 7);
 			addDays(d2, 7);
 		}
@@ -1642,8 +1656,6 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 		rowDivs=[],
 		rowDivTops=[];
 
-    // console.log(segs);
-
 	// calculate desired position/dimensions, create html
 	for (i=0; i<segCnt; i++) {
 		seg = segs[i];
@@ -1659,7 +1671,7 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 			}
 			left = seg.isEnd ? dayContentLeft(seg.end.getDay()-1) : minLeft;
 			right = seg.isStart ? dayContentRight(seg.start.getDay()) : maxLeft;
-		}else{
+		} else {
 			if (seg.isStart) {
 				className += 'fc-corner-left ';
 			}
@@ -1667,40 +1679,48 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 				className += 'fc-corner-right ';
 			}
 			left = seg.isStart ? dayContentLeft(seg.start.getDay()) : minLeft;
-			right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxLeft;
-			
-			if(event.isStandardPayPeriod == "false") {
-    			if (event.isWithinVirtualDay === "true") {
-    			    if (seg.end.getDay() - seg.start.getDay() >= 2) {
-        			    right = seg.isEnd ? dayContentRight(seg.end.getDay()-2) : maxLeft;
-    			    }
-    			}
-    			else {
-			        left = seg.isStart ? dayContentLeft(seg.start.getDay()+1) : minLeft;
-			        right = seg.isEnd ? dayContentRight(seg.end.getDay()) : maxLeft;
-			        seg.level--;
-			        
-    			}
-            }			
+			// right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxRight;
+            // this is hack to always set the day cell within one day
+			right = seg.isEnd ? dayContentRight(seg.start.getDay()) : maxRight;
+
 		}
 		
 		var fromTo = "";
 		
 		//TODO: create an array which contains all the earn codes that need to display hours only
-        if(event.earnCode == 'VAC' || event.earnCode == 'SCK') {
-            fromTo = "<tr><td align='center'>" + event.hours + " hours</td></tr>";
+        if(event.earnCodeType == 'HOUR') {
+            fromTo = "<tr><td align='center' colspan='3'>" + event.hours + " hours</td></tr>";
 		}
 		else {
-			fromTo = "<tr><td align='center'>from: " + formatDate(event.start,view.option('timeFormat')) +"</td><td align='center'>to: " + formatDate(event.end,view.option('timeFormat')) + "</td></tr>";
+			fromTo = "<tr><td align='center'>from: " + formatDate(event.start,view.option('timeFormat')) 
+			+"</td><td align='center'>to: " + formatDate(event.end,view.option('timeFormat')) + "</td></tr>";
 		}
+		
+		timeHourDetail = "";
+		// convert the string to a json obj by using the jquery-json plugin
+		var jsonString = jQuery.parseJSON(event.timeHourDetails);
+		
+		$.each (jsonString, function (index) {
+            timeHourDetail += "<tr>";
+            timeHourDetail += "<td align='center'>Earn Code: " + jsonString[index].earnCode + "</td>";
+            timeHourDetail += "<td align='center'>Hours: " + jsonString[index].hours + "</td>"; 
+            timeHourDetail += "<td align='center'>Amount: " + jsonString[index].amount + "</td>";
+            timeHourDetail += "</tr>";
+        });
+
+		
+
 		
 		html +=
 			"<div class='" + className + event.className.join(' ') + "' style='position:absolute;z-index:8;left:"+left+"px;margin-bottom:3px;' id='" + event.id + "'>" +
-			"<table style='font-size:0.7em;'><tr><td colspan='2' align='center'>" + event.title + "<div style='float:right; margin: 2px 7px 0 0; z-index: 1;' id='delete-event'><a href='TimeDetail.do?methodToCall=deleteTimeBlock&tkTimeBlockId=" + event.id + "' id='delete-link' style='background: white; color: black; padding: 0 2px 0 2px; font-weight:bold; font-size:.9em; z-index: 1;'>X</a></div></td></tr>" +
-			fromTo +
+			//"<table style='font-size:0.7em;'><tr><td colspan='2' align='center'>" + event.title + "<div style='float:right; margin: 2px 7px 0 0; z-index: 1;' id='delete-event'><a href='TimeDetail.do?methodToCall=deleteTimeBlock&tkTimeBlockId=" + event.id + "' id='delete-link' style='background: white; color: black; padding: 0 2px 0 2px; font-weight:bold; font-size:.9em; z-index: 1;'>X</a></div></td></tr>" +
+			"<table style='font-size:0.7em;'><tr><td colspan='3' style='text-align:center;'>" + event.title + "</td>" +   
+			"<td><a href='TimeDetail.do?methodToCall=deleteTimeBlock&tkTimeBlockId=" + event.id + "'id='delete-link' style='margin-left:-3px;'><span class='ui-icon ui-icon-close' style='float:right;'></span></a></td>" +
+			"</tr>" +
+			fromTo + timeHourDetail + 
 			"</table>" +
 			"</div>";
-
+			
 		seg.left = left;
 		seg.outerWidth = right - left;
 
@@ -1768,8 +1788,10 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 	}  
 
 	// set row heights, calculate event tops (in relation to row top)
+	
 	for (i=0, rowI=0; rowI<rowCnt; rowI++) {
 		top = levelI = levelHeight = 0;
+		
 		while (i<segCnt && (seg = segs[i]).row == rowI) {
 			if (seg.level != levelI) {
 				top += levelHeight;
@@ -1777,7 +1799,6 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 				levelI++;
 			}
 			levelHeight = Math.max(levelHeight, seg.outerHeight||0);
-			// console.log(top);
 			seg.top = top;
 			i++;
 		}
@@ -2194,6 +2215,7 @@ function Agenda(element, options, methods, viewName) {
 				slotEvents.push(events[i]);
 			}
 		}
+		
 		renderDaySegs(compileDaySegs(dayEvents), modifiedEventId);
 		renderSlotSegs(compileSlotSegs(slotEvents), modifiedEventId);
 	}
@@ -2211,11 +2233,8 @@ function Agenda(element, options, methods, viewName) {
 		slotSegmentContainer.empty();
 	}
 
-
-
-
-
 	function compileDaySegs(events) {
+	    
 		var levels = stackSegs(view.sliceSegs(events, $.map(events, exclEndDay), view.visStart, view.visEnd)),
 			i, levelCnt=levels.length, level,
 			j, seg,
@@ -3113,6 +3132,7 @@ var viewMethods = {
 	// report when view receives new events
 
 	reportEvents: function(events) { // events are already normalized at this point
+	    
 		var i, len=events.length, event,
 			eventsByID = this.eventsByID = {};
 		for (i=0; i<len; i++) {
@@ -3342,11 +3362,29 @@ var viewMethods = {
 			eventStart, eventEnd,
 			segStart, segEnd,
 			isStart, isEnd;
+			
+		var endPeriodHour = new Date($('#endPeriodDate').val()).getHours();
+			
 		for (i=0; i<len; i++) {
 			event = events[i];
+			
 			eventStart = event.start;
 			eventEnd = visEventEnds[i];
 			if (eventEnd > start && eventStart < end) {
+			    
+		        // var eventStartHour = event.start.getHours();
+		        //                 if(eventStartHour >= endPeriodHour) {
+		        //                     eventStartMonth = event.start.getMonth();
+		        //                     eventStartYear = event.start.getFullYear();
+		        //                     eventStartDate = event.start.getDate();
+		        //                     
+		        //                     dayToSet = eventStartDate == daysInMonth(eventStartMonth, eventStartYear) ? 1 : eventStartDate + 1;  
+		        //                     event.start.setDate(dayToSet); 
+		        //                     event.end.setDate(dayToSet);
+		        //                     event._start.setDate(dayToSet); 
+		        //                     event._end.setDate(dayToSet);
+		        //                 }  
+			    
 				if (eventStart < start) {
 					segStart = cloneDate(start);
 					isStart = false;
@@ -3373,7 +3411,7 @@ var viewMethods = {
 		}
 		return segs.sort(segCmp);
 	}
-
+  
 
 };
 
@@ -3402,6 +3440,7 @@ function lazySegBind(container, segs, bindHandlers) {
 // event rendering calculation utilities
 
 function stackSegs(segs) {
+    
 	var levels = [],
 		i, len = segs.length, seg,
 		j, collide, k;
@@ -3461,9 +3500,6 @@ function selection_dayMousedown(view, hoverListener, cellDate, cellIsAllDay, ren
                     }
 
 					dates = [ cellDate(origCell), cellDate(cell) ].sort(cmp);
-
-//                    console.log("start : " + formatDate(cellDate(origCell),'MM/dd/yyyy'));
-//                    console.log("end : " + formatDate(cellDate(cell),'MM/dd/yyyy'));
 
                     var dateRangeBegin = formatDate(cellDate(origCell),'MM/dd/yyyy');
                     var dateRangeEnd = formatDate(cellDate(cell),'MM/dd/yyyy');
@@ -4097,5 +4133,11 @@ function enableTextSelection(element) {
 		.unbind('selectstart.ui');
 }
 */
+
+function daysInMonth(month, year)
+{
+    return 32 - new Date(year, month, 32).getDate();
+}
+
 
 })(jQuery);

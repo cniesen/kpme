@@ -19,10 +19,9 @@ import org.joda.time.Days;
 import org.joda.time.Duration;
 import org.joda.time.Interval;
 import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.paycalendar.PayCalendarDates;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
-import org.kuali.rice.core.config.ConfigContext;
 
 public class TKUtils {
 
@@ -84,7 +83,7 @@ public class TKUtils {
 
 	public static BigDecimal getHoursBetween(long start, long end) {
 		long diff = end - start;
-		return new BigDecimal((diff / 3600000.0) % 24).setScale(TkConstants.MATH_CONTEXT.getPrecision(), TkConstants.MATH_CONTEXT.getRoundingMode()).abs();
+		return new BigDecimal((diff / 3600000.0) % 24).setScale(TkConstants.BIG_DECIMAL_SCALE, TkConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
 	}
 
 	public static Map<Timestamp, BigDecimal> getDateToHoursMap(TimeBlock timeBlock, TimeHourDetail timeHourDetail) {
@@ -146,12 +145,13 @@ public class TKUtils {
 	}
 	
 	public static String getAssignmentString(Assignment assignment) {
-		return assignment.getWorkAreaObj().getDescription() + " : compRate " + assignment.getJob().getCompRate() + " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
+		return assignment.getWorkAreaObj().getDescription() + " : $" + assignment.getJob().getCompRate() + " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
 	}
 	
-	public static List<Interval> getDaySpanForPayCalendarEntry(PayCalendarDates payCalendarEntry) {
-		DateTime beginDateTime = new DateTime(payCalendarEntry.getBeginPeriodDateTime());
-		DateTime endDateTime = new DateTime(payCalendarEntry.getEndPeriodDateTime());
+	public static List<Interval> getDaySpanForPayCalendarEntry(PayCalendarEntries payCalendarEntry) {
+		DateTime beginDateTime = new DateTime(payCalendarEntry.getBeginPeriodDateTime(), TkConstants.SYSTEM_DATE_TIME_ZONE);
+		DateTime endDateTime = new DateTime(payCalendarEntry.getEndPeriodDateTime(), TkConstants.SYSTEM_DATE_TIME_ZONE);
+
 		List<Interval> dayIntervals = new ArrayList<Interval>();
 
 		DateTime currDateTime = beginDateTime;
@@ -202,6 +202,19 @@ public class TKUtils {
 	
 	public static BigDecimal convertMillisToHours(long millis) {
 		return (new BigDecimal(millis)).divide(TkConstants.BIG_DECIMAL_MS_IN_H, TkConstants.MATH_CONTEXT);
+	}
+	
+	public static BigDecimal convertMinutesToHours(BigDecimal minutes) {
+		return minutes.divide(TkConstants.BIG_DECIMAL_60, TkConstants.MATH_CONTEXT);
+	}
+	
+	/*
+	 * Compares and confirms if the start of the day is at midnight or on a virtual day boundary
+	 * returns true if at midnight false otherwise(assuming 24 hr days)
+	 */
+	public static boolean isVirtualWorkDay(Calendar payCalendarStartTime){
+		return (payCalendarStartTime.get(Calendar.HOUR_OF_DAY) != 0 || payCalendarStartTime.get(Calendar.MINUTE) != 0 
+				&& payCalendarStartTime.get(Calendar.AM_PM) != Calendar.AM);
 	}
 	
 }

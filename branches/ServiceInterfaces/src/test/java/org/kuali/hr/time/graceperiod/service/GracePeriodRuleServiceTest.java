@@ -26,6 +26,13 @@ public class GracePeriodRuleServiceTest extends TkTestCase{
 		assertTrue("fetched one rule", gpr != null);
 	}
 	
+	@Test
+	public void testGracePeriodFetchValidation() throws Exception{
+		//TODO: Sai - confirm maintenance page renders
+		//TODO: Sai - confirm if hour factor is less than or equal 0 and greater than 1 it throws 
+		//appropriate error
+		
+	}
 	
 	@Test
 	public void testGracePeriodRuleTest() throws Exception{
@@ -47,12 +54,5 @@ public class GracePeriodRuleServiceTest extends TkTestCase{
 		derivedTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(beginDateTime, new Date(System.currentTimeMillis()));
 
 		assertTrue("rounded to 1:56", derivedTimestamp.getMinutes()==54);
-		
-		beginDateTime = new Timestamp((new DateTime(2010, 10, 16, 12, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
-		derivedTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(beginDateTime, new Date(System.currentTimeMillis()));
-
-		assertTrue("rounded to 1:00", derivedTimestamp.getMinutes()==0 && derivedTimestamp.getHours()==1);
-
-
 	}
 }

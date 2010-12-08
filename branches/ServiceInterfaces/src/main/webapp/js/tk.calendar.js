@@ -5,8 +5,10 @@ $(document).ready(function() {
     var d = date.getDate();
     var m = date.getMonth();
     var y = date.getFullYear();
-    var beginPeriodDate = $("#beginPeriodDate").val() != undefined ? $("#beginPeriodDate").val() : d + "/" + m + "/" + y;
-    var endPeriodDate = $("#endPeriodDate").val() != undefined ? $("#endPeriodDate").val() : d + "/" + m + "/" + y;
+    var beginPeriodDate = $("#beginPeriodDate").val() !== undefined ? $("#beginPeriodDate").val() : d + "/" + m + "/" + y;
+    var endPeriodDate = $("#endPeriodDate").val() !== undefined ? $("#endPeriodDate").val() : d + "/" + m + "/" + y;
+    var beginPeriodDateTimeObj = new Date($("#beginPeriodDate").val()); 
+    var endPeriodDateTimeObj = new Date($("#endPeriodDate").val());
 
     var calendar = $('#cal').fullCalendar({
             beginPeriodDate : beginPeriodDate,
@@ -18,131 +20,34 @@ $(document).ready(function() {
             header: {
                   left : "prev, today",
                   center : 'title',
-                  right : 'month,agendaWeek,agendaDay'
+                  right : ''
             },
             selectable: true,
             selectHelper: true,
             select: function(start, end, allDay) {
-
+                
                 // clear any existing values
-                $('#beginTimeField, #endTimeField, #hoursField').val("");
-
-                $('#dialog-form').dialog('enable');
-
-                var form = $('#dialog-form').dialog('open');
-
-                form.dialog({
-                    beforeclose: function(event, ui) {
-                        var title;
-                        var startTime = $('#beginTimeField');
-                        var endTime = $('#endTimeField');
-                        var hours = $('#hoursField');
-
-                        // this is for non-clock in / out earn codes, like vac, sick, etc.
-//                        if(hours.val() != '') {
-//                            title = $('#selectedAssignment').val() + " - " + $('#selectedEarnCode').val();
-//
-//                            start.setHours(9);
-//                            start.setMinutes(0);
-//
-//                            end.setHours(9+Number(hours.val()));
-//                            end.setMinutes(0);
-//
-//                            calendar.fullCalendar('renderEvent',
-//                              {
-//                                  title: title,
-//                                  start: start,
-//                                  end: end,
-//                                  allDay: false
-//                              },
-//                              true // make the event "stick"
-//                            );
-//                            calendar.fullCalendar('unselect');
-//                        }
-//
-//                        // this is for stardard clock in / out earn codes
-//                        if(startTime.val() != '' && endTime.val() != '') {
-//
-//                            startTime = $('#beginTimeField').parseTime();
-//                            endTime = $('#endTimeField').parseTime();
-//
-//                            title = $('#assignment').val() + " - " + $('#earnCode').val();
-//
-//                            start.setHours(startTime['hour']);
-//                            start.setMinutes(startTime['minute']);
-//
-//                            end.setHours(endTime['hour']);
-//                            end.setMinutes(endTime['minute']);
-//
-//                            calendar.fullCalendar('renderEvent',
-//                              {
-//                                  title: title,
-//                                  start: start,
-//                                  end: end,
-//                                  allDay: false
-//                              },
-//                              true // make the event "stick"
-//                            );
-//                            calendar.fullCalendar('unselect');
-//                        }
-                        
-                        // reset assignment and earn code
-                        $('#assignment > option:first').attr('selected','selected');
-                        
-                    	var params = {};
-                        params['selectedAssignment'] = $('#assignment:first').val();
-                    	
-                        $.ajax({
-                            url: "TimeDetail.do?methodToCall=getEarnCodes",
-                            data: params,
-                            cache: false,
-                            success: function(data) {
-                            	$('#earnCode').html(data);
-                            },
-                            error: function() {
-                            	$('#earnCode').html("Error: Can't get earn codes.");
-                            }
-                        });
-                        
-                        $('#loading-earnCodes').ajaxStart(function() {
-                			$(this).show();
-                		});
-                		$('#loading-earnCodes').ajaxStop(function() {
-                			$(this).hide();
-                		}); 
-                        
-                        //TODO: need to deal with week and day view where the clock in and out fields should be hidden
-                        // var view = calendar.fullCalendar('getView');
-                    }
-                });
+                $('#beginTimeField, #endTimeField, #hoursField, #acrossDaysField').val("");
+                $('#acrossDaysField').attr('checked','');
+                // check acrossDaysField if multiple days are selected
+                if(start.getTime() != end.getTime()) {
+                    $('#acrossDaysField').attr('checked','checked');
+                }
+                // disable showing the time entry form if the date is out of the pay period
+                if(start.getTime() >= beginPeriodDateTimeObj.getTime() && end.getTime() <= endPeriodDateTimeObj.getTime()) {
+                    $('#dialog-form').dialog('open');
+                }
             },
             editable: false,
-//            eventClick: function(calEvent, jsEvent, view) {
-//                alert('clicked');
-//            },
-//	        events :
-//            [
-//                {
-//					title : 'HRMS Java developer: RGN',
-//					start : new Date(y, m, d, 8, 00),
-//					end : new Date(y, m, d, 17, 00),
-//					allDay : false,
-//					id : 1 // this could be the unique sequence number from the table
-//				},
-//                {
-//					title : 'HRMS PS developer: RGN',
-//					start : new Date(y, m, d, 12, 0),
-//					end : new Date(y, m, d, 13, 0),
-//					allDay : false,
-//					id : 2
-//			    }
-//            ]
             events : "TimeDetail.do?methodToCall=getTimeblocks",
             loading: function(bool) {
-                if (bool) $('#loading').show();
-                else $('#loading').hide();
+                if (bool) {
+                    $('#loading').show();
+                }
+                else {
+                    $('#loading').hide();
+                }
             }
-
         });
 
     var tips = $(".validateTips");
@@ -167,14 +72,13 @@ $(document).ready(function() {
                 function updateTips(t) {
                     tips
                         .text(t)
-                        .addClass('ui-state-highlight');
+                        .addClass('ui-state-error');                        ;
                     setTimeout(function() {
-                        tips.removeClass('ui-state-highlight', 1500);
+                        tips.removeClass('ui-state-error', 1500);
                     }, 1000);
                 }
 
                 function checkLength(o,n,min,max) {
-
                     if ( o.val().length > max || o.val().length < min ) {
                         o.addClass('ui-state-error');
                         updateTips(n + " field can't be empty");
@@ -183,13 +87,18 @@ $(document).ready(function() {
                         return true;
                     }
                 }
-
+                
                 function checkTimeEntryFields(o,n) {
                     var val = o.val();
+                    o.addClass('ui-state-error');
+                    if(val == '') {
+                        updateTips(n + " field can't be empty");
+                        return false;
+                    }
+                    return true;
                 }
 
                 function checkRegexp(o,regexp,n) {
-
                     if ( !( regexp.test( o.val() ) ) ) {
                         o.addClass('ui-state-error');
                         updateTips(n);
@@ -199,14 +108,15 @@ $(document).ready(function() {
                     }
                 }
 
-                
-
-                if($('#hoursField').val() == '') {
+                if($('#hoursField').val() === '') {
                 	bValid = bValid && checkLength(startTime,"In",8,8);
                     bValid = bValid && checkLength(endTime,"Out",8,8);
                 }
                 
-                if($('#hoursField').val() != '' || bValid) {             
+                bValid = bValid && checkTimeEntryFields($('#assignment'), "Assignment");
+                bValid = bValid && checkTimeEntryFields($('#earnCode'), "Earn Code");
+                
+                if($('#hoursField').val() !== '' || bValid) {             
                     var params = {};
                     var dateRangeStart = $("#date-range-begin").val().split("/");
                     var dateRangeEnd = $("#date-range-end").val().split("/");
@@ -215,39 +125,29 @@ $(document).ready(function() {
                     
                     var startDateTime = new Date();
                     startDateTime.setFullYear(dateRangeStart[2], dateRangeStart[0]-1, dateRangeStart[1]);
-                    startDateTime.setHours(start['hour']);
-                    startDateTime.setMinutes(start['minute']);
-                    startDateTime.setSeconds(0)
+                    startDateTime.setHours(start.hour);
+                    startDateTime.setMinutes(start.minute);
+                    startDateTime.setSeconds(0);
                     startDateTime.setMilliseconds(0);
                     var endDateTime = new Date();
                     endDateTime.setFullYear(dateRangeEnd[2], dateRangeEnd[0]-1, dateRangeEnd[1]);
-                    endDateTime.setHours(end['hour']);
-                    endDateTime.setMinutes(end['minute']);
-                    endDateTime.setSeconds(0)
+                    endDateTime.setHours(end.hour);
+                    endDateTime.setMinutes(end.minute);
+                    endDateTime.setSeconds(0);
                     endDateTime.setMilliseconds(0);
-
-                    params['startDate'] = $("#date-range-begin").val();
-                    params['endDate'] = $("#date-range-end").val();
-                    params['startTime'] = startDateTime.getTime();
-                    params['endTime'] = endDateTime.getTime();
-                    params['hours'] = $('#hoursField').val();
-                    params['selectedEarnCode'] = $("#earnCode").val();
-                    params['selectedAssignment'] = $("#assignment").val();
-                    params['acrossDays'] = $('#acrossDays').is(':checked') ? 'y' : 'n';
-
-                    $.ajax({
-	                    url: "TimeDetail.do?methodToCall=addTimeBlock",
-	                    data: params,
-	                    cache: false,
-	                    success: function() {
-	                    	$("#dialog-form").dialog('close');
-	                    	calendar.fullCalendar('refetchEvents');
-	                    },
-                        error: function() {
-                        	updateTips("Error: Can't save data.");
-                        }
-	                });
-
+                    
+                    $("#methodToCall").val("addTimeBlock");
+                    $("#startDate").val($("#date-range-begin").val());
+                    $("#endDate").val($("#date-range-end").val());
+                    $("#startTime").val(startDateTime.getTime());
+                    $("#endTime").val(endDateTime.getTime());
+                    $("#hours").val($('#hoursField').val());
+                    $("#selectedEarnCode").val($("#earnCode").val().split("_")[0]);
+                    $("#selectedAssignment").val($("#assignment").val());
+                    $("#acrossDays").val($('#acrossDaysField').is(':checked') ? 'y' : 'n');
+                    
+                    $("#time-detail").submit();
+                    
                     fieldsToValidate.val('').removeClass('ui-state-error');
                 }
             },
@@ -258,6 +158,56 @@ $(document).ready(function() {
                 fieldsToValidate.val('').removeClass('ui-state-error');
             }
         }
+    });
+    
+    // earn code
+    $("select#earnCode").change(function(){
+
+        $('#hoursField').attr('readonly',false).css('background',"white").val("");
+
+        var fieldType = $(this).val().split("_")[1];
+
+        if(fieldType == 'HOUR') {
+            $('#beginTimeField,#endTimeField').val("");
+            $('#clockIn, #clockOut').hide();
+            $('#hoursSection').show();
+        }
+        // TODO: need to handle the amount field
+        else {
+            $('#hours').val("");
+            $('#clockIn, #clockOut').show();
+            $('#hoursSection').hide();
+        }
+
+        $("select#earnCode option[value='" + $(this).val() +"']").attr("selected", "selected");
+    });
+
+    // filter earn codes
+    $('#assignment').change(function(){
+        // remove the error style
+        $('#assignment').removeClass('ui-state-error');
+        
+        var params = {};
+        params['selectedAssignment'] = $(this).val();
+        
+        $.ajax({
+            url: "TimeDetail.do?methodToCall=getEarnCodes",
+            data: params,
+            cache: false,
+            success: function(data) {
+                $('#earnCode').html(data);
+            },
+            error: function() {
+                $('#earnCode').html("Error: Can't get earn codes.");
+            }
+        });
+        
+        $('#loading-earnCodes').ajaxStart(function() {
+            $(this).show();
+        });
+        $('#loading-earnCodes').ajaxStop(function() {
+            $(this).hide();
+        }); 
     });
 
     // error

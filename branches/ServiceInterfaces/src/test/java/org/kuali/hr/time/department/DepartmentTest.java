@@ -13,11 +13,11 @@ public class DepartmentTest extends TkTestCase {
 	public void testDepartmentMaint() throws Exception {
 		HtmlPage deptLookup = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.DEPT_MAINT_URL);
 		deptLookup = HtmlUnitUtil.clickInputContainingText(deptLookup, "search");
-		assertTrue("Page contains test dept", deptLookup.asText().contains("__TEST"));
+		assertTrue("Page contains test dept", deptLookup.asText().contains("TEST"));
+		HtmlUnitUtil.createTempFile(deptLookup);
+		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(deptLookup, "edit","100");
 		
-		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(deptLookup, "edit","__TEST");
-		
-		assertTrue("Maintenance Page contains test dept",maintPage.asText().contains("__TEST"));
+		assertTrue("Maintenance Page contains test dept",maintPage.asText().contains("TEST"));
 		
 	}
 
@@ -25,8 +25,10 @@ public class DepartmentTest extends TkTestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 		Department dept = new Department();
+		dept.setTkDeptId(1001L);
 		dept.setDept("__TEST");
 		dept.setDescription("TESTING_DEPT");
+		dept.setActive(true);
 		
 		KNSServiceLocator.getBusinessObjectService().save(dept);
 	}
@@ -34,6 +36,7 @@ public class DepartmentTest extends TkTestCase {
 	@Override
 	public void tearDown() throws Exception {
 		Department dept = new Department();
+		dept.setTkDeptId(1001L);
 		dept.setDept("__TEST");
 		dept.setDescription("TESTING_DEPT");
 		
