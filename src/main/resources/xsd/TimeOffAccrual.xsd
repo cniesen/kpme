@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="/tk" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lm="/tk">
+  <xs:element name="addTimeOffAccruals">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="timeOffAccruals">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="laAccrualId" type="xs:long"/>
+              <xs:element name="principalId" type="xs:string" nillable="false"/>
+              <xs:element name="accrualCategory" type="xs:string" nillable="false"/>
+              <xs:element name="effectiveDate" type="xs:date" nillable="false"/>              
+              <xs:element name="hoursAccrued" type="xs:long" nillable="false"/>
+              <xs:element name="hoursTaken" type="xs:long" nillable="false"/>
+              <xs:element name="hoursAdjust" type="xs:long" nillable="false"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

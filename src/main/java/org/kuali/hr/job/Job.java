@@ -5,31 +5,54 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.paytype.PayType;
+import org.kuali.rice.core.jaxb.SqlDateAdapter;
 import org.kuali.rice.kim.bo.Person;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
+@XmlAccessorType(value = XmlAccessType.NONE)
 public class Job extends PersistableBusinessObjectBase {
 
 	/*
 	 * Standard field included for serialization support
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
+	@XmlElement
 	private String location;
+	@XmlElement
 	private String hrPayType;
+	@XmlElement
 	private Boolean fte;
+	@XmlElement
 	private String payGrade;
+	@XmlElement
 	private BigDecimal standardHours;
+
 	private Long hrJobId;
+	@XmlElement
 	private String principalId;
+	@XmlElement
 	private Long jobNumber;
+
+	@XmlJavaTypeAdapter(value = SqlDateAdapter.class, type = Date.class)
+	@XmlElement(required = true, nillable = false)
 	private Date effectiveDate;
+	@XmlElement(required = true, nillable = false)
 	private String dept;
+	@XmlElement
 	private String tkSalGroup;
-	private Timestamp timestamp;
+	@XmlElement
 	private Boolean active;
+
+	private Timestamp timestamp;
+
 	private BigDecimal compRate = new BigDecimal(0);
 	
 	private Person principal;
@@ -46,7 +69,6 @@ public class Job extends PersistableBusinessObjectBase {
 
 		return toStringMap;
 	}
-
 
 	public Boolean getFte() {
 		return fte;
@@ -111,7 +133,7 @@ public class Job extends PersistableBusinessObjectBase {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
-	
+
 	public void setLocation(String location) {
 		this.location = location;
 	}
@@ -119,7 +141,7 @@ public class Job extends PersistableBusinessObjectBase {
 	public String getLocation() {
 		return location;
 	}
-	
+
 	public String getHrPayType() {
 		return hrPayType;
 	}
@@ -152,20 +174,18 @@ public class Job extends PersistableBusinessObjectBase {
 		this.tkSalGroup = tkSalGroup;
 	}
 
-
 	public BigDecimal getCompRate() {
 		return compRate;
 	}
-
 
 	public void setCompRate(BigDecimal compRate) {
 		this.compRate = compRate;
 	}
 
+
 	public Department getDeptObj() {
 		return deptObj;
 	}
-
 
 	public void setDeptObj(Department deptObj) {
 		this.deptObj = deptObj;

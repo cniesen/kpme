@@ -33,7 +33,7 @@ $(document).ready(function() {
                 if(start.getTime() != end.getTime()) {
                     $('#acrossDaysField').attr('checked','checked');
                 }
-                // disable showing the time entry form if the date is not within the pay period
+                // disable showing the time entry form if the date is out of the pay period
                 if(start.getTime() >= beginPeriodDateTimeObj.getTime() && end.getTime() <= endPeriodDateTimeObj.getTime()) {
                     $('#dialog-form').dialog('open');
                 }
@@ -53,10 +53,8 @@ $(document).ready(function() {
     var tips = $(".validateTips");
     var startTime = $('#beginTimeField');
     var endTime = $('#endTimeField');
-    var assignment = $('#assignment');
-    var earnCode = $('#earnCode')
 
-    var fieldsToValidate = $([]).add(startTime).add(endTime).add(assignment).add(earnCode);
+    var fieldsToValidate = $([]).add(startTime).add(endTime);
     fieldsToValidate.val('').removeClass('ui-state-error');
 
     $("#dialog-form").dialog({
@@ -64,29 +62,20 @@ $(document).ready(function() {
         height: 'auto',
         width: 'auto',
         modal: true,
-        beforeClose: function(event,ui) {
-            // remove all the error messages
-            $('.validateTips').html("").removeClass('ui-state-error');
-            // restore the earn code value to the default  
-            $('#earnCode').html("<option value=''>-- select an assignment --</option>");
-        },
         buttons: {
             Add: function() {
-                
-                //-----------------------------------
-                // time entry form validation
-                //-----------------------------------
+
                 var bValid = true;
+                fieldsToValidate.removeClass('ui-state-error');
                 tips.val("");
 
                 function updateTips(t) {
                     tips
                         .text(t)
-                        .addClass('ui-state-error')
-                        .css({'color':'red','font-weight':'bold'});
-                    // setTimeout(function() {
-                    //     tips.removeClass('ui-state-error', 1500);
-                    // }, 1000);
+                        .addClass('ui-state-error');                        ;
+                    setTimeout(function() {
+                        tips.removeClass('ui-state-error', 1500);
+                    }, 1000);
                 }
 
                 function checkLength(o,n,min,max) {
@@ -118,77 +107,55 @@ $(document).ready(function() {
                         return true;
                     }
                 }
-                
+
                 if($('#hoursField').val() === '') {
-                  bValid = bValid && checkLength(startTime,"In",8,8);
-                  bValid = bValid && checkLength(endTime,"Out",8,8);
+                	bValid = bValid && checkLength(startTime,"In",8,8);
+                    bValid = bValid && checkLength(endTime,"Out",8,8);
                 }
                 
-                bValid = bValid && checkTimeEntryFields(assignment, "Assignment");
-                bValid = bValid && checkTimeEntryFields(earnCode, "Earn Code");
-                
-                // end of time entry form validation
-                //-----------------------------------
+                bValid = bValid && checkTimeEntryFields($('#assignment'), "Assignment");
+                bValid = bValid && checkTimeEntryFields($('#earnCode'), "Earn Code");
                 
                 if($('#hoursField').val() !== '' || bValid) {             
                     var params = {};
-
-                    // these are for the submitted form
+                    var dateRangeStart = $("#date-range-begin").val().split("/");
+                    var dateRangeEnd = $("#date-range-end").val().split("/");
+                    var start = startTime.parseTime();
+                    var end = endTime.parseTime();
+                    
+                    var startDateTime = new Date();
+                    startDateTime.setFullYear(dateRangeStart[2], dateRangeStart[0]-1, dateRangeStart[1]);
+                    startDateTime.setHours(start.hour);
+                    startDateTime.setMinutes(start.minute);
+                    startDateTime.setSeconds(0);
+                    startDateTime.setMilliseconds(0);
+                    var endDateTime = new Date();
+                    endDateTime.setFullYear(dateRangeEnd[2], dateRangeEnd[0]-1, dateRangeEnd[1]);
+                    endDateTime.setHours(end.hour);
+                    endDateTime.setMinutes(end.minute);
+                    endDateTime.setSeconds(0);
+                    endDateTime.setMilliseconds(0);
+                    
                     $("#methodToCall").val("addTimeBlock");
                     $("#startDate").val($("#date-range-begin").val());
                     $("#endDate").val($("#date-range-end").val());
-                    $("#startTime").val($('#beginTimeField-messages').val());
-                    $("#endTime").val($('#endTimeField-messages').val());
+                    $("#startTime").val(startDateTime.getTime());
+                    $("#endTime").val(endDateTime.getTime());
                     $("#hours").val($('#hoursField').val());
                     $("#selectedEarnCode").val($("#earnCode").val().split("_")[0]);
                     $("#selectedAssignment").val($("#assignment").val());
                     $("#acrossDays").val($('#acrossDaysField').is(':checked') ? 'y' : 'n');
                     
-                    // these are for the validation
-                    params['startDate'] = $("#date-range-begin").val();
-                    params['endDate'] = $("#date-range-end").val();
-                    params['startTime'] = $('#beginTimeField-messages').val();
-                    params['endTime'] = $('#endTimeField-messages').val();
-                    params['hours'] = $('#hoursField').val(); 
-                    params['selectedEarnCode'] = $("#earnCode").val().split("_")[0];
-                    params['selectedAssignment'] = $("#assignment").val(); 
-                    params['acrossDays'] = $('#acrossDaysField').is(':checked') ? 'y' : 'n';
-                    
-                    $.ajax({
-                        url: "TimeDetail.do?methodToCall=validateTimeBlocks",
-                        data: params,
-                        cache: false,
-                        success: function(data) {
-                            //var match = data.match(/\w{1,}|/g);
-                            var json = jQuery.parseJSON(data);
-                            // if there is no error message, submit the form to add the time block
-                            if(json.length == 0) {
-                                $("#time-detail").submit();
-                            }
-                            else {
-                                // grab error messages
-                                var json = jQuery.parseJSON(data);
-                                var errorMsgs = "";
-                                $.each (json, function (index) {
-                                    errorMsgs += "Error : " + json[index] + "\n";                                    
-                                });
-                                
-                                updateTips(errorMsgs);
-                                
-                                return false;
-                            }
-                        },
-                        error: function() {
-                            updateTips("Error: Can't save data.");
-                        }
-                    });
+                    $("#time-detail").submit();
                     
                     fieldsToValidate.val('').removeClass('ui-state-error');
                 }
             },
             Cancel: function() {
-                fieldsToValidate.val('').removeClass('ui-state-error');
+                $('#beginTimeField').val("");
+                $('#endTimeField').val("");
                 $(this).dialog('close');
+                fieldsToValidate.val('').removeClass('ui-state-error');
             }
         }
     });
@@ -219,6 +186,7 @@ $(document).ready(function() {
     $('#assignment').change(function(){
         // remove the error style
         $('#assignment').removeClass('ui-state-error');
+        
         var params = {};
         params['selectedAssignment'] = $(this).val();
         
@@ -241,6 +209,9 @@ $(document).ready(function() {
             $(this).hide();
         }); 
     });
+
+    // error
+    $("#1").addClass('block-error');
 
     // use keyboard to open the form
     var isCtrl,isAlt = false;

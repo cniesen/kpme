@@ -71,4 +71,16 @@ public class EarnCodeDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implem
 
 		return ec;
 	}
+	
+	
+	// for WebService
+	public EarnCode getEarnCode(String earnCode){
+		Criteria crit = new Criteria();
+		crit.addEqualTo("earnCode", earnCode);
+		return (EarnCode) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(EarnCode.class,crit));
+	}
+	
+	
+
+
 }

@@ -86,7 +86,7 @@ var timeParsePatterns = [
         }
     },
     // p.m.
-    {   re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/i,
+    {   re: /(\d{1,2}):(\d{1,2}):(\d{1,2})(?:p| p)/,
         example: new Array('9:55:00 pm','12:55:00 p.m.','9:55:00 p','11:5:10pm','9:5:1p'),
         handler: function(bits) {
             var d = new Date();
@@ -99,7 +99,7 @@ var timeParsePatterns = [
         }
     },
     // p.m., no seconds
-    {   re: /(\d{1,2}):(\d{1,2})(?:p| p)/i,
+    {   re: /(\d{1,2}):(\d{1,2})(?:p| p)/,
         example: new Array('9:55 pm','12:55 p.m.','9:55 p','11:5pm','9:5p'),
         handler: function(bits) {
             var d = new Date();
@@ -112,7 +112,7 @@ var timeParsePatterns = [
         }
     },
     // p.m., hour only
-    {   re: /(\d{1,2})(?:p| p)/i,
+    {   re: /(\d{1,2})(?:p| p)/,
         example: new Array('9 pm','12 p.m.','9 p','11pm','9p'),
         handler: function(bits) {
             var d = new Date();
@@ -215,11 +215,6 @@ function parseTimeString(s) {
 
 function magicTime(input) {
     var messagespan = input.id + '-messages';
-    // get the date field
-    var dateRangeField = input.id == 'beginTimeField' ? $('#date-range-begin').val() : $('#date-range-end').val();
-     
-    // clear the error message
-    $("#" + input.id + '-error').html("");
     try {
         var d = parseTimeString(input.value);
 
@@ -230,12 +225,14 @@ function magicTime(input) {
         try {
             // Human readable time
             el = document.getElementById(messagespan);
-            dateRangeField = dateRangeField.split("/");
-            d.setFullYear(dateRangeField[2], dateRangeField[0]-1, dateRangeField[1]);
-            d.setSeconds(0);
-            d.setMilliseconds(0);
-            //el.innerHTML = d.getMonth() + " " + d.getDate() + " " + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-            el.value = d.getTime();
+
+            // el.firstChild.nodeValue = d.toTimeString();
+            // el.innerHTML = d.toTimeString();
+            // el.innerHTML = "<input type='hidden' id='"+ input.id +"-entry' value='" + d.getHours() + ":" + d.getMinutes() + "'/>";
+            // el.innerHTML = "<input type='hidden' id='"+ input.id +"-entry' value='" + d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds() + "'/>";
+            el.innerHTML = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
+            // the line below will generate the text in the message div
+            // el.innerHTML = formatDate(d);
             el.className = 'normal';
         }
         catch (e) {
@@ -246,18 +243,16 @@ function magicTime(input) {
     catch (e) {
         input.className = 'error';
         try {
-            el = document.getElementById(input.id + '-error');
+            el = document.getElementById(messagespan);
             var message = e.message;
             // Fix for IE6 bug
             if (message.indexOf('is null or not an object') > -1) {
-                message = 'Invalid format';
+                message = 'Invalid time string';
             }
             el.firstChild.nodeValue = message;
             el.className = 'error';
         } catch (e){
-            if ($("#" + input.id).val() != '') {
-              el.innerHTML = "Invalid format";
-            }
+//            el.innerHTML = "Invalid format";
         }
     }
 }

@@ -11,15 +11,14 @@
 		the specific language governing permissions and limitations under the
 		License.
 	-->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.kuali</groupId>
 	<artifactId>trojan-time</artifactId>
 	<packaging>war</packaging>
 	<name>trojan-time</name>
 	<description>Kuali's Trojan Time</description>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.0</version>
 
     <!--
          To run without hardcoded username/password/url, you can override
@@ -223,7 +222,7 @@
 								<argument>dbdeploy-maven</argument>
                                 <argument>-Ddb.user=${dbdeploy.user}</argument>
                                 <argument>-Ddb.password=${dbdeploy.pass}</argument>
-                                <argument>-Ddb.url=${dbdeploy.url}</argument>
+                                <argument>-Ddb.url=${dbdeploy.host}</argument>
 								<argument>-Dapp.version=${project.version}</argument>
 								<argument>-Denvironment=test</argument>
 							</arguments>
@@ -350,11 +349,9 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<!--
 					<excludes>
 						<exclude>**/*</exclude>
 					</excludes>
-					-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -447,9 +444,9 @@
 	</repositories>
 
 	<scm>
-		<connection>scm:svn:https://ais-svn.usc.edu/svn/T2/trunk</connection>
-		<developerConnection>scm:svn:https://ais-svn.usc.edu/svn/T2/trunk</developerConnection>
-		<url>https://ais-svn.usc.edu/svn/T2/trunk</url>
+		<connection>scm:svn:https://ais-svn.usc.edu/svn/T2/tags/trojan-time-0.1.0</connection>
+		<developerConnection>scm:svn:https://ais-svn.usc.edu/svn/T2/tags/trojan-time-0.1.0</developerConnection>
+		<url>https://ais-svn.usc.edu/svn/T2/tags/trojan-time-0.1.0</url>
 	</scm>
 
 </project>

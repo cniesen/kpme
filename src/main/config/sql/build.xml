@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="dbdeploy_lm" default="">
+<project name="dbdeploy_tk" default="">
 
 	<property environment="env" />
 
@@ -50,7 +50,7 @@
 				<fileset dir="./${db.schema}" includes="*.sql" />
 			</path>
 			<sequential>
-
+				
 				<propertyregex override="yes" property="file.num" input="@{file}" regexp=".*?${my.file.seperator}(\d*)-.*?" select="\1" casesensitive="false" />
 				<propertyregex override="yes" property="sql.version" input="@{file}" regexp=".*?-(\d\.\d\.\d)-.*?" select="\1" casesensitive="false" />
 				<versionComparator appVersion="${app.version}" sqlVersion="${sql.version}" resultVar="result.var" />
@@ -70,8 +70,16 @@
 	-->
 	<target name="create-changelog-table">
 		<echo>${db.url}${db.schema}</echo>
+		<if>
+			<equals arg1="${environment}" arg2="dev" />
+			<then>
+				<sql driver="${db.driver}" url="${db.url}" userid="${db.user}" password="${db.password}" classpathref="mysql.classpath">
+					DROP DATABASE IF EXISTS ${db.schema};
+				</sql>
+			</then>
+		</if>
 		<sql driver="${db.driver}" url="${db.url}" userid="${db.user}" password="${db.password}" classpathref="mysql.classpath">
-			DROP DATABASE IF EXISTS ${db.schema};
+	
 
 			CREATE DATABASE IF NOT EXISTS ${db.schema};
 			USE ${db.schema};
@@ -105,7 +113,7 @@
 		- creates out sql files that hold all the statements needed for this patricular version
 	-->
 	<target name="create-and-apply-database" description="generate a sql upgrade script" depends="create-changelog-table, prepare-update">
-		<var name="app.db.script" value="database-schema-${db.schema}-${app.version}.sql" />
+		<var name="app.db.script" value="delta-database-schema-${db.schema}-${app.version}.sql" />
 		<dbdeploy driver="${db.driver}" url="${db.url}${db.schema}" userid="${db.user}" password="${db.password}" dir="./${db.schema}" lastChangeToApply="${dbdeploy.lastChangeToApply}" />
 	</target>
 
