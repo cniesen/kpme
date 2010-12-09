@@ -738,7 +738,7 @@
     </bean>
     
     <bean id="holidayCalendarService" class="org.kuali.hr.time.holidaycalendar.service.HolidayCalendarServiceImpl">
-    	<property name="holidayCalendarDao" ref="holidayCalendarDao"/>
+    
     </bean>
     
     <bean id="userPrefService" class="org.kuali.hr.time.user.pref.service.UserPreferenceServiceImpl">
