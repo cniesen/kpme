@@ -600,10 +600,6 @@
     	<property name="jcdAlias" value="tkDataSource"/>
     </bean>    
     
-    <bean id="holidayCalendarDao" class="org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDaoImpl">
-    	<property name="jcdAlias" value="tkDataSource"/>
-    </bean>
-    
     <bean id="userPrefDao" class="org.kuali.hr.time.user.pref.dao.UserPreferenceDaoImpl">
     	<property name="jcdAlias" value="tkDataSource"/>
     </bean>    
@@ -736,18 +732,6 @@
 
 	<bean id="timeSummaryService"
 		class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl" />
-
-    <bean id="earnCodeService" class="org.kuali.hr.time.earncode.service.EarnCodeServiceImpl">
-    	<property name="earnCodeDao" ref="earnCodeDao"/>
-    </bean>
-    
-    <bean id="earnGroupService" class="org.kuali.hr.time.earngroup.service.EarnGroupServiceImpl">
-    	<property name="earnGroupDao" ref="earnGroupDao"/>
-    </bean>
-    
-    <bean id="timeHourDetailService" class="org.kuali.hr.time.timehourdetail.service.TimeHourDetailServiceImpl">
-    	<property name="timeHourDetailDao" ref="timeHourDetailDao"/>
-    </bean>
     
     <bean id="principalCalendarService" class="org.kuali.hr.time.principal.calendar.service.PrincipalCalendarServiceImpl">
     	<property name="principalCalendarDao" ref="principalCalendarDao"/>
@@ -761,10 +745,7 @@
     	<property name="userPrefDao" ref="userPrefDao"/>
     </bean>    
     
-    <bean id="timeSummaryService" class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl"/>
-
-	<bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
-
+    <bean id="tkServiceLocator" class="org.kuali.hr.time.service.base.TkServiceLocator" />
 
 	<bean id="tkRuleControllerService" class="org.kuali.hr.time.rule.TkRuleControllerServiceImpl" />
 
