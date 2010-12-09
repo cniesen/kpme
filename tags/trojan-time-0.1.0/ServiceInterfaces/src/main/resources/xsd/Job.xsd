@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="/tk" xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:lm="/tk">
+  <xs:element name="addJobs">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" name="jobs">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="location" type="xs:string"/>
+              <xs:element name="hrPayType" type="xs:string"/>
+              <xs:element name="fte" type="xs:boolean"/>
+              <xs:element name="payGrade" type="xs:string"/>
+              <xs:element name="standardHours" type="xs:int"/>
+              <xs:element name="hrJobId" type="xs:long"/>
+              <xs:element name="principalId" type="xs:string"/>
+			  <xs:element name="jobNumber" type="xs:long"/>
+			  <xs:element name="effectiveDate" type="xs:date" nillable="false"/>
+			  <xs:element name="dept" type="xs:string" nillable="false"/>
+			  <xs:element name="tkSalGroup" type="xs:string"/> 
+			  <xs:element name="active" type="xs:boolean"/>                           
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

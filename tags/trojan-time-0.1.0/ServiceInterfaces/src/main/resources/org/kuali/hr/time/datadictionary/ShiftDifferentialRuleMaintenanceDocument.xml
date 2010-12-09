@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:dd="http://rice.kuali.org/dd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://rice.kuali.org/dd
+                           http://rice.kuali.org/dd/dd.xsd">
+
+	<bean id="ShiftDefferentialRuleMaintenanceDocument" parent="ShiftDefferentialRuleMaintenanceDocument-parentBean" />
+
+	<bean id="ShiftDefferentialRuleMaintenanceDocument-parentBean" abstract="true"
+		parent="MaintenanceDocumentEntry" p:businessObjectClass="org.kuali.hr.time.shiftdiff.rule.ShiftDifferentialRule"
+		p:businessRulesClass="org.kuali.hr.time.shiftdiff.rule.validation.ShiftDifferentialRuleRule"		
+  		p:maintainableClass="org.kuali.hr.time.shiftdiff.rule.service.ShiftDifferentialRuleMaintenableImpl">  		
+		<property name="maintainableSections">
+			<list>
+				<ref bean="ShiftDefferentialRuleMaintenanceDocument-ShiftDefferentialRuleMaintenance" />
+			</list>
+		</property>
+		<property name="lockingKeys">
+			<list>
+				<value>tkShiftDiffRuleId</value>
+			</list>
+		</property>
+		<property name="documentTypeName" value="ShiftDifferentialRuleDocumentType" />
+	</bean>
+
+	<!-- Maintenance Section Definitions -->
+
+	<bean id="ShiftDefferentialRuleMaintenanceDocument-ShiftDefferentialRuleMaintenance" parent="ShiftDefferentialRuleMaintenanceDocument-ShiftDefferentialRuleMaintenance-parentBean" />
+
+	<bean id="ShiftDefferentialRuleMaintenanceDocument-ShiftDefferentialRuleMaintenance-parentBean"
+		abstract="true" parent="MaintainableSectionDefinition">
+		<property name="title" value="Shift Differential Rule Maintenance" />
+		<property name="maintainableItems">
+			<list>
+				<bean parent="MaintainableFieldDefinition" p:name="location" />
+				<bean parent="MaintainableFieldDefinition" p:name="tkSalGroup" />
+				<bean parent="MaintainableFieldDefinition" p:name="payGrade" />
+				<bean parent="MaintainableFieldDefinition" p:name="effectiveDate" />
+				<bean parent="MaintainableFieldDefinition" p:name="earnCode" />
+				<bean parent="MaintainableFieldDefinition" p:name="beginTime" />
+				<bean parent="MaintainableFieldDefinition" p:name="endTime" />
+				<bean parent="MaintainableFieldDefinition" p:name="minHours" />
+				<bean parent="MaintainableFieldDefinition" p:name="sunday" />
+				<bean parent="MaintainableFieldDefinition" p:name="monday" />
+				<bean parent="MaintainableFieldDefinition" p:name="tuesday" />
+				<bean parent="MaintainableFieldDefinition" p:name="wednesday" />
+				<bean parent="MaintainableFieldDefinition" p:name="thursday" />
+				<bean parent="MaintainableFieldDefinition" p:name="friday" />
+				<bean parent="MaintainableFieldDefinition" p:name="saturday" />
+				<bean parent="MaintainableFieldDefinition" p:name="maxGap" />
+				<bean parent="MaintainableFieldDefinition" p:name="userPrincipalId" />
+				<bean parent="MaintainableFieldDefinition" p:name="active" />			
+			</list>
+		</property>
+	</bean>
+</beans>
