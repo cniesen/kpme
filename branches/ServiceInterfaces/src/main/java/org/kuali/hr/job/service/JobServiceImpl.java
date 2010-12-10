@@ -3,7 +3,10 @@ package org.kuali.hr.job.service;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import javax.jws.WebService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -74,19 +77,32 @@ public class JobServiceImpl implements JobService {
 				if (!jobServiceRule.validateJobObject(job)) {
 					throw new IllegalArgumentException("invalid data for job");
 				}
-				if (job.getHrJobId() != null) {
-					Job oldJob = KNSServiceLocator
-							.getBusinessObjectService()
-							.findBySinglePrimaryKey(Job.class, job.getHrJobId());
-					oldJob.setActive(Boolean.FALSE);
+				Map<String, Object> queryMap = new HashMap<String, Object>();
+				queryMap.put("principalId", job.getPrincipalId());
+				queryMap.put("jobNumber", job.getJobNumber());
+				Job oldJob = (Job) KNSServiceLocator.getBusinessObjectService()
+						.findByPrimaryKey(Job.class, queryMap);
+				if (oldJob != null) {
+					// oldJob.setActive(Boolean.FALSE);
+					oldJob.setPrincipalId(job.getPrincipalId());
+					oldJob.setJobNumber(job.getJobNumber());
+					oldJob.setEffectiveDate(job.getEffectiveDate());
+					oldJob.setDept(job.getDept());
+					oldJob.setTkSalGroup(job.getTkSalGroup());
+					oldJob.setFte(job.getFte());
+					oldJob.setHrPayType(job.getHrPayType());
+					oldJob.setCompRate(job.getCompRate());
+					oldJob.setLocation(job.getLocation());
+					oldJob.setActive(job.getActive());
 					oldJob.setTimestamp(new Timestamp(Calendar.getInstance()
 							.getTimeInMillis()));
 					KNSServiceLocator.getBusinessObjectService().save(oldJob);
+				} else {
+					job.setHrJobId(null);
+					job.setTimestamp(new Timestamp(Calendar.getInstance()
+							.getTimeInMillis()));
+					KNSServiceLocator.getBusinessObjectService().save(job);
 				}
-				job.setHrJobId(null);
-				job.setTimestamp(new Timestamp(Calendar.getInstance()
-						.getTimeInMillis()));
-				KNSServiceLocator.getBusinessObjectService().save(job);
 
 			} catch (Exception ex) {
 				log.error("Error with job Object:"+ job, ex);
