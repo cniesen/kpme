@@ -15,6 +15,21 @@
 			<label>PayTypeDocument</label>
 		</documentType>
 		<documentType>
+			<name>PayCalendarDatesDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>PayCalendarDatesDocument</label>
+		</documentType>
+		<documentType>
+			<name>RoleAssignDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>RoleAssignDocument</label>
+		</documentType>
+		<documentType>
+			<name>WorkAreaMaintenanceDocument</name>
+			<parent>RiceDocument</parent>
+			<label>WorkAreaMaintenanceDocument</label>
+		</documentType>
+		<documentType>
 			<name>SalGroupDocumentType</name>
 			<parent>RiceDocument</parent>
 			<label>SalGroupDocument</label>
@@ -24,11 +39,7 @@
 			<parent>RiceDocument</parent>
 			<label>HolidayCalendarDocument</label>
 		</documentType>
-		<documentType>
-			<name>AccrualCategoryDocumentType</name>
-			<parent>RiceDocument</parent>
-			<label>AccrualCategoryDocument</label>
-		</documentType>
+
 		<documentType>
 			<name>HolidayCalendarDateEntryDocumentType</name>
 			<parent>RiceDocument</parent>
@@ -69,11 +80,13 @@
 			<parent>RiceDocument</parent>
 			<label>PayCalendarEntryDocument</label>
 		</documentType>
+
 		<documentType>
 			<name>PayCalendarDocumentType</name>
 			<parent>RiceDocument</parent>
 			<label>PayCalendarDocument</label>
 		</documentType>
+
 		<documentType>
 			<name>AssignmentDocumentType</name>
 			<parent>RiceDocument</parent>
