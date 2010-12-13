@@ -240,11 +240,7 @@ INSERT INTO `tk_py_calendar_dates_t` (`tk_py_calendar_dates_id`,`tk_py_calendar_
 
 	
 	
-#
-# User Prefs
-#
-delete from tk_user_pref_t;
-insert Into tk_user_pref_t values('admin','pacific');
+
 #
 # Daily Overtime Rule
 #

@@ -36,15 +36,15 @@
          -->
 	<properties>
 		<dbdeploy.dir>${basedir}/src/main/config/sql</dbdeploy.dir>
-        <dbdeploy.user>kuldemo</dbdeploy.user>
-        <dbdeploy.pass>kuldemo</dbdeploy.pass>
-        <dbdeploy.host>jdbc:mysql://localhost:3306/</dbdeploy.host>
+		<dbdeploy.user>root</dbdeploy.user>
+		<dbdeploy.pass>pass</dbdeploy.pass>
+		<dbdeploy.host>jdbc:mysql://localhost:3306/</dbdeploy.host>
 
         <test.db.driver>com.mysql.jdbc.Driver</test.db.driver>
-        <test.db.name>tk-test</test.db.name>
+        <test.db.name>tk</test.db.name>
         <test.db.url>jdbc:mysql://localhost:3306/</test.db.url>
-        <test.db.user>tk</test.db.user>
-        <test.db.pass>override_this</test.db.pass>
+        <test.db.user>root</test.db.user>
+        <test.db.pass>pass</test.db.pass>
 	</properties>
 
 	<profiles>
@@ -182,8 +182,8 @@
 							<executable>ant</executable>
 							<arguments>
 								<argument>dbdeploy-maven</argument>
-								<argument>-Ddb.user=kuldemo</argument>
-								<argument>-Ddb.password=kuldemo</argument>
+								<argument>-Ddb.user=root</argument>
+								<argument>-Ddb.password=pass</argument>
 								<argument>-Ddb.url=jdbc:mysql://localhost:3306/</argument>
 								<argument>-Dapp.version=${project.version}</argument>
 								<argument>-Denvironment=dev</argument>
