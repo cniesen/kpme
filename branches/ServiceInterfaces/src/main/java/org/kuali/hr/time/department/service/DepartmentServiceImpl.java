@@ -1,5 +1,7 @@
 package org.kuali.hr.time.department.service;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,9 +12,15 @@ import org.apache.log4j.Logger;
 import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.department.dao.DepartmentDao;
+import org.kuali.hr.time.department.validation.DepartmentServiceRule;
 import org.kuali.hr.time.exceptions.TkException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 
+/**
+ * 
+ * @author bsoohoo
+ * 
+ */
 public class DepartmentServiceImpl implements DepartmentService {
 
 	private static final Logger LOG = Logger.getLogger(DepartmentService.class);
@@ -64,6 +72,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 		// go through each department coming in
 		for (Department department : departments) {
 			try {
+				// Validate department
+				DepartmentServiceRule departmentServiceRule = new DepartmentServiceRule();
+				/*
+				 * if (!departmentServiceRule.validateDepartment(department)) {
+				 * throw new IllegalArgumentException("invalid data for job"); }
+				 */
+				// departmentServiceRule.validateDepartmentObject(department);
+				// Get bean
 				DepartmentDao departmentDao = SpringContext
 						.getBean(DepartmentDao.class);
 				// check if department with the same code exists and try to get
@@ -72,9 +88,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 						.departmentExists(department.getDept());
 				// if dept doesn't exist, save (add) it
 				if (oldDepartment == null) {
+					System.out.println(" * * * NEW DEPT * * * ");
+					departmentServiceRule.validateDepartmentObject(department);
 					KNSServiceLocator.getBusinessObjectDao().save(department);
 				} else {
+					System.out.println(" * * * Old Dept * * * ");
 					// id dept exists, update with new dept data
+					departmentServiceRule.compareDepartments(department,
+							oldDepartment);
+
 					oldDepartment.setDept(department.getDept());
 					oldDepartment.setDescription(department.getDescription());
 					oldDepartment.setOrg(department.getOrg());

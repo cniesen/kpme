@@ -6,6 +6,11 @@ import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.exceptions.TkException;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
+/**
+ * 
+ * @author bsoohoo
+ * 
+ */
 public class DepartmentDaoImpl extends PersistenceBrokerDaoSupport implements
 		DepartmentDao {
 

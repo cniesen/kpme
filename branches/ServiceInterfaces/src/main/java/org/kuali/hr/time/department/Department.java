@@ -56,9 +56,17 @@ public class Department extends PersistableBusinessObjectBase implements
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected LinkedHashMap toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
+	protected LinkedHashMap<String, Object> toStringMapper() {
+		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
+		map.put("dept", getDept());
+		map.put("desc", getDescription());
+		map.put("chart", getChart());
+		map.put("org", getOrg());
+		map.put("effectiveDate", getEffectiveDate());
+		map.put("timestamp", getTimestamp());
+		map.put("active", getActive());
+
+		return map;
 	}
 
 	public String getDescription() {
