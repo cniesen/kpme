@@ -29,5 +29,12 @@ public class UserPrefTest extends TkTestCase{
 		
 		TkServiceLocator.getTimezoneService().translateForTimezone(tbs, "America/Chicago");
 	}
+	
+	@Test
+	public void testNotValidUser() throws Exception{
+	   UserPreferences userPref  = TkServiceLocator.getUserPreferenceService().getUserPreferences("NoSuchUser");
+	   //There should be a null UserPreference
+	   assertNull("A null UserPreference should be returned for NoSuchUser",userPref);
+	}
 
 }
