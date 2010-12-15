@@ -9,6 +9,7 @@ public class TkRole {
 	private String principalId;
 	private String roleName;
 	private String userPrincipalId;
+	private Long tkAssignmentId;
 	private Long workArea;
 	private String department;
 	private Date effectiveDate;
@@ -45,6 +46,15 @@ public class TkRole {
 	public void setWorkArea(Long workArea) {
 		this.workArea = workArea;
 	}
+	
+	public Long getTkAssignmentId() {
+		return tkAssignmentId;
+	}
+
+	public void setTkAssignmentId(Long tkAssignmentId) {
+		this.tkAssignmentId = tkAssignmentId;
+	}
+	
 	public String getDepartment() {
 		return department;
 	}
