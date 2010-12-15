@@ -1,0 +1,1 @@
+ALTER TABLE `tk`.`tk_roles_t` ADD COLUMN `tk_assignment_id` BIGINT NULL DEFAULT NULL  AFTER `user_principal_id` ;
