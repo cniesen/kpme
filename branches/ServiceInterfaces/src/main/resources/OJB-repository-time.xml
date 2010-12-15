@@ -682,34 +682,34 @@
 		<field-descriptor name="timezone"   column="time_zone" jdbc-type="VARCHAR" length="30"/>		
 	</class-descriptor>	
 	
-	<!-- Transactional Doc Entry -->
-	<class-descriptor class="org.kuali.hr.time.document.TimeEntryDocument" table="time_entry_doc_t">
-	   <field-descriptor name="documentNumber" column="DOC_HDR_ID"
-			jdbc-type="VARCHAR" primarykey="true" />
-		<field-descriptor name="versionNumber" column="VER_NBR"
-			jdbc-type="BIGINT" locking="true" />
-		<field-descriptor name="objectId" column="OBJ_ID"
-			jdbc-type="VARCHAR" index="true" />
-		<reference-descriptor name="documentHeader"
-			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"
-			auto-update="object" auto-delete="object" proxy="true">
-			<foreignkey field-ref="documentNumber" />
-		</reference-descriptor>
-	</class-descriptor>
-	
-	<!-- Transactional Doc Entry -->
-	<class-descriptor class="org.kuali.hr.time.document.ClockPunchDocument" table="clock_log_doc_t">
-	    <field-descriptor name="documentNumber" column="DOC_HDR_ID"
-			jdbc-type="VARCHAR" primarykey="true" />
-		<field-descriptor name="versionNumber" column="VER_NBR"
-			jdbc-type="BIGINT" locking="true" />
-		<field-descriptor name="objectId" column="OBJ_ID"
-			jdbc-type="VARCHAR" index="true" />
-		<reference-descriptor name="documentHeader"
-			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"
-			auto-update="object" auto-delete="object" proxy="true">
-			<foreignkey field-ref="documentNumber" />
-		</reference-descriptor>
-	</class-descriptor>		
+<!--	 Transactional Doc Entry -->
+<!--	<class-descriptor class="org.kuali.hr.time.document.TimeEntryDocument" table="time_entry_doc_t">-->
+<!--	   <field-descriptor name="documentNumber" column="DOC_HDR_ID"-->
+<!--			jdbc-type="VARCHAR" primarykey="true" />-->
+<!--		<field-descriptor name="versionNumber" column="VER_NBR"-->
+<!--			jdbc-type="BIGINT" locking="true" />-->
+<!--		<field-descriptor name="objectId" column="OBJ_ID"-->
+<!--			jdbc-type="VARCHAR" index="true" />-->
+<!--		<reference-descriptor name="documentHeader"-->
+<!--			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"-->
+<!--			auto-update="object" auto-delete="object" proxy="true">-->
+<!--			<foreignkey field-ref="documentNumber" />-->
+<!--		</reference-descriptor>-->
+<!--	</class-descriptor>-->
+<!--	-->
+<!--	 Transactional Doc Entry -->
+<!--	<class-descriptor class="org.kuali.hr.time.document.ClockPunchDocument" table="clock_log_doc_t">-->
+<!--	    <field-descriptor name="documentNumber" column="DOC_HDR_ID"-->
+<!--			jdbc-type="VARCHAR" primarykey="true" />-->
+<!--		<field-descriptor name="versionNumber" column="VER_NBR"-->
+<!--			jdbc-type="BIGINT" locking="true" />-->
+<!--		<field-descriptor name="objectId" column="OBJ_ID"-->
+<!--			jdbc-type="VARCHAR" index="true" />-->
+<!--		<reference-descriptor name="documentHeader"-->
+<!--			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"-->
+<!--			auto-update="object" auto-delete="object" proxy="true">-->
+<!--			<foreignkey field-ref="documentNumber" />-->
+<!--		</reference-descriptor>-->
+<!--	</class-descriptor>		-->
 		
 </descriptor-repository>
