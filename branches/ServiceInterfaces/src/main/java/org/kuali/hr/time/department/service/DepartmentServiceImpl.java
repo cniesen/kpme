@@ -74,10 +74,6 @@ public class DepartmentServiceImpl implements DepartmentService {
 			try {
 				// Validate department
 				DepartmentServiceRule departmentServiceRule = new DepartmentServiceRule();
-				/*
-				 * if (!departmentServiceRule.validateDepartment(department)) {
-				 * throw new IllegalArgumentException("invalid data for job"); }
-				 */
 				// departmentServiceRule.validateDepartmentObject(department);
 				// Get bean
 				DepartmentDao departmentDao = SpringContext
@@ -88,11 +84,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 						.departmentExists(department.getDept());
 				// if dept doesn't exist, save (add) it
 				if (oldDepartment == null) {
-					System.out.println(" * * * NEW DEPT * * * ");
 					departmentServiceRule.validateDepartmentObject(department);
 					KNSServiceLocator.getBusinessObjectDao().save(department);
 				} else {
-					System.out.println(" * * * Old Dept * * * ");
 					// id dept exists, update with new dept data
 					departmentServiceRule.compareDepartments(department,
 							oldDepartment);

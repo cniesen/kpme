@@ -86,7 +86,6 @@ public class DepartmentServiceRule {
 	public Department validateDepartmentObject(Department department)
 			throws Exception {
 
-		System.out.println(" * * * ValidateDeptObject called");
 		try {
 			validateDepartmentCode(department);
 
