@@ -109,13 +109,11 @@ public class DepartmentEarnCodeMaintenanceTest extends TkTestCase{
 				earnCodeIndex = Long.parseLong(earnCodeIndexStr.substring(0, 2)); 
 				
 			}
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			
 			Criteria crit = new Criteria();
 			crit.addEqualTo("earnCode", earnCodeIndex);		
 			Query query = QueryFactory.newQuery(EarnCode.class, crit);
-			int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
-			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$");
+			int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);			
 			if (count == 0 ) {
 				TEST_CODE_INVALID_EARN_CODE_ID = earnCodeIndex;
 				break;
@@ -125,15 +123,35 @@ public class DepartmentEarnCodeMaintenanceTest extends TkTestCase{
 		//search for the salGroup which doesn't exist
 		for (;;) {
 			long salGroupIndex = randomObj.nextInt();
+			if(Long.toString(salGroupIndex).length() > 3 ){
+				String earnCodeIndexStr = Long.toString(salGroupIndex);
+				salGroupIndex = Long.parseLong(earnCodeIndexStr.substring(0, 2)); 
+				
+			}
+			
 			Criteria crit = new Criteria();
-			crit.addEqualTo("tkSalGroup", departmentEarnCode.getEarnCode());		
+			crit.addEqualTo("tkSalGroup", salGroupIndex);		
 			Query query = QueryFactory.newQuery(SalGroup.class, crit);
-			int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);	
-			if(count == 0){
-				TEST_CODE_INVALID_SAL_GROUP_ID = salGroupIndex;
+			int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);			
+			if (count == 0 ) {
+				TEST_CODE_INVALID_SAL_GROUP_ID= salGroupIndex;
 				break;
 			}
-		}
+		}		
+		departmentEarnCode.setEarnCode(TEST_CODE_INVALID_EARN_CODE_ID.toString());
+
+		
+//		for (;;) {
+//			long salGroupIndex = randomObj.nextInt();
+//			Criteria crit = new Criteria();
+//			crit.addEqualTo("tkSalGroup", departmentEarnCode.getEarnCode());		
+//			Query query = QueryFactory.newQuery(SalGroup.class, crit);
+//			int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);	
+//			if(count == 0){
+//				TEST_CODE_INVALID_SAL_GROUP_ID = salGroupIndex;
+//				break;
+//			}
+//		}
 		departmentEarnCode.setTkSalGroup(TEST_CODE_INVALID_SAL_GROUP_ID.toString());
 		departmentEarnCode.setEmployee(false);
 		departmentEarnCode.setOrg_admin(false);

@@ -289,3 +289,9 @@ insert into tk_daily_overtime_rl_t values(4,'BL','BW','2010-01-01','admin',now()
 insert into tk_user_pref_t values('admin','America/Chicago');
 
 ALTER TABLE tk_shift_differential_rl_t add column `from_earn_group` varchar(10) NULL DEFAULT NULL;
+
+insert into tk_user_pref_t values('admin','America/Chicago');
+
+INSERT INTO `la_accruals_t` VALUES (1,'admin',1,'2010-10-10 00:00:00','1.00','2.00','3.00','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97',1);
+INSERT INTO `la_accrual_categories_t` VALUES  (1,'TST','DESR','2010-10-10','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97',1,'Y','2010-10-10 00:00:00');
+INSERT INTO `tk_system_lunch_rl_t` VALUES  (1,'2010-11-11','2010-11-11 00:00:00','Y','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97',1,'admin','Y');

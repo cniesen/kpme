@@ -205,5 +205,10 @@
 			<parent>RiceDocument</parent>
 			<label>Sub Object Code</label>
 		</documentType>
+		<documentType>
+			<name>AccrualCategoryDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>AccrualCategoryDocument</label>
+		</documentType>
 	</documentTypes>
 </data>

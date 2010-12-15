@@ -29,9 +29,11 @@ public class PayCalendarDatesDaoSpringOjbImpl extends PersistenceBrokerDaoSuppor
 	 * be changed to PayCalendarEntry.
 	 */
 	public PayCalendarEntries getPayCalendarDates(Long payCalendarDatesId) {
+
 		Criteria currentRecordCriteria = new Criteria();
-		currentRecordCriteria.addEqualTo("payCalendarDatesId", payCalendarDatesId);
+		currentRecordCriteria.addEqualTo("payCalendarEntriesId", payCalendarDatesId);
 
 		return (PayCalendarEntries) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(PayCalendarEntries.class, currentRecordCriteria));
+	
 	}
 }
