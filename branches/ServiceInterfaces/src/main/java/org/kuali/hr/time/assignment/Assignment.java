@@ -54,6 +54,8 @@ public class Assignment extends PersistableBusinessObjectBase {
 
 	private List<AssignmentAccount> assignmentAccounts = new LinkedList<AssignmentAccount>();
 
+	private transient String description;
+	
 	public List<AssignmentAccount> getAssignmentAccounts() {
 		return assignmentAccounts;
 	}
@@ -203,5 +205,13 @@ public class Assignment extends PersistableBusinessObjectBase {
 
 	public void setPrincipal(Person principal) {
 		this.principal = principal;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

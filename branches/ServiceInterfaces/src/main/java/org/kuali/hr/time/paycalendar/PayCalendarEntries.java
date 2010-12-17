@@ -9,43 +9,43 @@ import javax.persistence.Transient;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 /**
- * This class uses java.sql.Time and java.sql.Date because for each respective component
- * we are only interested in a partial Date or Time, that is for example:
+ * This class uses java.sql.Time and java.sql.Date because for each respective
+ * component we are only interested in a partial Date or Time, that is for
+ * example:
  * 
- * 3:55 pm   (at any date)
- * 6/22/2010 (at any time)
+ * 3:55 pm (at any date) 6/22/2010 (at any time)
  * 
  * @author djunk
- *
+ * 
  */
 public class PayCalendarEntries extends PersistableBusinessObjectBase {
 
-    /**
+	/**
      * 
      */
-    private static final long serialVersionUID = 1L;
-    
-    private Long payCalendarEntriesId;
-    private Long payCalendarId;
+	private static final long serialVersionUID = 1L;
 
-    private java.util.Date beginPeriodDateTime;
+	private Long payCalendarEntriesId;
+	private Long payCalendarId;
 
-    private java.util.Date endPeriodDateTime;
-    
-    @Transient
-    private java.sql.Date beginPeriodDate;
-    @Transient
-    private java.sql.Date endPeriodDate;
-    @Transient
-    private Time beginPeriodTime;
-    @Transient
-    private Time endPeriodTime;
-    
+	private java.util.Date beginPeriodDateTime;
+
+	private java.util.Date endPeriodDateTime;
+
+	@Transient
+	private java.sql.Date beginPeriodDate;
+	@Transient
+	private java.sql.Date endPeriodDate;
+	@Transient
+	private Time beginPeriodTime;
+	@Transient
+	private Time endPeriodTime;
+
 	private Date batchInitiateDate;
 	private Time batchInitiateTime;
 
-	//this property is for the batch job 
-	//that runs at the end of pay period
+	// this property is for the batch job
+	// that runs at the end of pay period
 	private Date batchEndPayPeriodDate;
 	private Time batchEndPayPeriodTime;
 
@@ -55,32 +55,38 @@ public class PayCalendarEntries extends PersistableBusinessObjectBase {
 	private Date batchSupervisorApprovalDate;
 	private Time batchSupervisorApprovalTime;
 
+	/**
+	 * checks if the given date is between the dates of the payCalendar entry
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public boolean includesDate(Date date) {
+		return (beginPeriodDateTime.before(date) && endPeriodDateTime.after(date));
+	}
 
-    public Long getPayCalendarId() {
-	return payCalendarId;
-    }
+	public Long getPayCalendarId() {
+		return payCalendarId;
+	}
 
-    public void setPayCalendarId(Long payCalendarId) {
-	this.payCalendarId = payCalendarId;
-    }
+	public void setPayCalendarId(Long payCalendarId) {
+		this.payCalendarId = payCalendarId;
+	}
 
-  
+	@SuppressWarnings("unchecked")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    protected LinkedHashMap toStringMapper() {
-	// TODO Auto-generated method stub
-	return null;
-    }
+	public Long getPayCalendarEntriesId() {
+		return payCalendarEntriesId;
+	}
 
-    public Long getPayCalendarEntriesId() {
-        return payCalendarEntriesId;
-    }
-
-    public void setPayCalendarEntriesId(Long payCalendarEntriesId) {
-        this.payCalendarEntriesId = payCalendarEntriesId;
-    }
-
+	public void setPayCalendarEntriesId(Long payCalendarEntriesId) {
+		this.payCalendarEntriesId = payCalendarEntriesId;
+	}
 
 	public java.util.Date getBeginPeriodDateTime() {
 		return beginPeriodDateTime;
@@ -88,7 +94,7 @@ public class PayCalendarEntries extends PersistableBusinessObjectBase {
 
 	public void setBeginPeriodDateTime(java.util.Date beginPeriodDateTime) {
 		this.beginPeriodDateTime = beginPeriodDateTime;
-		if(beginPeriodDateTime!=null){
+		if (beginPeriodDateTime != null) {
 			setBeginPeriodDate(new java.sql.Date(beginPeriodDateTime.getTime()));
 			setBeginPeriodTime(new java.sql.Time(beginPeriodDateTime.getTime()));
 		}
@@ -100,7 +106,7 @@ public class PayCalendarEntries extends PersistableBusinessObjectBase {
 
 	public void setEndPeriodDateTime(java.util.Date endPeriodDateTime) {
 		this.endPeriodDateTime = endPeriodDateTime;
-		if(endPeriodDateTime!=null){
+		if (endPeriodDateTime != null) {
 			setEndPeriodDate(new java.sql.Date(endPeriodDateTime.getTime()));
 			setEndPeriodTime(new java.sql.Time(endPeriodDateTime.getTime()));
 		}
@@ -201,4 +207,5 @@ public class PayCalendarEntries extends PersistableBusinessObjectBase {
 	public void setBatchSupervisorApprovalTime(Time batchSupervisorApprovalTime) {
 		this.batchSupervisorApprovalTime = batchSupervisorApprovalTime;
 	}
+
 }
