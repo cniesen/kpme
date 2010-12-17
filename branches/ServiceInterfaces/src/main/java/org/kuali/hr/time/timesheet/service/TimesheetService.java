@@ -1,5 +1,6 @@
 package org.kuali.hr.time.timesheet.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.kuali.hr.time.paycalendar.PayCalendarEntries;
@@ -27,8 +28,9 @@ public interface TimesheetService {
 	 * @param documentId
 	 * @return
 	 */
-	public TimesheetDocument getTimesheetDocument(Long documentId);
+	public TimesheetDocument getTimesheetDocument(String documentId);
 	public boolean isSynchronousUser();
 	
 	public List<TimeBlock> getPrevDocumentTimeBlocks(String principalId, Long currDocumentId);
+	public void loadHolidaysOnTimesheet(TimesheetDocument timesheetDocument, String principalId, Date beginDate, Date endDate);
 }

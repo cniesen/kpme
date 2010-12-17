@@ -986,13 +986,13 @@ DROP TABLE IF EXISTS `tk_shift_differential_rl_t`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tk_shift_differential_rl_t` (
   `TK_SHIFT_DIFF_RL_ID` bigint(20) NOT NULL,
-  `LOCATION` varchar(2) COLLATE utf8_bin DEFAULT NULL,
+  `LOCATION` varchar(45) COLLATE utf8_bin DEFAULT NULL,
   `TK_SAL_GROUP` varchar(10) COLLATE utf8_bin DEFAULT NULL,
   `PAY_GRADE` varchar(3) COLLATE utf8_bin DEFAULT NULL,
   `EFFDT` date DEFAULT NULL,
   `EARN_CODE` varchar(3) COLLATE utf8_bin DEFAULT NULL,
-  `BEGIN_TS` varchar(8) COLLATE utf8_bin DEFAULT NULL,
-  `END_TS` varchar(8) COLLATE utf8_bin DEFAULT NULL,
+  `BEGIN_TS` TIMESTAMP NULL DEFAULT '0000-00-00 00:00:00',
+  `END_TS` TIMESTAMP NULL DEFAULT '0000-00-00 00:00:00',
   `MIN_HRS` decimal(2,0) DEFAULT NULL,
   `DAY0` bit(1) DEFAULT NULL,
   `DAY1` bit(1) DEFAULT NULL,
@@ -1501,14 +1501,16 @@ ALTER TABLE tk_roles_t CHANGE COLUMN `active` `active` VARCHAR(1) NULL DEFAULT '
 ALTER TABLE tk_shift_differential_rl_t CHANGE COLUMN `ACTIVE` `ACTIVE` VARCHAR(1) NULL DEFAULT 'N'  ;
 ALTER TABLE tk_time_collection_rl_t CHANGE COLUMN `ACTIVE` `ACTIVE` VARCHAR(1) NULL DEFAULT 'N'  ;
 ALTER TABLE tk_weekly_overtime_rl_t CHANGE COLUMN `ACTIVE` `ACTIVE` VARCHAR(1) NULL DEFAULT 'N'  ;
-
-ALTER TABLE tk_py_calendar_t DROP COLUMN `begin_date` , 
+ALTER TABLE tk_document_header_t ADD COLUMN `OBJ_ID` VARCHAR(36) NULL DEFAULT NULL, ADD COLUMN `VER_NBR` BIGINT(20) NULL DEFAULT 1;
+ALTER TABLE tk_py_calendar_t DROP COLUMN `begin_date` ,
 DROP COLUMN `begin_time` , DROP COLUMN `chart` , DROP COLUMN `end_date` , DROP COLUMN `end_time` ;
 
+DROP TABLE IF EXISTS `tk_py_calendar_entries_t`;
+DROP TABLE IF EXISTS `tk_py_calendar_entries_s`;
 alter table tk_py_calendar_dates_t rename tk_py_calendar_entries_t;
 alter table tk_py_calendar_dates_s rename tk_py_calendar_entries_s;
 
-ALTER TABLE tk_py_calendar_entries_t CHANGE COLUMN `tk_py_calendar_dates_id` `tk_py_calendar_entry_id` BIGINT(20) NOT NULL  
+ALTER TABLE tk_py_calendar_entries_t CHANGE COLUMN `tk_py_calendar_dates_id` `tk_py_calendar_entry_id` BIGINT(20) NOT NULL
 , DROP PRIMARY KEY , ADD PRIMARY KEY (`tk_py_calendar_entry_id`) ;
 
 DROP TABLE IF EXISTS `tk_user_pref_t`;
@@ -1517,6 +1519,22 @@ create table tk_user_pref_t (
   `TIME_ZONE` varchar(30) NULL,
     PRIMARY KEY (`PRINCIPAL_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+DROP TABLE IF EXISTS `tk_weekly_ovt_group_t`;
+CREATE TABLE tk_weekly_ovt_group_t 
+( `TK_WEEKLY_OVERTIME_GROUP_ID` BIGINT(20) NOT NULL,PRIMARY KEY (`TK_WEEKLY_OVERTIME_GROUP_ID`)) 
+ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+ALTER TABLE `tk_weekly_overtime_rl_t` ADD COLUMN `TK_WEEKLY_OVT_GROUP_ID` BIGINT(20) NOT NULL DEFAULT 1  AFTER `ACTIVE` ;
+
+ALTER TABLE `tk_document_header_t` CHANGE COLUMN `DOCUMENT_ID` `DOCUMENT_ID` VARCHAR(14) NOT NULL  ;
+
+ALTER TABLE `tk_holiday_calendar_dates_t` ADD COLUMN `HOLIDAY_HRS` DECIMAL(2,2) NOT NULL  AFTER `VER_NBR` ;
+
+ALTER TABLE `tk_daily_overtime_rl_t` CHANGE COLUMN `SHIFT_HOURS` `MIN_HOURS` DECIMAL(2,0) NULL DEFAULT NULL  ;
+ALTER TABLE `tk_daily_overtime_rl_t` ADD COLUMN `FROM_EARN_GROUP` VARCHAR(10) NULL  AFTER `ACTIVE` , ADD COLUMN `EARN_CODE` VARCHAR(10) NULL  AFTER `FROM_EARN_GROUP` , CHANGE COLUMN `LOCATION` `LOCATION` VARCHAR(40) CHARACTER SET 'utf8' COLLATE 'utf8_bin' NULL DEFAULT NULL  , CHANGE COLUMN `MIN_HOURS` `MIN_HOURS` DECIMAL(2,2) NULL DEFAULT NULL  ;
+ALTER TABLE `tk_daily_overtime_rl_t` CHANGE COLUMN `MIN_HOURS` `MIN_HOURS` DECIMAL(2,0) NULL DEFAULT NULL  ;
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

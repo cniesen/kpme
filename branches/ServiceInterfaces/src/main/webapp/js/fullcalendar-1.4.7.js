@@ -312,7 +312,7 @@ $.fn.fullCalendar = function(options) {
 				    end = (end.getMonth()+1) + "/" + end.getDate() + "/" + end.getFullYear() + " " + end.getHours() + ":" + end.getMinutes() + ":" + end.getSeconds(); 
 				    
 					// update title text
-					// header.find('h2.fc-header-title').html(view.title + "(" + begin + " - " + end +")");
+					//header.find('h2.fc-header-title').html(view.title + "(" + begin + " - " + end +")");
 					header.find('h2.fc-header-title').html(view.title);
 					// enable/disable 'today' button
 					var today = new Date();
@@ -1592,11 +1592,13 @@ function Grid(element, options, methods, viewName) {
 	function renderDayOverlay(overlayStart, overlayEnd) { // overlayEnd is exclusive
 		var rowStart = cloneDate(view.visStart);
 		var rowEnd = addDays(cloneDate(rowStart), colCnt);
+		
 		for (var i=0; i<rowCnt; i++) {
 			var stretchStart = new Date(Math.max(rowStart, overlayStart));
 			var stretchEnd = new Date(Math.min(rowEnd, overlayEnd));
 			if (stretchStart < stretchEnd) {
 				var colStart, colEnd;
+				
 				if (rtl) {
 					colStart = dayDiff(stretchEnd, rowStart)*dis+dit+1;
 					colEnd = dayDiff(stretchStart, rowStart)*dis+dit+1;
@@ -1680,20 +1682,20 @@ function _renderDaySegs(segs, rowCnt, view, minLeft, maxLeft, getRow, dayContent
 			}
 			left = seg.isStart ? dayContentLeft(seg.start.getDay()) : minLeft;
 			// right = seg.isEnd ? dayContentRight(seg.end.getDay()-1) : maxRight;
-            // this is hack to always set the day cell within one day
+      // this is hack to always set the day cell within one day
 			right = seg.isEnd ? dayContentRight(seg.start.getDay()) : maxRight;
 
 		}
 		
 		var fromTo = "";
 		
-		//TODO: create an array which contains all the earn codes that need to display hours only
-        if(event.earnCodeType == 'HOUR') {
-            fromTo = "<tr><td align='center' colspan='3'>" + event.hours + " hours</td></tr>";
+		
+    if(event.earnCodeType == 'HOUR') {
+        fromTo = "<tr><td align='center' colspan='3'>" + event.hours + " hours</td></tr>";
 		}
 		else {
-			fromTo = "<tr><td align='center'>from: " + formatDate(event.start,view.option('timeFormat')) 
-			+"</td><td align='center'>to: " + formatDate(event.end,view.option('timeFormat')) + "</td></tr>";
+			fromTo = "<tr><td align='center' colspan='3'>" + formatDate(event.start,view.option('timeFormat')) 
+			+" - " + formatDate(event.end,view.option('timeFormat')) + "</td></tr>";
 		}
 		
 		timeHourDetail = "";
@@ -2835,6 +2837,7 @@ function Agenda(element, options, methods, viewName) {
 				if (!endDate) {
 					endDate = cloneDate(startDate);
 				}
+				
 				renderDayOverlay(startDate, addDays(cloneDate(endDate), 1));
 			}
 		}else{

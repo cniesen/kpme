@@ -466,6 +466,8 @@
 			<list>
 				<value>org.kuali.hr.time.domain</value>
 				<value>org.kuali.kfs.coa.domain</value>
+				<value>org.kuali.hr.time</value>
+				<value>org.kuali.hr.kfs</value>
 			</list>
 		</property>
 	</bean>
@@ -602,7 +604,12 @@
     
     <bean id="userPrefDao" class="org.kuali.hr.time.user.pref.dao.UserPreferenceDaoImpl">
     	<property name="jcdAlias" value="tkDataSource"/>
-    </bean>    
+    </bean>
+        
+    <bean id="timeOffAccrualDao" class="org.kuali.hr.time.accrual.dao.TimeOffAccrualkDaoSpringOjbImpl">
+        <property name="jcdAlias" value="tkDataSource"/>
+    </bean>
+    
 	<!-- Time Services for Business Logic -->
 
 	<bean id="deptLunchRuleService"
@@ -757,6 +764,10 @@
     </bean>
     
     <bean id="timezoneService" class="org.kuali.hr.time.timezone.service.TimezoneServiceImpl"/>
+    
+    <bean id="timeOffAccrualService" class="org.kuali.hr.time.accrual.service.TimeOffAccrualServiceImpl">
+        <property name="timeOffAccrualDao" ref="timeOffAccrualDao"/>
+    </bean>
     
     <!-- Scheduler configuration -->
 

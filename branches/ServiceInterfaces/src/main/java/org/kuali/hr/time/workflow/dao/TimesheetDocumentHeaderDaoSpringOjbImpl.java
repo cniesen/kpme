@@ -11,7 +11,7 @@ import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements TimesheetDocumentHeaderDao {
 
 	@Override
-	public TimesheetDocumentHeader getTimesheetDocumentHeader(Long documentId) {
+	public TimesheetDocumentHeader getTimesheetDocumentHeader(String documentId) {
 		Criteria crit = new Criteria();
 		crit.addEqualTo("documentId", documentId);
 		return (TimesheetDocumentHeader)this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(TimesheetDocumentHeader.class, crit));
@@ -23,7 +23,6 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PersistenceBrokerDa
 			this.getPersistenceBrokerTemplate().store(documentHeader);
 		}
 	}
-
 	@Override
 	public TimesheetDocumentHeader getTimesheetDocumentHeader(String principalId, Date payBeginDate, Date payEndDate) {
 		Criteria crit = new Criteria();

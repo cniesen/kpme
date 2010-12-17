@@ -103,18 +103,22 @@ public class TkTestUtils {
 	 * @return
 	 */
 	public static List<TimeBlock> createUniformTimeBlocks(DateTime start, int days, BigDecimal hours, String earnCode, Long jobNumber, Long workArea) {
+		return TkTestUtils.createUniformTimeBlocks(null, days, hours, earnCode, jobNumber, workArea, null);
+	}
+	
+	public static List<TimeBlock> createUniformTimeBlocks(DateTime start, int days, BigDecimal hours, String earnCode, Long jobNumber, Long workArea, Long task) {
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
 		
 		for (int i=0; i<days; i++) {
 			DateTime ci = start.plusDays(i);
 			DateTime co = ci.plusHours(hours.intValue());
 			TimeBlock block = TkTestUtils.createDummyTimeBlock(ci, co, hours, earnCode, jobNumber, workArea);
+			block.setTask(task);
 			blocks.add(block);
 		}
 		
 		return blocks;
 	}
-
 
 	public static TimeBlock createDummyTimeBlock(DateTime clockIn, DateTime clockOut, BigDecimal hours, String earnCode) {
 		return TkTestUtils.createDummyTimeBlock(clockIn, clockOut, hours, earnCode, -1L, -1L);
@@ -258,7 +262,7 @@ public class TkTestUtils {
 				}
 			}
 		}
-
+		HtmlUnitUtil.createTempFile(resultPage);
 		return resultPage;
 	}
 
@@ -273,6 +277,25 @@ public class TkTestUtils {
 		HtmlForm form = HtmlUnitUtil.getDefaultForm(page);
 		HtmlSubmitInput input = form.getInputByName(name);
 		return (HtmlPage) input.click();
+	}
+	
+	@SuppressWarnings("serial")
+	public static void verifyAggregateHourSumsFlatList(String msg, final Map<String,BigDecimal> ecToHoursMap, TkTimeBlockAggregate aggregate) {
+		// Initializes sum map to zeros, since we only care about the entires 
+		// that were passed in.
+		Map<String,BigDecimal> ecToSumMap = new HashMap<String,BigDecimal>() {{ for (String ec : ecToHoursMap.keySet()) { put(ec, BigDecimal.ZERO); }}};
+	
+		for (TimeBlock bl : aggregate.getFlattenedTimeBlockList())
+			for (TimeHourDetail thd : bl.getTimeHourDetails())
+				if (ecToSumMap.containsKey(thd.getEarnCode())) 
+					ecToSumMap.put(thd.getEarnCode(), ecToSumMap.get(thd.getEarnCode()).add(thd.getHours()));
+		
+		// Assert that our values are correct.
+		for (String key : ecToHoursMap.keySet())
+			Assert.assertEquals(
+					msg + " >> ("+key+") Wrong number of hours expected: " + ecToHoursMap.get(key) + " found: " + ecToSumMap.get(key) + " :: ", 
+					0, 
+					ecToHoursMap.get(key).compareTo(ecToSumMap.get(key)));		
 	}
 	
 	/**

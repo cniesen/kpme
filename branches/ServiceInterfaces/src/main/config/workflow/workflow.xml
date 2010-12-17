@@ -168,6 +168,11 @@
 			<label>SystemLunchRuleMaintenanceDocument</label>
 		</documentType>
 		<documentType>
+			<name>WeeklyOvertimeRuleGroupDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>WeeklyOvertimeRuleMaintenanceDocument</label>
+		</documentType>
+		<documentType>
 			<name>ACCT</name>
 			<parent>RiceDocument</parent>
 			<label>Account</label>
@@ -204,11 +209,6 @@
 			<name>SOBJ</name>
 			<parent>RiceDocument</parent>
 			<label>Sub Object Code</label>
-		</documentType>
-		<documentType>
-			<name>AccrualCategoryDocumentType</name>
-			<parent>RiceDocument</parent>
-			<label>AccrualCategoryDocument</label>
 		</documentType>
 	</documentTypes>
 </data>

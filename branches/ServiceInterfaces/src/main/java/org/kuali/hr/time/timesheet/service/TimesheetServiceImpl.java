@@ -1,5 +1,7 @@
 package org.kuali.hr.time.timesheet.service;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -7,12 +9,15 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.holidaycalendar.HolidayCalendarDateEntry;
 import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
+import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.exception.WorkflowException;
 import org.kuali.rice.kew.service.KEWServiceLocator;
@@ -30,7 +35,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 			try {
 				wd = new WorkflowDocument(principalId, timesheetDocument.getDocumentHeader().getDocumentId());
 				wd.routeDocument("route");
-				String kewStatus = KEWServiceLocator.getWorkflowUtilityService().getDocumentStatus(timesheetDocument.getDocumentHeader().getDocumentId());
+				String kewStatus = KEWServiceLocator.getWorkflowUtilityService().getDocumentStatus(Long.parseLong(timesheetDocument.getDocumentHeader().getDocumentId()));
 				if (!kewStatus.equals(timesheetDocument.getDocumentHeader().getDocumentStatus())) {
 					timesheetDocument.getDocumentHeader().setDocumentStatus(kewStatus);
 					TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(timesheetDocument.getDocumentHeader());
@@ -60,6 +65,21 @@ public class TimesheetServiceImpl implements TimesheetService {
 		timesheetDocument.setTimeSummary(TkServiceLocator.getTimeSummaryService().getTimeSummary(timesheetDocument));
 		return timesheetDocument;
 	}
+	
+	public void loadHolidaysOnTimesheet(TimesheetDocument timesheetDocument, String principalId, Date beginDate, Date endDate){
+		PrincipalCalendar principalCalendar = TkServiceLocator.getPrincipalCalendarService().getPrincipalCalendar(principalId, new java.sql.Date(beginDate.getTime()));
+		List<HolidayCalendarDateEntry> lstHolidays = TkServiceLocator.getHolidayCalendarService().getHolidayCalendarDateEntriesForPayPeriod(principalCalendar.getHolidayCalendar().getHolidayCalendarId(), 
+														beginDate, endDate);
+		for(HolidayCalendarDateEntry holiday : lstHolidays){
+			//TODO implement this function once the functional specifications are ironed out
+			Assignment holidayAssign = TkServiceLocator.getHolidayCalendarService().getAssignmentToApplyHolidays();
+			BigDecimal holidayCalcHours = TkServiceLocator.getHolidayCalendarService().calculateHolidayHours(holidayAssign.getJob(), holiday.getHolidayHours());
+			TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().createTimeBlock(timesheetDocument, new Timestamp(holiday.getHolidayDate().getTime()), 
+							new Timestamp(holiday.getHolidayDate().getTime()), holidayAssign, TkConstants.HOLIDAY_EARN_CODE, holidayCalcHours);
+			timesheetDocument.getTimeBlocks().add(timeBlock);
+		}
+	
+	}
 
 	private TimesheetDocument initiateWorkflowDocument(String principalId, Date payBeginDate, Date payEndDate, String documentType, String title) throws WorkflowException {
 		TimesheetDocument timesheetDocument = null;		
@@ -69,9 +89,9 @@ public class TimesheetServiceImpl implements TimesheetService {
 		workflowDocument.setTitle(title);
 
 		String status = workflowDocument.getRouteHeader().getDocRouteStatus();
-		TimesheetDocumentHeader documentHeader = new TimesheetDocumentHeader(workflowDocument.getRouteHeaderId(), principalId, payBeginDate, payEndDate, status);
+		TimesheetDocumentHeader documentHeader = new TimesheetDocumentHeader(workflowDocument.getRouteHeaderId().toString(), principalId, payBeginDate, payEndDate, status);
 
-		documentHeader.setDocumentId(workflowDocument.getRouteHeaderId());
+		documentHeader.setDocumentId(workflowDocument.getRouteHeaderId().toString());
 		documentHeader.setDocumentStatus("I");
 
 		TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(documentHeader);
@@ -85,11 +105,11 @@ public class TimesheetServiceImpl implements TimesheetService {
 		if(prevTdh == null){
 			return new ArrayList<TimeBlock>();
 		}
-		return TkServiceLocator.getTimeBlockService().getTimeBlocks(prevTdh.getDocumentId());
+		return TkServiceLocator.getTimeBlockService().getTimeBlocks(Long.parseLong(prevTdh.getDocumentId()));
 	}
 
 	@Override
-	public TimesheetDocument getTimesheetDocument(Long documentId) {
+	public TimesheetDocument getTimesheetDocument(String documentId) {
 		TimesheetDocument timesheetDocument = null;
 		TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
 	
@@ -105,7 +125,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 	private void loadTimesheetDocumentData(TimesheetDocument tdoc, String principalId, Date payPeriodBegin, Date payPeriodEnd) {
 		List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getTimelessDate(payPeriodBegin));
 		List<Job> jobs = TkServiceLocator.getJobSerivce().getJobs(principalId, TKUtils.getTimelessDate(payPeriodBegin));
-		List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(tdoc.getDocumentHeader().getDocumentId());
+		List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(Long.parseLong(tdoc.getDocumentHeader().getDocumentId()));
 		
 		tdoc.setAssignments(assignments);
 		tdoc.setJobs(jobs);

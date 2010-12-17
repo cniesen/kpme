@@ -1,5 +1,6 @@
 package org.kuali.hr.time.accrual;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 
@@ -32,15 +33,15 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 	@XmlElement(required=true, nillable=false)
     @XmlJavaTypeAdapter(DateAdapter.class)
 	private Date effectiveDate;
+
+	@XmlElement(required=true, nillable=false)
+	private BigDecimal hoursAccrued = new BigDecimal("0");
+
+	@XmlElement(required=true, nillable=false)
+	private BigDecimal hoursTaken = new BigDecimal("0");
 	
 	@XmlElement(required=true, nillable=false)
-	private Long hoursAccrued;
-	
-	@XmlElement(required=true, nillable=false)
-	private Long hoursTaken;
-	
-	@XmlElement(required=true, nillable=false)
-	private Long hoursAdjust;
+	private BigDecimal hoursAdjust = new BigDecimal("0");
 
 	private AccrualCategory accrualCategoryObj;
 
@@ -77,33 +78,27 @@ public class TimeOffAccrual extends PersistableBusinessObjectBase {
 		this.effectiveDate = effectiveDate;
 	}
 
-	
-	public Long getHoursAccrued() {
+	public BigDecimal getHoursAccrued() {
 		return hoursAccrued;
 	}
 
-
-	public void setHoursAccrued(Long hoursAccrued) {
+	public void setHoursAccrued(BigDecimal hoursAccrued) {
 		this.hoursAccrued = hoursAccrued;
 	}
 
-
-	public Long getHoursTaken() {
+	public BigDecimal getHoursTaken() {
 		return hoursTaken;
 	}
 
-
-	public void setHoursTaken(Long hoursTaken) {
+	public void setHoursTaken(BigDecimal hoursTaken) {
 		this.hoursTaken = hoursTaken;
 	}
 
-
-	public Long getHoursAdjust() {
+	public BigDecimal getHoursAdjust() {
 		return hoursAdjust;
 	}
 
-
-	public void setHoursAdjust(Long hoursAdjust) {
+	public void setHoursAdjust(BigDecimal hoursAdjust) {
 		this.hoursAdjust = hoursAdjust;
 	}
 

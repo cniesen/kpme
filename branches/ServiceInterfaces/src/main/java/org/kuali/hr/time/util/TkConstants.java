@@ -90,6 +90,7 @@ public class TkConstants {
     }
 
     public static final String ASSIGNMENT_KEY_DELIMITER = "_";
+    public static final String HOLIDAY_EARN_CODE = "HOL";
     
     
     
