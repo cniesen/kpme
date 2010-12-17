@@ -1,0 +1,32 @@
+/*  Overriding default styles  */
+
+#headerarea-small { 
+	background-repeat: repeat;
+	height: 30px; 
+    margin-bottom: 30px;
+	padding: 50px 0 0 10px;
+}
+
+.headerarea { height: 75px; }
+
+#headerarea-small h1 { 
+    background-image: url("../../tk/images/t2-logo-usc-tk.png");
+    background-repeat: no-repeat;
+    width: 300px;
+    top: 0px;
+    left: 10px;
+    padding-top: 85px;
+}
+
+
+
+div.lookupcreatenew {padding: 55px 30px 10px 10px; }
+
+
+
+
+
+
+/* New Styles */
+
+

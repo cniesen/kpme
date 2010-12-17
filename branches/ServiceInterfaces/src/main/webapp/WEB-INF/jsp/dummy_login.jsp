@@ -18,12 +18,15 @@
 <html>
   <head>
     <title>Login</title>
-    <link href="${ConfigProperties.application.url}/${ConfigProperties.portal.css.files}" rel="stylesheet" type="text/css" />
+    <link href="/${ConfigProperties.app.context.name}/${ConfigProperties.portal.css.files}" rel="stylesheet" type="text/css" />
 
     <style type="text/css">
         div.body {
-            background-image: url("${ConfigProperties.application.url}/rice-portal/images/os-guy.gif");
+/*            background-image: url("${ConfigProperties.application.url}/rice-portal/images/os-guy.gif");
+ */           background-image: url("/${ConfigProperties.app.context.name}/tk/images/os-kuali-usc.png");
+
             background-repeat: no-repeat;
+            background-position: 10px 10px;
             padding-top: 5em;
         }
 

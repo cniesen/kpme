@@ -4,12 +4,15 @@
 <head>
 	<title>TK Index</title>
 	<link href="kr/css/kuali.css" rel="stylesheet" type="text/css" />
-	<link type="text/css" href="../jsp/css/hr_styles.css" rel="stylesheet">
+	<link type="text/css" href="jsp/css/hr_styles.css" rel="stylesheet">
+	<link type="text/css" href="tk/css/usc_tk_styles.css" rel="stylesheet">
+
 </head>
 <body>
 <div id="headerarea" class="headerarea">
 <span class="left">
-<img border="0" alt="Logo" src="jsp/images/time_logo3.gif"/>
+<!-- img border="0" alt="Logo" src="../jsp/images/time_logo3.gif"/ -->
+<img border="0" alt="Logo" src="/${ConfigProperties.app.context.name}/tk/images/t2-logo-usc-tk.png" />
 </span>
 
 <span class="right" style="margin-right: 10px;">

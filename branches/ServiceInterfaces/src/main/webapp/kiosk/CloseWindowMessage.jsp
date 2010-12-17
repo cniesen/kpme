@@ -4,6 +4,7 @@
 <head>
 	<title>Close Window</title>
 	<link type="text/css" href="../jsp/css/hr_styles.css" rel="stylesheet">
+	<link type="text/css" href="../tk/css/usc_tk_styles.css" rel="stylesheet">
 </head>
 <body>
 

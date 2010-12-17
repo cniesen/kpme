@@ -4,12 +4,14 @@
 <html>
 <head>
     <link rel=stylesheet href="../jsp/css/hr_styles.css" type="text/css">
+	<link type="text/css" href="../tk/css/usc_tk_styles.css" rel="stylesheet">
     <title>TK Redirect</title>
     <META HTTP-EQUIV="refresh" content="0;URL=../TimesheetDocument.do?method=open&liteMode=1"> 
 </head>
 <body>
 <div class="headerarea" id="headerarea">
-    <span class="left"><img src="../jsp/images/time_logo3.gif" alt="Logo" border="0"></span>
+    <!--  span class="left"><img src="../jsp/images/time_logo3.gif" alt="Logo" border="0"></span  -->
+    <span class="left"><img src="${ConfigProperties.app.context.name}/tk/images/t2-logo-usc-tk.png" alt="Logo" border="0"></span>
 </div>
 <div id="waitForPageToLoad" align="center" style="color:red">
      Please wait for the page to complete loading...

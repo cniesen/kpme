@@ -63,7 +63,9 @@
 <body>
 <div id="headerarea" class="headerarea">
 <span class="left">
-<img border="0" alt="Logo" src="../jsp/images/time_logo3.gif"/>
+<!-- img border="0" alt="Logo" src="../jsp/images/time_logo3.gif"/ -->
+<img border="0" alt="Logo" src="/${ConfigProperties.app.context.name}/tk/images/t2-logo-usc-tk.png" />
+
 </span>
 <span class="right" style="margin-right: 10px;" > <br><br>
 <a href="javascript:parent.window.location.reload()">refresh window</a>
