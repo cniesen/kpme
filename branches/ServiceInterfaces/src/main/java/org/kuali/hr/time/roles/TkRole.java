@@ -2,8 +2,14 @@ package org.kuali.hr.time.roles;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.LinkedHashMap;
 
-public class TkRole {
+import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+
+public class TkRole extends PersistableBusinessObjectBase{
 	
 	private Long tkRolesId;
 	private String principalId;
@@ -16,6 +22,31 @@ public class TkRole {
 	private Timestamp timestamp;
 	private boolean active;
 	
+	private Person principal;
+	private WorkArea workAreaObj;
+	private Assignment assignmentObj;
+	
+	
+	
+	
+	public WorkArea getWorkAreaObj() {
+		return workAreaObj;
+	}
+	public void setWorkAreaObj(WorkArea workAreaObj) {
+		this.workAreaObj = workAreaObj;
+	}
+	public Assignment getAssignmentObj() {
+		return assignmentObj;
+	}
+	public void setAssignmentObj(Assignment assignmentObj) {
+		this.assignmentObj = assignmentObj;
+	}
+	public Person getPrincipal() {
+		return principal;
+	}
+	public void setPrincipal(Person principal) {
+		this.principal = principal;
+	}
 	public Long getTkRolesId() {
 		return tkRolesId;
 	}
@@ -78,5 +109,10 @@ public class TkRole {
 	}
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

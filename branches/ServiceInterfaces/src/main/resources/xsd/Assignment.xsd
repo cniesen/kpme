@@ -13,6 +13,10 @@
               <xs:element name="workArea" type="xs:long"/>
               <xs:element name="task" type="xs:long"/>
               <xs:element name="active" type="xs:boolean"/>
+              <xs:element name="rate" type="xs:float"/>
+              <xs:element name="earnLineNumber" type="xs:long"/>
+              <xs:element name="startDate" type="xs:date"/>
+              <xs:element name="endDate" type="xs:date"/>
             </xs:sequence>
           </xs:complexType>
         </xs:element>

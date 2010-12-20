@@ -44,6 +44,10 @@
 		<field-descriptor name="objectId" 				column="obj_id" 			jdbc-type="VARCHAR" index="true" />
 		<field-descriptor name="versionNumber" 			column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />
 		<field-descriptor name="timestamp" 				column="timestamp" 			jdbc-type="TIMESTAMP" nullable="false" primarykey="false" />
+		<field-descriptor name="rate" 					column="RATE" jdbc-type="DECIMAL" />
+		<field-descriptor name="earnLineNumber" 		column="EARN_LINE_NUMBER" jdbc-type="BIGINT"  />
+		<field-descriptor name="endDate"				column="START_DATE" jdbc-type="DATE" />
+		<field-descriptor name="startDate" 				column="END_DATE" jdbc-type="DATE" />
 		
 		<collection-descriptor
 			name="assignmentAccounts"
@@ -649,7 +653,9 @@
 		<field-descriptor name="department"      column="dept" jdbc-type="VARCHAR" length="21"/>
 		<field-descriptor name="effectiveDate"   column="EFFDT" jdbc-type="DATE" />
 		<field-descriptor name="timestamp"       column="TIMESTAMP" jdbc-type="TIMESTAMP" nullable="false"/>
-		<field-descriptor name="active"          column="active"	    jdbc-type="VARCHAR" length="1" nullable="false"	conversion="org.kuali.rice.kns.util.OjbCharBooleanConversion" />			
+		<field-descriptor name="active"          column="active"	    jdbc-type="VARCHAR" length="1" nullable="false"	conversion="org.kuali.rice.kns.util.OjbCharBooleanConversion" />
+		<field-descriptor name="objectId" 				column="obj_id" 			jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" 			column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />			
 	</class-descriptor>
 	
 	
@@ -675,37 +681,7 @@
 		<field-descriptor name="principalId"     column="principal_id"		jdbc-type="VARCHAR" length="40" nullable="false" primarykey="true" />
 		<field-descriptor name="timezone"   column="time_zone" jdbc-type="VARCHAR" length="30"/>		
 	</class-descriptor>	
-	
-<!--	 Transactional Doc Entry -->
-<!--	<class-descriptor class="org.kuali.hr.time.document.TimeEntryDocument" table="time_entry_doc_t">-->
-<!--	   <field-descriptor name="documentNumber" column="DOC_HDR_ID"-->
-<!--			jdbc-type="VARCHAR" primarykey="true" />-->
-<!--		<field-descriptor name="versionNumber" column="VER_NBR"-->
-<!--			jdbc-type="BIGINT" locking="true" />-->
-<!--		<field-descriptor name="objectId" column="OBJ_ID"-->
-<!--			jdbc-type="VARCHAR" index="true" />-->
-<!--		<reference-descriptor name="documentHeader"-->
-<!--			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"-->
-<!--			auto-update="object" auto-delete="object" proxy="true">-->
-<!--			<foreignkey field-ref="documentNumber" />-->
-<!--		</reference-descriptor>-->
-<!--	</class-descriptor>-->
-<!--	-->
-<!--	 Transactional Doc Entry -->
-<!--	<class-descriptor class="org.kuali.hr.time.document.ClockPunchDocument" table="clock_log_doc_t">-->
-<!--	    <field-descriptor name="documentNumber" column="DOC_HDR_ID"-->
-<!--			jdbc-type="VARCHAR" primarykey="true" />-->
-<!--		<field-descriptor name="versionNumber" column="VER_NBR"-->
-<!--			jdbc-type="BIGINT" locking="true" />-->
-<!--		<field-descriptor name="objectId" column="OBJ_ID"-->
-<!--			jdbc-type="VARCHAR" index="true" />-->
-<!--		<reference-descriptor name="documentHeader"-->
-<!--			class-ref="org.kuali.rice.kns.bo.DocumentHeader" auto-retrieve="true"-->
-<!--			auto-update="object" auto-delete="object" proxy="true">-->
-<!--			<foreignkey field-ref="documentNumber" />-->
-<!--		</reference-descriptor>-->
-<!--	</class-descriptor>		-->
-		
+ 
 	
 	<class-descriptor class="org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRuleGroup" table="tk_weekly_ovt_group_t">
 		<field-descriptor name="tkWeeklyOvertimeRuleGroupId" column="TK_WEEKLY_OVERTIME_GROUP_ID" jdbc-type="BIGINT"  primarykey="true" />		

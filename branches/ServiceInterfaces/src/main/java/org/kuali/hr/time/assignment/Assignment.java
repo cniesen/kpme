@@ -1,5 +1,6 @@
 package org.kuali.hr.time.assignment;
 
+import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
@@ -42,7 +43,19 @@ public class Assignment extends PersistableBusinessObjectBase {
 	@XmlElement
 	private Long task;
 	@XmlElement
-	private boolean active;
+	private boolean active;	
+	@XmlElement
+	BigDecimal rate;
+	@XmlElement
+	Long earnLineNumber;
+	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	Date startDate;
+	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	Date endDate;
+	
+	
 
 	private Job job;
 	private Timestamp timestamp;
@@ -65,6 +78,47 @@ public class Assignment extends PersistableBusinessObjectBase {
 	}
 
 	public Assignment() {
+	}
+
+	
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public BigDecimal getRate() {
+		return rate;
+	}
+
+	public void setRate(BigDecimal rate) {
+		this.rate = rate;
+	}
+
+	public Long getEarnLineNumber() {
+		return earnLineNumber;
+	}
+
+	public void setEarnLineNumber(Long earnLineNumber) {
+		this.earnLineNumber = earnLineNumber;
+	}
+
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
 	}
 
 	public Assignment(String principalId, Long jobNumber, Date effectiveDate,
@@ -115,13 +169,7 @@ public class Assignment extends PersistableBusinessObjectBase {
 		this.effectiveDate = effectiveDate;
 	}
 
-	public boolean isActive() {
-		return active;
-	}
-
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+	 
 
 	/**
 	 * Provides us with the text to display to the user for clock actions on
