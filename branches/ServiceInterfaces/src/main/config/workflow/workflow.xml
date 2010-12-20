@@ -210,5 +210,10 @@
 			<parent>RiceDocument</parent>
 			<label>Sub Object Code</label>
 		</documentType>
+		<documentType>
+			<name>RoleDocumentType</name>
+			<parent>RiceDocument</parent>
+			<label>RoleDocument</label>
+		</documentType>
 	</documentTypes>
 </data>
