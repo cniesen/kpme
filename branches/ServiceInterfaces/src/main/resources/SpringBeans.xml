@@ -219,6 +219,7 @@
 							</property>
 							<property name="localServiceName" value="timeOffAccrualServiceSOAP" />
 						</bean>
+						
 						<!-- AccrualCategory -->
 						<bean parent="webServiceParentBean">
 							<property name="service">
@@ -764,10 +765,6 @@
     </bean>
     
     <bean id="timezoneService" class="org.kuali.hr.time.timezone.service.TimezoneServiceImpl"/>
-    
-    <bean id="timeOffAccrualService" class="org.kuali.hr.time.accrual.service.TimeOffAccrualServiceImpl">
-        <property name="timeOffAccrualDao" ref="timeOffAccrualDao"/>
-    </bean>
     
     <!-- Scheduler configuration -->
 

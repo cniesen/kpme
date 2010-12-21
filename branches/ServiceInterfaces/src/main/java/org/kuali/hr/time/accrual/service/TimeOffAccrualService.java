@@ -19,12 +19,15 @@ import org.kuali.hr.time.util.exceptions.ServiceException;
 @WebService(name = "timeOffAccrualServiceSOAP", targetNamespace = "/tk")
 @javax.jws.soap.SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface TimeOffAccrualService {
-	
+
 	@WebMethod
 	public boolean addTimeOffAccruals(
 			@WebParam(name = "timeOffAccruals") List<TimeOffAccrual> timeOffAccruals)
 			throws ServiceException;
 
+	@WebMethod(exclude = true)
 	public List<TimeOffAccrual> getTimeOffAccruals(String principalId);
+
+	@WebMethod(exclude = true)
 	public List<Map<String, Object>> getTimeOffAccrualsCalc(String principalId);
 }
