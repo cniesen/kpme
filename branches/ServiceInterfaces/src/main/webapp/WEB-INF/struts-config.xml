@@ -13,6 +13,7 @@
         <form-bean name="TimeBlockActionForm" type="org.kuali.hr.time.timeblock.web.TimeBlockActionForm" />        
         <form-bean name="TimeEntryForm" type="org.kuali.hr.time.timeentry.web.TimeEntryForm"/> 
         <form-bean name="TimeOffAccrualActionForm" type="org.kuali.hr.time.accrual.web.TimeOffAccrualActionForm" />
+        <form-bean name="TimeSheetCreatorActionForm" type="org.kuali.hr.time.timesheet.web.TimeSheetCreatorActionForm" />
     </form-beans>
 
 
@@ -65,6 +66,11 @@
        	<action path="/timeEntry" scope="session" attribute="KualiForm" name="TimeEntryForm" input="/WEB-INF/jsp/timeEntry.jsp" type="org.kuali.hr.time.timeentry.web.TimeEntryAction" parameter="methodToCall" validate="true">
        		<forward name="basic" path="/WEB-INF/jsp/timeEntry.jsp"></forward>
        	</action>
+       	
+       	 <action path="/TimeSheetCreator" name="TimeSheetCreatorActionForm" scope="request" input="/WEB-INF/jsp/timeSheetCreator.jsp" type="org.kuali.hr.time.timesheet.web.TimeSheetCreatorAction" parameter="methodToCall" validate="false">
+            <forward name="basic" path="/WEB-INF/jsp/timeSheetCreator.jsp" />
+          	<forward name="success" path="/WEB-INF/jsp/timeSheetCreator.jsp" />
+        </action>
        	
 	</action-mappings>
 
