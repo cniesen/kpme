@@ -13,7 +13,7 @@
 				<td>${Form.message}</td>
 		</tr>
 		</table> 
-		<input type="submit" value=""/>
+		<input type="submit" value="Create"/>
 
 	</html:form>
 	
