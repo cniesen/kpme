@@ -2,10 +2,10 @@ package org.kuali.hr.time.assignment.validation;
 
 
 
-import org.apache.ojb.broker.PersistenceBrokerFactory;
-import org.apache.ojb.broker.query.Criteria;
-import org.apache.ojb.broker.query.Query;
-import org.apache.ojb.broker.query.QueryFactory;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.task.Task;
@@ -17,46 +17,53 @@ import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class AssignmentRule extends MaintenanceDocumentRuleBase {
 
-	protected  boolean validateWorkArea(Assignment assignment) {
+	protected boolean validateWorkArea(Assignment assignment ) {
 		boolean valid = false;
-		Criteria crit = new Criteria();
-		crit.addEqualTo("workArea", assignment.getWorkArea());
-		Query query = QueryFactory.newQuery(WorkArea.class, crit);
-		int count = PersistenceBrokerFactory.defaultPersistenceBroker()
-				.getCount(query);
-		if (count > 0) {
+		LOG.debug("Validating workarea: " + assignment.getWorkArea());
+		WorkArea workArea = KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(WorkArea.class, assignment.getWorkAreaObj().getTkWorkAreaId());
+		if (workArea != null) {
 			valid = true;
+			LOG.debug("found workarea.");
+		} else {
+			this.putFieldError("workAreaId", "error.existence", "workarea '"
+					+ assignment.getWorkArea()+ "'");
 		}
 		return valid;
-
-	}
-
-	protected  boolean validateTask(Assignment assignment) {
+	} 
+	
+	@SuppressWarnings("rawtypes")
+	protected boolean validateTask(Assignment assignment ) {
 		boolean valid = false;
-
-		Criteria crit = new Criteria();
-		crit.addEqualTo("task", assignment.getTask());
-		Query query = QueryFactory.newQuery(Task.class, crit);
-		int count = PersistenceBrokerFactory.defaultPersistenceBroker()
-				.getCount(query);
-		if (count > 0) {
+		LOG.debug("Validating task: " + assignment.getTask());
+		Map<String,Object> criteria = new HashMap<String,Object>();
+		criteria.put("task", assignment.getTask());
+		Collection c = KNSServiceLocator.getBusinessObjectService().findMatching(Task.class, criteria);
+				//.findBySinglePrimaryKey(Task.class, assignment.getTask());
+		if (c.size() > 0) {
 			valid = true;
-		}
-		return valid;
-	}
-
-	protected  boolean validateJob(Assignment assignment) {
-		boolean valid = false;
-		Criteria crit = new Criteria();
-		crit.addEqualTo("jobNumber", assignment.getJobNumber());
-		Query query = QueryFactory.newQuery(Job.class, crit);
-		int count = PersistenceBrokerFactory.defaultPersistenceBroker()
-				.getCount(query);
-		if (count > 0) {
-			valid = true;
+			LOG.debug("found task.");
+		} else {
+			this.putFieldError("taskId", "error.existence", "taskId '"
+					+ assignment.getTask()+ "'");
 		}
 		return valid;
 	}
+	
+	protected boolean validateJob(Assignment assignment ) {
+		boolean valid = false;
+		LOG.debug("Validating job: " + assignment.getJob().getHrJobId());
+		Job job = KNSServiceLocator.getBusinessObjectService()
+				.findBySinglePrimaryKey(Job.class, assignment.getJob().getHrJobId());
+		if (job != null) {
+			valid = true;
+			
+			LOG.debug("found job.");
+		} else {
+			this.putFieldError("jobNumber", "error.existence", "jobNumber '"
+					+ assignment.getJobNumber()+ "'");
+		}
+		return valid;
+	} 
 	
 	//TODO fix this class
 	protected boolean validateEarnCode(Assignment assignment ) {

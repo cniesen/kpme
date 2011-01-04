@@ -67,6 +67,7 @@ public class JobServiceImpl implements JobService {
 		return job;
 	}
 
+
 	public boolean addJobs(List<Job> jobs) throws ServiceException {
 		JobServiceRule jobServiceRule = new JobServiceRule();
 		ServiceException serviceException  = new ServiceException("Error in Job WebService");
@@ -113,6 +114,10 @@ public class JobServiceImpl implements JobService {
 			throw serviceException;
 		}
 		return true;
+	}
+	
+	public Job getPrimaryJob(String principalId, Date payPeriodEndDate){
+		return SpringContext.getBean(JobDao.class).getPrimaryJob(principalId, payPeriodEndDate);
 	}
 
 }

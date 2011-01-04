@@ -4,12 +4,16 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.kuali.hr.time.roles.TkRole;
 import org.kuali.kfs.coa.businessobject.Chart;
 import org.kuali.kfs.coa.businessobject.Organization;
 import org.kuali.rice.core.jaxb.SqlDateAdapter;
@@ -50,11 +54,12 @@ public class Department extends PersistableBusinessObjectBase implements
 	@XmlJavaTypeAdapter(value = SqlTimestampAdapter.class, type = Timestamp.class)
 	@XmlElement
 	private Timestamp timestamp;
+    
+    private List<TkRole> roles = new LinkedList<TkRole>();
 
 	@XmlElement
 	private Boolean active;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected LinkedHashMap<String, Object> toStringMapper() {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
@@ -147,6 +152,14 @@ public class Department extends PersistableBusinessObjectBase implements
 
 	public void setOrgObj(Organization orgObj) {
 		this.orgObj = orgObj;
+	}
+
+	public List<TkRole> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<TkRole> roles) {
+		this.roles = roles;
 	}
 
 }

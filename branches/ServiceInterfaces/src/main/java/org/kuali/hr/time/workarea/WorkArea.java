@@ -9,6 +9,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.util.jaxb.DateAdapter;
@@ -48,10 +49,12 @@ public class WorkArea extends PersistableBusinessObjectBase {
     
     private Timestamp timestamp;
 
-    private transient List<TkRole> roles = new ArrayList<TkRole>();
+    private List<TkRole> roles = new ArrayList<TkRole>();
     private List<Task> tasks = new ArrayList<Task>();
     private List<WorkAreaOvertimePref> overTimePrefs = new ArrayList<WorkAreaOvertimePref>();
 
+    private Department department;
+    
 
     @SuppressWarnings("unchecked")
     @Override
@@ -185,5 +188,15 @@ public class WorkArea extends PersistableBusinessObjectBase {
 
 	public void setOverTimePrefs(List<WorkAreaOvertimePref> overTimePrefs) {
 		this.overTimePrefs = overTimePrefs;
+	}
+
+
+	public Department getDepartment() {
+		return department;
+	}
+
+
+	public void setDepartment(Department department) {
+		this.department = department;
 	}
 }

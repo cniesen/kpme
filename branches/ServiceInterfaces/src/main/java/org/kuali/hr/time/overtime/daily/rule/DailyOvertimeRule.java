@@ -6,6 +6,8 @@ import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
 import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.task.Task;
@@ -27,7 +29,7 @@ public class DailyOvertimeRule extends TkRule {
 	private String paytype;
 	private String dept;
 	private Long workArea;
-	private Long task;
+
 	private BigDecimal maxGap;
 	private BigDecimal minHours;
 	private String overtimePref;
@@ -40,6 +42,10 @@ public class DailyOvertimeRule extends TkRule {
 	private WorkArea workAreaObj;
 	private Department departmentObj;
 	private PayType payTypeObj;
+	
+	private EarnGroup fromEarnGroupObj;
+	private EarnCode earnCodeObj;
+
 	
 	@SuppressWarnings({ "rawtypes" })
 	@Override
@@ -155,16 +161,8 @@ public class DailyOvertimeRule extends TkRule {
 		this.workArea = workArea;
 	}
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
-
 	public Long getWorkArea() {
 		return workArea;
-	}
-
-	public Long getTask() {
-		return task;
 	}
 
 	public PayType getPayTypeObj() {
@@ -197,6 +195,22 @@ public class DailyOvertimeRule extends TkRule {
 
 	public void setMinHours(BigDecimal minHours) {
 		this.minHours = minHours;
+	}
+
+	public EarnGroup getFromEarnGroupObj() {
+		return fromEarnGroupObj;
+	}
+
+	public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
+		this.fromEarnGroupObj = fromEarnGroupObj;
+	}
+
+	public EarnCode getEarnCodeObj() {
+		return earnCodeObj;
+	}
+
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
+		this.earnCodeObj = earnCodeObj;
 	}
 
 }

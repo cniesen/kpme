@@ -6,6 +6,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.kuali.hr.job.Job;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.paycalendar.PayCalendar;
 import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.paycalendar.dao.PayCalendarDao;
@@ -37,11 +38,13 @@ public class PayCalendarServiceImpl implements PayCalendarService {
 	}
 
 	@Override
+	@CacheResult
 	public PayCalendar getPayCalendarByGroup(String calendarGroup) {
 		return payCalendarDao.getPayCalendarByGroup(calendarGroup);
 	}
 	
 	@Override
+	@CacheResult
 	public PayCalendarEntries getCurrentPayCalendarDates(String principalId, Date currentDate) {
 		PayCalendarEntries pcd = null;
 		DateTime currentTime = new DateTime(currentDate); 
@@ -68,7 +71,6 @@ public class PayCalendarServiceImpl implements PayCalendarService {
 			List<PayCalendarEntries> dates = payCalendar.getPayCalendarEntries();
 			for (PayCalendarEntries pcdate : dates) { 
 				DateTime beginDate = new DateTime(pcdate.getBeginPeriodDateTime());					
-				
 				DateTime endDate = new DateTime(pcdate.getEndPeriodDateTime());
 				
 				Interval range = new Interval(beginDate, endDate);
@@ -85,5 +87,6 @@ public class PayCalendarServiceImpl implements PayCalendarService {
 		
 		return pcd;
 	}
+	
 
 }

@@ -7,13 +7,14 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 import javax.jws.WebService;
+
 import org.apache.log4j.Logger;
 import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
-
 import org.kuali.hr.time.assignment.validation.AssignmentServiceRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
@@ -152,4 +153,5 @@ public class AssignmentServiceImpl implements AssignmentService {
 		
 		return true;
 	}
+
 }

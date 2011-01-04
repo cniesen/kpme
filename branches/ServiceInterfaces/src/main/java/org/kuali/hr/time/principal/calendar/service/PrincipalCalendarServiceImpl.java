@@ -2,12 +2,11 @@ package org.kuali.hr.time.principal.calendar.service;
 
 import java.sql.Date;
 
-import org.kuali.hr.sys.context.SpringContext;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
 import org.kuali.hr.time.principal.calendar.dao.PrincipalCalendarDao;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.util.TKContext;
 
 public class PrincipalCalendarServiceImpl implements PrincipalCalendarService {
 
@@ -17,7 +16,6 @@ public class PrincipalCalendarServiceImpl implements PrincipalCalendarService {
 			PrincipalCalendarDao principalCalendarDao) {
 		this.principalCalendarDao = principalCalendarDao;
 	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -25,6 +23,7 @@ public class PrincipalCalendarServiceImpl implements PrincipalCalendarService {
 	 * org.kuali.hr.time.principal.calendar.service.PrincipalCalendarService
 	 * #getPrincipalCalendar(java.lang.String, java.sql.Date)
 	 */
+	@CacheResult	
 	public PrincipalCalendar getPrincipalCalendar(String principalId,
 			Date asOfDate) {
 		PrincipalCalendar pc = this.principalCalendarDao.getPrincipalCalendar(

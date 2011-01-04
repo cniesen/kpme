@@ -12,9 +12,11 @@ import org.apache.log4j.Logger;
 import org.kuali.hr.sys.context.SpringContext;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.hr.time.accrual.dao.TimeOffAccrualDao;
+
 import org.kuali.hr.time.accrual.validation.TimeOffAccrualServiceRule;
 import org.kuali.hr.time.util.exceptions.ServiceException;
 import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.hr.time.cache.CacheResult;
 
 /**
  * 
@@ -69,6 +71,7 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
 	}
 	
 	@Override
+	@CacheResult
 	public List<TimeOffAccrual> getTimeOffAccruals(String principalId) {
 		return SpringContext.getBean(TimeOffAccrualDao.class).getTimeOffAccruals(principalId);
 	}

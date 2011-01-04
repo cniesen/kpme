@@ -15,7 +15,11 @@ import org.kuali.hr.time.paytype.PayType;
 import org.kuali.rice.core.jaxb.SqlDateAdapter;
 import org.kuali.rice.kim.bo.Person;
 import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
-
+/**
+ * 
+ * @author lfox
+ *
+ */
 @XmlAccessorType(value = XmlAccessType.NONE)
 public class Job extends PersistableBusinessObjectBase {
 
@@ -48,9 +52,12 @@ public class Job extends PersistableBusinessObjectBase {
 	private String dept;
 	@XmlElement
 	private String tkSalGroup;
+
 	@XmlElement
 	private Boolean active;
 
+	private Boolean primaryIndicator;
+	
 	private Timestamp timestamp;
 
 	private BigDecimal compRate = new BigDecimal(0);
@@ -209,6 +216,16 @@ public class Job extends PersistableBusinessObjectBase {
 
 	public void setPrincipal(Person principal) {
 		this.principal = principal;
+	}
+
+
+	public void setPrimaryIndicator(Boolean primaryIndicator) {
+		this.primaryIndicator = primaryIndicator;
+	}
+
+
+	public Boolean getPrimaryIndicator() {
+		return primaryIndicator;
 	}
 
 

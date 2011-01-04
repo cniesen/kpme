@@ -48,7 +48,8 @@ INSERT INTO `tk_work_area_t` (`TK_WORK_AREA_ID`, `WORK_AREA`, `EFFDT`,`ACTIVE`,`
     (102, '3456', '2010-01-05', 'Y', 'work area description3', 'TEST-DEPT3', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20'),
     (103, '4567', '2010-01-05', 'Y', 'work area description4', 'TEST-DEPT4', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20'),
     (104, '1000', '2010-01-05', 'Y', 'loras work area', 'LORA-DEPT', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20'),
-    (105, '1100', '2010-01-01', 'Y', 'shift-workarea', 'SHFT-DEPT', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20');
+    (105, '1100', '2010-01-01', 'Y', 'shift-workarea', 'SHFT-DEPT', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20'),
+    (106, '5555', '2010-01-05', 'Y', 'work area description5', 'TEST-DEPT5', 'OT1', 'work area admin description2', 'admin', '2010-07-27 10:25:13', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97', '20');
 
 #
 # Task
@@ -178,28 +179,29 @@ DELETE FROM `tk_roles_s`;
 INSERT INTO `tk_roles_s` VALUES ('1000');
 DELETE FROM `tk_roles_t`;
 INSERT INTO `tk_roles_t` (`TK_ROLES_ID`, `PRINCIPAL_ID`, `ROLE_NAME`, `USER_PRINCIPAL_ID`, `WORK_AREA`, `DEPT`, `EFFDT`, `TIMESTAMP`, `ACTIVE`) VALUES
-    ('1', 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-01', '2010-08-01 15:10:57', 'Y'),
-    ('2', 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-10', '2010-08-10 15:10:57', 'Y'),
-    ('3', 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:10:57', 'Y'),
-    ('4', 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:11:57', 'Y'),
-    ('5', 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:12:57', 'Y'),
-    ('6', 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-01', '2010-08-01 16:10:57', 'Y'),
-    ('7', 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-10', '2010-08-10 16:10:57', 'Y'),
-    ('8', 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:10:57', 'Y'),
-    ('9', 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:11:57', 'Y'),
-    ('10','eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:12:57', 'Y'),
-    ('11','admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-01', '2010-08-01 15:10:57', 'Y'),
-    ('12','admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-10', '2010-08-10 15:10:57', 'Y'),
-    ('13','admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:10:57', 'Y'),
-    ('14','admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:11:57', 'Y'),
-    ('15','admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:12:57', 'Y'),
-    ('16','eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-01', '2010-08-01 16:10:57', 'Y'),
-    ('17','eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-10', '2010-08-10 16:10:57', 'Y'),
-    ('18','eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:10:57', 'Y'),
-    ('19','eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:11:57', 'Y'),
-    ('20','eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:12:57', 'Y'),
-    ('21','eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:13:57', 'N'),
-    ('22','admin', 'TK_APPROVER', 'admin', '1234', NULL, '2010-01-05', '2010-01-05 15:12:57', 'Y');
+    (1, 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-01', '2010-08-01 15:10:57', 'Y'),
+    (2, 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-10', '2010-08-10 15:10:57', 'Y'),
+    (3, 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:10:57', 'Y'),
+    (4, 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:11:57', 'Y'),
+    (5, 'admin', 'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:12:57', 'Y'),
+    (6, 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-01', '2010-08-01 16:10:57', 'Y'),
+    (7, 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-10', '2010-08-10 16:10:57', 'Y'),
+    (8, 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:10:57', 'Y'),
+    (9, 'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:11:57', 'Y'),
+    (10,'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:12:57', 'Y'),
+    (11,'admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-01', '2010-08-01 15:10:57', 'Y'),
+    (12,'admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-10', '2010-08-10 15:10:57', 'Y'),
+    (13,'admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:10:57', 'Y'),
+    (14,'admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:11:57', 'Y'),
+    (15,'admin', 'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 15:12:57', 'Y'),
+    (16,'eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-01', '2010-08-01 16:10:57', 'Y'),
+    (17,'eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-10', '2010-08-10 16:10:57', 'Y'),
+    (18,'eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:10:57', 'Y'),
+    (19,'eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:11:57', 'Y'),
+    (20,'eric',  'TK_ORG_ADMIN', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:12:57', 'Y'),
+    (21,'eric',  'TK_APPROVER', 'admin', '999', NULL, '2010-08-20', '2010-08-20 16:13:57', 'N'),
+    (22,'admin', 'TK_APPROVER', 'admin', '1234', NULL, '2010-01-05', '2010-01-05 15:12:57', 'Y'),
+    (23,'admin', 'TK_SYS_ADMIN', 'admin', '999', NULL, '2010-01-01', '2010-01-05 15:12:57', 'Y');
 
 #
 # Pay Calendar
@@ -241,7 +243,21 @@ INSERT INTO `tk_py_calendar_entries_t` (`tk_py_calendar_entry_id`,`tk_py_calenda
   (25, 2, '2010-12-01 00:00:00', '2010-12-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
   (26, 2, '2010-12-15 00:00:00', '2011-01-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
   (27, 1, '2010-01-01 12:00:00', '2010-01-16 12:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-  (28, 1, '2010-01-16 12:00:00', '2010-02-01 12:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+  (28, 1, '2010-01-16 12:00:00', '2010-02-01 12:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (29, 2, '2011-01-01 00:00:00', '2011-01-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (30, 2, '2011-01-15 00:00:00', '2011-02-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (31, 2, '2011-02-01 00:00:00', '2011-02-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (32, 2, '2011-02-15 00:00:00', '2011-03-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (33, 2, '2011-03-01 00:00:00', '2011-03-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (34, 2, '2011-03-15 00:00:00', '2011-04-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (35, 2, '2011-04-01 00:00:00', '2011-04-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (36, 2, '2011-04-15 00:00:00', '2011-05-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (37, 2, '2011-05-01 00:00:00', '2011-05-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (38, 2, '2011-05-15 00:00:00', '2011-06-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (39, 2, '2011-06-01 00:00:00', '2011-06-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (40, 2, '2011-06-15 00:00:00', '2011-07-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (41, 2, '2011-07-01 00:00:00', '2011-07-15 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+  (42, 2, '2011-07-15 00:00:00', '2011-08-01 00:00:00', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
 
 DELETE FROM `tk_daily_overtime_rl_s`;
@@ -281,26 +297,26 @@ INSERT INTO `tk_time_collection_rl_t` (`TK_TIME_COLL_RULE_ID`,`DEPT`,`WORK_AREA`
 DELETE FROM `tk_clock_log_s`;
 INSERT INTO `tk_clock_log_s` VALUES('1000');
 DELETE FROM `tk_clock_log_t`;
-INSERT INTO `tk_clock_log_t` (`TK_CLOCK_LOG_ID`,`PRINCIPAL_ID`,`JOB_NUMBER`,`WORK_AREA`,`TASK`,`TK_WORK_AREA_ID`,`TK_TASK_ID`,`CLOCK_TS`,`CLOCK_TS_TZ`,`CLOCK_ACTION`,`IP_ADDRESS`,`USER_PRINCIPAL_ID`,`TIMESTAMP`,`HR_JOB_ID`) VALUES
-  ('1' , 'admin' , 30 , 9999 ,9999, 1 , 1 , '2010-01-01 08:08:08', "TEST" , "_","TEST" ,'admin' , '2010-01-01 08:08:08' , 1)  ;
+INSERT INTO `tk_clock_log_t` (`TK_CLOCK_LOG_ID`,`PRINCIPAL_ID`,`JOB_NUMBER`,`WORK_AREA`,`TASK`,`TK_WORK_AREA_ID`,`TK_TASK_ID`,`CLOCK_TS`,`CLOCK_TS_TZ`,`CLOCK_ACTION`,`IP_ADDRESS`,`USER_PRINCIPAL_ID`,`TIMESTAMP`,`HR_JOB_ID`,`OBJ_ID`) VALUES
+  ('1' , 'admin' , 30 , 30 ,30, 1 , 1 , '2010-01-01 08:08:08', "TEST" , "_","TEST" ,'admin' , '2010-01-01 08:08:08' , 1, '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97')  ;
 
 DELETE FROM `tk_document_header_t`;
 INSERT INTO `tk_document_header_t` (`DOCUMENT_ID`,`PRINCIPAL_ID`,`DOCUMENT_STATUS`) VALUES
   ('1','admin',"I")  ;
 
 DELETE FROM `tk_dept_lunch_rl_t`;
-INSERT INTO `tk_dept_lunch_rl_t` (`TK_DEPT_LUNCH_RL_ID`,`DEPT`,`WORK_AREA`, `PRINCIPAL_ID`, `JOB_NUMBER`, `EFFDT`, `REQUIRED_CLOCK_FL`, `MAX_MINS`, `USER_PRINCIPAL_ID`, `TIMESTAMP`, `ACTIVE`, `SHIFT_HOURS`, `DEDUCTION_MINS`) VALUES
-  ('1','INVALID','1234','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30') ,
-  ('2','TEST-DEPT','1234','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30') ,
-  ('3','TEST-DEPT','9999','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30') ;
+INSERT INTO `tk_dept_lunch_rl_t` (`TK_DEPT_LUNCH_RL_ID`,`DEPT`,`WORK_AREA`, `PRINCIPAL_ID`, `JOB_NUMBER`, `EFFDT`, `REQUIRED_CLOCK_FL`, `MAX_MINS`, `USER_PRINCIPAL_ID`, `TIMESTAMP`, `ACTIVE`, `SHIFT_HOURS`, `DEDUCTION_MINS`, `OBJ_ID`) VALUES
+  ('1','INVALID','1234','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97') ,
+  ('2','TEST-DEPT','1234','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97') ,
+  ('3','TEST-DEPT','9999','admin','20','2010-01-01','TST', '30', 'admin', '2010-01-01 08:08:08', 'Y', '2', '30','7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97') ;
 
 DELETE FROM `tk_holiday_calendar_t`;
 INSERT INTO `tk_holiday_calendar_T` (`HOLIDAY_CALENDAR_ID`,`HOLIDAY_CALENDAR_GROUP`,`DESCR`) VALUES
   (1,'REG', "Regular");
 
 DELETE FROM `la_accruals_t`;
-INSERT INTO `la_accruals_T` (`LA_ACCRUALS_ID`,`PRINCIPAL_ID`,`ACCRUAL_CATEGORY`) VALUES
-  (1,'admin', "TEX");
+INSERT INTO `la_accruals_T` (`LA_ACCRUALS_ID`,`PRINCIPAL_ID`,`ACCRUAL_CATEGORY`, `EFFDT`, `HOURS_ACCRUED`,`HOURS_TAKEN`,`HOURS_ADJUST`,`OBJ_ID`) VALUES
+  (1,'admin', "TEX", '2010-01-01', '0.0', '0.0', '0.0', '7EE387AB-26B0-B6A6-9C4C-5B5F687F0E97');
 
 DELETE FROM `tk_time_block_s`;
 INSERT INTO `tk_time_block_s` VALUES ('1000');
@@ -310,12 +326,6 @@ INSERT INTO `tk_hour_detail_s` VALUES ('1000');
 
 insert into tk_principal_calendar_t values('admin','BWS-CAL','HOL','2010-01-01', now(),uuid(),1);
 insert into tk_principal_calendar_t values('eric','BW-CAL1','HOL','2010-01-01', now(),uuid(),1);
-
-insert into tk_daily_overtime_rl_t values(1,'BL','BW','2010-01-01','admin',now(),'TEST-DEPT',1234,0,2,3,'OVT','Y','REG','OVT');
-insert into tk_daily_overtime_rl_t values(2,'BL','BW','2010-01-01','admin',now(),'TEST-DEPT',1234,-1,2,3,'OVT','Y','REG','OVT');
-insert into tk_daily_overtime_rl_t values(3,'BL','BW','2010-01-01','admin',now(),'TEST-DEPT',-1,0,2,3,'OVT','Y','REG','OVT');
-insert into tk_daily_overtime_rl_t values(4,'BL','BW','2010-01-01','admin',now(),'TEST-DEPT',-1,-1,2,3,'OVT','Y','REG','OVT');
-insert into tk_daily_overtime_rl_t values(5,'BL','BW','2010-01-01','admin',now(),'INVALID',-1,-1,2,3,'OVT','Y','REG','OVT');
 
 insert into tk_system_lunch_rl_t (`TK_SYSTEM_LUNCH_RL_ID`,`EFFDT`,`ACTIVE`,`USER_PRINCIPAL_ID`,`SHOW_LUNCH_BUTTON`) values
 (1, '2010-01-01', 'Y', 'admin', 'Y');
