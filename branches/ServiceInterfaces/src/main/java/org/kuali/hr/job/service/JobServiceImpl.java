@@ -92,6 +92,7 @@ public class JobServiceImpl implements JobService {
 					oldJob.setTkSalGroup(job.getTkSalGroup());
 					oldJob.setFte(job.getFte());
 					oldJob.setHrPayType(job.getHrPayType());
+					oldJob.setPayGrade(job.getPayGrade());
 					oldJob.setCompRate(job.getCompRate());
 					oldJob.setLocation(job.getLocation());
 					oldJob.setActive(job.getActive());
