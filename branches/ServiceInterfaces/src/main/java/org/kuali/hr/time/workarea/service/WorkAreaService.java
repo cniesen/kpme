@@ -15,7 +15,7 @@ import org.kuali.hr.time.workarea.WorkArea;
 @javax.jws.soap.SOAPBinding(style = SOAPBinding.Style.DOCUMENT, use = SOAPBinding.Use.LITERAL, parameterStyle = SOAPBinding.ParameterStyle.WRAPPED)
 public interface WorkAreaService {
 	@WebMethod(exclude = true)
-    public WorkArea getWorkArea(Long workAreaId, Date asOfDate);
+    public WorkArea getWorkArea(Long workArea, Date asOfDate);
 	@WebMethod(exclude = true)
     public void saveOrUpdate(WorkArea workArea);
     @WebMethod

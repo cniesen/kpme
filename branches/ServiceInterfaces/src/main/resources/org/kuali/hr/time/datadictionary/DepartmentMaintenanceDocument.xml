@@ -12,7 +12,7 @@
 
   <bean id="DepartmentMaintenanceDocument-parentBean" abstract="true" parent="MaintenanceDocumentEntry" 
   		p:businessObjectClass="org.kuali.hr.time.department.Department"
-  		p:businessRulesClass="org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase"
+  		p:businessRulesClass="org.kuali.hr.time.department.DepartmentRule"
   		p:maintainableClass="org.kuali.hr.time.department.DepartmentMaintainableImpl">
     <property name="maintainableSections">
       <list>
@@ -34,7 +34,9 @@
       	<bean parent="MaintainableFieldDefinition" p:name="dept" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="description" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="chart" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="org" p:required="true"/>        
+        <bean parent="MaintainableFieldDefinition" p:name="org" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="effectiveDate" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="active" p:required="true"/>
       </list>
     </property>
   </bean>

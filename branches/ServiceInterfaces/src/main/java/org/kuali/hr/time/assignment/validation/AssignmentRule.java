@@ -1,35 +1,27 @@
 package org.kuali.hr.time.assignment.validation;
 
-
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.ojb.broker.PersistenceBrokerFactory;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class AssignmentRule extends MaintenanceDocumentRuleBase {
 
 	protected boolean validateWorkArea(Assignment assignment ) {
 		boolean valid = false;
 		LOG.debug("Validating workarea: " + assignment.getWorkArea());
-		Criteria crit = new Criteria();
-		crit.addEqualTo("workArea", assignment.getWorkArea());
-		Query query = QueryFactory.newQuery(WorkArea.class, crit);
-		int count = PersistenceBrokerFactory.defaultPersistenceBroker()
-				.getCount(query);
-		if (count > 0) {
+		
+		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), assignment.getEffectiveDate());
+		//WorkArea workArea = KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(WorkArea.class, assignment.getWorkAreaObj().getTkWorkAreaId());
+		if (workArea != null) {
 			valid = true;
 			LOG.debug("found workarea.");
 		}else{
@@ -40,7 +32,6 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		
 	} 
 	
-	@SuppressWarnings("rawtypes")
 	protected boolean validateTask(Assignment assignment ) {
 		boolean valid = false;
 		LOG.debug("Validating task: " + assignment.getTask());
@@ -62,13 +53,12 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 	protected boolean validateJob(Assignment assignment ) {
 		LOG.debug("Validating job: " + assignment.getJobNumber());
 		boolean valid = false;
-		Criteria crit = new Criteria();
-		crit.addEqualTo("jobNumber", assignment.getJobNumber());
-		Query query = QueryFactory.newQuery(Job.class, crit);
-		int count = PersistenceBrokerFactory.defaultPersistenceBroker()
-				.getCount(query);
-		if (count > 0) {
-			
+
+		LOG.debug("Validating job: " + assignment.getJob());
+		Job job = TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate());
+		// Job job = KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Job.class, assignment.getJob().getHrJobId());
+		if (job != null) {
+
 			valid = true;
 			
 		}else{
