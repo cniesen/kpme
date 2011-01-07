@@ -96,6 +96,7 @@ public class JobServiceImpl implements JobService {
 					oldJob.setCompRate(job.getCompRate());
 					oldJob.setLocation(job.getLocation());
 					oldJob.setActive(job.getActive());
+					oldJob.setPrimaryIndicator(job.getPrimaryIndicator());
 					oldJob.setTimestamp(new Timestamp(Calendar.getInstance()
 							.getTimeInMillis()));
 					KNSServiceLocator.getBusinessObjectService().save(oldJob);
