@@ -17,6 +17,8 @@ import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.principal.calendar.service.PrincipalCalendarService;
 import org.kuali.hr.time.timeentry.web.TimeEntryForm.Note;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.timesheet.service.TimesheetService;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 
@@ -36,18 +38,24 @@ public class TimeEntryAction extends TkAction {
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
 		TimeEntryForm timeEntryForm = (TimeEntryForm) form;
-		timeEntryForm.setTimeCaptureRows(new ArrayList<TimeCapture>());
+		timeEntryForm.setTimeCaptureRows(new ArrayList<TimeCaptureRow>());
 		// get the current pay calendar
 		PayCalendarEntries payCalendarEntry = SpringContext.getBean(
 				PrincipalCalendarService.class)
 				.getPayCalendarForCurrentPrincipalAndCurrentDate(
 						TKContext.getPrincipalId(),
-						new Date(new java.util.Date().getTime()));
+						new Date(System.currentTimeMillis()));
+		
+		// TEST
+		TimesheetService timesheetService = SpringContext.getBean(TimesheetService.class);
+		
+		TimesheetDocument timesheet = timesheetService.openTimesheetDocument(TKContext.getPrincipalId(), payCalendarEntry);
+		
 		// set it for info
 		timeEntryForm.setPayCalendarEntry(payCalendarEntry);
 		// create the TimeCapture Objects
 		timeEntryForm.getTimeCaptureRows().add(
-				new TimeCapture(payCalendarEntry.getBeginPeriodDateTime()));
+				new TimeCaptureRow(payCalendarEntry.getBeginPeriodDateTime()));
 
 		// get the assingments
 		List<Assignment> assignments = SpringContext.getBean(
@@ -77,7 +85,7 @@ public class TimeEntryAction extends TkAction {
 			throws Exception {
 		TimeEntryForm timeEntryForm = (TimeEntryForm) form;
 		timeEntryForm.getTimeCaptureRows().add(
-				new TimeCapture(timeEntryForm.getPayCalendarEntry().getBeginPeriodDateTime()));
+				new TimeCaptureRow(timeEntryForm.getPayCalendarEntry().getBeginPeriodDateTime()));
 
 		return mapping.findForward("basic");
 	}
@@ -104,5 +112,42 @@ public class TimeEntryAction extends TkAction {
 		
 		timeEntryForm.setNewNote("");
 		return mapping.findForward("basic");
+	}
+	
+	/**
+	 * 
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward submit(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		TimeEntryForm timeEntryForm = (TimeEntryForm) form;
+		TimesheetService timesheetService = SpringContext.getBean(TimesheetService.class);
+		
+		TimesheetDocument timesheet = timesheetService.openTimesheetDocument(TKContext.getPrincipalId(), timeEntryForm.getPayCalendarEntry());
+		
+		
+		return mapping.findForward("portal");
+	}
+	
+	/**
+	 * 
+	 * @param mapping
+	 * @param form
+	 * @param request
+	 * @param response
+	 * @return
+	 * @throws Exception
+	 */
+	public ActionForward back(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+		
+		return mapping.findForward("portal");
 	}
 }

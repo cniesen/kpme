@@ -18,7 +18,7 @@ public class TimeEntryForm extends TkForm {
 	private static final long serialVersionUID = 883093629749776571L;
 
 	private PayCalendarEntries payCalendarEntry;
-	private List<TimeCapture> timeCaptureRows = new ArrayList<TimeCapture>();
+	private List<TimeCaptureRow> timeCaptureRows = new ArrayList<TimeCaptureRow>();
 	private List<Assignment> assignments = new ArrayList<Assignment>();
 	private List<Note> notes = new ArrayList<Note>();
 
@@ -32,11 +32,11 @@ public class TimeEntryForm extends TkForm {
 		return payCalendarEntry;
 	}
 
-	public void setTimeCaptureRows(List<TimeCapture> timeCaptureRows) {
+	public void setTimeCaptureRows(List<TimeCaptureRow> timeCaptureRows) {
 		this.timeCaptureRows = timeCaptureRows;
 	}
 
-	public List<TimeCapture> getTimeCaptureRows() {
+	public List<TimeCaptureRow> getTimeCaptureRows() {
 		return timeCaptureRows;
 	}
 

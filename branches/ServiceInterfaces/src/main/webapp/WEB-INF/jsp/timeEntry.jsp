@@ -10,5 +10,10 @@
 	<tk:timeEntry />
 	
 	<tk:notes />
+
+	<div class="globalbuttons" id="globalbuttons">
+    	<html:image property="methodToCall.submit" src="${ConfigProperties.kr.externalizable.images.url}buttonsmall_submit.gif" alt="Submit" title="Submit" styleClass="globalbuttons"/>
+    	<html:image property="methodToCall.back" src="${ConfigProperties.kr.externalizable.images.url}buttonsmall_close.gif" alt="Close" title="Close" styleClass="globalbuttons"/>
+    </div>
 	
 </kul:page>
