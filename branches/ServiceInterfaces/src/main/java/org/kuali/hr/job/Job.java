@@ -56,6 +56,7 @@ public class Job extends PersistableBusinessObjectBase {
 	@XmlElement
 	private Boolean active;
 
+	@XmlElement
 	private Boolean primaryIndicator;
 	
 	private Timestamp timestamp;
