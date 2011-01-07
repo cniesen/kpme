@@ -4,9 +4,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-public class TimeCapture {
+public class TimeCaptureRow {
 
-	public TimeCapture(java.util.Date startDate) {
+	public TimeCaptureRow(java.util.Date startDate) {
 		for (int i = 0; i < 14; i++) {
 			Calendar cal = Calendar.getInstance();
 			cal.setTime(startDate);
