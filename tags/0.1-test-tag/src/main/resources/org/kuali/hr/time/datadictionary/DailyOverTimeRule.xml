@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean name="DailyOvertimeRule" parent="DailyOvertimeRule-parentBean" />
+
+	<bean id="DailyOvertimeRule-parentBean" abstract="true"
+		parent="BusinessObjectEntry">
+		<property name="businessObjectClass"
+			value="org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule" />
+		<property name="titleAttribute" value="tkDailyOvertimeRuleId" />
+		<property name="objectLabel" value="DailyOvertimeRule" />
+		<property name="lookupDefinition">
+			<ref bean="DailyOvertimeRule-lookupDefinition" />
+		</property>
+		<property name="attributes">
+			<list>
+				<ref bean="DailyOvertimeRule-location" />
+				<ref bean="DailyOvertimeRule-paytype" />
+				<ref bean="DailyOvertimeRule-dept" />
+				<ref bean="DailyOvertimeRule-workArea" />
+				<ref bean="DailyOvertimeRule-maxGap" />
+				<ref bean="DailyOvertimeRule-minHours" />
+				<ref bean="DailyOvertimeRule-effectiveDate" />
+				<ref bean="DailyOvertimeRule-userPrincipalId" />
+				<ref bean="DailyOvertimeRule-timeStamp" />
+				<ref bean="DailyOvertimeRule-active" />
+				<ref bean="DailyOvertimeRule-fromEarnGroup" />
+				<ref bean="DailyOvertimeRule-earnCode" />
+			</list>
+		</property>
+
+		<property name="relationships">
+			<list>
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="workAreaObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="workArea"
+								p:targetName="workArea" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="dept" p:targetName="dept"/>
+						</list>
+					</property>
+				</bean>
+
+        <bean parent="RelationshipDefinition">
+          <property name="objectAttributeName" value="fromEarnGroupObj" />
+          <property name="primitiveAttributes">
+            <list>
+              <bean parent="PrimitiveAttributeDefinition" p:sourceName="fromEarnGroup" p:targetName="earnGroup" />
+            </list>
+          </property>
+        </bean>
+
+        <bean parent="RelationshipDefinition">
+          <property name="objectAttributeName" value="earnCodeObj" />
+          <property name="primitiveAttributes">
+            <list>
+              <bean parent="PrimitiveAttributeDefinition" p:sourceName="earnCode"
+                p:targetName="earnCode" />
+            </list>
+          </property>
+        </bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="departmentObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="dept"
+								p:targetName="dept" />
+						</list>
+					</property>
+				</bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="payTypeObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="paytype"
+								p:targetName="payType" />
+						</list>
+					</property>
+				</bean>
+				
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="locationObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="location"
+								p:targetName="location" />
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+
+	</bean>
+
+	<!-- Attribute Definitions -->
+	<!-- location -->
+	<bean id="DailyOvertimeRule-location" parent="DailyOvertimeRule-location-parentBean" />
+	<bean id="DailyOvertimeRule-location-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Location" />
+		<property name="maxLength" value="2" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="2" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
+	</bean>
+	<!-- hrPayType  -->
+	<bean id="DailyOvertimeRule-paytype" parent="DailyOvertimeRule-paytype-parentBean" />
+	<bean id="DailyOvertimeRule-paytype-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="forceUppercase" value="true" />
+		<property name="shortLabel" value="PayType" />
+		<property name="maxLength" value="4" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="4" />
+		</property>
+		<property name="name" value="paytype" />
+		<property name="label" value="PayType" />
+	</bean>
+	<!-- deptId -->
+	<bean id="DailyOvertimeRule-dept" parent="DailyOvertimeRule-dept-parentBean" />
+	<bean id="DailyOvertimeRule-dept-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="forceUppercase" value="true" />
+		<property name="shortLabel" value="Dept" />
+		<property name="maxLength" value="21" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="21" />
+		</property>
+		<property name="name" value="dept" />
+		<property name="label" value="Department" />
+	</bean>
+	<!--workArea  -->
+	<bean id="DailyOvertimeRule-workArea" parent="DailyOvertimeRule-workArea-parentBean" />
+	<bean id="DailyOvertimeRule-workArea-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Work Area" />
+		<property name="maxLength" value="10" />
+		<property name="validationPattern">
+			<bean parent="NumericValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="workArea" />
+		<property name="label" value="Work Area" />
+	</bean>
+	<!-- maxGap  -->
+	<bean id="DailyOvertimeRule-maxGap" parent="DailyOvertimeRule-maxGap-parentBean" />
+	<bean id="DailyOvertimeRule-maxGap-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Max. Gap Minutes" />
+		<property name="maxLength" value="5" />
+		<property name="validationPattern">
+			<bean parent="RegexValidationPattern">
+ 		   		<property name="pattern" value="((\+|-)?([0-9](\.[0-9]{1,2})?))()"></property>
+ 		   		<property name="validationErrorMessageKey" value="error.bigDecimal"></property>
+ 			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="5" />
+		</property>
+		<property name="name" value="maxGap" />
+		<property name="label" value="Max. Gap Minutes" />
+	</bean>
+	<!-- minHours -->
+	<bean id="DailyOvertimeRule-minHours" parent="DailyOvertimeRule-minHours-parentBean" />
+	<bean id="DailyOvertimeRule-minHours-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Shift Hours" />
+		<property name="maxLength" value="2" />
+		<property name="validationPattern">
+			<bean parent="NumericValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="2" />
+		</property>
+		<property name="name" value="minHours" />
+		<property name="label" value="Shift Hours" />
+	</bean>
+	<!-- effectiveDate -->
+	<bean id="DailyOvertimeRule-effectiveDate" parent="DailyOvertimeRule-effectiveDate-parentBean" />
+	<bean id="DailyOvertimeRule-effectiveDate-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="maxLength" value="10" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	<!-- userPrincipalId -->
+	<bean id="DailyOvertimeRule-userPrincipalId" parent="DailyOvertimeRule-userPrincipalId-parentBean" />
+	<bean id="DailyOvertimeRule-userPrincipalId-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="User PrincipalId" />
+		<property name="maxLength" value="10" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+		</property>
+		<property name="name" value="userPrincipalId" />
+		<property name="label" value="UserPrincipal Id" />
+	</bean>
+
+	<!-- timeStamp -->
+	<bean id="DailyOvertimeRule-timeStamp" parent="DailyOvertimeRule-timeStamp-parentBean" />
+	<bean id="DailyOvertimeRule-timeStamp-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Timestamp" />
+		<property name="maxLength" value="15" />
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+		</property>
+		<property name="formatterClass"
+			value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter" />
+		<property name="name" value="timeStamp" />
+		<property name="label" value="Time Stamp" />
+	</bean>
+	<!-- active -->
+	<bean id="DailyOvertimeRule-active" parent="DailyOvertimeRule-active-parentBean" />
+	<bean id="DailyOvertimeRule-active-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+	</bean>
+
+  <bean id="DailyOvertimeRule-fromEarnGroup" parent="DailyOvertimeRule-fromEarnGroup-parentBean" />
+  <bean id="DailyOvertimeRule-fromEarnGroup-parentBean"
+    abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Convert from EarnGroup" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern">
+      <bean parent="AnyCharacterValidationPattern">
+        <property name="allowWhitespace" value="false" />
+      </bean>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="3" />
+    </property>
+    <property name="name" value="fromEarnGroup" />
+    <property name="label" value="Convert from EarnGroup" />
+  </bean>
+
+  <bean id="DailyOvertimeRule-earnCode" parent="DailyOvertimeRule-earnCode-parentBean" />
+  <bean id="DailyOvertimeRule-earnCode-parentBean"
+    abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Convert to Earncode" />
+    <property name="maxLength" value="3" />
+    <property name="validationPattern">
+      <bean parent="AnyCharacterValidationPattern">
+        <property name="allowWhitespace" value="false" />
+      </bean>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="3" />
+    </property>
+    <property name="name" value="earnCode" />
+    <property name="label" value="Convert to Earncode" />
+  </bean>
+
+
+	<!--  Inquiry Definitions  -->
+	<bean id="DailyOvertimeRule-lookupDefinition" parent="DailyOvertimeRule-lookupDefinition-parentBean" />
+	<bean id="DailyOvertimeRule-lookupDefinition-parentBean" abstract="true"
+		parent="LookupDefinition">
+		<property name="lookupFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="dept" />
+				<bean parent="FieldDefinition" p:attributeName="workArea" />
+				<bean parent="FieldDefinition" p:attributeName="location" />
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate"/>
+				<bean parent="FieldDefinition" p:attributeName="active"/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="dept" />
+				<bean parent="FieldDefinition" p:attributeName="workArea" />
+				<bean parent="FieldDefinition" p:attributeName="location" />
+				<bean parent="FieldDefinition" p:attributeName="paytype" />
+				<bean parent="FieldDefinition" p:attributeName="minHours" />
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+				<bean parent="FieldDefinition" p:attributeName="timeStamp" />
+        		<bean parent="FieldDefinition" p:attributeName="fromEarnGroup" />
+        		<bean parent="FieldDefinition" p:attributeName="earnCode" />
+			</list>
+		</property>
+		<property name="title" value="DailyOvertimeRule Lookup" />
+	</bean>
+</beans>
