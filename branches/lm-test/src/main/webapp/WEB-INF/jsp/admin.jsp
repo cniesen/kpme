@@ -52,6 +52,9 @@
                         <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.workarea.WorkArea&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Work Area Maintenance</a></li>
                         <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.workschedule.WorkSchedule&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Work Schedule</a></li>
                         <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.missedpunch.MissedPunch&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Missed Punch</a></li>
+                        <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveplan.LeavePlan&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Leave Plan</a></li>
+                        <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveaccrualcategory.LeaveAccrualCategory&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Leave Accrual Category</a></li>
+                        <li><a href="kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveaccrualcategoryrule.LeaveAccrualCategoryRule&returnLocation=${ConfigProperties.application.url}/Admin.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y">Leave Accrual Category Rule</a></li>
                     </ul>
                     <b>Inquiries</b>
                     <ul>

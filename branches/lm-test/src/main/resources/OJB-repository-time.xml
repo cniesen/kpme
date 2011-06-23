@@ -772,7 +772,6 @@
 		<field-descriptor name="ipAddress" column="ip_address" jdbc-type="VARCHAR" length="20"/>
 		<field-descriptor name="batchJobName" column="batch_job_name" jdbc-type="VARCHAR" length="40"/>
 		<field-descriptor name="clockLogId" column="clock_log_id" jdbc-type="BIGINT" length="20"/>
-		
 	</class-descriptor>
 
 	<class-descriptor class="org.kuali.hr.time.position.Position" table="hr_position_t">
@@ -784,5 +783,54 @@
         <field-descriptor name="active"          column="active"	    jdbc-type="VARCHAR" length="1" nullable="false"	conversion="org.kuali.rice.kns.util.OjbCharBooleanConversion" />
         <field-descriptor name="effectiveDate"  column="effdt"			jdbc-type="DATE" nullable="false" primarykey="false" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"      jdbc-type="TIMESTAMP" nullable="false"/>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.hr.lm.leaveplan.LeavePlan" table="lm_leave_plan_t">
+		<field-descriptor name="lmLeavePlanId" 	column="lm_leave_plan_id" 	jdbc-type="BIGINT" 	primarykey="true" autoincrement="true" sequence-name="lm_leave_plan_s"/>
+		<field-descriptor name="leavePlan" 		column="leave_plan" 		jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
+		<field-descriptor name="description" 	column="description" 		jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
+		<field-descriptor name="effectiveDate" 	column="effdt" 				jdbc-type="DATE"    nullable="false" primarykey="false" />
+		<field-descriptor name="salaryGroup" 	column="sal_group" 	    	jdbc-type="VARCHAR" length="10" nullable="false" primarykey="false" />
+		<field-descriptor name="timeStamp" 		column="timestamp" 			jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" />
+		<field-descriptor name="objectId" 		column="obj_id" 			jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" 	column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="location" 		column="location" 			jdbc-type="VARCHAR" nullable="false" length="30"  />
+		<field-descriptor name="unitOfTime"     column="unit_of_time"		jdbc-type="VARCHAR" length="1" nullable="false"	/>
+		<field-descriptor name="active"         column="active"	    		jdbc-type="VARCHAR" length="1" nullable="false"	conversion="org.kuali.rice.kns.util.OjbCharBooleanConversion" />
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.hr.lm.leaveaccrualcategory.LeaveAccrualCategory" table="lm_leave_accrual_category_t">
+		<field-descriptor name="lmLeaveAccrualCategoryId" 	column="lm_leave_accrual_category_id" 	jdbc-type="BIGINT" 	primarykey="true" autoincrement="true" sequence-name="lm_leave_accrual_category_s"/>
+		<field-descriptor name="accrualCategory" 			column="accrual_category" 	jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
+		<field-descriptor name="description" 				column="description" 		jdbc-type="VARCHAR" length="30" nullable="false" primarykey="false" />
+		<field-descriptor name="effectiveDate" 				column="effdt" 				jdbc-type="DATE"    nullable="false" primarykey="false" />
+		<field-descriptor name="timeStamp" 					column="timestamp" 			jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" />
+		<field-descriptor name="objectId" 					column="obj_id" 			jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" 				column="ver_nbr" 			jdbc-type="BIGINT" locking="true" />
+		<field-descriptor name="leavePlan" 					column="leave_plan" 		jdbc-type="VARCHAR" nullable="false" length="15" />
+		<field-descriptor name="accrualEarnInterval" 		column="accrual_earn_interal"	jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="proration"         			column="proration"	    	jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="showOnGrid"         		column="show_on_grid"		jdbc-type="VARCHAR" length="1" nullable="false" conversion="org.kuali.rice.kns.util.OjbCharBooleanConversion"/>
+	</class-descriptor>
+	
+	<class-descriptor class="org.kuali.hr.lm.leaveaccrualcategoryrule.LeaveAccrualCategoryRule" table="lm_leave_accrual_category_rl_t">
+		<field-descriptor name="lmLeaveAccrualCategoryRuleId" 	column="lm_leave_accrual_category_rl_id" jdbc-type="BIGINT" primarykey="true" autoincrement="true" sequence-name="lm_leave_accrual_category_rl_s"/>
+		<field-descriptor name="leaveAccrualCategory" 		    column="leave_accrual_category" 		jdbc-type="VARCHAR" length="15" nullable="false"/>
+		<field-descriptor name="serviceUnitOfTime" 				column="service_unit_of_time" 			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="ruleStart" 						column="rl_start" 						jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="ruleEnd" 						column="rl_end" 						jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="accrualRate" 					column="accrual_rate"					jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="maxBalance"         			column="max_balance"	    			jdbc-type="INTEGER" nullable="false" />
+		<field-descriptor name="actionAtMaxBalance"         	column="action_at_max_balance"			jdbc-type="VARCHAR" length="1" nullable="false" />
+		<field-descriptor name="transferToLeaveAccrualCategory" column="max_balance_transfer_to_accrl_category"	jdbc-type="VARCHAR" length="15" />
+		<field-descriptor name="transferFactor"         		column="max_balance_transfer_factor"	jdbc-type="DECIMAL" />
+		<field-descriptor name="transferAmount"         		column="max_transfer_amount"			jdbc-type="INTEGER" />
+		<field-descriptor name="maxPayoutAmount" 				column="max_payout_amount"				jdbc-type="INTEGER" />
+		<field-descriptor name="maxPayoutLeaveCode"         	column="max_payout_leave_code"	    	jdbc-type="VARCHAR" length="15" />
+		<field-descriptor name="maxUsage"         				column="max_usage"						jdbc-type="INTEGER" />
+		<field-descriptor name="maxCarryOver" 					column="max_carry_over"					jdbc-type="INTEGER" />
+		<field-descriptor name="timeStamp" 						column="timestamp" 						jdbc-type="TIMESTAMP" nullable="false" />
+		<field-descriptor name="objectId" 						column="obj_id" 						jdbc-type="VARCHAR" index="true" />
+		<field-descriptor name="versionNumber" 					column="ver_nbr" 						jdbc-type="BIGINT" locking="true" />
 	</class-descriptor>
 </descriptor-repository>

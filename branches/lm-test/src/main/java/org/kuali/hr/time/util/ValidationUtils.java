@@ -25,6 +25,7 @@ import org.kuali.rice.kim.service.KIMServiceLocator;
 import org.kuali.rice.kns.service.KNSServiceLocator;
 
 import java.sql.Date;
+import java.util.Calendar;
 
 /**
  * A few methods to assist with various validation tasks.
@@ -325,6 +326,24 @@ public class ValidationUtils {
         Query query = QueryFactory.newQuery(PayCalendar.class, crit);
         int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);
         valid = (count > 0);
+        return valid;
+	}
+	
+	public static boolean validateEffectiveDate(Date effectiveDate) {
+		boolean valid = false;
+		
+		Calendar cal = Calendar.getInstance();
+		
+		cal.add(Calendar.YEAR, + 1); 
+		
+		java.util.Date utilDate = cal.getTime();
+		java.sql.Date oneYearFromCurrentDate =  new java.sql.Date(utilDate.getTime());
+		
+		if ( effectiveDate.compareTo(oneYearFromCurrentDate) <= 0 ){
+			valid = true;
+		} else {
+			valid = false;
+		}
         return valid;
 	}
 

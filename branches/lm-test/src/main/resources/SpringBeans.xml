@@ -632,6 +632,21 @@
             <bean class="org.kuali.hr.time.earngroup.service.EarnGroupLookupableHelper"/>
         </property>
     </bean>
+    <bean id="leaveAccrualCategoryLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+            <bean class="org.kuali.hr.time.TkLookupableHelper"/>
+        </property>
+    </bean>
+    <bean id="leaveAccrualCategoryRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+            <bean class="org.kuali.hr.time.TkLookupableHelper"/>
+        </property>
+    </bean>
+    <bean id="leavePlanLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+            <bean class="org.kuali.hr.time.TkLookupableHelper"/>
+        </property>
+    </bean>
     <bean id="payTypeLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.hr.time.paytype.service.PayTypeLookupableHelper"/>
