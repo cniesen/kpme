@@ -1,0 +1,1 @@
+update hr_roles_t set role_name = 'TK_ORG_ADMIN' where role_name = 'TK_CHART_ADMIN';
