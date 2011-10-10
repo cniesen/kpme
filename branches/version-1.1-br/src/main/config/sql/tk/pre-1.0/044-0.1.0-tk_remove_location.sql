@@ -1,0 +1,1 @@
+alter table hr_holiday_calendar_t drop column location;
