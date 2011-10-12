@@ -172,6 +172,20 @@ public class JobDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements 
 		Query query = QueryFactory.newQuery(Job.class, root);
 		return (List<Job>)this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Job> getActiveJobsForPayType(String hrPayType){
+		Criteria root = new Criteria();
+		
+		root.addEqualTo("hrPayType", hrPayType);
+		
+		Criteria activeFilter = new Criteria(); // Inner Join For Activity
+		activeFilter.addEqualTo("active", true);
+		root.addAndCriteria(activeFilter);
+		
+		Query query = QueryFactory.newQuery(Job.class, root);
+		return (List<Job>)this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+	}
 
 	@Override
 	public Job getJob(Long hrJobId) {
