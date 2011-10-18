@@ -240,9 +240,18 @@ public class TimeApprovalAction extends TkAction {
     	if(taaf.getPayCalendarGroups().size() > 0){
             String calGroup = StringUtils.isNotEmpty(taaf.getSelectedPayCalendarGroup()) ? taaf.getSelectedPayCalendarGroup() : taaf.getPayCalendarGroups().first();
             List<WorkArea> workAreaObjs = TkServiceLocator.getWorkAreaService().getWorkAreas(taaf.getSelectedDept(), new java.sql.Date(taaf.getPayEndDate().getTime()));
+            
+            List<WorkArea> workAreasToProcess = new ArrayList<WorkArea>();
+            Set<Long> apprWorkAreaRoles = TKContext.getUser().getCurrentRoles().getApproverWorkAreas();
+            Set<Long> revWorkAreaRoles = TKContext.getUser().getCurrentRoles().getReviewerWorkAreas();
+            for(WorkArea wa : workAreaObjs){
+            	if(apprWorkAreaRoles.contains(wa.getWorkArea()) || revWorkAreaRoles.contains(wa.getWorkArea())){
+            		workAreasToProcess.add(wa);
+            	}
+            }
             //TODO push this up
             List<Long> workAreas = new ArrayList<Long>();
-            for(WorkArea wa : workAreaObjs){
+            for(WorkArea wa : workAreasToProcess){
             	workAreas.add(wa.getWorkArea());
             }
             rows = TkServiceLocator.getTimeApproveService().getApprovalSummaryRows(taaf.getPayBeginDate(), taaf.getPayEndDate(), calGroup, workAreas);

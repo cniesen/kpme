@@ -48,8 +48,17 @@ public class TimeApproveServiceImpl implements TimeApproveService {
         Map<String, PayCalendarEntries> pceMap = new HashMap<String, PayCalendarEntries>();
         Set<String> principals = new HashSet<String>();
         List<WorkArea> workAreasForDept = TkServiceLocator.getWorkAreaService().getWorkAreas(dept, new java.sql.Date(currentDate.getTime()));
+        List<WorkArea> workAreasToProcess = new ArrayList<WorkArea>();
+        Set<Long> apprWorkAreaRoles = TKContext.getUser().getCurrentRoles().getApproverWorkAreas();
+        Set<Long> revWorkAreaRoles = TKContext.getUser().getCurrentRoles().getReviewerWorkAreas();
+        for(WorkArea wa : workAreasForDept){
+        	if(apprWorkAreaRoles.contains(wa.getWorkArea()) || revWorkAreaRoles.contains(wa.getWorkArea())){
+        		workAreasToProcess.add(wa);
+        	}
+        }
+       
         // Get all of the principals within our window of time.
-        for (WorkArea workArea : workAreasForDept) {
+        for (WorkArea workArea : workAreasToProcess) {
             Long waNum = workArea.getWorkArea();
             List<Assignment> assignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(waNum, TKUtils.getTimelessDate(currentDate));
 
