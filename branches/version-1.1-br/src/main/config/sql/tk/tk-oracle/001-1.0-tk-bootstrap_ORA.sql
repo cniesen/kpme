@@ -1,5 +1,3 @@
-Liquibase Home is not set.
-Liquibase Home: /home/tomcat/liquibase-2.0.1
 -- *********************************************************************
 -- Update Database Script
 -- *********************************************************************
