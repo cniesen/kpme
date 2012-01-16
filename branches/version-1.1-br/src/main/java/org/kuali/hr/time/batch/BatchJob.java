@@ -17,7 +17,7 @@ public class BatchJob {
 	private Long tkBatchJobId;
 	private String batchJobName;
 	private String batchJobStatus;
-	private String hrPyCalendarEntryId;
+	private Long hrPyCalendarEntryId;
 	private Long timeElapsed = 0L;
 	private Timestamp timestamp;
     long startTime;
@@ -106,11 +106,11 @@ public class BatchJob {
 		this.batchJobStatus = batchJobStatus;
 	}
 
-	public String getPayCalendarEntryId() {
+	public Long getPayCalendarEntryId() {
 		return hrPyCalendarEntryId;
 	}
 
-	public void setPayCalendarEntryId(String hrPyCalendarEntryId) {
+	public void setPayCalendarEntryId(Long hrPyCalendarEntryId) {
 		this.hrPyCalendarEntryId = hrPyCalendarEntryId;
 	}
 
