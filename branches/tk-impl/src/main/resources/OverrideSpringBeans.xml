@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="kimAuthenticationService" class="edu.iu.hrms.hredoc.web.HreWebAuthenticationService" />
+	<bean id="tkServiceLocator" class="edu.iu.hr.time.service.base.TkServiceLocator"/>
+
+	<bean id="jotm" class="org.springframework.transaction.jta.JotmFactoryBean">
+		<property name="defaultTimeout" value="3600"/>
+	</bean>
+	
+	    <bean id="tkDataSource" class="org.kuali.rice.core.database.XAPoolDataSource">
+        <property name="transactionManager" ref="jotm" />
+        <property name="driverClassName" value="${tk.datasource.driver.name}" />
+        <property name="maxSize" value="${tk.datasource.pool.maxSize}" />
+        <property name="minSize" value="${tk.datasource.pool.minSize}" />
+        <property name="maxWait" value="${tk.datasource.pool.maxWait}" />
+        <property name="validationQuery" value="${tk.datasource.pool.validationQuery}" />
+        <property name="url" value="${tk.datasource.url}" />
+        <property name="username" value="${tk.datasource.username}" />
+        <property name="password" value="${tk.datasource.password}" />
+    </bean>
+	
+	    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+        <property name="userTransaction">
+            <ref local="jotm"/>
+        </property>
+        <property name="transactionManager">
+            <ref local="jotm"/>
+        </property>
+    </bean>
+	
+	
+	<bean id="nonTransDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="${tk.datasource.driver.name}"/>
+        <property name="maxWait" value="30000"/>
+        <property name="validationQuery" value="${tk.datasource.pool.validationQuery}"/>
+        <property name="url" value="${tk.datasource.url}"/>
+        <property name="username" value="${tk.datasource.username}"/>
+        <property name="password" value="${tk.datasource.password}"/>
+        <property name="maxActive" value="50"/>
+        <property name="minIdle" value="3"/>
+        <property name="initialSize" value="3"/>
+    </bean>
+	
+	<bean id="ksbScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" destroy-method="stop">
+        <property name="jobListeners">
+            <list>
+                <bean class="org.kuali.rice.ksb.messaging.quartz.MessageServiceExecutorJobListener"/>
+            </list>
+        </property>
+        <property name="quartzProperties">
+            <props>
+                <prop key="org.quartz.scheduler.instanceName">TK Scheduler</prop>
+	          <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
+	          <prop key="org.quartz.jobStore.isClustered">true</prop>
+	          <prop key="org.quartz.jobStore.driverDelegateClass">org.quartz.impl.jdbcjobstore.oracle.OracleDelegate</prop>
+	          <prop key="org.quartz.threadPool.threadCount">1</prop>
+            </props>
+        </property>
+        <property name="waitForJobsToCompleteOnShutdown" value="false"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="dataSource" ref="tkDataSource"/>
+        <property name="nonTransactionalDataSource" ref="nonTransDataSource"/>
+    </bean>
+
+	<bean id="sudsDataSource" class="org.kuali.rice.core.database.XAPoolDataSource">
+		<property name="transactionManager" ref="jotm"/>
+		<property name="driverClassName" value="${suds.datasource.driver.name}"/>
+		<property name="maxSize" value="${suds.datasource.pool.maxSize}"/>
+		<property name="minSize" value="${suds.datasource.pool.minSize}"/>
+		<property name="maxWait" value="${suds.datasource.pool.maxWait}"/>
+		<property name="validationQuery" value="${suds.datasource.pool.validationQuery}"/>
+		<property name="url" value="${suds.datasource.url}"/>
+		<property name="username" value="${suds.datasource.username}"/>
+		<property name="password" value="${suds.datasource.password}"/>
+	</bean>
+
+	<bean name="sudsJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="sudsDataSource"/>
+	</bean>
+
+	<bean id="enWorkflowDataSource" class="org.kuali.rice.core.database.XAPoolDataSource">
+        <property name="transactionManager" ref="jotm"/>
+        <property name="driverClassName" value="${kr.datasource.driver.name}"/>
+        <property name="maxSize" value="${kr.datasource.pool.maxSize}"/>
+        <property name="minSize" value="${kr.datasource.pool.minSize}"/>
+        <property name="maxWait" value="${kr.datasource.pool.maxWait}"/>
+        <property name="validationQuery" value="${kr.datasource.pool.validationQuery}"/>
+        <property name="url" value="${kr.datasource.url}"/>
+        <property name="username" value="${kr.datasource.username}"/>
+        <property name="password" value="${kr.datasource.password}"/>
+    </bean>
+    
+	<bean name="riceJdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="enWorkflowDataSource"/>
+	</bean>
+
+	<bean id="iuTimeOffAccrualRateService" class="edu.iu.hr.time.accrual.service.IUTimeOffAccrualRateServiceImpl"/> 
+	<bean id="timesheetService" class="edu.iu.hr.time.timesheet.service.IUTimesheetServiceImpl" />
+	<bean id="timeApproveService" class="edu.iu.hr.time.approval.service.IUTimeApproveServiceImpl"/>
+	<bean id="tkSearchableAttributeService" class="edu.iu.hr.time.docsearch.IUTkSearchableAttributeServiceImpl"/>
+
+	<bean id="departmentService" class="edu.iu.hr.time.department.service.IUDepartmentServiceImpl">
+		<property name="departmentDao" ref="departmentDao"/>
+	</bean>
+ 
+	<bean id="payGradeDao" class="org.kuali.hr.paygrade.dao.PayGradeDaoSpringObjImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+	
+	<bean id="payTypeDao" class="org.kuali.hr.time.paytype.dao.PayTypeDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+	
+	<bean id="sudDao" class="org.kuali.hr.time.SudsDaoImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+	
+	<bean id="departmentDao" class="org.kuali.hr.time.department.dao.DepartmentDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="holidayCalendarDao" class="org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDaoImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="jobDao" class="org.kuali.hr.job.dao.JobDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="locationDao" class="org.kuali.hr.location.dao.LocationDaoSpringObjImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+	
+	<bean id="timeOffAccrualDao" class="org.kuali.hr.time.accrual.dao.TimeOffAccrualkDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="positionDao" class="org.kuali.hr.time.position.dao.PositionDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="salGroupDao" class="org.kuali.hr.time.salgroup.dao.SalGroupDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource" />
+	</bean>
+
+	<bean id="accrualCategoryDao" class="org.kuali.hr.time.accrual.dao.AccrualCategoryDaoSpringOjbImpl">
+		<property name="jcdAlias" value="sudsDataSource"/>
+	</bean>
+
+	<bean id="tkPersonDao" class="edu.iu.hr.time.person.dao.IUPersonDaoSpringOjbImpl" />
+</beans>
