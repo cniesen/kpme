@@ -1,0 +1,25 @@
+<config>
+        <param name="http.port">80</param>
+        <param name="application.host">ci.kpme.kuali.org</param>
+
+        <param name="datasource.ojb.platform">MySQL</param>
+        <param name="datasource.driver.name">@kr.dataSource.driver@</param>
+        <param name="datasource.url">@kr.dataSource.jdbcUrl@</param>
+        <param name="datasource.username">@kr.dataSource.username@</param>
+        <param name="datasource.password">@kr.dataSource.password@</param>
+
+        <param name="attachment.dir.location">${user.home}/kuali/main/${environment}/rice/kew_attachments</param>
+        <param name="plugin.dir">${user.home}/kuali/main/${environment}/rice/plugins</param>
+
+        <param name="log4j.settings.path">${user.home}/kuali/main/shared/log4j.properties</param>
+        <param name="log4j.settings.reloadInterval">5</param>
+
+        <param name="keystore.file">${user.home}/kuali/main/shared/rice.keystore</param>
+        <param name="keystore.alias">rice</param>
+        <param name="keystore.password">r1c3pw</param>
+
+        <param name="encryption.key" override="false">7IC64w6ksLU</param>
+
+        <param name="filter.login.class">org.kuali.rice.kew.web.DummyLoginFilter</param>
+        <param name="filtermapping.login.1">/*</param>
+</config>
