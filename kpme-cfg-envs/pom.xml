@@ -77,6 +77,7 @@
                         <phase>process-sources</phase>
                         <goals>
                             <goal>checkout</goal>
+                            <goal>update</goal>
                         </goals>
                         <configuration>
                             <checkoutDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</checkoutDirectory>
@@ -116,6 +117,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.kuali.maven.plugins</groupId>
                 <artifactId>maven-impex-plugin</artifactId>
@@ -252,6 +254,7 @@
                     </execution>
                 </executions>
             </plugin>
+             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
