@@ -33,6 +33,9 @@
 
     <param name="rice.portal.links.showRiceServerConfig">true</param>
 
+    <param name="keystore.alias" override="false">rice</param>
     <param name="keystore.file">${user.home}/kuali/main/shared/rice.keystore</param>
+    <param name="keystore.password" override="false">r1c3pw</param>
+    <param name="encryption.key" override="false">7IC64w6kAAAA</param>
 
 </config>
