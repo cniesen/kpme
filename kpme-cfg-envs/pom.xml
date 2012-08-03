@@ -77,11 +77,20 @@
                         <phase>process-sources</phase>
                         <goals>
                             <goal>checkout</goal>
-                            <goal>update</goal>
                         </goals>
                         <configuration>
                             <checkoutDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</checkoutDirectory>
                             <skipCheckoutIfExists>true</skipCheckoutIfExists>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>project-update</id>
+                        <phase>process-sources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</workingDirectory>
                         </configuration>
                     </execution>
                 </executions>
