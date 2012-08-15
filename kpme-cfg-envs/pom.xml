@@ -37,12 +37,18 @@
     
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <dba.environment>dba</dba.environment>
         <build.environment>dev</build.environment>
-        <scmRootUrl>scm:svn:http://svn.kuali.org/repos</scmRootUrl>
     </properties>
     
     <build>
         <resources>
+            <resource>
+                <directory>src/main/resources/${dba.environment}</directory>
+                <targetPath>${project.build.directory}/environment/${dba.environment}</targetPath>
+                <filtering>true</filtering>
+            </resource>
             <resource>
                 <directory>src/main/resources/${build.environment}</directory>
                 <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
@@ -67,7 +73,7 @@
                         <svn>javasvn</svn>
                     </providerImplementations>
                     
-                    <connectionUrl>${scmRootUrl}/kpme/${scmVersionUrl}</connectionUrl>
+                    <connectionUrl>scm:svn:http://svn.kuali.org/repos/kpme/${scmVersionUrl}</connectionUrl>
                     <scmVersionType>${scmVersionType}</scmVersionType>
                     <scmVersion>${scmVersion}</scmVersion>
                 </configuration>
@@ -115,11 +121,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <!--
             <plugin>
                 <groupId>org.kuali.maven.plugins</groupId>
                 <artifactId>maven-impex-plugin</artifactId>
-                <version>1.0.32</version>
+                <version>1.1.0</version>
                 <dependencies>
 	                <dependency>
 			            <groupId>mysql</groupId>
@@ -155,11 +160,7 @@
                             <goal>schemasql</goal>
                         </goals>
                         <configuration>
-                            <artifactId>${dba.dataSource.database}</artifactId>
-                            <driver>${dba.dataSource.driver}</driver>
-                            <url>${dba.dataSource.jdbcUrl}</url>
-                            <username>${dba.dataSource.username}</username>
-                            <password>${dba.dataSource.password}</password>
+                            <url>${kr.dataSource.jdbcUrl}</url>
                             <schemaXMLFile>${project.build.directory}/impex/${dba.dataSource.database}.xml</schemaXMLFile>
                             <schemaDir>${project.build.directory}/impex</schemaDir>
                             <schemaIncludes>${dba.dataSource.database}.xml</schemaIncludes>
@@ -173,11 +174,7 @@
                             <goal>datasql</goal>
                         </goals>
                         <configuration>
-                            <artifactId>${dba.dataSource.database}</artifactId>
-                            <driver>${dba.dataSource.driver}</driver>
-                            <url>${dba.dataSource.jdbcUrl}</url>
-                            <username>${dba.dataSource.username}</username>
-                            <password>${dba.dataSource.password}</password>
+                            <url>${kr.dataSource.jdbcUrl}</url>
                             <schemaXMLFile>${project.build.directory}/impex/${dba.dataSource.database}.xml</schemaXMLFile>
                             <schemaDir>${project.build.directory}/impex</schemaDir>
                             <schemaIncludes>${dba.dataSource.database}.xml</schemaIncludes>
@@ -252,7 +249,6 @@
                     </execution>
                 </executions>
             </plugin>
-             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-invoker-plugin</artifactId>
