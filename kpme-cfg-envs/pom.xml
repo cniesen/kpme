@@ -191,12 +191,11 @@
                             <goal>reset</goal>
                         </goals>
                         <configuration>
-                            <artifactId>${kr.dataSource.database}</artifactId>
-                            <driver>${kr.dataSource.driver}</driver>
-                            <url>${kr.dataSource.jdbcUrl}</url>
-                            <username>${kr.dataSource.username}</username>
-                            <password>${kr.dataSource.password}</password>
-                            <serverUrl>${kr.dataSource.jdbcUrl}</serverUrl>
+                            <artifactId>${admin.dataSource.database}</artifactId>
+                            <driver>${admin.dataSource.driver}</driver>
+                            <username>${admin.dataSource.username}</username>
+                            <password>${admin.dataSource.password}</password>
+                            <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
                             <database>${kr.dataSource.database}</database>
                             <databaseUser>${kr.dataSource.username}</databaseUser>
                             <databasePassword>${kr.dataSource.password}</databasePassword>
