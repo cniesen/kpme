@@ -160,7 +160,7 @@
                             <goal>schemasql</goal>
                         </goals>
                         <configuration>
-                            <url>${kr.dataSource.jdbcUrl}</url>
+                            <url>${dba.dataSource.jdbcUrl}</url>
                             <schemaXMLFile>${project.build.directory}/impex/${dba.dataSource.database}.xml</schemaXMLFile>
                             <schemaDir>${project.build.directory}/impex</schemaDir>
                             <schemaIncludes>${dba.dataSource.database}.xml</schemaIncludes>
@@ -174,7 +174,7 @@
                             <goal>datasql</goal>
                         </goals>
                         <configuration>
-                            <url>${kr.dataSource.jdbcUrl}</url>
+                            <url>${dba.dataSource.jdbcUrl}</url>
                             <schemaXMLFile>${project.build.directory}/impex/${dba.dataSource.database}.xml</schemaXMLFile>
                             <schemaDir>${project.build.directory}/impex</schemaDir>
                             <schemaIncludes>${dba.dataSource.database}.xml</schemaIncludes>
@@ -192,12 +192,14 @@
                         </goals>
                         <configuration>
                             <artifactId>${kr.dataSource.database}</artifactId>
-                            <serverUrl>${kr.dataSource.jdbcUrl}</serverUrl>
-                            <database>${kr.dataSource.database}</database>
                             <driver>${kr.dataSource.driver}</driver>
                             <url>${kr.dataSource.jdbcUrl}</url>
                             <username>${kr.dataSource.username}</username>
                             <password>${kr.dataSource.password}</password>
+                            <serverUrl>${kr.dataSource.jdbcUrl}</serverUrl>
+                            <database>${kr.dataSource.database}</database>
+                            <databaseUser>${kr.dataSource.username}</databaseUser>
+                            <databasePassword>${kr.dataSource.password}</databasePassword>
                         </configuration>
                     </execution>
                     <execution>
