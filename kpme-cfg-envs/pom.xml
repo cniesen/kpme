@@ -193,6 +193,7 @@
                         <configuration>
                             <artifactId>${admin.dataSource.database}</artifactId>
                             <driver>${admin.dataSource.driver}</driver>
+                            <url>${admin.dataSource.jdbcUrl}</url>
                             <username>${admin.dataSource.username}</username>
                             <password>${admin.dataSource.password}</password>
                             <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
