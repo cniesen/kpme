@@ -179,7 +179,7 @@
                             <schemaDir>${project.build.directory}/impex</schemaDir>
                             <schemaIncludes>${dba.dataSource.database}.xml</schemaIncludes>
                             <dataXMLDir>${project.build.directory}/impex/${dba.dataSource.database}</dataXMLDir>
-                            <dataXMLExcludes>${dba.dataSource.database}.xml</dataXMLExcludes>
+                            <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml</dataXMLExcludes>
                             <dataDTD>${project.build.directory}/impex/${dba.dataSource.database}.dtd</dataDTD>
                             <outputDir>${project.build.directory}/data-sql/${dba.dataSource.database}</outputDir>
                         </configuration>
