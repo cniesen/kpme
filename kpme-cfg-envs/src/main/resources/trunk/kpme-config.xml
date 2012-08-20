@@ -1,0 +1,41 @@
+<config>
+
+    <!-- Application-specific Parameters -->
+    <param name="application.http.scheme">http</param>
+    <param name="application.host">ci.kpme.kuali.org</param>
+    <param name="http.port">80</param>
+    <param name="app.context.name">${app.code}-${environment}</param>
+
+    <!-- KPME Client DB -->
+    <param name="datasource.url">@kpme.dataSource.jdbcUrl@</param>
+    <param name="datasource.username">@kpme.dataSource.username@</param>
+    <param name="datasource.password">@kpme.dataSource.password@</param>
+
+    <!-- Rice Server DB -->
+    <param name="server.datasource.url">@kr.dataSource.jdbcUrl@</param>
+    <param name="server.datasource.username">@kr.dataSource.username@</param>
+    <param name="server.datasource.password">@kr.dataSource.password@</param>
+
+    <!-- Embedded Mode Server URL -->
+    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>
+    <param name="kim.mode">EMBEDDED</param>
+    <param name="kcb.mode">EMBEDDED</param>
+    <param name="kew.mode">EMBEDDED</param>
+    <param name="ken.mode">REMOTE</param>
+    <param name="ksb.mode">REMOTE</param>
+    <param name="kns.mode">LOCAL</param>
+    <param name="krms.mode">REMOTE</param>
+    <param name="coreservice.mode">REMOTE</param>
+    <param name="location.mode">REMOTE</param>
+    <param name="core.mode">LOCAL</param>
+
+    <param name="dev.mode">false</param>
+
+    <param name="rice.portal.links.showRiceServerConfig">true</param>
+
+    <param name="keystore.alias">rice</param>
+    <param name="keystore.file">${user.home}/kuali/main/shared/rice.keystore</param>
+    <param name="keystore.password">r1c3pw</param>
+    <param name="encryption.key">7IC64w6kAAAA</param>
+
+</config>
