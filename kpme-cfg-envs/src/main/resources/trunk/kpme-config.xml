@@ -32,6 +32,9 @@
     <param name="dev.mode">false</param>
 
     <param name="rice.portal.links.showRiceServerConfig">true</param>
+    
+    <param name="log4j.settings.path">${user.home}/kuali/main/shared/log4j.properties</param>
+    <param name="log4j.settings.reloadInterval">5</param>
 
     <param name="keystore.alias">rice</param>
     <param name="keystore.file">${user.home}/kuali/main/shared/rice.keystore</param>
