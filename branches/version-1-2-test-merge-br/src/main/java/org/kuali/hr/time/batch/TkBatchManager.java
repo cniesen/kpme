@@ -1,15 +1,15 @@
 package org.kuali.hr.time.batch;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.core.config.ConfigContext;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.kuali.hr.time.util.TKUtils;
+import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Spring Bean to fire upon initialization.
@@ -70,8 +70,8 @@ public class TkBatchManager implements InitializingBean, DisposableBean {
      * @return true if this node is the master node.
      */
     public boolean isMasterBatchNode() {
-		return StringUtils.equals(ConfigContext.getCurrentContextConfig().getProperty(MESSAGE_QUEUE_CHECKER_IP_PARAM), TKUtils.getIPNumber());
-	}
+        return StringUtils.equals(ConfigContext.getCurrentContextConfig().getProperty(MESSAGE_QUEUE_CHECKER_IP_PARAM), TKUtils.getIPNumber());
+    }
 
     /**
      * Helper method to load configuration values, cast to ints, and report errors.

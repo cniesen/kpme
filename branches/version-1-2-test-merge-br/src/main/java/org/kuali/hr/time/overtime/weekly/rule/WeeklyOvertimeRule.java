@@ -4,12 +4,13 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.rule.TkRule;
 
 public class WeeklyOvertimeRule extends TkRule {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "WeeklyOvertimeRule";
 	/**
 	 * 
 	 */
@@ -28,14 +29,7 @@ public class WeeklyOvertimeRule extends TkRule {
 	private EarnGroup maxHoursEarnGroupObj;
 	private EarnGroup convertFromEarnGroupObj;
 	private EarnCode convertToEarnCodeObj;
-	
 
-	@SuppressWarnings({ "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public String getTkWeeklyOvertimeRuleId() {
 		return tkWeeklyOvertimeRuleId;

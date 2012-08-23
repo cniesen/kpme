@@ -1,18 +1,18 @@
 <%--
- Copyright 2005-2007 The Kuali Foundation
-
- Licensed under the Educational Community License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.opensource.org/licenses/ecl2.php
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
---%>
+  ~ Copyright 2006-2011 The Kuali Foundation
+  ~
+  ~ Licensed under the Educational Community License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.opensource.org/licenses/ecl2.php
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  --%>
 <%@ include file="/kr/WEB-INF/jsp/tldHeader.jsp"%>
 
 <%@ attribute name="docTitle" required="true" description="The title to display for the page." %>
@@ -57,7 +57,7 @@
 <head>
 <c:if test="${not empty SESSION_TIMEOUT_WARNING_MILLISECONDS}">
 	<script type="text/javascript">
-	<!-- 
+	<!--
 	setTimeout("alert('Your session will expire in ${SESSION_TIMEOUT_WARNING_MINUTES} minutes.')",'${SESSION_TIMEOUT_WARNING_MILLISECONDS}');
 	// -->
 	</script>
@@ -65,67 +65,90 @@
 
 	<script type="text/javascript">var jsContextPath = "${pageContext.request.contextPath}";</script>
 	<title><bean:message key="app.title" /> :: ${headerTitle}</title>
-	<c:forEach items="${fn:split(ConfigProperties.css.files, ',')}"
+	<c:forEach items="${fn:split(ConfigProperties.kns.css.files, ',')}"
 		var="cssFile">
 <c:if test="${fn:length(fn:trim(cssFile)) > 0}">
 			<link href="${pageContext.request.contextPath}/${cssFile}"
 				rel="stylesheet" type="text/css" />
 </c:if>
 </c:forEach>
-	<c:forEach items="${fn:split(ConfigProperties.javascript.files, ',')}"
+	<c:forEach items="${fn:split(ConfigProperties.kns.javascript.files, ',')}"
 		var="javascriptFile">
 <c:if test="${fn:length(fn:trim(javascriptFile)) > 0}">
 			<script language="JavaScript" type="text/javascript"
 				src="${pageContext.request.contextPath}/${javascriptFile}"></script>
 </c:if>
 </c:forEach>
-	<c:choose>
-		<c:when test="${lookup}" >
-			  <c:if test="${not empty KualiForm.headerNavigationTabs}">
-				<link href="kr/css/${KualiForm.navigationCss}" rel="stylesheet"
-					type="text/css" />
-			  </c:if>
+  
+<!-- new iframe resize logic -->
+<script type="text/javascript">
 
-			  <script type="text/javascript">
-			  <!-- allow for custom lookup calls -->
-			  function customLookupChanged() {
+var jq = jQuery.noConflict();
+var bodyHeight;
+function publishHeight(){
+    var parentUrl = "";
+    if(navigator.cookieEnabled){
+        parentUrl = jQuery.cookie('parentUrl');
+        var passedUrl = decodeURIComponent( document.location.hash.replace( /^#/, '' ) );
+        if(passedUrl && passedUrl.substring(0, 4) === "http"){
+            jQuery.cookie('parentUrl', passedUrl, {path: '/'});
+            parentUrl = passedUrl;
+        }
+    }
 
-				    methodToCallElement=document.createElement("input");
-				    methodToCallElement.setAttribute("type","hidden");
-				    methodToCallElement.setAttribute("name","methodToCall");
-				    methodToCallElement.setAttribute("value","refresh");
-				    document.forms[0].appendChild(methodToCallElement);
+    if(parentUrl === ""){
+        //make the assumption for not cross-domain, will have no effect if cross domain (message wont be
+        //received)
+        parentUrl = window.location;
+        parentUrl = decodeURIComponent(parentUrl);
+    }
 
-				    refreshCallerElement=document.createElement("input");
-				    refreshCallerElement.setAttribute("type","hidden");
-				    refreshCallerElement.setAttribute("name","refreshCaller");
-				    refreshCallerElement.setAttribute("value","customLookupAction");
-				    document.forms[0].appendChild(refreshCallerElement);
+    var height = jQuery('#view_div:first').outerHeight();
+    if (parentUrl && !isNaN(height) && height > 0 && height !== bodyHeight) {
+        jQuery.postMessage({ if_height: height}, parentUrl, parent);
+        bodyHeight = height;
+    }
+}
 
-				    document.forms[0].submit();
-			  }
-			  </script>
-		</c:when>
-		<c:otherwise>
-			<c:forEach items="${additionalScriptFiles}" var="scriptFile" >
-				<script language="JavaScript" type="text/javascript"
-					src="${scriptFile}"></script>
-			</c:forEach>
-		</c:otherwise>
-	</c:choose>
+jQuery(function(){
+  publishHeight();
+  window.onresize = publishHeight;
+  window.setInterval(publishHeight, 500);
+});
+</script>
+
+  <c:choose>
+    <c:when test="${lookup}" >
+      <c:if test="${not empty KualiForm.headerNavigationTabs}">
+        <link href="kr/css/${KualiForm.navigationCss}" rel="stylesheet" type="text/css" />
+      </c:if>
+
+      <!-- allow for custom lookup calls -->
+      <script language="JavaScript" type="text/javascript" src="${pageContext.request.contextPath}/kr/scripts/lookup.js"></script>
+
+    </c:when>
+    <c:otherwise>
+      <c:forEach items="${additionalScriptFiles}" var="scriptFile" >
+        <script language="JavaScript" type="text/javascript" src="${scriptFile}"></script>
+      </c:forEach>
+    </c:otherwise>
+  </c:choose>
 </head>
 <c:choose>
 	<c:when test="${lookup}" >
-		<body onload="placeFocus();
-		<c:if test='${KualiForm.class.name == "org.kuali.rice.kns.web.struts.form.LookupForm"}'>
-			<c:out value ="${KualiForm.lookupable.extraOnLoad}" />
+		<body onload="placeFocus();	 
+		<c:if test='<%= jspContext.findAttribute("KualiForm") != null %>'>
+			<c:if test='<%= jspContext.findAttribute("KualiForm").getClass() == org.kuali.rice.kns.web.struts.form.LookupForm.class %>'>
+				<c:out value ="${KualiForm.lookupable.extraOnLoad}" />
+			</c:if>
 		</c:if>
 		">
+    <div id="view_div">
 		<kul:backdoor />
 
 			<c:if
 				test="${! empty headerMenuBar and !_isInquiry and KualiForm.showMaintenanceLinks}">
-				<div class="lookupcreatenew" title="Create a new record">
+				<div class="lookupcreatenew">
 					${headerMenuBar}
 				</div>
 		</c:if>
@@ -153,6 +176,7 @@
 		</c:if>
 		<body onload="if ( !restoreScrollPosition() ) { ${anchorScript} }"
 			onKeyPress="return isReturnKeyAllowed('${Constants.DISPATCH_REQUEST_PARAMETER}.' , event);">
+    <div id="view_div">
 			<kul:backdoor />
 			${headerMenuBar}
 	</c:otherwise>
@@ -175,7 +199,7 @@
 				<h1>
 					${docTitle}&nbsp;
 					<c:choose>
-						<c:when test="${!empty alternativeHelp}"> 
+						<c:when test="${!empty alternativeHelp}">
 							<kul:help documentTypeName="${KualiForm.docTypeName}" alternativeHelp="${alternativeHelp}" altText="document help" />
 						</c:when>
 						<c:otherwise>
@@ -301,7 +325,7 @@
                                     </span></dt>
                                 </c:forEach>
                             </c:otherwise>
-                        </c:choose>  
+                        </c:choose>
                     </dl>
                 </div>
             </div>
@@ -387,5 +411,7 @@
 
 </html:form>
 <div id="formComplete"></div>
+</div>
 </body>
+
 </html:html>

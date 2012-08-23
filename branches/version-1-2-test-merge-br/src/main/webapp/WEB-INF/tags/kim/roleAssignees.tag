@@ -15,6 +15,8 @@
 --%>
 <%@ include file="/kr/WEB-INF/jsp/tldHeader.jsp"%>
 
+<%@ attribute name="formAction" required="false" description="form action" %>
+
 <c:set var="roleMemberAttributes" value="${DataDictionary.KimDocumentRoleMember.attributes}" />
 <c:set var="roleQualifierAttributes" value="${DataDictionary.KimDocumentRoleQualifier.attributes}" />
 <c:set var="kimAttributes" value="${DataDictionary.KimAttributeImpl.attributes}" />
@@ -49,7 +51,7 @@
               <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeFromDate}" horizontal="false" />
               <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeToDate}" horizontal="false" />
               <c:forEach var="attrDefn" items="${KualiForm.document.kimType.attributeDefinitions}" varStatus="status">
-                <c:set var="fieldName" value="${attrDefn.attributeName}" />
+                <c:set var="fieldName" value="${attrDefn.kimAttribute.attributeName}" />
                 <c:set var="attrEntry" value="${KualiForm.document.attributeEntry[fieldName]}" />
                 <kul:htmlAttributeHeaderCell attributeEntry="${attrEntry}" useShortLabel="false" />
               </c:forEach>
@@ -74,7 +76,7 @@
               </td>
               <td class="infoline">   
                 <div align="center">                
-                  <kul:htmlControlAttribute kimTypeId="${KualiForm.document.kimType.kimTypeId}" property="member.memberId" attributeEntry="${roleMemberAttributes.memberId}" readOnly="${!canModifyAssignees}"/>
+                  <kul:htmlControlAttribute property="member.memberId" attributeEntry="${roleMemberAttributes.memberId}" readOnly="${!canModifyAssignees}"/>
                   <c:if test="${canModifyAssignees}">
                       <kul:lookup boClassName="${bo}" fieldConversions="${fc}" anchor="${tabKey}" />
                   </c:if>
@@ -115,20 +117,32 @@
                     <kul:htmlControlAttribute property="member.activeToDate" attributeEntry="${roleMemberAttributes.activeToDate}" datePicker="true" readOnly="${!canModifyAssignees}" />
                 </div>
               </td>
+
               <c:forEach var="qualifier" items="${KualiForm.document.kimType.attributeDefinitions}" varStatus="statusQualifier">
-                  <c:set var="fieldName" value="${qualifier.attributeName}" />
+                  <c:set var="fieldName" value="${qualifier.kimAttribute.attributeName}" />
                   <c:set var="attrEntry" value="${KualiForm.document.attributeEntry[fieldName]}" />
                   <c:set var="attrDefinition" value="${KualiForm.document.definitionsKeyedByAttributeName[fieldName]}"/>
                   <td align="left" valign="middle">
-                      <div align="center"> <kul:htmlControlAttribute kimTypeId="${KualiForm.document.kimType.kimTypeId}" property="member.qualifier(${qualifier.kimAttributeId}).attrVal"  attributeEntry="${attrEntry}" readOnly="${!canModifyAssignees}" />
- 	               	    <c:if test="${attrDefinition.hasLookupBoDefinition}"> 
-                            <c:if test="${!empty attrDefinition.lookupBoClass and not readOnlyAssignees}">
-                              <kim:attributeLookup attributeDefinitions="${KualiForm.document.definitions}" pathPrefix="member" attr="${attrDefinition}" />
+
+                    <div align="center">
+
+                      <kul:htmlControlAttribute property="member.qualifier(${qualifier.kimAttribute.id}).attrVal"  attributeEntry="${attrEntry}" readOnly="${!canModifyAssignees}" />
+
+                      <c:if test="${canModifyAssignees}">
+                        <c:forEach var="widget" items="${attrDefinition.attributeField.widgets}" >
+                          <c:if test="${widget['class'].name == 'org.kuali.rice.core.api.uif.RemotableQuickFinder'}">
+                            <c:if test="${!empty widget.dataObjectClass and not readOnlyAssignees}">
+                              <kim:attributeLookup attributeDefinitions="${KualiForm.document.definitions}" pathPrefix="member" attr="${widget}" />
                             </c:if>
-                        </c:if>
+                          </c:if>
+                        </c:forEach>
+                      </c:if>
+
                       </div>
+
                   </td>
               </c:forEach>
+
               <td class="infoline">
                   <div align="center">
                       <c:choose>
@@ -153,42 +167,42 @@
         <td colspan=10 class="tab-subhead">Members:</td>
       </tr>
       <tr>
-        <th>&nbsp;</th> 
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberTypeCode}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberId}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberNamespaceCode}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberName}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberFullName}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeFromDate}" horizontal="false" />
-        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeToDate}" horizontal="false" />
+        <th>&nbsp;<input type="hidden" id="sortMethodToCallPlaceholder" name="sortMethodToCallPlaceholder" value="placeholder"/></th>
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberTypeCode}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.memberTypeCode';submitForm();" />
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberId}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.memberId';submitForm();" />
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberNamespaceCode}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.memberNamespaceCode';submitForm();" />
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberName}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.memberName';submitForm();" />
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.memberFullName}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.memberFullName';submitForm();"/>
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeFromDate}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.activeFromDate';submitForm();"/>
+        <kul:htmlAttributeHeaderCell attributeEntry="${roleMemberAttributes.activeToDate}" horizontal="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.activeToDate';submitForm();"/>
         <c:forEach var="attrDefn" items="${KualiForm.document.kimType.attributeDefinitions}" varStatus="status">
-          <c:set var="fieldName" value="${attrDefn.attributeName}" />
+          <c:set var="fieldName" value="${attrDefn.kimAttribute.attributeName}" />
           <c:set var="attrEntry" value="${KualiForm.document.attributeEntry[fieldName]}" />
-          <kul:htmlAttributeHeaderCell attributeEntry="${attrEntry}" useShortLabel="false" />
+          <kul:htmlAttributeHeaderCell attributeEntry="${attrEntry}" useShortLabel="false" headerLink="javascript:document.forms[0].sortMethodToCallPlaceholder.name='methodToCall.sort.${fieldName}';submitForm();"/>
         </c:forEach>
         <c:if test="${canModifyAssignees}"> 
           <kul:htmlAttributeHeaderCell literalLabel="Actions" scope="col"/>
         </c:if> 
-      </tr>    
+      </tr>
     <c:if test="${KualiForm.memberTableMetadata.firstRowIndex >= 0}">
         <c:forEach var="member" items="${KualiForm.document.members}" varStatus="statusMember"
                  begin="${KualiForm.memberTableMetadata.firstRowIndex}" 
                  end="${KualiForm.memberTableMetadata.lastRowIndex}">
             <c:set var="rows" value="2"/>
             <c:if test="${fn:length(member.roleRspActions) == 0}">  
-                   <c:set var="rows" value="1"/>            
+                   <c:set var="rows" value="1"/>
             </c:if> 
-            <c:set var="inquiryClass" value="org.kuali.rice.kim.bo.Person" />
+            <c:set var="inquiryClass" value="org.kuali.rice.kim.api.identity.Person" />
             <c:set var="keyValue" value="principalId" />
             <c:if test='${member.memberTypeCode == "G"}'>
-            	<c:set var="inquiryClass" value="org.kuali.rice.kim.bo.Group" />
-            	<c:set var="keyValue" value="groupId" />
+            	<c:set var="inquiryClass" value="org.kuali.rice.kim.impl.group.GroupBo" />
+            	<c:set var="keyValue" value="id" />
             </c:if>
             <c:if test='${member.memberTypeCode == "R"}'>
-            	<c:set var="inquiryClass" value="org.kuali.rice.kim.bo.Role" />
-            	<c:set var="keyValue" value="roleId" /> 
+            	<c:set var="inquiryClass" value="org.kuali.rice.kim.impl.role.RoleBo" />
+            	<c:set var="keyValue" value="id" />
             </c:if>
-              
+
               <tr>
                 <th rowspan="${rows}" class="infoline" valign="top">
                     <c:out value="${statusMember.index+1}" />
@@ -204,21 +218,24 @@
                     </div>
                 </td>
                 <td align="left" valign="middle">
-                    <div align="center"> <kul:htmlControlAttribute property="document.members[${statusMember.index}].memberNamespaceCode"  attributeEntry="${roleMemberAttributes.memberNamespaceCode}" readOnly="true"  />
+                    <div align="center"> 
+                    	<kul:htmlControlAttribute property="document.members[${statusMember.index}].memberNamespaceCode"  attributeEntry="${roleMemberAttributes.memberNamespaceCode}" readOnly="true"  /> 	
+                    </div>
+                </td>
+                <td align="left" valign="middle">				
+                	<div align="center">
+                    	<kul:inquiry boClassName="${inquiryClass}" keyValues="${keyValue}=${member.memberId}" render="true">
+                        	<kul:htmlControlAttribute property="document.members[${statusMember.index}].memberName"  attributeEntry="${roleMemberAttributes.memberName}" readOnly="true"  />
+	                    </kul:inquiry>  
                     </div>
                 </td>
                 <td align="left" valign="middle">
-                    <kul:inquiry boClassName="${inquiryClass}" keyValues="${keyValue}=${member.memberId}" render="true">
-                        <div align="center"> <kul:htmlControlAttribute property="document.members[${statusMember.index}].memberName"  attributeEntry="${roleMemberAttributes.memberName}" readOnly="true"  />
-                        </div>
-                    </kul:inquiry>    
-                </td>
-                <td align="left" valign="middle">
-                    <kul:inquiry boClassName="${inquiryClass}" keyValues="${keyValue}=${member.memberId}" render="true">
-                        	<div align="center"> <kul:htmlControlAttribute property="document.members[${statusMember.index}].memberFullName"  attributeEntry="${roleMemberAttributes.memberFullName}" readOnly="true"  />
-							</div>
-                    </kul:inquiry>
-                    
+                	<div align="center">               
+                    	<kul:inquiry boClassName="${inquiryClass}" keyValues="${keyValue}=${member.memberId}" render="true">
+<%--                         		<a href="javascript:document.forms[0].sortMethodToCallPlaceholder=methodToCall.sort.memberFullName${roleMemberAttributes.memberFullName[fieldName]}"></a> --%>
+                        		<kul:htmlControlAttribute property="document.members[${statusMember.index}].memberFullName"  attributeEntry="${roleMemberAttributes.memberFullName}" readOnly="true"  />
+                    	</kul:inquiry>
+					</div>                   
                 </td>
                 <td align="left" valign="middle">
                     <div align="center"> <kul:htmlControlAttribute property="document.members[${statusMember.index}].activeFromDate"  attributeEntry="${roleMemberAttributes.activeFromDate}" readOnly="${!canModifyAssignees}" datePicker="true" />
@@ -230,19 +247,30 @@
                 </td>
                 <c:set var="numberOfColumns" value="${KualiForm.member.numberOfQualifiers+6}"/>
                 <c:forEach var="qualifier" items="${KualiForm.document.kimType.attributeDefinitions}" varStatus="statusQualifier">
-                    <c:set var="fieldName" value="${qualifier.attributeName}" />
+                    <c:set var="fieldName" value="${qualifier.kimAttribute.attributeName}" />
                     <c:set var="attrEntry" value="${KualiForm.document.attributeEntry[fieldName]}" />
                     <c:set var="attrDefinition" value="${KualiForm.document.definitionsKeyedByAttributeName[fieldName]}"/>
                     <c:set var="attrReadOnly" value="${(!canModifyAssignees || member.edit)}"/>
-                    <td align="left" valign="middle">
-                        <div align="center"> <kul:htmlControlAttribute kimTypeId="${KualiForm.document.kimType.kimTypeId}" property="document.members[${statusMember.index}].qualifier(${qualifier.kimAttributeId}).attrVal"  attributeEntry="${attrEntry}" readOnly="${attrReadOnly}" />
-                        <c:if test="${attrDefinition.hasLookupBoDefinition}"> 
-                            <c:if test="${!empty attrDefinition.lookupBoClass and not attrReadOnly}">
-                              <kim:attributeLookup attributeDefinitions="${KualiForm.document.definitions}" pathPrefix="document.members[${statusMember.index}]" attr="${attrDefinition}" />
+                    <c:set var="index" value="${statusMember.index}"/>
+                    <c:set var="kimAttrId" value="${qualifier.kimAttribute.id}"  />
+                  <td align="left" valign="middle">
+                    <div align="center">
+                      <c:if test="${kfunc:matchingQualifierExists(KualiForm.document.members,index,kimAttrId) }">
+
+                        <kul:htmlControlAttribute property="document.members[${statusMember.index}].qualifier(${qualifier.kimAttribute.id}).attrVal"  attributeEntry="${attrEntry}" readOnly="${attrReadOnly}" />
+
+                        <c:if test="${!attrReadOnly}">
+                          <c:forEach var="widget" items="${attrDefinition.attributeField.widgets}" >
+                            <c:if test="${widget['class'].name == 'org.kuali.rice.core.api.uif.RemotableQuickFinder'}">
+                              <c:if test="${!empty widget.dataObjectClass and not readOnlyAssignees}">
+                                <kim:attributeLookup attributeDefinitions="${KualiForm.document.definitions}" pathPrefix="document.members[${statusMember.index}]" attr="${widget}" />
+                              </c:if>
                             </c:if>
+                          </c:forEach>
                         </c:if>
-                        </div>
-                    </td>
+                      </c:if>
+                    </div>
+                  </td>
                 </c:forEach>
             <c:if test="${canModifyAssignees}"> 
                 <td>

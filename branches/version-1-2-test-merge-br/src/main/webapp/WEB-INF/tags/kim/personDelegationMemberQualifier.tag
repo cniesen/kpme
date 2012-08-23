@@ -47,12 +47,15 @@
 						<c:set var="attrEntry" value="${delegationMember.attributesHelper.attributeEntry[fieldName]}" />
 				       	<td align="left" valign="middle">
 				       		<div align="center"> 
-				      		   <kul:htmlControlAttribute kimTypeId="${delegationMember.roleImpl.kimTypeId}" property="document.delegationMembers[${delegationMemberIdx}].qualifiers[${status1.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${readOnly}" />
-				       		   <c:if test="${attrDefinition.hasLookupBoDefinition}"> 
-                                   <c:if test="${!empty attr.lookupBoClass and not readOnly}">
-    				       		       <kim:attributeLookup attributeDefinitions="${delegationMember.attributesHelper.definitions}" pathPrefix="document.delegationMembers[${delegationMemberIdx}]" attr="${attr}" />
-    				          	   </c:if>
-                               </c:if>
+				      		   <kul:htmlControlAttribute property="document.delegationMembers[${delegationMemberIdx}].qualifiers[${status1.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${readOnly}" />
+
+                     			<c:forEach var="widget" items="${attrDefinition.attributeField.widgets}" >
+                          <c:if test="${widget['class'].name == 'org.kuali.rice.core.api.uif.RemotableQuickFinder'}">
+                                <c:if test="${!empty widget.dataObjectClass and not readOnly}">
+    				       		    <kim:attributeLookup attributeDefinitions="${delegationMember.attributesHelper.definitions}" pathPrefix="document.delegationMembers[${delegationMemberIdx}]" attr="${widget}" />
+                          </c:if>
+                            </c:if>
+                          </c:forEach>
 				  			</div>
 						</td>
 					</c:forEach>	

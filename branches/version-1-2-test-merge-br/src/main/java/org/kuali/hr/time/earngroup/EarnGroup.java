@@ -43,13 +43,7 @@ public class EarnGroup extends HrBusinessObject {
 	public void setHistory(Boolean history) {
 		this.history = history;
 	}
-	
 
-	@Override
-	protected LinkedHashMap<String, Object> toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	public void setEarnGroups(List<EarnGroupDefinition> earnGroups) {
 		this.earnGroups = earnGroups;

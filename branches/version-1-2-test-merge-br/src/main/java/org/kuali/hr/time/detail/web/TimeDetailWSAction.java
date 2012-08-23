@@ -65,7 +65,7 @@ public class TimeDetailWSAction extends TimesheetAction {
         String principalId = (String) request.getAttribute("principalId");
         Long jobNumber = (Long) request.getAttribute("jobNumber");
 
-        Job job = TkServiceLocator.getJobSerivce().getJob(principalId, jobNumber, TKUtils.getCurrentDate());
+        Job job = TkServiceLocator.getJobService().getJob(principalId, jobNumber, TKUtils.getCurrentDate());
         kualiForm.setAnnotation(job.getDept());
 
         return mapping.findForward("ws");
@@ -84,8 +84,13 @@ public class TimeDetailWSAction extends TimesheetAction {
                         assignment.getTask().compareTo(key.getTask()) == 0) {
                     List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assignment, tdaf.getTimesheetDocument().getAsOfDate());
                     for (EarnCode earnCode : earnCodes) {
-
-                        if (shouldAddEarnCode(assignment, earnCode, tdaf.getTimeBlockReadOnly())) {
+                        // TODO: minimize / compress the crazy if logics below
+                        if (earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
+                                && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover())) {
+                            continue;
+                        }
+                        if (!(assignment.getTimeCollectionRule().isClockUserFl() &&
+                                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()))) {
                             Map<String, Object> earnCodeMap = new HashMap<String, Object>();
                             earnCodeMap.put("assignment", assignment.getAssignmentKey());
                             earnCodeMap.put("earnCode", earnCode.getEarnCode());
@@ -108,7 +113,7 @@ public class TimeDetailWSAction extends TimesheetAction {
         Boolean shouldAddEarnCode;
 
         shouldAddEarnCode = earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
-                && !(TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().getCurrentRoles().isTimesheetApprover());
+                && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover());
 
         shouldAddEarnCode |= !(assignment.getTimeCollectionRule().isClockUserFl() &&
                 StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) &&

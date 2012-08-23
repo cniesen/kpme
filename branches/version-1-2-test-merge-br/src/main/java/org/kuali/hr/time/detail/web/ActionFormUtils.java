@@ -5,14 +5,16 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONValue;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
-import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
@@ -96,7 +98,7 @@ public class ActionFormUtils {
             String workAreaDesc = workArea.getDescription();
 
             // Roles
-            Boolean isAnyApprover = TKContext.getUser().getCurrentRoles().isAnyApproverActive();
+            Boolean isAnyApprover = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isAnyApproverActive();
             timeBlockMap.put("isApprover", isAnyApprover);
             timeBlockMap.put("isSynchronousUser", timeBlock.getClockLogCreated());
 
@@ -149,7 +151,7 @@ public class ActionFormUtils {
             // start / endTime are the actual fields used by the adding / editing timeblocks
             timeBlockMap.put("startTime", start.toString(TkConstants.DT_MILITARY_TIME_FORMAT));
             timeBlockMap.put("endTime", end.toString(TkConstants.DT_MILITARY_TIME_FORMAT));
-            timeBlockMap.put("id", timeBlock.getTkTimeBlockId().toString());
+            timeBlockMap.put("id", timeBlock.getTkTimeBlockId() == null ? null : timeBlock.getTkTimeBlockId().toString());
             timeBlockMap.put("hours", timeBlock.getHours());
             timeBlockMap.put("amount", timeBlock.getAmount());
             timeBlockMap.put("timezone", timezone);
@@ -183,35 +185,38 @@ public class ActionFormUtils {
 //        }
         return JSONValue.toJSONString(timeBlockList);
     }
-    
-    public static Map<String, String> getPayPeriodsMap(List<PayCalendarEntries> payPeriods) {
-    	// use linked map to keep the order of the pay periods
-    	Map<String, String> pMap = Collections.synchronizedMap(new LinkedHashMap<String, String>());
-    	if (payPeriods == null || payPeriods.isEmpty()) {
+
+    public static Map<String, String> getPayPeriodsMap(List<CalendarEntries> payPeriods) {
+        // use linked map to keep the order of the pay periods
+        Map<String, String> pMap = Collections.synchronizedMap(new LinkedHashMap<String, String>());
+        if (payPeriods == null || payPeriods.isEmpty()) {
             return pMap;
         }
-    	payPeriods.removeAll(Collections.singletonList(null));
-    	Collections.sort(payPeriods);  // sort the pay period list by getBeginPeriodDate
-    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        for (PayCalendarEntries pce : payPeriods) {
-        	if(pce != null && pce.getHrPyCalendarEntriesId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null) {
-        		pMap.put(pce.getHrPyCalendarEntriesId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format(pce.getEndPeriodDate()));
-        	}
+        payPeriods.removeAll(Collections.singletonList(null));
+        Collections.sort(payPeriods);  // sort the pay period list by getBeginPeriodDate
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        for (CalendarEntries pce : payPeriods) {
+            if(pce != null && pce.getHrCalendarEntriesId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null) {
+                pMap.put(pce.getHrCalendarEntriesId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format(pce.getEndPeriodDate()));
+            }
         }
-        
-    	return pMap;
+
+        return pMap;
     }
-    
+
     // detect if the passed-in calendar entry is the current one
-    public static boolean getOnCurrentPeriodFlag(PayCalendarEntries pce) {
-    	Date currentDate = TKUtils.getTimelessDate(null);
-    	String viewPrincipal = TKContext.getUser().getTargetPrincipalId();
-        PayCalendarEntries calendarEntry = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(viewPrincipal,  currentDate);
+    public static boolean getOnCurrentPeriodFlag(CalendarEntries pce) {
+        Date currentDate = TKUtils.getTimelessDate(null);
+        String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+        CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal, currentDate);
 
         if(pce != null && calendarEntry != null && calendarEntry.equals(pce)) {
-    		return true;
-    	}
-    	return false;
+            return true;
+        }
+        return false;
     }
+
+
+
 }
 

@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.roles.TkRole;
-import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public class DepartmentRole extends PersistableBusinessObjectBase{
 
@@ -21,12 +21,6 @@ public class DepartmentRole extends PersistableBusinessObjectBase{
 
 	public void setRoles(List<TkRole> roles) {
 		this.roles = roles;
-	}
-
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public String getDepartment() {

@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 /**
  * Represents a Location object
@@ -11,7 +12,7 @@ import org.kuali.hr.time.HrBusinessObject;
  *
  */
 public class Location extends HrBusinessObject {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Location";
 	/**
 	 * 
 	 */
@@ -22,13 +23,7 @@ public class Location extends HrBusinessObject {
 	private String description;
 	private String userPrincipalId;
 	private String history;
-	
-	@SuppressWarnings({ "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	public String getHrLocationId() {
 		return hrLocationId;

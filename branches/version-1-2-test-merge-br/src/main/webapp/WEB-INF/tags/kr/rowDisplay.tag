@@ -1,18 +1,18 @@
 <%--
- Copyright 2007 The Kuali Foundation
-
- Licensed under the Educational Community License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.opensource.org/licenses/ecl2.php
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
---%>
+  ~ Copyright 2006-2011 The Kuali Foundation
+  ~
+  ~ Licensed under the Educational Community License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.opensource.org/licenses/ecl2.php
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  --%>
 <%@ include file="/kr/WEB-INF/jsp/tldHeader.jsp"%>
 
 <%@ attribute name="rows" required="true" type="java.util.List"
@@ -41,7 +41,11 @@
 <c:set var="isInquiry" value="${maintenanceViewMode eq Constants.PARAM_MAINTENANCE_VIEW_MODE_INQUIRY}" />
 
 <%-- Is the screen a view of a mantenance document? --%>
-<c:set var="isMaintenance" value="${KualiForm.class.name eq 'org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm' || maintenanceViewMode eq Constants.PARAM_MAINTENANCE_VIEW_MODE_MAINTENANCE}" />
+<c:set var="isMaintenanceForm" value='false' />
+<c:if test='<%= jspContext.findAttribute("KualiForm") != null %>'>
+	<c:set var="isMaintenanceForm" value='<%= jspContext.findAttribute("KualiForm").getClass() == org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm.class %>' />
+</c:if>
+<c:set var="isMaintenance" value="${isMaintenanceForm || maintenanceViewMode eq Constants.PARAM_MAINTENANCE_VIEW_MODE_MAINTENANCE}" />
 
 <%-- Is the screen a lookup? --%>
 <c:set var="isLookup" value="${maintenanceViewMode eq Constants.PARAM_MAINTENANCE_VIEW_MODE_LOOKUP}" />
@@ -243,7 +247,7 @@
                         <%-- Only show the show/hide button on collection entries that
                         contain data (i.e. those that aren't adding --%>
                         <kul:subtab noShowHideButton="${isFieldAddingToACollection or empty field.containerRows}" subTabTitle="${kfunc:scrubWhitespace(subTabTitle)}" buttonAlt="${kfunc:scrubWhitespace(subTabButtonAlt)}" width="${width}" highlightTab="${tabHighlight}"
-                                boClassName="${field.multipleValueLookupClassName}" lookedUpBODisplayName="${field.multipleValueLookupClassLabel}" lookedUpCollectionName="${field.multipleValueLookedUpCollectionName}" open="${!rowHidden}" >	
+                                boClassName="${field.multipleValueLookupClassName}" lookedUpBODisplayName="${field.multipleValueLookupClassLabel}" lookedUpCollectionName="${field.multipleValueLookedUpCollectionName}" useCurrentTabIndexAsKey="true" open="${!rowHidden}" >	
                             <table style="width: ${width}; text-align: left; margin-left: auto; margin-right: auto;" class="datatable" cellpadding="0" cellspacing="0" align="center">
                                 <%-- cannot refer to recursive tag (containerRowDisplay) using kul alias or Jetty 7 will have jsp compilation errors on Linux --%>
     							<%-- this tag ends up being recursive b/c it calls rowDisplay--%>
@@ -432,7 +436,7 @@
                                 ${kfunc:registerEditableProperty(KualiForm, field.propertyName)}
                                 <c:set var="checkboxPresentOnFormAnnotationFieldName" value="${field.propertyName}${Constants.CHECKBOX_PRESENT_ON_FORM_ANNOTATION}" />
                                 ${kfunc:registerEditableProperty(KualiForm, checkboxPresentOnFormAnnotationFieldName)}
-                                <input type="checkbox" id='${field.propertyName}' name="${field.propertyName}" onclick="${field.script}"
+                                <input type="checkbox" id='${field.propertyName}' name="${field.propertyName}"
                                     ${field.propertyValue eq 'Yes' || field.propertyValue eq 'YES' ? 'checked="checked"' : ''}
                                     ${onblurcall} ${onchangecall} tabIndex="${tabIndex}"/>
                                 <input type="hidden" name="${checkboxPresentOnFormAnnotationFieldName}" value="present"/>
@@ -447,7 +451,7 @@
 
                 </c:when>
 
-                <c:when test="${field.fieldType eq field.DROPDOWN || field.fieldType eq field.DROPDOWN_APC}">
+                <c:when test="${field.fieldType eq field.DROPDOWN}">
 
                     <kul:fieldDefaultLabel isLookup="${isLookup}" isRequired="${field.fieldRequired}"
                         isReadOnly="${isFieldReadOnly}" cellWidth="${dataCellWidth}%"
@@ -559,7 +563,7 @@
 
                             <c:otherwise>
                                 ${kfunc:registerEditableProperty(KualiForm, field.propertyName)}
-                                <select multiple="${true}" id='${field.propertyName}' name='${field.propertyName}' size="${field.maxLength}" style="${textStyle}" ${onblurcall} ${onchangecall} tabIndex="${tabIndex}">
+                                <select multiple="${true}" id='${field.propertyName}' name='${field.propertyName}' size="${field.size}" style="${textStyle}" ${onblurcall} ${onchangecall} tabIndex="${tabIndex}">
                                     <%--<c:if test="${!field.hasBlankValidValue}">
                                         <option value=""></option>
                                     </c:if> --%>
@@ -671,7 +675,10 @@
                 <c:when test="${field.fieldType eq field.FILE}">
                     <kul:fieldDefaultLabel isLookup="${isLookup}" isRequired="${field.fieldRequired}" isReadOnly="${isFieldReadOnly}"
                         cellWidth="${dataCellWidth}%" fieldType="${field.fieldType}" fieldLabel="${field.fieldLabel}" fieldName="${field.propertyName}"/>
-
+                    <c:set var="lineNum" value="" />
+                    <c:if test="${fn:contains(field.propertyName, '[') and fn:contains(field.propertyName, '].')}" >
+                      <c:set var="lineNum" value=".line${fn:substringBefore(fn:substringAfter(field.propertyName, '['), '].')}.anchor${tabIndex}"/>
+                    </c:if>
                     <td class="grid" style="width:${dataCellWidth}%;">
                         <c:choose>
                             <c:when test="${isFieldReadOnly}">
@@ -679,6 +686,9 @@
                                     <c:out value="<%=((String) request.getAttribute(\"fileName\"))%>" />&nbsp;
                                 </c:if>
                                 <c:if test="${not empty fieldValue}" >
+                                    <c:if test="${(isInquiry or isLookup)}">
+                                      <html:image property="methodToCall.downloadAttachment${lineNum}" src="${ConfigProperties.kr.externalizable.images.url}${field.imageSrc}" alt="download attachment" style="padding:5px" onclick="excludeSubmitRestriction=true"/>
+                                    </c:if>
                                     <kul:fieldShowReadOnly field="${field}" addHighlighting="${addHighlighting}" isLookup="${isLookup}" />
                                 </c:if>
                             </c:when>
@@ -695,8 +705,10 @@
                                             </c:if>
                                         </c:when>
                                         <c:otherwise>
-                                        <div id="replaceDiv" style="display:block;">
-                                            <html:image property="methodToCall.downloadAttachment" src="${ConfigProperties.kr.externalizable.images.url}clip.gif" alt="download attachment" style="padding:5px" onclick="excludeSubmitRestriction=true"/>
+
+                                          <div id="replaceDiv" style="display:block;">
+
+                                            <html:image property="methodToCall.downloadAttachment${lineNum}" src="${ConfigProperties.kr.externalizable.images.url}${field.imageSrc}" alt="download attachment" style="padding:5px" onclick="excludeSubmitRestriction=true"/>
                                             <c:out value="${fieldValue}"/>
                                             &nbsp;&nbsp;
                                                                                         <input type="hidden" name='methodToCall' />
@@ -708,7 +720,7 @@
                                                     submitForm();
                                                 }
                                             </script>
-                                            <html:link linkName="replaceAttachment" onclick="javascript: replaceAttachment();" href="" anchor="" property="methodToCall.replaceAttachment">replace</html:link>
+                                           <html:image property="methodToCall.replaceAttachment.${lineNum}" src="${ConfigProperties.kr.externalizable.images.url}tinybutton-replace.gif" alt="replace attachment" onclick="excludeSubmitRestriction=true"/>
                                         </div>
                                         <div id="replaceFileDiv" valign="middle" style="display:none;">
                                             ${kfunc:registerEditableProperty(KualiForm, field.propertyName)}

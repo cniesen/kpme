@@ -84,7 +84,7 @@ public interface TimeBlockService {
 	 */
 	public List<TimeBlock> buildTimeBlocksSpanDates(Assignment assignment, String earnCode, TimesheetDocument timesheetDocument,
 												Timestamp beginTimestamp, Timestamp endTimestamp, BigDecimal hours, BigDecimal amount,
-                                                Boolean isClockLogCreated, Boolean isLunchDeleted);
+                                                Boolean isClockLogCreated, Boolean isLunchDeleted, String spanWeeks);
 	/**
 	 * Create a TimeBlock for the given criteria
 	 * @param timesheetDocument
@@ -124,7 +124,7 @@ public interface TimeBlockService {
 
     /**
      * Get overnight timeblocks by the clock log begin id
-     * @param clockLogBeginId
+     * @param clockLogEndId
      * @return
      */
     public List<TimeBlock> getOvernightTimeBlocks(String clockLogEndId);

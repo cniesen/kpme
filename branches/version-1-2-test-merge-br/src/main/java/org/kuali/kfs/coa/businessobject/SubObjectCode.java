@@ -15,15 +15,15 @@
  */
 package org.kuali.kfs.coa.businessobject;
 
-import java.util.LinkedHashMap;
+import org.kuali.rice.core.api.mo.common.active.Inactivatable;
+import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-import org.kuali.rice.kns.bo.Inactivateable;
-import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+import java.util.LinkedHashMap;
 
 /**
  * 
  */
-public class SubObjectCode extends PersistableBusinessObjectBase implements Inactivateable {
+public class SubObjectCode extends PersistableBusinessObjectBase implements Inactivatable {
 
     private static final long serialVersionUID = -5292158248714650271L;
 
@@ -216,21 +216,6 @@ public class SubObjectCode extends PersistableBusinessObjectBase implements Inac
 
     public void setUniversityFiscalYear(Integer universityFiscalYear) {
         this.universityFiscalYear = universityFiscalYear;
-    }
-
-    /**
-     * @see org.kuali.rice.kns.bo.BusinessObjectBase#toStringMapper()
-     */
-    protected LinkedHashMap toStringMapper() {
-        LinkedHashMap m = new LinkedHashMap();
-
-        m.put("universityFiscalYear", this.universityFiscalYear);
-        m.put("chartOfAccountsCode", this.chartOfAccountsCode);
-        m.put("accountNumber", this.accountNumber);
-        m.put("financialObjectCode", this.financialObjectCode);
-        m.put("financialSubObjectCode", this.financialSubObjectCode);
-
-        return m;
     }
 
 }

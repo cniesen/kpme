@@ -5,14 +5,14 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.util.TkConstants;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 import java.util.List;
 
-public class ClockLogDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements ClockLogDao {
+public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements ClockLogDao {
 
     private static final Logger LOG = Logger.getLogger(ClockLogDaoSpringOjbImpl.class);
     
@@ -86,28 +86,29 @@ public class ClockLogDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implem
     	
     	return (ClockLog)this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(ClockLog.class,currentRecordCriteria));
     }
-    
-    @SuppressWarnings("unchecked")
-	public List<ClockLog> getOpenClockLogs(PayCalendarEntries payCalendarEntry){
-    	Criteria criteria = new Criteria();
-    	criteria.addIn("clockAction", TkConstants.ON_THE_CLOCK_CODES);
 
-    	Criteria clockTimeJoinCriteria = new Criteria();
+
+    @SuppressWarnings("unchecked")
+    public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry){
+        Criteria criteria = new Criteria();
+        criteria.addIn("clockAction", TkConstants.ON_THE_CLOCK_CODES);
+
+        Criteria clockTimeJoinCriteria = new Criteria();
         clockTimeJoinCriteria.addBetween("clockTimestamp", payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
-    	clockTimeJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-    	ReportQueryByCriteria clockTimeSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimeJoinCriteria);
-    	clockTimeSubQuery.setAttributes(new String[] {new StringBuffer("max(").append("clockTimestamp").append(")").toString() });
-    	
-    	criteria.addEqualTo("clockTimestamp", clockTimeSubQuery);
-    	
-    	Criteria clockTimestampJoinCriteria = new Criteria();
+        clockTimeJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        ReportQueryByCriteria clockTimeSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimeJoinCriteria);
+        clockTimeSubQuery.setAttributes(new String[] {new StringBuffer("max(").append("clockTimestamp").append(")").toString() });
+
+        criteria.addEqualTo("clockTimestamp", clockTimeSubQuery);
+
+        Criteria clockTimestampJoinCriteria = new Criteria();
         clockTimestampJoinCriteria.addBetween("clockTimestamp", payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
-    	clockTimestampJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-    	ReportQueryByCriteria clockTimestampSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimestampJoinCriteria);
-    	clockTimestampSubQuery.setAttributes(new String[] { new StringBuffer("max(").append("timestamp").append(")").toString()});
-    	
-    	criteria.addEqualTo("timestamp", clockTimestampSubQuery);
-    	return (List<ClockLog>)this.getPersistenceBrokerTemplate().getCollectionByQuery((QueryFactory.newQuery(ClockLog.class, criteria)));
+        clockTimestampJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        ReportQueryByCriteria clockTimestampSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimestampJoinCriteria);
+        clockTimestampSubQuery.setAttributes(new String[] { new StringBuffer("max(").append("timestamp").append(")").toString()});
+
+        criteria.addEqualTo("timestamp", clockTimestampSubQuery);
+        return (List<ClockLog>)this.getPersistenceBrokerTemplate().getCollectionByQuery((QueryFactory.newQuery(ClockLog.class, criteria)));
     }
 
 }

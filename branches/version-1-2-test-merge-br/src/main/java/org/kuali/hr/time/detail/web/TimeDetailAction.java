@@ -1,15 +1,29 @@
 package org.kuali.hr.time.detail.web;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.calendar.Calendar;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.calendar.TkCalendar;
-import org.kuali.hr.time.paycalendar.PayCalendar;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
@@ -22,24 +36,15 @@ import org.kuali.hr.time.timesummary.AssignmentRow;
 import org.kuali.hr.time.timesummary.EarnCodeSection;
 import org.kuali.hr.time.timesummary.EarnGroupSection;
 import org.kuali.hr.time.timesummary.TimeSummary;
-import org.kuali.hr.time.util.*;
+import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
+import org.kuali.hr.time.util.TKUtils;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.hr.time.util.TkTimeBlockAggregate;
+import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.service.KEWServiceLocator;
-import org.kuali.rice.kns.exception.AuthorizationException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.text.SimpleDateFormat;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import org.kuali.rice.krad.exception.AuthorizationException;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 public class TimeDetailAction extends TimesheetAction {
 
@@ -47,7 +52,7 @@ public class TimeDetailAction extends TimesheetAction {
     protected void checkTKAuthorization(ActionForm form, String methodToCall) throws AuthorizationException {
         super.checkTKAuthorization(form, methodToCall); // Checks for read access first.
         TKUser user = TKContext.getUser();
-        UserRoles roles = user.getCurrentRoles(); // either backdoor or actual
+        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
         TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
 
         // Check for write access to Timeblock.
@@ -92,92 +97,92 @@ public class TimeDetailAction extends TimesheetAction {
         ActionFormUtils.addWarningTextFromEarnGroup(tdaf);
 
         // Set calendar
-        PayCalendarEntries payCalendarEntry = tdaf.getPayCalendarDates();
-        PayCalendar payCalendar = TkServiceLocator.getPayCalendarSerivce().getPayCalendar(payCalendarEntry.getHrPyCalendarId());
+        CalendarEntries payCalendarEntry = tdaf.getPayCalendarDates();
+        Calendar payCalendar = TkServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId());
         TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(timeBlocks, payCalendarEntry, payCalendar, true,
-                TKUtils.getFullWeekDaySpanForPayCalendarEntry(payCalendarEntry));
+                TKUtils.getFullWeekDaySpanForCalendarEntry(payCalendarEntry));
         TkCalendar cal = TkCalendar.getCalendar(aggregate);
         cal.assignAssignmentStyle(aMap);
         tdaf.setTkCalendar(cal);
-     
+
         this.populateCalendarAndPayPeriodLists(request, tdaf);
 
         tdaf.setTimeBlockString(ActionFormUtils.getTimeBlocksJson(aggregate.getFlattenedTimeBlockList()));
 
         tdaf.setOvertimeEarnCodes(TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDoucment().getAsOfDate()));
 
-        if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), TKContext.getUser().getPrincipalId())) {
-        	tdaf.setWorkingOnItsOwn("true");
+        if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())) {
+            tdaf.setWorkingOnItsOwn("true");
         }
-        
+
         tdaf.setDocEditable("false");
         if (TKContext.getUser().isSystemAdmin()) {
             tdaf.setDocEditable("true");
         } else {
             boolean docFinal = TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
             if (!docFinal) {
-            	if(StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), TKContext.getUser().getPrincipalId())
-	            		|| TKContext.getUser().isSystemAdmin() 
-	            		|| TKContext.getUser().isLocationAdmin() 
-	            		|| TKContext.getUser().isDepartmentAdmin() 
-	            		|| TKContext.getUser().isReviewer() 
-	            		|| TKContext.getUser().isApprover()) {
+                if(StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
+                        || TKContext.getUser().isSystemAdmin()
+                        || TKContext.getUser().isLocationAdmin()
+                        || TKContext.getUser().isDepartmentAdmin()
+                        || TKContext.getUser().isReviewer()
+                        || TKContext.getUser().isApprover()) {
                     tdaf.setDocEditable("true");
                 }
-            	
-	            //if the timesheet has been approved by at least one of the approvers, the employee should not be able to edit it
-	            if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), TKContext.getUser().getPrincipalId())
-	            		&& TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)) {
-		        	Collection actions = KEWServiceLocator.getActionTakenService().findByDocIdAndAction(Long.parseLong(TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentId()), TkConstants.TIMESHEET_ACTIONS.APPROVE);
-	        		if(!actions.isEmpty()) {
-	        			tdaf.setDocEditable("false");  
-	        		}
-		        }
+
+                //if the timesheet has been approved by at least one of the approvers, the employee should not be able to edit it
+                if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
+                        && TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)) {
+                    Collection actions = KEWServiceLocator.getActionTakenService().findByDocIdAndAction(TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentId(), TkConstants.TIMESHEET_ACTIONS.APPROVE);
+                    if(!actions.isEmpty()) {
+                        tdaf.setDocEditable("false");
+                    }
+                }
             }
         }
 
         return forward;
     }
 
-	private void populateCalendarAndPayPeriodLists(HttpServletRequest request, TimeDetailActionForm tdaf) {
-		List<TimesheetDocumentHeader> documentHeaders = (List<TimesheetDocumentHeader>) TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeadersForPrincipalId(TKContext.getUser().getPrincipalId());
+    private void populateCalendarAndPayPeriodLists(HttpServletRequest request, TimeDetailActionForm tdaf) {
+        List<TimesheetDocumentHeader> documentHeaders = (List<TimesheetDocumentHeader>) TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeadersForPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         if(tdaf.getCalendarYears().isEmpty()) {
-        	// get calendar year drop down list contents
-	        Set<String> yearSet = new HashSet<String>();
-	        
-	        for(TimesheetDocumentHeader tdh : documentHeaders) {
-	        	yearSet.add(sdf.format(tdh.getPayBeginDate()));
-	        }
-	        List<String> yearList = new ArrayList<String>(yearSet);
-	        Collections.sort(yearList);
-	        tdaf.setCalendarYears(yearList);
+            // get calendar year drop down list contents
+            Set<String> yearSet = new HashSet<String>();
+
+            for(TimesheetDocumentHeader tdh : documentHeaders) {
+                yearSet.add(sdf.format(tdh.getPayBeginDate()));
+            }
+            List<String> yearList = new ArrayList<String>(yearSet);
+            Collections.sort(yearList);
+            tdaf.setCalendarYears(yearList);
         }
         // if selected calendar year is passed in
         if(request.getParameter("selectedCY")!= null) {
-        	tdaf.setSelectedCalendarYear(request.getParameter("selectedCY").toString());
+            tdaf.setSelectedCalendarYear(request.getParameter("selectedCY").toString());
         }
         // if there is no selected calendr year, use the year of current pay calendar entry
         if(StringUtils.isEmpty(tdaf.getSelectedCalendarYear())) {
-        	tdaf.setSelectedCalendarYear(sdf.format(tdaf.getPayCalendarDates().getBeginPeriodDate()));
+            tdaf.setSelectedCalendarYear(sdf.format(tdaf.getPayCalendarDates().getBeginPeriodDate()));
         }
         if(tdaf.getPayPeriodsMap().isEmpty()) {
-	        List<PayCalendarEntries> payPeriodList = new ArrayList<PayCalendarEntries>();
-	        for(TimesheetDocumentHeader tdh : documentHeaders) {
-	        	if(sdf.format(tdh.getPayBeginDate()).equals(tdaf.getSelectedCalendarYear())) {
-	        		PayCalendarEntries pe = TkServiceLocator.getPayCalendarEntriesSerivce().getCalendarEntriesByBeginAndEndDate(tdh.getPayBeginDate(), tdh.getPayEndDate());
-	        		payPeriodList.add(pe);
-	        	}
-	        }
-	        tdaf.setPayPeriodsMap(ActionFormUtils.getPayPeriodsMap(payPeriodList));
+            List<CalendarEntries> payPeriodList = new ArrayList<CalendarEntries>();
+            for(TimesheetDocumentHeader tdh : documentHeaders) {
+                if(sdf.format(tdh.getPayBeginDate()).equals(tdaf.getSelectedCalendarYear())) {
+                    CalendarEntries pe = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(tdh.getPayBeginDate(), tdh.getPayEndDate());
+                    payPeriodList.add(pe);
+                }
+            }
+            tdaf.setPayPeriodsMap(ActionFormUtils.getPayPeriodsMap(payPeriodList));
         }
         if(request.getParameter("selectedPP")!= null) {
-        	tdaf.setSelectedPayPeriod(request.getParameter("selectedPP").toString());
+            tdaf.setSelectedPayPeriod(request.getParameter("selectedPP").toString());
         }
         if(StringUtils.isEmpty(tdaf.getSelectedPayPeriod())) {
-        	tdaf.setSelectedPayPeriod(tdaf.getPayCalendarDates().getHrPyCalendarEntriesId());
+            tdaf.setSelectedPayPeriod(tdaf.getPayCalendarDates().getHrCalendarEntriesId());
         }
-	}
+    }
 
 
     /**
@@ -274,12 +279,13 @@ public class TimeDetailAction extends TimesheetAction {
         List<TimeBlock> newTimeBlocks = tdaf.getTimesheetDocument().getTimeBlocks();
         DateTime startTemp = new DateTime(startTime);
         DateTime endTemp = new DateTime(endTime);
+        // KPME-1446 add spanningweeks to the calls below 
         if (StringUtils.equals(tdaf.getAcrossDays(), "y")
                 && !(endTemp.getDayOfYear() - startTemp.getDayOfYear() <= 1
                 && endTemp.getHourOfDay() == 0)) {
             newTimeBlocks.addAll(TkServiceLocator.getTimeBlockService().buildTimeBlocksSpanDates(assignment,
                     tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(), startTime,
-                    endTime, tdaf.getHours(), tdaf.getAmount(), false, Boolean.parseBoolean(tdaf.getLunchDeleted())));
+                    endTime, tdaf.getHours(), tdaf.getAmount(), false, Boolean.parseBoolean(tdaf.getLunchDeleted()), tdaf.getSpanningWeeks()));
         } else {
             newTimeBlocks.addAll(TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment,
                     tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(), startTime,
@@ -358,47 +364,43 @@ public class TimeDetailAction extends TimesheetAction {
 
         List<TimeBlock> newTimeBlocks = tdaf.getTimesheetDocument().getTimeBlocks();
         TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
-        // KPME-1340
-        TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument(), TKContext.getPrincipalId());
-        TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTimeBlocks);
-        TKContext.getCurrentTimesheetDoucment().setTimeBlocks(newTimeBlocks);
 
         return mapping.findForward("basic");
     }
-      
-  public ActionForward gotoCurrentPayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-	  String viewPrincipal = TKContext.getUser().getTargetPrincipalId();
-	  Date currentDate = TKUtils.getTimelessDate(null);
-      PayCalendarEntries pce = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(viewPrincipal,  currentDate);
-      TimesheetDocument td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, pce);
-      setupDocumentOnFormContext((TimesheetActionForm)form, td);
-	  return mapping.findForward("basic");
-  }
-  
-  //Triggered by changes of pay period drop down list, reload the whole page based on the selected pay period
-  public ActionForward changeCalendarYear(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-	  
-	  TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
-	  if(request.getParameter("selectedCY") != null) {
-		  tdaf.setSelectedCalendarYear(request.getParameter("selectedCY").toString());
-	  }
-	  return mapping.findForward("basic");
-  }
-  
-  //Triggered by changes of pay period drop down list, reload the whole page based on the selected pay period
-  public ActionForward changePayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-	  TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
-	  if(request.getParameter("selectedPP") != null) {
-		  tdaf.setSelectedPayPeriod(request.getParameter("selectedPP").toString());
-		  PayCalendarEntries pce = TkServiceLocator.getPayCalendarEntriesSerivce()
-		  	.getPayCalendarEntries(request.getParameter("selectedPP").toString());
-		  if(pce != null) {
-			  String viewPrincipal = TKContext.getUser().getTargetPrincipalId();
-			  TimesheetDocument td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, pce);
-			  setupDocumentOnFormContext((TimesheetActionForm)form, td);
-		  }
-	  }
-	  return mapping.findForward("basic");
-  }
+
+    public ActionForward gotoCurrentPayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+        Date currentDate = TKUtils.getTimelessDate(null);
+        CalendarEntries pce = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal, currentDate);
+        TimesheetDocument td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, pce);
+        setupDocumentOnFormContext((TimesheetActionForm)form, td);
+        return mapping.findForward("basic");
+    }
+
+    //Triggered by changes of pay period drop down list, reload the whole page based on the selected pay period
+    public ActionForward changeCalendarYear(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
+        if(request.getParameter("selectedCY") != null) {
+            tdaf.setSelectedCalendarYear(request.getParameter("selectedCY").toString());
+        }
+        return mapping.findForward("basic");
+    }
+
+    //Triggered by changes of pay period drop down list, reload the whole page based on the selected pay period
+    public ActionForward changePayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
+        if(request.getParameter("selectedPP") != null) {
+            tdaf.setSelectedPayPeriod(request.getParameter("selectedPP").toString());
+            CalendarEntries pce = TkServiceLocator.getCalendarEntriesService()
+                    .getCalendarEntries(request.getParameter("selectedPP").toString());
+            if(pce != null) {
+                String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+                TimesheetDocument td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, pce);
+                setupDocumentOnFormContext((TimesheetActionForm)form, td);
+            }
+        }
+        return mapping.findForward("basic");
+    }
 
 }

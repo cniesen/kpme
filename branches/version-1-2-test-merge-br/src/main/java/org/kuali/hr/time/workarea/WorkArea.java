@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.authorization.DepartmentalRule;
 import org.kuali.hr.time.department.Department;
@@ -14,7 +15,7 @@ import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.task.Task;
 
 public class WorkArea extends HrBusinessObject implements DepartmentalRule {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "WorkArea";
     private static final long serialVersionUID = 1L;
 
     private String tkWorkAreaId;
@@ -39,14 +40,6 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule {
     private Department department;
     private Task taskObj;
     private EarnCode defaultOvertimeEarnCodeObj;
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected LinkedHashMap toStringMapper() {
-	LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
-	toStringMap.put("workArea", workArea);
-	return toStringMap;
-    }
 
 
     public Date getEffectiveDate() {

@@ -3,6 +3,7 @@ package org.kuali.hr.time.workflow;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -14,13 +15,17 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.core.api.uif.RemotableAttributeError;
+import org.kuali.rice.kew.api.identity.Id;
+import org.kuali.rice.kew.api.identity.PrincipalId;
+import org.kuali.rice.kew.api.rule.RoleName;
+import org.kuali.rice.kew.api.rule.RuleExtension;
 import org.kuali.rice.kew.engine.RouteContext;
-import org.kuali.rice.kew.identity.Id;
-import org.kuali.rice.kew.identity.PrincipalId;
 import org.kuali.rice.kew.routeheader.DocumentContent;
 import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
-import org.kuali.rice.kew.rule.Role;
 import org.kuali.rice.kew.rule.RoleAttribute;
+import org.kuali.rice.kew.rule.RuleExtensionValue;
+import org.kuali.rice.kns.web.ui.Row;
 
 public class TkWorkflowMissedPunchAttribute implements RoleAttribute {
 
@@ -33,33 +38,23 @@ public class TkWorkflowMissedPunchAttribute implements RoleAttribute {
     public static final String XP_MD_A_ASSIGN = "/assignment/text()";
     public static final String XP_MD_A_TDOCID = "/timesheetDocumentId/text()";
 
-	@Override
-	public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
-		List<String> roles = new ArrayList<String>();
-		roles.add(roleName);
-		return roles;
-	}
+    @Override
+    public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
+        List<String> roles = new ArrayList<String>();
+        roles.add(roleName);
+        return roles;
+    }
 
-	@Override
-	public List<Role> getRoleNames() {
-		// This is a list of "RoleNames" that this RoleAttribute supports -
-		// we can use this to have branching logic in the resolveQualifiedRole()
-		// method for different types of "Roles"
-		// and have different principal Resolution.
-		// ... Now whether or not we need this is another question
-		throw new UnsupportedOperationException("Not supported in TkWorkflowMissedPunchAttribute");
-	}
+    /**
+     * Role name is passed in in the routing rule.
+     */
+    @Override
+    public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
+        ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
+        List<Id> principals = new ArrayList<Id>();
+        Long routeHeaderId = new Long(routeContext.getDocument().getDocumentId());
 
-	@Override
-	/**
-	 * Role name is passed in in the routing rule.
-	 */
-	public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
-		ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
-		List<Id> principals = new ArrayList<Id>();
-		Long routeHeaderId = routeContext.getDocument().getRouteHeaderId();
-
-		TkRoleService roleService = TkServiceLocator.getTkRoleService();
+        TkRoleService roleService = TkServiceLocator.getTkRoleService();
         MissedPunchDocument missedPunch = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(routeHeaderId.toString());
 
         String assign_string = missedPunch.getAssignment();
@@ -71,7 +66,7 @@ public class TkWorkflowMissedPunchAttribute implements RoleAttribute {
                 Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(tdoc, assign_string);
                 if (assignment != null) {
                     List<String> users = roleService.getResponsibleParties(assignment, roleName, tdoc.getAsOfDate());
-                   
+
                     // add approver delegates to users
                     Long workAreaNumber = assignment.getWorkArea();
                     List<TkRole> approvers = roleService.getWorkAreaRoles(workAreaNumber, roleName, TKUtils.getCurrentDate());
@@ -80,19 +75,19 @@ public class TkWorkflowMissedPunchAttribute implements RoleAttribute {
                     roles.addAll(approvers);
                     roles.addAll(approverDelegates);
                     for(TkRole aRole : roles) {
-                    	users.add(aRole.getPrincipalId());
+                        users.add(aRole.getPrincipalId());
                     }
-                    
+
                     if(users.isEmpty()){
-                    	throw new RuntimeException("No responsible people for work area" + assignment.getWorkArea());
+                        throw new RuntimeException("No responsible people for work area" + assignment.getWorkArea());
                     }
                     for (String user : users) {
-                    	if(user != null) {
-	                        PrincipalId pid = new PrincipalId(user);
-	                        if (!principals.contains(pid)) {
-	                            principals.add(pid);
-	                        }
-                    	}
+                        if(user != null) {
+                            PrincipalId pid = new PrincipalId(user);
+                            if (!principals.contains(pid)) {
+                                principals.add(pid);
+                            }
+                        }
                     }
                 } else {
                     throw new RuntimeException("Could not obtain Assignment.");
@@ -105,10 +100,73 @@ public class TkWorkflowMissedPunchAttribute implements RoleAttribute {
         }
 
 
-		if (principals.size() == 0)
-			throw new RuntimeException("No principals to route to. Push to exception routing.");
+        if (principals.size() == 0)
+            throw new RuntimeException("No principals to route to. Push to exception routing.");
 
-		rqr.setRecipients(principals);
-		return rqr;
-	}
+        rqr.setRecipients(principals);
+        return rqr;
+    }
+
+    @Override
+    public boolean isMatch(DocumentContent docContent,
+                           List<RuleExtension> ruleExtensions) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public List<Row> getRuleRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Row> getRoutingDataRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getDocContent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RuleExtensionValue> getRuleExtensionValues() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RemotableAttributeError> validateRoutingData(
+            Map<String, String> paramMap) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RemotableAttributeError> validateRuleData(
+            Map<String, String> paramMap) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean isRequired() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public List<RoleName> getRoleNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

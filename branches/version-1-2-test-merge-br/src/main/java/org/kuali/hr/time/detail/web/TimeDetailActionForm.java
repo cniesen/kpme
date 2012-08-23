@@ -35,6 +35,16 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
     private String tkTimeHourDetailId;
     private String isLunchDeleted;
     private boolean canAddTimeblock;
+    private String spanningWeeks; // KPME-1446
+
+    public String getSpanningWeeks() {
+        return spanningWeeks;
+    }
+
+    public void setSpanningWeeks(String spanningWeeks) {
+        this.spanningWeeks = spanningWeeks;
+    }
+
 
     public TkCalendar getTkCalendar() {
         return calendar;
@@ -90,7 +100,7 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 	}
 
 	public String getServerTimezone() {
-		return TkConstants.SYSTEM_TIME_ZONE;
+        return TKUtils.getSystemTimeZone();
 	}
 
 	public String getUserTimezone() {

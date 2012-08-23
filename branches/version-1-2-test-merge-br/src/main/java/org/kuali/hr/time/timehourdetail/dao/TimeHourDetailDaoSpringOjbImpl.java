@@ -5,11 +5,12 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 import java.util.List;
 
-public class TimeHourDetailDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements TimeHourDetailDao {
+public class TimeHourDetailDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimeHourDetailDao {
 
     private static final Logger LOG = Logger.getLogger(TimeHourDetailDaoSpringOjbImpl.class);
 

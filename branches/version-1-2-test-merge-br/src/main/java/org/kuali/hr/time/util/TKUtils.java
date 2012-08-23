@@ -1,15 +1,5 @@
 package org.kuali.hr.time.util;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.*;
-import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
-import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.task.Task;
-import org.kuali.rice.core.config.ConfigContext;
-
-import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.net.UnknownHostException;
 import java.sql.Date;
@@ -17,6 +7,22 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.Interval;
+import org.joda.time.Period;
+import org.kuali.hr.location.service.TimezoneKeyValueFinder;
+import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.task.Task;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 
 public class TKUtils {
 
@@ -33,6 +39,27 @@ public class TKUtils {
     public static String getDayOfMonthFromDateString(String dateString) {
         String[] date = dateString.split("/");
         return date[1];
+    }
+
+    public static String getSystemTimeZone() {
+        String configTimezone = TimeZone.getDefault().getID();
+        if (ConfigContext.getCurrentContextConfig() != null
+                && StringUtils.isNotBlank(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ConfigSettings.KPME_SYSTEM_TIMEZONE).trim())) {
+            String tempTimeZoneId = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ConfigSettings.KPME_SYSTEM_TIMEZONE);
+
+            if (TimeZone.getTimeZone(tempTimeZoneId) != null) {
+                configTimezone = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ConfigSettings.KPME_SYSTEM_TIMEZONE);
+            } else {
+                LOG.error("Timezone set by configuration parameter " + TkConstants.ConfigSettings.KPME_SYSTEM_TIMEZONE + " is not a valid time zone id.  Using the systems default time zone instead.");
+            }
+        }
+
+
+        return configTimezone;
+    }
+
+    public static DateTimeZone getSystemDateTimeZone() {
+        return DateTimeZone.forID(TKUtils.getSystemTimeZone());
     }
 
     /**
@@ -126,34 +153,34 @@ public class TKUtils {
                 || assignment.getJobNumber() == null) {
             return "";     // getAssignment() of AssignmentService can return an empty assignment
         }
-        
-       String stringTemp = assignment.getWorkAreaObj().getDescription() + " : $" 
-       				+ assignment.getJob().getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE) 
-       				+ " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
-       if(assignment.getTask()!= null) {
-	       	Task aTask = TkServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveDate());
-	       	if(aTask != null) {
-	       		// do not display task description if the task is the default one
-	        	// default task is created in getTask() of TaskService
-	        	if(!aTask.getDescription().equals(TkConstants.TASK_DEFAULT_DESP)) {
-	        		stringTemp += " " +  aTask.getDescription();
-	        	}
-	       	} 
-       }
-       return stringTemp;
+
+        String stringTemp = assignment.getWorkAreaObj().getDescription() + " : $"
+                + assignment.getJob().getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE)
+                + " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
+        if(assignment.getTask()!= null) {
+            Task aTask = TkServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveDate());
+            if(aTask != null) {
+                // do not display task description if the task is the default one
+                // default task is created in getTask() of TaskService
+                if(!aTask.getDescription().equals(TkConstants.TASK_DEFAULT_DESP)) {
+                    stringTemp += " " +  aTask.getDescription();
+                }
+            }
+        }
+        return stringTemp;
     }
 
     /**
      * Constructs a list of Day Spans for the pay calendar entry provided. You
      * must also provide a DateTimeZone so that we can create relative boundaries.
      *
-     * @param payCalendarEntry
+     * @param calendarEntry
      * @param timeZone
      * @return
      */
-    public static List<Interval> getDaySpanForPayCalendarEntry(PayCalendarEntries payCalendarEntry, DateTimeZone timeZone) {
-        DateTime beginDateTime = payCalendarEntry.getBeginLocalDateTime().toDateTime(timeZone);
-        DateTime endDateTime = payCalendarEntry.getEndLocalDateTime().toDateTime(timeZone);
+    public static List<Interval> getDaySpanForCalendarEntry(CalendarEntries calendarEntry, DateTimeZone timeZone) {
+        DateTime beginDateTime = calendarEntry.getBeginLocalDateTime().toDateTime(timeZone);
+        DateTime endDateTime = calendarEntry.getEndLocalDateTime().toDateTime(timeZone);
 
         List<Interval> dayIntervals = new ArrayList<Interval>();
 
@@ -168,42 +195,6 @@ public class TKUtils {
         return dayIntervals;
     }
 
-    public static List<Interval> getDaySpanForPayCalendarEntry(PayCalendarEntries payCalendarEntry) {
-        return getDaySpanForPayCalendarEntry(payCalendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
-    }
-
-    public static List<Interval> getFullWeekDaySpanForPayCalendarEntry(PayCalendarEntries payCalendarEntry) {
-        return getFullWeekDaySpanForPayCalendarEntry(payCalendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
-    }
-
-    public static List<Interval> getFullWeekDaySpanForPayCalendarEntry(PayCalendarEntries payCalendarEntry, DateTimeZone timeZone) {
-        DateTime beginDateTime = payCalendarEntry.getBeginLocalDateTime().toDateTime(timeZone);
-        DateTime endDateTime = payCalendarEntry.getEndLocalDateTime().toDateTime(timeZone);
-
-        List<Interval> dayIntervals = new ArrayList<Interval>();
-
-        DateTime currDateTime = beginDateTime;
-        if (beginDateTime.getDayOfWeek() != 7) {
-            currDateTime = beginDateTime.plusDays(0 - beginDateTime.getDayOfWeek());
-        }
-
-        int afterEndDate = 6 - endDateTime.getDayOfWeek();
-        if (endDateTime.getDayOfWeek() == 7 && endDateTime.getHourOfDay() != 0) {
-            afterEndDate = 6;
-        }
-        if (endDateTime.getHourOfDay() == 0) {
-            afterEndDate += 1;
-        }
-        DateTime aDate = endDateTime.plusDays(afterEndDate);
-        while (currDateTime.isBefore(aDate)) {
-            DateTime prevDateTime = currDateTime;
-            currDateTime = currDateTime.plusDays(1);
-            Interval daySpan = new Interval(prevDateTime, currDateTime);
-            dayIntervals.add(daySpan);
-        }
-
-        return dayIntervals;
-    }
 
     /**
      * Includes partial weeks if the time range provided does not divide evenly
@@ -299,7 +290,7 @@ public class TKUtils {
 
         return new Timestamp(dateTime.getMillis());
     }
-    
+
     public static Timestamp convertDateStringToTimestampWithoutZone(String dateStr, String timeStr) {
         // the date/time format is defined in tk.calendar.js. For now, the format is 11/17/2010 8:0
         String[] date = dateStr.split("/");
@@ -319,8 +310,8 @@ public class TKUtils {
 
         return new Timestamp(dateTime.getMillis());
     }
-    
-   public static String getIPAddressFromRequest(HttpServletRequest request) {
+
+    public static String getIPAddressFromRequest(HttpServletRequest request) {
         // Check for IPv6 addresses - Not sure what to do with them at this point.
         // TODO: IPv6 - I see these on my local machine.
         String ip = request.getRemoteAddr();
@@ -362,22 +353,22 @@ public class TKUtils {
         return sdf.format(dt);
     }
 
-    
+
     public static String formatDateTime(Timestamp timestamp){
-    	Date dt = new Date(timestamp.getTime());
-    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Date dt = new Date(timestamp.getTime());
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         return sdf.format(dt);
     }
-    
+
     public static Date formatDateString(String date){
-    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-    	try {
-			return new Date(sdf.parse(date).getTime());
-		} catch (ParseException e) {
-			return null;
-		}
+        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        try {
+            return new Date(sdf.parse(date).getTime());
+        } catch (ParseException e) {
+            return null;
+        }
     }
-    
+
     /**
      * Method to obtain the timezone offset string for the specified date time.
      *
@@ -420,6 +411,136 @@ public class TKUtils {
                 ? 2700 :
                 Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ConfigSettings.SESSION_TIMEOUT));
     }
-    
 
+    /**
+     * Creates a Timestamp object using Jodatime as an intermediate data structure
+     * from the provided date and time string. (From the form POST and javascript
+     * formats)
+     *
+     * @param dateStr (the format is 01/01/2011)
+     * @return Timestamp
+     */
+    public static Timestamp convertDateStringToTimestamp(String dateStr) {
+        // the date/time format is defined in tk.calendar.js. the format is 11/17/2010
+        String[] date = dateStr.split("/");
+
+        DateTimeZone dtz = DateTimeZone.forID(TkServiceLocator.getTimezoneService().getUserTimezone());
+
+        // this is from the jodattime javadoc:
+        // DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond, DateTimeZone zone)
+        // Noted that the month value is the actual month which is different than the java date object where the month value is the current month minus 1.
+        // I tried to use the actual month in the code as much as I can to reduce the convertions.
+        DateTime dateTime = new DateTime(
+                Integer.parseInt(date[2]),
+                Integer.parseInt(date[0]),
+                Integer.parseInt(date[1]),
+                0, 0, 0, 0, dtz);
+
+        return new Timestamp(dateTime.getMillis());
+    }
+
+
+    public static Timestamp getCurrentTimestamp() {
+        return new Timestamp(System.currentTimeMillis());
+    }
+
+    public static List<Interval> createDaySpan(DateTime beginDateTime, DateTime endDateTime, DateTimeZone zone) {
+        beginDateTime = beginDateTime.toDateTime(zone);
+        endDateTime = endDateTime.toDateTime(zone);
+        List<Interval> dayIntervals = new ArrayList<Interval>();
+
+        DateTime currDateTime = beginDateTime;
+        while (currDateTime.isBefore(endDateTime)) {
+            DateTime prevDateTime = currDateTime;
+            currDateTime = currDateTime.plusDays(1);
+            Interval daySpan = new Interval(prevDateTime, currDateTime);
+            dayIntervals.add(daySpan);
+        }
+
+        return dayIntervals;
+    }
+
+    public static List<Interval> getDaySpanForCalendarEntry(CalendarEntries calendarEntry) {
+        return getDaySpanForCalendarEntry(calendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+    }
+
+    public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntries calendarEntry) {
+        return getFullWeekDaySpanForCalendarEntry(calendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+    }
+
+    public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntries calendarEntry, DateTimeZone timeZone) {
+        DateTime beginDateTime = calendarEntry.getBeginLocalDateTime().toDateTime(timeZone);
+        DateTime endDateTime = calendarEntry.getEndLocalDateTime().toDateTime(timeZone);
+
+        List<Interval> dayIntervals = new ArrayList<Interval>();
+
+        DateTime currDateTime = beginDateTime;
+        if (beginDateTime.getDayOfWeek() != 7) {
+            currDateTime = beginDateTime.plusDays(0 - beginDateTime.getDayOfWeek());
+        }
+
+        int afterEndDate = 6 - endDateTime.getDayOfWeek();
+        if (endDateTime.getDayOfWeek() == 7 && endDateTime.getHourOfDay() != 0) {
+            afterEndDate = 6;
+        }
+        if (endDateTime.getHourOfDay() == 0) {
+            afterEndDate += 1;
+        }
+        DateTime aDate = endDateTime.plusDays(afterEndDate);
+        while (currDateTime.isBefore(aDate)) {
+            DateTime prevDateTime = currDateTime;
+            currDateTime = currDateTime.plusDays(1);
+            Interval daySpan = new Interval(prevDateTime, currDateTime);
+            dayIntervals.add(daySpan);
+        }
+
+        return dayIntervals;
+    }
+
+    public static java.util.Date removeTime(java.util.Date date) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        return cal.getTime();
+    }
+
+    public static int getWorkDays(java.util.Date startDate, java.util.Date endDate) {
+        int dayCounts = 0;
+        if(startDate.after(endDate)) {
+            return 0;
+        }
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTime(startDate);
+        Calendar cal2 = Calendar.getInstance();
+        cal2.setTime(endDate);
+
+        while(!cal1.after(cal2)) {
+            if(cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY
+                    && cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+                dayCounts ++;
+            }
+            cal1.add(Calendar.DATE, 1);
+        }
+        return dayCounts;
+    }
+
+    public static boolean isWeekend(java.util.Date aDate) {
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(aDate);
+        if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
+                || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+            return true;
+        }
+        return false;
+    }
+
+    public static java.util.Date addDates(java.util.Date aDate, int aNumber) {
+        Calendar gc = new GregorianCalendar();
+        gc.setTime(aDate);
+        gc.add(Calendar.DAY_OF_YEAR, aNumber);
+        return gc.getTime();
+    }
 }

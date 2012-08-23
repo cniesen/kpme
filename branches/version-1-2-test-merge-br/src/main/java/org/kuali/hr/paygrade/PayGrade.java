@@ -4,10 +4,11 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
 public class PayGrade extends HrBusinessObject {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayGrade";
 	/**
 	 * 
 	 */
@@ -16,13 +17,7 @@ public class PayGrade extends HrBusinessObject {
 	private String payGrade;
 	private String description;
 	private String userPrincipalId;
-
-	@SuppressWarnings("rawtypes")
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    private String salGroup;
 
 	public String getHrPayGradeId() {
 		return hrPayGradeId;
@@ -94,4 +89,12 @@ public class PayGrade extends HrBusinessObject {
 	public void setId(String id) {
 		setHrPayGradeId(id);
 	}
+
+    public String getSalGroup() {
+        return salGroup;
+    }
+
+    public void setSalGroup(String salGroup) {
+        this.salGroup = salGroup;
+    }
 }

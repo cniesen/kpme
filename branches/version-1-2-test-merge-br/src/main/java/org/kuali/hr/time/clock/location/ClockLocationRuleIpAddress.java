@@ -1,65 +1,52 @@
 package org.kuali.hr.time.clock.location;
 
-import java.util.LinkedHashMap;
-
 import org.kuali.hr.time.HrBusinessObject;
 
 public class ClockLocationRuleIpAddress extends HrBusinessObject {
 
-	private static final long serialVersionUID = 1L;
-	private String tkClockLocationRuleIpId;
-	private String tkClockLocationRuleId;
-	private String ipAddress;
-	
-	@Override
-	public String getId() {
-		return this.getTkClockLocationRuleIpId();
-	}
+    private static final long serialVersionUID = 1L;
+    private String tkClockLocationRuleIpId;
+    private String tkClockLocationRuleId;
+    private String ipAddress;
 
-	@Override
-	public void setId(String id) {
-		this.setTkClockLocationRuleIpId(id);
-	}
-	@Override
-	public String getUniqueKey() {
-		String ipAddressKey = getTkClockLocationRuleIpId().toString()
-			+"_"+ getTkClockLocationRuleId().toString() + "_" + getIpAddress();
-		return ipAddressKey;
-	}
+    @Override
+    public String getId() {
+        return this.getTkClockLocationRuleIpId();
+    }
 
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
+    @Override
+    public void setId(String id) {
+        this.setTkClockLocationRuleIpId(id);
+    }
+    @Override
+    public String getUniqueKey() {
+        String ipAddressKey = getTkClockLocationRuleIpId().toString()
+                +"_"+ getTkClockLocationRuleId().toString() + "_" + getIpAddress();
+        return ipAddressKey;
+    }
 
-		toStringMap.put("tkClockLocationRuleIpId", tkClockLocationRuleIpId);
-		toStringMap.put("tkOwnerObjectId", tkClockLocationRuleId);
-		toStringMap.put("ipAddress", ipAddress);
-		return null;
-	}
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
-	
-	public String getIpAddress() {
-		return ipAddress;
-	}
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+    public String getTkClockLocationRuleIpId() {
+        return tkClockLocationRuleIpId;
+    }
 
-	public String getTkClockLocationRuleIpId() {
-		return tkClockLocationRuleIpId;
-	}
+    public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
+        this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
+    }
 
-	public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
-		this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
-	}
+    public String getTkClockLocationRuleId() {
+        return tkClockLocationRuleId;
+    }
 
-	public String getTkClockLocationRuleId() {
-		return tkClockLocationRuleId;
-	}
-
-	public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
-		this.tkClockLocationRuleId = tkClockLocationRuleId;
-	}
+    public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
+        this.tkClockLocationRuleId = tkClockLocationRuleId;
+    }
 
 }

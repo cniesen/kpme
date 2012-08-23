@@ -16,7 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.Interval;
 import org.kuali.hr.time.timeblock.TimeBlockHistory;
 import org.kuali.hr.time.timeblock.TimeBlockHistoryDetail;
-import org.kuali.rice.kns.bo.BusinessObject;
+import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
 
 public class TimeBlockHistoryDetailLookupableHelperServiceImpl extends KualiLookupableHelperServiceImpl {

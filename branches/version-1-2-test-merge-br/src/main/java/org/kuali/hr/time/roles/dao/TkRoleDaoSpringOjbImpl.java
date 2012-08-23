@@ -12,6 +12,7 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 import java.sql.Date;
@@ -268,7 +269,7 @@ public class TkRoleDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implemen
 
         if (StringUtils.isNotBlank(principalId)) {
             //Fetch all the jobs and grab any position roles for this persons jobs
-            List<Job> lstActiveJobs = TkServiceLocator.getJobSerivce().getJobs(principalId, asOfDate);
+            List<Job> lstActiveJobs = TkServiceLocator.getJobService().getJobs(principalId, asOfDate);
             for (Job job : lstActiveJobs) {
                 if (job.getPositionNumber() != null) {
                     List<TkRole> lstRoles = findPositionRoles(job.getPositionNumber(),
@@ -402,7 +403,7 @@ public class TkRoleDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implemen
 
     @Override
     public void saveOrUpdateRole(TkRole role) {
-        KNSServiceLocator.getBusinessObjectService().save(role);
+        KRADServiceLocator.getBusinessObjectService().save(role);
     }
 
     @Override

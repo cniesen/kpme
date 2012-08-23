@@ -11,14 +11,14 @@
         	<th width="5%" rowspan="20" style="border-style:none">&nbsp;</th>
 			<th>&nbsp;</th> 
 			<c:forEach var="attrDefn" items="${role.definitions}" varStatus="status">
-       			<c:set var="attr" value="${attrDefn.value}" />
+       	  <c:set var="attr" value="${attrDefn.attributeField}" />
     			<%-- AttrDefn: ${attr}<br /> --%>
 				<c:set var="fieldName" value="${attr.name}" />
 				<c:set var="attrEntry" value="${role.attributeEntry[fieldName]}" />
 		    	<kul:htmlAttributeHeaderCell attributeEntry="${attrEntry}" useShortLabel="false" />
 			</c:forEach>
-			<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /></div></th>
-			<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" /></div></th>
+			<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /> 
+            <kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" /> 
            <c:if test="${not inquiry}">	
  			 <kul:htmlAttributeHeaderCell literalLabel="Actions"/>
            </c:if>   			
@@ -29,22 +29,24 @@
 					<c:out value="Add:" />
 				</th>
 				<c:forEach var="attrDefn" items="${role.definitions}" varStatus="status1">
-					<c:set var="attr" value="${attrDefn.value}" />
+					<c:set var="attr" value="${attrDefn.attributeField}" />
 					<c:set var="fieldName" value="${attr.name}" />
 					<c:set var="attrEntry" value="${role.attributeEntry[fieldName]}" />
 					<c:set var="attrDefinition" value="${role.definitionsKeyedByAttributeName[fieldName]}"/>
 			       	<td align="left" valign="middle">
 			       		<div align="center"> 
-			      		   <kul:htmlControlAttribute kimTypeId="${role.kimTypeId}" property="document.roles[${roleIdx}].newRolePrncpl.qualifiers[${status1.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${readOnlyRole}" />
+			      		   <kul:htmlControlAttribute property="document.roles[${roleIdx}].newRolePrncpl.qualifiers[${status1.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${readOnlyRole}" />
 			      		   <%-- 
 			      		   TODO: code (probably) does not pull the remote property name properly
 			      		   TODO: code does not handle multiple lookup/conversion parameters 
 			      		   --%>
-                           <c:if test="${attrDefinition.hasLookupBoDefinition}"> 
-    			       		   <c:if test="${!empty attr.lookupBoClass and not readOnlyRole}">
-    			       		       <kim:attributeLookup attributeDefinitions="${role.definitions}" pathPrefix="document.roles[${roleIdx}].newRolePrncpl" attr="${attr}" />
-    			          	   </c:if>
-			          	   </c:if>
+                   			<c:forEach var="widget" items="${attrDefn.attributeField.widgets}" >
+                          <c:if test="${widget['class'].name == 'org.kuali.rice.core.api.uif.RemotableQuickFinder'}">
+                                <c:if test="${!empty widget.dataObjectClass and not readOnlyRole}">
+    				       		    <kim:attributeLookup attributeDefinitions="${role.definitions}" pathPrefix="document.roles[${roleIdx}].newRolePrncpl" attr="${widget}" />
+                          </c:if>
+                            </c:if>
+                        </c:forEach>
 			  			</div>
 						<%--
 						Field: ${fieldName}<br />
@@ -86,35 +88,31 @@
 						</th>
 				        <c:forEach var="attrDefn" items="${role.definitions}" varStatus="status">
 			        	    <c:forEach var="qualifier" items="${rolePrncpl.qualifiers}" varStatus="status2">			        			    
-				        		<c:if test="${attrDefn.value.name == qualifier.kimAttribute.attributeName}">
-					        		<c:set var="attr" value="${attrDefn.value}" />
+				        		<c:if test="${attrDefn.attributeField.name == qualifier.kimAttribute.attributeName}">
+					        		<c:set var="attr" value="${attrDefn.attributeField}" />
 					        		<c:set var="fieldName" value="${attr.name}" />
 					        		<c:set var="attrEntry" value="${role.attributeEntry[fieldName]}" />
                     				<c:set var="attrDefinition" value="${role.definitionsKeyedByAttributeName[fieldName]}"/>
 									<c:set var="attrReadOnly" value="${readOnlyRole}"/>
 				            <td align="left" valign="middle">
 				                <div align="center"> 
-				                	<kul:htmlControlAttribute kimTypeId="${role.kimTypeId}" property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].qualifiers[${status.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${attrReadOnly}" />
-						      		   <c:if test="${attrDefinition.hasLookupBoDefinition}"> 
-                                           <c:if test="${!empty attr.lookupBoClass and not attrReadOnly}">
-    						      		       <kim:attributeLookup attributeDefinitions="${role.definitions}" pathPrefix="document.roles[${roleIdx}].rolePrncpls[${status1.index}]" attr="${attr}" />
-    						         	   </c:if>
-                                       </c:if>
+				                	<kul:htmlControlAttribute property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].qualifiers[${status.index}].attrVal"  attributeEntry="${attrEntry}" readOnly="${attrReadOnly}" />
+
+                        <c:forEach var="widget" items="${attrDefn.attributeField.widgets}" >
+                          <c:if test="${widget['class'].name == 'org.kuali.rice.core.api.uif.RemotableQuickFinder'}">
+                                <c:if test="${!empty widget.dataObjectClass and not attrReadOnly}">
+    				       		    <kim:attributeLookup attributeDefinitions="${role.definitions}" pathPrefix="document.roles[${roleIdx}].rolePrncpls[${status1.index}]" attr="${widget}" />
+                          </c:if>
+                            </c:if>
+                        </c:forEach>
 								</div>
 							</td>
 				        		</c:if>    
 				        	</c:forEach>
 						</c:forEach>									
-						<td>
-							<div align="center">
-				            <kul:htmlControlAttribute property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].activeFromDate"  attributeEntry="${docRolePrncplAttributes.activeFromDate}" datePicker="true" readOnly="${readOnlyRole}" />
-			        		</div>
-		        		</td>
-		        		<td>
-			        		<div align="center">
-				            <kul:htmlControlAttribute property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].activeToDate"  attributeEntry="${docRolePrncplAttributes.activeToDate}" datePicker="true" readOnly="${readOnlyRole}" />
-			        		</div>
-		        		</td>
+						<kim:cell inquiry="${inquiry}" textAlign="center" property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].activeFromDate"  attributeEntry="${docRolePrncplAttributes.activeFromDate}" datePicker="true" readOnly="${readOnlyRole}" />
+						<kim:cell inquiry="${inquiry}" textAlign="center" property="document.roles[${roleIdx}].rolePrncpls[${status1.index}].activeToDate"  attributeEntry="${docRolePrncplAttributes.activeToDate}" datePicker="true" readOnly="${readOnlyRole}" />
+				
            				<c:if test="${not inquiry}">									
 								<td class="infoline">
 								<div align=center>

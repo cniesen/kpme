@@ -1,12 +1,12 @@
 /*
- * Copyright 2005-2007 The Kuali Foundation
- * 
+ * Copyright 2005-2012 The Kuali Foundation
+ *
  * Licensed under the Educational Community License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.opensource.org/licenses/ecl2.php
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,6 +42,7 @@ function rend(obj, cc) {
 
     if (grpIdx.style.display == 'none') {
       grpIdx.style.display = '';
+      fldIdx.title = 'hide';
       if(cc){
         fldIdx.src = open_file_cc;
       } else {
@@ -49,6 +50,7 @@ function rend(obj, cc) {
       }
     } else {
       grpIdx.style.display = 'none';
+      fldIdx.title = 'show';
       if(cc){
         fldIdx.src = closed_file_cc;
       } else {
@@ -186,15 +188,15 @@ function setRecipientValue(recipientBase, value, isError ) {
     var containerDiv = document.getElementById(recipientBase + divSuffix);
     if (containerDiv) {
 		if (value == '') {
-			DWRUtil.setValue( containerDiv.id, "&nbsp;" );
+			dwr.util.setValue( containerDiv.id, "&nbsp;", {escapeHtml:false} );
 		} else {
-			DWRUtil.setValue( containerDiv.id, value, isError?null:{escapeHtml:true} );
+            dwr.util.setValue( containerDiv.id, value, isError?{escapeHtml:false}:{escapeHtml:true} );
 		}
 	}
     if (containerHidden) {
     	// get rid of HTML in the value
     	value = value.replace(/(<([^>]+)>)/ig,"");
-		DWRUtil.setValue( recipientBase, value );
+        dwr.util.setValue( recipientBase, value );
 	}
 }
 

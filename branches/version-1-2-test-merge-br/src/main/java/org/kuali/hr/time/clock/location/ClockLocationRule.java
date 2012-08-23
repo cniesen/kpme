@@ -1,208 +1,199 @@
 package org.kuali.hr.time.clock.location;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.authorization.DepartmentalRule;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.kim.bo.Person;
-
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import org.kuali.rice.kim.api.identity.Person;
 
 public class ClockLocationRule extends TkRule implements DepartmentalRule {
+    private static final long serialVersionUID = 1L;
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "ClockLocationRule";
 
-	private static final long serialVersionUID = 1L;
+    private String tkClockLocationRuleId;
 
-	private String tkClockLocationRuleId;
+    private Department department;
+    private String dept;
+    private String hrDeptId;
 
-	private Department department;
-	private String dept;
-	private String hrDeptId;
-	
-	private Long workArea;
-	private String tkWorkAreaId;
-	private String principalId;
-	private Long jobNumber;
-	private String hrJobId;
+    private Long workArea;
+    private String tkWorkAreaId;
+    private String principalId;
+    private Long jobNumber;
+    private String hrJobId;
 
-	private List<ClockLocationRuleIpAddress> ipAddresses = new ArrayList<ClockLocationRuleIpAddress>();
-	private String userPrincipalId;
-	private Timestamp timestamp;
-	private Boolean history;
+    private List<ClockLocationRuleIpAddress> ipAddresses = new ArrayList<ClockLocationRuleIpAddress>();
+    private String userPrincipalId;
+    private Timestamp timestamp;
+    private Boolean history;
 
-	private WorkArea workAreaObj;
-	private Job job;
-	private Person principal;
+    private WorkArea workAreaObj;
+    private Job job;
+    private Person principal;
 
-	@Override
-	protected LinkedHashMap<String,Object> toStringMapper() {
-		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-		toStringMap.put("principalId", principalId);
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-		return toStringMap;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
 
-	public String getPrincipalId() {
-		return principalId;
-	}
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
 
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
+    public Long getJobNumber() {
+        return jobNumber;
+    }
 
-	public String getUserPrincipalId() {
-		return userPrincipalId;
-	}
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+    public Department getDepartment() {
+        return department;
+    }
 
-	public void setUserPrincipalId(String userPrincipalId) {
-		this.userPrincipalId = userPrincipalId;
-	}
+    public void setDepartment(Department department) {
+        this.department = department;
+    }
 
-	public Long getJobNumber() {
-		return jobNumber;
-	}
+    public WorkArea getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setJobNumber(Long jobNumber) {
-		this.jobNumber = jobNumber;
-	}
-	public Department getDepartment() {
-	    return department;
-	}
+    public void setWorkAreaObj(WorkArea workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public void setDepartment(Department department) {
-	    this.department = department;
-	}
+    public Job getJob() {
+        return job;
+    }
 
-	public WorkArea getWorkAreaObj() {
-	    return workAreaObj;
-	}
+    public void setJob(Job job) {
+        this.job = job;
+    }
 
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-	    this.workAreaObj = workAreaObj;
-	}
+    public String getTkClockLocationRuleId() {
+        return tkClockLocationRuleId;
+    }
 
-	public Job getJob() {
-	    return job;
-	}
+    public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
+        this.tkClockLocationRuleId = tkClockLocationRuleId;
+    }
 
-	public void setJob(Job job) {
-	    this.job = job;
-	}
+    public String getDept() {
+        return dept;
+    }
 
-	public String getTkClockLocationRuleId() {
-		return tkClockLocationRuleId;
-	}
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
-	public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
-		this.tkClockLocationRuleId = tkClockLocationRuleId;
-	}
+    public void setHistory(Boolean history) {
+        this.history = history;
+    }
 
-	public String getDept() {
-		return dept;
-	}
+    public Boolean getHistory() {
+        return history;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
 
-	public void setHistory(Boolean history) {
-		this.history = history;
-	}
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-	public Boolean getHistory() {
-		return history;
-	}
+    public String getHrDeptId() {
+        return hrDeptId;
+    }
 
-	public Person getPrincipal() {
-		return principal;
-	}
+    public void setHrDeptId(String hrDeptId) {
+        this.hrDeptId = hrDeptId;
+    }
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
 
-	public String getHrDeptId() {
-		return hrDeptId;
-	}
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
 
-	public void setHrDeptId(String hrDeptId) {
-		this.hrDeptId = hrDeptId;
-	}
+    public String getHrJobId() {
+        return hrJobId;
+    }
 
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    public void setHrJobId(String hrJobId) {
+        this.hrJobId = hrJobId;
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
+    @Override
+    public String getUniqueKey() {
+        String clockLocKey = getDept()+"_"+getPrincipalId()+"_"+
+                (getJobNumber()!=null ? getJobNumber().toString(): "") +"_" +
+                (getWorkArea() !=null ? getWorkArea().toString() : "");
 
-	public String getHrJobId() {
-		return hrJobId;
-	}
+        return clockLocKey;
+    }
 
-	public void setHrJobId(String hrJobId) {
-		this.hrJobId = hrJobId;
-	}
+    @Override
+    public String getId() {
+        return getTkClockLocationRuleId();
+    }
 
-	@Override
-	public String getUniqueKey() {
-		String clockLocKey = getDept()+"_"+getPrincipalId()+"_"+
-		(getJobNumber()!=null ? getJobNumber().toString(): "") +"_" + 
-		(getWorkArea() !=null ? getWorkArea().toString() : "");
-		
-		return clockLocKey;
-	}
+    @Override
+    public void setId(String id) {
+        setTkClockLocationRuleId(id);
+    }
 
-	@Override
-	public String getId() {
-		return getTkClockLocationRuleId();
-	}
+    public List<ClockLocationRuleIpAddress> getIpAddresses() {
+        if(ipAddresses.isEmpty()) {
+            TkServiceLocator.getClockLocationRuleService().populateIPAddressesForCLR(this);
+        }
+        return ipAddresses;
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkClockLocationRuleId(id);
-	}
-
-	public List<ClockLocationRuleIpAddress> getIpAddresses() {
-		if(ipAddresses.isEmpty()) {
-			TkServiceLocator.getClockLocationRuleService().populateIPAddressesForCLR(this);
-		}
-		return ipAddresses;
-	}
-
-	public void setIpAddresses(List<ClockLocationRuleIpAddress> ipAddresses) {
-		this.ipAddresses = ipAddresses;
-	}
-	// for lookup and inquiry display only
-	public String getIpAddressesString() {
-		String aString = "";
-		for(ClockLocationRuleIpAddress ip : this.getIpAddresses()) {
-			aString += ip.getIpAddress() + ", ";
-		}
-		return aString;
-	}
+    public void setIpAddresses(List<ClockLocationRuleIpAddress> ipAddresses) {
+        this.ipAddresses = ipAddresses;
+    }
+    // for lookup and inquiry display only
+    public String getIpAddressesString() {
+        String aString = "";
+        for(ClockLocationRuleIpAddress ip : this.getIpAddresses()) {
+            aString += ip.getIpAddress() + ", ";
+        }
+        return aString;
+    }
 
 
 }

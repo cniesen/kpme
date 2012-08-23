@@ -1,57 +1,60 @@
 package org.kuali.hr.time.assignment.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
+import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.util.UrlFactory;
 
-import java.util.List;
-import java.util.Map;
+public class AssignmentLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
 
-public class AssignmentLookupableHelper extends
-        HrEffectiveDateActiveLookupableHelper {
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 774015772672806415L;
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
-                                              List pkNames) {
-        List<HtmlData> customActionUrls = super.getCustomActionUrls(
-                businessObject, pkNames);
-        if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
-            Assignment assignment = (Assignment) businessObject;
-            final String className = this.getBusinessObjectClass().getName();
-            final String tkAssignmentId = assignment.getTkAssignmentId();
+    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+        List<HtmlData> customActionUrls = new ArrayList<HtmlData>();
 
-            HtmlData htmlData = new HtmlData() {
+        List<HtmlData> defaultCustomActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-                /**
-                 *
-                 */
-                private static final long serialVersionUID = 1L;
+        Assignment assignment = (Assignment) businessObject;
+        String tkAssignmentId = assignment.getTkAssignmentId();
+        String location = TkServiceLocator.getDepartmentService().getDepartment(assignment.getDept(), TKUtils.getCurrentDate()).getLocation();
+        String department = assignment.getDept();
 
-                @Override
-                public String constructCompleteHtmlTag() {
+        boolean systemAdmin = TKContext.getUser().isSystemAdmin();
+        boolean locationAdmin = TKContext.getUser().getLocationAdminAreas().contains(location);
+        boolean departmentAdmin = TKContext.getUser().getDepartmentAdminAreas().contains(department);
 
-                    return "<a target=\"_blank\" href=\"inquiry.do?businessObjectClassName="
-                            + className
-                            + "&methodToCall=start&tkAssignmentId="
-                            + tkAssignmentId
-                            + "\">view</a>";
-
+        for (HtmlData defaultCustomActionUrl : defaultCustomActionUrls){
+            if (StringUtils.equals(defaultCustomActionUrl.getMethodToCall(), "edit")) {
+                if (systemAdmin || locationAdmin || departmentAdmin) {
+                    customActionUrls.add(defaultCustomActionUrl);
                 }
-            };
-            customActionUrls.add(htmlData);
-        } else if (customActionUrls.size() != 0) {
-            customActionUrls.remove(0);
+            } else {
+                customActionUrls.add(defaultCustomActionUrl);
+            }
         }
+
+        Properties params = new Properties();
+        params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
+        params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
+        params.put("tkAssignmentId", tkAssignmentId);
+        AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
+        viewUrl.setDisplayText("view");
+        viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
+        customActionUrls.add(viewUrl);
+
         return customActionUrls;
     }
 
@@ -83,7 +86,7 @@ public class AssignmentLookupableHelper extends
 //		for(int i = 0; i< aList.size(); i++) {
 //			Assignment anAssign = (Assignment) aList.get(i);
 //			if(anAssign.getPrincipalId() != null && anAssign.getEffectiveDate() != null) {
-//				List<Job> jobList = TkServiceLocator.getJobSerivce().getJobs(anAssign.getPrincipalId(), anAssign.getEffectiveDate());
+//				List<Job> jobList = TkServiceLocator.getJobService().getJobs(anAssign.getPrincipalId(), anAssign.getEffectiveDate());
 //				for(Job aJob : jobList) {
 //					if(!aJob.getJobNumber().equals(anAssign.getJobNumber())){
 //						continue;

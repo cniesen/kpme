@@ -3,7 +3,7 @@ package org.kuali.hr.time.earngroup;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 import java.util.LinkedHashMap;
 
@@ -31,11 +31,6 @@ public class EarnGroupDefinition extends PersistableBusinessObjectBase {
 
 	public void setEarnCode(String earnCode) {
 		this.earnCode = earnCode;
-	}
-	@Override
-	protected LinkedHashMap<String, Object> toStringMapper() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public String getHrEarnGroupDefId() {

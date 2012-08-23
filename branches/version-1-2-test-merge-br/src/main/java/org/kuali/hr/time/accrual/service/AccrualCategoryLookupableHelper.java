@@ -1,14 +1,14 @@
 package org.kuali.hr.time.accrual.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.util.TKContext;
-import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.krad.bo.BusinessObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Used to override lookup functionality for the accrual category lookup
@@ -22,9 +22,8 @@ public class AccrualCategoryLookupableHelper extends
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
-			List pkNames) {
+    @Override
+    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(
 				businessObject, pkNames);
 			List<HtmlData> overrideUrls = new ArrayList<HtmlData>();
@@ -34,7 +33,7 @@ public class AccrualCategoryLookupableHelper extends
 				}
 			}
 
-		if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
+		if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
 			AccrualCategory accrualCategory = (AccrualCategory) businessObject;
 			final String className = this.getBusinessObjectClass().getName();
 			final String lmAccrualCategoryId = accrualCategory

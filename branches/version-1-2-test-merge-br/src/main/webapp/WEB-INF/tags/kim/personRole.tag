@@ -23,12 +23,12 @@
         <c:if test="${!readOnly}">	          	
           	<tr>
           		<th>&nbsp;</th> 
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.roleId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.namespaceCode}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.roleName}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.kimTypeId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" /></div></th>
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.roleId}" noColon="true" />
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.namespaceCode}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.roleName}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.kimTypeId}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" />  
            	<c:if test="${!readOnly}">	
               	<kul:htmlAttributeHeaderCell literalLabel="Actions" scope="col"/>
           	</c:if>	
@@ -40,7 +40,7 @@
                 <td align="left" valign="middle" class="infoline">
                 <div align="center">
                 	<kul:htmlControlAttribute property="newRole.roleId" attributeEntry="${docRoleAttributes.roleId}" readOnly="${readOnly}" />
-                	<kul:lookup boClassName="org.kuali.rice.kim.bo.impl.RoleImpl" fieldConversions="roleId:newRole.newRolePrncpl.memberId,roleId:newRole.roleId,kimTypeId:newRole.kimTypeId,roleName:newRole.roleName,namespaceCode:newRole.namespaceCode,kimRoleType.name:newRole.kimRoleType.name,kimRoleType.kimTypeServiceName:newRole.kimRoleType.kimTypeServiceName" anchor="${tabKey}" />
+                	<kul:lookup boClassName="org.kuali.rice.kim.impl.role.RoleBo" fieldConversions="id:newRole.newRolePrncpl.memberId,id:newRole.roleId,kimTypeId:newRole.kimTypeId,name:newRole.roleName,namespaceCode:newRole.namespaceCode,kimRoleType.name:newRole.kimRoleType.name,kimRoleType.serviceName:newRole.kimRoleType.serviceName" anchor="${tabKey}" />
 					
 					<html:hidden property="newRole.roleName" />
 					<html:hidden property="newRole.roleId" />
@@ -48,16 +48,16 @@
 					<html:hidden property="newRole.namespaceCode" />
 					<html:hidden property="newRole.kimTypeId" />
 					<html:hidden property="newRole.kimRoleType.name" />
-					<html:hidden property="newRole.kimRoleType.kimTypeServiceName" />
+					<html:hidden property="newRole.kimRoleType.serviceName" />
 	            </div>
 				</td>
-				<td>${KualiForm.newRole.namespaceCode}&nbsp;</td>
+				<td align="center">${KualiForm.newRole.namespaceCode}&nbsp;</td>
                 <td align="left" valign="middle" class="infoline">
                 <div align="center">
                 	<kul:htmlControlAttribute property="newRole.roleName" attributeEntry="${docRoleAttributes.roleName}" disabled="true"/>
 	            </div>
 				</td>
-				<td>${KualiForm.newRole.kimRoleType.kimTypeServiceName}</td>
+				<td align="center">${KualiForm.newRole.kimRoleType.name}</td>
                 <td align="left" valign="middle">
                 	<div align="center"> <kul:htmlControlAttribute property="newRole.newRolePrncpl.activeFromDate"  attributeEntry="${docRolePrncplAttributes.activeFromDate}"  datePicker="true" readOnly="${readOnly}" />
 				</div>
@@ -80,12 +80,12 @@
         	<%-- add header label for each 'role' to see if it is less confusion for user --%>
           	<tr>
           		<th>&nbsp;</th> 
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.roleId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.namespaceCode}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.roleName}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRoleAttributes.kimTypeId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" /></div></th>
+	           	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.roleId}" noColon="true" />
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.namespaceCode}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.roleName}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRoleAttributes.kimTypeId}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeFromDate}" noColon="true" /> 
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${docRolePrncplAttributes.activeToDate}" noColon="true" />
 	           	<c:if test="${!readOnly}">	
 	              	<kul:htmlAttributeHeaderCell literalLabel="Actions" scope="col"/>
 	          	</c:if>	
@@ -100,22 +100,11 @@
 					<c:out value="${status.index+1}" />
 				</th>
 				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.roles[${status.index}].roleId"  attributeEntry="${docRoleAttributes.roleId}" readOnly="true"  />
-				</div>
-				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.roles[${status.index}].namespaceCode"  attributeEntry="${docRoleAttributes.namespaceCode}" readOnly="true" />
-				</div>
-				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.roles[${status.index}].roleName"  attributeEntry="${docRoleAttributes.roleName}" readOnly="true"  />
-				</div>
-				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.roles[${status.index}].kimRoleType.name"  attributeEntry="${docRoleAttributes.kimGroupType.name}" readOnly="true"  />
-				</div>
-				</td>
+				<kim:cell inquiry="${inquiry}" valign="middle" textAlign="center" property="document.roles[${status.index}].roleId"  attributeEntry="${docRoleAttributes.roleId}" readOnly="true" />
+                <kim:cell inquiry="${inquiry}" valign="middle" textAlign="center" property="document.roles[${status.index}].namespaceCode"  attributeEntry="${docRoleAttributes.namespaceCode}" readOnly="true" />
+                <kim:cell inquiry="${inquiry}" valign="middle" textAlign="center" property="document.roles[${status.index}].roleName"  attributeEntry="${docRoleAttributes.roleName}" readOnly="true" />
+                <kim:cell inquiry="${inquiry}" valign="middle" textAlign="center" property="document.roles[${status.index}].kimRoleType.name"  attributeEntry="${docRoleAttributes['kimRoleType.name']}" readOnly="true" />
+
 				<c:set var="roleMemberActiveDatesReadOnly" value="${(!empty role.definitions and fn:length(role.definitions) > 0) || readOnlyRole}" />
                 <td align="left" valign="middle">
                 	<c:if test="${fn:length(role.rolePrncpls) > 0}">

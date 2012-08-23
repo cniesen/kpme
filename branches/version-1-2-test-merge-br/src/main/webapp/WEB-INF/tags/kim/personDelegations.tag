@@ -24,10 +24,10 @@
         <c:if test="${!readOnly}">	          	
           	<tr>
           		<th>&nbsp;</th> 
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.roleMemberId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.activeFromDate}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.activeToDate}" noColon="true" /></div></th>
-        		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.delegationTypeCode}" noColon="true" /></div></th>
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.roleMemberId}" noColon="true" /> 
+            	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.activeFromDate}" noColon="true" /> 
+            	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.activeToDate}" noColon="true" /> 
+            	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.delegationTypeCode}" noColon="true" /> 
            	<c:if test="${!readOnly}">	
               	<kul:htmlAttributeHeaderCell literalLabel="Actions" scope="col"/>
           	</c:if>	
@@ -38,15 +38,15 @@
 
                 <td align="left" valign="middle" class="infoline">
                 <div align="center">
-                	${KualiForm.newDelegationMember.roleImpl.namespaceCode}&nbsp;${KualiForm.newDelegationMember.roleImpl.roleName}&nbsp;&nbsp;${KualiForm.newDelegationMember.roleMemberNamespaceCode}&nbsp;${KualiForm.newDelegationMember.roleMemberName}
-                	<kul:lookup boClassName="org.kuali.rice.kim.bo.impl.RoleImpl" fieldConversions="roleId:newDelegationMemberRoleId,kimTypeId:newDelegationMember.roleImpl.kimTypeId,roleName:newDelegationMember.roleImpl.roleName,namespaceCode:newDelegationMember.roleImpl.namespaceCode,kimRoleType.name:newDelegationMember.roleImpl.kimRoleType.name,kimRoleType.kimTypeServiceName:newDelegationMember.roleImpl.kimRoleType.kimTypeServiceName" anchor="${tabKey}" />
+                	${KualiForm.newDelegationMember.roleBo.namespaceCode}&nbsp;${KualiForm.newDelegationMember.roleBo.name}&nbsp;&nbsp;${KualiForm.newDelegationMember.roleMemberNamespaceCode}&nbsp;${KualiForm.newDelegationMember.roleMemberName}
+                	<kul:lookup boClassName="org.kuali.rice.kim.impl.role.RoleBo" fieldConversions="id:newDelegationMemberRoleId,kimTypeId:newDelegationMember.roleBo.kimTypeId,name:newDelegationMember.roleBo.name,namespaceCode:newDelegationMember.roleBo.namespaceCode,kimRoleType.name:newDelegationMember.roleBo.kimRoleType.name,kimRoleType.serviceName:newDelegationMember.roleBo.kimRoleType.serviceName" anchor="${tabKey}" />
 
-					<html:hidden property="newDelegationMember.roleImpl.roleName" />
-					<html:hidden property="newDelegationMember.roleImpl.roleId" />
-					<html:hidden property="newDelegationMember.roleImpl.namespaceCode" />
-					<html:hidden property="newDelegationMember.roleImpl.kimTypeId" />
-					<html:hidden property="newDelegationMember.roleImpl.kimRoleType.name" />
-					<html:hidden property="newDelegationMember.roleImpl.kimRoleType.kimTypeServiceName" />
+					<html:hidden property="newDelegationMember.roleBo.name" />
+					<html:hidden property="newDelegationMember.roleBo.id" />
+					<html:hidden property="newDelegationMember.roleBo.namespaceCode" />
+					<html:hidden property="newDelegationMember.roleBo.kimTypeId" />
+					<html:hidden property="newDelegationMember.roleBo.kimRoleType.name" />
+					<html:hidden property="newDelegationMember.roleBo.kimRoleType.serviceName" />
 					<html:hidden property="newDelegationMember.roleMemberId" />
 	            </div>
 				</td>
@@ -78,9 +78,9 @@
         	<%-- add header label for each 'role' to see if it is less confusion for user --%>
           	<tr>
           		<th>&nbsp;</th> 
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.roleMemberId}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.activeFromDate}" noColon="true" /></div></th>
-          		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${delegationMemberAttributes.activeToDate}" noColon="true" /></div></th>
+          		<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.roleMemberId}" noColon="true" /> 
+            	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.activeFromDate}" noColon="true" /> 
+            	<kim:cell inquiry="${inquiry}" isLabel="true" textAlign="center" attributeEntry="${delegationMemberAttributes.activeToDate}" noColon="true" /> 
 	           	<c:if test="${!readOnly}">	
 	              	<kul:htmlAttributeHeaderCell literalLabel="Actions" scope="col"/>
 	          	</c:if>	
@@ -92,21 +92,13 @@
 				</th>
                 <td align="left" valign="middle">
                 	<div align="center"> 
-           	        <b>Role:</b> ${KualiForm.document.delegationMembers[status.index].roleImpl.namespaceCode}&nbsp;${KualiForm.document.delegationMembers[status.index].roleImpl.roleName}&nbsp;&nbsp;<b>Role Member:</b>&nbsp;${KualiForm.document.delegationMembers[status.index].roleMemberNamespaceCode}&nbsp;${KualiForm.document.delegationMembers[status.index].roleMemberName}
+           	        <b>Role:</b> ${KualiForm.document.delegationMembers[status.index].roleBo.namespaceCode}&nbsp;${KualiForm.document.delegationMembers[status.index].roleBo.name}&nbsp;&nbsp;<b>Role Member:</b>&nbsp;${KualiForm.document.delegationMembers[status.index].roleMemberNamespaceCode}&nbsp;${KualiForm.document.delegationMembers[status.index].roleMemberName}
 				</div>
 				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.delegationMembers[${status.index}].activeFromDate"  attributeEntry="${delegationMemberAttributes.activeFromDate}" readOnly="${readOnly}" datePicker="true" />
-					</div>
-				</td>
-                <td align="left" valign="middle">
-                	<div align="center"> <kul:htmlControlAttribute property="document.delegationMembers[${status.index}].activeToDate"  attributeEntry="${delegationMemberAttributes.activeToDate}" readOnly="${readOnly}" datePicker="true" />
-					</div>
-				</td>
-	            <td align="left" valign="middle">
-	               	<div align="center"> <kul:htmlControlAttribute property="document.delegationMembers[${status.index}].delegationTypeCode"  attributeEntry="${delegationMemberAttributes.delegationTypeCode}" disabled="${readOnly}" readOnly="false" />
-					</div>
-				</td>
+				<kim:cell inquiry="${inquiry}" valign="middle" cellClass="infoline" textAlign="center" property="document.delegationMembers[${status.index}].activeFromDate"  attributeEntry="${delegationMemberAttributes.activeFromDate}" readOnly="${readOnly}" datePicker="true" />
+				<kim:cell inquiry="${inquiry}" valign="middle" cellClass="infoline" textAlign="center" property="document.delegationMembers[${status.index}].activeToDate"  attributeEntry="${delegationMemberAttributes.activeToDate}" readOnly="${readOnly}" datePicker="true" />
+				<kim:cell inquiry="${inquiry}" valign="middle" cellClass="infoline" textAlign="center" property="document.delegationMembers[${status.index}].delegationTypeCode"  attributeEntry="${delegationMemberAttributes.delegationTypeCode}" disabled="${readOnly}" readOnly="false" />
+			
            		<c:if test="${!readOnly}">						
 					<td>
 						<div align=center>&nbsp;

@@ -4,8 +4,8 @@ import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.roles.TkRoleGroup;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
-import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.krad.bo.BusinessObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +20,7 @@ public class TkRoleLookupableHelper extends HrEffectiveDateActiveLookupableHelpe
 
     @SuppressWarnings({"rawtypes", "serial"})
     @Override
-    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
-                                              List pkNames) {
+    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
         List<HtmlData> customActionUrls = super.getCustomActionUrls(
                 businessObject, pkNames);
         if (TKContext.getUser().isSystemAdmin() ||

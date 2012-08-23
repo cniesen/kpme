@@ -17,15 +17,7 @@ public class AccrualCategory extends HrBusinessObject {
 	private String descr;
 	private boolean history;
 	
-	
-	
-	@SuppressWarnings({ "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		LinkedHashMap<String,String> lhm = new LinkedHashMap<String, String>();
-		lhm.put(accrualCategory, accrualCategory);
-		return lhm;
-	}
+
 
 	public String getAccrualCategory() {
 		return accrualCategory;

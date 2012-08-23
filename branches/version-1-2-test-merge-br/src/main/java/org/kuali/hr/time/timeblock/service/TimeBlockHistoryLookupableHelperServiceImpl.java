@@ -2,7 +2,7 @@ package org.kuali.hr.time.timeblock.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.timeblock.TimeBlockHistory;
-import org.kuali.rice.kns.bo.BusinessObject;
+import org.kuali.rice.krad.bo.BusinessObject;
 import java.util.*;
 
 public class TimeBlockHistoryLookupableHelperServiceImpl extends TimeBlockLookupableHelperServiceImpl {

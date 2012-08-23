@@ -1,7 +1,6 @@
 package org.kuali.hr.time.task.service;
 
-import org.codehaus.plexus.util.StringUtils;
-import org.kuali.hr.time.cache.CacheResult;
+import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.task.dao.TaskDao;
@@ -17,16 +16,15 @@ public class TaskServiceImpl implements TaskService {
     private TaskDao taskDao;
 
     @Override
-    @CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
     public Task getTask(Long task, Date asOfDate) {
         Task taskObj =  taskDao.getTask(task, asOfDate);
         if(taskObj == null){
-        	taskObj = new Task();
-        	taskObj.setActive(true);
-        	taskObj.setEffectiveDate(asOfDate);
-        	taskObj.setTask(task);
-        	taskObj.setDescription(TkConstants.TASK_DEFAULT_DESP);
-        	taskObj.setTkTaskId("0");
+            taskObj = new Task();
+            taskObj.setActive(true);
+            taskObj.setEffectiveDate(asOfDate);
+            taskObj.setTask(task);
+            taskObj.setDescription(TkConstants.TASK_DEFAULT_DESP);
+            taskObj.setTkTaskId("0");
         }
         return taskObj;
     }
@@ -43,12 +41,12 @@ public class TaskServiceImpl implements TaskService {
 
     public void setTaskDao(TaskDao taskDao) {
         this.taskDao = taskDao;
-    } 
+    }
 
-	@Override
-	public Task getMaxTask(){
-		return taskDao.getMaxTask();
-	}
+    @Override
+    public Task getMaxTask(){
+        return taskDao.getMaxTask();
+    }
 
     @Override
     public List<Task> getTasks(String task, String description, String workArea, String workAreaDesc, Date fromEffdt, Date toEffdt) {
@@ -70,9 +68,9 @@ public class TaskServiceImpl implements TaskService {
 
         return results;
     }
-    
+
     @Override
     public int getTaskCount(Long task) {
-    	return taskDao.getTaskCount(task);
+        return taskDao.getTaskCount(task);
     }
 }

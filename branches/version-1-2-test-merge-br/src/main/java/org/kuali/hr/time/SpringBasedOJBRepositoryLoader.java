@@ -1,17 +1,16 @@
 package org.kuali.hr.time;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.metadata.ConnectionRepository;
 import org.apache.ojb.broker.metadata.DescriptorRepository;
 import org.apache.ojb.broker.metadata.MetadataManager;
-import org.kuali.rice.core.exception.RiceRuntimeException;
-import org.kuali.rice.core.util.ClassLoaderUtils;
+import org.kuali.rice.core.api.util.ClassLoaderUtils;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.DefaultResourceLoader;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 
 public class SpringBasedOJBRepositoryLoader implements InitializingBean {
 
@@ -54,7 +53,7 @@ public class SpringBasedOJBRepositoryLoader implements InitializingBean {
 		    LOG.info("Failed to close InputStream on OJB repository path " + ojbRepositoryFilePath, e);
 		}
 	    }
-	    throw new RiceRuntimeException(ioe);
+        throw new RuntimeException(ioe);
 	} finally {
 	    if (is != null) {
 		try {

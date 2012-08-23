@@ -1,14 +1,12 @@
 package org.kuali.hr.time.position.service;
 
-import java.util.List;
-
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
-import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.position.Position;
-import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
 import org.kuali.hr.time.util.TKContext;
-import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.krad.bo.BusinessObject;
+
+import java.util.List;
 
 public class PositionLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
 
@@ -18,8 +16,7 @@ public class PositionLookupableHelper extends HrEffectiveDateActiveLookupableHel
 	private static final long serialVersionUID = 1L;
 	@SuppressWarnings("rawtypes")
 	@Override
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
-			List pkNames) {
+    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		Position position = (Position) businessObject;
 		final String hrPositionId = position.getHrPositionId();
 		final String className = this.getBusinessObjectClass().getName();

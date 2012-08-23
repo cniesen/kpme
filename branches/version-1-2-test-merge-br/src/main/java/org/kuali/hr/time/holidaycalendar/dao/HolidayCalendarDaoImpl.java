@@ -7,9 +7,10 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendarDateEntry;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class HolidayCalendarDaoImpl extends PersistenceBrokerDaoSupport implements HolidayCalendarDao {
+public class HolidayCalendarDaoImpl extends PlatformAwareDaoBaseOjb implements HolidayCalendarDao {
 
 	@Override
 	public HolidayCalendar getHolidayCalendarByGroup(String holidayCalendarGroup) {

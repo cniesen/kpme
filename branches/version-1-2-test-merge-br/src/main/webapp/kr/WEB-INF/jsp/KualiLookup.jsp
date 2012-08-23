@@ -1,17 +1,19 @@
 <%--
- Copyright 2005-2007 The Kuali Foundation
 
- Licensed under the Educational Community License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+    Copyright 2005-2012 The Kuali Foundation
 
- http://www.opensource.org/licenses/ecl2.php
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
 --%>
 <%@ include file="tldHeader.jsp"%>
 
@@ -35,13 +37,13 @@
       var kualiElements = kualiForm.elements;
     </SCRIPT>
     <script type="text/javascript" src="${pageContext.request.contextPath}/dwr/interface/DocumentTypeService.js"></script>
-	
+
 	<c:if test="${KualiForm.headerBarEnabled}">
 	<div class="headerarea-small" id="headerarea-small">
 		<h1><c:out value="${KualiForm.lookupable.title}" /> <c:choose>
-			<c:when test="${KualiForm.fields.docTypeFullName != null}">
+			<c:when test="${KualiForm.fields.documentTypeName != null}">
 				<%-- this is a custom doc search --%>
-				<kul:help searchDocumentTypeName="${KualiForm.fields.docTypeFullName}" altText="lookup help" />
+				<kul:help searchDocumentTypeName="${KualiForm.fields.documentTypeName}" altText="lookup help" />
 			</c:when>
 			<c:otherwise>
 				<%-- KNS looup --%>
@@ -187,7 +189,7 @@
 			<br>
 			<br>
 
-			<c:if test="${reqSearchResultsActualSize>0}">
+			<c:if test="${reqSearchResultsActualSize > reqSearchResultsLimitedSize && reqSearchResultsLimitedSize>0}">
 				<c:out value="${reqSearchResultsActualSize}" /> items found.  Please refine your search criteria to narrow down your search.
             </c:if>
 			<c:if test="${!empty reqSearchResultsActualSize }">
@@ -199,7 +201,6 @@
     				<bean-el:message key="lookup.no.returnable.rows" />
     				<br/><br/>
     			</c:if>
-
 				<display:table class="datatable-100" cellspacing="0"
 				requestURIcontext="false" cellpadding="0" name="${reqSearchResults}"
 				id="row" export="true" pagesize="100" varTotals="totals" 
@@ -209,12 +210,16 @@
 				<%-- the param['d-16544-e'] parameter below is NOT null when we are in exporting mode, so this check disables rendering of return/action URLs when we are exporting to CSV, excel, xml, etc. --%>
 				<c:if test="${param['d-16544-e'] == null}">
 					<logic:present name="KualiForm" property="formKey">
-						<c:if
-							test="${KualiForm.formKey!='' && KualiForm.hideReturnLink!=true && !KualiForm.multipleValues && !empty KualiForm.backLocation}">
-							<c:if test="${row.rowReturnable}">
-								<display:column class="infocell" property="returnUrl" media="html" title="Return Value"/>
-							</c:if>
-						</c:if>
+						<c:if test="${KualiForm.formKey!='' && KualiForm.hideReturnLink!=true && !KualiForm.multipleValues && !empty KualiForm.backLocation}">
+ 	 	 	 				<c:choose>
+								<c:when test="${row.rowReturnable}">    
+									<display:column class="infocell" media="html" title="Return Value">${row.returnUrl}</display:column>
+								</c:when>
+								<c:otherwise>
+									<display:column class="infocell" media="html" title="Blank">&nbsp;</display:column>
+								</c:otherwise>
+ 		                   </c:choose>
+ 		                </c:if>
 						<c:if test="${KualiForm.actionUrlsExist==true && KualiForm.suppressActions!=true && !KualiForm.multipleValues && KualiForm.showMaintenanceLinks}">
 							<c:choose>
 								<c:when test="${row.actionUrls!=''}">
@@ -235,7 +240,7 @@
                 <c:set var="totalColumnNums" value=""/>
                 
 				<c:forEach items="${row.columns}" var="column" varStatus="loopStatus">
-                    <c:set var="colClass" value="${ fn:startsWith(column.formatter, 'org.kuali.rice.kns.web.format.CurrencyFormatter') ? 'numbercell' : 'infocell' }" />
+                    <c:set var="colClass" value="${ fn:startsWith(column.formatter, 'org.kuali.rice.krad.web.format.CurrencyFormatter') ? 'numbercell' : 'infocell' }" />
               
                     <c:if test="${!empty columnNums}" >
                       <c:set var="columnNums" value="${columnNums},"/>
@@ -272,7 +277,7 @@
 <%--NOTE: DO NOT FORMAT THIS FILE, DISPLAY:COLUMN WILL NOT WORK CORRECTLY IF IT CONTAINS LINE BREAKS --%>
 						<c:otherwise>
 							<display:column class="${colClass}" sortable="${column.sortable}"
-								title="${column.columnTitle}" comparator="${column.comparator}" total="${column.total}" value="${staticColumnValue}" 
+								title="${column.columnTitle}" comparator="${column.comparator}" total="${column.total}" value="${fn:escapeXml(staticColumnValue)}"
 								maxLength="${column.maxLength}" decorator="org.kuali.rice.kns.web.ui.FormatAwareDecorator"><c:out value="${column.propertyValue}"/>&nbsp;</display:column>
                         </c:otherwise>
 					</c:choose>

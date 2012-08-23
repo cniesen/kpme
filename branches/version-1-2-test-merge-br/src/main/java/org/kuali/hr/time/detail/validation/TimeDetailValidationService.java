@@ -4,14 +4,14 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.*;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.detail.web.TimeDetailActionFormBase;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 
@@ -46,7 +46,7 @@ public class TimeDetailValidationService {
         }
         if (errors.size() > 0) return errors;
 
-        PayCalendarEntries payCalEntry = timesheetDocument.getPayCalendarEntry();
+        CalendarEntries payCalEntry = timesheetDocument.getPayCalendarEntry();
         java.sql.Date asOfDate = payCalEntry.getEndPeriodDate();
 
         errors.addAll(TimeDetailValidationService.validateDates(startDateS, endDateS));
@@ -164,14 +164,14 @@ public class TimeDetailValidationService {
         List<Interval> dayInt = new ArrayList<Interval>();
 
         //if the user is clocked in, check if this time block overlaps with the clock action
-        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKContext.getUser().getTargetPrincipalId());
+        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
         if(lastClockLog != null &&
         		(lastClockLog.getClockAction().equals(TkConstants.CLOCK_IN) 
         				|| lastClockLog.getClockAction().equals(TkConstants.LUNCH_IN))) {
         	 Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
              String lastClockZone = lastClockLog.getClockTimestampTimezone();
              if (StringUtils.isEmpty(lastClockZone)) {
-                 lastClockZone = TkConstants.SYSTEM_TIME_ZONE;
+                 lastClockZone = TKUtils.getSystemTimeZone();
              }
              DateTimeZone zone = DateTimeZone.forID(lastClockZone);
              DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
@@ -240,7 +240,7 @@ public class TimeDetailValidationService {
         return errors;
     }
 
-    public static List<String> validateInterval(PayCalendarEntries payCalEntry, Long startTime, Long endTime) {
+    public static List<String> validateInterval(CalendarEntries payCalEntry, Long startTime, Long endTime) {
         List<String> errors = new ArrayList<String>();
         LocalDateTime pcb_ldt = payCalEntry.getBeginLocalDateTime();
         LocalDateTime pce_ldt = payCalEntry.getEndLocalDateTime();

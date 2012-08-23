@@ -1,12 +1,12 @@
 /*
- * Copyright 2006-2007 The Kuali Foundation
- * 
+ * Copyright 2005-2012 The Kuali Foundation
+ *
  * Licensed under the Educational Community License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.opensource.org/licenses/ecl2.php
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -144,19 +144,24 @@ function submitForm() {
     document.forms[0].submit();
 }
 
+function resetScrollPosition() {
+	window.scrollTo(0,0);
+	parent.window.scrollTo(0,0);
+}
+
 function saveScrollPosition() {
 //	alert( document.forms[0].formKey );
 	if ( document.forms[0].formKey ) {
 		formKey = document.forms[0].formKey.value;
 		if( document.documentElement ) { 
-			x = Math.max(document.documentElement.scrollLeft, document.body.scrollLeft); 
-		  	y = Math.max(document.documentElement.scrollTop, document.body.scrollTop); 
+			x = Math.max(parent.document.documentElement.scrollLeft, parent.document.body.scrollLeft); 
+		  	y = Math.max(parent.document.documentElement.scrollTop, parent.document.body.scrollTop); 
 		} else if( document.body && typeof document.body.scrollTop != "undefined" ) { 
-			x = document.body.scrollLeft; 
-		  	y = document.body.scrollTop; 
+			x = parent.document.body.scrollLeft; 
+		  	y = parent.document.body.scrollTop; 
 		} else if ( typeof window.pageXOffset != "undefined" ) { 
-			x = window.pageXOffset; 
-		  	y = window.pageYOffset; 
+			x = parent.window.pageXOffset; 
+		  	y = parent.window.pageYOffset; 
 		} 
 		document.cookie = "KulScrollPos"+formKey+"="+x+","+y+"; path="+document.location.pathname;
 	}
@@ -175,6 +180,7 @@ function restoreScrollPosition() {
         if ( matchResult ) {
             var coords = matchResult[1].split( ',' );
             window.scrollTo(coords[0],coords[1]);
+            parent.window.scrollTo(coords[0],coords[1]);
             expireCookie( cookieName );
             return true;
         } else { // check for entry before form key set
@@ -183,9 +189,14 @@ function restoreScrollPosition() {
 	        if ( matchResult ) {
 	            var coords = matchResult[1].split( ',' );
 	            window.scrollTo(coords[0],coords[1]);
+	            parent.window.scrollTo(coords[0],coords[1]);
 	            expireCookie( cookieName );
 	            return true;
-	        }
+	        } //else {
+	        	//no match for cookie... new screen???
+	        	//resetScrollPosition();
+	        //}
+	        
         }
     }
     return false;
@@ -287,7 +298,13 @@ function resizeTheRouteLogFrame() {
   idx1=url.indexOf(pathname);
   idx2=url.indexOf("/",idx1+1);
   baseUrl=url.substr(0,idx2)
-  window.open(baseUrl+"/kr/directInquiry.do?"+queryString, "_blank", "width=640, height=600, scrollbars=yes");
+
+  if (baseUrl.length > 3 && baseUrl.substr(baseUrl.length - 3)=="/kr") {
+    window.open(baseUrl+"/directInquiry.do?"+queryString, "_blank", "width=640, height=600, scrollbars=yes");
+  }
+  else {
+    window.open(baseUrl+"/kr/directInquiry.do?"+queryString, "_blank", "width=640, height=600, scrollbars=yes");
+  }
 }
  
 function textAreaPop(textAreaName, htmlFormAction, textAreaLabel, docFormKey, textAreaReadOnly, textAreaMaxLength) {
@@ -366,6 +383,14 @@ function getStyleObject(objectId) {
    }
 }
 
+// used on multiple value lookup pages to support the select/deselect all on page functions
+function setAllMultipleValueLookuResults(checked) {
+	for (i = 0; i < kualiElements.length; i++) {
+		if (kualiElements[i].type == 'checkbox' && kualiElements[i].name.match('^selectedObjId-') == 'selectedObjId-') {
+			kualiElements[i].checked = checked;
+		}
+	}
+}
 function placeFocus() {
 	if (document.forms.length > 0) {
 	  var fieldNameToFocus;

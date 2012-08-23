@@ -1,32 +1,27 @@
 <%--
- Copyright 2005-2008 The Kuali Foundation
- 
- Licensed under the Educational Community License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
- 
- http://www.opensource.org/licenses/ecl2.php
- 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+
+    Copyright 2005-2012 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
 --%>
-<%@ page
-	import="org.kuali.rice.kns.exception.KualiExceptionIncident"%>
+<%@ page import="org.kuali.rice.krad.exception.KualiExceptionIncident"%>
 <%@ include file="tldHeader.jsp"%>
 
 <c:set var="textAreaAttributes"
 	value="${DataDictionary.AttributeReferenceElements.attributes}" />
 
-<%
-Object incident=request.getAttribute("org.kuali.rice.kns.web.struts.pojo.KualiExceptionIncident");
-request.setAttribute("test", incident);
-%>
-
-<c:set var="parameters"
-       value="<%=request.getAttribute(\"org.kuali.rice.kns.web.struts.action.KualiExceptionHandlerAction\")%>" />
+<c:set var="parameters" value="<%=request.getAttribute(\"KualiExceptionHandlerAction\")%>" />
 
 <c:if test="${not empty parameters}">
 	<c:set var="documentId"       value="${parameters.documentId}" />
@@ -102,14 +97,12 @@ request.setAttribute("test", incident);
   <html:hidden property="stackTrace"       write="false" value="${stackTrace}" />
   <html:hidden property="exceptionHideIncidentReport" write="false" value="${exceptionHideIncidentReport}" />
 
-<div align="right"><a href="./Logout.do">LOGOUT</a></div>
 <c:if test="${exceptionHideIncidentReport eq false}">
   <div align="center">
     <font color="blue" size="3">Please use the Incident Report form below to report the problems</font>
   </div>
   <br/>
 </c:if>
-     
 	<div class="topblurb">
 		<div align="center">
 			<table cellpadding="10" cellspacing="0" border="0" class="container2">

@@ -1,5 +1,9 @@
 package org.kuali.hr.time.overtime.daily.rule;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.earncode.EarnCode;
@@ -9,258 +13,244 @@ import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.workarea.WorkArea;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.LinkedHashMap;
-
 
 public class DailyOvertimeRule extends TkRule {
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "DailyOvertimeRule";
+    private static final long serialVersionUID = 1L;
+    private String tkDailyOvertimeRuleId;
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	private String tkDailyOvertimeRuleId;
+    private String fromEarnGroup;
+    private String earnCode;
 
-	private String fromEarnGroup;
-	private String earnCode;
+    private String location;
+    private String paytype;
+    private String dept;
+    private Long workArea;
 
-	private String location;
-	private String paytype;
-	private String dept;
-	private Long workArea;
+    private BigDecimal maxGap;
+    private BigDecimal minHours;
+    private String userPrincipalId;
+    private boolean history;
+    private Boolean ovtEarnCode;
 
-	private BigDecimal maxGap;
-	private BigDecimal minHours;
-	private String userPrincipalId;
-	private boolean history;
-	private Boolean ovtEarnCode;
+    private String tkWorkAreaId;
+    private String hrDeptId;
+    private String hrLocationId;
 
-	private String tkWorkAreaId;
-	private String hrDeptId;
-	private String hrLocationId;
-	
-	private Task taskObj;
-	private WorkArea workAreaObj;
-	private Department departmentObj;
-	private PayType payTypeObj;
+    private Task taskObj;
+    private WorkArea workAreaObj;
+    private Department departmentObj;
+    private PayType payTypeObj;
 
-	private EarnGroup fromEarnGroupObj;
-	private EarnCode earnCodeObj;
-	private Location locationObj;
+    private EarnGroup fromEarnGroupObj;
+    private EarnCode earnCodeObj;
+    private Location locationObj;
 
+    public String getTkDailyOvertimeRuleId() {
+        return tkDailyOvertimeRuleId;
+    }
 
-	@SuppressWarnings({ "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		return null;
-	}
+    public void setTkDailyOvertimeRuleId(String tkDailyOvertimeRuleId) {
+        this.tkDailyOvertimeRuleId = tkDailyOvertimeRuleId;
+    }
 
-	public String getTkDailyOvertimeRuleId() {
-		return tkDailyOvertimeRuleId;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public void setTkDailyOvertimeRuleId(String tkDailyOvertimeRuleId) {
-		this.tkDailyOvertimeRuleId = tkDailyOvertimeRuleId;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public BigDecimal getMaxGap() {
+        return maxGap;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public void setMaxGap(BigDecimal maxGap) {
+        this.maxGap = maxGap;
+    }
 
-	public BigDecimal getMaxGap() {
-		return maxGap;
-	}
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
 
-	public void setMaxGap(BigDecimal maxGap) {
-		this.maxGap = maxGap;
-	}
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
 
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
 
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
-	public String getUserPrincipalId() {
-		return userPrincipalId;
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public void setUserPrincipalId(String userPrincipalId) {
-		this.userPrincipalId = userPrincipalId;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public Department getDepartmentObj() {
+        return departmentObj;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public void setDepartmentObj(Department departmentObj) {
+        this.departmentObj = departmentObj;
+    }
 
-	public Department getDepartmentObj() {
-		return departmentObj;
-	}
+    public String getPaytype() {
+        return paytype;
+    }
 
-	public void setDepartmentObj(Department departmentObj) {
-		this.departmentObj = departmentObj;
-	}
+    public void setPaytype(String paytype) {
+        this.paytype = paytype;
+    }
 
-	public String getPaytype() {
-		return paytype;
-	}
+    public String getDept() {
+        return dept;
+    }
 
-	public void setPaytype(String paytype) {
-		this.paytype = paytype;
-	}
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
-	public String getDept() {
-		return dept;
-	}
+    public Task getTaskObj() {
+        return taskObj;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public void setTaskObj(Task taskObj) {
+        this.taskObj = taskObj;
+    }
 
-	public Task getTaskObj() {
-		return taskObj;
-	}
+    public WorkArea getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setTaskObj(Task taskObj) {
-		this.taskObj = taskObj;
-	}
+    public void setWorkAreaObj(WorkArea workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public WorkArea getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public PayType getPayTypeObj() {
+        return payTypeObj;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public void setPayTypeObj(PayType payTypeObj) {
+        this.payTypeObj = payTypeObj;
+    }
 
-	public PayType getPayTypeObj() {
-		return payTypeObj;
-	}
+    public String getFromEarnGroup() {
+        return fromEarnGroup;
+    }
 
-	public void setPayTypeObj(PayType payTypeObj) {
-		this.payTypeObj = payTypeObj;
-	}
+    public void setFromEarnGroup(String fromEarnGroup) {
+        this.fromEarnGroup = fromEarnGroup;
+    }
 
-	public String getFromEarnGroup() {
-		return fromEarnGroup;
-	}
+    public String getEarnCode() {
+        return earnCode;
+    }
 
-	public void setFromEarnGroup(String fromEarnGroup) {
-		this.fromEarnGroup = fromEarnGroup;
-	}
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public BigDecimal getMinHours() {
+        return minHours;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public void setMinHours(BigDecimal minHours) {
+        this.minHours = minHours;
+    }
 
-	public BigDecimal getMinHours() {
-		return minHours;
-	}
+    public EarnGroup getFromEarnGroupObj() {
+        return fromEarnGroupObj;
+    }
 
-	public void setMinHours(BigDecimal minHours) {
-		this.minHours = minHours;
-	}
+    public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
+        this.fromEarnGroupObj = fromEarnGroupObj;
+    }
 
-	public EarnGroup getFromEarnGroupObj() {
-		return fromEarnGroupObj;
-	}
+    public EarnCode getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
-		this.fromEarnGroupObj = fromEarnGroupObj;
-	}
+    public void setEarnCodeObj(EarnCode earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public EarnCode getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    public Location getLocationObj() {
+        return locationObj;
+    }
 
-	public void setEarnCodeObj(EarnCode earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
+    public void setLocationObj(Location locationObj) {
+        this.locationObj = locationObj;
+    }
 
-	public Location getLocationObj() {
-		return locationObj;
-	}
+    public boolean isHistory() {
+        return history;
+    }
 
-	public void setLocationObj(Location locationObj) {
-		this.locationObj = locationObj;
-	}
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 
-	public boolean isHistory() {
-		return history;
-	}
+    public Boolean getOvtEarnCode() {
+        return ovtEarnCode;
+    }
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
+    public void setOvtEarnCode(Boolean ovtEarnCode) {
+        this.ovtEarnCode = ovtEarnCode;
+    }
 
-	public Boolean getOvtEarnCode() {
-		return ovtEarnCode;
-	}
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
 
-	public void setOvtEarnCode(Boolean ovtEarnCode) {
-		this.ovtEarnCode = ovtEarnCode;
-	}
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
 
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    public String getHrDeptId() {
+        return hrDeptId;
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
+    public void setHrDeptId(String hrDeptId) {
+        this.hrDeptId = hrDeptId;
+    }
 
-	public String getHrDeptId() {
-		return hrDeptId;
-	}
+    public String getHrLocationId() {
+        return hrLocationId;
+    }
 
-	public void setHrDeptId(String hrDeptId) {
-		this.hrDeptId = hrDeptId;
-	}
+    public void setHrLocationId(String hrLocationId) {
+        this.hrLocationId = hrLocationId;
+    }
 
-	public String getHrLocationId() {
-		return hrLocationId;
-	}
+    @Override
+    public String getUniqueKey() {
+        return location + "_" + dept + "_" + workArea + "_" + paytype;
+    }
 
-	public void setHrLocationId(String hrLocationId) {
-		this.hrLocationId = hrLocationId;
-	}
+    @Override
+    public String getId() {
+        return getTkDailyOvertimeRuleId();
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return location + "_" + dept + "_" + workArea + "_" + paytype;
-	}
-
-	@Override
-	public String getId() {
-		return getTkDailyOvertimeRuleId();
-	}
-
-	@Override
-	public void setId(String id) {
-		setTkDailyOvertimeRuleId(id);
-	}
+    @Override
+    public void setId(String id) {
+        setTkDailyOvertimeRuleId(id);
+    }
 
 }

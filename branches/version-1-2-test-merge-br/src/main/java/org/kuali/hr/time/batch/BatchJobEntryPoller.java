@@ -1,12 +1,12 @@
 package org.kuali.hr.time.batch;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-
-import java.util.List;
 
 /**
  * Runs on each worker node, schedules jobs to run on the thread pool.
@@ -26,8 +26,8 @@ public class BatchJobEntryPoller extends Thread  {
         this.ipAddress = TKUtils.getIPNumber();
     }
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
 
         try {
             Thread.sleep(1000 * startupSleep);
@@ -38,10 +38,10 @@ public class BatchJobEntryPoller extends Thread  {
         while(true) {
             LOG.debug("Looking for BatchJobEntries to run on '" + this.ipAddress + "'");
             try {
-    		    //Find any jobs for this ip address that have a status of S
+                //Find any jobs for this ip address that have a status of S
                 List<BatchJobEntry> entries = TkServiceLocator.getBatchJobEntryService().getBatchJobEntries(ipAddress, TkConstants.BATCH_JOB_ENTRY_STATUS.SCHEDULED);
 
-	        	//Add jobs to the manager
+                //Add jobs to the manager
                 for (BatchJobEntry entry : entries) {
                     manager.pool.submit(getRunnable(entry));
                 }
@@ -50,7 +50,7 @@ public class BatchJobEntryPoller extends Thread  {
                 LOG.error(e);
             }
         }
-	}
+    }
 
     private BatchJobEntryRunnable getRunnable(BatchJobEntry entry) {
         BatchJobEntryRunnable bjer = null;
@@ -68,7 +68,7 @@ public class BatchJobEntryPoller extends Thread  {
             LOG.debug("Creating InitiateBatchJobRunnable.");
             bjer = new InitiateBatchJobRunnable(entry);
         } else if(StringUtils.equals(entry.getBatchJobName(), TkConstants.BATCH_JOB_NAMES.BATCH_APPROVE_MISSED_PUNCH)) {
-        	LOG.debug("Creating BatchApproveMissedPunchJobRunnable.");
+            LOG.debug("Creating BatchApproveMissedPunchJobRunnable.");
             bjer = new BatchApproveMissedPunchJobRunnable(entry);
         } else {
             LOG.warn("Unknown BatchJobEntryRunnable found in BatchJobEntry table. Unable to create Runnable.");

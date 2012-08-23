@@ -1,23 +1,20 @@
 package org.kuali.hr.time.approval.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-
+import com.google.common.collect.Multimap;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
-import org.kuali.hr.time.paycalendar.PayCalendar;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.calendar.Calendar;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
+import org.springframework.cache.annotation.Cacheable;
 
-import com.google.common.collect.Multimap;
+import java.math.BigDecimal;
+import java.util.*;
 
 
 public interface TimeApproveService {
@@ -31,11 +28,12 @@ public interface TimeApproveService {
      * @param calGroup Specify a calendar group to filter by.
      * @return A Map<String, List<ApprovalTimeSummaryRow>> container.
      */
-	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(Date payBeginDate, Date payEndDate, String calGroup, List<TKPerson> principalIds, List<String> payCalendarLabels, PayCalendarEntries payCalendarEntries);
+    public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(Date payBeginDate, Date payEndDate, String calGroup, List<TKPerson> principalIds, List<String> payCalendarLabels, CalendarEntries payCalendarEntries);
 
 //	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(Date payBeginDate, Date payEndDate, String calGroup, List<String> principalIds);
 
-	public List<String> getPayCalendarLabelsForApprovalTab(Date payBeginDate, Date payEndDate);
+    @Cacheable(value= KPMEConstants.KPME_GLOBAL_CACHE_NAME, key="'{PayCalendarLabelsForApprovalTab}' + 'payBeginDate=' + #p0 + '|' + 'payEndDate=' + #p1")
+    public List<String> getPayCalendarLabelsForApprovalTab(Date payBeginDate, Date payEndDate);
 
     /**
      * Method to obtain all of the active Pay Calendar Group names for the current
@@ -56,9 +54,9 @@ public interface TimeApproveService {
      * @return list of note objects
      */
     @SuppressWarnings("rawtypes")
-	public List getNotesForDocument(String documentNumber);
+    public List getNotesForDocument(String documentNumber);
 
-    Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, Long workArea, PayCalendarEntries payCalendarEntries, PayCalendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
+    public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
 
     /**
      * Method to provide a mapping of PayCalendarGroupNames to PayCalendarEntries to
@@ -70,16 +68,15 @@ public interface TimeApproveService {
      *
      * @return A CalendarGroup Name to PayCalendarEntries mapping.
      */
-    public Map<String,PayCalendarEntries> getPayCalendarEntriesForApprover(String principalId, Date currentDate, String dept);
-    
-    public List<PayCalendarEntries> getAllPayCalendarEntriesForApprover(String principalId, Date currentDate);
-    
+    public Map<String,CalendarEntries> getPayCalendarEntriesForApprover(String principalId, Date currentDate, String dept);
+
+    public List<CalendarEntries> getAllPayCalendarEntriesForApprover(String principalId, Date currentDate);
+
     public boolean doesApproverHavePrincipalsForCalendarGroup(Date asOfDate, String calGroup);
-    public Map<String,PayCalendarEntries> getPayCalendarEntriesForDept(String dept, Date currentDate);
+    public Map<String,CalendarEntries> getPayCalendarEntriesForDept(String dept, Date currentDate);
 
     /**
      * Get a list of unique pay groups
-     * @param approverWorkAreas
      * @return
      */
     List<String> getUniquePayGroups();
@@ -87,18 +84,18 @@ public interface TimeApproveService {
     /**
      * Method to get a list of principal ids based on the department work areas.
      *
+     * @param roleName
      * @param department
      * @param workArea
      * @param payEndDate
      * @param calGroup
      * @return A list of the PrincipalIds
      */
-    List<String> getPrincipalIdsByDeptWorkAreaRolename(String roleName, String department, String WorkArea, java.sql.Date payBeginDate, java.sql.Date payEndDate, String calGroup);
-    
+    List<String> getPrincipalIdsByDeptWorkAreaRolename(String roleName, String department, String workArea, java.sql.Date payBeginDate, java.sql.Date payEndDate, String calGroup);
+
     /**
      * Method to create a map that contains the principal's id and corresponding timesheet document header.
      *
-     * @param principalIds
      * @param payBeginDate
      * @param payEndDate
      * @return A PrincipalId to TimesheetDocumentHeader mapping.
@@ -120,6 +117,6 @@ public interface TimeApproveService {
      * @return A Dept and Work Areas mapping.
      */
     Multimap<String, Long> getDeptWorkAreasByDepts(Set<String> userDepts);
-    
+
     public DocumentRouteHeaderValue getRouteHeader(String documentId);
 }

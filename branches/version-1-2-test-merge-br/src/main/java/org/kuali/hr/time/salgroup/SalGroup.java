@@ -1,5 +1,6 @@
 package org.kuali.hr.time.salgroup;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
 import java.sql.Date;
@@ -7,7 +8,7 @@ import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
 public class SalGroup extends HrBusinessObject {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "SalGroup";
 	/**
 	 * 
 	 */
@@ -16,14 +17,6 @@ public class SalGroup extends HrBusinessObject {
 	private String hrSalGroup;
 	private String descr;
 	private boolean history;
-
-	@SuppressWarnings({ "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		LinkedHashMap<String,String> lhm = new LinkedHashMap<String, String>();
-		lhm.put(hrSalGroup, hrSalGroup);
-		return lhm;
-	}
 
 	public Date getEffectiveDate() {
 		return effectiveDate;

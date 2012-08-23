@@ -1,5 +1,17 @@
 package org.kuali.hr.time.clock.web;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -14,6 +26,7 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
+import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -24,14 +37,8 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kns.exception.AuthorizationException;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import org.kuali.rice.krad.exception.AuthorizationException;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 public class ClockAction extends TimesheetAction {
 
@@ -44,8 +51,7 @@ public class ClockAction extends TimesheetAction {
         super.checkTKAuthorization(form, methodToCall); // Checks for read access first.
 
         TimesheetActionForm taForm = (TimesheetActionForm) form;
-        TKUser user = TKContext.getUser();
-        UserRoles roles = user.getCurrentRoles(); // either backdoor or actual
+        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
         TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
 
         // Check for write access to Timeblock.
@@ -82,17 +88,17 @@ public class ClockAction extends TimesheetAction {
             }
             caf.setAssignmentLunchMap(assignmentDeptLunchRuleMap);
         }
-        String principalId = TKContext.getUser().getTargetPrincipalId();
+        String principalId = TKUser.getCurrentTargetPerson().getPrincipalId();
         if (principalId != null) {
             caf.setPrincipalId(principalId);
         }
         this.assignShowDistributeButton(caf);
         // if the time sheet document is final or enroute, do not allow missed punch
         if(caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)
-        		|| caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
-        	caf.setShowMissedPunchButton(false);
+                || caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
+            caf.setShowMissedPunchButton(false);
         } else {
-        	caf.setShowMissedPunchButton(true);
+            caf.setShowMissedPunchButton(true);
         }
 
         String tbIdString = caf.getEditTimeBlockId();
@@ -105,7 +111,7 @@ public class ClockAction extends TimesheetAction {
             Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
             String lastClockZone = lastClockLog.getClockTimestampTimezone();
             if (StringUtils.isEmpty(lastClockZone)) {
-                lastClockZone = TkConstants.SYSTEM_TIME_ZONE;
+                lastClockZone = TKUtils.getSystemTimeZone();
             }
             // zone will not be null. At this point is Valid or Exception.
             // Exception would indicate bad data stored in the system. We can wrap this, but
@@ -140,36 +146,36 @@ public class ClockAction extends TimesheetAction {
         }
         return forward;
     }
-    
+
     public void assignShowDistributeButton(ClockActionForm caf) {
-    	TimesheetDocument timesheetDocument = caf.getTimesheetDocument();
-    	if(timesheetDocument != null) {
-    		List<Assignment> assignments = timesheetDocument.getAssignments();
-    		if(assignments.size() <= 1) {
-    			caf.setShowDistrubuteButton(false);
-    			return;
-    		}
-    		List<TimeCollectionRule> ruleList = new ArrayList<TimeCollectionRule> ();
-    		for(Assignment assignment: assignments) {
-    			TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),assignment.getEffectiveDate());
-		    	if(rule != null) {
-		    		if(rule.isHrsDistributionF()) {
-		    			ruleList.add(rule);
-		    		}
-		    	}
-    		}
-    		// if there's only one eligible assignment, don't show the distribute button
-    		if(ruleList.size() <= 1) {
-    			caf.setShowDistrubuteButton(false);
-    			return;	
-    		} else {
-	    		caf.setShowDistrubuteButton(true);
-				return;
-    		}
-    	}
-    	caf.setShowDistrubuteButton(false);
+        TimesheetDocument timesheetDocument = caf.getTimesheetDocument();
+        if(timesheetDocument != null) {
+            List<Assignment> assignments = timesheetDocument.getAssignments();
+            if(assignments.size() <= 1) {
+                caf.setShowDistrubuteButton(false);
+                return;
+            }
+            List<TimeCollectionRule> ruleList = new ArrayList<TimeCollectionRule> ();
+            for(Assignment assignment: assignments) {
+                TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),assignment.getEffectiveDate());
+                if(rule != null) {
+                    if(rule.isHrsDistributionF()) {
+                        ruleList.add(rule);
+                    }
+                }
+            }
+            // if there's only one eligible assignment, don't show the distribute button
+            if(ruleList.size() <= 1) {
+                caf.setShowDistrubuteButton(false);
+                return;
+            } else {
+                caf.setShowDistrubuteButton(true);
+                return;
+            }
+        }
+        caf.setShowDistrubuteButton(false);
     }
-    
+
 
     public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ClockActionForm caf = (ClockActionForm) form;
@@ -180,33 +186,33 @@ public class ClockAction extends TimesheetAction {
             caf.setErrorMessage("No assignment selected.");
             return mapping.findForward("basic");
         }
-        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKContext.getUser().getTargetPrincipalId());
+        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
         if(previousClockLog != null && StringUtils.equals(caf.getCurrentClockAction(), previousClockLog.getClockAction())){
-        	caf.setErrorMessage("The operation is already performed.");
+            caf.setErrorMessage("The operation is already performed.");
             return mapping.findForward("basic");
         }
         String ip = TKUtils.getIPAddressFromRequest(request);
         Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(caf.getTimesheetDocument(), caf.getSelectedAssignment());
-        
+
         List<Assignment> lstAssingmentAsOfToday = TkServiceLocator.getAssignmentService().getAssignments(TKContext.getTargetPrincipalId(), TKUtils.getCurrentDate());
         boolean foundValidAssignment = false;
         for(Assignment assign : lstAssingmentAsOfToday){
-        	if((assign.getJobNumber().compareTo(assignment.getJobNumber()) ==0) &&
-        		(assign.getWorkArea().compareTo(assignment.getWorkArea()) == 0) &&
-        		(assign.getTask().compareTo(assignment.getTask()) == 0)){
-        		foundValidAssignment = true;
-        		break;
-        	}
+            if((assign.getJobNumber().compareTo(assignment.getJobNumber()) ==0) &&
+                    (assign.getWorkArea().compareTo(assignment.getWorkArea()) == 0) &&
+                    (assign.getTask().compareTo(assignment.getTask()) == 0)){
+                foundValidAssignment = true;
+                break;
+            }
         }
-        
+
         if(!foundValidAssignment){
-        	caf.setErrorMessage("Assignment is not effective as of today");
-        	return mapping.findForward("basic");
+            caf.setErrorMessage("Assignment is not effective as of today");
+            return mapping.findForward("basic");
         }
-        
-               
+
+
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new Timestamp(System.currentTimeMillis()), assignment, caf.getPayCalendarDates(), ip,
-                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKContext.getUser().getTargetPrincipalId());
+                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKUser.getCurrentTargetPerson().getPrincipalId());
 
         caf.setClockLog(clockLog);
 
@@ -245,128 +251,128 @@ public class ClockAction extends TimesheetAction {
 
         return new ActionForward(forward.getPath() + "?editTimeBlockId=" + currentTb.getTkTimeBlockId().toString());
     }
-    
+
     public ActionForward saveNewTimeBlocks(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
-		ClockActionForm caf = (ClockActionForm)form;
-		String tbId = caf.getTbId();
-		String timesheetDocId = caf.getTsDocId();
+        ClockActionForm caf = (ClockActionForm)form;
+        String tbId = caf.getTbId();
+        String timesheetDocId = caf.getTsDocId();
 
-		String[] assignments = caf.getNewAssignDesCol().split(SEPERATOR);
-		String[] beginDates = caf.getNewBDCol().split(SEPERATOR);
-		String[] beginTimes = caf.getNewBTCol().split(SEPERATOR);
-		String[] endDates = caf.getNewEDCol().split(SEPERATOR);
-		String[] endTimes = caf.getNewETCol().split(SEPERATOR);
-		String[] hrs = caf.getNewHrsCol().split(SEPERATOR);
-		String earnCode = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId).getEarnCode();
+        String[] assignments = caf.getNewAssignDesCol().split(SEPERATOR);
+        String[] beginDates = caf.getNewBDCol().split(SEPERATOR);
+        String[] beginTimes = caf.getNewBTCol().split(SEPERATOR);
+        String[] endDates = caf.getNewEDCol().split(SEPERATOR);
+        String[] endTimes = caf.getNewETCol().split(SEPERATOR);
+        String[] hrs = caf.getNewHrsCol().split(SEPERATOR);
+        String earnCode = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId).getEarnCode();
 
-		List<TimeBlock> newTbList = new ArrayList<TimeBlock>();
-		for(int i = 0; i < hrs.length; i++) {
-			TimeBlock tb = new TimeBlock();
-			BigDecimal hours = new BigDecimal(hrs[i]);
-			Timestamp beginTS = TKUtils.convertDateStringToTimestamp(beginDates[i], beginTimes[i]);
-			Timestamp endTS = TKUtils.convertDateStringToTimestamp(endDates[i], endTimes[i]);
-			String assignString = assignments[i];
-			Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(assignString);
-			
-			TimesheetDocument tsDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocId);
-			
-			tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false);
-			newTbList.add(tb);
-		}
-		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
-		TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
-		TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
-		TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
-		return mapping.findForward("basic");
-	}
-	
-	public ActionForward validateNewTimeBlock(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
-		ClockActionForm caf = (ClockActionForm)form;
-		String tbId = caf.getTbId();
-		String[] assignments = caf.getNewAssignDesCol().split(SEPERATOR);
-		String[] beginDates = caf.getNewBDCol().split(SEPERATOR);
-		String[] beginTimes = caf.getNewBTCol().split(SEPERATOR);
-		String[] endDates = caf.getNewEDCol().split(SEPERATOR);
-		String[] endTimes = caf.getNewETCol().split(SEPERATOR);
-		String[] hrs = caf.getNewHrsCol().split(SEPERATOR);
+        List<TimeBlock> newTbList = new ArrayList<TimeBlock>();
+        for(int i = 0; i < hrs.length; i++) {
+            TimeBlock tb = new TimeBlock();
+            BigDecimal hours = new BigDecimal(hrs[i]);
+            Timestamp beginTS = TKUtils.convertDateStringToTimestamp(beginDates[i], beginTimes[i]);
+            Timestamp endTS = TKUtils.convertDateStringToTimestamp(endDates[i], endTimes[i]);
+            String assignString = assignments[i];
+            Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(assignString);
 
-		List<Interval> newIntervals = new ArrayList<Interval>();
-		JSONArray errorMsgList = new JSONArray();
+            TimesheetDocument tsDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocId);
 
-		// validates that all fields are available
-		if(assignments.length != beginDates.length ||
-				assignments.length!= beginTimes.length ||
-				assignments.length != endDates.length ||
-				assignments.length != endTimes.length ||
-				assignments.length != hrs.length) {
-			errorMsgList.add("All fields are required");
-		    caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-		    return mapping.findForward("ws");
-		}
+            tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false);
+            newTbList.add(tb);
+        }
+        TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
+        TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
+        TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
+        return mapping.findForward("basic");
+    }
 
-		for(int i = 0; i < hrs.length; i++) {
-			String index = String.valueOf(i+1);
+    public ActionForward validateNewTimeBlock(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
+        ClockActionForm caf = (ClockActionForm)form;
+        String tbId = caf.getTbId();
+        String[] assignments = caf.getNewAssignDesCol().split(SEPERATOR);
+        String[] beginDates = caf.getNewBDCol().split(SEPERATOR);
+        String[] beginTimes = caf.getNewBTCol().split(SEPERATOR);
+        String[] endDates = caf.getNewEDCol().split(SEPERATOR);
+        String[] endTimes = caf.getNewETCol().split(SEPERATOR);
+        String[] hrs = caf.getNewHrsCol().split(SEPERATOR);
 
-			// validate the hours field
-			BigDecimal dc = new BigDecimal(hrs[i]);
-		    if (dc.compareTo(new BigDecimal("0")) == 0) {
-		        errorMsgList.add("The entered hours for entry " + index + " is not valid.");
-		        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-		        return mapping.findForward("ws");
-		    }
+        List<Interval> newIntervals = new ArrayList<Interval>();
+        JSONArray errorMsgList = new JSONArray();
 
-		    // check if the begin / end time are valid
-		    // should not include time zone in consideration when conparing time intervals
-		    Timestamp beginTS = TKUtils.convertDateStringToTimestampWithoutZone(beginDates[i], beginTimes[i]);
-			Timestamp endTS = TKUtils.convertDateStringToTimestampWithoutZone(endDates[i], endTimes[i]);
-		    if ((beginTS.compareTo(endTS) > 0 || endTS.compareTo(beginTS) < 0)) {
-		        errorMsgList.add("The time or date for entry " + index + " is not valid.");
-		        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-		        return mapping.findForward("ws");
-		    }
+        // validates that all fields are available
+        if(assignments.length != beginDates.length ||
+                assignments.length!= beginTimes.length ||
+                assignments.length != endDates.length ||
+                assignments.length != endTimes.length ||
+                assignments.length != hrs.length) {
+            errorMsgList.add("All fields are required");
+            caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+            return mapping.findForward("ws");
+        }
 
-		    // check if new time blocks overlap with existing time blocks
-		    DateTime start = new DateTime(beginTS);
-		    DateTime end = new DateTime(endTS);
-		    Interval addedTimeblockInterval = new Interval(start, end);
-		    newIntervals.add(addedTimeblockInterval);
-		    for (TimeBlock timeBlock : caf.getTimesheetDocument().getTimeBlocks()) {
-		    	if(timeBlock.getTkTimeBlockId().equals(tbId)) {	// ignore the original time block
-		    		continue;
-		    	}
-		    	if(timeBlock.getHours().compareTo(BigDecimal.ZERO) == 0) { // ignore time blocks with zero hours
-		    		continue;
-		    	}
-			    Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
-			    if (timeBlockInterval.overlaps(addedTimeblockInterval)) {
-			        errorMsgList.add("The time block you are trying to add for entry " + index + " overlaps with an existing time block.");
-			        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-			        return mapping.findForward("ws");
-			    }
-		    }
-		}
-		// check if new time blocks overlap with each other
-		if(newIntervals.size() > 1 ) {
-			for(Interval intv1 : newIntervals) {
-				for(Interval intv2 : newIntervals) {
-					if(intv1.equals(intv2)) {
-						continue;
-					}
-					if (intv1.overlaps(intv2)) {
-						errorMsgList.add("There is time overlap between the entries.");
-				        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-				        return mapping.findForward("ws");
-					}
-				}
-			}
-		}
+        for(int i = 0; i < hrs.length; i++) {
+            String index = String.valueOf(i+1);
 
-	    caf.setOutputString(JSONValue.toJSONString(errorMsgList));
-		return mapping.findForward("ws");
- 	}
+            // validate the hours field
+            BigDecimal dc = new BigDecimal(hrs[i]);
+            if (dc.compareTo(new BigDecimal("0")) == 0) {
+                errorMsgList.add("The entered hours for entry " + index + " is not valid.");
+                caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+                return mapping.findForward("ws");
+            }
+
+            // check if the begin / end time are valid
+            // should not include time zone in consideration when conparing time intervals
+            Timestamp beginTS = TKUtils.convertDateStringToTimestampWithoutZone(beginDates[i], beginTimes[i]);
+            Timestamp endTS = TKUtils.convertDateStringToTimestampWithoutZone(endDates[i], endTimes[i]);
+            if ((beginTS.compareTo(endTS) > 0 || endTS.compareTo(beginTS) < 0)) {
+                errorMsgList.add("The time or date for entry " + index + " is not valid.");
+                caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+                return mapping.findForward("ws");
+            }
+
+            // check if new time blocks overlap with existing time blocks
+            DateTime start = new DateTime(beginTS);
+            DateTime end = new DateTime(endTS);
+            Interval addedTimeblockInterval = new Interval(start, end);
+            newIntervals.add(addedTimeblockInterval);
+            for (TimeBlock timeBlock : caf.getTimesheetDocument().getTimeBlocks()) {
+                if(timeBlock.getTkTimeBlockId().equals(tbId)) {	// ignore the original time block
+                    continue;
+                }
+                if(timeBlock.getHours().compareTo(BigDecimal.ZERO) == 0) { // ignore time blocks with zero hours
+                    continue;
+                }
+                Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
+                if (timeBlockInterval.overlaps(addedTimeblockInterval)) {
+                    errorMsgList.add("The time block you are trying to add for entry " + index + " overlaps with an existing time block.");
+                    caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+                    return mapping.findForward("ws");
+                }
+            }
+        }
+        // check if new time blocks overlap with each other
+        if(newIntervals.size() > 1 ) {
+            for(Interval intv1 : newIntervals) {
+                for(Interval intv2 : newIntervals) {
+                    if(intv1.equals(intv2)) {
+                        continue;
+                    }
+                    if (intv1.overlaps(intv2)) {
+                        errorMsgList.add("There is time overlap between the entries.");
+                        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+                        return mapping.findForward("ws");
+                    }
+                }
+            }
+        }
+
+        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
+        return mapping.findForward("ws");
+    }
 
     public ActionForward closeMissedPunchDoc(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
         return mapping.findForward("closeMissedPunchDoc");
     }
-    
+
 }

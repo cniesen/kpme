@@ -26,12 +26,12 @@
       <c:when test="${field.secure}">
         <c:out value="${field.displayMaskValue}"/>
       </c:when>
-      <c:when test="${(field.fieldType==field.DROPDOWN or field.fieldType==field.DROPDOWN_APC or field.fieldType==field.DROPDOWN_REFRESH or field.fieldType==field.DROPDOWN_SCRIPT or field.fieldType==field.RADIO) && empty field.additionalDisplayPropertyName}">
+      <c:when test="${(field.fieldType==field.DROPDOWN or field.fieldType==field.DROPDOWN_REFRESH or field.fieldType==field.DROPDOWN_SCRIPT or field.fieldType==field.RADIO) && empty field.additionalDisplayPropertyName}">
         <c:set var="value_found" value="false" />
         <c:forEach items="${field.fieldValidValues}" var="select">
           <c:if test="${field.propertyValue==select.key}">
             <c:if test="${!value_found}">
-              <c:out value="${select.label}" />
+              <c:out value="${select.value}" />
               <c:if test="${isLookup}">
       		    <input type="hidden" name="${field.propertyName}" value="<c:out value="${field.propertyValue}"/>" />
 		      </c:if>
@@ -43,7 +43,7 @@
 			<c:forEach items="${field.fieldInactiveValidValues}" var="select">
 	          <c:if test="${field.propertyValue==select.key}">
 	            <c:if test="${!value_found}">
-	              <c:out value="${select.label}" />
+	              <c:out value="${select.value}" />
                   <c:if test="${isLookup}">
       		        <input type="hidden" name="${field.propertyName}" value="<c:out value="${field.propertyValue}"/>" />
 		          </c:if>

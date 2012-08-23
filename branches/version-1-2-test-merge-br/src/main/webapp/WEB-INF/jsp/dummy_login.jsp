@@ -1,24 +1,35 @@
 <%--
- Copyright 2007-2009 The Kuali Foundation
 
- Licensed under the Educational Community License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+    Copyright 2005-2012 The Kuali Foundation
 
- http://www.opensource.org/licenses/ecl2.php
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
 --%>
 <%@ include file="/kr/WEB-INF/jsp/tldHeader.jsp" %>
 
 <html>
   <head>
     <title>Login</title>
-    <link href="${ConfigProperties.application.url}/${ConfigProperties.portal.css.files}" rel="stylesheet" type="text/css" />
+	<c:forEach items="${fn:split(ConfigProperties.portal.css.files, ',')}" var="cssFile">
+		<c:if test="${fn:length(fn:trim(cssFile)) > 0}">
+	        <link href="${pageContext.request.contextPath}/${fn:trim(cssFile)}" rel="stylesheet" type="text/css" />
+		</c:if>
+	</c:forEach>
+	<c:forEach items="${fn:split(ConfigProperties.portal.javascript.files, ',')}" var="javascriptFile">
+		<c:if test="${fn:length(fn:trim(javascriptFile)) > 0}">
+	        <script language="JavaScript" type="text/javascript" src="${ConfigProperties.application.url}/${fn:trim(javascriptFile)}"></script>
+		</c:if>
+	</c:forEach>
 
     <style type="text/css">
         div.body {
@@ -37,7 +48,7 @@
         }
 
         table#login th {
-            height: 30 px;
+            height: 30px;
             padding-top: .8em;
             padding-bottom: .8em;
             color: #a02919;
@@ -62,11 +73,20 @@
             padding-bottom: .6em;
         }
 
+        div.build {
+            float: right;
+            color: #dfdda9;
+            margin: .3em;
+        }
+
     </style>
   </head>
-<body>
 
-<form action="" method="post" name="login-form">
+<body OnLoad="document.loginForm.__login_user.focus();">
+
+<div class="build">${ConfigProperties.version} (${ConfigProperties.datasource.ojb.platform})</div>
+
+<form name="loginForm" action="" method="post">
 
 <div class="body">
         <table id="login" cellspacing="0" cellpadding="0" align="center">
@@ -79,24 +99,26 @@
 	                <label>Username:&nbsp;</label>
 	            </td>
 	            <td class="rightTd" align="left">
-	                <input type="text" name="__login_user" value="admin" size="20"/>
+	                <input type="text" name="__login_user" value="" size="20"/>
 	            </td>
             </tr>
+            <c:set var="invalidAuthMsg" value="Invalid username" />
             <c:if test="${requestScope.showPasswordField}">
+            <c:set var="invalidAuthMsg" value="Invalid username or password" />
             <tr>
             <td class="leftTd" width="Infinity%" align="right">
                 <label>Password:&nbsp;</label>
             </td>
-              <td class="rightTd" align="left"><input type="password" name="__login_pw" value="admin" size="20"/></td>
+              <td class="rightTd" align="left"><input type="password" name="__login_pw" value="" size="20"/></td>
             </tr>
             </c:if>
-            <c:if test="${requestScope.invalidPassword}">
+            <c:if test="${requestScope.invalidAuth}">
             <tr>
-              <td align="center" colspan="2"><strong>Invalid username or password</strong></td>
+              <td align="center" colspan="2"><strong>${invalidAuthMsg}</strong></td>
             </tr>
             </c:if>
             <tr>
-              <td id="buttonRow" height="30" colspan="2" align="center"><input type="submit" value="Login" name="login"/>
+              <td id="buttonRow" height="30" colspan="2" align="center"><input type="submit" value="Login"/>
               <!-- input type="image" title="Click to login." value="login" name="imageField" src="${pageContext.request.contextPath}/rice-portal/images/tinybutton-login.gif"/ -->
               </td>
             </tr>

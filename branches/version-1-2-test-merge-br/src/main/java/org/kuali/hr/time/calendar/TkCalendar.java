@@ -2,7 +2,6 @@ package org.kuali.hr.time.calendar;
 
 import org.joda.time.DateTime;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.util.TkConstants;
@@ -12,17 +11,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TkCalendar {
+public class TkCalendar extends CalendarParent {
     private List<TkCalendarWeek> weeks = new ArrayList<TkCalendarWeek>();
-    private PayCalendarEntries payCalEntry;
+    private CalendarEntries payCalEntry;
     private DateTime beginDateTime;
     private DateTime endDateTime;
+
+    public TkCalendar() {}
+
+    public TkCalendar(CalendarEntries calendarEntry) {
+        super(calendarEntry);
+    }
 
     public static TkCalendar getCalendar(TkTimeBlockAggregate aggregate) {
         TkCalendar tc = new TkCalendar();
 
         if (aggregate != null) {
-            List<TkCalendarWeek> weeks = new ArrayList<TkCalendarWeek>();
+            List<CalendarWeek> weeks = new ArrayList<CalendarWeek>();
             tc.setPayCalEntry(aggregate.getPayCalendarEntry());
 
             int firstDay = 0;
@@ -32,7 +37,7 @@ public class TkCalendar {
             for (int i = 0; i < aggregate.numberOfAggregatedWeeks(); i++) {
                 TkCalendarWeek week = new TkCalendarWeek();
                 List<List<TimeBlock>> weekBlocks = aggregate.getWeekTimeBlocks(i);
-                List<TkCalendarDay> days = new ArrayList<TkCalendarDay>(7);
+                List<CalendarDay> days = new ArrayList<CalendarDay>(7);
 
                 for (int j = 0; j < weekBlocks.size(); j++) {
                     List<TimeBlock> dayBlocks = weekBlocks.get(j);
@@ -88,9 +93,9 @@ public class TkCalendar {
     }
 
     public void assignAssignmentStyle(Map<String, String> styleMap) {
-        for (TkCalendarWeek aWeek : this.getWeeks()) {
-            for (TkCalendarDay aDay : aWeek.getDays()) {
-                for (TimeBlockRenderer tbr : aDay.getBlockRenderers()) {
+        for (CalendarWeek aWeek : this.getWeeks()) {
+            for (CalendarDay aDay : aWeek.getDays()) {
+                for (TimeBlockRenderer tbr : ((TkCalendarDay)aDay).getBlockRenderers()) {
                     String assignmentKey = tbr.getTimeBlock().getAssignmentKey();
                     if (assignmentKey != null && styleMap.containsKey(assignmentKey)) {
                         tbr.setAssignmentClass(styleMap.get(assignmentKey));
@@ -103,19 +108,19 @@ public class TkCalendar {
     }
 
 
-    public List<TkCalendarWeek> getWeeks() {
-        return weeks;
-    }
+//    public List<TkCalendarWeek> getWeeks() {
+//        return weeks;
+//    }
+//
+//    public void setWeeks(List<TkCalendarWeek> weeks) {
+//        this.weeks = weeks;
+//    }
 
-    public void setWeeks(List<TkCalendarWeek> weeks) {
-        this.weeks = weeks;
-    }
-
-    public PayCalendarEntries getPayCalEntry() {
+    public CalendarEntries getPayCalEntry() {
         return payCalEntry;
     }
 
-    public void setPayCalEntry(PayCalendarEntries payCalEntry) {
+    public void setPayCalEntry(CalendarEntries payCalEntry) {
         this.payCalEntry = payCalEntry;
         // Relative time, with time zone added.
         this.beginDateTime = payCalEntry.getBeginLocalDateTime().toDateTime(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
@@ -172,8 +177,9 @@ public class TkCalendar {
             }
         } else {
             // Day Split Strings
-            StringBuilder builder = new StringBuilder();
+
             for (int i = firstDay; i < lastDay; i++) {
+                StringBuilder builder = new StringBuilder("");
                 DateTime currStart = getBeginDateTime().plusDays(i);
                 DateTime currEnd = getBeginDateTime().plusDays(i);
 
@@ -206,11 +212,9 @@ public class TkCalendar {
             DateTime currStart = getBeginDateTime().plusDays(dayDelta);
             DateTime currEnd = getBeginDateTime().plusDays(dayDelta);
 
-            b.append(currStart.toString("d"));
-            b.append(currStart.toString("HH:mm"));
+            b.append(currStart.toString("d HH:mm"));
             b.append(" - ");
-            b.append(currEnd.toString("d"));
-            b.append(currStart.toString("HH:mm"));
+            b.append(currStart.toString("d HH:mm"));
         }
 
         return b.toString();

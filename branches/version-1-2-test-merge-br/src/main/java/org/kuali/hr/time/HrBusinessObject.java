@@ -3,47 +3,47 @@ package org.kuali.hr.time;
 import java.sql.Date;
 import java.sql.Timestamp;
 
-import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public abstract class HrBusinessObject extends PersistableBusinessObjectBase{
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	
-	public abstract String getUniqueKey();
-	protected Date effectiveDate;
-	protected boolean active;
-	protected Timestamp timestamp;
-	
-	public abstract String getId();
-	
-	public abstract void setId(String id);
-	
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
 
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
+    protected abstract String getUniqueKey();
+    protected Date effectiveDate;
+    protected boolean active;
+    protected Timestamp timestamp;
 
-	public boolean isActive() {
-		return active;
-	}
+    public abstract String getId();
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public abstract void setId(String id);
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
 
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
 
 }

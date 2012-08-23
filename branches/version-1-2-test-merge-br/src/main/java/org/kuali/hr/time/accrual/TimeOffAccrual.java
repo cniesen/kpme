@@ -1,12 +1,11 @@
 package org.kuali.hr.time.accrual;
 
 import org.kuali.hr.time.HrBusinessObject;
-import org.kuali.rice.kim.bo.Person;
-import org.kuali.rice.kim.bo.impl.PersonImpl;
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.impl.identity.PersonImpl;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.util.LinkedHashMap;
 
 public class TimeOffAccrual extends HrBusinessObject {
 
@@ -27,13 +26,7 @@ public class TimeOffAccrual extends HrBusinessObject {
 	
 	private AccrualCategory accrualCategoryObj;
 
-	protected PersonImpl principal;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		return null;
-	}
+	protected Person principal;
 
 
 	public String getPrincipalId() {

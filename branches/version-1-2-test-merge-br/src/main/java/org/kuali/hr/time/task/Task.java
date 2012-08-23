@@ -5,12 +5,13 @@ import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.StringUtils;
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.workarea.WorkArea;
 
 public class Task extends HrBusinessObject {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Task";
     /**
      *
      */
@@ -25,20 +26,6 @@ public class Task extends HrBusinessObject {
     private String administrativeDescription;
 	private WorkArea workAreaObj;
 	private String workAreaDescription;
-	
-	@SuppressWarnings({  "rawtypes" })
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
-		toStringMap.put("tkTaskId", tkTaskId);
-		toStringMap.put("task", task);
-		toStringMap.put("workArea", workArea);
-		toStringMap.put("tkWorkAreaId", tkWorkAreaId);
-		toStringMap.put("description", description);
-		toStringMap.put("userPrincipalId", userPrincipalId);
-		toStringMap.put("administrativeDescription", administrativeDescription);
-		return toStringMap;
-	}
 
     public String getDescription()
     {

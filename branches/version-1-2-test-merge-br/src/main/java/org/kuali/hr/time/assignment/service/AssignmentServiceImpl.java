@@ -1,17 +1,16 @@
 package org.kuali.hr.time.assignment.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
-import org.kuali.hr.time.cache.CacheResult;
-import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
 
 import java.sql.Date;
 import java.util.*;
@@ -31,7 +30,6 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 
     @Override
-    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getAssignments(String principalId, Date asOfDate) {
         List<Assignment> assignments;
 
@@ -63,12 +61,12 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
-                                           String dept, String workArea, String active, String showHistory) {
+                                              String dept, String workArea, String active, String showHistory) {
         return assignmentDao.searchAssignments(fromEffdt, toEffdt, principalId, jobNumber, dept, workArea, active, showHistory);
     }
 
 
-    public List<Assignment> getAssignmentsByPayEntry(String principalId, PayCalendarEntries payCalendarEntry) {
+    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry) {
         List<Assignment> beginPeriodAssign = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate());
         List<Assignment> endPeriodAssign = getAssignments(principalId, payCalendarEntry.getEndPeriodDate());
         List<Assignment> assignsWithPeriod = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
@@ -173,14 +171,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Assignment getAssignment(String tkAssignmentId) {
         return getAssignmentDao().getAssignment(tkAssignmentId);
     }
 
 
     @Override
-    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, Date asOfDate) {
         List<Assignment> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea, asOfDate);
         for (Assignment assignment : assignments) {
@@ -190,13 +186,12 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignments(Date asOfDate) {
         return assignmentDao.getActiveAssignments(asOfDate);
     }
 
     private void populateAssignment(Assignment assignment, Date asOfDate) {
-        assignment.setJob(TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
+        assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
         assignment.setTimeCollectionRule(TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),asOfDate));
         assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
         assignment.setDeptLunchRule(TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(assignment.getJob().getDept(),
@@ -229,11 +224,15 @@ public class AssignmentServiceImpl implements AssignmentService {
      * Get a list of active assignments based on principalId and jobNumber as of a particular date
      */
     @Override
-    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignmentsForJob(String principalId, Long jobNumber, Date asOfDate) {
         List<Assignment> assignments = assignmentDao.getActiveAssignmentsForJob(principalId, jobNumber, asOfDate);
 
         return assignments;
     }
 
+
+    @Override
+    public Assignment getMaxTimestampAssignment(String principalId) {
+        return assignmentDao.getMaxTimestampAssignment(principalId);
+    }
 }

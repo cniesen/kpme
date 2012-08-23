@@ -1,9 +1,11 @@
 package org.kuali.hr.time.earncode;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -14,7 +16,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class EarnCode extends HrBusinessObject {
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "EarnCode";
 	/**
      *
      */
@@ -37,11 +39,6 @@ public class EarnCode extends HrBusinessObject {
 
 	private AccrualCategory accrualCategoryObj;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected LinkedHashMap toStringMapper() {
-		return null;
-	}
 
 	public String getEarnCode() {
 		return earnCode;
@@ -140,7 +137,7 @@ public class EarnCode extends HrBusinessObject {
 	public void assingAccrualCategoryObj() {
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put("accrualCategory", getAccrualCategory());
-		Collection c = KNSServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
+		Collection c = KRADServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
 		if(!c.isEmpty()) {
 			this.setAccrualCategoryObj((AccrualCategory)c.toArray()[0]);
 		}

@@ -4,24 +4,19 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
 
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
 
 
 public class GracePeriodRule extends HrBusinessObject {
-    
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "GracePeriodRule";
 	private static final long serialVersionUID = 1L;
 
 	private String tkGracePeriodRuleId;
 	private BigDecimal hourFactor;
 	private String userPrincipalId;
-	
-	protected LinkedHashMap<String,Object> toStringMapper() {
-		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
-		toStringMap.put("effDt", effectiveDate);
-		toStringMap.put("hourFactor", hourFactor);
-		return toStringMap;
-	}
+
 
 	public boolean isActive() {
 	    return active;

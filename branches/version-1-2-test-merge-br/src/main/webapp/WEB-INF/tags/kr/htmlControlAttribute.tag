@@ -1,3 +1,6 @@
+<%@ tag import="java.util.Map" %>
+<%@ tag import="org.kuali.rice.kns.util.ActionFormUtilMap" %>
+<%@ tag import="java.util.ArrayList" %>
 <%--
  Copyright 2005-2007 The Kuali Foundation
 
@@ -46,8 +49,16 @@
         description="Use this to attach further information to the title attribute of a field
         if present"%>
 <%@ attribute name="forceRequired" required="false" description="Whether this control should be rendered as required, no matter the information from the data dictionary about the required state of the attribute." %>
-<%@ attribute name="kimTypeId" required="false" description="If the rendered attribute is a KIM attribute, the ID of the type of that KIM attribute." %>
-<%-- Do not remove session check in this tag file since it is used by other type of files (not MD or TD) --%>
+<%
+if (property == null) {
+  throw new javax.servlet.jsp.JspTagException("property was null, attributeEntry: " + attributeEntry);
+}
+
+if (attributeEntry == null) {
+  throw new javax.servlet.jsp.JspTagException("attributeEntry was null, property: " + property);
+}
+%>
+
 <c:set var="sessionDocument" value="${requestScope['sessionDoc']}" />
 <c:if test="${empty readOnly}">
     <c:set var="readOnly" value="false"/>
@@ -139,17 +150,29 @@
 				 <c:set var="businessObjectClass" value="${fn:replace(attributeEntry.control.businessObject,'.','|')}"/>
 				   	     
 				 <c:choose>
-	               <c:when test="${not empty businessObjectClass and empty kimTypeId}">
+
+             <c:when test="${not empty finderClass}">
+               <c:set var="keyLabelMapEntries" value="<%=java.util.Collections.EMPTY_SET%>"/>
+               <c:choose>
+	               <c:when test="${not empty businessObjectClass}">
 	                 <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${businessObjectClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.keyAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.labelAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeBlankRow}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeKeyInLabel}"/>
-	               </c:when>
-	               <c:when test="${not empty kimTypeId}">
-	                 <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.name}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${kimTypeId}"/>
 	               </c:when>
 	               <c:otherwise>
 	                 <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
 	               </c:otherwise>
-	           	 </c:choose>
-	           	 <jsp:useBean id="methodAndParms" type="java.lang.String"/> 
+               </c:choose>
+             </c:when>
+             <c:otherwise>
+               <c:set var="methodAndParms" value="" />
+               <c:choose>
+                 <c:when test="${not empty attributeEntry.keyLabelMap}">
+                   <c:set var="keyLabelMapEntries" value='<%= ((Map)((Map)getJspContext().findAttribute("attributeEntry")).get("keyLabelMap")).entrySet() %>' />
+                 </c:when>
+               </c:choose>
+             </c:otherwise>
+         </c:choose>
+         <jsp:useBean id="keyLabelMapEntries" type="java.util.Set"/> 
+	       <jsp:useBean id="methodAndParms" type="java.lang.String"/>
            	  
 			     <%
 			        java.lang.String selectedOptionDescription = "";
@@ -160,23 +183,31 @@
 			   	    java.util.List propertyValue = new java.util.ArrayList();
 			   	    Object value = TagUtils.lookup(pageCtx, "org.apache.struts.taglib.html.BEAN", property, null);
 			   	    if (value instanceof String) {
-			   		  propertyValue.add(value);
+			   		    propertyValue.add(value);
 			   	    } else if (value instanceof java.util.Collection) {
-			   		  propertyValue.addAll((java.util.Collection)value);
+			   		    propertyValue.addAll((java.util.Collection)value);
 			   	    }
-			   	    java.util.List collection = (java.util.List) TagUtils.lookup(pageCtx, "org.apache.struts.taglib.html.BEAN", methodAndParms, null);
-			   	
+              java.util.List collection;
+              if (methodAndParms.length() > 0) {
+			   	      collection = (java.util.List) TagUtils.lookup(pageCtx, "org.apache.struts.taglib.html.BEAN", methodAndParms, null);
+              } else {
+                collection = new ArrayList<org.kuali.rice.core.api.util.KeyValue>();
+                for (Map.Entry<String, String> entry : ((java.util.Set<Map.Entry<String, String>>)keyLabelMapEntries)) {
+                  collection.add(new org.kuali.rice.core.api.util.ConcreteKeyValue(entry));
+                }
+              }
+
 			   	    if(collection != null && collection.size() > 0) {
-			   		  for(Object obj : collection) {
-				   	    org.kuali.rice.core.util.KeyLabelPair pair = (org.kuali.rice.core.util.KeyLabelPair) obj;
-				   	    for (Object val : propertyValue) {
-					   	  if(pair.getKey() != null && pair.getKey().toString().equals(val)) {
-					   	    if (!selectedOptionDescription.trim().equals("")) {
-					   	      selectedOptionDescription += "<br />";
+				   	  for (Object val : propertyValue) {
+                for (Object obj : collection) {
+                  org.kuali.rice.core.api.util.KeyValue pair = (org.kuali.rice.core.api.util.KeyValue) obj;
+					   	    if(pair.getKey() != null && pair.getKey().equals(val)) {
+					   	      if (!selectedOptionDescription.trim().equals("")) {
+					   	        selectedOptionDescription += "<br />";
+					   	      }
+					   	      selectedOptionDescription += pair.getValue();
+					   	      break;
 					   	    }
-					   	    selectedOptionDescription += pair.getLabel();
-					   	    break;
-					   	  }
 				   	    }
 				   	  }
 				   	  pageCtx.setAttribute("readOnlyAlternateDisplay", selectedOptionDescription);
@@ -225,17 +256,29 @@
 
             <html:select styleId="${property}" property="${property}" title="${accessibleTitle}" tabindex="${tabindex}" style="${textStyle}" disabled="${disableField}" onblur="${onblur}" onchange="${onchange}" styleClass="${styleClass}">
               <c:choose>
-              	<c:when test="${not empty businessObjectClass and empty kimTypeId}">
+                <c:when test="${not empty businessObjectClass}">
                   <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${businessObjectClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.keyAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.labelAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeBlankRow}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeKeyInLabel}"/>
-              	</c:when>
-              	<c:when test="${not empty kimTypeId}">
-                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.name}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${kimTypeId}"/>
-              	</c:when>
+                  <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                </c:when>
               	<c:otherwise>
-                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                  <c:choose>
+                    <c:when test="${not empty finderClass}">
+                      <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                      <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                    </c:when>
+                    <c:when test="${not empty attributeEntry.keyLabelMap}">
+                      <c:forEach var="opt" items="${attributeEntry.keyLabelMap}" varStatus="x">
+                        <html:option value="${opt.key}">${opt.value}</html:option>
+                      </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                      <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                    </c:otherwise>
+                  </c:choose>
               	</c:otherwise>
            	  </c:choose>
-              <html:optionsCollection property="${methodAndParms}" label="label" value="key"/>
+              <%--<html:optionsCollection property="${methodAndParms}" label="value" value="key"/>--%>
             </html:select>
     </c:when>
 
@@ -245,17 +288,30 @@
             <c:set var="businessObjectClass" value="${fn:replace(attributeEntry.control.businessObject,'.','|')}"/>
 			<html:select styleId="${property}" property="${property}" title="${accessibleTitle}" tabindex="${tabindex}" style="${textStyle}" size="${attributeEntry.control.size}" disabled="${disableField}" onblur="${onblur}" onchange="${onchange}" styleClass="${styleClass}" multiple="multiple" >
 			  <c:choose>
-              	<c:when test="${not empty businessObjectClass and empty kimTypeId}">
+              	<c:when test="${not empty businessObjectClass}">
                   <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${businessObjectClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.keyAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.labelAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeBlankRow}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeKeyInLabel}"/>
-              	</c:when>
-              	<c:when test="${not empty kimTypeId}">
-                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.name}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${kimTypeId}"/>
-              	</c:when>
+                  <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                </c:when>
               	<c:otherwise>
-                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                  <c:choose>
+                    <c:when test="${not empty finderClass}">
+                      <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                      <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                    </c:when>
+                    <c:when test="${not empty attributeEntry.keyLabelMap}">
+                      <c:forEach var="opt" items="${attributeEntry.keyLabelMap}" varStatus="x">
+                        <html:option value="${opt.key}">${opt.value}</html:option>
+                      </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                      <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+                      <html:optionsCollection property="${methodAndParms}" label="value" value="key"/>
+                    </c:otherwise>
+                  </c:choose>
               	</c:otherwise>
            	  </c:choose>
-              <html:optionsCollection property="${methodAndParms}" label="label" value="key"/>
+
+
             </html:select>
             <c:if test="${disableField == false}">
               <input type="hidden" name="multiSelectToReset" value="${property}"/> 
@@ -266,24 +322,45 @@
         <c:set var="finderClass" value="${fn:replace(attributeEntry.control.valuesFinder,'.','|')}"/>
         <c:set var="businessObjectClass" value="${fn:replace(attributeEntry.control.businessObject,'.','|')}"/>
 
-		<c:choose>
-      		<c:when test="${not empty businessObjectClass and empty kimTypeId}">
+		    <c:choose>
+      		<c:when test="${not empty businessObjectClass}">
             	<c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${businessObjectClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.keyAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.labelAttribute}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeBlankRow}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.control.includeKeyInLabel}"/>
       	  	</c:when>
-      		<c:when test="${not empty kimTypeId}">
-                <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${attributeEntry.name}${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}IGNORED${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${kimTypeId}"/>
-      	  	</c:when>
       	  	<c:otherwise>
-            	<c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+              <c:choose>
+                <c:when test="${not empty finderClass}">
+                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+
+                </c:when>
+                <c:when test="${not empty attributeEntry.keyLabelMap}">
+                  <c:set var="methodAndParms" value=""/>
+                </c:when>
+                <c:otherwise>
+                  <c:set var="methodAndParms" value="actionFormUtilMap.getOptionsMap${Constants.ACTION_FORM_UTIL_MAP_METHOD_PARM_DELIMITER}${finderClass}"/>
+
+                </c:otherwise>
+              </c:choose>
       	  	</c:otherwise>
    	    </c:choose>
 
-       	<logic:iterate name="KualiForm" property="${methodAndParms}" id="KeyValue">
-       		<c:set var="accessibleRadioTitle" value="${accessibleTitle} - ${KeyValue.label}"/>
-            <html:radio property="${property}" style="${textStyle}" title="${accessibleRadioTitle}" tabindex="${tabindex}"
-            	value="key" idName="KeyValue" disabled="${disableField}" onclick="${onchange}"
-            	styleClass="${styleClass}"/>${KeyValue.label}
-        </logic:iterate>
+        <c:choose>
+          <c:when test="${not empty methodAndParms}">
+            <logic:iterate name="KualiForm" property="${methodAndParms}" id="KeyValue">
+              <c:set var="accessibleRadioTitle" value="${accessibleTitle} - ${KeyValue.value}"/>
+                <html:radio property="${property}" style="${textStyle}" title="${accessibleRadioTitle}" tabindex="${tabindex}"
+                  value="key" idName="KeyValue" disabled="${disableField}" onclick="${onchange}"
+                  styleClass="${styleClass}"/>${KeyValue.value}
+            </logic:iterate>
+          </c:when>
+          <c:otherwise>
+            <c:forEach var="opt" items="${attributeEntry.keyLabelMap}" varStatus="x">
+              <c:set var="accessibleRadioTitle" value="${accessibleTitle} - ${opt.value}"/>
+              <html:radio property="${property}" style="${textStyle}" title="${accessibleRadioTitle}" tabindex="${tabindex}"
+                          value="key" idName="opt" disabled="${disableField}" onclick="${onchange}"
+                          styleClass="${styleClass}"/>${opt.value}
+            </c:forEach>
+          </c:otherwise>
+        </c:choose>
     </c:when>
 
     <%-- checkbox --%>
@@ -309,6 +386,9 @@
                            onblur="${onblur}" onchange="${onchange}" styleId="${property}" disabled="${disableField}"
                            styleClass="${styleClass}" />
     </c:when>
+    <c:otherwise>
+      unknown control type for: ${attributeEntry.name}
+    </c:otherwise>
   </c:choose>
   <%-- error icon --%>
   <c:if test="${hasErrors}">

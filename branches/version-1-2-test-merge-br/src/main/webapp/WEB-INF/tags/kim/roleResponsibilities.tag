@@ -15,12 +15,12 @@
 --%>
 <%@ include file="/kr/WEB-INF/jsp/tldHeader.jsp"%>
 
-<c:set var="responsibilityAttributes" value="${DataDictionary.ResponsibilityImpl.attributes}" />
+<c:set var="responsibilityAttributes" value="${DataDictionary.UberResponsibilityBo.attributes}" />
 
 <kul:tab tabTitle="Responsibilities" defaultOpen="true" tabErrorKey="document.resp*">
 	<div class="tab-container" align="center">
     
-    <table cellpadding=0 cellspacing=0 summary="">
+    <table cellpadding="0" cellspacing="0" summary="">
           <c:if test="${!readOnly}">	
           	
              <tr>
@@ -28,12 +28,12 @@
 	                <div align="center">
 	                	<br/>
 						<b>Add Responsibility ID:</b>
-						<kul:htmlControlAttribute property="responsibility.responsibilityId" attributeEntry="${responsibilityAttributes.responsibilityId}"/>
-	                	<kul:lookup boClassName="org.kuali.rice.kim.bo.impl.ResponsibilityImpl" fieldConversions=
-	                	"template.name:responsibility.kimResponsibility.template.name,responsibilityId:responsibility.responsibilityId,name:responsibility.kimResponsibility.name,namespaceCode:responsibility.kimResponsibility.namespaceCode" anchor="${tabKey}" />
-						<html:hidden property="responsibility.kimResponsibility.name" />
-						<html:hidden property="responsibility.kimResponsibility.namespaceCode" />
-						${KualiForm.responsibility.kimResponsibility.namespaceCode}&nbsp;&nbsp;${KualiForm.responsibility.kimResponsibility.name}&nbsp;
+						<kul:htmlControlAttribute property="responsibility.responsibilityId" attributeEntry="${responsibilityAttributes.id}"/>
+	                	<kul:lookup boClassName="org.kuali.rice.kim.impl.responsibility.UberResponsibilityBo" fieldConversions=
+	                	"id:responsibility.responsibilityId,template.name:responsibility.kimResponsibility.template.name,name:responsibility.kimResponsibility.name,namespaceCode:responsibility.kimResponsibility.namespaceCode" anchor="${tabKey}" />
+						<html:hidden property="responsibility.name" />
+						<html:hidden property="responsibility.namespaceCode" />
+						${KualiForm.responsibility.namespaceCode}&nbsp;&nbsp;${KualiForm.responsibility.name}&nbsp;
 	                	<br/>
 	                	<br/>
 		            </div>
@@ -49,11 +49,11 @@
 	       </tr>         
      </c:if>       
 	</table>
-	<table>
+	<table cellpadding="0" cellspacing="0" summary="">
         	<tr>
         		<th>&nbsp;</th> 
         		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.namespaceCode}" noColon="true" /></div></th>
-        		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.responsibilityId}" noColon="true" /></div></th>
+        		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.id}" noColon="true" /></div></th>
         		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.name}" noColon="true" /></div></th>
         		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.detailObjectsValues}" noColon="true" /></div></th>
         		<th><div align="center"><kul:htmlAttributeLabel attributeEntry="${responsibilityAttributes.active}" noColon="true" /></div></th>
@@ -75,7 +75,7 @@
 					</div>
 				</td>
 	            <td align="left" valign="middle">
-	               	<div align="left"> <kul:htmlControlAttribute property="document.responsibilities[${status.index}].responsibilityId"  attributeEntry="${responsibilityAttributes.responsibilityId}" readOnly="true"  />
+	               	<div align="left"> <kul:htmlControlAttribute property="document.responsibilities[${status.index}].responsibilityId"  attributeEntry="${responsibilityAttributes.id}" readOnly="true"  />
 					</div>
 				</td>
 	            <td align="left" valign="middle">
@@ -83,7 +83,7 @@
 					</div>
 				</td>
 	            <td align="left" valign="middle">
-	               	<div align="left"> <kul:htmlControlAttribute property="document.responsibilities[${status.index}].kimResponsibility.detailObjectsValues"  attributeEntry="${responsibilityAttributes.detailObjectsToDisplay}" readOnly="true"  />
+	               	<div align="left">  <kul:htmlControlAttribute property="document.responsibilities[${status.index}].kimResponsibility.detailObjectsToDisplay"  attributeEntry="${responsibilityAttributes.detailObjectsToDisplay}" readOnly="true"  />
 					</div>
 				</td>
 				<c:choose>
