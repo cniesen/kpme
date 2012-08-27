@@ -502,7 +502,9 @@
 		                    <pomIncludes>
 		                        <pomInclude>pom.xml</pomInclude>
 		                    </pomIncludes>
-		                    <profiles>${settings.activeProfiles}</profiles>
+		                    <profiles>
+                                <profile>${build.environment}</profile>
+                            </profiles>
 		                    <goals>
 		                        <goal>clean</goal>
 		                        <goal>package</goal>
