@@ -3,10 +3,10 @@
         <param name="application.host">ci.kpme.kuali.org</param>
 
         <param name="datasource.ojb.platform">MySQL</param>
-        <param name="datasource.driver.name">@kr.dataSource.driver@</param>
-        <param name="datasource.url">@kr.dataSource.jdbcUrl@</param>
-        <param name="datasource.username">@kr.dataSource.username@</param>
-        <param name="datasource.password">@kr.dataSource.password@</param>
+        <param name="datasource.driver.name">@dba.dataSource.driver@</param>
+        <param name="datasource.url">@dba.dataSource.jdbcUrl@</param>
+        <param name="datasource.username">@dba.dataSource.username@</param>
+        <param name="datasource.password">@dba.dataSource.password@</param>
 
         <param name="attachment.dir.location">${user.home}/kuali/main/${environment}/rice/kew_attachments</param>
         <param name="plugin.dir">${user.home}/kuali/main/${environment}/rice/plugins</param>
