@@ -388,7 +388,7 @@
                                     <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
                                     <database>${kpme.dataSource.database}</database>
                                     <databaseUser>${kpme.dataSource.username}</databaseUser>
-                                    <databasePassword>${kpme].dataSource.password}</databasePassword>
+                                    <databasePassword>${kpme.dataSource.password}</databasePassword>
                                 </configuration>
                             </execution>
 		                    <execution>
