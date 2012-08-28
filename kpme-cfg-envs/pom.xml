@@ -356,7 +356,7 @@
                         <artifactId>maven-impex-plugin</artifactId>
                         <executions>
                             <execution>
-		                        <id>reset-db</id>
+		                        <id>reset-kr</id>
 		                        <phase>process-sources</phase>
 		                        <goals>
 		                            <goal>reset</goal>
@@ -374,7 +374,25 @@
 		                        </configuration>
 		                    </execution>
 		                    <execution>
-		                        <id>import-schema-db</id>
+                                <id>reset-kpme</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>reset</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${admin.dataSource.database}</artifactId>
+                                    <driver>${admin.dataSource.driver}</driver>
+                                    <url>${admin.dataSource.jdbcUrl}</url>
+                                    <username>${admin.dataSource.username}</username>
+                                    <password>${admin.dataSource.password}</password>
+                                    <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
+                                    <database>${kpme.dataSource.database}</database>
+                                    <databaseUser>${kpme.dataSource.username}</databaseUser>
+                                    <databasePassword>${kpme].dataSource.password}</databasePassword>
+                                </configuration>
+                            </execution>
+		                    <execution>
+		                        <id>import-schema-kr</id>
 		                        <phase>process-sources</phase>
 		                        <goals>
 		                            <goal>import</goal>
@@ -390,7 +408,7 @@
 		                        </configuration>
 		                    </execution>
 		                    <execution>
-		                        <id>import-data-db</id>
+		                        <id>import-data-kr</id>
 		                        <phase>process-sources</phase>
 		                        <goals>
 		                            <goal>import</goal>
@@ -405,7 +423,7 @@
 		                        </configuration>
 		                    </execution>
 		                    <execution>
-		                        <id>import-constraints-db</id>
+		                        <id>import-constraints-kr</id>
 		                        <phase>process-sources</phase>
 		                        <goals>
 		                            <goal>import</goal>
@@ -420,6 +438,53 @@
 		                            <importDirIncludes>${krdba.dataSource.database}-constraints.sql</importDirIncludes>
 		                        </configuration>
 		                    </execution>
+		                    <execution>
+                                <id>import-schema-kpme</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kpme.dataSource.database}</artifactId>
+                                    <driver>${kpme.dataSource.driver}</driver>
+                                    <url>${kpme.dataSource.jdbcUrl}</url>
+                                    <username>${kpme.dataSource.username}</username>
+                                    <password>${kpme.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</importDir>
+                                    <importDirIncludes>${kpmedba.dataSource.database}.sql</importDirIncludes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>import-data-kpme</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kpme.dataSource.database}</artifactId>
+                                    <driver>${kpme.dataSource.driver}</driver>
+                                    <url>${kpme.dataSource.jdbcUrl}</url>
+                                    <username>${kpme.dataSource.username}</username>
+                                    <password>${kpme.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/data-sql/${kpmedba.dataSource.database}</importDir>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>import-constraints-kr</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kpme.dataSource.database}</artifactId>
+                                    <driver>${kpme.dataSource.driver}</driver>
+                                    <url>${kpme.dataSource.jdbcUrl}</url>
+                                    <username>${kpme.dataSource.username}</username>
+                                    <password>${kpme.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</importDir>
+                                    <importDirIncludes>${kpmedba.dataSource.database}-constraints.sql</importDirIncludes>
+                                </configuration>
+                            </execution>
 		                </executions>
 		            </plugin>
                 </plugins>
