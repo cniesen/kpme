@@ -385,8 +385,8 @@
 		                            <url>${kr.dataSource.jdbcUrl}</url>
 		                            <username>${kr.dataSource.username}</username>
 		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/schema-sql/${dba.dataSource.database}</importDir>
-		                            <importDirIncludes>${dba.dataSource.database}.sql</importDirIncludes>
+		                            <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
+		                            <importDirIncludes>${krdba.dataSource.database}.sql</importDirIncludes>
 		                        </configuration>
 		                    </execution>
 		                    <execution>
@@ -401,7 +401,7 @@
 		                            <url>${kr.dataSource.jdbcUrl}</url>
 		                            <username>${kr.dataSource.username}</username>
 		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/data-sql/${dba.dataSource.database}</importDir>
+		                            <importDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</importDir>
 		                        </configuration>
 		                    </execution>
 		                    <execution>
@@ -416,8 +416,8 @@
 		                            <url>${kr.dataSource.jdbcUrl}</url>
 		                            <username>${kr.dataSource.username}</username>
 		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/schema-sql/${dba.dataSource.database}</importDir>
-		                            <importDirIncludes>${dba.dataSource.database}-constraints.sql</importDirIncludes>
+		                            <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
+		                            <importDirIncludes>${krdba.dataSource.database}-constraints.sql</importDirIncludes>
 		                        </configuration>
 		                    </execution>
 		                </executions>
