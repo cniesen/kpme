@@ -470,7 +470,7 @@
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>import-constraints-kr</id>
+                                <id>import-constraints-kpme</id>
                                 <phase>process-sources</phase>
                                 <goals>
                                     <goal>import</goal>
