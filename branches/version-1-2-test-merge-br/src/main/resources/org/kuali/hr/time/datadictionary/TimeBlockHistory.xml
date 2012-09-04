@@ -21,16 +21,23 @@
                 <ref bean="TimeBlockHistory-workArea"/>
                 <ref bean="TimeBlockHistory-task"/>
                 <ref bean="TimeBlockHistory-earnCode"/>
-                <ref bean="TimeBlockHistory-beginTimeStamp"/>
-                <ref bean="TimeBlockHistory-endTimeStamp"/>
-                <ref bean="TimeBlockHistory-beginDate" />
+                <ref bean="TimeBlockHistory-beginTimestamp"/>
+                <ref bean="TimeBlockHistory-endTimestamp"/>
+                <ref bean="TimeBlockHistory-beginTimestampTimezone"/>
+                <ref bean="TimeBlockHistory-endTimestampTimezone"/>
+               <!-- <ref bean="TimeBlockHistory-beginDate" /> -->
                 <ref bean="TimeBlockHistory-clockLogCreated"/>
                 <ref bean="TimeBlockHistory-hours"/>
                 <ref bean="TimeBlockHistory-amount"/>
-                <ref bean="TimeBlockHistory-timeStamp"/>
+                <ref bean="TimeBlockHistory-timestamp"/>
                 <ref bean="TimeBlockHistory-userPrincipalId"/>
                 <ref bean="TimeBlockHistory-principalId"/>
                 <ref bean="TimeBlockHistory-actionHistory"/>
+                <ref bean="TimeBlockHistory-tkWorkAreaId"/>
+                <ref bean="TimeBlockHistory-tkTaskId"/>
+                <ref bean="TimeBlockHistory-modifiedByPrincipalId"/>
+                <ref bean="TimeBlockHistory-timestampModified"/>
+                <ref bean="TimeBlockHistory-hrJobId"/>
                 <ref bean="TimeBlockHistory-timesheetDocumentHeader.documentStatus"/>
             </list>
         </property>
@@ -163,17 +170,17 @@
 
     <bean id="TimeBlockHistory-earnCode-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="forceUppercase" value="true"/>
-        <property name="maxLength" value="3"/>
+        <property name="maxLength" value="15"/>
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="3"/>
+            <bean parent="TextControlDefinition" p:size="15"/>
         </property>
         <property name="name" value="earnCode"/>
         <property name="label" value="Earn Code"/>
         <property name="description" value="Earn Code"/>
     </bean>
 
-    <bean id="TimeBlockHistory-beginTimeStamp" parent="TimeBlockHistory-beginTimeStamp-parentBean"/>
-    <bean id="TimeBlockHistory-beginTimeStamp-parentBean" abstract="true"
+    <bean id="TimeBlockHistory-beginTimestamp" parent="TimeBlockHistory-beginTimestamp-parentBean"/>
+    <bean id="TimeBlockHistory-beginTimestamp-parentBean" abstract="true"
           parent="AttributeDefinition">
         <property name="shortLabel" value="Begin Time"/>
         <property name="maxLength" value="15"/>
@@ -181,13 +188,13 @@
             <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
         </property>
         <property name="formatterClass"
-                  value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter"/>
+                  value="org.kuali.rice.core.web.format.TimestampAMPMFormatter"/>
         <property name="name" value="beginTimestamp"/>
         <property name="label" value=" Begin Time"/>
     </bean>
 
-    <bean id="TimeBlockHistory-endTimeStamp" parent="TimeBlockHistory-endTimeStamp-parentBean"/>
-    <bean id="TimeBlockHistory-endTimeStamp-parentBean" abstract="true"
+    <bean id="TimeBlockHistory-endTimestamp" parent="TimeBlockHistory-endTimestamp-parentBean"/>
+    <bean id="TimeBlockHistory-endTimestamp-parentBean" abstract="true"
           parent="AttributeDefinition">
         <property name="shortLabel" value="End Time"/>
         <property name="maxLength" value="15"/>
@@ -195,7 +202,7 @@
             <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
         </property>
         <property name="formatterClass"
-                  value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter"/>
+                  value="org.kuali.rice.core.web.format.TimestampAMPMFormatter"/>
         <property name="name" value="endTimestamp"/>
         <property name="label" value="End Time"/>
     </bean>
@@ -210,13 +217,13 @@
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
 		</property>
-		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
 		<property name="name" value="beginDate" />
 		<property name="label" value="Date" />
 	</bean> 
 
-    <bean id="TimeBlockHistory-timeStamp" parent="TimeBlockHistory-timeStamp-parentBean"/>
-    <bean id="TimeBlockHistory-timeStamp-parentBean" abstract="true"
+    <bean id="TimeBlockHistory-timestamp" parent="TimeBlockHistory-timestamp-parentBean"/>
+    <bean id="TimeBlockHistory-timestamp-parentBean" abstract="true"
           parent="AttributeDefinition">
         <property name="shortLabel" value="Timestamp"/>
         <property name="maxLength" value="15"/>
@@ -224,7 +231,7 @@
             <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
         </property>
         <property name="formatterClass"
-                  value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter"/>
+                  value="org.kuali.rice.core.web.format.TimestampAMPMFormatter"/>
         <property name="name" value="timestamp"/>
         <property name="label" value="Time Stamp"/>
     </bean>
@@ -238,7 +245,7 @@
         </property>
         <property name="name" value="clockLogCreated"/>
         <property name="label" value="Clock Log Created"/>
-        <property name="formatterClass" value="org.kuali.rice.kns.web.format.BooleanFormatter"/>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
     </bean>
 
     <bean id="TimeBlockHistory-userPrincipalId" parent="TimeBlockHistory-userPrincipalId-parentBean"/>

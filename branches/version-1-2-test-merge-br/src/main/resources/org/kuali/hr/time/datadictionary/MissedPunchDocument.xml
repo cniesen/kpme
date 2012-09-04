@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:dd="http://rice.kuali.org/dd"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd         http://rice.kuali.org/dd         http://rice.kuali.org/dd/dd.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="MissedPunchDocument" parent="MissedPunchDocument-parentBean" />
 
@@ -20,7 +19,8 @@
 				<ref bean="MissedPunchDocument-clockAction" />
 				<ref bean="MissedPunchDocument-actionDate" />
 				<ref bean="MissedPunchDocument-actionTime" />
-				<ref bean="MissedPunchDocument-documentId" />
+				<!-- <ref bean="MissedPunchDocument-documentId" /> -->
+				<ref bean="MissedPunchDocument-documentNumber" />
 				<ref bean="MissedPunchDocument-timesheetDocumentId" />
 				<ref bean="MissedPunchDocument-documentStatus" />
 			</list>
@@ -31,7 +31,7 @@
 	<bean id="MissedPunchDocument-assignment-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="forceUppercase" value="false"/>
 		<property name="shortLabel" value="Assignment" />
-		<property name="maxLength" value="30" />
+		<property name="maxLength" value="20" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
@@ -49,7 +49,7 @@
     <bean id="MissedPunchDocument-principalId-parentBean" abstract="true"
         parent="AttributeDefinition">
         <property name="shortLabel" value="Principal Id" />
-        <property name="maxLength" value="20" />
+        <property name="maxLength" value="40" />
         <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern">
                 <property name="allowWhitespace" value="false" />
@@ -66,7 +66,7 @@
     <bean id="MissedPunchDocument-clockAction-parentBean" abstract="true"
         parent="AttributeDefinition">
         <property name="shortLabel" value="Missed Clock Action" />
-        <property name="maxLength" value="30" />
+        <property name="maxLength" value="20" />
         <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern">
                 <property name="allowWhitespace" value="false" />
@@ -89,7 +89,7 @@
       <property name="control">
         <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
       </property>
-      <property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter"/>
+      <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter"/>
       <property name="name" value="actionDate"/>
       <property name="label" value="Missed Action Date (MM/DD/YYYY)"/>
     </bean>
@@ -109,7 +109,7 @@
         <property name="label" value="Missed Action Time (00:00 AM)"/>
     </bean>
 
-    <bean id="MissedPunchDocument-documentId" parent="MissedPunchDocument-documentId-parentBean"/>
+    <!-- <bean id="MissedPunchDocument-documentId" parent="MissedPunchDocument-documentId-parentBean"/>
     <bean id="MissedPunchDocument-documentId-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="shortLabel" value="Document Id"/>
         <property name="maxLength" value="14"/>
@@ -124,7 +124,24 @@
         <property name="name" value="documentNumber"/>
         <property name="label" value="Document Id"/>
     </bean>
-
+ -->
+ 
+	<bean id="MissedPunchDocument-documentNumber" parent="MissedPunchDocument-documentNumber-parentBean"/>
+    <bean id="MissedPunchDocument-documentNumber-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Document Id"/>
+        <property name="maxLength" value="14"/>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+            <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="14"/>
+        </property>
+        <property name="name" value="documentNumber"/>
+        <property name="label" value="Document Id"/>
+    </bean>
+     
     <bean id="MissedPunchDocument-timesheetDocumentId" parent="MissedPunchDocument-timesheetDocumentId-parentBean"/>
     <bean id="MissedPunchDocument-timesheetDocumentId-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="shortLabel" value="Timesheet Doc Id"/>

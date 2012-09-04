@@ -14,7 +14,7 @@
 		p:businessObjectClass="org.kuali.hr.time.assignment.Assignment"
 		p:businessRulesClass="org.kuali.hr.time.assignment.validation.AssignmentRule"
 		p:maintainableClass="org.kuali.hr.time.assignment.service.AssignmentMaintainableServiceImpl"
-		p:documentAuthorizerClass="org.kuali.hr.time.authorization.SystemAdminAuthorizer">
+		p:documentAuthorizerClass="org.kuali.hr.time.authorization.DepartmentAdminAuthorizer">
 		<property name="maintainableSections">
 			<list>
 				<ref bean="AssignmentMaintenanceDocument-AssignmentMaintenance" />
@@ -43,9 +43,9 @@
 					p:required="true" p:noLookup="true"/>
 				<bean parent="MaintainableFieldDefinition" p:name="principalId"
 					p:required="true" />
-				<bean parent="MaintainableFieldDefinition" p:name="name" 
+<!-- 				<bean parent="MaintainableFieldDefinition" p:name="name" 
 					p:noLookup="true"/>
-				<bean parent="MaintainableFieldDefinition" p:name="jobNumber"
+ -->				<bean parent="MaintainableFieldDefinition" p:name="jobNumber"
 					p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="dept" p:lookupReadOnly="true"
 					p:noLookup="true"/>

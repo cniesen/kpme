@@ -17,7 +17,7 @@
 
   <bean id="PersonImpl" parent="PersonImpl-parentBean"/>
 
-  <bean id="PersonImpl-parentBean" abstract="true" parent="BusinessObjectEntry" p:businessObjectClass="org.kuali.rice.kim.bo.impl.PersonImpl" p:titleAttribute="principalId" p:objectLabel="Person" p:inquiryDefinition-ref="PersonImpl-inquiryDefinition" p:lookupDefinition-ref="PersonImpl-lookupDefinition">
+  <bean id="PersonImpl-parentBean" abstract="true" parent="BusinessObjectEntry" p:businessObjectClass="org.kuali.rice.kim.impl.identity.PersonImpl" p:titleAttribute="principalId" p:objectLabel="Person" p:inquiryDefinition-ref="PersonImpl-inquiryDefinition" p:lookupDefinition-ref="PersonImpl-lookupDefinition">
     <property name="attributes">
       <list>
         <ref bean="PersonImpl-campusCode"/>

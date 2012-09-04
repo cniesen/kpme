@@ -21,7 +21,7 @@
 		<property name="attributes">
 			<list>
 				<ref bean="GracePeriodRule-hourFactor" />
-				<ref bean="GracePeriodRule-effDt" />
+				<ref bean="GracePeriodRule-effectiveDate" />
 				<ref bean="GracePeriodRule-active" />
 				<ref bean="GracePeriodRule-userPrincipalId" />
 				<ref bean="GracePeriodRule-timestamp" />
@@ -48,9 +48,9 @@
 	</bean>
 
 
-	<bean id="GracePeriodRule-effDt" parent="GracePeriodRule-effDt-parentBean" />
+	<bean id="GracePeriodRule-effectiveDate" parent="GracePeriodRule-effectiveDate-parentBean" />
 
-	<bean id="GracePeriodRule-effDt-parentBean" abstract="true"
+	<bean id="GracePeriodRule-effectiveDate-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Eff Date" />
 		<property name="maxLength" value="10" />
@@ -60,7 +60,7 @@
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
 		</property>
-		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
 		<property name="name" value="effectiveDate" />
 		<property name="label" value="Effective Date" />
 	</bean>
