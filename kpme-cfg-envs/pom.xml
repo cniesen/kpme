@@ -344,6 +344,162 @@
 		                    </execution>
 		                </executions>
 		            </plugin>
+		            <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-scripts-mysql</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <fileset id="mysql-server-schema" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql/${krdba.dataSource.database}.sql" />
+                                        <fileset id="mysql-server-constraints" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql/${krdba.dataSource.database}-constraints.sql" />
+                                        <fileset id="mysql-client-schema" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql/${kpmedba.dataSource.database}.sql" />
+                                        <fileset id="mysql-client-constraints" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql/${kpmedba.dataSource.database}-constraints.sql" />
+                                        <fileset id="mysql-server-data" dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/mysql" />                                        
+                                        <fileset id="mysql-client-data" dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/mysql" />
+                                        
+                                        <pathconvert property="mysql-server-schema-script" refid="mysql-server-schema" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${krdba.dataSource.database}.sql" to="\. ./mysql/server/schema/schema.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="mysql-server-constraints-script" refid="mysql-server-constraints" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="\. ./mysql/server/schema/schema-constraints.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="mysql-client-schema-script" refid="mysql-client-schema" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. ./mysql/client/data/schema.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="mysql-client-constraints-script" refid="mysql-client-constraints" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="\. ./mysql/client/schema/schema-constraints.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="mysql-server-data-script" refid="mysql-server-data" pathsep="${line.separator}">
+                                            <chainedmapper>
+	                                            <flattenmapper />
+	                                            <globmapper from="*.sql" to="\. ./mysql/server/data/*.sql" />
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="mysql-client-data-script" refid="mysql-client-data" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <globmapper from="*.sql" to="\. ./mysql/client/data/*.sql" />
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        
+                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" />
+                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" />
+                                        
+                                        <zip destfile="${project.build.directory}/mysql_${dba.environment}.zip">
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql" includes="${krdba.dataSource.database}.sql" fullpath="mysql/server/schema/schema.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql" includes="${krdba.dataSource.database}-constraints.sql" fullpath="mysql/server/schema/schema-constraints.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql" includes="${kpmedba.dataSource.database}.sql" fullpath="mysql/client/schema/schema.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql" includes="${kpmedba.dataSource.database}-constraints.sql" fullpath="mysql/client/schema/schema-constraints.sql" />
+                                            <zipfileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/mysql" prefix="mysql/server/data" />
+                                            <zipfileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/mysql" prefix="mysql/client/data" />
+                                            <zipfileset dir="${project.build.directory}/mysql_${dba.environment}" />
+                                        </zip>
+                                    </target>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>create-scripts-oracle</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <fileset id="oracle-server-schema" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}.sql" />
+                                        <fileset id="oracle-server-constraints" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}-constraints.sql" />
+                                        <fileset id="oracle-client-schema" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}.sql" />
+                                        <fileset id="oracle-client-constraints" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}-constraints.sql" />
+                                        <fileset id="oracle-server-data" dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />                                        
+                                        <fileset id="oracle-client-data" dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" />
+                                        
+                                        <pathconvert property="oracle-server-schema-script" refid="oracle-server-schema" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${krdba.dataSource.database}.sql" to="@oracle/server/schema/schema.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-server-constraints-script" refid="oracle-server-constraints" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="@oracle/server/schema/schema-constraints.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-client-schema-script" refid="oracle-client-schema" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="@oracle/client/data/schema.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-client-constraints-script" refid="oracle-client-constraints" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="@oracle/client/schema/schema-constraints.sql" />
+                                                </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-server-data-script" refid="oracle-server-data" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <globmapper from="*.sql" to="@oracle/server/data/*.sql" />
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-client-data-script" refid="oracle-client-data" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <globmapper from="*.sql" to="@oracle/client/data/*.sql" />
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        
+                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_server.sql" />
+                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_client.sql" />
+                                        
+                                        <zip destfile="${project.build.directory}/oracle_${dba.environment}.zip">
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle" includes="${krdba.dataSource.database}.sql" fullpath="oracle/server/schema/schema.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle" includes="${krdba.dataSource.database}-constraints.sql" fullpath="oracle/server/schema/schema-constraints.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle" includes="${kpmedba.dataSource.database}.sql" fullpath="oracle/client/schema/schema.sql" />
+                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle" includes="${kpmedba.dataSource.database}-constraints.sql" fullpath="oracle/client/schema/schema-constraints.sql" />
+                                            <zipfileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" prefix="oracle/server/data" />
+                                            <zipfileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" prefix="oracle/client/data" />
+                                            <zipfileset dir="${project.build.directory}/oracle_${dba.environment}" />
+                                        </zip>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
 		        </plugins>
 		    </build>
 		</profile>
