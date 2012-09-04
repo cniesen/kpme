@@ -354,7 +354,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}.sql" to="\. ./mysql/server/schema/schema.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}.sql" to="\. mysql/server/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -362,7 +362,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="\. ./mysql/server/schema/schema-constraints.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="\. mysql/server/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -370,7 +370,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. ./mysql/client/data/schema.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. mysql/client/data/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -378,25 +378,25 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="\. ./mysql/client/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="\. mysql/client/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-server-data-script" refid="mysql-server-data" pathsep="${line.separator}">
                                             <chainedmapper>
 	                                            <flattenmapper />
-	                                            <globmapper from="*.sql" to="\. ./mysql/server/data/*.sql" />
+	                                            <globmapper from="*.sql" to="\. mysql/server/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-client-data-script" refid="mysql-client-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
-                                                <globmapper from="*.sql" to="\. ./mysql/client/data/*.sql" />
+                                                <globmapper from="*.sql" to="\. mysql/client/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         
-                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" />
-                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" />
+                                        <echo message="delimiter /${line.separator}${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}${line.separator}delimiter ;" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" />
+                                        <echo message="delimiter /${line.separator}${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}${line.separator}delimiter ;" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" />
                                         
                                         <zip destfile="${project.build.directory}/mysql_${dba.environment}.zip">
                                             <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql" includes="${krdba.dataSource.database}.sql" fullpath="mysql/server/schema/schema.sql" />
