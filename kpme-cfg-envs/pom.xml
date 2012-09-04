@@ -395,8 +395,8 @@
                                             </chainedmapper>
                                         </pathconvert>
                                         
-                                        <echo message="delimiter /${line.separator}${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}${line.separator}delimiter ;" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" />
-                                        <echo message="delimiter /${line.separator}${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}${line.separator}delimiter ;" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" />
+                                        <echo message="${line.separator}${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" />
+                                        <echo message="${line.separator}${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" />
                                         
                                         <zip destfile="${project.build.directory}/mysql_${dba.environment}.zip">
                                             <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/mysql" includes="${krdba.dataSource.database}.sql" fullpath="mysql/server/schema/schema.sql" />
