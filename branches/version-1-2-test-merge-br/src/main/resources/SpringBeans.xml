@@ -281,13 +281,13 @@
 
     <bean id="departmentDao" class="org.kuali.hr.time.department.dao.DepartmentDaoSpringOjbImpl" parent="platformAwareDao" />
 
-    <bean id="earnCodeSecurityDao" class="org.kuali.hr.lm.earncodesec.dao.EarnCodeSecurityDaoSpringOjbImpl" parent="platformAwareDao" />
+    <bean id="earnCodeSecurityDao" class="org.kuali.hr.earncodesec.dao.EarnCodeSecurityDaoSpringOjbImpl" parent="platformAwareDao" />
 
     <bean id="earnCodeDao" class="org.kuali.hr.time.earncode.dao.EarnCodeDaoSpringOjbImpl" parent="platformAwareDao" />
 
     <bean id="timeCollectionRuleDao" class="org.kuali.hr.time.timecollection.rule.dao.TimeCollectionRuleDaoServiceImpl" parent="platformAwareDao" />
 
-    <bean id="earnCodeGroupDao" class="org.kuali.hr.time.earncodegroup.dao.EarnCodeGroupDaoServiceImpl" parent="platformAwareDao" />
+    <bean id="earnGroupDao" class="org.kuali.hr.time.earngroup.dao.EarnGroupDaoServiceImpl" parent="platformAwareDao" />
 
     <bean id="timeHourDetailDao" class="org.kuali.hr.time.timehourdetail.dao.TimeHourDetailDaoSpringOjbImpl" parent="platformAwareDao" />
 
@@ -323,9 +323,8 @@
     
     <bean id="batchJobEntryDao" class="org.kuali.hr.time.batch.dao.BatchJobEntryDaoSpringOjbImpl" parent="platformAwareDao" />
 
-  	<bean id="accrualCategoryDao" class="org.kuali.hr.lm.accrual.dao.AccrualCategoryDaoSpringOjbImpl" parent="platformAwareDao" />
-  	
-    <bean id="accrualCategoryRuleDao" class="org.kuali.hr.lm.accrual.dao.AccrualCategoryRuleDaoSpringOjbImpl" parent="platformAwareDao" />
+  	<bean id="accrualCategoryDao" class="org.kuali.hr.time.accrual.dao.AccrualCategoryDaoSpringOjbImpl" parent="platformAwareDao" />
+
     
     <!-- Time Services for Business Logic -->
     <bean id="missedPunchService" class="org.kuali.hr.time.missedpunch.service.MissedPunchServiceImpl">
@@ -453,7 +452,7 @@
     <bean id="timesheetService" class="org.kuali.hr.time.timesheet.service.TimesheetServiceImpl">
     </bean>
 
-    <bean id="earnCodeSecurityService" class="org.kuali.hr.lm.earncodesec.service.EarnCodeSecurityServiceImpl">
+    <bean id="earnCodeSecurityService" class="org.kuali.hr.earncodesec.service.EarnCodeSecurityServiceImpl">
         <property name="earnCodeSecurityDao" ref="earnCodeSecurityDao"/>
     </bean>
 
@@ -465,8 +464,8 @@
         <property name="earnCodeDao" ref="earnCodeDao"/>
     </bean>
 
-    <bean id="earnCodeGroupService" class="org.kuali.hr.time.earncodegroup.service.EarnCodeGroupServiceImpl">
-        <property name="earnCodeGroupDao" ref="earnCodeGroupDao"/>
+    <bean id="earnGroupService" class="org.kuali.hr.time.earngroup.service.EarnGroupServiceImpl">
+        <property name="earnGroupDao" ref="earnGroupDao"/>
     </bean>
 
     <bean id="salGroupService" class="org.kuali.hr.time.salgroup.service.SalGroupServiceImpl">
@@ -509,13 +508,8 @@
     <bean id="batchJobEntryService" class="org.kuali.hr.time.batch.service.BatchJobEntryServiceImpl">
         <property name="batchJobEntryDao" ref="batchJobEntryDao"/>
     </bean>
-    <bean id="accrualCategoryService" class="org.kuali.hr.lm.accrual.service.AccrualCategoryServiceImpl">
+    <bean id="accrualCategoryService" class="org.kuali.hr.time.accrual.service.AccrualCategoryServiceImpl">
         <property name="accrualCategoryDao" ref="accrualCategoryDao"/>
-    </bean>
-    <bean id="accrualCategoryRuleService" class="org.kuali.hr.lm.accrual.service.AccrualCategoryRuleServiceImpl">
-        <property name="accrualCategoryRuleDao" ref="accrualCategoryRuleDao"/>
-    </bean>
-    <bean id="accrualService" class="org.kuali.hr.lm.accrual.service.AccrualServiceImpl">
     </bean>
     
     <bean id="timeSummaryService" class="org.kuali.hr.time.timesummary.service.TimeSummaryServiceImpl"/>
@@ -579,7 +573,7 @@
 
     <bean id="EarnCodeSecurityLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.hr.lm.earncodesec.service.EarnCodeSecurityLookupableHelper"/>
+            <bean class="org.kuali.hr.earncodesec.service.EarnCodeSecurityLookupableHelper"/>
         </property>
     </bean>
     <bean id="earnCodeLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
@@ -589,7 +583,7 @@
     </bean>
     <bean id="earnCodeGroupLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.hr.time.earncodegroup.service.EarnCodeGroupLookupableHelper"/>
+            <bean class="org.kuali.hr.time.earngroup.service.EarnGroupLookupableHelper"/>
         </property>
     </bean>
     <bean id="payTypeLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
@@ -747,7 +741,7 @@
     
     <bean id="accrualCategoryLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.hr.lm.accrual.service.AccrualCategoryLookupableHelper"/>          
+            <bean class="org.kuali.hr.time.accrual.service.AccrualCategoryLookupableHelper"/>
         </property>
     </bean> 
 

@@ -30,7 +30,7 @@ public class EarnCodeSecurity extends HrBusinessObject {
 	private String hrSalGroupId;
 	private String hrEarnCodeId;
 	private String hrLocationId;
-	
+
 	private SalGroup  salGroupObj;
 	private Department departmentObj;
 	private EarnCode earnCodeObj;

@@ -6,6 +6,7 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.accrual.AccrualCategory;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 import java.sql.Date;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class AccrualCategoryDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements AccrualCategoryDao {
+public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements AccrualCategoryDao {
 
     private static final Logger LOG = Logger.getLogger(AccrualCategoryDaoSpringOjbImpl.class);
     
