@@ -43,19 +43,6 @@
     </properties>
     
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources/${dba.environment}</directory>
-                <targetPath>${project.build.directory}/environment/${dba.environment}</targetPath>
-                <filtering>true</filtering>
-            </resource>
-            <resource>
-                <directory>src/main/resources/${build.environment}</directory>
-                <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
-        
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -649,6 +636,18 @@
         <profile>
             <id>deploy</id>
             <build>
+		        <resources>
+		            <resource>
+		                <directory>src/main/resources/${dba.environment}</directory>
+		                <targetPath>${project.build.directory}/environment/${dba.environment}</targetPath>
+		                <filtering>true</filtering>
+		            </resource>
+		            <resource>
+		                <directory>src/main/resources/${build.environment}</directory>
+		                <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
+		                <filtering>true</filtering>
+		            </resource>
+		        </resources>
                 <plugins>
                     <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
