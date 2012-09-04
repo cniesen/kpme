@@ -370,7 +370,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. mysql/client/data/schema.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. mysql/client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -445,7 +445,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="@oracle/client/data/schema.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="@oracle/client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
