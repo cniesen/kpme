@@ -471,10 +471,10 @@
                                 <configuration>
                                     <target>
                                         <fileset id="oracle-server-schema" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}.sql" />
+                                        <fileset id="oracle-server-data" dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />                                        
                                         <fileset id="oracle-server-constraints" file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}-constraints.sql" />
                                         <fileset id="oracle-client-schema" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}.sql" />
                                         <fileset id="oracle-client-constraints" file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}-constraints.sql" />
-                                        <fileset id="oracle-server-data" dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />                                        
                                         <fileset id="oracle-client-data" dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" />
                                         
                                         <pathconvert property="oracle-server-schema-script" refid="oracle-server-schema" pathsep="${line.separator}">
@@ -483,6 +483,12 @@
                                                 <filtermapper>
                                                     <replacestring from="${krdba.dataSource.database}.sql" to="@oracle/server/schema/schema.sql" />
                                                 </filtermapper>
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-server-data-script" refid="oracle-server-data" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <globmapper from="*.sql" to="@oracle/server/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="oracle-server-constraints-script" refid="oracle-server-constraints" pathsep="${line.separator}">
@@ -509,12 +515,6 @@
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
-                                        <pathconvert property="oracle-server-data-script" refid="oracle-server-data" pathsep="${line.separator}">
-                                            <chainedmapper>
-                                                <flattenmapper />
-                                                <globmapper from="*.sql" to="@oracle/server/data/*.sql" />
-                                            </chainedmapper>
-                                        </pathconvert>
                                         <pathconvert property="oracle-client-data-script" refid="oracle-client-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
@@ -522,18 +522,28 @@
                                             </chainedmapper>
                                         </pathconvert>
                                         
-                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_server.sql" />
-                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_client.sql" />
+                                        <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/server/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}.sql" />
+                                        </copy>
+                                        <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/server/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle/${krdba.dataSource.database}-constraints.sql" />
+                                        </copy>
+                                        <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/server/data"> 
+                                            <fileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />
+                                        </copy>
+                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_server.sql" /> 
+                                        <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/client/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}.sql" />
+                                        </copy>
+                                        <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/client/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}-constraints.sql" />
+                                        </copy>
+                                        <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/client/data">
+                                            <fileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" />
+                                        </copy>
+                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_client.sql" /> 
                                         
-                                        <zip destfile="${project.build.directory}/oracle_${dba.environment}.zip">
-                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle" includes="${krdba.dataSource.database}.sql" fullpath="oracle/server/schema/schema.sql" />
-                                            <zipfileset dir="${project.build.directory}/schema-sql/${krdba.dataSource.database}/oracle" includes="${krdba.dataSource.database}-constraints.sql" fullpath="oracle/server/schema/schema-constraints.sql" />
-                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle" includes="${kpmedba.dataSource.database}.sql" fullpath="oracle/client/schema/schema.sql" />
-                                            <zipfileset dir="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle" includes="${kpmedba.dataSource.database}-constraints.sql" fullpath="oracle/client/schema/schema-constraints.sql" />
-                                            <zipfileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" prefix="oracle/server/data" />
-                                            <zipfileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" prefix="oracle/client/data" />
-                                            <zipfileset dir="${project.build.directory}/oracle_${dba.environment}" />
-                                        </zip>
+                                        <zip basedir="${project.build.directory}/oracle_${dba.environment}" destfile="${project.build.directory}/oracle_${dba.environment}.zip" />
                                     </target>
                                 </configuration>
                             </execution>
