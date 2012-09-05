@@ -531,7 +531,7 @@
                                         <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/server/data"> 
                                             <fileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_server.sql" /> 
+                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_server.sql" /> 
                                         <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/client/schema/schema.sql">
                                             <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}.sql" />
                                         </copy>
@@ -541,7 +541,7 @@
                                         <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/client/data">
                                             <fileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_client.sql" /> 
+                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_client.sql" /> 
                                         
                                         <zip basedir="${project.build.directory}/oracle_${dba.environment}" destfile="${project.build.directory}/oracle_${dba.environment}.zip" />
                                     </target>
