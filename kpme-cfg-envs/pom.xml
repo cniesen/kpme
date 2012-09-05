@@ -354,21 +354,21 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}.sql" to="\. mysql/server/schema/schema.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}.sql" to="\. server/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-server-data-script" refid="mysql-server-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
-                                                <globmapper from="*.sql" to="\. mysql/server/data/*.sql" />
+                                                <globmapper from="*.sql" to="\. server/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-server-constraints-script" refid="mysql-server-constraints" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="\. mysql/server/schema/schema-constraints.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="\. server/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -376,21 +376,21 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. mysql/client/schema/schema.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="\. client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-client-data-script" refid="mysql-client-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
-                                                <globmapper from="*.sql" to="\. mysql/client/data/*.sql" />
+                                                <globmapper from="*.sql" to="\. client/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="mysql-client-constraints-script" refid="mysql-client-constraints" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="\. mysql/client/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="\. client/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -425,19 +425,9 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_server.sql" /> 
+                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql/mysql_server.sql" /> 
                                         <copy tofile="${project.build.directory}/mysql_${dba.environment}/mysql/client/schema/schema.sql">
                                             <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql/${kpmedba.dataSource.database}.sql" />
-                                            <filterchain>
-                                                <tokenfilter>
-                                                    <filetokenizer />
-                                                    <replaceregex pattern="^" replace="DELIMITER /${line.separator}" />
-                                                    <replaceregex pattern="$" replace="${line.separator}DELIMITER ;" />
-                                                </tokenfilter>
-                                            </filterchain>
-                                        </copy>
-                                        <copy tofile="${project.build.directory}/mysql_${dba.environment}/mysql/client/schema/schema-constraints.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql/${kpmedba.dataSource.database}-constraints.sql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -456,7 +446,17 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql_client.sql" /> 
+                                        <copy tofile="${project.build.directory}/mysql_${dba.environment}/mysql/client/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/mysql/${kpmedba.dataSource.database}-constraints.sql" />
+                                            <filterchain>
+                                                <tokenfilter>
+                                                    <filetokenizer />
+                                                    <replaceregex pattern="^" replace="DELIMITER /${line.separator}" />
+                                                    <replaceregex pattern="$" replace="${line.separator}DELIMITER ;" />
+                                                </tokenfilter>
+                                            </filterchain>
+                                        </copy>
+                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${dba.environment}/mysql/mysql_client.sql" /> 
                                         
                                         <zip basedir="${project.build.directory}/mysql_${dba.environment}" destfile="${project.build.directory}/mysql_${dba.environment}.zip" />
                                     </target>
@@ -481,21 +481,21 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}.sql" to="@oracle/server/schema/schema.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}.sql" to="@server/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="oracle-server-data-script" refid="oracle-server-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
-                                                <globmapper from="*.sql" to="@oracle/server/data/*.sql" />
+                                                <globmapper from="*.sql" to="@server/data/*.sql" />
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="oracle-server-constraints-script" refid="oracle-server-constraints" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="@oracle/server/schema/schema-constraints.sql" />
+                                                    <replacestring from="${krdba.dataSource.database}-constraints.sql" to="@server/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -503,22 +503,22 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="@oracle/client/schema/schema.sql" />
-                                                </filtermapper>
-                                            </chainedmapper>
-                                        </pathconvert>
-                                        <pathconvert property="oracle-client-constraints-script" refid="oracle-client-constraints" pathsep="${line.separator}">
-                                            <chainedmapper>
-                                                <flattenmapper />
-                                                <filtermapper>
-                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="@oracle/client/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kpmedba.dataSource.database}.sql" to="@client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         <pathconvert property="oracle-client-data-script" refid="oracle-client-data" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
-                                                <globmapper from="*.sql" to="@oracle/client/data/*.sql" />
+                                                <globmapper from="*.sql" to="@client/data/*.sql" />
+                                            </chainedmapper>
+                                        </pathconvert>
+                                        <pathconvert property="oracle-client-constraints-script" refid="oracle-client-constraints" pathsep="${line.separator}">
+                                            <chainedmapper>
+                                                <flattenmapper />
+                                                <filtermapper>
+                                                    <replacestring from="${kpmedba.dataSource.database}-constraints.sql" to="@client/schema/schema-constraints.sql" />
+                                                </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         
@@ -531,7 +531,7 @@
                                         <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/server/data"> 
                                             <fileset dir="${project.build.directory}/data-sql/${krdba.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_server.sql" /> 
+                                        <echo message="${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_server.sql" /> 
                                         <copy tofile="${project.build.directory}/oracle_${dba.environment}/oracle/client/schema/schema.sql">
                                             <fileset file="${project.build.directory}/schema-sql/${kpmedba.dataSource.database}/oracle/${kpmedba.dataSource.database}.sql" />
                                         </copy>
@@ -541,7 +541,7 @@
                                         <copy todir="${project.build.directory}/oracle_${dba.environment}/oracle/client/data">
                                             <fileset dir="${project.build.directory}/data-sql/${kpmedba.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle_client.sql" /> 
+                                        <echo message="${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}" file="${project.build.directory}/oracle_${dba.environment}/oracle/oracle_client.sql" /> 
                                         
                                         <zip basedir="${project.build.directory}/oracle_${dba.environment}" destfile="${project.build.directory}/oracle_${dba.environment}.zip" />
                                     </target>
