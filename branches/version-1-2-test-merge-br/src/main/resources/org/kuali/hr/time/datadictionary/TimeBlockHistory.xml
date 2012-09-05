@@ -92,6 +92,7 @@
     </bean>
 
     <!-- Attribute Definitions -->
+
     <bean id="TimeBlockHistory-tkTimeBlockId" parent="TimeBlockHistory-tkTimeBlockId-parentBean"/>
     <bean id="TimeBlockHistory-tkTimeBlockId-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="shortLabel" value="TimeBlockHistory Id"/>
@@ -333,7 +334,110 @@
         <property name="label" value="Document Status"/>
         <property name="required" value="false"/>
     </bean>
-    
+
+    <bean id="TimeBlockHistory-tkWorkAreaId" parent="TimeBlockHistory-tkWorkAreaId-parentBean"/>
+    <bean id="TimeBlockHistory-tkWorkAreaId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="forceUppercase" value="true"/>
+
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="20"/>
+        </property>
+
+        <property name="name" value="tkWorkAreaId"/>
+        <property name="label" value="TK Work Area Id"/>
+        <property name="description" value="TK Work Area Id"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-tkTaskId" parent="TimeBlockHistory-tkTaskId-parentBean"/>
+    <bean id="TimeBlockHistory-tkTaskId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="forceUppercase" value="true"/>
+
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="20"/>
+        </property>
+
+        <property name="name" value="tkTaskId"/>
+        <property name="label" value="TK Task Id"/>
+        <property name="description" value="TK Task Id"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-beginTimestampTimezone" parent="TimeBlockHistory-beginTimestampTimezone-parentBean"/>
+    <bean id="TimeBlockHistory-beginTimestampTimezone-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="maxLength" value="50"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="50"/>
+        </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="true"/>
+            </bean>
+        </property>
+        <property name="name" value="beginTimestampTimezone"/>
+        <property name="label" value="Begin Timestamp Timezone"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-endTimestampTimezone" parent="TimeBlockHistory-endTimestampTimezone-parentBean"/>
+    <bean id="TimeBlockHistory-endTimestampTimezone-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="maxLength" value="50"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="50"/>
+        </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="true"/>
+            </bean>
+        </property>
+        <property name="name" value="endTimestampTimezone"/>
+        <property name="label" value="End Timestamp Timezone"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-hrJobId" parent="TimeBlockHistory-hrJobId-parentBean"/>
+    <bean id="TimeBlockHistory-hrJobId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Job Id"/>
+        <property name="maxLength" value="60"/>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false"/>
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="60"/>
+        </property>
+        <property name="name" value="hrJobId"/>
+        <property name="label" value="Job Id"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-timestampModified" parent="TimeBlockHistory-timestampModified-parentBean"/>
+    <bean id="TimeBlockHistory-timestampModified-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="End Time"/>
+        <property name="maxLength" value="15"/>
+        <property name="control">
+            <bean parent="LookupReadonlyControlDefinition" p:size="15"/>
+        </property>
+        <property name="formatterClass"
+                  value="org.kuali.rice.core.web.format.TimestampAMPMFormatter"/>
+        <property name="name" value="timestampModified"/>
+        <property name="label" value="Timestamp Modified"/>
+    </bean>
+
+    <bean id="TimeBlockHistory-modifiedByPrincipalId" parent="TimeBlockHistory-modifiedByPrincipalId-parentBean"/>
+    <bean id="TimeBlockHistory-modifiedByPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Principal Id"/>
+        <property name="maxLength" value="40"/>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false"/>
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="40"/>
+        </property>
+        <property name="name" value="modifiedByPrincipalId"/>
+        <property name="label" value="Modified By Principal Id"/>
+    </bean>
     <!-- Business Object Inquiry Definition -->
 
 

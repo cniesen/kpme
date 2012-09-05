@@ -436,7 +436,7 @@
 
 	<!-- pyCalendarGroup -->
 	<bean id="ShiftDifferentialRule-calendarName" parent="ShiftDifferentialRule-calendarName-parentBean" />
-	<bean id="ShiftDifferentialRule-pyCalendarGroup-parentBean"
+	<bean id="ShiftDifferentialRule-calendarName-parentBean"
 		abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Calendar Name" />
 		<property name="maxLength" value="30" />

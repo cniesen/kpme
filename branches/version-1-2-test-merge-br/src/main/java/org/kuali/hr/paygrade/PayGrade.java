@@ -18,8 +18,9 @@ public class PayGrade extends HrBusinessObject {
 	private String description;
 	private String userPrincipalId;
     private String salGroup;
+    private String salGrade;
 
-	public String getHrPayGradeId() {
+    public String getHrPayGradeId() {
 		return hrPayGradeId;
 	}
 
@@ -34,6 +35,14 @@ public class PayGrade extends HrBusinessObject {
 	public void setPayGrade(String payGrade) {
 		this.payGrade = payGrade;
 	}
+
+    public String getSalGrade() {
+        return salGrade;
+    }
+
+    public void setSalGrade(String salGrade) {
+        this.salGrade = salGrade;
+    }
 
 	public String getDescription() {
 		return description;

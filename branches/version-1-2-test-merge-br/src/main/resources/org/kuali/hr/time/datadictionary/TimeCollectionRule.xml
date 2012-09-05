@@ -72,6 +72,23 @@
 	</bean>
 
 	<!-- Attribute Definitions -->
+
+    <bean id="TimeCollectionRule-effectiveDate" parent="TimeCollectionRule-effectiveDate-parentBean" />
+    <bean id="TimeCollectionRule-effectiveDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Effective Date" />
+        <property name="maxLength" value="10" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+        <property name="name" value="effectiveDate" />
+        <property name="label" value="Effective Date" />
+    </bean>
+
 	<bean id="TimeCollectionRule-tkTimeCollectionRuleId" parent="TimeCollectionRule-tkTimeCollectionRuleId-parentBean" />
 	<bean id="TimeCollectionRule-tkTimeCollectionRuleId-parentBean" abstract="true"
 		parent="AttributeDefinition">

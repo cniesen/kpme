@@ -143,8 +143,19 @@
 		<property name="name" value="timestamp" />
 		<property name="label" value="Timestamp" />
 	</bean>
-	
-<!-- history removed-->
+
+    <!-- history -->
+    <bean id="PayType-history" parent="PayType-history-parentBean" />
+    <bean id="PayType-history-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Show History" />
+        <property name="control">
+            <bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.hr.time.util.TkHistoryKeyValueFinder">
+            </bean>
+        </property>
+        <property name="name" value="history" />
+        <property name="label" value="Show History" />
+    </bean>
 
 
     <bean id="PayType-active" parent="PayType-active-parentBean"/>

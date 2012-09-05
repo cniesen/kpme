@@ -26,19 +26,27 @@ public class EarnCode extends HrBusinessObject {
 	private String earnCode;
 	private String description;
 	//used for clock in and out
-	private Boolean recordHours;
-	//used for recording time
-	private Boolean recordTime;
-	private Boolean recordAmount;
+//	private Boolean recordHours;
+//	//used for recording time
+//	private Boolean recordTime;
+//	private Boolean recordAmount;
+    private String recordMethod;
     private Boolean ovtEarnCode;
 	private String accrualCategory;
 	private BigDecimal inflateMinHours;
 	private BigDecimal inflateFactor;
-
+    private Long defaultAmountofTime;
 	private boolean history;
 
 	private AccrualCategory accrualCategoryObj;
 
+    public Long getDefaultAmountofTime() {
+        return defaultAmountofTime;
+    }
+
+    public void setDefaultAmountofTime(Long defaultAmountofTime) {
+        this.defaultAmountofTime = defaultAmountofTime;
+    }
 
 	public String getEarnCode() {
 		return earnCode;
@@ -88,29 +96,37 @@ public class EarnCode extends HrBusinessObject {
 		this.hrEarnCodeId = hrEarnCodeId;
 	}
 
-	public Boolean getRecordHours() {
-		return recordHours;
-	}
+//	public Boolean getRecordHours() {
+//		return recordHours;
+//	}
+//
+//	public void setRecordHours(Boolean recordHours) {
+//		this.recordHours = recordHours;
+//	}
+//
+//	public Boolean getRecordTime() {
+//		return recordTime;
+//	}
+//
+//	public void setRecordTime(Boolean recordTime) {
+//		this.recordTime = recordTime;
+//	}
+//
+//	public Boolean getRecordAmount() {
+//		return recordAmount;
+//	}
+//
+//	public void setRecordAmount(Boolean recordAmount) {
+//		this.recordAmount = recordAmount;
+//	}
 
-	public void setRecordHours(Boolean recordHours) {
-		this.recordHours = recordHours;
-	}
+    public String getRecordMethod() {
+        return recordMethod;
+    }
 
-	public Boolean getRecordTime() {
-		return recordTime;
-	}
-
-	public void setRecordTime(Boolean recordTime) {
-		this.recordTime = recordTime;
-	}
-
-	public Boolean getRecordAmount() {
-		return recordAmount;
-	}
-
-	public void setRecordAmount(Boolean recordAmount) {
-		this.recordAmount = recordAmount;
-	}
+    public void setRecordMethod(String recordMethod) {
+        this.recordMethod = recordMethod;
+    }
 
 	public Timestamp getTimestamp() {
 		return timestamp;
@@ -130,11 +146,11 @@ public class EarnCode extends HrBusinessObject {
 
 	public AccrualCategory getAccrualCategoryObj() {
 		if(accrualCategoryObj == null && !this.getAccrualCategory().isEmpty()) {
-			this.assingAccrualCategoryObj();
+			this.assignAccrualCategoryObj();
 		}
 		return accrualCategoryObj;
 	}
-	public void assingAccrualCategoryObj() {
+	public void assignAccrualCategoryObj() {
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put("accrualCategory", getAccrualCategory());
 		Collection c = KRADServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
@@ -177,19 +193,20 @@ public class EarnCode extends HrBusinessObject {
 	 * @return String fieldType
 	 */
 	public String getEarnCodeType() {
-		if(getRecordHours()) {
-			return TkConstants.EARN_CODE_HOUR;
-		}
-		else if(getRecordTime()) {
-			return TkConstants.EARN_CODE_TIME;
-		}
-		else if(getRecordAmount()) {
-			return TkConstants.EARN_CODE_AMOUNT;
-		}
-		else {
-			return "";
-		}
-	}
+//		if(getRecordHours()) {
+//			return TkConstants.EARN_CODE_HOUR;
+//		}
+//		else if(getRecordTime()) {
+//			return TkConstants.EARN_CODE_TIME;
+//		}
+//		else if(getRecordAmount()) {
+//			return TkConstants.EARN_CODE_AMOUNT;
+//		}
+//		else {
+//			return "";
+//		}
+        return this.recordMethod;
+    }
 
 	@Override
 	public String getUniqueKey() {

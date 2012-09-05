@@ -45,26 +45,10 @@
               <property name="objectAttributeName" value="calendar"/>
               <property name="primitiveAttributes">
                 <list>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="leaveCalendar" p:targetName="calendarName"/>
-                </list>
-              </property>
-            </bean>
-            <bean parent="RelationshipDefinition">
-              <property name="objectAttributeName" value="calendar"/>
-              <property name="primitiveAttributes">
-                <list>
 					<bean parent="PrimitiveAttributeDefinition" p:sourceName="payCalendar" p:targetName="calendarName"/>
                 </list>
               </property>
             </bean>
-            <bean parent="RelationshipDefinition">
-				<property name="objectAttributeName" value="leavePlanObj" />
-				<property name="primitiveAttributes">
-					<list>
-						<bean parent="PrimitiveAttributeDefinition" p:sourceName="leavePlan" p:targetName="leavePlan" />
-					</list>
-				</property>
-			</bean>
         </list>
     </property>  		
 	</bean>
@@ -101,7 +85,23 @@
     	<property name="name" value="payCalendar"/>
     	<property name="label" value="Pay Calendar"/>
   	</bean>
-		
+
+    <bean id="PrincipalHRAttributes-holidayCalendarGroup" parent="PrincipalHRAttributes-holidayCalendarGroup-parentBean"/>
+    <bean id="PrincipalHRAttributes-holidayCalendarGroup-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Pay Calendar"/>
+        <property name="maxLength" value="3" />
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="3" />
+        </property>
+        <property name="name" value="holidayCalendarGroup"/>
+        <property name="label" value="Holiday Calendar Group"/>
+    </bean>
+
 	<bean id="PrincipalHRAttributes-serviceDate" parent="PrincipalHRAttributes-serviceDate-parentBean" />
 	<bean id="PrincipalHRAttributes-serviceDate-parentBean" abstract="true"
 		parent="AttributeDefinition">

@@ -13,6 +13,22 @@ import java.util.*;
 
 
 public class TkConstants {
+
+    public static final class RECORD_METHOD {
+        public static final String TIME = "T";
+        public static final String HOUR = "H";
+        public static final String AMOUNT = "A";
+        public static final String DAY = "D";
+    }
+
+    public static final Map<String, String> RECORD_METHOD_MAP = new HashMap<String, String>(2);
+    static {
+        RECORD_METHOD_MAP.put(RECORD_METHOD.TIME, "Time");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.HOUR, "Hours");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.AMOUNT, "Amount");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.DAY, "Days");
+    }
+
     public static final int DEFAULT_CACHE_TIME = 900;
     public static final String TK_TARGET_USER_RETURN = "tkTargetReturn";
     public static final String TK_TARGET_USER_PERSON = "tkTargetPerson";

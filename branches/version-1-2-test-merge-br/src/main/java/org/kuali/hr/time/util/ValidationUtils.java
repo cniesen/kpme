@@ -469,4 +469,23 @@ public class ValidationUtils {
         return matches > 0;
     }
 
+    public static boolean validateRecordMethod(String recordMethod, String accrualCategory, Date asOfDate) {
+        boolean valid = false;
+        if (asOfDate != null) {
+            AccrualCategory ac = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, asOfDate);
+            if (ac != null
+                    && ac.getUnitOfTime() != null) {
+                if (TkConstants.RECORD_METHOD.HOUR.equals(ac.getUnitOfTime())
+                        && (TkConstants.RECORD_METHOD.HOUR.equals(recordMethod))
+                        || TkConstants.RECORD_METHOD.TIME.equals(recordMethod)) {
+                    valid = true;
+                } else {
+                    valid = StringUtils.equalsIgnoreCase(ac.getUnitOfTime(), recordMethod);
+                }
+
+            }
+        }
+        return valid;
+    }
+
 }

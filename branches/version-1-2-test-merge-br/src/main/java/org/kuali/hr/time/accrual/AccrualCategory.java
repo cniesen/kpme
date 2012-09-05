@@ -15,6 +15,7 @@ public class AccrualCategory extends HrBusinessObject {
 	private String lmAccrualCategoryId;
 	private String accrualCategory;
 	private String descr;
+    private String unitOfTime;
 	private boolean history;
 	
 
@@ -45,6 +46,14 @@ public class AccrualCategory extends HrBusinessObject {
 	public boolean isHistory() {
 		return history;
 	}
+
+    public String getUnitOfTime() {
+        return unitOfTime;
+    }
+
+    public void setUnitOfTime(String unitOfTime) {
+        this.unitOfTime = unitOfTime;
+    }
 
 	public void setHistory(boolean history) {
 		this.history = history;

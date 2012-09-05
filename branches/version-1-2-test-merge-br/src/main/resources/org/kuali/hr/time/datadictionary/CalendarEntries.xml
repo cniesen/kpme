@@ -25,14 +25,14 @@
 		<ref bean="CalendarEntries-endPeriodDate"/>
 		<ref bean="CalendarEntries-endPeriodTime"/>        
         
-        <ref bean="CalendarEntries-initiateDate"/>
-        <ref bean="CalendarEntries-initiateTime"/>
-        <ref bean="CalendarEntries-endPayPeriodDate"/>
-        <ref bean="CalendarEntries-endPayPeriodTime"/>
-        <ref bean="CalendarEntries-employeeApprovalDate"/>
-        <ref bean="CalendarEntries-employeeApprovalTime"/>
-        <ref bean="CalendarEntries-supervisorApprovalDate"/>
-        <ref bean="CalendarEntries-supervisorApprovalTime"/>        
+        <ref bean="CalendarEntries-batchInitiateDate"/>
+        <ref bean="CalendarEntries-batchInitiateTime"/>
+        <ref bean="CalendarEntries-batchEndPayPeriodDate"/>
+        <ref bean="CalendarEntries-batchEndPayPeriodTime"/>
+        <ref bean="CalendarEntries-batchEmployeeApprovalDate"/>
+        <ref bean="CalendarEntries-batchEmployeeApprovalTime"/>
+        <ref bean="CalendarEntries-batchSupervisorApprovalDate"/>
+        <ref bean="CalendarEntries-batchSupervisorApprovalTime"/>
       </list>
     </property>   
     

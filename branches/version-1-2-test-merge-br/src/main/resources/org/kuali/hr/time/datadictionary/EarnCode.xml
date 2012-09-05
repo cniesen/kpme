@@ -213,7 +213,7 @@
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Allow Negative Accrual Balance" />
 		<property name="control">
-			<bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.hr.lm.util.RecordMethodKeyValueFinder" />
+			<bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.hr.time.util.RecordMethodKeyValueFinder" />
 		</property>
 		<property name="name" value="recordMethod" />
 		<property name="label" value="Record Method" />
