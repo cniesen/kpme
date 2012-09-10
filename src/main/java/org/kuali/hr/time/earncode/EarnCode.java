@@ -1,20 +1,20 @@
 package org.kuali.hr.time.earncode;
 
+import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.accrual.AccrualCategory;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.time.HrBusinessObject;
-import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-
 public class EarnCode extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "EarnCode";
+
 	/**
      *
      */
@@ -23,7 +23,11 @@ public class EarnCode extends HrBusinessObject {
 	private String hrEarnCodeId;
 	private String earnCode;
 	private String description;
-	
+	//used for clock in and out
+	private Boolean recordHours;
+	//used for recording time
+	private Boolean recordTime;
+	private Boolean recordAmount;
     private Boolean ovtEarnCode;
 	private String accrualCategory;
 	private BigDecimal inflateMinHours;
@@ -32,139 +36,12 @@ public class EarnCode extends HrBusinessObject {
 	private boolean history;
 
 	private AccrualCategory accrualCategoryObj;
-	private EarnCode rollupToEarnCodeObj;
-	
-	private String leavePlan;
-	private String accrualBalanceAction;
-	private String fractionalTimeAllowed;
-	private String roundingOption;
-	private String eligibleForAccrual;
-	private String affectPay;
-	private String allowScheduledLeave;
-	private String fmla;
-	private String workmansComp;
-	private Long defaultAmountofTime;
-	private String allowNegativeAccrualBalance;
-	private String rollupToEarnCode;
-	private String recordMethod;
-	
-	public String getRecordMethod() {
-		return recordMethod;
-	}
 
-	public void setRecordMethod(String recordMethod) {
-		this.recordMethod = recordMethod;
+	@SuppressWarnings("unchecked")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		return null;
 	}
-
-	public String getRollupToEarnCode() {
-		return rollupToEarnCode;
-	}
-
-	public void setRollupToEarnCode(String rollupToEarnCode) {
-		this.rollupToEarnCode = rollupToEarnCode;
-	}
-
-	public EarnCode getRollupToEarnCodeObj() {
-		return rollupToEarnCodeObj;
-	}
-
-	public void setRollupToEarnCodeObj(EarnCode rollupToEarnCodeObj) {
-		this.rollupToEarnCodeObj = rollupToEarnCodeObj;
-	}
-
-	public String getLeavePlan() {
-		AccrualCategory myAccrualCategoryObj = new AccrualCategory();
-		if(this.accrualCategory != null) {
-			myAccrualCategoryObj =  TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate);
-	    }
-		this.leavePlan =(myAccrualCategoryObj != null) ? myAccrualCategoryObj.getLeavePlan() : ""; 
-	    return leavePlan;
-	}
-
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
-
-	public String getAccrualBalanceAction() {
-		return accrualBalanceAction;
-	}
-
-	public void setAccrualBalanceAction(String accrualBalanceAction) {
-		this.accrualBalanceAction = accrualBalanceAction;
-	}
-
-	public String getFractionalTimeAllowed() {
-		return fractionalTimeAllowed;
-	}
-
-	public void setFractionalTimeAllowed(String fractionalTimeAllowed) {
-		this.fractionalTimeAllowed = fractionalTimeAllowed;
-	}
-
-	public String getRoundingOption() {
-		return roundingOption;
-	}
-
-	public void setRoundingOption(String roundingOption) {
-		this.roundingOption = roundingOption;
-	}
-
-	public String getEligibleForAccrual() {
-		return eligibleForAccrual;
-	}
-
-	public void setEligibleForAccrual(String eligibleForAccrual) {
-		this.eligibleForAccrual = eligibleForAccrual;
-	}
-
-	public String getAffectPay() {
-		return affectPay;
-	}
-
-	public void setAffectPay(String affectPay) {
-		this.affectPay = affectPay;
-	}
-
-	public String getAllowScheduledLeave() {
-		return allowScheduledLeave;
-	}
-
-	public void setAllowScheduledLeave(String allowScheduledLeave) {
-		this.allowScheduledLeave = allowScheduledLeave;
-	}
-
-	public String getFmla() {
-		return fmla;
-	}
-
-	public void setFmla(String fmla) {
-		this.fmla = fmla;
-	}
-
-	public String getWorkmansComp() {
-		return workmansComp;
-	}
-
-	public void setWorkmansComp(String workmansComp) {
-		this.workmansComp = workmansComp;
-	}
-
-	public Long getDefaultAmountofTime() {
-		return defaultAmountofTime;
-	}
-
-	public void setDefaultAmountofTime(Long defaultAmountofTime) {
-		this.defaultAmountofTime = defaultAmountofTime;
-	}
-
-	public String getAllowNegativeAccrualBalance() {
-		return allowNegativeAccrualBalance;
-	}
-
-	public void setAllowNegativeAccrualBalance(String allowNegativeAccrualBalance) {
-		this.allowNegativeAccrualBalance = allowNegativeAccrualBalance;
-	}
-
 
 	public String getEarnCode() {
 		return earnCode;
@@ -214,6 +91,30 @@ public class EarnCode extends HrBusinessObject {
 		this.hrEarnCodeId = hrEarnCodeId;
 	}
 
+	public Boolean getRecordHours() {
+		return recordHours;
+	}
+
+	public void setRecordHours(Boolean recordHours) {
+		this.recordHours = recordHours;
+	}
+
+	public Boolean getRecordTime() {
+		return recordTime;
+	}
+
+	public void setRecordTime(Boolean recordTime) {
+		this.recordTime = recordTime;
+	}
+
+	public Boolean getRecordAmount() {
+		return recordAmount;
+	}
+
+	public void setRecordAmount(Boolean recordAmount) {
+		this.recordAmount = recordAmount;
+	}
+
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
@@ -239,7 +140,7 @@ public class EarnCode extends HrBusinessObject {
 	public void assingAccrualCategoryObj() {
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put("accrualCategory", getAccrualCategory());
-		Collection c = KRADServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
+		Collection c = KNSServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
 		if(!c.isEmpty()) {
 			this.setAccrualCategoryObj((AccrualCategory)c.toArray()[0]);
 		}
@@ -279,19 +180,18 @@ public class EarnCode extends HrBusinessObject {
 	 * @return String fieldType
 	 */
 	public String getEarnCodeType() {
-//		if(getRecordHours()) {
-//			return TkConstants.EARN_CODE_HOUR;
-//		}
-//		else if(getRecordTime()) {
-//			return TkConstants.EARN_CODE_TIME;
-//		}
-//		else if(getRecordAmount()) {
-//			return TkConstants.EARN_CODE_AMOUNT;
-//		}
-//		else {
-//			return "";
-//		}
-		return this.recordMethod;
+		if(getRecordHours()) {
+			return TkConstants.EARN_CODE_HOUR;
+		}
+		else if(getRecordTime()) {
+			return TkConstants.EARN_CODE_TIME;
+		}
+		else if(getRecordAmount()) {
+			return TkConstants.EARN_CODE_AMOUNT;
+		}
+		else {
+			return "";
+		}
 	}
 
 	@Override
@@ -308,19 +208,4 @@ public class EarnCode extends HrBusinessObject {
 	public void setId(String id) {
 		setHrEarnCodeId(id);
 	}
-	
-    public String getEarnCodeKeyForDisplay() {
-//    	String unitTime = null;
-//    	AccrualCategory acObj = null;
-//    	if(this.accrualCategory != null) {
-//    		acObj = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate);
-//    	}
-//    	unitTime = (acObj!= null ? acObj.getUnitOfTime() : this.recordMethod) ;
-//        return hrEarnCodeId + ":" + unitTime;
-    	return hrEarnCodeId;
-    }
-    
-    public String getEarnCodeValueForDisplay() {
-        return earnCode + " : " + description;
-    }
 }

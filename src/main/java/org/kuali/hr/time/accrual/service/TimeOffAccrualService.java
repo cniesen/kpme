@@ -3,7 +3,6 @@ package org.kuali.hr.time.accrual.service;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.sql.Date;
 import java.util.List;
@@ -16,7 +15,6 @@ public interface TimeOffAccrualService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= TimeOffAccrual.CACHE_NAME, key="'{getTimeOffAccrualsCalc}' + 'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Map<String, Object>> getTimeOffAccrualsCalc(String principalId, Date asOfDate);
 	
 	/**
@@ -42,10 +40,8 @@ public interface TimeOffAccrualService {
 	 * @param laTimeOffAccrualId
 	 * @return
 	 */
-    @Cacheable(value= TimeOffAccrual.CACHE_NAME, key="'laTimeOffAccrualId=' + #p0")
 	public TimeOffAccrual getTimeOffAccrual(Long laTimeOffAccrualId);
-
-    @Cacheable(value= TimeOffAccrual.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
+	
 	public List<TimeOffAccrual> getTimeOffAccruals(String principalId, Date asOfDate);
 
     /**

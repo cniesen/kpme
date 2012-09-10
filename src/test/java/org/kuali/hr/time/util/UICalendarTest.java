@@ -1,14 +1,11 @@
 package org.kuali.hr.time.util;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
 import com.thoughtworks.selenium.DefaultSelenium;
 import com.thoughtworks.selenium.SeleneseTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
-@Ignore
 public class UICalendarTest extends SeleneseTestCase {
     @Before
     public void setUp() throws Exception {

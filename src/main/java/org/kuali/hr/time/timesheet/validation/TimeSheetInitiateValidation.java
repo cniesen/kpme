@@ -1,11 +1,11 @@
 package org.kuali.hr.time.timesheet.validation;
 
-import org.kuali.hr.time.calendar.Calendar;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.paycalendar.PayCalendar;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimeSheetInitiate;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kew.exception.WorkflowException;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 
@@ -14,13 +14,13 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
         boolean valid = true;
         TimeSheetInitiate timeInit = (TimeSheetInitiate)this.getNewBo();
-        Calendar pc = TkServiceLocator.getCalendarService().getCalendarByGroup(timeInit.getPyCalendarGroup());
+        PayCalendar pc = TkServiceLocator.getPayCalendarSerivce().getPayCalendarByGroup(timeInit.getPyCalendarGroup());
         if(pc == null) {
         	this.putFieldError("pyCalendarGroup", "timeSheetInit.payCalendar.Invalid");
         	valid = false;
         }
         
-    	CalendarEntries pce = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(timeInit.getHrPyCalendarEntriesId());
+    	PayCalendarEntries pce = TkServiceLocator.getPayCalendarEntriesSerivce().getPayCalendarEntries(timeInit.getHrPyCalendarEntriesId());
     	if(pce == null) {
     		this.putFieldError("hrPyCalendarEntriesId", "timeSheetInit.payCalEntriesId.Invalid");
         	valid = false;
@@ -32,7 +32,7 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
         return valid;
     }
 
-    protected void createTimeSheetDocument(TimeSheetInitiate timeInit, CalendarEntries entries) {
+    protected void createTimeSheetDocument(TimeSheetInitiate timeInit, PayCalendarEntries entries) {
     	try {
     		TimesheetDocument tsd = TkServiceLocator.getTimesheetService().openTimesheetDocument(timeInit.getPrincipalId(), entries);
     		if(tsd != null) {

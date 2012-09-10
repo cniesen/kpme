@@ -1,7 +1,7 @@
 package org.kuali.hr.time.docsearch;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +14,7 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.kew.api.WorkflowDocument;
-import org.kuali.rice.kew.api.WorkflowDocumentFactory;
+import org.kuali.rice.kew.service.WorkflowDocument;
 
 public class TkSearchableAttributeServiceImpl implements
 		TkSearchableAttributeService {
@@ -31,15 +30,15 @@ public class TkSearchableAttributeServiceImpl implements
         //
         if (!document.getDocumentHeader().getDocumentStatus().equals("F")) {
             try {
-                workflowDocument = WorkflowDocumentFactory.loadDocument(document.getPrincipalId(), document.getDocumentId());
+                workflowDocument = new WorkflowDocument(document.getPrincipalId(), Long.parseLong(document.getDocumentId()));
                 workflowDocument.setApplicationContent(createSearchableAttributeXml(document, asOfDate));
                 workflowDocument.saveDocument("");
-                if (!"I".equals(workflowDocument.getStatus().getCode())) {
+                if (!"I".equals(workflowDocument.getRouteHeader().getDocRouteStatus())) {
                     //updateWorkflowTitle(document,workflowDocument);
-                    if(workflowDocument.getInitiatorPrincipalId().equals(TKContext.getPrincipalId())){
+                    if(workflowDocument.getRouteHeader().getInitiatorPrincipalId().equals(TKContext.getPrincipalId())){
                         workflowDocument.saveDocument("");
                     }else{
-                    	workflowDocument.saveDocumentData();
+                        workflowDocument.saveRoutingData();
                     }
                 }else{
                     workflowDocument.saveDocument("");
@@ -63,7 +62,7 @@ public class TkSearchableAttributeServiceImpl implements
 			if(!workAreas.contains(assign.getWorkArea())){
 				workAreas.add(assign.getWorkArea());
 			}
-			Job job = TkServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), document.getAsOfDate());
+			Job job = TkServiceLocator.getJobSerivce().getJob(assign.getPrincipalId(), assign.getJobNumber(), document.getAsOfDate());
 
 			if(!salGroups.contains(job.getHrSalGroup())){
 				salGroups.add(job.getHrSalGroup());

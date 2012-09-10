@@ -107,11 +107,9 @@ $(function () {
             "click div[id*=show]" : "showTimeBlock",
             "click img[id^=timeblockDelete]" : "deleteTimeBlock",
             "click img[id^=lunchDelete]" : "deleteLunchDeduction",
-            "click img[id^=leaveBlockDelete]" : "deleteLeaveBlock",
             // .create is the div that fills up the white sapce and .day-number is the div with the day number on it.
             // <div class="create"></div> is in calendar.tag.
             // We want to trigger the show event on any white space areas.
-            "click .event" : "doNothing",
             "click .create" : "showTimeEntryDialog",
             "click span[id*=overtime]" : "showOverTimeDialog",
             "blur #startTimeHourMinute, #endTimeHourMinute" : "formatTime",
@@ -140,10 +138,6 @@ $(function () {
             // If there is anything you want to render when the view is initiated, place them here.
             // A good convention is to return this at the end of render to enable chained calls.
             return this;
-        },
-
-        doNothing : function (e) {
-            e.stopPropagation();
         },
 
         formatTime : function (e) {
@@ -192,9 +186,7 @@ $(function () {
                         } else {
                             // If this is triggered directly by backbone, i.e. user clicked on the white area to create a new timeblock,
                             // Set the date by grabbing the div id.
-                            var currentDay = new Date(beginPeriodDateTimeObj);
-                            var targetDay = currentDay.addDays(parseInt((startDate.target.id).split("_")[1]));
-                            $("#startDate, #endDate").val(Date.parse(targetDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT));
+                            $("#startDate, #endDate").val(startDate.target.id);
                             // Check if there is only one assignment
                             // Placing this code block here will prevent fetching earn codes twice
                             // when showTimeEntryDialog() is called by showTimeBlock()
@@ -236,7 +228,6 @@ $(function () {
                             }
 
                             $('#acrossDays').val($('#acrossDays').is(':checked') ? 'y' : 'n');
-                            $('#spanningWeeks').val($('#spanningWeeks').is(':checked') ? 'y' : 'n');  // KPME-1446
 
                             var isValid = true;
                             // If the user can only update the assignment, there is no need to do the validations.
@@ -410,12 +401,6 @@ $(function () {
             }
         },
 
-        deleteLeaveBlock : function (e) {
-            var key = _(e).parseEventKey();
-        	if (confirm('You are about to delete a leave block. Click OK to confirm the delete.')) {
-        		window.location = "TimeDetail.do?methodToCall=deleteLeaveBlock&lmLeaveBlockId=" + key.id;
-        	}
-        },
 
         fetchEarnCode : function (e, isTimeBlockReadOnly) {
 
@@ -527,7 +512,6 @@ $(function () {
                     params['overtimePref'] = $("#overtimePref").val();
                 }
                 params['acrossDays'] = $('#acrossDays').is(':checked') ? 'y' : 'n';
-                params['spanningWeeks'] = $('#spanningWeeks').is(':checked') ? 'y' : 'n'; // KPME-1446
                 params['tkTimeBlockId'] = $('#tkTimeBlockId').val();
 
                 // validate timeblocks
@@ -567,7 +551,7 @@ $(function () {
 
         validateEarnCode : function () {
             var isValid = true;
-            isValid = isValid && this.checkEmptyField($("#selectedEarnCode option:selected"), "Earn Code");
+            isValid = isValid && this.checkEmptyField($("#earnCode"), "Earn Code");
 
             // couldn't find an easier way to get the earn code json, so we validate by the field id
             // The method below will get a list of not hidden fields' ids
@@ -602,7 +586,7 @@ $(function () {
 
         checkEmptyField : function (o, field) {
             var val = o.val();
-            if (val == '' || val == undefined) {
+            if (val == '') {
                 this.displayErrorMessages(field + " field cannot be empty", o);
                 return false;
             }

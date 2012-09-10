@@ -4,9 +4,9 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.user.pref.UserPreferences;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class UserPreferenceDaoImpl extends PlatformAwareDaoBaseOjb implements UserPreferenceDao {
+public class UserPreferenceDaoImpl extends PersistenceBrokerDaoSupport implements UserPreferenceDao {
 	
 	
 	public UserPreferences getUserPreferences(String principalId){

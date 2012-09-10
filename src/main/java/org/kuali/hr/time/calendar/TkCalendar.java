@@ -1,9 +1,8 @@
 package org.kuali.hr.time.calendar;
 
 import org.joda.time.DateTime;
-import org.kuali.hr.lm.leaveblock.LeaveBlock;
-import org.kuali.hr.lm.util.LeaveBlockAggregate;
 import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.util.TkConstants;
@@ -13,78 +12,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class TkCalendar extends CalendarParent {
+public class TkCalendar {
     private List<TkCalendarWeek> weeks = new ArrayList<TkCalendarWeek>();
-    private CalendarEntries payCalEntry;
+    private PayCalendarEntries payCalEntry;
     private DateTime beginDateTime;
     private DateTime endDateTime;
 
-    public TkCalendar() {}
-
-    public TkCalendar(CalendarEntries calendarEntry) {
-        super(calendarEntry);
-    }
-
-    public static TkCalendar getCalendar(TkTimeBlockAggregate tbAggregate, LeaveBlockAggregate lbAggregate) {
-    	TkCalendar tc = new TkCalendar();
-    	 
-        if (tbAggregate != null && lbAggregate != null) {
-        	if(tbAggregate.getDayTimeBlockList().size() != lbAggregate.getDayLeaveBlockList().size()){
-        		// error
-        	}
-        		
-        	List<CalendarWeek> weeks = new ArrayList<CalendarWeek>();
-	        tc.setPayCalEntry(tbAggregate.getPayCalendarEntry());
-	
-	         int firstDay = 0;
-	         if (tc.getBeginDateTime().getDayOfWeek() != 7) {
-	             firstDay = 0 - tc.getBeginDateTime().getDayOfWeek();   // always render calendar weeks from Sundays
-	         }
-	         for (int i = 0; i < tbAggregate.numberOfAggregatedWeeks(); i++) {
-	             TkCalendarWeek week = new TkCalendarWeek();
-	             List<List<TimeBlock>> weekBlocks = tbAggregate.getWeekTimeBlocks(i);
-	             List<List<LeaveBlock>> weekLeaveBlocks = lbAggregate.getWeekLeaveBlocks(i);
-	             List<CalendarDay> days = new ArrayList<CalendarDay>(7);
-	
-	             for (int j = 0; j < weekBlocks.size(); j++) {
-	                 List<TimeBlock> dayBlocks = weekBlocks.get(j);
-	                 List<LeaveBlock> dayLeaveBlocks = weekLeaveBlocks.get(j);
-	                 // Create the individual days.
-	                 TkCalendarDay day = new TkCalendarDay();
-	                 day.setTimeblocks(dayBlocks);
-	                 day.setLeaveBlocks(dayLeaveBlocks);
-	                 day.setDayNumberString(tc.getDayNumberString(i * 7 + j + firstDay));
-	                 day.setDayNumberDelta(i * 7 + j + firstDay);
-	                 day.setDateString(tc.getDateString(day.getDayNumberDelta()));
-	                 assignDayLunchLabel(day);
-	                 int dayIndex = i * 7 + j + firstDay;
-	                 DateTime beginDateTemp = tc.getBeginDateTime().plusDays(dayIndex);
-	                 day.setGray(false);
-	                 if (beginDateTemp.isBefore(tc.getBeginDateTime().getMillis())
-	                         || beginDateTemp.isAfter(tc.getEndDateTime().getMillis())) {
-	                     day.setGray(true);
-	                 }
-	                 if (tc.getEndDateTime().getHourOfDay() == 0 && beginDateTemp.equals(tc.getEndDateTime())) {
-	                     day.setGray(true);
-	                 }
-	                 days.add(day);
-	             }
-	             week.setDays(days);
-	             weeks.add(week);
-	         }
-	         tc.setWeeks(weeks);
-	     } else {
-	         return null;
-	     }
-
-        return tc;
-    }
-    
     public static TkCalendar getCalendar(TkTimeBlockAggregate aggregate) {
         TkCalendar tc = new TkCalendar();
 
         if (aggregate != null) {
-            List<CalendarWeek> weeks = new ArrayList<CalendarWeek>();
+            List<TkCalendarWeek> weeks = new ArrayList<TkCalendarWeek>();
             tc.setPayCalEntry(aggregate.getPayCalendarEntry());
 
             int firstDay = 0;
@@ -94,7 +32,7 @@ public class TkCalendar extends CalendarParent {
             for (int i = 0; i < aggregate.numberOfAggregatedWeeks(); i++) {
                 TkCalendarWeek week = new TkCalendarWeek();
                 List<List<TimeBlock>> weekBlocks = aggregate.getWeekTimeBlocks(i);
-                List<CalendarDay> days = new ArrayList<CalendarDay>(7);
+                List<TkCalendarDay> days = new ArrayList<TkCalendarDay>(7);
 
                 for (int j = 0; j < weekBlocks.size(); j++) {
                     List<TimeBlock> dayBlocks = weekBlocks.get(j);
@@ -149,11 +87,10 @@ public class TkCalendar extends CalendarParent {
         }
     }
 
-    
     public void assignAssignmentStyle(Map<String, String> styleMap) {
-        for (CalendarWeek aWeek : this.getWeeks()) {
-            for (CalendarDay aDay : aWeek.getDays()) {
-                for (TimeBlockRenderer tbr : ((TkCalendarDay)aDay).getBlockRenderers()) {
+        for (TkCalendarWeek aWeek : this.getWeeks()) {
+            for (TkCalendarDay aDay : aWeek.getDays()) {
+                for (TimeBlockRenderer tbr : aDay.getBlockRenderers()) {
                     String assignmentKey = tbr.getTimeBlock().getAssignmentKey();
                     if (assignmentKey != null && styleMap.containsKey(assignmentKey)) {
                         tbr.setAssignmentClass(styleMap.get(assignmentKey));
@@ -161,33 +98,24 @@ public class TkCalendar extends CalendarParent {
                         tbr.setAssignmentClass("");
                     }
                 }
-                for (LeaveBlockRenderer lbr : ((TkCalendarDay)aDay).getLeaveBlockRenderers()) {
-                    String assignmentKey = lbr.getLeaveBlock().getAssignmentKey();
-                    if (assignmentKey != null && styleMap.containsKey(assignmentKey)) {
-                        lbr.setAssignmentClass(styleMap.get(assignmentKey));
-                    } else {
-                        lbr.setAssignmentClass("");
-                    }
-                } 
-                
             }
         }
     }
 
 
-//    public List<TkCalendarWeek> getWeeks() {
-//        return weeks;
-//    }
-//
-//    public void setWeeks(List<TkCalendarWeek> weeks) {
-//        this.weeks = weeks;
-//    }
+    public List<TkCalendarWeek> getWeeks() {
+        return weeks;
+    }
 
-    public CalendarEntries getPayCalEntry() {
+    public void setWeeks(List<TkCalendarWeek> weeks) {
+        this.weeks = weeks;
+    }
+
+    public PayCalendarEntries getPayCalEntry() {
         return payCalEntry;
     }
 
-    public void setPayCalEntry(CalendarEntries payCalEntry) {
+    public void setPayCalEntry(PayCalendarEntries payCalEntry) {
         this.payCalEntry = payCalEntry;
         // Relative time, with time zone added.
         this.beginDateTime = payCalEntry.getBeginLocalDateTime().toDateTime(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
@@ -244,9 +172,8 @@ public class TkCalendar extends CalendarParent {
             }
         } else {
             // Day Split Strings
-
+            StringBuilder builder = new StringBuilder();
             for (int i = firstDay; i < lastDay; i++) {
-                StringBuilder builder = new StringBuilder("");
                 DateTime currStart = getBeginDateTime().plusDays(i);
                 DateTime currEnd = getBeginDateTime().plusDays(i);
 
@@ -279,9 +206,11 @@ public class TkCalendar extends CalendarParent {
             DateTime currStart = getBeginDateTime().plusDays(dayDelta);
             DateTime currEnd = getBeginDateTime().plusDays(dayDelta);
 
-            b.append(currStart.toString("d HH:mm"));
+            b.append(currStart.toString("d"));
+            b.append(currStart.toString("HH:mm"));
             b.append(" - ");
-            b.append(currStart.toString("d HH:mm"));
+            b.append(currEnd.toString("d"));
+            b.append(currStart.toString("HH:mm"));
         }
 
         return b.toString();

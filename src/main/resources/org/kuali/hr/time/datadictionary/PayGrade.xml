@@ -18,7 +18,6 @@
 			<list>
 				<ref bean="PayGrade-hrPayGradeId" />
 				<ref bean="PayGrade-payGrade" />
-				<ref bean="PayGrade-salGroup" />
 				<ref bean="PayGrade-description" />
 				<ref bean="PayGrade-effectiveDate" />
 				<ref bean="PayGrade-active" />
@@ -26,20 +25,6 @@
 				<ref bean="PayGrade-timestamp" />
 			</list>
 		</property>	 
-		<property name="relationships">
-			<list>
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="salGroupObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="salGroup"
-								p:targetName="hrSalGroup" />
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
-		
 	</bean>
 
 	<!-- Attribute Definitions -->
@@ -78,23 +63,6 @@
 		<property name="label" value="PayGrade" />
 	</bean>
 
-	<bean id="PayGrade-salGroup" parent="PayGrade-salGroup-parentBean" />
-	<bean id="PayGrade-salGroup-parentBean" abstract="true"
-		parent="AttributeDefinition">
-		<property name="shortLabel" value="Sal Group" />
-		<property name="maxLength" value="10" />
-		<property name="validationPattern">
-			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="true" />
-			</bean>
-		</property>
-		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
-		</property>
-		<property name="name" value="salGroup" />
-		<property name="label" value="Salary Group" />
-	</bean>
-
 	<bean id="PayGrade-description" parent="PayGrade-description-parentBean" />
 	<bean id="PayGrade-description-parentBean" abstract="true"
 		parent="AttributeDefinition">
@@ -123,7 +91,7 @@
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
 		</property>
-		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
 		<property name="name" value="effectiveDate" />
 		<property name="label" value="Effective Date" />
 	</bean>
@@ -137,7 +105,7 @@
 		</property>
 		<property name="name" value="active" />
 		<property name="label" value="Active" />
-		<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+		<property name="formatterClass" value="org.kuali.rice.kns.web.format.BooleanFormatter"/>
 	</bean>
 
 
@@ -169,7 +137,7 @@
 			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
 		</property>
 		<property name="formatterClass"
-			value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+			value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter" />
 		<property name="name" value="timestamp" />
 		<property name="label" value="Time Stamp" />
 	</bean>

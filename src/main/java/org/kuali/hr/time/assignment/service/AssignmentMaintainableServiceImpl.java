@@ -1,10 +1,7 @@
 package org.kuali.hr.time.assignment.service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.assignment.Assignment;
@@ -12,13 +9,17 @@ import org.kuali.hr.time.assignment.AssignmentAccount;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
+import org.kuali.hr.time.util.TkConstants;
 import org.kuali.kfs.coa.businessobject.Account;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Override the Maintenance page behavior for Assignment object
@@ -37,7 +38,7 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 			MaintenanceDocument maintenanceDocument, String methodToCall) {
 		if (fieldValues.containsKey("principalId")
 				&& StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-			Person p = KimApiServiceLocator.getPersonService().getPerson(
+			Person p = KIMServiceLocator.getPersonService().getPerson(
 					fieldValues.get("principalId"));
 			if (p != null) {
 				fieldValues.put("name", p.getName());
@@ -66,7 +67,7 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 			Map<String, String> fields = new HashMap<String, String>();
 			fields.put("accountNumber", fieldValues
 					.get("assignmentAccounts.accountNbr"));
-			Collection account = KRADServiceLocator.getBusinessObjectService()
+			Collection account = KNSServiceLocator.getBusinessObjectDao()
 					.findMatching(Account.class, fields);
 			if (account.size() > 0) {
 				Account acc = (Account) account.iterator().next();
@@ -81,9 +82,9 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 				&& assignment.getPrincipalId() != null 
 				&& assignment.getJobNumber() != null 
 				&& assignment.getEffectiveDate() != null) {
-			  Job job = TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate(), false);
+			  Job job = TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate(), false);
 			  if(job != null) {
-					PayType payType = TkServiceLocator.getPayTypeService().getPayType(job.getHrPayType(), assignment.getEffectiveDate());
+					PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(job.getHrPayType(), assignment.getEffectiveDate());					
 					fieldValues.put("assignmentAccounts.earnCode", (payType != null) ? payType.getRegEarnCode() : "");
 				}
 			}

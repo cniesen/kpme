@@ -1,16 +1,13 @@
 package org.kuali.hr.time.util;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import sun.util.LocaleServiceProviderPool;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainableImpl {
-    protected static org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(HrBusinessObjectMaintainableImpl.class);
+
 	/**
 	 * 
 	 */
@@ -33,26 +30,15 @@ public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainable
 					oldHrObj.setActive(false);
 					oldHrObj.setId(null);
 				}
-				KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
+				KNSServiceLocator.getBusinessObjectService().save(oldHrObj);
 			}
 		}
 		hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		hrObj.setId(null);
 		
 		customSaveLogic(hrObj);
-		KRADServiceLocator.getBusinessObjectService().save(hrObj);
-
-        //cache clearing?!?!
-        try {
-            String cacheName = (String)hrObj.getClass().getDeclaredField("CACHE_NAME").get(hrObj);
-            CacheUtils.flushCache(cacheName);
-        } catch (NoSuchFieldException e) {
-            // no cache name found
-            LOG.warn("No cache name found for object: " + hrObj.getClass().getName());
-        } catch (IllegalAccessException e) {
-            LOG.warn("No cache name found for object: " + hrObj.getClass().getName());
-        }
-    }
+		KNSServiceLocator.getBusinessObjectService().save(hrObj);
+	}
 	
 	public abstract HrBusinessObject getObjectById(String id);
 	public void customSaveLogic(HrBusinessObject hrObj){};

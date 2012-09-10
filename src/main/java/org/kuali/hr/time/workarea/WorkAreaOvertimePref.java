@@ -1,6 +1,8 @@
 package org.kuali.hr.time.workarea;
 
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import java.util.LinkedHashMap;
+
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class WorkAreaOvertimePref extends PersistableBusinessObjectBase {
 
@@ -13,6 +15,14 @@ public class WorkAreaOvertimePref extends PersistableBusinessObjectBase {
 	private Long tkWorkAreaId;
 	private String payType;
 	private String overtimePreference;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	public Long getTkWorkAreaId() {
 		return tkWorkAreaId;

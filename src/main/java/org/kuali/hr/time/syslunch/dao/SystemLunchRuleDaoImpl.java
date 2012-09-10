@@ -1,15 +1,15 @@
 package org.kuali.hr.time.syslunch.dao;
 
-import java.sql.Date;
-
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.syslunch.rule.SystemLunchRule;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class SystemLunchRuleDaoImpl  extends PlatformAwareDaoBaseOjb implements SystemLunchRuleDao {
+import java.sql.Date;
+
+public class SystemLunchRuleDaoImpl  extends PersistenceBrokerDaoSupport implements SystemLunchRuleDao {
 
 	@Override
 	public SystemLunchRule getSystemLunchRule(Date asOfDate) {

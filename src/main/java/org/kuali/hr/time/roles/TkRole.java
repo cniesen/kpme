@@ -1,9 +1,5 @@
 package org.kuali.hr.time.roles;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.department.Department;
@@ -12,11 +8,15 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.kfs.coa.businessobject.Chart;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
 
 public class TkRole extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TkRole";
+
 	/**
 	 *
 	 */
@@ -90,7 +90,7 @@ public class TkRole extends HrBusinessObject {
 	}
 	public void setPrincipalId(String principalId) {
 		this.principalId = principalId;
-        setPerson(KimApiServiceLocator.getPersonService().getPerson(this.principalId));
+        setPerson(KIMServiceLocator.getPersonService().getPerson(this.principalId));
 	}
 	public String getRoleName() {
 		return roleName;
@@ -141,6 +141,13 @@ public class TkRole extends HrBusinessObject {
 	public void setPerson(Person person) {
 		this.person = person;
 	}
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public Long getHrDeptId() {
 		return hrDeptId;
 	}
@@ -167,7 +174,7 @@ public class TkRole extends HrBusinessObject {
      */
     public String getUserName() {
         if (person == null) {
-            person = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
+            person = KIMServiceLocator.getPersonService().getPerson(this.principalId);
         }
 
         return (person != null) ? person.getName() : "";

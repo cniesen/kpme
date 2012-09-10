@@ -1,13 +1,12 @@
 package org.kuali.hr.time.position;
 
-import java.sql.Timestamp;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
-import org.kuali.hr.time.workarea.WorkArea;
+
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
 
 public class Position extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Position";
+
 	/**
 	 * 
 	 */
@@ -17,8 +16,13 @@ public class Position extends HrBusinessObject {
 	private String positionNumber;
 	private String description;
 	private String history;
-	private Long workArea;
-	private WorkArea workAreaObj;
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public String getHrPositionId() {
 		return hrPositionId;
@@ -83,21 +87,4 @@ public class Position extends HrBusinessObject {
 		setHrPositionId(id);
 	}
 
-	
-	public WorkArea getWorkAreaObj() {
-		return workAreaObj;
-	}
-
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
-
-	public Long getWorkArea() {
-		return workArea;
-	}
-
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
-	
 }

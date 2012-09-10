@@ -1,10 +1,10 @@
 package org.kuali.hr.time.detail.web;
 
+import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
 
 /**
  * Base form for both WS and Regular TimeDetail action.
@@ -23,18 +23,8 @@ public class TimeDetailActionFormBase extends TimesheetActionForm {
     private BigDecimal hours;
     private BigDecimal amount;
     private String overtimePref;
-    private String spanningWeeks; // KPME-1446
-    private String lmLeaveBlockId;
 
-    public String getSpanningWeeks() {
-		return spanningWeeks;
-	}
-
-	public void setSpanningWeeks(String spanningWeeks) {
-		this.spanningWeeks = spanningWeeks;
-	}
-
-	public String getTkTimeBlockId() {
+    public String getTkTimeBlockId() {
         return tkTimeBlockId;
     }
 
@@ -121,12 +111,4 @@ public class TimeDetailActionFormBase extends TimesheetActionForm {
     public void setOvertimePref(String overtimePref) {
         this.overtimePref = overtimePref;
     }
-
-	public String getLmLeaveBlockId() {
-		return lmLeaveBlockId;
-	}
-
-	public void setLmLeaveBlockId(String lmLeaveBlockId) {
-		this.lmLeaveBlockId = lmLeaveBlockId;
-	}
 }

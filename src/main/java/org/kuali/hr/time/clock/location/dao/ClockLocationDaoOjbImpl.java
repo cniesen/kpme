@@ -10,9 +10,9 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.clock.location.ClockLocationRuleIpAddress;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements ClockLocationDao{	
+public class ClockLocationDaoOjbImpl extends PersistenceBrokerDaoSupport implements ClockLocationDao{	
 	@SuppressWarnings("unchecked")
 	public List<ClockLocationRule> getClockLocationRule(String dept, Long workArea, String principalId, Long jobNumber, Date asOfDate){		
 		Criteria root = new Criteria();

@@ -3,12 +3,13 @@ package org.kuali.hr.job.service;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.job.dao.JobDao;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -33,11 +34,12 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Job> getJobs(String principalId, Date asOfDate) {
         List<Job> jobs = jobDao.getJobs(principalId, asOfDate);
 
         for (Job job : jobs) {
-            PayType payType = TkServiceLocator.getPayTypeService().getPayType(
+            PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(
                     job.getHrPayType(), asOfDate);
             job.setPayTypeObj(payType);
         }
@@ -46,29 +48,31 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Job getJob(String principalId, Long jobNumber, Date asOfDate) {
         return getJob(principalId, jobNumber, asOfDate, true);
     }
 
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Job getPrimaryJob(String principalId, Date payPeriodEndDate) {
         return jobDao.getPrimaryJob(principalId, payPeriodEndDate);
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Job getJob(String principalId, Long jobNumber, Date asOfDate,
                       boolean chkDetails) {
         Job job = jobDao.getJob(principalId, jobNumber, asOfDate);
         if (job == null && chkDetails) {
-            return null;
-            //throw new RuntimeException("No job for principal : " + principalId
-            //        + " Job Number: " + jobNumber);
+            throw new RuntimeException("No job for principal : " + principalId
+                    + " Job Number: " + jobNumber);
         }
         if (chkDetails) {
             String hrPayType = job.getHrPayType();
             if (StringUtils.isBlank(hrPayType)) {
                 throw new RuntimeException("No pay type for this job!");
             }
-            PayType payType = TkServiceLocator.getPayTypeService().getPayType(
+            PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(
                     hrPayType, asOfDate);
             if (payType == null)
                 throw new RuntimeException("No paytypes defined for this job!");
@@ -78,21 +82,25 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Job> getActiveJobsForPosition(String positionNbr, Date asOfDate) {
         return jobDao.getActiveJobsForPosition(positionNbr, asOfDate);
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Job> getActiveJobsForPayType(String hrPayType, Date asOfDate) {
         return jobDao.getActiveJobsForPayType(hrPayType, asOfDate);
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Job getJob(String hrJobId) {
         return jobDao.getJob(hrJobId);
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Job getMaxJob(String principalId) {
         return jobDao.getMaxJob(principalId);
     }
@@ -106,7 +114,7 @@ public class JobServiceImpl implements JobService {
             Map<String, String> fields = new HashMap<String, String>();
             fields.put("firstName", firstName);
             fields.put("lastName", lastName);
-            List<Person> people = KimApiServiceLocator.getPersonService().findPeople(fields);
+            List<Person> people = KIMServiceLocator.getPersonService().findPeople(fields);
 
             List<Job> jobs = new ArrayList<Job>();
             for (Person p : people) {
@@ -123,48 +131,4 @@ public class JobServiceImpl implements JobService {
     public int getJobCount(String principalId, Long jobNumber, String dept) {
     	return jobDao.getJobCount(principalId, jobNumber, dept);
     }
-    
-    @Override
-    public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate) {
-    	return jobDao.getActiveLeaveJobs(principalId, asOfDate);
-    }
-    
-    @Override
-    public BigDecimal getFteSumForJobs(List<Job> jobs) {
-    	BigDecimal fteSum = new BigDecimal(0);
-    	for(Job aJob : jobs) {
-    		fteSum = fteSum.add(aJob.getFte());
-    	}
-    	return fteSum;
-    	
-    }
-    
-    @Override
-    public BigDecimal getStandardHoursSumForJobs(List<Job> jobs) {
-    	BigDecimal hoursSum = new BigDecimal(0);
-    	for(Job aJob : jobs) {
-    		hoursSum = hoursSum.add(aJob.getStandardHours());
-    	}
-    	return hoursSum;
-    }
-   
-    @Override
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate) {
-    	return jobDao.getAllActiveLeaveJobs(principalId, asOfDate);
-    }
-    
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, Date startDate, Date endDate) {
-    	return jobDao.getInactiveLeaveJobs(jobNumber, startDate, endDate);
-    }
-    
-    @Override
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate) {
-    	return jobDao.getAllInActiveLeaveJobsInRange(principalId, startDate, endDate);
-    }
-    
-    @Override
-    public Job getMaxTimestampJob(String principalId) {
-    	return jobDao.getMaxTimestampJob(principalId);
-    }
-    
 }

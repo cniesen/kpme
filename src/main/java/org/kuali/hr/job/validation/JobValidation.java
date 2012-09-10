@@ -1,15 +1,17 @@
 package org.kuali.hr.job.validation;
 
+import java.sql.Date;
 import java.util.List;
 
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 public class JobValidation extends MaintenanceDocumentRuleBase {
 
@@ -26,7 +28,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 
 	private boolean validateJobNumber(Job job) {
 		if (job.getJobNumber() != null) {
-			Job jobObj = TkServiceLocator.getJobService().getJob(
+			Job jobObj = TkServiceLocator.getJobSerivce().getJob(
 					job.getPrincipalId(), job.getJobNumber(),
 					job.getEffectiveDate(), false);
 			if (jobObj != null) {
@@ -106,7 +108,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 			if(oldJob!=null && oldJob.getPrimaryIndicator()!=null && oldJob.getPrimaryIndicator()){
 				return valid;
 			}
-			Job existingJob = TkServiceLocator.getJobService().getPrimaryJob(job.getPrincipalId(), TKUtils.getCurrentDate());
+			Job existingJob = TkServiceLocator.getJobSerivce().getPrimaryJob(job.getPrincipalId(), TKUtils.getCurrentDate());
 			if (existingJob != null && existingJob.getPrimaryIndicator()) {
 				this.putFieldError("primaryIndicator", "error.primary.job.already.exist", job.getPrincipalId());
 				valid = false;
@@ -139,7 +141,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Job");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof Job) {
 			Job job = (Job) pbo;
 			Job oldJob = (Job) this.getOldBo();

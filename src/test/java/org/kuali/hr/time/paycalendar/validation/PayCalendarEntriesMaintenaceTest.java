@@ -1,16 +1,14 @@
 package org.kuali.hr.time.paycalendar.validation;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
-import org.kuali.hr.time.test.HtmlUnitUtil;
-import org.kuali.hr.time.test.TkTestConstants;
-
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import org.junit.Test;
+import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.hr.time.test.TkTestConstants;
 
-public class PayCalendarEntriesMaintenaceTest extends KPMETestCase {
+public class PayCalendarEntriesMaintenaceTest extends TkTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
@@ -27,12 +25,11 @@ public class PayCalendarEntriesMaintenaceTest extends KPMETestCase {
     	//String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.time.paycalendar.PayCalendarEntries&methodToCall=start";
 		String baseUrl = TkTestConstants.Urls.PAY_CALENDAR_ENTRIES_MAINT_NEW_URL;
     	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
-    	Assert.assertNotNull(page);
+    	assertNotNull(page);
 
 		HtmlTextInput text  = (HtmlTextInput) page.getHtmlElementById("document.documentHeader.documentDescription");
 		text.setValueAttribute("test");
-		HtmlUnitUtil.createTempFile(page);
-		text  = (HtmlTextInput) page.getHtmlElementById(TkTestConstants.DOC_NEW_ELEMENT_ID_PREFIX + "calendarName");
+		text  = (HtmlTextInput) page.getHtmlElementById(TkTestConstants.DOC_NEW_ELEMENT_ID_PREFIX + "pyCalendarGroup");
 		text.setValueAttribute("TTT");	// set an invalid pay calendar		
 		text  = (HtmlTextInput) page.getHtmlElementById(TkTestConstants.DOC_NEW_ELEMENT_ID_PREFIX + "beginPeriodDate");
 		text.setValueAttribute("02/21/2011");		
@@ -61,16 +58,15 @@ public class PayCalendarEntriesMaintenaceTest extends KPMETestCase {
 		
 		HtmlElement element = page.getElementByName("methodToCall.route");
         HtmlPage page1 = element.click();
-        HtmlUnitUtil.createTempFile(page1);
 		// error for invalid pay calendar
-        Assert.assertTrue("Maintenance Page contains error messages", page1.asText().contains("You must specify a valid Calendar."));
+        assertTrue("Maintenance Page contains error messages", page1.asText().contains("You must specify a valid Pay Calendar."));
 
-		text  = (HtmlTextInput) page1.getHtmlElementById(TkTestConstants.DOC_NEW_ELEMENT_ID_PREFIX + "calendarName");
+		text  = (HtmlTextInput) page1.getHtmlElementById(TkTestConstants.DOC_NEW_ELEMENT_ID_PREFIX + "pyCalendarGroup");
 		text.setValueAttribute("BW-CAL");	// set a valid pay calendar	
         
 		element = page1.getElementByName("methodToCall.route");
         HtmlPage page2 = element.click();
-        Assert.assertTrue("Maintenance page is submitted successfully", page2.asText().contains("Document was successfully submitted."));
-        Assert.assertTrue("Maintenance page is submitted successfully", page2.asText().contains("Status: 	 FINAL"));
+        assertTrue("Maintenance page is submitted successfully", page2.asText().contains("Document was successfully submitted."));
+		assertTrue("Maintenance page is submitted successfully", page2.asText().contains("Status: 	 FINAL"));
 	}
 }

@@ -1,10 +1,11 @@
 package org.kuali.hr.time.syslunch.rule;
 
-import org.kuali.hr.core.KPMEConstants;
+import java.util.LinkedHashMap;
+
 import org.kuali.hr.time.rule.TkRule;
 
 public class SystemLunchRule extends TkRule {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "SystemLunchRule";
+
 	/**
 	 * 
 	 */
@@ -14,6 +15,12 @@ public class SystemLunchRule extends TkRule {
 	private boolean history;
 	private String userPrincipalId;
 
+	@SuppressWarnings({ "rawtypes" })
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	public String getTkSystemLunchRuleId() {
 		return tkSystemLunchRuleId;

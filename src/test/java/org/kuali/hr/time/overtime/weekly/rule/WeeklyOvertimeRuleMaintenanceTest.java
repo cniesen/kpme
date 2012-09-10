@@ -2,18 +2,16 @@ package org.kuali.hr.time.overtime.weekly.rule;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-
-import org.junit.Assert;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
+public class WeeklyOvertimeRuleMaintenanceTest extends TkTestCase {
 	
 	protected static final String TEST_CODE="TST";
 	private static final BigDecimal TEST_NO=new BigDecimal(10);
@@ -25,11 +23,11 @@ public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
 	public void testWeeklyOvertimeRuleMaint() throws Exception {
 		HtmlPage weeklyOvertimeRuleLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.WEEKLY_OVERTIME_RULE_MAINT_URL);
 		weeklyOvertimeRuleLookUp = HtmlUnitUtil.clickInputContainingText(weeklyOvertimeRuleLookUp, "search");
-		Assert.assertTrue("Page contains test WeeklyOvertimeRule", weeklyOvertimeRuleLookUp.asText().contains(TEST_CODE));
-		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(weeklyOvertimeRuleLookUp, "edit",weeklyOvertimeRuleId);
-		Assert.assertTrue("Maintenance Page contains test WeeklyOvertimeRule",maintPage.asText().contains(TEST_CODE));
+		assertTrue("Page contains test WeeklyOvertimeRule", weeklyOvertimeRuleLookUp.asText().contains(TEST_CODE.toString()));		
+		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(weeklyOvertimeRuleLookUp, "edit",weeklyOvertimeRuleId.toString());		
+		assertTrue("Maintenance Page contains test WeeklyOvertimeRule",maintPage.asText().contains(TEST_CODE.toString()));	
 		
-		// test Convert from EarnCodeGroup has overtime earn codes error		
+		// test Convert from EarnGroup has overtime earn codes error		
 		HtmlPage newMaintPage = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.WEEKLY_OVERTIME_RULE_MAINT_NEW_URL);
 		setFieldValue(newMaintPage, "document.documentHeader.documentDescription", "Test");
 		setFieldValue(newMaintPage, "document.newMaintainableObject.add.lstWeeklyOvertimeRules.effectiveDate", "01/01/2010");
@@ -41,7 +39,7 @@ public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
 //		HtmlPage finalPage = HtmlUnitUtil.clickInputContainingText(newMaintPage, "add");
 		HtmlElement element = newMaintPage.getElementById("methodToCall.addLine.lstWeeklyOvertimeRules.(!!org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRule!!)");
         HtmlPage finalPage = element.click();
-		Assert.assertTrue("Maintenance Page should contains EarnCodeGroup has overtime earn code error",
+		assertTrue("Maintenance Page should contains EarnGroup has overtime earn code error",
 				finalPage.asText().contains("Earn Group 'OVT' has overtime earn codes."));
 	}
 
@@ -58,15 +56,15 @@ public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
 		weeklyOvertimeRule.setStep(TEST_NO);
 		weeklyOvertimeRule.setTimestamp(TEST_TIME_STAMP);
 		weeklyOvertimeRule.setUserPrincipalId(TEST_CODE);	
-		KRADServiceLocator.getBusinessObjectService().save(weeklyOvertimeRule);		
+		KNSServiceLocator.getBusinessObjectService().save(weeklyOvertimeRule);		
 		weeklyOvertimeRuleId=weeklyOvertimeRule.getTkWeeklyOvertimeRuleId();		
 	}
 
 	@Override
 	public void tearDown() throws Exception {	
 		//clean up
-		WeeklyOvertimeRule weeklyOvertimeRuleObj= KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(WeeklyOvertimeRule.class, weeklyOvertimeRuleId);			
-		KRADServiceLocator.getBusinessObjectService().delete(weeklyOvertimeRuleObj);				
+		WeeklyOvertimeRule weeklyOvertimeRuleObj= KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(WeeklyOvertimeRule.class, weeklyOvertimeRuleId);			
+		KNSServiceLocator.getBusinessObjectService().delete(weeklyOvertimeRuleObj);				
 		super.tearDown();
 	}
 

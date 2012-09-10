@@ -1,7 +1,6 @@
 package org.kuali.hr.time.workflow.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
@@ -10,7 +9,6 @@ import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
 
 public class WorkflowTagSupport {
 
@@ -19,7 +17,7 @@ public class WorkflowTagSupport {
     }
 
     public boolean isDisplayingRouteButton() {
-      TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
+      UserRoles roles = TKContext.getUser().getActualPersonRoles();
       TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
       TimesheetDocumentHeader tdh = doc.getDocumentHeader();
       if(tdh.getDocumentStatus().equals("S") || tdh.getDocumentStatus().equals("I")){
@@ -39,9 +37,9 @@ public class WorkflowTagSupport {
     }
 
     public boolean isDisplayingApprovalButtons() {
-        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
+        UserRoles roles = TKContext.getUser().getCurrentRoles();
         TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
-        boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), doc.getDocumentId());
+        boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), Long.parseLong(doc.getDocumentId()));
         return !tookActionAlready && roles.isApproverForTimesheet(doc) && !StringUtils.equals(doc.getDocumentHeader().getDocumentStatus(), "F");
     }
 
@@ -50,9 +48,9 @@ public class WorkflowTagSupport {
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         boolean isEnroute = tdh.getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE);
         if(isEnroute){
-        	DocumentRouteHeaderValue routeHeader = KEWServiceLocator.getRouteHeaderService().getRouteHeader(doc.getDocumentId());
-        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
-        	boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), doc.getDocumentId());
+        	DocumentRouteHeaderValue routeHeader = KEWServiceLocator.getRouteHeaderService().getRouteHeader(Long.parseLong(doc.getDocumentId()));
+        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getUserSession(), routeHeader, new SecuritySession(TKContext.getUserSession()));
+        	boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), Long.parseLong(doc.getDocumentId()));
         	return !tookActionAlready && authorized;
         }
         return false;

@@ -6,16 +6,13 @@ import java.sql.Timestamp;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.graceperiod.rule.GracePeriodRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
-public class GracePeriodRuleServiceTest extends KPMETestCase{
+public class GracePeriodRuleServiceTest extends TkTestCase{
 
 	@Test
 	public void testGracePeriodRuleFetch() throws Exception{
@@ -24,16 +21,12 @@ public class GracePeriodRuleServiceTest extends KPMETestCase{
 		gpr.setEffectiveDate(new Date(System.currentTimeMillis()));
 		gpr.setHourFactor(new BigDecimal(0.1));
 		
-		KRADServiceLocator.getBusinessObjectService().save(gpr);
+		KNSServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(new Date(System.currentTimeMillis()));
-		Assert.assertTrue("fetched one rule", gpr != null);
-
-        //cleanup
-        KRADServiceLocator.getBusinessObjectService().delete(gpr);
+		assertTrue("fetched one rule", gpr != null);
 	}
 	
 	@Test
-    @Ignore
 	public void testGracePeriodFetchValidation() throws Exception{
 		//TODO: Sai - confirm maintenance page renders
 		//TODO: Sai - confirm if hour factor is less than or equal 0 and greater than 1 it throws 
@@ -48,21 +41,18 @@ public class GracePeriodRuleServiceTest extends KPMETestCase{
 		gpr.setEffectiveDate(new Date(System.currentTimeMillis()));
 		gpr.setHourFactor(new BigDecimal(3));
 		
-		KRADServiceLocator.getBusinessObjectService().save(gpr);
+		KNSServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(new Date(System.currentTimeMillis()));
-		Assert.assertTrue("fetched one rule", gpr != null);
+		assertTrue("fetched one rule", gpr != null);
 
-		Timestamp beginDateTime = new Timestamp((new DateTime(2012, 10, 16, 12, 3, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
+		Timestamp beginDateTime = new Timestamp((new DateTime(2012, 10, 16, 12, 3, 0, 0, DateTimeZone.forID("EST"))).getMillis());
 		Timestamp derivedTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(beginDateTime, new Date(System.currentTimeMillis()));
 
-		Assert.assertTrue("rounded to 1:03", derivedTimestamp.getMinutes()==3);
+		assertTrue("rounded to 1:03", derivedTimestamp.getMinutes()==3);
 		
-		beginDateTime = new Timestamp((new DateTime(2012, 10, 16, 12, 56, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
+		beginDateTime = new Timestamp((new DateTime(2012, 10, 16, 12, 56, 0, 0, DateTimeZone.forID("EST"))).getMillis());
 		derivedTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(beginDateTime, new Date(System.currentTimeMillis()));
 
-		Assert.assertTrue("rounded to 1:56", derivedTimestamp.getMinutes()==57);
-
-        //cleanup
-        KRADServiceLocator.getBusinessObjectService().delete(gpr);
+		assertTrue("rounded to 1:56", derivedTimestamp.getMinutes()==57);
 	}
 }

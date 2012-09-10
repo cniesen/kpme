@@ -1,18 +1,18 @@
 package org.kuali.hr.time.shiftdiff.rule.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.shiftdiff.rule.ShiftDifferentialRule;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class ShiftDifferentialRuleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements ShiftDifferentialRuleDao {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class ShiftDifferentialRuleDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements ShiftDifferentialRuleDao {
 	
 	@Override
 	public ShiftDifferentialRule findShiftDifferentialRule(String id) {

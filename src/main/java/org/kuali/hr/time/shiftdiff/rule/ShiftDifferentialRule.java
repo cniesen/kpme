@@ -1,20 +1,20 @@
 package org.kuali.hr.time.shiftdiff.rule;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Time;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
-import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
+import org.kuali.hr.time.paycalendar.PayCalendar;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.salgroup.SalGroup;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Time;
+import java.util.LinkedHashMap;
+
 public class ShiftDifferentialRule extends TkRule {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "ShiftDifferentialRule";
+
 	/**
 	 *
 	 */
@@ -47,11 +47,17 @@ public class ShiftDifferentialRule extends TkRule {
 	
 	private EarnCode earnCodeObj;
 	private SalGroup salGroupObj;
-    private EarnCodeGroup fromEarnGroupObj;
-    private Calendar payCalendar;
+    private EarnGroup fromEarnGroupObj;
+    private PayCalendar payCalendar;
     private Location locationObj;
     private PayGrade payGradeObj;
-    
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		return null;
+	}
+
 	public String getTkShiftDiffRuleId() {
 		return tkShiftDiffRuleId;
 	}
@@ -243,19 +249,19 @@ public class ShiftDifferentialRule extends TkRule {
 		this.salGroupObj = salGroupObj;
 	}
 
-    public EarnCodeGroup getFromEarnGroupObj() {
+    public EarnGroup getFromEarnGroupObj() {
         return fromEarnGroupObj;
     }
 
-    public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
+    public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
         this.fromEarnGroupObj = fromEarnGroupObj;
     }
 
-    public Calendar getPayCalendar() {
+    public PayCalendar getPayCalendar() {
         return payCalendar;
     }
 
-    public void setPayCalendar(Calendar payCalendar) {
+    public void setPayCalendar(PayCalendar payCalendar) {
         this.payCalendar = payCalendar;
     }
 

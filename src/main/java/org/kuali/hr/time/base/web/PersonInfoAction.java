@@ -1,27 +1,25 @@
 package org.kuali.hr.time.base.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class PersonInfoAction extends TkAction {
 
@@ -39,20 +37,11 @@ public class PersonInfoAction extends TkAction {
 		PersonInfoActionForm personForm = (PersonInfoActionForm)form;
 		
 		personForm.setPrincipalId(TKContext.getTargetPrincipalId());
-		Person person = KimApiServiceLocator.getPersonService().getPerson(personForm.getPrincipalId());
+		Person person = KIMServiceLocator.getPersonService().getPerson(personForm.getPrincipalId());
 		personForm.setPrincipalName(person.getPrincipalName());
 		// set name
 		personForm.setName(person.getName());
-		personForm.setJobs(TkServiceLocator.getJobService().getJobs(TKContext.getTargetPrincipalId(), TKUtils.getCurrentDate()));
-		
-		//KPME-1441
-		PrincipalHRAttributes principalHRAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(personForm.getPrincipalId(), TKUtils.getCurrentDate());
-		if ( principalHRAttributes != null && principalHRAttributes.getServiceDate() != null ){
-			personForm.setServiceDate(principalHRAttributes.getServiceDate().toString());
-		} else {
-			personForm.setServiceDate("");
-		}
-		// KPME-1441
+		personForm.setJobs(TkServiceLocator.getJobSerivce().getJobs(TKContext.getTargetPrincipalId(), TKUtils.getCurrentDate()));
 		
 		setupRolesOnForm(personForm);
 
@@ -117,15 +106,15 @@ public class PersonInfoAction extends TkAction {
 
         for(TkRole role : deptAdminRoles) {
         	if(role.getPositionNumber() != null){
-				List<Job> lstJobs = TkServiceLocator.getJobService().getActiveJobsForPosition(role.getPositionNumber(), TKUtils.getCurrentDate());
+				List<Job> lstJobs = TkServiceLocator.getJobSerivce().getActiveJobsForPosition(role.getPositionNumber(), TKUtils.getCurrentDate());
 				for(Job j : lstJobs){
-					Person person = KimApiServiceLocator.getPersonService().getPerson(j.getPrincipalId());
+					Person person = KIMServiceLocator.getPersonService().getPerson(j.getPrincipalId());
 					if(person !=null){
 						deptAdminPeople.add(person);
 					}
 				}
 			} else{
-				Person person = KimApiServiceLocator.getPersonService().getPerson(role.getPrincipalId());
+				Person person = KIMServiceLocator.getPersonService().getPerson(role.getPrincipalId());
 				if(person!=null){
 					deptAdminPeople.add(person);
 				}
@@ -142,15 +131,15 @@ public class PersonInfoAction extends TkAction {
 		workAreaToApprover.put(workArea, lstApproverRoles);
 		for(TkRole role : lstApproverRoles){
 			if(role.getPositionNumber() != null){
-				List<Job> lstJobs = TkServiceLocator.getJobService().getActiveJobsForPosition(role.getPositionNumber(), TKUtils.getCurrentDate());
+				List<Job> lstJobs = TkServiceLocator.getJobSerivce().getActiveJobsForPosition(role.getPositionNumber(), TKUtils.getCurrentDate());
 				for(Job j : lstJobs){
-					Person approver = KimApiServiceLocator.getPersonService().getPerson(j.getPrincipalId());
+					Person approver = KIMServiceLocator.getPersonService().getPerson(j.getPrincipalId());
 					if(approver!=null){
 					addApproverPersonForWorkArea(workArea, approver, workAreaToApproverPerson);
 					}
 				}
 			} else{
-				Person approver = KimApiServiceLocator.getPersonService().getPerson(role.getPrincipalId());
+				Person approver = KIMServiceLocator.getPersonService().getPerson(role.getPrincipalId());
 				if(approver!=null){
 					addApproverPersonForWorkArea(workArea, approver, workAreaToApproverPerson);
 				}

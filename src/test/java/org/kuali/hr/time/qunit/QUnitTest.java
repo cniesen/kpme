@@ -6,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -19,9 +18,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-
 @Ignore
-public class QUnitTest extends KPMETestCase {
+public class QUnitTest extends TkTestCase {
 
 	private static final Logger LOG = Logger.getLogger(QUnitTest.class);
 	private List<String> failures;
@@ -32,7 +30,7 @@ public class QUnitTest extends KPMETestCase {
 
 		File qunitDir = new File("src/main/webapp/qunit");
 		if (!qunitDir.exists() || !qunitDir.isDirectory()) {
-			Assert.fail("Test dir does not exist or is not a directory: " + qunitDir);
+			fail("Test dir does not exist or is not a directory: " + qunitDir);
 		}
 
 		for (File file : qunitDir.listFiles()) {
@@ -50,7 +48,7 @@ public class QUnitTest extends KPMETestCase {
 			}
 			LOG.debug("\n\n" + sb.toString() + "\n\n");
 
-			Assert.fail("Tests failed: " + sb.toString());
+			fail("Tests failed: " + sb.toString());
 		}
 	}
 
@@ -63,7 +61,7 @@ public class QUnitTest extends KPMETestCase {
 
 		// pass the login filter
 		// need to change to the testing port 8090
-		HtmlPage page = client.getPage(new URL(HtmlUnitUtil.getBaseURL() + "/TimeDetail.do"));
+		HtmlPage page = client.getPage(new URL("http://localhost:8080/tk-dev/TimeDetail.do"));
 		HtmlForm form = page.getFormByName("login-form");
 		HtmlSubmitInput button = form.getInputByName("login");
 		page = button.click();

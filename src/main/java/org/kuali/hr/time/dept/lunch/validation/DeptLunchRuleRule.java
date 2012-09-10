@@ -6,10 +6,10 @@ import org.kuali.hr.time.dept.lunch.DeptLunchRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class DeptLunchRuleRule extends MaintenanceDocumentRuleBase {
 
@@ -47,7 +47,7 @@ public class DeptLunchRuleRule extends MaintenanceDocumentRuleBase {
 		if (ruleObj.getJobNumber() == null) {
 			valid = false;
 		} else if (!ruleObj.getJobNumber().equals(TkConstants.WILDCARD_LONG)) {
-			int count = TkServiceLocator.getJobService().getJobCount(ruleObj.getPrincipalId(), ruleObj.getJobNumber(), null);
+			int count = TkServiceLocator.getJobSerivce().getJobCount(ruleObj.getPrincipalId(), ruleObj.getJobNumber(), null);
 			valid = (count > 0);
 			if (!valid) {
 				this.putFieldError("jobNumber", "principalid.job.invalid.sync",
@@ -89,7 +89,7 @@ public class DeptLunchRuleRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for DeptLunchRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof DeptLunchRule) {
 			DeptLunchRule deptLunchRule = (DeptLunchRule) pbo;
 			deptLunchRule.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());

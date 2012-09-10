@@ -1,8 +1,8 @@
 package org.kuali.hr.time.roles.dao;
 
-import java.util.List;
-
 import org.kuali.hr.time.roles.TkRoleGroup;
+
+import java.util.List;
 
 public interface TkRoleGroupDao {
 

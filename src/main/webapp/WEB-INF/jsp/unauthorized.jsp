@@ -1,4 +1,4 @@
-<%@ include file="/WEB-INF/jsp/TkTldHeader.jsp" %>
+<%@ include file="/jsp/tlds.jsp" %>
 
 <html>
 <head>

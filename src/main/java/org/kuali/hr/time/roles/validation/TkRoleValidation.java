@@ -1,13 +1,13 @@
 package org.kuali.hr.time.roles.validation;
 
 
-import org.apache.commons.lang.StringUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.roles.TkRoleGroup;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 public class TkRoleValidation extends MaintenanceDocumentRuleBase{
 
@@ -54,7 +54,7 @@ public class TkRoleValidation extends MaintenanceDocumentRuleBase{
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = true;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof TkRole) {
 			TkRole role = (TkRole)pbo;
             valid = validateTkRole(role, null);

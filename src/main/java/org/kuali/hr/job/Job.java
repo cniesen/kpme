@@ -1,10 +1,5 @@
 package org.kuali.hr.job;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.HrBusinessObject;
@@ -13,15 +8,20 @@ import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
 /**
  * 
  * Job representation
  *
  */
 public class Job extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Job";
+
 	/*
 	 * Standard field included for serialization support
 	 */
@@ -46,7 +46,6 @@ public class Job extends HrBusinessObject {
 	
 	private String hrDeptId;
 	private String hrPayTypeId;
-	private boolean eligibleForLeave;
 	
 	private Person principal;
 	private Department deptObj;
@@ -55,32 +54,16 @@ public class Job extends HrBusinessObject {
     private PayGrade payGradeObj;
     private SalGroup salGroupObj;
     private Position positionObj;
-    
-    private BigDecimal fte = new BigDecimal(0); //kpme1465, chen
-    private String flsaStatus;
-    
-	public String getFlsaStatus() {
-		return flsaStatus;
-	}
 
-	public void setFlsaStatus(String flsaStatus) {
-		this.flsaStatus = flsaStatus;
-	}
+	@SuppressWarnings({ "rawtypes" })
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String, Object>();
+		toStringMap.put("jobId", hrJobId);
+		toStringMap.put("principalId", principalId);
+		toStringMap.put("hrSalGroup", hrSalGroup);
 
-	public BigDecimal getFte() {
-		if ( this.standardHours != null ) {
-			return this.standardHours.divide(new BigDecimal(40)).setScale(2);
-		} else {
-			return fte;
-		}
-	}
-
-	public void setFte() {
-		if ( this.standardHours != null ) {
-			this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2);
-		} else {
-			this.fte = new BigDecimal(0).setScale(2);
-		}
+		return toStringMap;
 	}
 	
 	public String getPayGrade() {
@@ -125,14 +108,14 @@ public class Job extends HrBusinessObject {
 
 	public String getName() {
 		if (principal == null) {
-            principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
+            principal = KIMServiceLocator.getPersonService().getPerson(this.principalId);
 	    }
 	    return (principal != null) ? principal.getName() : "";
 	}
 
 	public String getPrincipalName() {
 		if(principalName == null && !this.getPrincipalId().isEmpty()) {
-			Person aPerson = KimApiServiceLocator.getPersonService().getPerson(getPrincipalId());
+			Person aPerson = KIMServiceLocator.getPersonService().getPerson(getPrincipalId());
 			setPrincipalName(aPerson.getName());
 		}
 		return principalName;
@@ -345,11 +328,5 @@ public class Job extends HrBusinessObject {
 	public void setId(String id) {
 		setHrJobId(id);
 	}
-	public boolean isEligibleForLeave() {
-		return eligibleForLeave;
-	}
 
-	public void setEligibleForLeave(boolean eligibleForLeave) {
-		this.eligibleForLeave = eligibleForLeave;
-	}
 }

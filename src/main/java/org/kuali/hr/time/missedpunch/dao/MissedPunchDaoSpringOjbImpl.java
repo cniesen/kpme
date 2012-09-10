@@ -1,20 +1,20 @@
 package org.kuali.hr.time.missedpunch.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.batch.BatchJobEntry;
-import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements MissedPunchDao {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MissedPunchDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements MissedPunchDao {
 
     @Override
     public MissedPunchDocument getMissedPunchByRouteHeader(String headerId) {
@@ -51,7 +51,7 @@ public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impleme
 	    List<MissedPunchDocument> aList = (List<MissedPunchDocument>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
 	    
 	    String pcdId = batchJobEntry.getHrPyCalendarEntryId();
-	    CalendarEntries pcd = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(pcdId.toString());
+	    PayCalendarEntries pcd = TkServiceLocator.getPayCalendarEntriesSerivce().getPayCalendarEntries(pcdId.toString());
 	    if(pcd != null) {
 		    for(MissedPunchDocument aDoc : aList) {
 		    	String tscId = aDoc.getTimesheetDocumentId();

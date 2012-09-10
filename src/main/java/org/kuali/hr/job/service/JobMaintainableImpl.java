@@ -7,8 +7,8 @@ import org.kuali.hr.job.Job;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 
 /**
@@ -26,7 +26,7 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 	
 	public void setJobNumber(Job job) {
 		Long jobNumber = new Long("0");
-		Job maxJob = TkServiceLocator.getJobService().getMaxJob(job.getPrincipalId());
+		Job maxJob = TkServiceLocator.getJobSerivce().getMaxJob(job.getPrincipalId());
 		
 		if(maxJob != null) {
 			// get the max of job number of the collection
@@ -43,7 +43,7 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 			MaintenanceDocument maintenanceDocument, String methodToCall) {
 		if (fieldValues.containsKey("principalId")
 				&& StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-			Person p = KimApiServiceLocator.getPersonService().getPerson(
+			Person p = KIMServiceLocator.getPersonService().getPerson(
 					fieldValues.get("principalId"));
 			if (p != null) {
 				fieldValues.put("name", p.getName());
@@ -54,7 +54,7 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 		if(StringUtils.equals(getMaintenanceAction(),"New")){
 			if (!fieldValues.containsKey("jobNumber") || StringUtils.isEmpty(fieldValues.get("jobNumber"))) {
 				if (fieldValues.containsKey("principalId") && StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-					Job maxJob = TkServiceLocator.getJobService().getMaxJob(fieldValues.get("principalId"));
+					Job maxJob = TkServiceLocator.getJobSerivce().getMaxJob(fieldValues.get("principalId"));
 					if(maxJob != null) {
 						fieldValues.put("jobNumber", Long.toString(maxJob.getJobNumber() +1));
 					} else {
@@ -70,7 +70,7 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject)TkServiceLocator.getJobService().getJob(id);
+		return (HrBusinessObject)TkServiceLocator.getJobSerivce().getJob(id);
 	}
 
 	@Override

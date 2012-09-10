@@ -1,10 +1,5 @@
 package org.kuali.hr.time.timecollection.rule.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -12,9 +7,14 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb implements TimeCollectionRuleDaoService {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class TimeCollectionRuleDaoServiceImpl extends PersistenceBrokerDaoSupport implements TimeCollectionRuleDaoService {
 
     /*
       * Returns valid TimeCollectionRule based on dept,workArea, and asOfDate
@@ -220,11 +220,8 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         Criteria root = new Criteria();
         Criteria effdt = new Criteria();
         Criteria timestamp = new Criteria();
-        if (workArea != null) {
-            effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        } else {
-            effdt.addIsNull(Criteria.PARENT_QUERY_PREFIX + "workArea");
-        }
+
+        effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
         effdt.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
         if (StringUtils.isNotBlank(dept)) {
             effdt.addEqualTo("dept", dept);
@@ -234,11 +231,8 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         }
         ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, effdt);
         effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-        if (workArea != null) {
-            timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        } else {
-            timestamp.addIsNull(Criteria.PARENT_QUERY_PREFIX + "workArea");
-        }
+
+        timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
         timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
         if (StringUtils.isNotBlank(dept)) {
             timestamp.addEqualTo("dept", dept);
@@ -259,8 +253,8 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         if (StringUtils.isNotBlank(payType)) {
             root.addLike("payType", payType);
         }
-        //root.addEqualTo("effectiveDate", effdtSubQuery);
-        //root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", effdtSubQuery);
+        root.addEqualTo("timestamp", timestampSubQuery);
 
         if (StringUtils.equals(active, "Y")) {
             Criteria activeFilter = new Criteria(); // Inner Join For Activity

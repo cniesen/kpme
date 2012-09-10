@@ -1,18 +1,18 @@
 package org.kuali.hr.time.workschedule.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.workschedule.WorkScheduleAssignment;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class WorkScheduleAssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements WorkScheduleAssignmentDao {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class WorkScheduleAssignmentDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements WorkScheduleAssignmentDao {
 
     @Override
     public void saveOrUpdate(WorkScheduleAssignment wsa) {

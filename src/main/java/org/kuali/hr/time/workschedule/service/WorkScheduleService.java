@@ -1,10 +1,10 @@
 package org.kuali.hr.time.workschedule.service;
 
-import java.sql.Date;
-import java.util.List;
-
 import org.kuali.hr.time.workschedule.WorkSchedule;
 import org.kuali.hr.time.workschedule.WorkScheduleEntry;
+
+import java.sql.Date;
+import java.util.List;
 
 public interface WorkScheduleService {
 

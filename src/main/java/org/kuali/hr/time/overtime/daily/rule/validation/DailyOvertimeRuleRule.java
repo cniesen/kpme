@@ -5,10 +5,10 @@ import org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 
@@ -69,7 +69,7 @@ public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 						.getFromEarnGroup(), dailyOvertimeRule
 						.getEffectiveDate())) {
 			this.putFieldError("fromEarnGroup", "error.existence",
-					"from EarnCodeGroup '" + dailyOvertimeRule.getFromEarnGroup()
+					"from EarnGroup '" + dailyOvertimeRule.getFromEarnGroup()
 							+ "'");
 			return false;
 		}
@@ -117,7 +117,7 @@ public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for DailyOvertimeRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof DailyOvertimeRule) {
 			DailyOvertimeRule dailyOvertimeRule = (DailyOvertimeRule) pbo;
 			dailyOvertimeRule.setUserPrincipalId(GlobalVariables

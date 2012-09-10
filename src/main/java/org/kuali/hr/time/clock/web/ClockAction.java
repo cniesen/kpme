@@ -1,17 +1,5 @@
 package org.kuali.hr.time.clock.web;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -26,7 +14,6 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
-import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -37,8 +24,14 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.exception.AuthorizationException;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.exception.AuthorizationException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ClockAction extends TimesheetAction {
 
@@ -51,7 +44,8 @@ public class ClockAction extends TimesheetAction {
         super.checkTKAuthorization(form, methodToCall); // Checks for read access first.
 
         TimesheetActionForm taForm = (TimesheetActionForm) form;
-        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
+        TKUser user = TKContext.getUser();
+        UserRoles roles = user.getCurrentRoles(); // either backdoor or actual
         TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
 
         // Check for write access to Timeblock.
@@ -88,7 +82,7 @@ public class ClockAction extends TimesheetAction {
             }
             caf.setAssignmentLunchMap(assignmentDeptLunchRuleMap);
         }
-        String principalId = TKUser.getCurrentTargetPerson().getPrincipalId();
+        String principalId = TKContext.getUser().getTargetPrincipalId();
         if (principalId != null) {
             caf.setPrincipalId(principalId);
         }
@@ -111,7 +105,7 @@ public class ClockAction extends TimesheetAction {
             Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
             String lastClockZone = lastClockLog.getClockTimestampTimezone();
             if (StringUtils.isEmpty(lastClockZone)) {
-                lastClockZone = TKUtils.getSystemTimeZone();
+                lastClockZone = TkConstants.SYSTEM_TIME_ZONE;
             }
             // zone will not be null. At this point is Valid or Exception.
             // Exception would indicate bad data stored in the system. We can wrap this, but
@@ -186,7 +180,7 @@ public class ClockAction extends TimesheetAction {
             caf.setErrorMessage("No assignment selected.");
             return mapping.findForward("basic");
         }
-        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
+        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKContext.getUser().getTargetPrincipalId());
         if(previousClockLog != null && StringUtils.equals(caf.getCurrentClockAction(), previousClockLog.getClockAction())){
         	caf.setErrorMessage("The operation is already performed.");
             return mapping.findForward("basic");
@@ -212,7 +206,7 @@ public class ClockAction extends TimesheetAction {
         
                
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new Timestamp(System.currentTimeMillis()), assignment, caf.getPayCalendarDates(), ip,
-                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKUser.getCurrentTargetPerson().getPrincipalId());
+                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKContext.getUser().getTargetPrincipalId());
 
         caf.setClockLog(clockLog);
 

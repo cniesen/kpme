@@ -1,15 +1,15 @@
 package org.kuali.hr.time.paytype.validation;
 
-import java.sql.Date;
-import java.util.List;
-
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
+
+import java.sql.Date;
+import java.util.List;
 
 public class PayTypeRule extends MaintenanceDocumentRuleBase {
 
@@ -32,7 +32,7 @@ public class PayTypeRule extends MaintenanceDocumentRuleBase {
 
 	boolean validateActive(String hrPayType, Date asOfDate) {
 		boolean valid = true;
-		List<Job> jobs = TkServiceLocator.getJobService()
+		List<Job> jobs = TkServiceLocator.getJobSerivce()
 				.getActiveJobsForPayType(hrPayType, asOfDate);
 		if (jobs != null && !jobs.isEmpty()) {
 			this.putFieldError("active", "paytype.inactivate.locked", hrPayType);
@@ -46,7 +46,7 @@ public class PayTypeRule extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = false;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof PayType) {
 			PayType pt = (PayType) pbo;
 

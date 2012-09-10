@@ -16,7 +16,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.json.simple.JSONValue;
-import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -82,19 +81,4 @@ public class TimeApprovalWSAction extends TkAction {
         taaf.setOutputString(ts.toJsonString());
         return mapping.findForward("ws");
     }
-    
-    public ActionForward getLeaveSummary(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
-    	String docId = taaf.getDocumentId();
-    	LeaveCalendarDocumentHeader lcdh = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(docId);
-    	if(lcdh != null) {
-    		List<Map<String, Object>> detailMap = TkServiceLocator.getLeaveApprovalService().getLaveApprovalDetailSectins(lcdh);
-    		 
-    		String jsonString = JSONValue.toJSONString(detailMap);
-    		taaf.setOutputString(jsonString);
-    	}
-    	
-    	return mapping.findForward("ws");
-    }
-    
 }

@@ -15,13 +15,13 @@
  */
 package org.kuali.kfs.coa.businessobject;
 
-import org.kuali.rice.core.api.mo.common.active.Inactivatable;
-import org.kuali.rice.krad.bo.KualiCodeBase;
+import org.kuali.rice.kns.bo.Inactivateable;
+import org.kuali.rice.kns.bo.KualiCodeBase;
 
 /**
  * 
  */
-public class ProjectCode extends KualiCodeBase implements Inactivatable {
+public class ProjectCode extends KualiCodeBase implements Inactivateable {
 
     private static final long serialVersionUID = 4529316062843227897L;
 

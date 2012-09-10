@@ -4,18 +4,17 @@ package org.kuali.hr.time.overtime.daily.rule;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class DailyOvertimeRuleMaintenanceTest extends KPMETestCase{
+public class DailyOvertimeRuleMaintenanceTest extends TkTestCase{
 		
 	private static final String TEST_CODE="BL";		
 	private static String TEST_CODE_INVALID_DEPT_ID ="INVALID";
@@ -29,18 +28,18 @@ public class DailyOvertimeRuleMaintenanceTest extends KPMETestCase{
 		HtmlPage dailyOvertimeRuleLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.DAILY_OVERTIME_RULE_MAINT_URL);
 		dailyOvertimeRuleLookUp = HtmlUnitUtil.clickInputContainingText(dailyOvertimeRuleLookUp, "search");
 		HtmlUnitUtil.createTempFile(dailyOvertimeRuleLookUp);
-		Assert.assertTrue("Page contains test DailyOvertimeRule", dailyOvertimeRuleLookUp.asText().contains(TEST_CODE.toString()));		
+		assertTrue("Page contains test DailyOvertimeRule", dailyOvertimeRuleLookUp.asText().contains(TEST_CODE.toString()));		
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(dailyOvertimeRuleLookUp, "edit",dailyOvertimeRuleId.toString());		
-		Assert.assertTrue("Maintenance Page contains test DailyOvertimeRule",maintPage.asText().contains(TEST_CODE.toString()));		
+		assertTrue("Maintenance Page contains test DailyOvertimeRule",maintPage.asText().contains(TEST_CODE.toString()));		
 	}
 	
 	@Test
 	public void testDailyOvertimeRuleMaintForErrorMessages() throws Exception {
 		HtmlPage dailyOvertimeRuleLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.DAILY_OVERTIME_RULE_MAINT_URL);
 		dailyOvertimeRuleLookUp = HtmlUnitUtil.clickInputContainingText(dailyOvertimeRuleLookUp, "search");
-		Assert.assertTrue("Page contains test DailyOvertimeRule", dailyOvertimeRuleLookUp.asText().contains(TEST_CODE.toString()));		
+		assertTrue("Page contains test DailyOvertimeRule", dailyOvertimeRuleLookUp.asText().contains(TEST_CODE.toString()));		
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(dailyOvertimeRuleLookUp, "edit",dailyOvertimeRuleId.toString());		
-		Assert.assertTrue("Maintenance Page contains test DailyOvertimeRule",maintPage.asText().contains(TEST_CODE.toString()));
+		assertTrue("Maintenance Page contains test DailyOvertimeRule",maintPage.asText().contains(TEST_CODE.toString()));
 		
 		HtmlInput inputForDescription = HtmlUnitUtil.getInputContainingText(
 				maintPage, "* Document Description");
@@ -48,16 +47,16 @@ public class DailyOvertimeRuleMaintenanceTest extends KPMETestCase{
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");
 		System.out.println(resultantPageAfterEdit.asText());
-		Assert.assertTrue("Maintenance Page contains test deptErrormessage",
+		assertTrue("Maintenance Page contains test deptErrormessage",
 				resultantPageAfterEdit.asText().contains(
 						"The specified department '"
 								+ TEST_CODE_INVALID_DEPT_ID
 								+ "' does not exist."));
 		
-		// test Convert from EarnCodeGroup has overtime earn codes error
+		// test Convert from EarnGroup has overtime earn codes error
 		setFieldValue(resultantPageAfterEdit, "document.newMaintainableObject.fromEarnGroup", "OVT");
 		HtmlPage finalPage = HtmlUnitUtil.clickInputContainingText(resultantPageAfterEdit, "submit");
-		Assert.assertTrue("Maintenance Page should contains EarnCodeGroup has overtime earn code error",
+		assertTrue("Maintenance Page should contains EarnGroup has overtime earn code error",
 				finalPage.asText().contains("Earn Group 'OVT' has overtime earn codes."));
 		
 	}
@@ -79,13 +78,13 @@ public class DailyOvertimeRuleMaintenanceTest extends KPMETestCase{
 		dor.setFromEarnGroup("RGN");
 		dor.setEarnCode("OVT");
 		
-		KRADServiceLocator.getBusinessObjectService().save(dor);
+		KNSServiceLocator.getBusinessObjectService().save(dor);
 		dailyOvertimeRuleId = dor.getTkDailyOvertimeRuleId();
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		KRADServiceLocator.getBusinessObjectService().deleteMatching(DailyOvertimeRule.class, new HashMap());
+		KNSServiceLocator.getBusinessObjectService().deleteMatching(DailyOvertimeRule.class, new HashMap());
 		super.tearDown();
 	}
 }

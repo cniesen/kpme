@@ -1,36 +1,27 @@
 package org.kuali.hr.time.util;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.lm.LMConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
-import org.kuali.hr.lm.leavecode.LeaveCode;
-import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.hr.time.authorization.DepartmentalRule;
-import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.dept.earncode.DepartmentEarnCode;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroupDefinition;
+import org.kuali.hr.time.earngroup.EarnGroup;
+import org.kuali.hr.time.earngroup.EarnGroupDefinition;
 import org.kuali.hr.time.paytype.PayType;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.kfs.coa.businessobject.Chart;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+
+import java.sql.Date;
 
 /**
  * A few methods to assist with various validation tasks.
@@ -106,137 +97,7 @@ public class ValidationUtils {
 
 		return valid;
 	}
-	
-	public static boolean validateLeaveCode(String leaveCode, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			LeaveCode lc = TkServiceLocator.getLeaveCodeService().getLeaveCode(leaveCode, asOfDate);
-			valid = (lc != null);
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("leaveCode", leaveCode);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(LeaveCode.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		
-		return valid;
-	}
-	
-	public static boolean validateLeavePlan(String leavePlan, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			LeavePlan lp = TkServiceLocator.getLeavePlanService().getLeavePlan(leavePlan, asOfDate);
-			valid = (lp != null);
-		} else {
-			// chen, moved the code that access db to service and dao
-			valid = TkServiceLocator.getLeavePlanService().isValidLeavePlan(leavePlan);
-		}
-		
-		return valid;
-	}
 
-	public static boolean validateLeaveCode(String leaveCode, String principalId, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			List<LeaveCode> leaveCodes = TkServiceLocator.getLeaveCodeService().getLeaveCodes(principalId, asOfDate);
-			if(leaveCodes != null && !leaveCodes.isEmpty()) {
-				for(LeaveCode leaveCodeObj : leaveCodes) {
-					if(leaveCodeObj.getLeaveCode() != null) {
-						if(StringUtils.equals(leaveCodeObj.getLeaveCode().trim(), leaveCode.trim())){
-							valid = true;
-							break;
-						}
-					}
-				}
-			}
-//			valid = (leaveCodes != null);
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("leaveCode", leaveCode);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(LeaveCode.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		
-		return valid;
-	}
-	
-	public static boolean validateEarnCodeOfAccrualCategory(String earnCode, String accrualCategory, String principalId, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			if(validateAccCategory(accrualCategory, principalId, asOfDate)){
-				List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(principalId, asOfDate);
-				if(earnCodes != null && !earnCodes.isEmpty()) {
-					for(EarnCode earnCodeObj : earnCodes) {
-						if(earnCodeObj.getEarnCode() != null) {
-							if(StringUtils.equals(earnCodeObj.getEarnCode().trim(), earnCode.trim()) && StringUtils.equals(earnCodeObj.getAccrualCategory(), accrualCategory)){
-								valid = true;
-								break;
-							}
-						}
-					}
-				}
-			}
-//			valid = (leaveCodes != null);
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("earnCode", earnCode);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(EarnCode.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		
-		return valid;
-	}
-	
-	public static boolean validateAccCategory(String accrualCategory, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			AccrualCategory ac = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, asOfDate);
-			valid = (ac != null);
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("accrualCategory", accrualCategory);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(AccrualCategory.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		
-		return valid;
-	}
-	
-	public static boolean validateAccCategory(String accrualCategory, String principalId, Date asOfDate) {
-		boolean valid = false;
-		
-		if (asOfDate != null) {
-			AccrualCategory ac = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, asOfDate);
-			if(ac != null && ac.getLeavePlan() != null) {
-				// fetch leave plan users
-				if(principalId != null) {
-					PrincipalHRAttributes principalHRAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, asOfDate);
-					if(principalHRAttributes != null && principalHRAttributes.getLeavePlan() != null) {
-						valid = StringUtils.equals(ac.getLeavePlan().trim(), principalHRAttributes.getLeavePlan().trim());
-					}
-				} else {
-					valid = true;
-				}
-			} 
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("accrualCategory", accrualCategory);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(AccrualCategory.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		return valid;
-	}
-	
 	public static boolean validateLocation(String location, Date asOfDate) {
 		boolean valid = false;
 
@@ -255,10 +116,10 @@ public class ValidationUtils {
 		boolean valid = false;
 
 		if (asOfDate != null) {
-			PayType pt = TkServiceLocator.getPayTypeService().getPayType(payType, asOfDate);
+			PayType pt = TkServiceLocator.getPayTypeSerivce().getPayType(payType, asOfDate);
 			valid = (pt != null);
 		} else {
-			int count = TkServiceLocator.getPayTypeService().getPayTypeCount(payType);
+			int count = TkServiceLocator.getPayTypeSerivce().getPayTypeCount(payType);
 			valid = (count > 0);
 		}
 
@@ -322,7 +183,7 @@ public class ValidationUtils {
         boolean valid = false;
 
         if (!StringUtils.isEmpty(chart)) {
-            Object o = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Chart.class, chart);
+            Object o = KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Chart.class, chart);
             valid = (o instanceof Chart);
         }
 
@@ -381,7 +242,7 @@ public class ValidationUtils {
 	public static boolean validatePrincipalId(String principalId) {
 		boolean valid = false;
 		if (principalId != null) {
-			Person p = KimApiServiceLocator.getPersonService().getPerson(principalId);
+			Person p = KIMServiceLocator.getPersonService().getPerson(principalId);
 		    valid = (p != null);
 		}
 		return valid;
@@ -409,18 +270,18 @@ public class ValidationUtils {
 
     /**
      * No wildcarding is accounted for in this method.
-     * @param earnGroup EarnCodeGroup
+     * @param earnGroup EarnGroup
      * @param asOfDate Can be null, if we just want to look for the general case.
-     * @return True if the EarnCodeGroup is present / valid.
+     * @return True if the EarnGroup is present / valid.
      */
     public static boolean validateEarnGroup(String earnGroup, Date asOfDate) {
         boolean valid = false;
 
         if (earnGroup != null && asOfDate != null) {
-            EarnCodeGroup eg = TkServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(earnGroup, asOfDate);
+            EarnGroup eg = TkServiceLocator.getEarnGroupService().getEarnGroup(earnGroup, asOfDate);
             valid = (eg != null);
         } else if (earnGroup != null) {
-        	int count = TkServiceLocator.getEarnCodeGroupService().getEarnCodeGroupCount(earnGroup);
+        	int count = TkServiceLocator.getEarnGroupService().getEarnGroupCount(earnGroup);
             valid = (count > 0);
         }
 
@@ -428,15 +289,15 @@ public class ValidationUtils {
     }
     
     /**
-     * @param earnGroup EarnCodeGroup
+     * @param earnGroup EarnGroup
      * @param asOfDate
-     * @return True if the EarnCodeGroup has overtime earn codes
+     * @return True if the EarnGroup has overtime earn codes
      */
     public static boolean earnGroupHasOvertimeEarnCodes(String earnGroup, Date asOfDate) {
          if (earnGroup != null && asOfDate != null) {
-             EarnCodeGroup eg = TkServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(earnGroup, asOfDate);
+             EarnGroup eg = TkServiceLocator.getEarnGroupService().getEarnGroup(earnGroup, asOfDate);
              if(eg != null) {
-            	for(EarnCodeGroupDefinition egd : eg.getEarnCodeGroups()) {
+            	for(EarnGroupDefinition egd : eg.getEarnGroups()) {
             		if(egd.getEarnCode() != null) {
             			EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(egd.getEarnCode(), asOfDate);
             			if(ec != null && ec.getOvtEarnCode()) {
@@ -450,28 +311,26 @@ public class ValidationUtils {
         return false;
     }
 
-
 	/**
 	 * Checks for row presence of a pay calendar
 	 */
-	public static boolean validateCalendar(String calendarName) {
-		Map<String, String> fieldValues = new HashMap<String, String>();
-		fieldValues.put("calendarName", calendarName);
-		int matches = KRADServiceLocator.getBusinessObjectService().countMatching(Calendar.class, fieldValues);
-
-        return matches > 0;
+	public static boolean validatePayCalendar(String pyCalendarGroup) {
+		boolean valid = false;
+		int count = TkServiceLocator.getPayCalendarSerivce().getPyCalendarGroupCount(pyCalendarGroup);
+        valid = (count > 0);
+        return valid;
 	}
 
-   public static boolean duplicateDeptEarnCodeExists(EarnCodeSecurity deptEarnCode) {
+   public static boolean duplicateDeptEarnCodeExists(DepartmentEarnCode deptEarnCode) {
 	   boolean valid = false;
-	   int count = TkServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurityCount
-               (deptEarnCode.getDept(), deptEarnCode.getHrSalGroup(), deptEarnCode.getEarnCode(), deptEarnCode.isEmployee() ? "1" : "0",
-                       deptEarnCode.isApprover() ? "1" : "0", deptEarnCode.getLocation(), deptEarnCode.getActive() ? "Y" : "N", deptEarnCode.getEffectiveDate(), null);
+	   int count = TkServiceLocator.getDepartmentEarnCodeService().getDepartmentEarnCodeCount
+	   				(deptEarnCode.getDept(), deptEarnCode.getHrSalGroup(), deptEarnCode.getEarnCode(), deptEarnCode.isEmployee() ? "1" : "0", 
+	   				 deptEarnCode.isApprover()? "1" : "0", deptEarnCode.getLocation(), deptEarnCode.getActive() ? "Y" : "N", deptEarnCode.getEffectiveDate(), null);
        if(count == 1) {
     	   valid = true;
-    	   count = TkServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurityCount
-                   (deptEarnCode.getDept(), deptEarnCode.getHrSalGroup(), deptEarnCode.getEarnCode(), deptEarnCode.isEmployee() ? "1" : "0",
-                           deptEarnCode.isApprover() ? "1" : "0", deptEarnCode.getLocation(), deptEarnCode.getActive() ? "Y" : "N", deptEarnCode.getEffectiveDate(), deptEarnCode.getHrEarnCodeSecurityId());
+    	   count = TkServiceLocator.getDepartmentEarnCodeService().getDepartmentEarnCodeCount
+    	   			(deptEarnCode.getDept(), deptEarnCode.getHrSalGroup(), deptEarnCode.getEarnCode(), deptEarnCode.isEmployee() ? "1" : "0", 
+   					deptEarnCode.isApprover()? "1" : "0", deptEarnCode.getLocation(), deptEarnCode.getActive() ? "Y" : "N", deptEarnCode.getEffectiveDate(), deptEarnCode.getHrDeptEarnCodeId());
     	   if(count == 1) {
     		   valid = false;
     	   }
@@ -485,11 +344,11 @@ public class ValidationUtils {
    public static boolean duplicateTimeOffAccrual (TimeOffAccrual timeOffAccrual) {
 	   boolean valid = false;
 	   int count = TkServiceLocator.getTimeOffAccrualService().getTimeOffAccrualCount
-               (timeOffAccrual.getAccrualCategory(), timeOffAccrual.getEffectiveDate(), timeOffAccrual.getPrincipalId(), null);
+	   				(timeOffAccrual.getAccrualCategory(), timeOffAccrual.getEffectiveDate(), timeOffAccrual.getPrincipalId(), null);
 	   if(count == 1) {
     	   valid = true;
     	   count = TkServiceLocator.getTimeOffAccrualService().getTimeOffAccrualCount
-                   (timeOffAccrual.getAccrualCategory(), timeOffAccrual.getEffectiveDate(), timeOffAccrual.getPrincipalId(), timeOffAccrual.getLmAccrualId());
+  					(timeOffAccrual.getAccrualCategory(), timeOffAccrual.getEffectiveDate(), timeOffAccrual.getPrincipalId(), timeOffAccrual.getLmAccrualId());
     	   if(count == 1) {
     		   valid = false;
     	   }
@@ -499,91 +358,5 @@ public class ValidationUtils {
 	   return valid;
    }
 
-   /**
-    * Checks for date not more than one year in the future or current date
-    * 
-    */
 
-   public static boolean validateOneYearFutureDate(Date date){
-	   java.util.Calendar startDate = java.util.Calendar.getInstance();
-	   startDate.add(java.util.Calendar.DATE, -1);
-	   startDate.set(java.util.Calendar.SECOND, 0);
-	   startDate.set(java.util.Calendar.MINUTE, 0);
-	   startDate.set(java.util.Calendar.HOUR_OF_DAY, 0);
-	   java.util.Calendar endDate = java.util.Calendar.getInstance();
-	   endDate.add(java.util.Calendar.YEAR, 1); // One year after the current date
-	   return date.compareTo(startDate.getTime()) * date.compareTo(endDate.getTime()) <= 0;
-   }
-   
-   /**
-    * Checks for date not more than one year in the future and does not consider past date
-    * 
-    */
-
-   public static boolean validateOneYearFutureEffectiveDate(Date date){
-	   java.util.Calendar startDate = java.util.Calendar.getInstance();
-	   startDate.set(java.util.Calendar.MILLISECOND, 0);
-	   startDate.set(java.util.Calendar.SECOND, 0);
-	   startDate.set(java.util.Calendar.MINUTE, 0);
-	   startDate.set(java.util.Calendar.HOUR_OF_DAY, 0);
-	   startDate.add(java.util.Calendar.YEAR, 1); // One year after the current date
-	   return date.compareTo(startDate.getTime()) <= 0;
-   }
-   
-   /**
-    * Checks for date in the future
-    * 
-    */
-   
-   public static boolean validateFutureDate(Date date){
-	   java.util.Calendar startDate = java.util.Calendar.getInstance();
-	   startDate.add(java.util.Calendar.DATE, 0);
-	   startDate.set(java.util.Calendar.SECOND, 0);
-	   startDate.set(java.util.Calendar.MINUTE, 0);
-	   startDate.set(java.util.Calendar.HOUR_OF_DAY, 0);
-	   return date.compareTo(startDate.getTime()) > 0;
-   }
-
-	/**
-	 * Checks for row presence of a pay calendar by calendar type
-	 */
-	public static boolean validateCalendarByType(String calendarName, String calendarType) {
-		Map<String, String> fieldValues = new HashMap<String, String>();
-		fieldValues.put("calendarName", calendarName);
-		fieldValues.put("calendarTypes", calendarType);
-		int matches = KRADServiceLocator.getBusinessObjectService().countMatching(Calendar.class, fieldValues);
-		
-		return matches > 0;
-	}
-	
-	public static boolean validateRecordMethod(String recordMethod, String accrualCategory, Date asOfDate) {
-		boolean valid = false;
-		if (asOfDate != null) {
-			AccrualCategory ac = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, asOfDate);
-			if (ac != null
-                    && ac.getUnitOfTime() != null) {
-                if (LMConstants.RECORD_METHOD.HOUR.equals(ac.getUnitOfTime())
-                        && (LMConstants.RECORD_METHOD.HOUR.equals(recordMethod))
-                            || LMConstants.RECORD_METHOD.TIME.equals(recordMethod)) {
-                    valid = true;
-                } else {
-                    valid = StringUtils.equalsIgnoreCase(ac.getUnitOfTime(), recordMethod);
-                }
-
-            }
-		}
-		return valid;
-	}
-	
-	public static boolean validateEarnCodeFraction(String earnCode, BigDecimal amount, Date asOfDate) {
-		boolean valid = true;
-		 EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
-		 if(ec != null && ec.getFractionalTimeAllowed() != null) {
-			 BigDecimal fracAllowed = new BigDecimal(ec.getFractionalTimeAllowed());
-			 if(amount.scale() > fracAllowed.scale()) {
-				 valid = false;
-			 }
-		 }
-		return valid;
-	}
 }

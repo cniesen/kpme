@@ -14,7 +14,7 @@
   		p:businessObjectClass="org.kuali.hr.job.Job"
   		p:businessRulesClass="org.kuali.hr.job.validation.JobValidation"
   		p:maintainableClass="org.kuali.hr.job.service.JobMaintainableImpl"
-  		p:documentAuthorizerClass="org.kuali.hr.time.authorization.DepartmentAdminAuthorizer">
+  		p:documentAuthorizerClass="org.kuali.hr.time.authorization.SystemAdminAuthorizer">
     <property name="maintainableSections">
       <list>
         <ref bean="JobMaintenanceDocument-JobMaintenance"/>
@@ -43,10 +43,7 @@
         <bean parent="MaintainableFieldDefinition" p:name="payGrade" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="compRate" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="standardHours" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="fte" p:unconditionallyReadOnly="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="eligibleForLeave" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="primaryIndicator" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="flsaStatus" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="active" p:defaultValue="true" p:required="true"/>
       </list>
     </property>

@@ -10,9 +10,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.kuali.hr.time.base.web.TkCommonCalendarForm;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.roles.TkUserRoles;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 
 public class TimeApprovalActionForm extends TkCommonCalendarForm {
 
@@ -37,7 +37,7 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     private String roleName;
 
 	private List<String> payCalendarLabels = new ArrayList<String>();
-    private CalendarEntries payCalendarEntries;
+    private PayCalendarEntries payCalendarEntries;
 
 	private List<ApprovalTimeSummaryRow> approvalRows;
     private Long workArea = null;
@@ -50,9 +50,6 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     
     private Map<Long,String> workAreaDescr = new HashMap<Long,String>();
 
-    private String selectedApprovalType;
-    private List<ApprovalLeaveSummaryRow> leaveApprovalRows;
-	private List<String> leaveCalendarLabels = new ArrayList<String>();
 
 
 	/**
@@ -149,11 +146,11 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
         return payCalendarLabels;
     }
 
-    public CalendarEntries getPayCalendarEntries() {
+    public PayCalendarEntries getPayCalendarEntries() {
 		return payCalendarEntries;
 	}
 
-	public void setPayCalendarEntries(CalendarEntries payCalendarEntries) {
+	public void setPayCalendarEntries(PayCalendarEntries payCalendarEntries) {
 		this.payCalendarEntries = payCalendarEntries;
 	}
 
@@ -252,7 +249,8 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
      * @return A Set of Longs representing work areas.
      */
     public Set<Long> getApproverWorkAreas() {
-        return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+        TKUser tkUser = TKContext.getUser();
+        return tkUser.getCurrentRoles().getApproverWorkAreas();
     }
 
     public Long getWorkArea() {
@@ -389,30 +387,6 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
 
 	public void setWorkAreaDescr(Map<Long,String> workAreaDescr) {
 		this.workAreaDescr = workAreaDescr;
-	}
-
-	public List<ApprovalLeaveSummaryRow> getLeaveApprovalRows() {
-		return leaveApprovalRows;
-	}
-
-	public void setLeaveApprovalRows(List<ApprovalLeaveSummaryRow> leaveApprovalRows) {
-		this.leaveApprovalRows = leaveApprovalRows;
-	}
-
-	public List<String> getLeaveCalendarLabels() {
-		return leaveCalendarLabels;
-	}
-
-	public void setLeaveCalendarLabels(List<String> leaveCalendarLabels) {
-		this.leaveCalendarLabels = leaveCalendarLabels;
-	}
-
-	public String getSelectedApprovalType() {
-		return selectedApprovalType;
-	}
-
-	public void setSelectedApprovalType(String selectedApprovalType) {
-		this.selectedApprovalType = selectedApprovalType;
 	}
 
 }

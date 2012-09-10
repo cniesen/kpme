@@ -1,10 +1,10 @@
 package org.kuali.hr.time.assignment;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.util.TkConstants;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AssignmentDescriptionKey {
 	private static final Logger LOG = Logger.getLogger(AssignmentDescriptionKey.class);
@@ -43,7 +43,7 @@ public class AssignmentDescriptionKey {
 		Pattern keyPattern = Pattern.compile("^\\d{1,}_\\d{1,}_\\d{1,}");
 		Matcher match = keyPattern.matcher(assignmentKey);
 		if(!match.matches()) {
-			throw new RuntimeException("the format of the assignment key is wrong. it should be jobNumber_workArea_task");
+			throw new RuntimeException("the format of the assignment key is wrong. it should be jobNubmer_workArea_task");
 		}
 
 		String[] key = assignmentKey.split(TkConstants.ASSIGNMENT_KEY_DELIMITER);

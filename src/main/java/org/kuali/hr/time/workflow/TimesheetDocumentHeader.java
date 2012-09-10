@@ -1,8 +1,9 @@
 package org.kuali.hr.time.workflow;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 
@@ -81,6 +82,12 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 
 	public void setPayBeginDate(Date payBeginDate) {
 		this.payBeginDate = payBeginDate;
+	}
+
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

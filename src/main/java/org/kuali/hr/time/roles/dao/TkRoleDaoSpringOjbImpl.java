@@ -1,11 +1,5 @@
 package org.kuali.hr.time.roles.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -17,10 +11,15 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TkRoleDao {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class TkRoleDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements TkRoleDao {
 
     public List<TkRole> findAllRoles(String principalId, Date asOfDate) {
         return findRoles(principalId, asOfDate, null, null, null, null);
@@ -159,14 +158,32 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addLessOrEqualThan("effectiveDate", asOfDate);
 
         // EFFECTIVE DATE --
-        if (workArea != null || StringUtils.isNotEmpty(department) || StringUtils.isNotEmpty(chart)) {
-            if (workArea != null)
-                effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-            if (department != null)
-                effdt.addEqualToField("department", Criteria.PARENT_QUERY_PREFIX + "department");
-            if (chart != null)
-                effdt.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart");
-        }
+
+        // Adding criteria to nest an AND that has multiple ORs to select
+        // the correct ID / date combination.
+        Criteria orWrapperEd = new Criteria();
+        Criteria nstWaEd = new Criteria();
+        Criteria nstDptEd = new Criteria();
+        Criteria nstChrEd = new Criteria();
+
+        // Inner AND to allow for all null chart/dept/work area
+        Criteria nullAndWrapper = new Criteria();
+        nullAndWrapper.addIsNull("workArea");
+        nullAndWrapper.addIsNull("department");
+        nullAndWrapper.addIsNull("chart");
+
+        nstWaEd.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea"); // OR
+        nstDptEd.addEqualToField("department", Criteria.PARENT_QUERY_PREFIX + "department"); // OR
+        nstChrEd.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart"); // OR
+        orWrapperEd.addOrCriteria(nstWaEd);
+        orWrapperEd.addOrCriteria(nstDptEd);
+        orWrapperEd.addOrCriteria(nstChrEd);
+
+        // Inner AND to allow for all null chart/dept/work area
+        orWrapperEd.addOrCriteria(nullAndWrapper);
+
+        // Add the inner OR criteria to effective date
+        effdt.addAndCriteria(orWrapperEd);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
         effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
@@ -179,14 +196,31 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
         timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
 
-        if (workArea != null || StringUtils.isNotEmpty(department) || StringUtils.isNotEmpty(chart)) {
-            if (workArea != null)
-                timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-            if (department != null)
-                timestamp.addEqualToField("department", Criteria.PARENT_QUERY_PREFIX + "department");
-            if (chart != null)
-                timestamp.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart");
-        }
+        // Adding criteria to nest an AND that has multiple ORs to select
+        // the correct ID / date combination.
+        orWrapperEd = new Criteria();
+        nstWaEd = new Criteria();
+        nstDptEd = new Criteria();
+        nstChrEd = new Criteria();
+
+        // Inner AND to allow for all null chart/dept/work area
+        nullAndWrapper = new Criteria();
+        nullAndWrapper.addIsNull("workArea");
+        nullAndWrapper.addIsNull("department");
+        nullAndWrapper.addIsNull("chart");
+
+        nstWaEd.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea"); // OR
+        nstDptEd.addEqualToField("department", Criteria.PARENT_QUERY_PREFIX + "department"); // OR
+        nstChrEd.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart"); // OR
+        orWrapperEd.addOrCriteria(nstWaEd);
+        orWrapperEd.addOrCriteria(nstDptEd);
+        orWrapperEd.addOrCriteria(nstChrEd);
+
+        // Inner AND to allow for all null chart/dept/work area
+        orWrapperEd.addOrCriteria(nullAndWrapper);
+
+        // Add the inner OR criteria to effective date
+        timestamp.addAndCriteria(orWrapperEd);
 
         timestampSubQuery = QueryFactory.newReportQuery(TkRole.class, timestamp);
         timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
@@ -197,39 +231,33 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         root.addEqualTo("timestamp", timestampSubQuery);
 
         // Optional ROOT criteria added :
-        if (workArea != null) {
+        if (workArea != null)
             root.addEqualTo("workArea", workArea);
-        }
-
         if (StringUtils.isNotEmpty(department)) {
             departmentCriteria.addEqualTo("department", department);
             Collection<WorkArea> collectionWorkAreas = TkServiceLocator.getWorkAreaService().getWorkAreas(department, asOfDate);
-            if (CollectionUtils.isNotEmpty(collectionWorkAreas)) {
-                List<Long> longWorkAreas = new ArrayList<Long>();
-                for(WorkArea cwa : collectionWorkAreas){
-                    longWorkAreas.add(cwa.getWorkArea());
-                }
-                workAreaCriteria.addIn("workArea", longWorkAreas);
-                departmentCriteria.addOrCriteria(workAreaCriteria);
+            List<Long> longWorkAreas = new ArrayList<Long>();
+            for(WorkArea cwa : collectionWorkAreas){
+                longWorkAreas.add(cwa.getWorkArea());
             }
+            workAreaCriteria.addIn("workArea", longWorkAreas);
+            departmentCriteria.addOrCriteria(workAreaCriteria);
             root.addAndCriteria(departmentCriteria);
         }
-        if (StringUtils.isNotEmpty(chart)) {
+        if (StringUtils.isNotEmpty(chart))
             root.addEqualTo("chart", chart);
-        }
-        if (StringUtils.isNotEmpty(roleName)) {
+        if (StringUtils.isNotEmpty(roleName))
             root.addEqualTo("roleName", roleName);
-        }
-        if (StringUtils.isNotEmpty(principalId)) {
+        if (StringUtils.isNotEmpty(principalId))
             root.addEqualTo("principalId", principalId);
-        }
 
         // Filter for ACTIVE = 'Y'
-        root.addEqualTo("active", true);
+        Criteria activeFilter = new Criteria();
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
 
         Query query = QueryFactory.newQuery(TkRole.class, root);
         // limit the number of the resultset
-        // TODO: hard coding the limits?  probably not the most user friendly of ways to do this
         query.setStartAtIndex(0);
         query.setEndAtIndex(299);
         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
@@ -240,7 +268,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
 
         if (StringUtils.isNotBlank(principalId)) {
             //Fetch all the jobs and grab any position roles for this persons jobs
-            List<Job> lstActiveJobs = TkServiceLocator.getJobService().getJobs(principalId, asOfDate);
+            List<Job> lstActiveJobs = TkServiceLocator.getJobSerivce().getJobs(principalId, asOfDate);
             for (Job job : lstActiveJobs) {
                 if (job.getPositionNumber() != null) {
                     List<TkRole> lstRoles = findPositionRoles(job.getPositionNumber(),
@@ -374,7 +402,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
 
     @Override
     public void saveOrUpdateRole(TkRole role) {
-        KRADServiceLocator.getBusinessObjectService().save(role);
+        KNSServiceLocator.getBusinessObjectService().save(role);
     }
 
     @Override

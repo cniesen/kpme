@@ -1,9 +1,9 @@
 package org.kuali.hr.time.shiftdiff.rule.service;
 
 import org.junit.Ignore;
-import org.kuali.hr.test.KPMETestCase;
+import org.kuali.hr.time.test.TkTestCase;
 @Ignore
-public class ShiftDifferentialRuleServiceTest extends KPMETestCase {
+public class ShiftDifferentialRuleServiceTest extends TkTestCase {
 
 	public static final String USER_PRINCIPAL_ID = "admin";
 	

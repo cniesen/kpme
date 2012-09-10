@@ -1,14 +1,14 @@
 package org.kuali.hr.time.holidaycalendar.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
-import org.kuali.rice.krad.bo.BusinessObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HolidayCalendarLookupableHelper extends
 		KualiLookupableHelperServiceImpl {
@@ -28,7 +28,7 @@ public class HolidayCalendarLookupableHelper extends
 				overrideUrls.add(actionUrl);
 			}
 		}
-		if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
+		if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
 			HolidayCalendar holidayCalendar = (HolidayCalendar) businessObject;
 			final String className = this.getBusinessObjectClass().getName();
 			final String hrHolidayCalendarId = holidayCalendar

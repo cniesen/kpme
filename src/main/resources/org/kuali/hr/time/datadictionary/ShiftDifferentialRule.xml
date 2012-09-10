@@ -76,7 +76,7 @@
 					<property name="primitiveAttributes">
 						<list>
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="fromEarnGroup"
-								p:targetName="earnCodeGroup" />
+								p:targetName="earnGroup" />
 						</list>
 					</property>
 				</bean>
@@ -86,7 +86,7 @@
 					<property name="primitiveAttributes">
 						<list>
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="pyCalendarGroup"
-								p:targetName="calendarName" />
+								p:targetName="pyCalendarGroup" />
 						</list>
 					</property>
 				</bean>
@@ -200,7 +200,7 @@
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
 		</property>
-		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
 		<property name="name" value="effectiveDate" />
 		<property name="label" value="Effective Date" />
 	</bean>
@@ -211,14 +211,14 @@
 	<bean id="ShiftDifferentialRule-earnCode-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Earn Code" />
-		<property name="maxLength" value="15" />
+		<property name="maxLength" value="3" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="15" />
+			<bean parent="TextControlDefinition" p:size="3" />
 		</property>
 		<property name="name" value="earnCode" />
 		<property name="label" value="Earn Code" />
@@ -415,7 +415,7 @@
 			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
 		</property>
 		<property name="formatterClass"
-			value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+			value="org.kuali.rice.kns.web.format.TimestampAMPMFormatter" />
 		<property name="name" value="timestamp" />
 		<property name="label" value="Time Stamp" />
 	</bean>
@@ -430,7 +430,7 @@
 		<property name="name" value="active" />
 		<property name="label" value="Active" />
 		<property name="formatterClass"
-			value="org.kuali.rice.core.web.format.BooleanFormatter" />
+			value="org.kuali.rice.kns.web.format.BooleanFormatter" />
 	</bean>
 
 	<!-- pyCalendarGroup -->

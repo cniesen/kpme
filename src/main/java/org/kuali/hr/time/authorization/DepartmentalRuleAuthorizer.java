@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.kns.bo.BusinessObject;
 
 /**
  * Implements Authorization logic for the "Departmental Rules":
@@ -51,17 +51,18 @@ public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerB
 
     public static boolean hasAccessToWrite(DepartmentalRule dr) {
         boolean ret = false;
-        if (TKContext.getUser().isSystemAdmin())
+        UserRoles roles = TKContext.getUser().getCurrentRoles();
+        if (roles.isSystemAdmin())
             return true;
 
-        if (dr != null && TKContext.getUser().getDepartmentAdminAreas().size() > 0) {
+        if (dr != null && roles.getOrgAdminDepartments().size() > 0) {
             String dept = dr.getDept();
             if (StringUtils.equals(dept, TkConstants.WILDCARD_CHARACTER)) {
                 // Must be system administrator
                 ret = false;
             } else {
                 // Must have parent Department
-                ret = TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
+                ret = roles.getOrgAdminDepartments().contains(dr.getDept());
             }
         }
 
@@ -78,7 +79,8 @@ public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerB
      */
     public static boolean hasAccessToRead(DepartmentalRule dr) {
         boolean ret = false;
-        if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly())
+        UserRoles roles = TKContext.getUser().getCurrentRoles();
+        if (roles.isSystemAdmin() || roles.isGlobalViewOnly())
             return true;
 
         if (dr != null) {
@@ -95,18 +97,18 @@ public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerB
             if (StringUtils.equals(dr.getDept(), TkConstants.WILDCARD_CHARACTER) &&
                     dr.getWorkArea().equals(TkConstants.WILDCARD_LONG)) {
                 // case 1
-                ret = TKContext.getUser().getApproverWorkAreas().size() > 0 || TKContext.getUser().getLocationAdminAreas().size() > 0 ||
-                		TKContext.getUser().getDepartmentAdminAreas().size() > 0;
+                ret = roles.getApproverWorkAreas().size() > 0 || roles.getOrgAdminCharts().size() > 0 ||
+                        roles.getOrgAdminDepartments().size() > 0;
             } else if (StringUtils.equals(dr.getDept(), TkConstants.WILDCARD_CHARACTER)) {
                 // case 2 *
                 // Should not encounter this case.
                 LOG.error("Invalid case encountered while scanning business objects: Wildcard Department & Defined workArea.");
             } else if (dr.getWorkArea().equals(TkConstants.WILDCARD_LONG)) {
                 // case 3
-                ret = TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
+                ret = roles.getOrgAdminDepartments().contains(dr.getDept());
             } else {
-                ret = TKContext.getUser().getApproverWorkAreas().contains(dr.getWorkArea()) ||
-                		TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
+                ret = roles.getApproverWorkAreas().contains(dr.getWorkArea()) ||
+                    roles.getOrgAdminDepartments().contains(dr.getDept());
             }
         }
 

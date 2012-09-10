@@ -56,19 +56,13 @@ var CONSTANTS = {
         OVERTIME : "OVT"
     },
     EARNCODE_TYPE : {
-        HOUR: "H",
-        TIME: "T",
-        AMOUNT: "A"
-    },
-    EARNCODE_UNIT: {
-    	HOUR: "H",
-    	DAY: "D"
+        HOUR: "HOUR",
+        TIME: "TIME",
+        AMOUNT: "AMOUNT"
     },
     ACTIONS : {
         UPDATE_TIME_BLOCK : "updateTimeBlock",
-        ADD_TIME_BLOCK: "addTimeBlock",
-        ADD_LEAVE_BLOCK: "addLeaveBlock",
-        UPDATE_LEAVE_BLOCK: "updateLeaveBlock"
+        ADD_TIME_BLOCK: "addTimeBlock"
     },
     TIME_FORMAT : {
         DATE_FOR_OUTPUT : 'M/d/yyyy',
@@ -147,51 +141,7 @@ $(document).ready(function() {
     $('#nav_next').click(function() {
         window.location = 'TimeDetail.do?documentId=' + nextDocId;
     });
-    
- // create navigation buttons for leave calendar
-    var calId = $('#calEntryId').val();
-    var prevCalId = $('#prevCalEntryId').val();
-    var nextCalId = $('#nextCalEntryId').val();
-    
-    $('#nav_prev_lc').button({
-        icons: {
-            primary: "ui-icon-circle-triangle-w"
-        },
-        text: false
-    });
 
-    $('#nav_prev_lc').click(function() {
-        window.location = 'LeaveCalendar.do?documentId=' + prevDocId+'&calEntryId='+prevCalId;
-    });
-
-    $('#nav_next_lc').button({
-        icons: {
-            primary: "ui-icon-circle-triangle-e"
-        },
-        text: false
-    });
-
-    $('#nav_next_lc').click(function() {
-        window.location = 'LeaveCalendar.do?documentId=' + nextDocId+'&calEntryId='+nextCalId;
-    });
-    
-    // create navigation buttons for leave block display
-    $('#nav_lb_prev').button({
-        icons: {
-            primary: "ui-icon-circle-triangle-w"
-        },
-        text: false
-    });
-
-
-    $('#nav_lb_next').button({
-        icons: {
-            primary: "ui-icon-circle-triangle-e"
-        },
-        text: false
-    });
-
-   
 
     // datepicker
     $('#startDate, #endDate, #bdRow1, #edRow1, #bdRow2, #edRow2').datepicker({
@@ -210,10 +160,7 @@ $(document).ready(function() {
         minDate : new Date($('#beginPeriodDate').val()),
         maxDate : new Date($('#endPeriodDate').val())
     });
-    
-    //KPME-1542
-    $("#startdatepicker, #enddatepicker").datepicker();
-    
+
     // hide the date picker by default
     // https://jira.kuali.org/browse/KPME-395
     $('#ui-datepicker-div').css('display', 'none');
@@ -517,7 +464,7 @@ $(document).ready(function() {
         var ipToChange = value[0];
         var tkBatchJobEntryId = value[1];
 
-        window.location = "batchJob.do?methodToCall=changeIpAddress&ipToChange=" + ipToChange + "&tkBatchJobEntryId=" + tkBatchJobEntryId;
+        window.location = "BatchJob.do?methodToCall=changeIpAddress&ipToChange=" + ipToChange + "&tkBatchJobEntryId=" + tkBatchJobEntryId;
     });
 
 
@@ -533,43 +480,6 @@ $(document).ready(function() {
             primary: "ui-icon-circle-triangle-e"
         },
         text: false
-    });
-    
-    // Leave Request page accordions
-    
-    // Planned Request
-    $("#leave-planned-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Pending Request
-    $("#leave-pending-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Approved Request
-    $("#leave-approved-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Disapproved Request
-    $("#leave-disapproved-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-    
-    // Leave Block Display
-    $("#leave-block-display-accordion").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
     });
 
 });

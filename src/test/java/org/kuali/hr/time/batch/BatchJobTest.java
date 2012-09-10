@@ -1,14 +1,13 @@
 package org.kuali.hr.time.batch;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.batch.service.BatchJobService;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.util.TkConstants;
 
-public class BatchJobTest extends KPMETestCase {
+public class BatchJobTest extends TkTestCase {
 
 	private static final String BATCH_JOB_NAME = "testJob";
 	private Long ibjId;
@@ -35,6 +34,6 @@ public class BatchJobTest extends KPMETestCase {
 	public void testSavingAndRetrievingBatchJob() throws Exception {
 		creatAndSaveBatchJob();
 		BatchJob bj = (BatchJob) bjService.getBatchJob(ibjId);
-		Assert.assertTrue("Batch Job Name not right", bj.getBatchJobName().equals(BATCH_JOB_NAME));
+		assertTrue("Batch Job Name not right", bj.getBatchJobName().equals(BATCH_JOB_NAME));
 	}
 }

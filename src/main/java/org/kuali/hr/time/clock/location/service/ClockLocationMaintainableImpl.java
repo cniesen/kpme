@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.clock.location.ClockLocationRuleIpAddress;
@@ -12,9 +11,9 @@ import org.kuali.hr.time.clock.location.validation.ClockLocationRuleRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
 import org.kuali.rice.kns.document.MaintenanceDocument;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
-import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.kns.util.GlobalVariables;
+import org.kuali.rice.kns.util.KNSConstants;
 
 /**
  * 
@@ -77,7 +76,7 @@ public class ClockLocationMaintainableImpl extends HrBusinessObjectMaintainableI
         if (collectionName.equals("ipAddresses")) {
         	ClockLocationRuleIpAddress anIP = (ClockLocationRuleIpAddress)newCollectionLines.get(collectionName );
     		if(!ClockLocationRuleRule.validateIpAddress(anIP.getIpAddress())) {
-    			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"ipAddresses", 
+    			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KNSConstants.MAINTENANCE_NEW_MAINTAINABLE +"ipAddresses", 
         				"ipaddress.invalid.format",anIP.getIpAddress());
         		return;
     		}
@@ -93,9 +92,8 @@ public class ClockLocationMaintainableImpl extends HrBusinessObjectMaintainableI
 		if(!ips.isEmpty()) {
 			for(ClockLocationRuleIpAddress ipAddress : ips) {
 				ipAddress.setTkClockLocationRuleId(clr.getTkClockLocationRuleId());
-				KRADServiceLocator.getBusinessObjectService().save(ipAddress);
+				KNSServiceLocator.getBusinessObjectService().save(ipAddress);
 			}
-            CacheUtils.flushCache(ClockLocationRule.CACHE_NAME);
 		}
 		
 	}

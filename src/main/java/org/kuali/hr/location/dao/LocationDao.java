@@ -1,8 +1,8 @@
 package org.kuali.hr.location.dao;
 
-import org.kuali.hr.location.Location;
-
 import java.sql.Date;
+
+import org.kuali.hr.location.Location;
 
 public interface LocationDao {
 	/**

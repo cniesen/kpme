@@ -1,14 +1,13 @@
 package org.kuali.hr.time.user.pref;
 
-import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.time.util.TKUtils;
+import java.util.LinkedHashMap;
+
+import org.codehaus.plexus.util.StringUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 public class UserPreferences extends PersistableBusinessObjectBase {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "UserPreferences";
-    /**
+	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
@@ -28,9 +27,15 @@ public class UserPreferences extends PersistableBusinessObjectBase {
 
 	public String getTimezone() {
         if (StringUtils.isEmpty(timezone))
-            return TKUtils.getSystemTimeZone();
+            return TkConstants.SYSTEM_TIME_ZONE;
 
 		return timezone;
+	}
+
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	public String getPrincipalId() {

@@ -98,14 +98,14 @@
 	<bean id="PayType-regEarnCode-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Earn Code" />
-		<property name="maxLength" value="15" />
+		<property name="maxLength" value="3" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="15" />
+			<bean parent="TextControlDefinition" p:size="3" />
 		</property>
 		<property name="name" value="regEarnCode" />
 		<property name="label" value="Regular Earn Code" />
@@ -122,7 +122,7 @@
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
 		</property>
-		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="formatterClass" value="org.kuali.rice.kns.web.format.DateFormatter" />
 		<property name="name" value="effectiveDate" />
 		<property name="label" value="Effective Date" />
 	</bean>

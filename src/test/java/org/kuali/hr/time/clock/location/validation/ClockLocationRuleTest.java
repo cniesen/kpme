@@ -9,23 +9,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.clock.location.ClockLocationRuleIpAddress;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.rice.krad.service.BusinessObjectService;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.rice.kns.service.BusinessObjectService;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 /**
  * A really basic unit test testing persistence and searching over persisted business objects.
  */
-public class ClockLocationRuleTest extends KPMETestCase {
+public class ClockLocationRuleTest extends TkTestCase {
 
     private static final Logger LOG = Logger.getLogger(ClockLocationRuleTest.class);
 
@@ -37,7 +36,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-    	boService = KRADServiceLocator.getBusinessObjectService();
+    	boService = KNSServiceLocator.getBusinessObjectService();
     	clearBusinessObjects(ClockLocationRule.class);
     }
 
@@ -90,9 +89,9 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	aList.add(anIp);
     	clr.setIpAddresses(aList);
     	    	
-    	Assert.assertNull("Should not have ObjectId before persist.", clr.getObjectId());
+    	assertNull("Should not have ObjectId before persist.", clr.getObjectId());
     	boService.save(clr);
-    	Assert.assertNotNull("Should have ObjectId after persist.", clr.getObjectId());
+    	assertNotNull("Should have ObjectId after persist.", clr.getObjectId());
     	
     	for(ClockLocationRuleIpAddress ip : clr.getIpAddresses()) {
     		ip.setTkClockLocationRuleId(clr.getTkClockLocationRuleId());
@@ -100,13 +99,13 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	}
 
     	Collection<ClockLocationRule> collection = boService.findAll(ClockLocationRule.class);
-    	Assert.assertEquals("One entry should be in list.", 1, collection.size());
+    	assertEquals("One entry should be in list.", 1, collection.size());
     	
     	for (ClockLocationRule crule : collection) {
     		// There is only one
     		TkServiceLocator.getClockLocationRuleService().populateIPAddressesForCLR(crule);
-    		Assert.assertEquals(crule.getIpAddresses().size(), 1);
-    		Assert.assertEquals(crule.getIpAddresses().get(0).getIpAddress(), IP_ADDRESS_ONE);
+    		assertEquals(crule.getIpAddresses().size(), 1);
+    		assertEquals(crule.getIpAddresses().get(0).getIpAddress(), IP_ADDRESS_ONE);
     	}
     }
 
@@ -123,12 +122,12 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	clr = this.createClr(IP_ADDRESS_TWO,1234L, "1234", 0L);
     	
     	LOG.info("ID:"  + clr.getTkClockLocationRuleId() + " oID: "  + clr.getObjectId());
-    	Assert.assertEquals("Should have two records saved", 2, boService.findAll(ClockLocationRule.class).size());
+    	assertEquals("Should have two records saved", 2, boService.findAll(ClockLocationRule.class).size());
     	Map<String, Object> matchMap = new HashMap<String, Object>();
 		matchMap = new HashMap<String, Object>();
 		matchMap.put("dept", "TEST");
 		Collection<ClockLocationRule> found = boService.findMatching(ClockLocationRule.class, matchMap);
-		Assert.assertEquals(2, found.size());
+		assertEquals(2, found.size());
 
     }
     
@@ -138,13 +137,13 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	List<ClockLocationRule> clockLocationRule = TkServiceLocator.getClockLocationRuleService().getClockLocationRule("TEST", 1234L, 
     											"12345", 0L, new Date(System.currentTimeMillis()));
     	
-    	Assert.assertTrue("Clock Location Rule pulled back correctly",clockLocationRule.size()==1);
+    	assertTrue("Clock Location Rule pulled back correctly",clockLocationRule.size()==1);
     	boService.delete(clr);
     	clr = this.createClr(IP_ADDRESS_ONE, -1L, "%", -1L);
     	
     	clockLocationRule = TkServiceLocator.getClockLocationRuleService().getClockLocationRule("TEST", 1234L, 
 				"12345", 0L, new Date(System.currentTimeMillis()));
-    	Assert.assertTrue("Clock Location Rule pulled back correctly",clockLocationRule.size()==1);
+    	assertTrue("Clock Location Rule pulled back correctly",clockLocationRule.size()==1);
     }
     
     @Test
@@ -162,7 +161,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	
     	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, new Date(System.currentTimeMillis()));
     	
-    	Assert.assertTrue("clock location rule no error",GlobalVariables.getMessageMap().hasNoWarnings());
+    	assertTrue("clock location rule no error",GlobalVariables.getMessageMap().hasNoWarnings());
     	
     	boService.delete(clr);
     	
@@ -178,7 +177,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	
     	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, new Date(System.currentTimeMillis()));
     	
-    	Assert.assertTrue("clock location rule no error",GlobalVariables.getMessageMap().hasWarnings());
+    	assertTrue("clock location rule no error",GlobalVariables.getMessageMap().hasWarnings());
 
     }
     
@@ -206,15 +205,15 @@ public class ClockLocationRuleTest extends KPMETestCase {
     public void processRuleWithIPNoWarning(ClockLog clockLog, String ipAddress) {
     	ClockLocationRule clr = this.createClr(ipAddress, 1234L, "1234", 0L);
     	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, new Date(System.currentTimeMillis()));
-    	Assert.assertTrue("clock location rule no warning message",GlobalVariables.getMessageMap().hasNoWarnings());
+    	assertTrue("clock location rule no warning message",GlobalVariables.getMessageMap().hasNoWarnings());
     }
     
     public void processRuleWithIPWithWarning(ClockLog clockLog, String ipAddress) {
     	clearBusinessObjects(ClockLocationRule.class);
     	ClockLocationRule clr = this.createClr(ipAddress, 1234L, "12345", 0L);
     	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, new Date(System.currentTimeMillis()));
-    	Assert.assertFalse("clock location rule with warning message",GlobalVariables.getMessageMap().hasNoWarnings());
-    	Assert.assertTrue("clock location rule with 1 warning message",(GlobalVariables.getMessageMap().getWarningCount()== 1));
+    	assertFalse("clock location rule with warning message",GlobalVariables.getMessageMap().hasNoWarnings());
+    	assertTrue("clock location rule with 1 warning message",(GlobalVariables.getMessageMap().getWarningCount()== 1));
     }
 
     @SuppressWarnings("unchecked")

@@ -1,11 +1,13 @@
 package org.kuali.hr.time.graceperiod.service;
 
-import org.kuali.hr.time.graceperiod.dao.GracePeriodDao;
-import org.kuali.hr.time.graceperiod.rule.GracePeriodRule;
-
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
+
+import org.kuali.hr.time.cache.CacheResult;
+import org.kuali.hr.time.graceperiod.dao.GracePeriodDao;
+import org.kuali.hr.time.graceperiod.rule.GracePeriodRule;
+import org.kuali.hr.time.util.TkConstants;
 
 public class GracePeriodServiceImpl implements GracePeriodService {
 	private GracePeriodDao gracePeriodDao;
@@ -17,8 +19,8 @@ public class GracePeriodServiceImpl implements GracePeriodService {
 	public void setGracePeriodDao(GracePeriodDao gracePeriodDao) {
 		this.gracePeriodDao = gracePeriodDao;
 	}
-
-    @Override
+	
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public GracePeriodRule getGracePeriodRule(Date asOfDate){
 		return gracePeriodDao.getGracePeriodRule(asOfDate);
 	}
@@ -51,6 +53,7 @@ public class GracePeriodServiceImpl implements GracePeriodService {
 	}
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public GracePeriodRule getGracePeriodRule(String tkGracePeriodId) {
 		return gracePeriodDao.getGracePeriodRule(tkGracePeriodId);
 	}

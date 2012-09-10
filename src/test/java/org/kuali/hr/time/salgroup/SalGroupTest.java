@@ -1,14 +1,12 @@
 package org.kuali.hr.time.salgroup;
 
-import org.junit.Assert;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-public class SalGroupTest extends KPMETestCase {
+public class SalGroupTest extends TkTestCase {
 	
 	@Test
 	public void testSalGroupMaintenancePage() throws Exception{	
@@ -16,7 +14,7 @@ public class SalGroupTest extends KPMETestCase {
     	page = HtmlUnitUtil.clickInputContainingText(page, "search");
     	HtmlUnitUtil.createTempFile(page);
     	page = HtmlUnitUtil.clickAnchorContainingText(page, "edit","hrSalGroupId=10");
-    	Assert.assertTrue("Test that maintenance screen rendered", page.asText().contains("A10"));
+    	assertTrue("Test that maintenance screen rendered", page.asText().contains("A10"));
 	}
 	
 }

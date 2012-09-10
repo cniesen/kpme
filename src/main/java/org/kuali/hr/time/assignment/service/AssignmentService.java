@@ -1,11 +1,9 @@
 package org.kuali.hr.time.assignment.service;
 
-import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.sql.Date;
 import java.util.List;
@@ -18,7 +16,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
     public List<Assignment> getAssignments(String principalId, Date asOfDate);
     /**
      * Reverse lookup of an assignment based on the assignment key and the document
@@ -32,7 +29,6 @@ public interface AssignmentService {
      * @param tkAssignmentId
      * @return
      */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'tkAssignmentId=' + #p0")
     public Assignment getAssignment(String tkAssignmentId);
     /**
      * Get Assignment Description key based off of description
@@ -59,7 +55,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, Date asOfDate);
 
 	/**
@@ -69,7 +64,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'asOfDate=' + #p0")
 	public List<Assignment> getActiveAssignments(Date asOfDate);
 
 
@@ -96,7 +90,7 @@ public interface AssignmentService {
      * @param payCalendarEntry
      * @return
      */
-    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry);
+    public List<Assignment> getAssignmentsByPayEntry(String principalId, PayCalendarEntries payCalendarEntry);
     
     /**
 	 * KPME-1129 Kagata
@@ -106,22 +100,8 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'jobNumber=' + #p1 + '|' + 'asOfDate=' + #p2")
     public List<Assignment> getActiveAssignmentsForJob(String principalId, Long jobNumber, Date asOfDate);
 
     List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
                                     String dept, String workArea, String active, String showHistory);
-    
-    
-    /**
-     * Get all assignment descriptions for a document
-     * @param td
-     * @param clockOnlyAssignments
-     * @return
-     */
-    public Map<String,String> getAssignmentDescriptions(LeaveCalendarDocument lcd);
-    
-    public Assignment getAssignment(LeaveCalendarDocument leaveCalendarDocument, String assignmentKey);
-    
-    public Assignment getMaxTimestampAssignment(String principalId);
 }

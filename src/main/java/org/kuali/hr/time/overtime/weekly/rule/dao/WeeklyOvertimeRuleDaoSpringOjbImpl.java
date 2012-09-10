@@ -11,9 +11,10 @@ import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRule;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class WeeklyOvertimeRuleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements WeeklyOvertimeRuleDao {
+public class WeeklyOvertimeRuleDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements WeeklyOvertimeRuleDao {
 
 	@SuppressWarnings("unchecked")
 	@Override

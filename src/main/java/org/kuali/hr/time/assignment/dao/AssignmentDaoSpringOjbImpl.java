@@ -1,10 +1,5 @@
 package org.kuali.hr.time.assignment.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
@@ -14,9 +9,14 @@ import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements AssignmentDao {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class AssignmentDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements AssignmentDao {
 
     private static final Logger LOG = Logger.getLogger(AssignmentDaoSpringOjbImpl.class);
 
@@ -290,6 +290,7 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         Criteria effdt = new Criteria();
         Criteria timestamp = new Criteria();
 
+
         // subquery for effective date
         effdt.addLessOrEqualThan("effectiveDate", asOfDate);
         effdt.addEqualTo("principalId", principalId);
@@ -409,22 +410,6 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 
         }
         return results;
-    }
-    
-    @Override
-    public Assignment getMaxTimestampAssignment(String principalId) {
-    	Criteria root = new Criteria();
-        Criteria crit = new Criteria();
-        
-        crit.addEqualTo("principalId", principalId);
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Assignment.class, crit);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-
-        root.addEqualTo("principalId", principalId);
-        root.addEqualTo("timestamp", timestampSubQuery);
-
-        Query query = QueryFactory.newQuery(Assignment.class, root);
-        return (Assignment) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
 

@@ -1,10 +1,5 @@
 package org.kuali.hr.time.task.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -12,9 +7,14 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class TaskDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TaskDao {
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+public class TaskDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements TaskDao {
 
     @Override
     public Task getMaxTask() {

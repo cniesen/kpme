@@ -12,9 +12,9 @@ import org.kuali.hr.time.clock.location.ClockLocationRuleIpAddress;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 
@@ -95,7 +95,7 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 		if (clr.getJobNumber() == null) {
 			valid = false;
 		} else if (!clr.getJobNumber().equals(TkConstants.WILDCARD_LONG)) {
-			int count = TkServiceLocator.getJobService().getJobCount(clr.getPrincipalId(), clr.getJobNumber(),null);
+			int count = TkServiceLocator.getJobSerivce().getJobCount(clr.getPrincipalId(), clr.getJobNumber(),null);
 			valid = (count > 0);
 			if (!valid) {
 				this.putFieldError("jobNumber", "principalid.job.invalid.sync",
@@ -157,7 +157,7 @@ public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof ClockLocationRule) {
 			ClockLocationRule clr = (ClockLocationRule) pbo;
             valid = this.validateDepartment(clr);

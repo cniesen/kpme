@@ -1,27 +1,25 @@
 package org.kuali.hr.time.timeblock;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.junit.Test;
+import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.hr.time.test.TkTestUtils;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TkConstants;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.junit.Assert;
-import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
-import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.test.TkTestUtils;
-import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
+public class TimeBlockHistoryTest extends TkTestCase {
 
-public class TimeBlockHistoryTest extends KPMETestCase {
-
-    private static Date DEFAULT_EFFDT = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
-    Timestamp beginTimestamp = new Timestamp(new DateTime(2010, 1, 1, 8, 0, 0, 0, TKUtils.getSystemDateTimeZone()).getMillis());
-    Timestamp endTimestamp = new Timestamp(new DateTime(2010, 1, 1, 16, 0, 0, 0, TKUtils.getSystemDateTimeZone()).getMillis());
+    private static Date DEFAULT_EFFDT = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
+    Timestamp beginTimestamp = new Timestamp(new DateTime(2010, 1, 1, 8, 0, 0, 0, DateTimeZone.forID("EST")).getMillis());
+    Timestamp endTimestamp = new Timestamp(new DateTime(2010, 1, 1, 16, 0, 0, 0, DateTimeZone.forID("EST")).getMillis());
 
     @Test
     public void testTimeBlockHistory() throws Exception {
@@ -35,7 +33,7 @@ public class TimeBlockHistoryTest extends KPMETestCase {
         }
 
         for(TimeBlockHistory tbh : tbhs) {
-        	Assert.assertEquals(TkConstants.ACTIONS.ADD_TIME_BLOCK, tbh.getActionHistory());
+            assertEquals(TkConstants.ACTIONS.ADD_TIME_BLOCK, tbh.getActionHistory());
         }
     }
 }

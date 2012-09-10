@@ -2,12 +2,13 @@ package org.kuali.hr.time.overtime.weekly.rule.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
 import org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRule;
 import org.kuali.hr.time.overtime.weekly.rule.dao.WeeklyOvertimeRuleDao;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
@@ -49,8 +50,8 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 			 if (prevBlocks.size() > 0) {
 				TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(principalId, timesheetDocument.getDocumentHeader().getPayBeginDate());
 				if (prevTdh != null) {
-					CalendarEntries prevPayCalendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, prevTdh.getPayEndDate(), null);
-					TkTimeBlockAggregate prevTimeAggregate = new TkTimeBlockAggregate(prevBlocks, prevPayCalendarEntry, prevPayCalendarEntry.getCalendarObj(), true);
+					PayCalendarEntries prevPayCalendarEntry = TkServiceLocator.getPayCalendarSerivce().getPayCalendarDatesByPayEndDate(principalId, prevTdh.getPayEndDate());
+					TkTimeBlockAggregate prevTimeAggregate = new TkTimeBlockAggregate(prevBlocks, prevPayCalendarEntry, prevPayCalendarEntry.getPayCalendarObj(), true);
 					previousWeeks = prevTimeAggregate.getFlsaWeeks(zone);
 					if (previousWeeks.size() == 0) {
 						previousWeeks = null;
@@ -62,8 +63,8 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		// Iterate over each Weekly Overtime Rule (We have to grab them all to see if they apply)
 		for (WeeklyOvertimeRule wor : weeklyOvertimeRules) {
 			// Grab all the earn codes for the convert from max hours group
-			Set<String> maxHoursEarnCodes = TkServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(wor.getMaxHoursEarnGroup(), asOfDate);
-			Set<String> convertFromEarnCodes = TkServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(wor.getConvertFromEarnGroup(), asOfDate);
+			Set<String> maxHoursEarnCodes = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(wor.getMaxHoursEarnGroup(), asOfDate);
+			Set<String> convertFromEarnCodes = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(wor.getConvertFromEarnGroup(), asOfDate);
 
 			// Iterate over the weeks for this Pay Period (FLSA)
 			//
@@ -219,6 +220,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 	}
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public List<WeeklyOvertimeRule> getWeeklyOvertimeRules(Date asOfDate) {
 		return weeklyOvertimeRuleDao.findWeeklyOvertimeRules(asOfDate);
 	}
@@ -239,6 +241,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public WeeklyOvertimeRule getWeeklyOvertimeRule(String tkWeeklyOvertimeRuleId) {
 		return weeklyOvertimeRuleDao.getWeeklyOvertimeRule(tkWeeklyOvertimeRuleId);
 	}

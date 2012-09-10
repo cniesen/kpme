@@ -17,9 +17,9 @@ import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
-import org.kuali.rice.krad.bo.BusinessObject;
 
 public class TimeBlockLookupableHelperServiceImpl extends KualiLookupableHelperServiceImpl {
 
@@ -53,7 +53,7 @@ public class TimeBlockLookupableHelperServiceImpl extends KualiLookupableHelperS
 			while(itr.hasNext()){
 				TimeBlock tb = (TimeBlock)itr.next();
 				List<TkRole> tkRoles = TkServiceLocator.getTkRoleService().getRoles(TKContext.getPrincipalId(), TKUtils.getCurrentDate());
-				Job job = TkServiceLocator.getJobService().getJob(tb.getUserPrincipalId(), tb.getJobNumber(), TKUtils.getCurrentDate(), false);
+				Job job = TkServiceLocator.getJobSerivce().getJob(tb.getUserPrincipalId(), tb.getJobNumber(), TKUtils.getCurrentDate(), false);
 				boolean valid = false;
 				for (TkRole tkRole : tkRoles) {
 					if (StringUtils.equals(tkRole.getRoleName(),

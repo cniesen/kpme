@@ -1,18 +1,17 @@
 package org.kuali.hr.time.calendar;
 
-import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.time.timeblock.TimeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TkCalendarDay extends CalendarDay{
+public class TkCalendarDay {
 	private List<TimeBlock> timeblocks = new ArrayList<TimeBlock>();
     private List<TimeBlockRenderer> blockRenderers = new ArrayList<TimeBlockRenderer>();
     private String dayNumberString;
+    private int dayNumberDelta;
+    private String dateString;
     private Boolean gray;
-    private List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
-    private List<LeaveBlockRenderer> leaveBlockRenderers = new ArrayList<LeaveBlockRenderer>();
 
 	public List<TimeBlock> getTimeblocks() {
 		return timeblocks;
@@ -37,6 +36,14 @@ public class TkCalendarDay extends CalendarDay{
         this.dayNumberString = dayNumberString;
     }
 
+    public int getDayNumberDelta() {
+        return dayNumberDelta;
+    }
+
+    public void setDayNumberDelta(int dayNumberDelta) {
+        this.dayNumberDelta = dayNumberDelta;
+    }
+
 	public Boolean getGray() {
 		return gray;
 	}
@@ -45,23 +52,11 @@ public class TkCalendarDay extends CalendarDay{
 		this.gray = gray;
 	}
 
-	public List<LeaveBlock> getLeaveBlocks() {
-		return leaveBlocks;
-	}
+    public String getDateString() {
+        return dateString;
+    }
 
-	public void setLeaveBlocks(List<LeaveBlock> leaveBlocks) {
-		this.leaveBlocks = leaveBlocks;
-        for (LeaveBlock lb : leaveBlocks) {
-            leaveBlockRenderers.add(new LeaveBlockRenderer(lb));
-        }
-	}
-
-	public List<LeaveBlockRenderer> getLeaveBlockRenderers() {
-		return leaveBlockRenderers;
-	}
-
-	public void setLeaveBlockRenderers(List<LeaveBlockRenderer> leaveBlockRenderers) {
-		this.leaveBlockRenderers = leaveBlockRenderers;
-	}
-
+    public void setDateString(String dateString) {
+        this.dateString = dateString;
+    }
 }

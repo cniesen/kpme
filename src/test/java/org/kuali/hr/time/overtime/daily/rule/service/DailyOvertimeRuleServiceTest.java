@@ -1,29 +1,27 @@
 package org.kuali.hr.time.overtime.daily.rule.service;
 
+import org.joda.time.DateTime;
+import org.junit.Test;
+import org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.hr.time.test.TkTestUtils;
+import org.kuali.hr.time.timeblock.TimeBlock;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.hr.time.util.TkTimeBlockAggregate;
+
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.joda.time.DateTime;
-import org.junit.Assert;
-import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule;
-import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.test.TkTestUtils;
-import org.kuali.hr.time.timeblock.TimeBlock;
-import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
-import org.kuali.hr.time.util.TkTimeBlockAggregate;
-
-public class DailyOvertimeRuleServiceTest extends KPMETestCase {
+public class DailyOvertimeRuleServiceTest extends TkTestCase {
 
 	public static final String USER_PRINCIPAL_ID = "admin";
-	private Date JAN_AS_OF_DATE = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
+	private Date JAN_AS_OF_DATE = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, TkConstants.SYSTEM_DATE_TIME_ZONE)).getMillis());
 
 
 	private void createDailyOvertimeRule(String fromEarnGroup, String earnCode, String location, String paytype, String dept, Long workArea, Long task, BigDecimal minHours, BigDecimal maxGap, String overtimePref) {
@@ -55,9 +53,9 @@ public class DailyOvertimeRuleServiceTest extends KPMETestCase {
 				task, new BigDecimal(8), new BigDecimal("0.10"), null);
 		// Create Time Blocks (2 days, 2 blocks on each day, 15 minute gap between blocks, 4 hours first block, 5 the next.
 		// Should end up with 2 hours total OVT.
-		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TKUtils.getSystemDateTimeZone());
+		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TkConstants.SYSTEM_DATE_TIME_ZONE);
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
-		CalendarEntries payCalendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates("admin", new Date(start.getMillis()));
+		PayCalendarEntries payCalendarEntry = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates("admin", new Date(start.getMillis()));
 		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
 		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
 		TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(blocks, payCalendarEntry);
@@ -86,9 +84,9 @@ public class DailyOvertimeRuleServiceTest extends KPMETestCase {
 
 		// Create Time Blocks (2 days, 2 blocks on each day, 15 minute gap between blocks, 4 hours first block, 5 the next.
 		// Should end up with 2 hours total OVT.
-		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TKUtils.getSystemDateTimeZone());
+		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TkConstants.SYSTEM_DATE_TIME_ZONE);
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
-		CalendarEntries payCalendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates("admin", new Date(start.getMillis()));
+		PayCalendarEntries payCalendarEntry = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates("admin", new Date(start.getMillis()));
 		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
 		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
 		TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(blocks, payCalendarEntry);
@@ -112,7 +110,7 @@ public class DailyOvertimeRuleServiceTest extends KPMETestCase {
 		createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea,
 				task, new BigDecimal(8), new BigDecimal("0.25"), null);
 		DailyOvertimeRule rule = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRule("SD1", "BW", "TEST-DEPT", workArea, JAN_AS_OF_DATE);
-		Assert.assertNotNull("Rule not created.", rule);
+		assertNotNull("Rule not created.", rule);
 	}
 
 }

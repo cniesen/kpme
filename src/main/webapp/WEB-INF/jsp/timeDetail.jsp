@@ -44,7 +44,7 @@
         <html:textarea property="timeBlockString" styleId="timeBlockString" value="${Form.timeBlockString}"/>
 
             <%-- render the calendar --%>
-        <tk:calendar cal="${Form.tkCalendar}" docId="${Form.documentId}" calType="payCalendar"/>
+        <tk:calendar cal="${Form.tkCalendar}" docId="${Form.documentId}"/>
 
             <%-- render the calendar buttons --%>
         <tk:tkTimesheetRouting/>
@@ -62,8 +62,9 @@
     <%-- The time entry form (dialog) --%>
 
 
-    <div id="cal">
-        <div id="dialog-form" class="dialog-form">
+    <div id="cal" style="margin: 20px auto 20px auto; width:95%; font-size:.9em; display: none;">
+        <div id="dialog-form" class="dialog-form"
+             style="margin-left: auto; margin-right: auto;">
             <html:form action="/TimeDetail.do" styleId="time-detail">
                 <p id="validation" class="validation" title="Validation">All form fields are .</p>
 
@@ -141,14 +142,6 @@
                             <td>
                                 <input type="checkbox" name="acrossDays" id="acrossDays" value="n" title="Check time if you want to cross days" checked="checked"/>
                                 <label for="acrossDays">Apply time to each day</label>
-                            </td>
-                        </tr>
-                        <!--  KPME-1446  -->
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="checkbox" name="spanningWeeks" id="spanningWeeks" value="n" title="Check if you want to span weeks over weekend"/>
-                                <label for="spanningWeeks">Include weekends</label>
                             </td>
                         </tr>
                     </table>

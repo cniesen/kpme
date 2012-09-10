@@ -12,9 +12,9 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.QueryByCriteria;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimesheetDocumentHeaderDao {
+public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements TimesheetDocumentHeaderDao {
 
     @Override
     public TimesheetDocumentHeader getTimesheetDocumentHeader(String documentId) {

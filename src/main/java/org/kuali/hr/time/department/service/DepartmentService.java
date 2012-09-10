@@ -1,7 +1,6 @@
 package org.kuali.hr.time.department.service;
 
 import org.kuali.hr.time.department.Department;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.sql.Date;
 import java.util.List;
@@ -13,7 +12,6 @@ public interface DepartmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Department.CACHE_NAME, key="'department=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public Department getDepartment(String department, Date asOfDate);
 
     /**
@@ -24,7 +22,6 @@ public interface DepartmentService {
      * @param asOfDate Effective date
      * @return A List<Department> object.
      */
-    @Cacheable(value= Department.CACHE_NAME, key="'chart=' + #p0 + '|' + 'asOfDate=' + #p1")
     public List<Department> getDepartments(String chart, Date asOfDate);
 
     /**
@@ -42,14 +39,12 @@ public interface DepartmentService {
      * @param hrDeptId
      * @return
      */
-    @Cacheable(value= Department.CACHE_NAME, key="'hrDeptId=' + #p0")
     public Department getDepartment(String hrDeptId);
     /**
      * Fetch department by location
      * @param location
      * @return
      */
-    @Cacheable(value= Department.CACHE_NAME, key="'location=' + #p0")
     public List<Department> getDepartmentByLocation(String location);
     /**
 	 * get count of department with given department

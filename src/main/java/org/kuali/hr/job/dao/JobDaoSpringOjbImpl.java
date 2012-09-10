@@ -1,11 +1,5 @@
 package org.kuali.hr.job.dao;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
@@ -14,12 +8,14 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
+
+import java.util.*;
 
 /**
  * Represents an implementation of {@link JobDao}.
  */
-public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
+public class JobDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements JobDao {
 
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(JobDaoSpringOjbImpl.class);
@@ -370,7 +366,7 @@ public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobD
             activeFilter.addEqualTo("active", false);
             crit.addAndCriteria(activeFilter);
             Query query = QueryFactory.newQuery(Job.class, crit);
-            Collection c =this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
             results.addAll(c);
         }
 
@@ -390,116 +386,4 @@ public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobD
 		Query query = QueryFactory.newQuery(Job.class, crit);
 		return this.getPersistenceBrokerTemplate().getCount(query);
     }
-    
-    @SuppressWarnings("unchecked")
-	public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate) {
-    	Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
-
-        effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-        effdt.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Job.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-        
-        timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-        timestamp.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Job.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-    	
-        root.addEqualTo("principalId", principalId);
-        root.addEqualTo("eligibleForLeave", true);
-        root.addEqualTo("active", true);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
-        
-        Query query = QueryFactory.newQuery(Job.class, root);
-        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-        // remove jobs that has been inactive from the list
-        List<Job> jobList = new ArrayList<Job>();
-        jobList.addAll(c);
-        List<Job> aList = new ArrayList<Job>();
-        aList.addAll(jobList);
-        for(Job aJob : aList) {
-        	List<Job> inactiveJobs = this.getInactiveLeaveJobs(aJob.getJobNumber(), asOfDate, aJob.getEffectiveDate());
-        	if(!inactiveJobs.isEmpty()) {
-        		jobList.remove(aJob);
-        	}
-        }
-    	return jobList;
-    }
-    
-    @Override
-    @SuppressWarnings("unchecked")
-	public List<Job> getInactiveLeaveJobs(Long jobNumber, Date asOfDate, Date jobDate) {
-    	Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
-        
-        effdt.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-        effdt.addGreaterOrEqualThan("effectiveDate", jobDate );	// inactive job needs to be afer the active job
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Job.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-        
-        timestamp.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Job.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-    	
-        root.addEqualTo("jobNumber", jobNumber);
-        root.addEqualTo("eligibleForLeave", true);
-        root.addEqualTo("active", false);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
-        
-        Query query = QueryFactory.newQuery(Job.class, root);
-        return (List<Job>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);    	
-    }
-    
-    @Override
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate) {
-    	Criteria root = new Criteria();
-        root.addEqualTo("principalId", principalId);
-        root.addLessOrEqualThan("effectiveDate", asOfDate);
-        root.addEqualTo("active", true);
-        root.addEqualTo("eligibleForLeave", true);
-
-        Query query = QueryFactory.newQuery(Job.class, root);
-        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-        
-        List<Job> jobs = new LinkedList<Job>();
-        if (c != null) {
-            jobs.addAll(c);
-        }
-        return jobs;
-    }
-    
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate) {
-    	Criteria root = new Criteria();    	
-        root.addEqualTo("principalId", principalId);
-        root.addLessOrEqualThan("effectiveDate", endDate);
-        root.addEqualTo("active", false);
-        Query query = QueryFactory.newQuery(Job.class, root);
-        return (List<Job>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);    	
-    }
-    
-    @Override
-    public Job getMaxTimestampJob(String principalId) {
-    	Criteria root = new Criteria();
-        Criteria crit = new Criteria();
-        
-        crit.addEqualTo("principalId", principalId);
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Job.class, crit);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-
-        root.addEqualTo("principalId", principalId);
-        root.addEqualTo("timestamp", timestampSubQuery);
-
-        Query query = QueryFactory.newQuery(Job.class, root);
-        return (Job) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
-    }
-    
 }

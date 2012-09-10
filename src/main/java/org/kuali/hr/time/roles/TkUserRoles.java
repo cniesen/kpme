@@ -1,21 +1,16 @@
 package org.kuali.hr.time.roles;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.util.GlobalVariables;
+
+import java.util.*;
 
 /**
  * TkUserRoles encapsulates the concept of roles for a single user and provides
@@ -32,15 +27,19 @@ public class TkUserRoles implements UserRoles {
     private Map<Long, TkRole> approverRoles = new HashMap<Long, TkRole>();
     private Map<Long, TkRole> approverDelegateRoles = new HashMap<Long, TkRole>();
     private Map<Long, TkRole> reviewerRoles = new HashMap<Long, TkRole>();
-
+    ;
     private Map<String, TkRole> deptViewOnlyRoles = new HashMap<String, TkRole>();
     private Set<String> activeAssignmentIds = new HashSet<String>();
-    
-    public static TkUserRoles getUserRoles(String principalId) {
-    	List<TkRole> roles = TkServiceLocator.getTkRoleService().getRoles(principalId, TKUtils.getCurrentDate());
-		List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getCurrentDate());
-		
-		return new TkUserRoles(principalId, roles, assignments);
+
+    /**
+     * Constructor that takes a list of all roles that will be encapsulated
+     * by this object.
+     *
+     * @param roles
+     */
+    public TkUserRoles(String principalId, List<TkRole> roles) {
+        this.principalId = principalId;
+        setRoles(roles);
     }
 
     /**
@@ -51,7 +50,7 @@ public class TkUserRoles implements UserRoles {
      * @param roles
      * @param assignments
      */
-    private TkUserRoles(String principalId, List<TkRole> roles, List<Assignment> assignments) {
+    public TkUserRoles(String principalId, List<TkRole> roles, List<Assignment> assignments) {
         this.principalId = principalId;
         setRoles(roles);
         setAssignments(assignments);
@@ -132,14 +131,6 @@ public class TkUserRoles implements UserRoles {
     public boolean isSynchronous() {
         return synchronousAssignments;
     }
-    
-	public boolean isReviewer() {
-		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getReviewerWorkAreas().size() > 0;
-	}
-
-	public boolean isApprover() {
-		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().size() > 0;
-	}
 
     /**
      * Place the TkRole objects in the provided List into their appropriate
@@ -153,8 +144,7 @@ public class TkUserRoles implements UserRoles {
                 approverRoles.put(role.getWorkArea(), role);
             } else if (role.getRoleName().equals(TkConstants.ROLE_TK_APPROVER_DELEGATE)) {
                 approverDelegateRoles.put(role.getWorkArea(), role);
-            } else if (role.getRoleName().equals(TkConstants.ROLE_TK_LOCATION_ADMIN) ||
-            			role.getRoleName().equals(TkConstants.ROLE_LV_DEPT_ADMIN)) {
+            } else if (role.getRoleName().equals(TkConstants.ROLE_TK_LOCATION_ADMIN)) {
                 if (!StringUtils.isEmpty(role.getChart())) {
                     orgAdminRolesChart.put(role.getChart(), role);
                     List<Department> ds = TkServiceLocator.getDepartmentService().getDepartments(role.getChart(), TKUtils.getCurrentDate());
@@ -180,6 +170,8 @@ public class TkUserRoles implements UserRoles {
                 globalViewOnly = role;
             } else if (role.getRoleName().equals(TkConstants.ROLE_TK_REVIEWER)) {
                 reviewerRoles.put(role.getWorkArea(), role);
+            } else {
+                throw new RuntimeException("Invalid Role."); // TODO: Maybe we want to just ignore this exception.
             }
         }
     }
@@ -371,7 +363,7 @@ public class TkUserRoles implements UserRoles {
         List<Assignment> lstAssignment = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getCurrentDate());
 
         for (Assignment assignment : lstAssignment) {
-            if (getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().contains(assignment.getWorkArea())) {
+            if (TKContext.getUser().getCurrentRoles().getApproverWorkAreas().contains(assignment.getWorkArea())) {
                 return true;
             }
         }
@@ -382,14 +374,15 @@ public class TkUserRoles implements UserRoles {
 
     @Override
     public boolean isDepartmentAdminForPerson(String principalId) {
-        UserRoles userRoles = getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
+        UserRoles userRoles = TKContext.getUser().getCurrentRoles();
+        TKUser targetUser = TkServiceLocator.getUserService().buildTkUser(principalId, TKUtils.getCurrentDate());
 
         // Department admin
         // Department view only
         if (userRoles.isDepartmentAdmin() || userRoles.isDeptViewOnly()) {
-        	List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
-            for (Job job : jobs) {
-                if (getOrgAdminDepartments().contains(job.getDept())) {
+
+            for (String dept : targetUser.getDepartments()) {
+                if (getOrgAdminDepartments().contains(dept)) {
                     return true;
                 }
             }

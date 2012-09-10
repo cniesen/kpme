@@ -1,9 +1,9 @@
 package org.kuali.hr.time.util;
 
-import java.math.BigDecimal;
-import java.net.URLEncoder;
-import java.util.List;
-
+import com.gargoylesoftware.htmlunit.ScriptResult;
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -15,10 +15,9 @@ import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.kuali.hr.util.filter.TestAutoLoginFilter;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.util.List;
 
 public class TimeDetailTestUtils {
 
@@ -40,7 +39,7 @@ public class TimeDetailTestUtils {
      *
      * @return A populated TimeDetailActionFormBase object.
      */
-    public static TimeDetailActionFormBase buildDetailActionForm(TimesheetDocument timeshetDocument, Assignment assignment, EarnCode earnCode, DateTime start, DateTime end, BigDecimal amount, boolean acrossDays, String timeblockId, boolean spanningWeeks) {
+    public static TimeDetailActionFormBase buildDetailActionForm(TimesheetDocument timeshetDocument, Assignment assignment, EarnCode earnCode, DateTime start, DateTime end, BigDecimal amount, boolean acrossDays, String timeblockId) {
         TimeDetailActionFormBase tdaf = new TimeDetailActionFormBase();
 
         BigDecimal hours = null;
@@ -71,7 +70,6 @@ public class TimeDetailTestUtils {
         selectedEarnCode = earnCode.getEarnCode();
 
         tdaf.setAcrossDays(acrossDays ? "y" : "n");
-        tdaf.setSpanningWeeks(spanningWeeks ? "y" : "n"); // KPME-1446
         tdaf.setAmount(amount);
         tdaf.setHours(hours);
         tdaf.setStartTime(startTimeS);
@@ -179,31 +177,6 @@ public class TimeDetailTestUtils {
         return page;
     }
 
-    /**
-     * A method to wrap the submission of the time details.
-     * @param baseUrl
-     * @param tdaf
-     * @return
-     */
-    public static HtmlPage submitTimeDetails(String principalId, String baseUrl, TimeDetailActionFormBase tdaf) {
-        // For now, until a more HtmlUnit based click method can be found
-        // workable, we're building a url-encoded string to directly
-        // post to the servlet.
-
-        String url = baseUrl + buildPostFromFormParams(tdaf);
-        HtmlPage page = null;
-
-        try {
-            TestAutoLoginFilter.OVERRIDE_ID = principalId;
-            page = HtmlUnitUtil.gotoPageAndLogin(url);
-            TestAutoLoginFilter.OVERRIDE_ID = "";
-        } catch (Exception e) {
-            LOG.error("Error while submitting form", e);
-        }
-
-        return page;
-    }
-
     private static String buildPostFromFormParams(TimeDetailActionFormBase tdaf) {
         StringBuilder builder = new StringBuilder();
 
@@ -222,7 +195,7 @@ public class TimeDetailTestUtils {
             builder.append("&selectedAssignment=").append(URLEncoder.encode(tdaf.getSelectedAssignment(), "UTF-8"));
             builder.append("&selectedEarnCode=").append(URLEncoder.encode(tdaf.getSelectedEarnCode(), "UTF-8"));
             if (tdaf.getTkTimeBlockId() != null) {
-                builder.append("&tkTimeBlockId=").append(URLEncoder.encode(tdaf.getTkTimeBlockId().toString(), "UTF-8"));
+                builder.append("&tkTimeBlockId").append(URLEncoder.encode(tdaf.getTkTimeBlockId().toString(), "UTF-8"));
             }
         } catch (Exception e) {
             LOG.error("Exception building Post String", e);

@@ -1,20 +1,23 @@
 package org.kuali.hr.time.department;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.kfs.coa.businessobject.Chart;
 import org.kuali.kfs.coa.businessobject.Organization;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Department extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Department";
+
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     private String hrDeptId;
@@ -30,6 +33,14 @@ public class Department extends HrBusinessObject {
     
     private List<TkRole> roles = new LinkedList<TkRole>();
     private List<TkRole> inactiveRoles = new ArrayList<TkRole>();
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    protected LinkedHashMap toStringMapper() {
+    	LinkedHashMap<String, String> lhm = new LinkedHashMap<String,String>();
+    	lhm.put(dept, dept);
+    	return lhm;
+    }
 
     public String getDescription() {
         return description;

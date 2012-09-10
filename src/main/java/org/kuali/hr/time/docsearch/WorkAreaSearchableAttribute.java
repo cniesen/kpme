@@ -7,8 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.rice.kew.api.document.DocumentWithContent;
-import org.kuali.rice.kew.api.extension.ExtensionDefinition;
+import org.kuali.rice.kew.docsearch.DocumentSearchContext;
 import org.kuali.rice.kew.docsearch.SearchableAttributeLongValue;
 import org.kuali.rice.kew.docsearch.SearchableAttributeValue;
 import org.kuali.rice.kew.docsearch.xml.StandardGenericXMLSearchableAttribute;
@@ -22,10 +21,10 @@ public class WorkAreaSearchableAttribute extends StandardGenericXMLSearchableAtt
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public List extractDocumentAttributes(ExtensionDefinition extensionDefinition, DocumentWithContent documentWithContent) {
+    public List getSearchStorageValues(DocumentSearchContext docContext) {
 		List<SearchableAttributeValue> searchableAttributeValues = new ArrayList<SearchableAttributeValue>();
 		
-		String documentId = StringUtils.substringBetween(documentWithContent.getDocumentContent().toString(), "<string>", "</string>");
+		String documentId = StringUtils.substringBetween(docContext.getDocumentContent(), "<string>", "</string>");
 		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
 		List<Long> workAreasIncluded = new ArrayList<Long>();
 		for(Assignment assign : timesheetDocument.getAssignments()){

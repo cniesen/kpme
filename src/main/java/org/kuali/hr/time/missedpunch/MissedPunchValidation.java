@@ -16,9 +16,9 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.document.Document;
-import org.kuali.rice.krad.rules.TransactionalDocumentRuleBase;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.document.Document;
+import org.kuali.rice.kns.rules.TransactionalDocumentRuleBase;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class MissedPunchValidation extends TransactionalDocumentRuleBase {
 
