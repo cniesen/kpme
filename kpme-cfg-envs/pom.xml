@@ -40,6 +40,7 @@
         
         <dba.environment>dba</dba.environment>
         <build.environment>dev</build.environment>
+        <build.version>NO VERSION</build.version>
     </properties>
     
     <build>
@@ -63,7 +64,12 @@
                 <plugin>
 	                <groupId>org.apache.maven.plugins</groupId>
 	                <artifactId>maven-scm-plugin</artifactId>
-	                <version>1.7</version>
+	                <version>1.6</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>buildnumber-maven-plugin</artifactId>
+                    <version>1.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
@@ -747,7 +753,7 @@
 		                    <dependency>
 		                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
 		                        <artifactId>maven-scm-provider-svnjava</artifactId>
-		                        <version>2.0.3</version>
+		                        <version>1.15</version>
 		                    </dependency>
 		                </dependencies>
 		                <configuration>
@@ -755,7 +761,6 @@
 		                        <svn>javasvn</svn>
 		                    </providerImplementations>
 		                    
-		                    <connectionUrl>scm:svn:http://svn.kuali.org/repos/kpme/${scmVersionUrl}</connectionUrl>
 		                    <scmVersionType>${scmVersionType}</scmVersionType>
 		                    <scmVersion>${scmVersion}</scmVersion>
 		                </configuration>
@@ -772,6 +777,27 @@
 		                    </execution>
 		                </executions>
 		            </plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>buildnumber-maven-plugin</artifactId>
+						<configuration>
+                            <providerImplementations>
+                                <svn>javasvn</svn>
+                            </providerImplementations>
+                            
+							<doCheck>false</doCheck>
+							<doUpdate>false</doUpdate>
+							<scmDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</scmDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>compile</phase>
+								<goals>
+									<goal>create</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 		            <plugin>
 		                <groupId>org.apache.maven.plugins</groupId>
 		                <artifactId>maven-invoker-plugin</artifactId>
@@ -793,6 +819,7 @@
 		                    </goals>
 		                    <properties>
 		                        <build.environment>${build.environment}</build.environment>
+		                        <build.version>${buildNumber}</build.version>
 		                        <maven.test.skip>true</maven.test.skip>
 		                    </properties>
 		                </configuration>
@@ -809,6 +836,10 @@
             </build>
         </profile>
     </profiles>
+    
+    <scm>
+        <connection>scm:svn:http://svn.kuali.org/repos/kpme/${scmVersionUrl}</connection>
+    </scm>
     
     <repositories>
         <repository>
