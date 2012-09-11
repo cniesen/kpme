@@ -819,7 +819,7 @@
 		                    </goals>
 		                    <properties>
 		                        <build.environment>${build.environment}</build.environment>
-		                        <build.version>${buildNumber}</build.version>
+		                        <build.version>build-${buildNumber}</build.version>
 		                        <maven.test.skip>true</maven.test.skip>
 		                    </properties>
 		                </configuration>
