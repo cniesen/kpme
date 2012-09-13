@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.LMConstants;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.calendar.dao.CalendarDao;
@@ -33,11 +32,8 @@ public class CalendarServiceImpl implements CalendarService {
     @Override
     public CalendarEntries getCalendarDatesByPayEndDate(String principalId, Date payEndDate, String calendarType) {
         CalendarEntries pcd = null;
-        boolean findLeaveCal = false;
-        if(calendarType != null && calendarType.equalsIgnoreCase(LMConstants.LEAVE_CALENDAR_TYPE)) {
-        	findLeaveCal = true;
-        }
-        Calendar calendar = getCalendar(principalId, payEndDate, findLeaveCal);
+
+        Calendar calendar = getCalendar(principalId, payEndDate, false);
         pcd = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByIdAndPeriodEndDate(calendar.getHrCalendarId(), payEndDate);
         pcd.setCalendarObj(calendar);
 

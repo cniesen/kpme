@@ -1,10 +1,9 @@
 package org.kuali.hr.time.person.service;
 
-import org.kuali.hr.time.person.TKPerson;
-import org.kuali.hr.time.person.dao.PersonDao;
-
 import java.util.List;
 
+import org.kuali.hr.time.person.TKPerson;
+import org.kuali.hr.time.person.dao.PersonDao;
 
 public class PersonServiceImpl implements PersonService { 
 	private PersonDao personDao;

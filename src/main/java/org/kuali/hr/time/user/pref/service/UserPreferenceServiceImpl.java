@@ -7,26 +7,26 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 
 public class UserPreferenceServiceImpl implements UserPreferenceService {
-	private UserPreferenceDao userPrefDao;
-	
-	
-	@Override
-	public UserPreferences getUserPreferences(String principalId) {
-		UserPreferences userPref = userPrefDao.getUserPreferences(principalId);
-		if(userPref == null){
-			return new UserPreferences(TKContext.getPrincipalId(), TKUtils.getSystemTimeZone());
-		}
-		return userPref;
-	}
+    private UserPreferenceDao userPrefDao;
 
 
-	public UserPreferenceDao getUserPrefDao() {
-		return userPrefDao;
-	}
+    @Override
+    public UserPreferences getUserPreferences(String principalId) {
+        UserPreferences userPref = userPrefDao.getUserPreferences(principalId);
+        if(userPref == null){
+            return new UserPreferences(TKContext.getPrincipalId(), TKUtils.getSystemTimeZone());
+        }
+        return userPref;
+    }
 
 
-	public void setUserPrefDao(UserPreferenceDao userPrefDao) {
-		this.userPrefDao = userPrefDao;
-	}
+    public UserPreferenceDao getUserPrefDao() {
+        return userPrefDao;
+    }
+
+
+    public void setUserPrefDao(UserPreferenceDao userPrefDao) {
+        this.userPrefDao = userPrefDao;
+    }
 
 }

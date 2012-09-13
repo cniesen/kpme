@@ -17,7 +17,7 @@ public class TimeBlockHistory extends TimeBlock {
 	private String tkTimeBlockHistoryId = null;
 	private String actionHistory;
 	private String modifiedByPrincipalId;
-	private Timestamp timestampModified;
+    private Timestamp timestampModified;
 	private Person principal;
 	private Person userPrincipal;
 	private List<TimeBlockHistoryDetail> timeBlockHistoryDetails = new ArrayList<TimeBlockHistoryDetail>();
@@ -67,6 +67,14 @@ public class TimeBlockHistory extends TimeBlock {
 	public void setModifiedByPrincipalId(String modifiedByPrincipalId) {
 		this.modifiedByPrincipalId = modifiedByPrincipalId;
 	}
+
+    public Timestamp getTimestampModified() {
+        return timestampModified;
+    }
+
+    public void setTimestampModified(Timestamp timestampModified) {
+        this.timestampModified = timestampModified;
+    }
 
 	public Person getPrincipal() {
 		return principal;

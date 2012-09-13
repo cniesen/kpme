@@ -1,6 +1,5 @@
 package org.kuali.hr.time.position.service;
 
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -27,6 +26,5 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
         //position.setPositionNumber(nextUniqueNumber);
 
         position = KRADServiceLocator.getBusinessObjectService().save(position);
-        CacheUtils.flushCache(Position.CACHE_NAME);
     }
 }

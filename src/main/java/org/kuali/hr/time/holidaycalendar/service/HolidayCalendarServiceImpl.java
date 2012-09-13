@@ -14,52 +14,52 @@ import java.util.Date;
 import java.util.List;
 
 public class HolidayCalendarServiceImpl implements HolidayCalendarService {
-	private HolidayCalendarDao holidayCalendarDao;
-	
-	
-	@Override
-	public HolidayCalendar getHolidayCalendarByGroup(String holidayCalendarGroup) {
-		return holidayCalendarDao.getHolidayCalendarByGroup(holidayCalendarGroup);
-	}
+    private HolidayCalendarDao holidayCalendarDao;
 
 
-	public HolidayCalendarDao getHolidayCalendarDao() {
-		return holidayCalendarDao;
-	}
+    @Override
+    public HolidayCalendar getHolidayCalendarByGroup(String holidayCalendarGroup) {
+        return holidayCalendarDao.getHolidayCalendarByGroup(holidayCalendarGroup);
+    }
 
 
-	public void setHolidayCalendarDao(HolidayCalendarDao holidayCalendarDao) {
-		this.holidayCalendarDao = holidayCalendarDao;
-	}
+    public HolidayCalendarDao getHolidayCalendarDao() {
+        return holidayCalendarDao;
+    }
 
 
-	@Override
-	public List<HolidayCalendarDateEntry> getHolidayCalendarDateEntriesForPayPeriod(
-			String hrHolidayCalendarId, Date startDate, Date endDate) {
-		return holidayCalendarDao.getHolidayCalendarDateEntriesForPayPeriod(hrHolidayCalendarId, startDate, endDate);
-	}
-
-	@Override
-	public HolidayCalendarDateEntry getHolidayCalendarDateEntryByDate(String hrHolidayCalendarId, Date startDate) {
-		return holidayCalendarDao.getHolidayCalendarDateEntryByDate(hrHolidayCalendarId, startDate);
-	}
-
-	@Override
-	public Assignment getAssignmentToApplyHolidays(TimesheetDocument timesheetDocument, java.sql.Date payEndDate) {
-		Job primaryJob = TkServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
-		for(Assignment assign : timesheetDocument.getAssignments()){
-			if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
-				return assign;
-			}
-		}
-		return null;
-	}
+    public void setHolidayCalendarDao(HolidayCalendarDao holidayCalendarDao) {
+        this.holidayCalendarDao = holidayCalendarDao;
+    }
 
 
-	@Override
-	public BigDecimal calculateHolidayHours(Job job, BigDecimal holidayHours) {
-		BigDecimal fte = job.getStandardHours().divide(new BigDecimal(40.0),TkConstants.BIG_DECIMAL_SCALE);
-		return fte.multiply(holidayHours).setScale(TkConstants.BIG_DECIMAL_SCALE);
-	}
+    @Override
+    public List<HolidayCalendarDateEntry> getHolidayCalendarDateEntriesForPayPeriod(
+            String hrHolidayCalendarId, Date startDate, Date endDate) {
+        return holidayCalendarDao.getHolidayCalendarDateEntriesForPayPeriod(hrHolidayCalendarId, startDate, endDate);
+    }
+
+    @Override
+    public HolidayCalendarDateEntry getHolidayCalendarDateEntryByDate(String hrHolidayCalendarId, Date startDate) {
+        return holidayCalendarDao.getHolidayCalendarDateEntryByDate(hrHolidayCalendarId, startDate);
+    }
+
+    @Override
+    public Assignment getAssignmentToApplyHolidays(TimesheetDocument timesheetDocument, java.sql.Date payEndDate) {
+        Job primaryJob = TkServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
+        for(Assignment assign : timesheetDocument.getAssignments()){
+            if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
+                return assign;
+            }
+        }
+        return null;
+    }
+
+
+    @Override
+    public BigDecimal calculateHolidayHours(Job job, BigDecimal holidayHours) {
+        BigDecimal fte = job.getStandardHours().divide(new BigDecimal(40.0),TkConstants.BIG_DECIMAL_SCALE);
+        return fte.multiply(holidayHours).setScale(TkConstants.BIG_DECIMAL_SCALE);
+    }
 
 }

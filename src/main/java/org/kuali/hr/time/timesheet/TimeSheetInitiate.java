@@ -8,95 +8,95 @@ import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public class TimeSheetInitiate extends PersistableBusinessObjectBase {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	private String tkTimeSheetInitId;
-	private String principalId;
-	private String hrPyCalendarEntriesId;
-	private String pyCalendarGroup;
-	private String documentId;
-	
-	private Person principal;
-	private Calendar payCalendarObj;
-	
-	private CalendarEntries payCalendarEntriesObj;
-	
-	public String getPrincipalId() {
-		return principalId;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
+    private String tkTimeSheetInitId;
+    private String principalId;
+    private String hrCalendarEntriesId;
+    private String calendarName;
+    private String documentId;
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
-	
-	public Person getPrincipal() {
-		return principal;
-	}
+    private Person principal;
+    private Calendar payCalendarObj;
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    private CalendarEntries payCalendarEntriesObj;
 
-	
-	public String getTkTimeSheetInitId() {
-		return tkTimeSheetInitId;
-	}
-
-	public void setTkTimeSheetInitId(String tkTimeSheetInitId) {
-		this.tkTimeSheetInitId = tkTimeSheetInitId;
-	}
-	
-    public String getHrPyCalendarEntriesId() {
-        return hrPyCalendarEntriesId;
+    public String getPrincipalId() {
+        return principalId;
     }
 
-    public void setHrPyCalendarEntriesId(String hrPyCalendarEntriesId) {
-        this.hrPyCalendarEntriesId = hrPyCalendarEntriesId;
-    }
-	
-	public CalendarEntries getPayCalendarEntriesObj() {
-		if(hrPyCalendarEntriesId != null) {
-			setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrPyCalendarEntriesId));
-		}
-		return payCalendarEntriesObj;
-	}
-
-	public void setPayCalendarEntriesObj(CalendarEntries payCalendarEntriesObj) {
-		this.payCalendarEntriesObj = payCalendarEntriesObj;
-	}
-
-    public String getPyCalendarGroup() {
-        return pyCalendarGroup;
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
     }
 
-    public void setPyCalendarGroup(String pyCalendarGroup) {
-        this.pyCalendarGroup = pyCalendarGroup;
+    public Person getPrincipal() {
+        return principal;
     }
 
-	public String getDocumentId() {
-		return documentId;
-	}
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
-	}
 
-	public Calendar getPayCalendarObj() {
-		return payCalendarObj;
-	}
+    public String getTkTimeSheetInitId() {
+        return tkTimeSheetInitId;
+    }
 
-	public void setPayCalendarObj(Calendar payCalendarObj) {
-		this.payCalendarObj = payCalendarObj;
-	}
+    public void setTkTimeSheetInitId(String tkTimeSheetInitId) {
+        this.tkTimeSheetInitId = tkTimeSheetInitId;
+    }
 
-	public String getBeginAndEndDateTime() {
-		if (payCalendarEntriesObj == null && this.getHrPyCalendarEntriesId() != null) {
-			payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrPyCalendarEntriesId());
-	    }
-	    return (payCalendarEntriesObj != null) ? 
-	    		payCalendarEntriesObj.getBeginPeriodDateTime().toString() + " - "+ payCalendarEntriesObj.getEndPeriodDateTime().toString() : "";
-	}
+    public String getHrCalendarEntriesId() {
+        return hrCalendarEntriesId;
+    }
+
+    public void setHrCalendarEntriesId(String hrCalendarEntriesId) {
+        this.hrCalendarEntriesId = hrCalendarEntriesId;
+    }
+
+    public CalendarEntries getPayCalendarEntriesObj() {
+        if(hrCalendarEntriesId != null) {
+            setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrCalendarEntriesId));
+        }
+        return payCalendarEntriesObj;
+    }
+
+    public void setPayCalendarEntriesObj(CalendarEntries payCalendarEntriesObj) {
+        this.payCalendarEntriesObj = payCalendarEntriesObj;
+    }
+
+    public String getCalendarName() {
+        return calendarName;
+    }
+
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
+    public Calendar getPayCalendarObj() {
+        return payCalendarObj;
+    }
+
+    public void setPayCalendarObj(Calendar payCalendarObj) {
+        this.payCalendarObj = payCalendarObj;
+    }
+
+    public String getBeginAndEndDateTime() {
+        if (payCalendarEntriesObj == null && this.getHrCalendarEntriesId() != null) {
+            payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrCalendarEntriesId());
+        }
+        return (payCalendarEntriesObj != null) ?
+                payCalendarEntriesObj.getBeginPeriodDateTime().toString() + " - "+ payCalendarEntriesObj.getEndPeriodDateTime().toString() : "";
+    }
 
 }

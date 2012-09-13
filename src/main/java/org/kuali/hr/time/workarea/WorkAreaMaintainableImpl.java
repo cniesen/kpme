@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.roles.TkRole;
@@ -50,30 +49,30 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
     public void addNewLineToCollection(String collectionName) {
-		if (collectionName.equals("roles")) {
-        	TkRole aRole = (TkRole)newCollectionLines.get(collectionName );
+        if (collectionName.equals("roles")) {
+            TkRole aRole = (TkRole)newCollectionLines.get(collectionName );
             if ( aRole != null ) {
-            	if(!StringUtils.isEmpty(aRole.getPrincipalId()) && !StringUtils.isEmpty(aRole.getPositionNumber())) {
-            		GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
-            				"error.role.principalId.positonNumber", aRole.getPrincipalId());
-            		return;
-            	}
-            	if(aRole.getPrincipalId() != null && !aRole.getPrincipalId().isEmpty()) {
-            		Person aPerson = KimApiServiceLocator.getPersonService().getPerson(aRole.getPrincipalId());
-            		if(aPerson == null) {
-            			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
-                				"error.role.person.notexist", aRole.getPrincipalId());
-                		return;
-            		}
-            	}
-            	if(aRole.getPositionNumber() != null && !aRole.getPositionNumber().isEmpty()) {
-            		Position aPositon = TkServiceLocator.getPositionService().getPositionByPositionNumber(aRole.getPositionNumber());
-            		if(aPositon == null) {
-            			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
-                				"error.role.position.notexist", aRole.getPositionNumber());
-                		return;
-            		}
-            	}
+                if(!StringUtils.isEmpty(aRole.getPrincipalId()) && !StringUtils.isEmpty(aRole.getPositionNumber())) {
+                    GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
+                            "error.role.principalId.positonNubmer", aRole.getPrincipalId());
+                    return;
+                }
+                if(aRole.getPrincipalId() != null && !aRole.getPrincipalId().isEmpty()) {
+                    Person aPerson = KimApiServiceLocator.getPersonService().getPerson(aRole.getPrincipalId());
+                    if(aPerson == null) {
+                        GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
+                                "error.role.person.notexist", aRole.getPrincipalId());
+                        return;
+                    }
+                }
+                if(aRole.getPositionNumber() != null && !aRole.getPositionNumber().isEmpty()) {
+                    Position aPositon = TkServiceLocator.getPositionService().getPositionByPositionNumber(aRole.getPositionNumber());
+                    if(aPositon == null) {
+                        GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
+                                "error.role.position.notexist", aRole.getPositionNumber());
+                        return;
+                    }
+                }
             }
         }
         super.addNewLineToCollection(collectionName);
@@ -123,14 +122,14 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
     public void customSaveLogic(HrBusinessObject hrObj) {
         WorkArea workArea = (WorkArea) hrObj;
         List<TkRole> roles = workArea.getRoles();
-		List<TkRole> rolesCopy = new ArrayList<TkRole>();
-		rolesCopy.addAll(roles);
-		if (workArea.getInactiveRoles() != null
-				&& workArea.getInactiveRoles().size() > 0) {
-			for (TkRole role : workArea.getInactiveRoles()) {
-				roles.add(role);
-			}
-		}
+        List<TkRole> rolesCopy = new ArrayList<TkRole>();
+        rolesCopy.addAll(roles);
+        if (workArea.getInactiveRoles() != null
+                && workArea.getInactiveRoles().size() > 0) {
+            for (TkRole role : workArea.getInactiveRoles()) {
+                roles.add(role);
+            }
+        }
         List<Task> tasks = workArea.getTasks();
         for (Task task : tasks) {
             task.setTkTaskId(null);
@@ -155,32 +154,31 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         super.processAfterNew(document, parameters);
     }
 
-	@Override
-	public void saveBusinessObject() {
-		HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
-		customSaveLogic(hrObj);
-		if(hrObj.getId()!=null){
-			HrBusinessObject oldHrObj = this.getObjectById(hrObj.getId());
-			if(oldHrObj!= null){
-				//if the effective dates are the same do not create a new row just inactivate the old one
-				if(hrObj.getEffectiveDate().equals(oldHrObj.getEffectiveDate())){
-					oldHrObj.setActive(false);
-					oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime()))); 
-				} else{
-					//if effective dates not the same add a new row that inactivates the old entry based on the new effective date
-					oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
-					oldHrObj.setEffectiveDate(hrObj.getEffectiveDate());
-					oldHrObj.setActive(false);
-					oldHrObj.setId(null);
-				}
-				KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
-			}
-		}
-		hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		hrObj.setId(null);
+    @Override
+    public void saveBusinessObject() {
+        HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
+        customSaveLogic(hrObj);
+        if(hrObj.getId()!=null){
+            HrBusinessObject oldHrObj = this.getObjectById(hrObj.getId());
+            if(oldHrObj!= null){
+                //if the effective dates are the same do not create a new row just inactivate the old one
+                if(hrObj.getEffectiveDate().equals(oldHrObj.getEffectiveDate())){
+                    oldHrObj.setActive(false);
+                    oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
+                } else{
+                    //if effective dates not the same add a new row that inactivates the old entry based on the new effective date
+                    oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
+                    oldHrObj.setEffectiveDate(hrObj.getEffectiveDate());
+                    oldHrObj.setActive(false);
+                    oldHrObj.setId(null);
+                }
+                KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
+            }
+        }
+        hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        hrObj.setId(null);
 
-		KRADServiceLocator.getBusinessObjectService().save(hrObj);
-        CacheUtils.flushCache(WorkArea.CACHE_NAME);
-	}
-		
+        KRADServiceLocator.getBusinessObjectService().save(hrObj);
+    }
+
 }

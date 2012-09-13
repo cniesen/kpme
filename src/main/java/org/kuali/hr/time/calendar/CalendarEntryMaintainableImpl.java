@@ -2,7 +2,6 @@ package org.kuali.hr.time.calendar;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalTime;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
@@ -46,7 +45,6 @@ public class CalendarEntryMaintainableImpl extends KualiMaintainableImpl {
 		payEntry.setEndPeriodDateTime(new java.util.Date(endDateTime.getMillis()));
 		
 		super.saveBusinessObject();
-        CacheUtils.flushCache(CalendarEntries.CACHE_NAME);
 	}
 
 

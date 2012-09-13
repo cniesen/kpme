@@ -41,18 +41,7 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 			return true;
 		}
 	}
-	
-	
-	private boolean validateLeavePlan(PrincipalHRAttributes principalHRAttr) {
-		if (principalHRAttr.getLeavePlan() != null
-				&& !ValidationUtils.validateLeavePlan(principalHRAttr.getLeavePlan(), null)) {
-			this.putFieldError("leavePlan", "error.existence",
-					"leavePlan '" + principalHRAttr.getLeavePlan() + "'");
-			return false;
-		} else {
-			return true;
-		}
-	}
+
 	
 	boolean validateEffectiveDate(PrincipalHRAttributes principalHRAttr) {
 		boolean valid = true;
@@ -78,8 +67,6 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 				// KPME-1442 Kagata
 				//valid &= this.validateEffectiveDate(principalHRAttr);
 				valid &= this.validatePayCalendar(principalHRAttr);
-				valid &= this.validateLeaveCalendar(principalHRAttr);
-				valid &= this.validateLeavePlan(principalHRAttr);
 			}
 		}
 		return valid;

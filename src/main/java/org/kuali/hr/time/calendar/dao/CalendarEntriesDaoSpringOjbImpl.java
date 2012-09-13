@@ -177,9 +177,9 @@ public class CalendarEntriesDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
         try {
 	    	 crit.addEqualTo("hrCalendarId", hrCalendarId);
 	    	 DateFormat df = new SimpleDateFormat("yyyy");
-	    	 java.util.Date cYear = df.parse(year);
+	    	 Date cYear = df.parse(year);
 	    	 String nextYear = Integer.toString((Integer.parseInt(year) + 1));
-	    	 java.util.Date nYear = df.parse(nextYear);
+	    	 Date nYear = df.parse(nextYear);
 	    	 
 	    	 crit.addGreaterOrEqualThan("beginPeriodDateTime", cYear);
 	    	 crit.addLessThan("beginPeriodDateTime", nYear );

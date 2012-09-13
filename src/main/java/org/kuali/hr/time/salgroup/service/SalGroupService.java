@@ -6,17 +6,17 @@ import org.springframework.cache.annotation.Cacheable;
 import java.sql.Date;
 
 public interface SalGroupService {
-	/**
-	 * Fetch a SalGroup as of a particular date
-	 * @param salGroup
-	 * @param asOfDate
-	 * @return
-	 */
+    /**
+     * Fetch a SalGroup as of a particular date
+     * @param salGroup
+     * @param asOfDate
+     * @return
+     */
     @Cacheable(value= SalGroup.CACHE_NAME, key="'salGroup=' + #p0 + '|' + 'asOfDate=' + #p1")
-	public SalGroup getSalGroup(String salGroup, Date asOfDate);
+    public SalGroup getSalGroup(String salGroup, Date asOfDate);
 
     @Cacheable(value= SalGroup.CACHE_NAME, key="'hrSalGroupId=' + #p0")
-	public SalGroup getSalGroup(String hrSalGroupId);
-	
-	public int getSalGroupCount(String salGroup);
+    public SalGroup getSalGroup(String hrSalGroupId);
+
+    public int getSalGroupCount(String salGroup);
 }

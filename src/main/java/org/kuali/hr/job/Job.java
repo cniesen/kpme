@@ -1,9 +1,5 @@
 package org.kuali.hr.job;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
@@ -15,6 +11,10 @@ import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 /**
  * 
  * Job representation
@@ -46,7 +46,6 @@ public class Job extends HrBusinessObject {
 	
 	private String hrDeptId;
 	private String hrPayTypeId;
-	private boolean eligibleForLeave;
 	
 	private Person principal;
 	private Department deptObj;
@@ -55,34 +54,35 @@ public class Job extends HrBusinessObject {
     private PayGrade payGradeObj;
     private SalGroup salGroupObj;
     private Position positionObj;
-    
+
     private BigDecimal fte = new BigDecimal(0); //kpme1465, chen
     private String flsaStatus;
-    
-	public String getFlsaStatus() {
-		return flsaStatus;
-	}
 
-	public void setFlsaStatus(String flsaStatus) {
-		this.flsaStatus = flsaStatus;
-	}
 
-	public BigDecimal getFte() {
-		if ( this.standardHours != null ) {
-			return this.standardHours.divide(new BigDecimal(40)).setScale(2);
-		} else {
-			return fte;
-		}
-	}
+    public BigDecimal getFte() {
+        if ( this.standardHours != null ) {
+            return this.standardHours.divide(new BigDecimal(40)).setScale(2);
+        } else {
+            return fte;
+        }
+    }
 
-	public void setFte() {
-		if ( this.standardHours != null ) {
-			this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2);
-		} else {
-			this.fte = new BigDecimal(0).setScale(2);
-		}
-	}
-	
+    public void setFte() {
+        if ( this.standardHours != null ) {
+            this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2);
+        } else {
+            this.fte = new BigDecimal(0).setScale(2);
+        }
+    }
+
+    public String getFlsaStatus() {
+        return flsaStatus;
+    }
+
+    public void setFlsaStatus(String flsaStatus) {
+        this.flsaStatus = flsaStatus;
+    }
+
 	public String getPayGrade() {
 		return payGrade;
 	}
@@ -345,11 +345,5 @@ public class Job extends HrBusinessObject {
 	public void setId(String id) {
 		setHrJobId(id);
 	}
-	public boolean isEligibleForLeave() {
-		return eligibleForLeave;
-	}
 
-	public void setEligibleForLeave(boolean eligibleForLeave) {
-		this.eligibleForLeave = eligibleForLeave;
-	}
 }

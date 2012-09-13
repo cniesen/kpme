@@ -13,49 +13,49 @@ import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 public class PayTypeRule extends MaintenanceDocumentRuleBase {
 
-	boolean validateEarnCode(String regEarnCode, Date asOfDate) {
-		boolean valid = ValidationUtils.validateEarnCode(regEarnCode, asOfDate);
+    boolean validateEarnCode(String regEarnCode, Date asOfDate) {
+        boolean valid = ValidationUtils.validateEarnCode(regEarnCode, asOfDate);
 
-		if (!valid) {
-			this.putFieldError("regEarnCode", "earncode.notfound");
-		} else {
-			valid = !ValidationUtils.validateEarnCode(regEarnCode, true,
-					asOfDate);
-			if (!valid) {
-				this.putFieldError("regEarnCode", "earncode.ovt.not.required",
-						regEarnCode);
-			}
-		}
+        if (!valid) {
+            this.putFieldError("regEarnCode", "earncode.notfound");
+        } else {
+            valid = !ValidationUtils.validateEarnCode(regEarnCode, true,
+                    asOfDate);
+            if (!valid) {
+                this.putFieldError("regEarnCode", "earncode.ovt.not.required",
+                        regEarnCode);
+            }
+        }
 
-		return valid;
-	}
+        return valid;
+    }
 
-	boolean validateActive(String hrPayType, Date asOfDate) {
-		boolean valid = true;
-		List<Job> jobs = TkServiceLocator.getJobService()
-				.getActiveJobsForPayType(hrPayType, asOfDate);
-		if (jobs != null && !jobs.isEmpty()) {
-			this.putFieldError("active", "paytype.inactivate.locked", hrPayType);
-			valid = false;
-		}
-		return valid;
-	}
-    
-	@Override
-	protected boolean processCustomRouteDocumentBusinessRules(
-			MaintenanceDocument document) {
-		boolean valid = false;
+    boolean validateActive(String hrPayType, Date asOfDate) {
+        boolean valid = true;
+        List<Job> jobs = TkServiceLocator.getJobService()
+                .getActiveJobsForPayType(hrPayType, asOfDate);
+        if (jobs != null && !jobs.isEmpty()) {
+            this.putFieldError("active", "paytype.inactivate.locked", hrPayType);
+            valid = false;
+        }
+        return valid;
+    }
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
-		if (pbo instanceof PayType) {
-			PayType pt = (PayType) pbo;
+    @Override
+    protected boolean processCustomRouteDocumentBusinessRules(
+            MaintenanceDocument document) {
+        boolean valid = false;
 
-			valid = validateEarnCode(pt.getRegEarnCode(), pt.getEffectiveDate());
-			if (document.isOldBusinessObjectInDocument() && !pt.isActive()) {
-				valid = validateActive(pt.getPayType(), pt.getEffectiveDate());
-			}
-		}
+        PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+        if (pbo instanceof PayType) {
+            PayType pt = (PayType) pbo;
 
-		return valid;
-	}
+            valid = validateEarnCode(pt.getRegEarnCode(), pt.getEffectiveDate());
+            if (document.isOldBusinessObjectInDocument() && !pt.isActive()) {
+                valid = validateActive(pt.getPayType(), pt.getEffectiveDate());
+            }
+        }
+
+        return valid;
+    }
 }

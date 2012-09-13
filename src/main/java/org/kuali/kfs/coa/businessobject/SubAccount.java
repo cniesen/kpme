@@ -16,8 +16,6 @@
 
 package org.kuali.kfs.coa.businessobject;
 
-import java.util.LinkedHashMap;
-
 import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
@@ -182,17 +180,6 @@ public class SubAccount extends PersistableBusinessObjectBase implements Inactiv
      */
     public void setOrg(Organization org) {
         this.org = org;
-    }
-
-    /**
-     * @see org.kuali.rice.kns.bo.BusinessObjectBase#toStringMapper()
-     */
-    protected LinkedHashMap toStringMapper() {
-        LinkedHashMap m = new LinkedHashMap();
-        m.put("chartCode", this.chartOfAccountsCode);
-        m.put("account", this.accountNumber);
-        m.put("subAccountNumber", this.subAccountNumber);
-        return m;
     }
 
 }

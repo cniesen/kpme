@@ -3,6 +3,7 @@ package org.kuali.hr.time.workarea;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.kuali.hr.core.KPMEConstants;
@@ -39,6 +40,7 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule {
     private Department department;
     private Task taskObj;
     private EarnCode defaultOvertimeEarnCodeObj;
+
 
     public Date getEffectiveDate() {
         return effectiveDate;

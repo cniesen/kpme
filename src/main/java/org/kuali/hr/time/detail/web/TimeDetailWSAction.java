@@ -1,14 +1,5 @@
 package org.kuali.hr.time.detail.web;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -17,7 +8,6 @@ import org.apache.struts.action.ActionMapping;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.leavecalendar.validation.LeaveCalendarValidationService;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.detail.validation.TimeDetailValidationService;
@@ -28,6 +18,13 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class TimeDetailWSAction extends TimesheetAction {
 
@@ -53,16 +50,8 @@ public class TimeDetailWSAction extends TimesheetAction {
     public ActionForward validateTimeEntry(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeDetailActionFormBase tdaf = (TimeDetailActionFormBase) form;
         JSONArray errorMsgList = new JSONArray();
-        List<String> errors = new ArrayList<String>();
-        
-    	EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument().getAsOfDate());
-    	if(ec != null && ec.getLeavePlan() != null) {	// leave blocks changes
-    		errors = LeaveCalendarValidationService.validateLeaveEntryDetails(tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getSpanningWeeks().equalsIgnoreCase("y"));
-    	} else {	// time blocks changes
-    		errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
-    	}
-        
-//        List<String> errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
+
+        List<String> errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
         errorMsgList.addAll(errors);
 
         tdaf.setOutputString(JSONValue.toJSONString(errorMsgList));
@@ -93,21 +82,20 @@ public class TimeDetailWSAction extends TimesheetAction {
                 if (assignment.getJobNumber().compareTo(key.getJobNumber()) == 0 &&
                         assignment.getWorkArea().compareTo(key.getWorkArea()) == 0 &&
                         assignment.getTask().compareTo(key.getTask()) == 0) {
-                    List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, tdaf.getTimesheetDocument().getAsOfDate());
+                    List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assignment, tdaf.getTimesheetDocument().getAsOfDate());
                     for (EarnCode earnCode : earnCodes) {
-                        //@TODO may not need this IF.
-                        if (assignment.getTimeCollectionRule().isClockUserFl() && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId())) {
+                        // TODO: minimize / compress the crazy if logics below
+                        if (earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
+                                && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover())) {
+                            continue;
+                        }
+                        if (!(assignment.getTimeCollectionRule().isClockUserFl() &&
+                                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()))) {
                             Map<String, Object> earnCodeMap = new HashMap<String, Object>();
                             earnCodeMap.put("assignment", assignment.getAssignmentKey());
                             earnCodeMap.put("earnCode", earnCode.getEarnCode());
                             earnCodeMap.put("desc", earnCode.getDescription());
                             earnCodeMap.put("type", earnCode.getEarnCodeType());
-                            // for leave blocks
-                            earnCodeMap.put("leavePlan", earnCode.getLeavePlan());	
-                            if(StringUtils.isNotEmpty(earnCode.getLeavePlan())) {
-	                            earnCodeMap.put("fractionalTimeAllowed", earnCode.getFractionalTimeAllowed());
-	                            earnCodeMap.put("unitOfTime", ActionFormUtils.getUnitOfTimeForEarnCode(earnCode));
-                            }
 
                             earnCodeList.add(earnCodeMap);
                         }

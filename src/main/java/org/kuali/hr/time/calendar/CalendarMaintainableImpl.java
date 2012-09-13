@@ -3,7 +3,6 @@ package org.kuali.hr.time.calendar;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
 
@@ -43,8 +42,6 @@ public class CalendarMaintainableImpl extends KualiMaintainableImpl {
 		super.saveBusinessObject();
 		Calendar calendar = (Calendar) this.getBusinessObject();
 		LOG.info("Saved pay calendar: " + calendar.getHrCalendarId());
-        CacheUtils.flushCache(Calendar.CACHE_NAME);
-        CacheUtils.flushCache(CalendarEntries.CACHE_NAME);
 	}
 
 }

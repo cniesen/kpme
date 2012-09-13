@@ -48,9 +48,9 @@ public class CalendarEntries extends PersistableBusinessObjectBase implements Co
     private java.util.Date endPeriodDateTime;
 
     @Transient
-    private java.sql.Date beginPeriodDate;
+    private Date beginPeriodDate;
     @Transient
-    private java.sql.Date endPeriodDate;
+    private Date endPeriodDate;
     @Transient
     private Time beginPeriodTime;
     @Transient
@@ -128,8 +128,8 @@ public class CalendarEntries extends PersistableBusinessObjectBase implements Co
     public void setBeginPeriodDateTime(java.util.Date beginPeriodDateTime) {
         this.beginPeriodDateTime = beginPeriodDateTime;
         if (beginPeriodDateTime != null) {
-            setBeginPeriodDate(new java.sql.Date(beginPeriodDateTime.getTime()));
-            setBeginPeriodTime(new java.sql.Time(beginPeriodDateTime.getTime()));
+            setBeginPeriodDate(new Date(beginPeriodDateTime.getTime()));
+            setBeginPeriodTime(new Time(beginPeriodDateTime.getTime()));
         }
     }
 
@@ -140,30 +140,30 @@ public class CalendarEntries extends PersistableBusinessObjectBase implements Co
     public void setEndPeriodDateTime(java.util.Date endPeriodDateTime) {
         this.endPeriodDateTime = endPeriodDateTime;
         if (endPeriodDateTime != null) {
-            setEndPeriodDate(new java.sql.Date(endPeriodDateTime.getTime()));
-            setEndPeriodTime(new java.sql.Time(endPeriodDateTime.getTime()));
+            setEndPeriodDate(new Date(endPeriodDateTime.getTime()));
+            setEndPeriodTime(new Time(endPeriodDateTime.getTime()));
         }
     }
 
-    public java.sql.Date getBeginPeriodDate() {
+    public Date getBeginPeriodDate() {
     	if(beginPeriodDate == null && this.getBeginPeriodDateTime() != null) {
-    		setBeginPeriodDate(new java.sql.Date(this.getBeginPeriodDateTime().getTime()));
+    		setBeginPeriodDate(new Date(this.getBeginPeriodDateTime().getTime()));
     	}
         return beginPeriodDate;
     }
 
-    public void setBeginPeriodDate(java.sql.Date beginPeriodDate) {
+    public void setBeginPeriodDate(Date beginPeriodDate) {
         this.beginPeriodDate = beginPeriodDate;
     }
 
-    public java.sql.Date getEndPeriodDate() {
+    public Date getEndPeriodDate() {
     	if(endPeriodDate == null && this.getEndPeriodDateTime() != null) {
-    		setEndPeriodDate(new java.sql.Date(this.getEndPeriodDateTime().getTime()));
+    		setEndPeriodDate(new Date(this.getEndPeriodDateTime().getTime()));
     	}
         return endPeriodDate;
     }
 
-    public void setEndPeriodDate(java.sql.Date endPeriodDate) {
+    public void setEndPeriodDate(Date endPeriodDate) {
         this.endPeriodDate = endPeriodDate;
     }
 

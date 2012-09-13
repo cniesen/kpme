@@ -1,59 +1,45 @@
 package org.kuali.hr.time.util;
 
-import java.lang.reflect.Field;
 import java.sql.Timestamp;
 
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import sun.util.LocaleServiceProviderPool;
 
 public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainableImpl {
-    protected static org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(HrBusinessObjectMaintainableImpl.class);
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	@Override
-	public void saveBusinessObject() {
-		HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
-		if(hrObj.getId()!=null){
-			HrBusinessObject oldHrObj = this.getObjectById(hrObj.getId());
-			if(oldHrObj!= null){
-				//if the effective dates are the same do not create a new row just inactivate the old one
-				if(hrObj.getEffectiveDate().equals(oldHrObj.getEffectiveDate())){
-					oldHrObj.setActive(false);
-					oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime()))); 
-				} else{
-					//if effective dates not the same add a new row that inactivates the old entry based on the new effective date
-					oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
-					oldHrObj.setEffectiveDate(hrObj.getEffectiveDate());
-					oldHrObj.setActive(false);
-					oldHrObj.setId(null);
-				}
-				KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
-			}
-		}
-		hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
-		hrObj.setId(null);
-		
-		customSaveLogic(hrObj);
-		KRADServiceLocator.getBusinessObjectService().save(hrObj);
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-        //cache clearing?!?!
-        try {
-            String cacheName = (String)hrObj.getClass().getDeclaredField("CACHE_NAME").get(hrObj);
-            CacheUtils.flushCache(cacheName);
-        } catch (NoSuchFieldException e) {
-            // no cache name found
-            LOG.warn("No cache name found for object: " + hrObj.getClass().getName());
-        } catch (IllegalAccessException e) {
-            LOG.warn("No cache name found for object: " + hrObj.getClass().getName());
+    @Override
+    public void saveBusinessObject() {
+        HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
+        if(hrObj.getId()!=null){
+            HrBusinessObject oldHrObj = this.getObjectById(hrObj.getId());
+            if(oldHrObj!= null){
+                //if the effective dates are the same do not create a new row just inactivate the old one
+                if(hrObj.getEffectiveDate().equals(oldHrObj.getEffectiveDate())){
+                    oldHrObj.setActive(false);
+                    oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
+                } else{
+                    //if effective dates not the same add a new row that inactivates the old entry based on the new effective date
+                    oldHrObj.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(TKUtils.getCurrentDate().getTime())));
+                    oldHrObj.setEffectiveDate(hrObj.getEffectiveDate());
+                    oldHrObj.setActive(false);
+                    oldHrObj.setId(null);
+                }
+                KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
+            }
         }
+        hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        hrObj.setId(null);
+
+        customSaveLogic(hrObj);
+        KRADServiceLocator.getBusinessObjectService().save(hrObj);
     }
-	
-	public abstract HrBusinessObject getObjectById(String id);
-	public void customSaveLogic(HrBusinessObject hrObj){};
+
+    public abstract HrBusinessObject getObjectById(String id);
+    public void customSaveLogic(HrBusinessObject hrObj){};
 }

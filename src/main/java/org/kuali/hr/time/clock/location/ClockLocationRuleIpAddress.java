@@ -4,49 +4,49 @@ import org.kuali.hr.time.HrBusinessObject;
 
 public class ClockLocationRuleIpAddress extends HrBusinessObject {
 
-	private static final long serialVersionUID = 1L;
-	private String tkClockLocationRuleIpId;
-	private String tkClockLocationRuleId;
-	private String ipAddress;
-	
-	@Override
-	public String getId() {
-		return this.getTkClockLocationRuleIpId();
-	}
+    private static final long serialVersionUID = 1L;
+    private String tkClockLocationRuleIpId;
+    private String tkClockLocationRuleId;
+    private String ipAddress;
 
-	@Override
-	public void setId(String id) {
-		this.setTkClockLocationRuleIpId(id);
-	}
-	@Override
-	public String getUniqueKey() {
-		String ipAddressKey = getTkClockLocationRuleIpId().toString()
-			+"_"+ getTkClockLocationRuleId().toString() + "_" + getIpAddress();
-		return ipAddressKey;
-	}
+    @Override
+    public String getId() {
+        return this.getTkClockLocationRuleIpId();
+    }
 
-	public String getIpAddress() {
-		return ipAddress;
-	}
+    @Override
+    public void setId(String id) {
+        this.setTkClockLocationRuleIpId(id);
+    }
+    @Override
+    public String getUniqueKey() {
+        String ipAddressKey = getTkClockLocationRuleIpId().toString()
+                +"_"+ getTkClockLocationRuleId().toString() + "_" + getIpAddress();
+        return ipAddressKey;
+    }
 
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+    public String getIpAddress() {
+        return ipAddress;
+    }
 
-	public String getTkClockLocationRuleIpId() {
-		return tkClockLocationRuleIpId;
-	}
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
 
-	public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
-		this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
-	}
+    public String getTkClockLocationRuleIpId() {
+        return tkClockLocationRuleIpId;
+    }
 
-	public String getTkClockLocationRuleId() {
-		return tkClockLocationRuleId;
-	}
+    public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
+        this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
+    }
 
-	public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
-		this.tkClockLocationRuleId = tkClockLocationRuleId;
-	}
+    public String getTkClockLocationRuleId() {
+        return tkClockLocationRuleId;
+    }
+
+    public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
+        this.tkClockLocationRuleId = tkClockLocationRuleId;
+    }
 
 }

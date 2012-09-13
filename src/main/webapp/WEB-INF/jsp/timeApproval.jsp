@@ -157,7 +157,7 @@
         	<td></td>
         	<c:if test="${!Form.onCurrentPeriod}" >
 	        	<td align="center">
-	        		<a href="TimeApproval.do?methodToCall=gotoCurrentPayPeriod"
+	        		<a href="${KualiForm.backLocation}?methodToCall=gotoCurrentPayPeriod"
 	                  	 target="_self" id="cppLink">Go to Current Period</a>
 	        	</td>
         	</c:if>

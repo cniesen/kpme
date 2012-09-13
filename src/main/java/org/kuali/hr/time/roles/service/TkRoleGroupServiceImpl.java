@@ -47,6 +47,7 @@ public class TkRoleGroupServiceImpl implements TkRoleGroupService {
         if (tkRoleGroup != null) {
             List<TkRole> tkRoles = TkServiceLocator.getTkRoleService().getRoles(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
             List<TkRole> tkInActiveRoles = TkServiceLocator.getTkRoleService().getInactiveRoles(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
+
             Iterator<TkRole> itr = tkRoles.iterator();
             while (itr.hasNext()) {
                 TkRole tkRole = (TkRole) itr.next();

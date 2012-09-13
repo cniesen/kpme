@@ -19,7 +19,6 @@
 			<list>
 				<ref bean="Assignment-tkAssignmentId" />
 				<ref bean="Assignment-principalId" />
-				<ref bean="Assignment-name" />
 				<ref bean="Assignment-jobNumber" />
 				<ref bean="Assignment-hrJobId" />
 				<ref bean="Assignment-effectiveDate" />
@@ -120,19 +119,19 @@
 	<bean id="Assignment-principalId-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Principal Id" />
-		<property name="maxLength" value="10" />
+		<property name="maxLength" value="40" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
+			<bean parent="TextControlDefinition" p:size="40" />
 		</property>
 		<property name="name" value="principalId" />
 		<property name="label" value="Principal Id" />
 	</bean>
-
+<!-- 
 	<bean id="Assignment-name" parent="Assignment-name-parentBean" />
 	<bean id="Assignment-name-parentBean" abstract="true"
 		parent="AttributeDefinition">
@@ -144,7 +143,7 @@
 		<property name="name" value="name" />
 		<property name="label" value="Name" />
 	</bean>
-
+ -->
 
 	<bean id="Assignment-jobNumber" parent="Assignment-jobNumber-parentBean" />
 	<bean id="Assignment-jobNumber-parentBean" abstract="true"

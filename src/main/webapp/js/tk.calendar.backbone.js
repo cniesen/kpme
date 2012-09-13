@@ -107,7 +107,6 @@ $(function () {
             "click div[id*=show]" : "showTimeBlock",
             "click img[id^=timeblockDelete]" : "deleteTimeBlock",
             "click img[id^=lunchDelete]" : "deleteLunchDeduction",
-            "click img[id^=leaveBlockDelete]" : "deleteLeaveBlock",
             // .create is the div that fills up the white sapce and .day-number is the div with the day number on it.
             // <div class="create"></div> is in calendar.tag.
             // We want to trigger the show event on any white space areas.
@@ -410,12 +409,6 @@ $(function () {
             }
         },
 
-        deleteLeaveBlock : function (e) {
-            var key = _(e).parseEventKey();
-        	if (confirm('You are about to delete a leave block. Click OK to confirm the delete.')) {
-        		window.location = "TimeDetail.do?methodToCall=deleteLeaveBlock&lmLeaveBlockId=" + key.id;
-        	}
-        },
 
         fetchEarnCode : function (e, isTimeBlockReadOnly) {
 
@@ -465,53 +458,29 @@ $(function () {
         },
 
         showFieldByEarnCodeType : function () {
-  			if($("#selectedEarnCode option:selected").val() == '') {
-  				return;
-  			}
             var earnCodeType = _.getEarnCodeType(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-            var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection", ".leaveAmountSection"];
-            var leavePlan = this.getEarnCodeLeavePlan(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
+            var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection"];
 
-            // reset values every time the earn code is changed
-            $("#startTimeHourMinute, #startTime, #endTimeHourMinute, #endTime, #hours, #amount, #leaveAmount").val("");
-            if(typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined') {  // for leave block earn codes
-            	var earnCodeUnit = this.getEarnCodeUnit(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
- 				if(typeof earnCodeUnit == 'undefined' || earnCodeUnit == '' || earnCodeUnit == null || earnCodeUnit == 'undefined') {
- 					var checkFlag = earnCodeType;
- 				} else {
- 					var checkFlag = earnCodeUnit;
- 				}
-                $(_.without(fieldSections, ".leaveAmountSection").join(",")).hide();
-                $(fieldSections[4]).show();
+            // reset values everytime when the earn code is changed
+            $("#startTimeHourMinute, #startTime, #endTimeHourMinute, #endTime, #hours, #amount").val("");
 
-                if (checkFlag == CONSTANTS.EARNCODE_UNIT.DAY) {
-            		$('#unitOfTime').text('* Leave Days');
-            	} else if (checkFlag == CONSTANTS.EARNCODE_UNIT.HOUR) {
-            		$('#unitOfTime').text('* Leave Hours');
-            	}
-                var defaultTime = this.getEarnCodeDefaultTime(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-                $('#leaveAmount').val(defaultTime);
-
+            // There might be a better way doing this, but we can revisit this later.
+            // Currently, the fields variable contains a list of the entry field classes.
+            // The Underscore.js _.without function returns an array except the ones you speficied.
+            if (earnCodeType == CONSTANTS.EARNCODE_TYPE.HOUR) {
+                $(_.without(fieldSections, ".hourSection").join(",")).hide();
+                $(fieldSections[2]).show();
+                // TODO: figure out why we had to do something crazy like below...
+                $('#startTime, #endTime').val("23:59");
+            } else if (earnCodeType == CONSTANTS.EARNCODE_TYPE.AMOUNT) {
+                $(_.without(fieldSections, ".amountSection").join(",")).hide();
+                $(fieldSections[3]).show();
+                $('#startTime, #endTime').val("23:59");
+            } else {
+                $(_.without(fieldSections, ".clockInSection", ".clockOutSection").join(",")).hide();
+                $(fieldSections[0] + "," + fieldSections[1]).show();
             }
-            else {
-	            // There might be a better way doing this, but we can revisit this later.
-	            // Currently, the fields variable contains a list of the entry field classes.
-	            // The Underscore.js _.without function returns an array except the ones you speficied.
-	            if (earnCodeType == CONSTANTS.EARNCODE_TYPE.HOUR) {
-	                $(_.without(fieldSections, ".hourSection").join(",")).hide();
-	                $(fieldSections[2]).show();
-	                // TODO: figure out why we had to do something crazy like below...
-	                $('#startTime, #endTime').val("23:59");
-	            } else if (earnCodeType == CONSTANTS.EARNCODE_TYPE.AMOUNT) {
-	                $(_.without(fieldSections, ".amountSection").join(",")).hide();
-	                $(fieldSections[3]).show();
-	                $('#startTime, #endTime').val("23:59");
-	            } 
-	            else {
-	                $(_.without(fieldSections, ".clockInSection", ".clockOutSection").join(",")).hide();
-	                $(fieldSections[0] + "," + fieldSections[1]).show();
-	            }
-            }
+
         },
 
         changeAssignment : function () {
@@ -545,7 +514,6 @@ $(function () {
                 params['endTime'] = $('#endTime').val();
                 params['hours'] = $('#hours').val();
                 params['amount'] = $('#amount').val();
-                params['leaveAmount'] = $('#leaveAmount').val();
                 params['selectedAssignment'] = _.getSelectedAssignmentValue();
                 params['selectedEarnCode'] = $('#selectedEarnCode option:selected').val();
                 if ($("#overtimePref") != undefined) {
@@ -610,67 +578,11 @@ $(function () {
                 var hours = $('#hours');
                 isValid = isValid && (this.checkEmptyField(hours, "Hour") && this.checkMinLength(hours, "Hour", 1) && this.checkRegexp(hours, '/0/', 'Hours cannot be zero'));
             }
-            else if (_.contains(ids, "amount")) {
+            else {
                 var amount = $('#amount');
                 isValid = isValid && (this.checkEmptyField(amount, "Amount") && this.checkMinLength(amount, "Amount", 1) && this.checkRegexp(amount, '/0/', 'Amount cannot be zero'));
             }
-           // get earn code leave plan, if it's not null, then the change is for a leave block  
-           var leavePlan = this.getEarnCodeLeavePlan(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-           if (typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined') {
-                var leaveAmount = $('#leaveAmount');
-                isValid = isValid && (this.checkEmptyField(leaveAmount, "Leave Amount") && this.checkMinLength(leaveAmount, "Leave Amount", 1) && this.checkRegexp(leaveAmount, '/0/', 'Leave Amount cannot be zero'));
-                // check fraction allowed by the Earn Code
-	            if(isValid) {
-	            	var fraction = this.getEarnCodeFractionalAllowedTime(EarnCodes.toJSON(), $('#selectedEarnCode option:selected').val());
-	        		if(typeof fraction != 'undefined' && fraction != '') {
-	        			var fractionAr = fraction.split(".");
-	        			var leaveAmountAr = leaveAmount.val().split(".");
-	        			if(leaveAmountAr.length > 1) {
-	        				fieldLength = leaveAmountAr[1].length;
-	        			} else {
-	        				fieldLength = 0;
-	        			}
-	        			if(fractionAr.length > 1) {
-	        				fracLength = fractionAr[1].length;
-	        			} else {
-	        				fracLength = 0 ;
-	        			}
-	        			if(fieldLength > fracLength) {
-	        				isValid = false;
-	        				this.displayErrorMessages("Leave Amount field should be in the format of "+fraction);
-	        			}
-	        		}		           
-	            }
-           }
-            
             return isValid;
-        },
-        
-        getEarnCodeLeavePlan : function (earnCodeJson, earnCode) {
-            var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).leavePlan;
-        },
-        
-        getEarnCodeFractionalAllowedTime : function (earnCodeJson, earnCode) {
-       	 var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).fractionalTimeAllowed;
-        },
-        
-        getEarnCodeDefaultTime : function (earnCodeJson, earnCode) {
-       	 var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).defaultAmountofTime;
-        },
-        getEarnCodeUnit : function (earnCodeJson, earnCode) {
-            var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).unitOfTime;
         },
 
         checkLength : function (o, n, min, max) {
@@ -786,7 +698,6 @@ $(function () {
         render : function () {
             var self = this;
             $("#selectedEarnCode").html("");
-            $(self.el).append("<option value=''>-- select an earn code --</option>");
             this.collection.each(function (earnCode) {
                 $(self.el).append(self.template(earnCode.toJSON()));
             });

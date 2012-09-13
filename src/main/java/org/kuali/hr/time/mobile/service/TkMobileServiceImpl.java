@@ -1,11 +1,6 @@
 package org.kuali.hr.time.mobile.service;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
+import com.google.gson.Gson;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
@@ -21,7 +16,11 @@ import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
-import com.google.gson.Gson;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class TkMobileServiceImpl implements TkMobileService {
 
@@ -71,7 +70,7 @@ public class TkMobileServiceImpl implements TkMobileService {
         // processClockLog is the correct method to use. It creates and persists a clock log and a time block if necessary.
         // buildClockLog just creates a clock log object.
         TkServiceLocator.getClockLogService().processClockLog(currentTs, assignment, td.getPayCalendarEntry(), ip,
-                new java.sql.Date(currentTs.getTime()), td, getCurrentClockAction(), principalId);
+                new Date(currentTs.getTime()), td, getCurrentClockAction(), principalId);
 
         // TODO: not sure what we want to return for the errorWarningMap
 

@@ -15,8 +15,8 @@ public class BatchJobManagerThread extends Thread {
     private static final Logger LOG = Logger.getLogger(BatchJobManagerThread.class);
 
     int startupSleep = 120;
-	//This represents a number of days on both sides of today
-	int numOfDaysToPoll = 30;
+    //This represents a number of days on both sides of today
+    int numOfDaysToPoll = 30;
     int secondsToSleep = 120;
 
     public BatchJobManagerThread(int secondsToSleep, int numberOfDaysToPoll, int startupSleep) {
@@ -25,8 +25,8 @@ public class BatchJobManagerThread extends Thread {
         this.startupSleep = startupSleep;
     }
 
-	@Override
-	public void run() {
+    @Override
+    public void run() {
 
         try {
             Thread.sleep(1000 * startupSleep);
@@ -84,7 +84,7 @@ public class BatchJobManagerThread extends Thread {
                 LOG.error(e);
             }
         }
-	}
+    }
 
     private boolean jobPresentInJobsList(List<BatchJob> batchJobs, String batchJobName) {
         for (BatchJob batchJob : batchJobs) {

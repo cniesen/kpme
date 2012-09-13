@@ -1,16 +1,14 @@
 package org.kuali.hr.time.accrual;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-
-import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.impl.identity.PersonImpl;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+
 public class TimeOffAccrual extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeOffAccrual";
+
 	/**
 	 * 
 	 */
@@ -28,7 +26,8 @@ public class TimeOffAccrual extends HrBusinessObject {
 	
 	private AccrualCategory accrualCategoryObj;
 
-	protected PersonImpl principal;
+	protected Person principal;
+
 
 	public String getPrincipalId() {
 		return principalId;

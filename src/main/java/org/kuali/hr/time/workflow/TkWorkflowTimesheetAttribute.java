@@ -1,7 +1,6 @@
 package org.kuali.hr.time.workflow;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -23,40 +22,39 @@ import org.kuali.rice.kew.api.rule.RoleName;
 import org.kuali.rice.kew.api.rule.RuleExtension;
 import org.kuali.rice.kew.engine.RouteContext;
 import org.kuali.rice.kew.routeheader.DocumentContent;
-import org.kuali.rice.kew.rule.AbstractRoleAttribute;
 import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
 import org.kuali.rice.kew.rule.RoleAttribute;
 import org.kuali.rice.kew.rule.RuleExtensionValue;
 import org.kuali.rice.kns.web.ui.Row;
 
-public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
+public class TkWorkflowTimesheetAttribute implements RoleAttribute {
 
     private static final Logger LOG = Logger.getLogger(TkWorkflowTimesheetAttribute.class);
 
-	@Override
-	public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
-		List<String> roles = new ArrayList<String>();
-		Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
-		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
+    @Override
+    public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
+        List<String> roles = new ArrayList<String>();
+        Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
+        TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
 
-		if (timesheetDocument != null) {
-			List<Assignment> assignments = timesheetDocument.getAssignments();
-			for (Assignment assignment : assignments) {
-				String roleStr = roleName + "_" +assignment.getWorkArea();
-				if(!roles.contains(roleStr)){
-					roles.add(roleStr);
-				}
-			}
-		}
-		return roles;
-	}
+        if (timesheetDocument != null) {
+            List<Assignment> assignments = timesheetDocument.getAssignments();
+            for (Assignment assignment : assignments) {
+                String roleStr = roleName + "_" +assignment.getWorkArea();
+                if(!roles.contains(roleStr)){
+                    roles.add(roleStr);
+                }
+            }
+        }
+        return roles;
+    }
 
-	/**
-	 * Role name is passed in in the routing rule.
-	 */
-	@Override
-	public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
-		ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
+    /**
+     * Role name is passed in in the routing rule.
+     */
+    @Override
+    public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
+        ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
         Long workAreaNumber = null;
 
         try {
@@ -73,50 +71,108 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
             throw new RuntimeException("Unable to resolve work area during routing.");
         }
 
-		List<Id> principals = new ArrayList<Id>();
-		String routeHeaderId = routeContext.getDocument().getDocumentId();
-		TkRoleService roleService = TkServiceLocator.getTkRoleService();
-		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
-		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
+        List<Id> principals = new ArrayList<Id>();
+        Long routeHeaderId = new Long(routeContext.getDocument().getDocumentId());
+        TkRoleService roleService = TkServiceLocator.getTkRoleService();
+        TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
+        WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
 
         // KPME-1071
         List<TkRole> approvers = roleService.getWorkAreaRoles(workAreaNumber, roleName, TKUtils.getCurrentDate());
         List<TkRole> approverDelegates = roleService.getWorkAreaRoles(workAreaNumber, TkConstants.ROLE_TK_APPROVER_DELEGATE, TKUtils.getCurrentDate());
-		List<TkRole> roles = new ArrayList<TkRole>();
+        List<TkRole> roles = new ArrayList<TkRole>();
         roles.addAll(approvers);
         roles.addAll(approverDelegates);
 
-		for (TkRole role : roles) {
-			//Position routing
-			if(StringUtils.isEmpty(role.getPrincipalId())){
-				String positionNumber = role.getPositionNumber();
-				List<Job> lstJobsForPosition = TkServiceLocator.getJobService().getActiveJobsForPosition(positionNumber, timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime());
-				for(Job job : lstJobsForPosition){
-					PrincipalId pid = new PrincipalId(job.getPrincipalId());
-					if (!principals.contains(pid)) {
-						principals.add(pid);
-					}
-				}
-			} else {
-				PrincipalId pid = new PrincipalId(role.getPrincipalId());
-					if (!principals.contains(pid)) {
-						principals.add(pid);
-					}
-			}
-		}
+        for (TkRole role : roles) {
+            //Position routing
+            if(StringUtils.isEmpty(role.getPrincipalId())){
+                String positionNumber = role.getPositionNumber();
+                List<Job> lstJobsForPosition = TkServiceLocator.getJobService().getActiveJobsForPosition(positionNumber, timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime());
+                for(Job job : lstJobsForPosition){
+                    PrincipalId pid = new PrincipalId(job.getPrincipalId());
+                    if (!principals.contains(pid)) {
+                        principals.add(pid);
+                    }
+                }
+            } else {
+                PrincipalId pid = new PrincipalId(role.getPrincipalId());
+                if (!principals.contains(pid)) {
+                    principals.add(pid);
+                }
+            }
+        }
 
-		if (principals.size() == 0)
-			throw new RuntimeException("No principals to route to. Push to exception routing.");
+        if (principals.size() == 0)
+            throw new RuntimeException("No principals to route to. Push to exception routing.");
 
-		rqr.setRecipients(principals);
-		rqr.setAnnotation("Dept: "+ workArea.getDept()+", Work Area: "+workArea.getWorkArea());
+        rqr.setRecipients(principals);
+        rqr.setAnnotation("Dept: "+ workArea.getDept()+", Work Area: "+workArea.getWorkArea());
 
-		return rqr;
-	}
+        return rqr;
+    }
 
-	@Override
-	public List<RoleName> getRoleNames() {
-        return Collections.EMPTY_LIST;
-	}
+    @Override
+    public boolean isMatch(DocumentContent docContent,
+                           List<RuleExtension> ruleExtensions) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public List<Row> getRuleRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<Row> getRoutingDataRows() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public String getDocContent() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RuleExtensionValue> getRuleExtensionValues() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RemotableAttributeError> validateRoutingData(
+            Map<String, String> paramMap) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public List<RemotableAttributeError> validateRuleData(
+            Map<String, String> paramMap) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setRequired(boolean required) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public boolean isRequired() {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    @Override
+    public List<RoleName> getRoleNames() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }

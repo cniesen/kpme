@@ -12,7 +12,7 @@ import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 
 public class EmployeeApprovalBatchJob extends BatchJob {
-	private Logger LOG = Logger.getLogger(EmployeeApprovalBatchJob.class);
+    private Logger LOG = Logger.getLogger(EmployeeApprovalBatchJob.class);
     private CalendarEntries payCalendarEntry;
 
     public EmployeeApprovalBatchJob(CalendarEntries payCalendarEntry) {
@@ -20,27 +20,27 @@ public class EmployeeApprovalBatchJob extends BatchJob {
         setBatchJobName(TkConstants.BATCH_JOB_NAMES.APPROVE);
     }
 
-	@Override
-	public void doWork() {
-		Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
-		//TODO populate pay begin date here
-		List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
-		for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
-			populateBatchJobEntry(timesheetDocumentHeader);
-		}
-	}
+    @Override
+    public void doWork() {
+        Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
+        //TODO populate pay begin date here
+        List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
+        for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
+            populateBatchJobEntry(timesheetDocumentHeader);
+        }
+    }
 
-	@Override
-	protected void populateBatchJobEntry(Object o) {
-		TimesheetDocumentHeader timesheetDocumentHeader = (TimesheetDocumentHeader)o;
-		String ip = this.getNextIpAddressInCluster();
-		if(StringUtils.isNotBlank(ip)){
+    @Override
+    protected void populateBatchJobEntry(Object o) {
+        TimesheetDocumentHeader timesheetDocumentHeader = (TimesheetDocumentHeader)o;
+        String ip = this.getNextIpAddressInCluster();
+        if(StringUtils.isNotBlank(ip)){
             //insert a batch job entry here
             BatchJobEntry entry = this.createBatchJobEntry(this.getBatchJobName(), ip, timesheetDocumentHeader.getPrincipalId(), timesheetDocumentHeader.getDocumentId(),null);
             TkServiceLocator.getBatchJobEntryService().saveBatchJobEntry(entry);
-		} else {
-			LOG.info("No ip found in cluster to assign batch jobs");
-		}
-	}
+        } else {
+            LOG.info("No ip found in cluster to assign batch jobs");
+        }
+    }
 
 }

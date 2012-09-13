@@ -1,1 +1,0 @@
-delete from tk_document_header_t where document_id = '2';

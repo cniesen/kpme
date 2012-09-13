@@ -5,10 +5,8 @@
     <table class="cal-header">
 		<tbody>
 			<tr>
-				<td align="left">
-					<span class="header-title-left">Calendar Year</span>
-                </td>
-                <td align="left">
+				<td>
+					<span class="header-title">Calendar Years</span>
 	                <select id="selectedCalendarYear" name="selectedCalendarYear">
 	                    <c:forEach var="calendarYear" items="${Form.calendarYears}">
 	                        <c:choose>
@@ -21,16 +19,13 @@
 	                        </c:choose>
 	                    </c:forEach>
 	                </select>
-                </td>
-            </tr>
-            <tr>
-                <td align="left">
-          			<span class="header-title-left">Pay Period</span>
-                </td>
-                <td align="left">
-                    <select id="selectedPayPeriod" name="selectedPayPeriod">
-                         <option value=''>-- select a pay period --</option>
-                         <c:forEach var="payPeriod" items="${Form.payPeriodsMap}">
+	                <%--
+	                <div id="payPeriod-section">
+	                 --%>
+	        			<span class="header-title">Pay Periods</span>
+                        <select id="selectedPayPeriod" name="selectedPayPeriod">
+                           <option value=''>-- select a pay period --</option>
+                           <c:forEach var="payPeriod" items="${Form.payPeriodsMap}">
 		                      <c:choose>
 		                          <c:when test="${Form.selectedPayPeriod eq payPeriod.key}">
 		                              <option value="${payPeriod.key}" selected="selected">${payPeriod.value}</option>
@@ -40,7 +35,10 @@
 		                          </c:otherwise>
 		                      </c:choose>
                  		 </c:forEach>
-                    </select>
+                        </select>
+                   <%--
+                    </div>
+                     --%>
 		        </td>
 			</tr>
 		</tbody>

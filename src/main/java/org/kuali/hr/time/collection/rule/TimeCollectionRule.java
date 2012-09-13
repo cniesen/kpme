@@ -9,167 +9,167 @@ import org.kuali.hr.time.workarea.WorkArea;
 
 public class TimeCollectionRule extends HrBusinessObject implements DepartmentalRule {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeCollectionRule";
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String tkTimeCollectionRuleId;
-	private String dept;
-	private Long workArea;
-	private boolean clockUserFl;
-	private boolean hrsDistributionF;
-	private String userPrincipalId;
+    private String tkTimeCollectionRuleId;
+    private String dept;
+    private Long workArea;
+    private boolean clockUserFl;
+    private boolean hrsDistributionF;
+    private String userPrincipalId;
 
-	private String tkWorkAreaId;
-	private String hrDeptId;
+    private String tkWorkAreaId;
+    private String hrDeptId;
 
-	private Department departmentObj;
-	private WorkArea workAreaObj;
-	
-	private Boolean history;
-	
-	// chen, 11/07/11, KPME-1152
-	private String payType; 
-	private String hrPayTypeId; 
-	private PayType payTypeObj;
-	// KPME-1152
+    private Department departmentObj;
+    private WorkArea workAreaObj;
 
-	
-	public Department getDepartmentObj() {
-		return departmentObj;
-	}
+    private Boolean history;
 
-	public String getPayType() {
-		return payType;
-	}
+    // chen, 11/07/11, KPME-1152
+    private String payType;
+    private String hrPayTypeId;
+    private PayType payTypeObj;
+    // KPME-1152
 
-	public void setPayType(String payType) {
-		this.payType = payType;
-	}
 
-	public String getHrPayTypeId() {
-		return hrPayTypeId;
-	}
+    public Department getDepartmentObj() {
+        return departmentObj;
+    }
 
-	public void setHrPayTypeId(String hrPayTypeId) {
-		this.hrPayTypeId = hrPayTypeId;
-	}
+    public String getPayType() {
+        return payType;
+    }
 
-	public PayType getPayTypeObj() {
-		return payTypeObj;
-	}
+    public void setPayType(String payType) {
+        this.payType = payType;
+    }
 
-	public void setPayTypeObj(PayType payTypeObj) {
-		this.payTypeObj = payTypeObj;
-	}
+    public String getHrPayTypeId() {
+        return hrPayTypeId;
+    }
 
-	public void setDepartmentObj(Department departmentObj) {
-		this.departmentObj = departmentObj;
-	}
+    public void setHrPayTypeId(String hrPayTypeId) {
+        this.hrPayTypeId = hrPayTypeId;
+    }
 
-	public WorkArea getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public PayType getPayTypeObj() {
+        return payTypeObj;
+    }
 
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public void setPayTypeObj(PayType payTypeObj) {
+        this.payTypeObj = payTypeObj;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public void setDepartmentObj(Department departmentObj) {
+        this.departmentObj = departmentObj;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public WorkArea getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public void setWorkAreaObj(WorkArea workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-	public boolean isClockUserFl() {
-		return clockUserFl;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public void setClockUserFl(boolean clockUserFl) {
-		this.clockUserFl = clockUserFl;
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public boolean isHrsDistributionF() {
-		return hrsDistributionF;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-	public void setHrsDistributionF(boolean hrsDistributionF) {
-		this.hrsDistributionF = hrsDistributionF;
-	}
+    public boolean isClockUserFl() {
+        return clockUserFl;
+    }
 
-	public String getUserPrincipalId() {
-		return userPrincipalId;
-	}
+    public void setClockUserFl(boolean clockUserFl) {
+        this.clockUserFl = clockUserFl;
+    }
 
-	public void setUserPrincipalId(String userPrincipalId) {
-		this.userPrincipalId = userPrincipalId;
-	}
+    public boolean isHrsDistributionF() {
+        return hrsDistributionF;
+    }
 
-	public String getTkTimeCollectionRuleId() {
-		return tkTimeCollectionRuleId;
-	}
+    public void setHrsDistributionF(boolean hrsDistributionF) {
+        this.hrsDistributionF = hrsDistributionF;
+    }
 
-	public void setTkTimeCollectionRuleId(String tkTimeCollectionRuleId) {
-		this.tkTimeCollectionRuleId = tkTimeCollectionRuleId;
-	}
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
 
-	public String getDept() {
-		return dept;
-	}
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public String getTkTimeCollectionRuleId() {
+        return tkTimeCollectionRuleId;
+    }
 
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    public void setTkTimeCollectionRuleId(String tkTimeCollectionRuleId) {
+        this.tkTimeCollectionRuleId = tkTimeCollectionRuleId;
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
+    public String getDept() {
+        return dept;
+    }
 
-	public String getHrDeptId() {
-		return hrDeptId;
-	}
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
-	public void setHrDeptId(String hrDeptId) {
-		this.hrDeptId = hrDeptId;
-	}
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		String timeCollKey = getDept()+"_"+isClockUserFl()+"_"+isHrsDistributionF()+"_"+
-		(getWorkArea() !=null ? getWorkArea().toString() : "");
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
 
-		return timeCollKey;
-	}
+    public String getHrDeptId() {
+        return hrDeptId;
+    }
 
-	@Override
-	public String getId() {
-		return getTkTimeCollectionRuleId();
-	}
+    public void setHrDeptId(String hrDeptId) {
+        this.hrDeptId = hrDeptId;
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkTimeCollectionRuleId(id);
-	}
+    @Override
+    public String getUniqueKey() {
+        String timeCollKey = getDept()+"_"+isClockUserFl()+"_"+isHrsDistributionF()+"_"+
+                (getWorkArea() !=null ? getWorkArea().toString() : "");
 
-	public Boolean getHistory() {
-		return history;
-	}
+        return timeCollKey;
+    }
 
-	public void setHistory(Boolean history) {
-		this.history = history;
-	}
+    @Override
+    public String getId() {
+        return getTkTimeCollectionRuleId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setTkTimeCollectionRuleId(id);
+    }
+
+    public Boolean getHistory() {
+        return history;
+    }
+
+    public void setHistory(Boolean history) {
+        this.history = history;
+    }
 
 
 }

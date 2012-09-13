@@ -11,7 +11,7 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 public class SupervisorApprovalBatchJob extends BatchJob {
-    private Logger LOG = Logger.getLogger(PayPeriodEndBatchJob.class);
+    private Logger LOG = Logger.getLogger(SupervisorApprovalBatchJob.class);
     private CalendarEntries payCalendarEntry;
 
     public SupervisorApprovalBatchJob(String hrPyCalendarEntryId) {
@@ -23,17 +23,17 @@ public class SupervisorApprovalBatchJob extends BatchJob {
 
     @Override
     public void doWork() {
-		Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
-		List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
-		for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
-			populateBatchJobEntry(timesheetDocumentHeader);
-		}
+        Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
+        List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
+        for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
+            populateBatchJobEntry(timesheetDocumentHeader);
+        }
     }
 
 
     @Override
     protected void populateBatchJobEntry(Object o) {
-    	TimesheetDocumentHeader tdh = (TimesheetDocumentHeader)o;
+        TimesheetDocumentHeader tdh = (TimesheetDocumentHeader)o;
         String ip = this.getNextIpAddressInCluster();
         if(StringUtils.isNotBlank(ip)){
             //insert a batch job entry here

@@ -1,13 +1,13 @@
 package org.kuali.hr.time.holidaycalendar;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.LinkedHashMap;
+
 public class HolidayCalendarDateEntry extends PersistableBusinessObjectBase {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "HolidayCalendarDateEntry";
+	
 	
 	/**
 	 * 

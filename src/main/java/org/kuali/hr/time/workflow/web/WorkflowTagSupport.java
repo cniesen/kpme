@@ -19,13 +19,13 @@ public class WorkflowTagSupport {
     }
 
     public boolean isDisplayingRouteButton() {
-      TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
-      TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
-      TimesheetDocumentHeader tdh = doc.getDocumentHeader();
-      if(tdh.getDocumentStatus().equals("S") || tdh.getDocumentStatus().equals("I")){
-    	  return roles.canSubmitTimesheet(doc);
-      }
-      return false;
+        TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocumentHeader tdh = doc.getDocumentHeader();
+        if(tdh.getDocumentStatus().equals("S") || tdh.getDocumentStatus().equals("I")){
+            return roles.canSubmitTimesheet(doc);
+        }
+        return false;
     }
 
     /**
@@ -50,10 +50,10 @@ public class WorkflowTagSupport {
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         boolean isEnroute = tdh.getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE);
         if(isEnroute){
-        	DocumentRouteHeaderValue routeHeader = KEWServiceLocator.getRouteHeaderService().getRouteHeader(doc.getDocumentId());
-        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
-        	boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), doc.getDocumentId());
-        	return !tookActionAlready && authorized;
+            DocumentRouteHeaderValue routeHeader = KEWServiceLocator.getRouteHeaderService().getRouteHeader(doc.getDocumentId());
+            boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
+            boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), doc.getDocumentId());
+            return !tookActionAlready && authorized;
         }
         return false;
     }

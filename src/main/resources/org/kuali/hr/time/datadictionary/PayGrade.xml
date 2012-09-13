@@ -18,7 +18,7 @@
 			<list>
 				<ref bean="PayGrade-hrPayGradeId" />
 				<ref bean="PayGrade-payGrade" />
-				<ref bean="PayGrade-salGroup" />
+				<ref bean="PayGrade-salGrade" />
 				<ref bean="PayGrade-description" />
 				<ref bean="PayGrade-effectiveDate" />
 				<ref bean="PayGrade-active" />
@@ -26,20 +26,6 @@
 				<ref bean="PayGrade-timestamp" />
 			</list>
 		</property>	 
-		<property name="relationships">
-			<list>
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="salGroupObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="salGroup"
-								p:targetName="hrSalGroup" />
-						</list>
-					</property>
-				</bean>
-			</list>
-		</property>
-		
 	</bean>
 
 	<!-- Attribute Definitions -->
@@ -77,22 +63,22 @@
 		<property name="name" value="payGrade" />
 		<property name="label" value="PayGrade" />
 	</bean>
-
-	<bean id="PayGrade-salGroup" parent="PayGrade-salGroup-parentBean" />
-	<bean id="PayGrade-salGroup-parentBean" abstract="true"
+	
+	<bean id="PayGrade-salGrade" parent="PayGrade-salGrade-parentBean" />
+	<bean id="PayGrade-salGrade-parentBean" abstract="true"
 		parent="AttributeDefinition">
-		<property name="shortLabel" value="Sal Group" />
-		<property name="maxLength" value="10" />
+		<property name="shortLabel" value="salGrade" />
+		<property name="maxLength" value="20" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="true" />
+				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
+			<bean parent="TextControlDefinition" p:size="20" />
 		</property>
-		<property name="name" value="salGroup" />
-		<property name="label" value="Salary Group" />
+		<property name="name" value="salGrade" />
+		<property name="label" value="SalGrade" />
 	</bean>
 
 	<bean id="PayGrade-description" parent="PayGrade-description-parentBean" />
@@ -145,14 +131,14 @@
 	<bean id="PayGrade-userPrincipalId-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="User Principal Id" />
-		<property name="maxLength" value="10" />
+		<property name="maxLength" value="27" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+			<bean parent="LookupReadonlyControlDefinition" p:size="27" />
 		</property>
 		<property name="name" value="userPrincipalId" />
 		<property name="label" value="User Principal Id" />

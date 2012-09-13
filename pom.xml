@@ -14,27 +14,35 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kuali.kpme</groupId>
-    <artifactId>kpme</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <artifactId>time-and-attendance</artifactId>
     <packaging>war</packaging>
-    <name>Kuali Person Management for the Enterprise</name>
-    <description>Kuali People Management for the Enterprise (KPME) is an open-source, comprehensive HR/Payroll System built by higher education for higher education.</description>
-    <url>http://${kuali.site.hostname}/kpme/${project.version}</url>
- 	
-    <parent>
-        <groupId>org.kuali.pom</groupId>
-        <artifactId>kuali-common</artifactId>
-        <version>1.7.3</version>
-    </parent>
+    <name>KPME Time and Attendance</name>
+    <description>KPME Time and Attendance</description>
+    <url>http://kuali.org/kpme</url>
+    <organization>
+        <name>The Kuali Foundation</name>
+        <url>http://kuali.org</url>
+    </organization>
+
+    <version>1.2-SNAPSHOT</version>
+
+    <licenses>
+        <license>
+            <name>The Kuali Foundation Educational Community License 2.0</name>
+            <url>http://www.opensource.org/licenses/ecl2.txt</url>
+            <distribution>manual</distribution>
+        </license>
+    </licenses>
 
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <build.environment>dev</build.environment>
         <default.context.path>/kpme-${build.environment}</default.context.path>
         <ehcache.version>2.5.0</ehcache.version>
         <apache.cxf.version>2.3.8</apache.cxf.version>
         <displaytag.version>1.1.1</displaytag.version>
         <jetty.version>7.5.1.v20110908</jetty.version>
-        <rice.version>2.1.1</rice.version>
+        <rice.version>2.1.1-SNAPSHOT</rice.version>
     </properties>
 
     <dependencies>
@@ -59,10 +67,10 @@
             <version>2.0</version>
             <exclusions>
                 <exclusion>
-	                <groupId>commons-beanutils</groupId>
-	                <artifactId>commons-beanutils</artifactId>
-	            </exclusion>
-	        </exclusions>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sf.ehcache</groupId>
@@ -78,7 +86,7 @@
                 <exclusion>
                     <artifactId>commons-beanutils</artifactId>
                     <groupId>commons-beanutils</groupId>
-                 </exclusion>
+                </exclusion>
                 <exclusion>
                     <artifactId>commons-collections</artifactId>
                     <groupId>commons-collections</groupId>
@@ -86,7 +94,7 @@
                 <exclusion>
                     <artifactId>commons-lang</artifactId>
                     <groupId>commons-lang</groupId>
-                 </exclusion>
+                </exclusion>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-api</artifactId>
@@ -94,8 +102,8 @@
                 <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>slf4j-log4j12</artifactId>
-                 </exclusion>
-                 <exclusion>
+                </exclusion>
+                <exclusion>
                     <groupId>org.slf4j</groupId>
                     <artifactId>jcl104-over-slf4j</artifactId>
                 </exclusion>
@@ -109,14 +117,14 @@
                 <exclusion>
                     <artifactId>commons-beanutils</artifactId>
                     <groupId>commons-beanutils</groupId>
-                 </exclusion>
+                </exclusion>
                 <exclusion>
                     <artifactId>commons-lang</artifactId>
                     <groupId>commons-lang</groupId>
-                 </exclusion>
+                </exclusion>
                 <exclusion>
-                	<artifactId>commons-beanutils</artifactId>
-                	<groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils</artifactId>
+                    <groupId>commons-beanutils</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -144,16 +152,16 @@
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <version>2.10</version>
+            <version>2.9</version>
             <exclusions>
                 <exclusion>
                     <artifactId>commons-codec</artifactId>
                     <groupId>commons-codec</groupId>
                 </exclusion>
-            	<exclusion>
-            		<artifactId>commons-collections</artifactId>
-            		<groupId>commons-collections</groupId>
-            	</exclusion>
+                <exclusion>
+                    <artifactId>commons-collections</artifactId>
+                    <groupId>commons-collections</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <!--<dependency>
@@ -191,7 +199,7 @@
         <dependency>
             <groupId>org.glassfish.web</groupId>
             <artifactId>jstl-impl</artifactId>
-            <version>1.2</version> 
+            <version>1.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet.jsp</groupId>
@@ -220,17 +228,17 @@
             <artifactId>rice-impl</artifactId>
             <version>${rice.version}</version>
             <exclusions>
-            	<exclusion>
-            		<artifactId>slf4j-log4j12</artifactId>
-            		<groupId>org.slf4j</groupId>
-            	</exclusion>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
             <groupId>org.kuali.rice</groupId>
             <artifactId>rice-krms-impl</artifactId>
             <version>${rice.version}</version>
-        </dependency>  
+        </dependency>
         <dependency>
             <groupId>org.kuali.rice</groupId>
             <artifactId>rice-ksb-web</artifactId>
@@ -345,7 +353,7 @@
                 <directory>src/main/resources</directory>
             </resource>
         </resources>
-        
+
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
@@ -361,6 +369,14 @@
 
         <plugins>
             <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>2.0.5</version>
@@ -371,20 +387,19 @@
                 <executions>
                     <execution>
                         <id>rice-database-load</id>
-	                    <phase>process-resources</phase>
-	                    <goals>
-	                        <goal>update</goal>
-	                    </goals>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
                         <configuration>
                             <driver>${kr.dataSource.driver}</driver>
                             <url>${kr.dataSource.jdbcUrl}</url>
                             <username>${kr.dataSource.username}</username>
                             <password>${kr.dataSource.password}</password>
                             <dropFirst>${kr.dataSource.dropFirst}</dropFirst>
-                            <clearCheckSums>${kr.dataSource.clearCheckSums}</clearCheckSums>
                             <contexts>${kr.dataSource.contexts}</contexts>
-	                    </configuration>
-	                </execution>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>kpme-database-load</id>
                         <phase>process-resources</phase>
@@ -397,55 +412,21 @@
                             <username>${kpme.dataSource.username}</username>
                             <password>${kpme.dataSource.password}</password>
                             <dropFirst>${kpme.dataSource.dropFirst}</dropFirst>
-                            <clearCheckSums>${kpme.dataSource.clearCheckSums}</clearCheckSums>
                             <contexts>${kpme.dataSource.contexts}</contexts>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-dependency-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>unpack-rice-web</id>
-	                    <phase>generate-sources</phase>
-	                    <goals>
-	                        <goal>unpack</goal>
-	                    </goals>
-	                    <configuration>
-	                        <artifactItems>
-	                            <artifactItem>
-	                                <groupId>org.kuali.rice</groupId>
-	                                <artifactId>rice-standalone</artifactId>
-	                                <version>${rice.version}</version>
-	                                <type>war</type>
-	                                <overWrite>false</overWrite>
-	                                <outputDirectory>src/main/webapp</outputDirectory>
-	                            </artifactItem>
-	                        </artifactItems>
-	                        <includes>*/**</includes>
-                            <excludes>
-                                index.jsp,
-
-                                META-INF/,
-	                           
-                                WEB-INF/struts-config.xml,
-                                WEB-INF/web.xml,
-                                WEB-INF/classes/,
-                                WEB-INF/lib/,
-                                WEB-INF/tags/rice-portal/mainTab.tag,
-                                WEB-INF/tags/rice-portal/maintenanceTab.tag,
-                                WEB-INF/tags/rice-portal/portalBody.tag,
-                                WEB-INF/tags/rice-portal/portalTabs.tag,
-                            </excludes>
-	                    </configuration>
-	                </execution>
-	                <execution>
-                        <id>copy-rice-web</id>
-                        <phase>package</phase>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack-rice-web</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>copy</goal>
+                            <goal>unpack</goal>
                         </goals>
                         <configuration>
                             <artifactItems>
@@ -455,74 +436,90 @@
                                     <version>${rice.version}</version>
                                     <type>war</type>
                                     <overWrite>false</overWrite>
-                                    <outputDirectory>${project.build.directory}</outputDirectory>
+                                    <outputDirectory>src/main/webapp</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
+                            <includes>*/**</includes>
+                            <excludes>
+                                index.jsp,
+
+                                META-INF/,
+
+                                WEB-INF/struts-config.xml,
+                                WEB-INF/web.xml,
+                                WEB-INF/classes/,
+                                WEB-INF/lib/,
+                                WEB-INF/tags/rice-portal/mainTab.tag,
+                                WEB-INF/tags/rice-portal/maintenanceTab.tag,
+                                WEB-INF/tags/rice-portal/portalBody.tag,
+                                WEB-INF/tags/rice-portal/portalTabs.tag,
+                            </excludes>
                         </configuration>
                     </execution>
-	            </executions>
-	        </plugin>
-	        <plugin>
-	            <groupId>org.apache.maven.plugins</groupId>
-	            <artifactId>maven-clean-plugin</artifactId>
-	            <executions>
-	                <execution>
-	                    <id>delete-rice-web</id>
-	                    <phase>clean</phase>
-	                    <goals>
-	                        <goal>clean</goal>
-	                    </goals>
-	                    <configuration>
-	                        <filesets>
-	                            <fileset>
-	                                <directory>src/main/webapp</directory>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>2.4.1</version>
+                <executions>
+                    <execution>
+                        <id>delete-rice-web</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>src/main/webapp</directory>
                                     <includes>
                                         <include>acknowledgments.jsp</include>
                                         <include>favicon.ico</include>
-	                                    <include>portal.jsp</include>
-	                                    <include>core/</include>
-	                                    <include>kcb/</include>
-	                                    <include>ken/</include>
-	                                    <include>kew/</include>
-	                                    <include>kim/</include>
-	                                    <include>kr/</include>
-	                                    <include>krad/</include>
-	                                    <include>krms/</include>
-	                                    <include>ksb/</include>
-	                                    <include>rice-portal/</include>
-	                                    <include>WEB-INF/dwr-kew.xml</include>
-	                                    <include>WEB-INF/dwr-kns.xml</include>
-	                                    <include>WEB-INF/krad-servlet.xml</include>
-	                                    <include>WEB-INF/validator-rules.xml</include>
-	                                    <include>WEB-INF/jsp/dummy_login.jsp</include>
+                                        <include>portal.jsp</include>
+                                        <include>core/</include>
+                                        <include>kcb/</include>
+                                        <include>ken/</include>
+                                        <include>kew/</include>
+                                        <include>kim/</include>
+                                        <include>kr/</include>
+                                        <include>krad/</include>
+                                        <include>krms/</include>
+                                        <include>ksb/</include>
+                                        <include>rice-portal/</include>
+                                        <include>WEB-INF/dwr-kew.xml</include>
+                                        <include>WEB-INF/dwr-kns.xml</include>
+                                        <include>WEB-INF/krad-servlet.xml</include>
+                                        <include>WEB-INF/validator-rules.xml</include>
+                                        <include>WEB-INF/jsp/dummy_login.jsp</include>
                                         <include>WEB-INF/jsp/moduleLocked.jsp</include>
                                         <include>WEB-INF/jsp/recurseCheckTabHighlight.jsp</include>
                                         <include>WEB-INF/jsp/recurseRowDisplay.jsp</include>
                                         <include>WEB-INF/jsp/recurseTreeNode.jsp</include>
-	                                    <include>WEB-INF/tags/kew/</include>
-	                                    <include>WEB-INF/tags/kim/</include>
-	                                    <include>WEB-INF/tags/kr/</include>
-	                                    <include>WEB-INF/tags/krad/</include>
-	                                    <include>WEB-INF/tags/rice-portal/administrationTab.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/iframePortletContainer.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/immutableBar.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/portalBottom.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/portalLink.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/portalTop.tag</include>
-	                                    <include>WEB-INF/tags/rice-portal/channel/</include>
-	                                    <include>WEB-INF/tld/</include>
-	                                </includes>
-	                                <excludes>
-	                                    <exclude>**/.svn</exclude>
-	                                    <exclude>**/.svn/**</exclude>
-	                                </excludes>
-	                            </fileset>
-	                        </filesets>
-	                    </configuration>
-	                </execution>
-	            </executions>
-	        </plugin>
-	        <plugin>
+                                        <include>WEB-INF/tags/kew/</include>
+                                        <include>WEB-INF/tags/kim/</include>
+                                        <include>WEB-INF/tags/kr/</include>
+                                        <include>WEB-INF/tags/krad/</include>
+                                        <include>WEB-INF/tags/rice-portal/administrationTab.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/iframePortletContainer.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/immutableBar.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/portalBottom.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/portalLink.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/portalTop.tag</include>
+                                        <include>WEB-INF/tags/rice-portal/channel/</include>
+                                        <include>WEB-INF/tld/</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>**/.svn</exclude>
+                                        <exclude>**/.svn/**</exclude>
+                                    </excludes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>${jetty.version}</version>
@@ -530,11 +527,12 @@
                     <webAppConfig>
                         <contextPath>${default.context.path}</contextPath>
                     </webAppConfig>
-                </configuration>                        
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.12.1</version>
                 <configuration>
                     <forkMode>once</forkMode>
                     <!--<useSystemClassLoader>false</useSystemClassLoader>-->
@@ -546,16 +544,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
+                <version>2.1-alpha-2</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
+                <version>2.0</version>
                 <configuration>
                     <tagBase>https://svn.kuali.org/repos/kpme/tags</tagBase>
                 </configuration>
             </plugin>
         </plugins>
-        
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -606,23 +606,21 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
-            <properties>   
+            <properties>
                 <kr.dataSource.driver>com.mysql.jdbc.Driver</kr.dataSource.driver>
                 <kr.dataSource.jdbcUrl>jdbc:mysql://localhost:3306/krtt</kr.dataSource.jdbcUrl>
                 <kr.dataSource.database>krtt</kr.dataSource.database>
                 <kr.dataSource.username>krtt</kr.dataSource.username>
                 <kr.dataSource.password>krtt</kr.dataSource.password>
                 <kr.dataSource.dropFirst>false</kr.dataSource.dropFirst>
-                <kr.dataSource.clearCheckSums>false</kr.dataSource.clearCheckSums>
                 <kr.dataSource.contexts>rice-server-bootstrap,kpme-server-bootstrap,kpme-server-staging</kr.dataSource.contexts>
-            
+
                 <kpme.dataSource.driver>com.mysql.jdbc.Driver</kpme.dataSource.driver>
                 <kpme.dataSource.jdbcUrl>jdbc:mysql://localhost:3306/tk</kpme.dataSource.jdbcUrl>
                 <kpme.dataSource.database>tk</kpme.dataSource.database>
                 <kpme.dataSource.username>tk</kpme.dataSource.username>
                 <kpme.dataSource.password>tk_tk_tk</kpme.dataSource.password>
                 <kpme.dataSource.dropFirst>false</kpme.dataSource.dropFirst>
-                <kpme.dataSource.clearCheckSums>false</kpme.dataSource.clearCheckSums>
                 <kpme.dataSource.contexts>rice-client-bootstrap,kpme-client-bootstrap,kpme-client-staging</kpme.dataSource.contexts>
             </properties>
         </profile>
@@ -635,7 +633,6 @@
                 <kr.dataSource.username>tk</kr.dataSource.username>
                 <kr.dataSource.password>tk_tk_tk</kr.dataSource.password>
                 <kr.dataSource.dropFirst>false</kr.dataSource.dropFirst>
-                <kr.dataSource.clearCheckSums>false</kr.dataSource.clearCheckSums>
                 <kr.dataSource.contexts>rice-server-bootstrap,kpme-server-bootstrap,kpme-server-test</kr.dataSource.contexts>
 
                 <kpme.dataSource.driver>com.mysql.jdbc.Driver</kpme.dataSource.driver>
@@ -644,32 +641,64 @@
                 <kpme.dataSource.username>tk</kpme.dataSource.username>
                 <kpme.dataSource.password>tk_tk_tk</kpme.dataSource.password>
                 <kpme.dataSource.dropFirst>false</kpme.dataSource.dropFirst>
-                <kpme.dataSource.clearCheckSums>false</kpme.dataSource.clearCheckSums>
                 <kpme.dataSource.contexts>kpme-client-bootstrap,kpme-client-test</kpme.dataSource.contexts>
             </properties>
         </profile>
+
+        <profile>
+            <id>server-embedded</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>copy-rice-web</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                        <artifactItem>
+                                            <groupId>org.kuali.rice</groupId>
+                                            <artifactId>rice-standalone</artifactId>
+                                            <version>${rice.version}</version>
+                                            <type>war</type>
+                                            <overWrite>false</overWrite>
+                                            <outputDirectory>${project.build.directory}</outputDirectory>
+                                        </artifactItem>
+                                    </artifactItems>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
-    
+
     <repositories>
         <repository>
             <id>kuali.nexus</id>
             <name>Nexus Repository Manager</name>
             <url>http://nexus.kuali.org/content/groups/public</url>
             <releases>
-                    <enabled>true</enabled>
+                <enabled>true</enabled>
             </releases>
             <snapshots>
-                    <enabled>true</enabled>
+                <enabled>true</enabled>
             </snapshots>
         </repository>
-		<repository>
-			<id>kuali</id>
-			<name>Kuali Repository</name>
-			<url>https://test.kuali.org/maven</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+        <repository>
+            <id>kuali</id>
+            <name>Kuali Repository</name>
+            <url>https://test.kuali.org/maven</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
         <repository>
             <id>nexus</id>
             <name>Nexus Repository</name>
@@ -679,9 +708,14 @@
     </repositories>
 
     <scm>
-		<connection>scm:svn:http://svn.kuali.org/repos/kpme/trunk</connection>
-		<developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/trunk</developerConnection>
+        <connection>scm:svn:http://svn.kuali.org/repos/kpme/trunk</connection>
+        <developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/trunk</developerConnection>
         <url>http://fisheye.kuali.org/browse/kpme</url>
-	</scm>
+    </scm>
+
+    <issueManagement>
+        <system>Jira</system>
+        <url>https://test.kuali.org/jira/</url>
+    </issueManagement>
 
 </project>

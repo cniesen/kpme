@@ -18,13 +18,14 @@ public class TimeOffAccrualRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for ClockLocationRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = (PersistableBusinessObject)this.getNewBo();
 		if (pbo instanceof TimeOffAccrual) {
 			TimeOffAccrual tof = (TimeOffAccrual) pbo;
 			if (tof != null) {
 				valid = true;
 				valid &= this.validatePrincipalId(tof);
 				valid &= this.validateAccrualCategory(tof);
+				valid &= this.validateDuplication(tof);
 			}
 		}
 
@@ -48,6 +49,15 @@ public class TimeOffAccrualRule extends MaintenanceDocumentRuleBase {
 						.getAccrualCategory(), tof.getEffectiveDate())) {
 			this.putFieldError("accrualCategory", "error.existence",
 					"accrualCategory '" + tof.getAccrualCategory() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private boolean validateDuplication(TimeOffAccrual tof) {
+		if(ValidationUtils.duplicateTimeOffAccrual(tof)) {
+			this.putFieldError("effectiveDate", "timeoffaccrual.duplicate.exists");
 			return false;
 		} else {
 			return true;

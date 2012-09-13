@@ -1,14 +1,13 @@
 package org.kuali.hr.time.principal;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-
 import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+
+import java.sql.Date;
+import java.sql.Timestamp;
 
 public class PrincipalHRAttributes extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PrincipalHRAttributes";
@@ -23,7 +22,7 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	private String leavePlan;
 	private Date serviceDate;
 	private boolean fmlaEligible;
-	private boolean workersCompEligible;
+	private boolean workmansCompEligible;
 	private String holidayCalendarGroup;
 	private String timezone;
 	// KPME-1268 Kagata added recordTime and recordLeave variables
@@ -34,7 +33,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	private Calendar calendar;
 	private Calendar leaveCalObj;
 	private Person person;
-	private LeavePlan leavePlanObj;
 
 
 	public String getPrincipalId() {
@@ -85,12 +83,12 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 		this.fmlaEligible = fmlaEligible;
 	}
 
-	public boolean isWorkersCompEligible() {
-		return workersCompEligible;
+	public boolean isWorkmansCompEligible() {
+		return workmansCompEligible;
 	}
 
-	public void setWorkersCompEligible(boolean workersCompEligible) {
-		this.workersCompEligible = workersCompEligible;
+	public void setWorkmansCompEligible(boolean workmansCompEligible) {
+		this.workmansCompEligible = workmansCompEligible;
 	}
 
 	public Date getEffectiveDate() {
@@ -139,14 +137,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 
 	public void setPerson(Person person) {
 		this.person = person;
-	}
-
-	public LeavePlan getLeavePlanObj() {
-		return leavePlanObj;
-	}
-
-	public void setLeavePlanObj(LeavePlan leavePlanObj) {
-		this.leavePlanObj = leavePlanObj;
 	}
 
 	public Boolean getActive() {

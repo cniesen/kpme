@@ -30,7 +30,7 @@ public class ClockLog extends PersistableBusinessObjectBase {
     private String userPrincipalId;
     private String hrJobId;
     private Timestamp timestamp;
-    
+
     private String missedPunchDocumentId;
 
     private Job job;
@@ -39,15 +39,15 @@ public class ClockLog extends PersistableBusinessObjectBase {
 
     private Person principal;
 
-	public Job getJob() {
-		return job;
-	}
+    public Job getJob() {
+        return job;
+    }
 
-	public void setJob(Job job) {
-		this.job = job;
-	}
+    public void setJob(Job job) {
+        this.job = job;
+    }
 
-	public String getPrincipalId() {
+    public String getPrincipalId() {
         return principalId;
     }
 
@@ -116,99 +116,99 @@ public class ClockLog extends PersistableBusinessObjectBase {
      * @return
      */
     public String getNextValidClockAction() {
-	String ret;
+        String ret;
 
-	if (this.getClockAction().equals(TkConstants.CLOCK_IN)) {
-	    ret = TkConstants.CLOCK_OUT;
-	} else if (this.getClockAction().equals(TkConstants.CLOCK_OUT)) {
-	    ret = TkConstants.CLOCK_IN;
-	} else if (this.getClockAction().equals(TkConstants.LUNCH_IN)) {
-	    ret = TkConstants.LUNCH_OUT;
-	} else if (this.getClockAction().equals(TkConstants.LUNCH_OUT)) {
-	    ret = TkConstants.LUNCH_IN;
-	} else {
-	    ret = TkConstants.CLOCK_IN;
-	}
+        if (this.getClockAction().equals(TkConstants.CLOCK_IN)) {
+            ret = TkConstants.CLOCK_OUT;
+        } else if (this.getClockAction().equals(TkConstants.CLOCK_OUT)) {
+            ret = TkConstants.CLOCK_IN;
+        } else if (this.getClockAction().equals(TkConstants.LUNCH_IN)) {
+            ret = TkConstants.LUNCH_OUT;
+        } else if (this.getClockAction().equals(TkConstants.LUNCH_OUT)) {
+            ret = TkConstants.LUNCH_IN;
+        } else {
+            ret = TkConstants.CLOCK_IN;
+        }
 
-	return ret;
+        return ret;
     }
 
-	public String getTkClockLogId() {
-		return tkClockLogId;
-	}
+    public String getTkClockLogId() {
+        return tkClockLogId;
+    }
 
-	public void setTkClockLogId(String tkClockLogId) {
-		this.tkClockLogId = tkClockLogId;
-	}
+    public void setTkClockLogId(String tkClockLogId) {
+        this.tkClockLogId = tkClockLogId;
+    }
 
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
 
-	public String getTkTaskId() {
-		return tkTaskId;
-	}
+    public String getTkTaskId() {
+        return tkTaskId;
+    }
 
-	public void setTkTaskId(String tkTaskId) {
-		this.tkTaskId = tkTaskId;
-	}
+    public void setTkTaskId(String tkTaskId) {
+        this.tkTaskId = tkTaskId;
+    }
 
-	public String getHrJobId() {
-		return hrJobId;
-	}
+    public String getHrJobId() {
+        return hrJobId;
+    }
 
-	public void setHrJobId(String hrJobId) {
-		this.hrJobId = hrJobId;
-	}
+    public void setHrJobId(String hrJobId) {
+        this.hrJobId = hrJobId;
+    }
 
-	public WorkArea getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public WorkArea getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public void setWorkAreaObj(WorkArea workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public Task getTaskObj() {
-		return taskObj;
-	}
+    public Task getTaskObj() {
+        return taskObj;
+    }
 
-	public void setTaskObj(Task taskObj) {
-		this.taskObj = taskObj;
-	}
+    public void setTaskObj(Task taskObj) {
+        this.taskObj = taskObj;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
-	public Long getWorkArea() {
-		return workArea;
-	}
-	public Long getTask() {
-		return task;
-	}
+    public void setTask(Long task) {
+        this.task = task;
+    }
+    public Long getWorkArea() {
+        return workArea;
+    }
+    public Long getTask() {
+        return task;
+    }
 
-	public Person getPrincipal() {
-		return principal;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-	public String getMissedPunchDocumentId() {
-		return missedPunchDocumentId;
-	}
+    public String getMissedPunchDocumentId() {
+        return missedPunchDocumentId;
+    }
 
-	public void setMissedPunchDocumentId(String missedPunchDocumentId) {
-		this.missedPunchDocumentId = missedPunchDocumentId;
-	}
+    public void setMissedPunchDocumentId(String missedPunchDocumentId) {
+        this.missedPunchDocumentId = missedPunchDocumentId;
+    }
 
 }

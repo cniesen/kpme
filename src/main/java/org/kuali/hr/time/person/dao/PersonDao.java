@@ -1,8 +1,8 @@
 package org.kuali.hr.time.person.dao;
 
-import org.kuali.hr.time.person.TKPerson;
-
 import java.util.List;
+
+import org.kuali.hr.time.person.TKPerson;
 
 public interface PersonDao {
 	
