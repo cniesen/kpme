@@ -810,7 +810,8 @@
 		                    <pomIncludes>
 		                        <pomInclude>pom.xml</pomInclude>
 		                    </pomIncludes>
-		                    <profiles>
+                            <profiles>
+                                <profile>kpme-main</profile>
                                 <profile>${build.environment}</profile>
                             </profiles>
 		                    <goals>
