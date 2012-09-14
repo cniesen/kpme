@@ -14,7 +14,7 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     private static final long serialVersionUID = 1L;
     private String tkTimeSheetInitId;
     private String principalId;
-    private String hrCalendarEntriesId;
+    private String hrPyCalendarEntriesId;
     private String pyCalendarGroup;
     private String documentId;
 
@@ -48,17 +48,17 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
         this.tkTimeSheetInitId = tkTimeSheetInitId;
     }
 
-    public String getHrCalendarEntriesId() {
-        return hrCalendarEntriesId;
+    public String getHrPyCalendarEntriesId() {
+        return hrPyCalendarEntriesId;
     }
 
-    public void setHrCalendarEntriesId(String hrCalendarEntriesId) {
-        this.hrCalendarEntriesId = hrCalendarEntriesId;
+    public void setHrPyCalendarEntriesId(String hrPyCalendarEntriesId) {
+        this.hrPyCalendarEntriesId = hrPyCalendarEntriesId;
     }
 
     public CalendarEntries getPayCalendarEntriesObj() {
-        if(hrCalendarEntriesId != null) {
-            setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrCalendarEntriesId));
+        if(hrPyCalendarEntriesId != null) {
+            setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrPyCalendarEntriesId));
         }
         return payCalendarEntriesObj;
     }
@@ -92,8 +92,8 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     }
 
     public String getBeginAndEndDateTime() {
-        if (payCalendarEntriesObj == null && this.getHrCalendarEntriesId() != null) {
-            payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrCalendarEntriesId());
+        if (payCalendarEntriesObj == null && this.getHrPyCalendarEntriesId() != null) {
+            payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrPyCalendarEntriesId());
         }
         return (payCalendarEntriesObj != null) ?
                 payCalendarEntriesObj.getBeginPeriodDateTime().toString() + " - "+ payCalendarEntriesObj.getEndPeriodDateTime().toString() : "";

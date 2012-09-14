@@ -17,7 +17,7 @@
       <list>
       	<ref bean="TimeSheetInitiate-tkTimeSheetInitId"/>
         <ref bean="TimeSheetInitiate-principalId"/>
-        <ref bean="TimeSheetInitiate-hrCalendarEntriesId"/>
+        <ref bean="TimeSheetInitiate-hrPyCalendarEntriesId"/>
         <ref bean="TimeSheetInitiate-pyCalendarGroup"/>
         <ref bean="TimeSheetInitiate-documentId"/>
         <ref bean="TimeSheetInitiate-beginAndEndDateTime"/>
@@ -103,8 +103,8 @@
   	</bean>
 	
 
-	  <bean id="TimeSheetInitiate-hrCalendarEntriesId" parent="TimeSheetInitiate-hrCalendarEntriesId-parentBean"/>
-  <bean id="TimeSheetInitiate-hrCalendarEntriesId-parentBean" abstract="true" parent="AttributeDefinition">
+	  <bean id="TimeSheetInitiate-hrPyCalendarEntriesId" parent="TimeSheetInitiate-hrPyCalendarEntriesId-parentBean"/>
+  <bean id="TimeSheetInitiate-hrPyCalendarEntriesId-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Pay Calendar Entry Id"/>
     <property name="maxLength" value="20"/>
     <property name="validationPattern">
@@ -113,8 +113,8 @@
     <property name="control">
       <bean parent="TextControlDefinition" p:size="20"/>
     </property>
-    <property name="name" value="hrCalendarEntriesId"/>
-    <property name="label" value="Pay Calendar Entry Id"/>
+    <property name="name" value="hrPyCalendarEntriesId"/>
+    <property name="label" value="HR Pay Calendar Entry Id"/>
   </bean>	
 	
 	<bean id="TimeSheetInitiate-pyCalendarGroup" parent="TimeSheetInitiate-pyCalendarGroup-parentBean" />
