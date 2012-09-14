@@ -15,7 +15,7 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     private String tkTimeSheetInitId;
     private String principalId;
     private String hrCalendarEntriesId;
-    private String calendarName;
+    private String pyCalendarGroup;
     private String documentId;
 
     private Person principal;
@@ -67,12 +67,12 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
         this.payCalendarEntriesObj = payCalendarEntriesObj;
     }
 
-    public String getCalendarName() {
-        return calendarName;
+    public String getPyCalendarGroup() {
+        return pyCalendarGroup;
     }
 
-    public void setCalendarName(String calendarName) {
-        this.calendarName = calendarName;
+    public void setPyCalendarGroup(String pyCalendarGroup) {
+        this.pyCalendarGroup = pyCalendarGroup;
     }
 
     public String getDocumentId() {
