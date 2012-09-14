@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.2//EN"
-        "http://jakarta.apache.org/struts/dtds/struts-config_1_2.dtd">
+<!DOCTYPE struts-config PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 1.3//EN" "http://struts.apache.org/dtds/struts-config_1_3.dtd">
+
 <struts-config>
     <form-beans>
 
@@ -29,18 +29,75 @@
     </form-beans>
 
     <global-exceptions>
+        <!-- Rice content Start -->
         <exception type="java.lang.Throwable"
                    handler="org.kuali.rice.kns.web.struts.form.pojo.StrutsExceptionIncidentHandler"
                    key="meaningless"/>
+        <exception type="org.kuali.rice.krad.exception.AuthorizationException"
+                   handler="org.kuali.rice.kns.web.struts.form.pojo.AuthorizationExceptionHandler"
+                   key="meaningless" />
+        <!-- Rice content End -->
     </global-exceptions>
 
     <global-forwards type="org.apache.struts.action.ActionForward">
-        <forward name="unauthorized" path="/WEB-INF/jsp/unauthorized.jsp"/>
+        <!-- Rice content Start -->
+        <forward name="save" path="/portal.jsp" redirect="true" />
+        <forward name="cancel" path="/portal.jsp" redirect="true" />
+        <forward name="close" path="/portal.jsp" redirect="true" />
+        <forward name="portal" path="/portal.jsp" redirect="true" />
+        <forward name="route_report" path="/WEB-INF/jsp/RoutingReportForward.jsp"/>
+        <forward name="updateTextArea" path="/kr/WEB-INF/jsp/TextArea.jsp" />
         <forward name="exceptionIncidentHandler" path="/kr/kualiExceptionIncidentReport.do"/>
+        <forward name="authorizationExceptionHandler" path="/kr/authorizationExceptionReport.do"/>
+        <!-- Rice content End -->
+
+        <forward name="unauthorized" path="/WEB-INF/jsp/unauthorized.jsp"/>
     </global-forwards>
 
-
     <action-mappings>
+        <!-- Rice content Start -->
+        <action path="/portal" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiPortalAction">
+            <forward name="basic" path="/portal.jsp" />
+        </action>
+        <action path="/backdoorlogin" name="BackdoorForm" scope="request" parameter="methodToCall"
+                input="/WEB-INF/jsp/backdoor/index.jsp" type="org.kuali.rice.kns.web.struts.action.BackdoorAction">
+            <forward name="basic" path="/portal.jsp" />
+            <forward name="viewPortal" path="/portal.jsp" />
+            <forward name="logout" path="/logout.do" />
+        </action> 
+        <action path="/logout" name="KualiLogoutForm" type="org.kuali.rice.kns.web.struts.action.KualiLogoutAction" />
+        <action path="/index" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiSimpleAction">
+            <forward name="basic" path="/portal.jsp" />
+        </action>
+        <action path="/updateTextArea" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiDocumentActionBase">
+            <forward name="basic" path="/kr/WEB-INF/jsp/TextArea.jsp" />
+        </action>
+        <!-- Rice content End -->
+        
+        <action path="/changeTargetPerson" name="ChangeTargetPersonForm" type="org.kuali.hr.time.admin.web.ChangeTargetPersonAction">
+            <forward name="basic" path="/portal.jsp"/>
+        </action>
+        
+        <action path="/deleteDocument" name="DeleteDocumentForm" type="org.kuali.hr.time.admin.web.DeleteDocumentAction">
+            <forward name="basic" path="/portal.jsp"/>
+        </action>
+        
+        <action path="/calculateLeaveAccruals" name="CalculateLeaveAccrualsForm" type="org.kuali.hr.time.admin.web.CalculateLeaveAccrualsAction">
+            <forward name="basic" path="/portal.jsp"/>
+        </action>
+        
+        <action path="/batchJob" name="BatchJobActionForm" type="org.kuali.hr.time.batch.web.BatchJobAction">
+            <forward name="basic" path="/portal.jsp"/>
+        </action>
+        
+        <action path="/calendarEntry" name="CalendarEntryActionForm" type="org.kuali.hr.time.calendar.web.CalendarEntryAction">
+            <forward name="basic" path="/portal.jsp"/>
+        </action>
+        
+        <action path="/DepartmentAdmin" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiSimpleAction">
+            <forward name="basic" path="/WEB-INF/jsp/departmentAdmin.jsp"/>
+        </action>
+        
         <action path="/Clock" name="ClockActionForm" scope="request" input="/WEB-INF/jsp/clock.jsp"
                 type="org.kuali.hr.time.clock.web.ClockAction" parameter="methodToCall" validate="false">
             <forward name="basic" path="/WEB-INF/jsp/clock.jsp"/>
@@ -135,25 +192,6 @@
                 type="org.kuali.hr.time.web.SessionInvalidateAction" parameter="methodToCall" validate="true">
             <forward name="basic" path="/WEB-INF/jsp/sessionInvalidate.jsp"/>
         </action>
-
-        <!-- Rice content Start -->
-        <action path="/portal" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiPortalAction">
-            <forward name="basic" path="/portal.jsp" />
-        </action>
-        <action path="/backdoorlogin" name="BackdoorForm" scope="request" parameter="methodToCall"
-                input="/WEB-INF/jsp/backdoor/index.jsp" type="org.kuali.rice.kns.web.struts.action.BackdoorAction">
-            <forward name="basic" path="/portal.jsp" />
-            <forward name="viewPortal" path="/portal.jsp" />
-            <forward name="logout" path="/logout.do" />
-        </action>
-        <action path="/logout" name="KualiLogoutForm" type="org.kuali.rice.kns.web.struts.action.KualiLogoutAction" />
-        <action path="/index" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiSimpleAction">
-            <forward name="basic" path="/portal.jsp" />
-        </action>
-        <action path="/updateTextArea" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiDocumentActionBase" parameter="">
-            <forward name="basic" path="/kr/WEB-INF/jsp/TextArea.jsp" />
-        </action>
-        <!-- Rice content End -->
 
     </action-mappings>
 
