@@ -41,6 +41,8 @@ ALTER TABLE `tk`.`hr_earn_code_security_t` ADD COLUMN `earn_code_type` VARCHAR(1
 
 ALTER TABLE `tk`.`hr_earn_code_security_t` CHANGE COLUMN `earn_code` `earn_code` VARCHAR(15) CHARACTER SET 'utf8' COLLATE 'utf8_bin';
 
+ALTER TABLE `tk`.`hr_earn_code_security_t` CHANGE COLUMN `hr_dept_earn_code_id` `hr_earn_code_security_id` VARCHAR(60) CHARACTER SET 'utf8' COLLATE 'utf8_bin';
+
 ALTER TABLE `tk`.`tk_daily_overtime_rl_t` CHANGE COLUMN `earn_code` `earn_code` VARCHAR(15) CHARACTER SET 'utf8' COLLATE 'utf8_bin';
 
 ALTER TABLE `tk`.`tk_hour_detail_t` CHANGE COLUMN `earn_code` `earn_code` VARCHAR(15) CHARACTER SET 'utf8' COLLATE 'utf8_bin' NOT NULL;
