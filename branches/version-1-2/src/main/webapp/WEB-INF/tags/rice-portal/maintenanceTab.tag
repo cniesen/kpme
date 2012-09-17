@@ -22,10 +22,10 @@
     <admin:administrative />
 </td>
 <td class="content" valign="top">
+    testing
     <admin:inquiries />
     <admin:changeTargetPerson />
     <admin:deleteTimesheet />
-    <admin:calculateLeaveAccruals />
 </td>
 <td class="content" valign="top">
     <admin:batchJob />

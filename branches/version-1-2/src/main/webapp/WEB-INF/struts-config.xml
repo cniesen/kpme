@@ -25,6 +25,8 @@
         <form-bean name="MissedPunchForm" type="org.kuali.hr.time.missedpunch.MissedPunchForm"/>
         <form-bean name="HelpActionForm" type="org.kuali.hr.time.help.web.HelpActionForm"/>
         <form-bean name="SessionInvalidateForm" type="org.kuali.hr.time.web.SessionInvalidateForm"/>
+        <form-bean name="ChangeTargetPersonForm" type="org.kuali.hr.time.admin.web.ChangeTargetPersonForm"/>
+        <form-bean name="DeleteTimesheetForm" type="org.kuali.hr.time.admin.web.DeleteTimesheetForm"/>
 
     </form-beans>
 
@@ -78,13 +80,10 @@
             <forward name="basic" path="/portal.jsp"/>
         </action>
         
-        <action path="/deleteDocument" name="DeleteDocumentForm" type="org.kuali.hr.time.admin.web.DeleteDocumentAction">
+        <action path="/deleteTimesheet" name="DeleteTimesheetForm" type="org.kuali.hr.time.admin.web.DeleteTimesheetAction">
             <forward name="basic" path="/portal.jsp"/>
         </action>
-        
-        <action path="/calculateLeaveAccruals" name="CalculateLeaveAccrualsForm" type="org.kuali.hr.time.admin.web.CalculateLeaveAccrualsAction">
-            <forward name="basic" path="/portal.jsp"/>
-        </action>
+
         
         <action path="/batchJob" name="BatchJobActionForm" type="org.kuali.hr.time.batch.web.BatchJobAction">
             <forward name="basic" path="/portal.jsp"/>
