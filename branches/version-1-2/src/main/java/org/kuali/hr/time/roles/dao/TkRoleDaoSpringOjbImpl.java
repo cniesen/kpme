@@ -242,8 +242,10 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
             for(WorkArea cwa : collectionWorkAreas){
                 longWorkAreas.add(cwa.getWorkArea());
             }
-            workAreaCriteria.addIn("workArea", longWorkAreas);
-            departmentCriteria.addOrCriteria(workAreaCriteria);
+            if(!longWorkAreas.isEmpty()) {
+                workAreaCriteria.addIn("workArea", longWorkAreas);
+                departmentCriteria.addOrCriteria(workAreaCriteria);
+            }
             root.addAndCriteria(departmentCriteria);
         }
         if (StringUtils.isNotEmpty(chart))

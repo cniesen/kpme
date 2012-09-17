@@ -82,7 +82,7 @@ public class TkServiceLocator implements ApplicationContextAware {
     public static final String TK_ROLE_SERVICE = "tkRoleService";
     public static final String TK_ROLE_GROUP_SERVICE = "tkRoleGroupService";
     public static final String TK_TIME_SUMMARY_SERVICE = "timeSummaryService";
-    public static final String TK_TIME_EARN_CODE_GROUP_SERVICE = "earnCodeGroupService";
+    public static final String TK_TIME_EARN_CODE_GROUP_SERVICE = "earnGroupService";
     public static final String TK_TIME_HOUR_DETAIL_SERVICE= "timeHourDetailService";
     public static final String TK_DAILY_OVERTIME_RULE_SERVICE = "dailyOvertimeRuleService";
     public static final String TK_WEEKLY_OVERTIME_RULE_SERVICE = "weeklyOvertimeRuleService";
