@@ -14,8 +14,26 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     private static final long serialVersionUID = 1L;
     private String tkTimeSheetInitId;
     private String principalId;
-    private String hrPyCalendarEntriesId;
-    private String pyCalendarGroup;
+
+    public String getHrCalendarEntriesId() {
+        return hrCalendarEntriesId;
+    }
+
+    public void setHrCalendarEntriesId(String hrCalendarEntriesId) {
+        this.hrCalendarEntriesId = hrCalendarEntriesId;
+    }
+
+    private String hrCalendarEntriesId;
+
+    public String getCalendarName() {
+        return calendarName;
+    }
+
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
+
+    private String calendarName;
     private String documentId;
 
     private Person principal;
@@ -47,18 +65,9 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     public void setTkTimeSheetInitId(String tkTimeSheetInitId) {
         this.tkTimeSheetInitId = tkTimeSheetInitId;
     }
-
-    public String getHrPyCalendarEntriesId() {
-        return hrPyCalendarEntriesId;
-    }
-
-    public void setHrPyCalendarEntriesId(String hrPyCalendarEntriesId) {
-        this.hrPyCalendarEntriesId = hrPyCalendarEntriesId;
-    }
-
     public CalendarEntries getPayCalendarEntriesObj() {
-        if(hrPyCalendarEntriesId != null) {
-            setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrPyCalendarEntriesId));
+        if(hrCalendarEntriesId != null) {
+            setPayCalendarEntriesObj(TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrCalendarEntriesId));
         }
         return payCalendarEntriesObj;
     }
@@ -67,13 +76,6 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
         this.payCalendarEntriesObj = payCalendarEntriesObj;
     }
 
-    public String getPyCalendarGroup() {
-        return pyCalendarGroup;
-    }
-
-    public void setPyCalendarGroup(String pyCalendarGroup) {
-        this.pyCalendarGroup = pyCalendarGroup;
-    }
 
     public String getDocumentId() {
         return documentId;
@@ -92,8 +94,8 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
     }
 
     public String getBeginAndEndDateTime() {
-        if (payCalendarEntriesObj == null && this.getHrPyCalendarEntriesId() != null) {
-            payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrPyCalendarEntriesId());
+        if (payCalendarEntriesObj == null && this.getHrCalendarEntriesId() != null) {
+            payCalendarEntriesObj = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getHrCalendarEntriesId());
         }
         return (payCalendarEntriesObj != null) ?
                 payCalendarEntriesObj.getBeginPeriodDateTime().toString() + " - "+ payCalendarEntriesObj.getEndPeriodDateTime().toString() : "";

@@ -35,7 +35,16 @@ public class ShiftDifferentialRule extends TkRule {
     private boolean friday;
     private boolean saturday;
     private String fromEarnGroup;
-    private String pyCalendarGroup;
+
+    public String getCalendarName() {
+        return calendarName;
+    }
+
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
+
+    private String calendarName;
     private BigDecimal maxGap; // Gap is in HOURS
     private String userPrincipalId;
 
@@ -137,14 +146,6 @@ public class ShiftDifferentialRule extends TkRule {
 
     public void setHrSalGroup(String hrSalGroup) {
         this.hrSalGroup = hrSalGroup;
-    }
-
-    public String getPyCalendarGroup() {
-        return pyCalendarGroup;
-    }
-
-    public void setPyCalendarGroup(String pyCalendarGroup) {
-        this.pyCalendarGroup = pyCalendarGroup;
     }
 
     public Time getBeginTime() {
