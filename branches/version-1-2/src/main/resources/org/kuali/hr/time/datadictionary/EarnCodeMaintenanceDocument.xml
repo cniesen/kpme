@@ -39,7 +39,6 @@
         <bean parent="MaintainableFieldDefinition" p:name="description"     p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="accrualCategory" p:required="false"/>
         <bean parent="MaintainableFieldDefinition" p:name="ovtEarnCode"   	p:required="false" p:defaultValue="false"/>
-        <bean parent="MaintainableFieldDefinition" p:name="accrualCategory" p:required="false"/>
         <bean parent="MaintainableFieldDefinition" p:name="recordMethod" 	p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="inflateMinHours" p:required="true" p:defaultValue="0"/>
         <bean parent="MaintainableFieldDefinition" p:name="inflateFactor" p:required="true" p:defaultValue="1.0"/>
