@@ -199,6 +199,7 @@
         <property name="serviceNameSpaceURI" value="KPME" />
         <property name="beanNames">
             <set>
+                <value>calendarLookupable</value>
                 <value>timeBlockLookupable</value> 
 				<value>timeBlockHistoryLookupable</value> 
 				<value>timeBlockHistoryDetailLookupable</value> 
@@ -743,7 +744,7 @@
         <property name="lookupableHelperService">
             <bean class="org.kuali.hr.time.accrual.service.AccrualCategoryLookupableHelper"/>
         </property>
-    </bean> 
+    </bean>
 
     
     <!-- Scheduler configuration -->
