@@ -92,16 +92,7 @@
                                 <%-- Render the Time Blocks --%>
 
                             <div>
-                                <c:choose>
-                                    <c:when test="${calType eq 'payCalendar'}">
-                                        <tk:payCalendar day="${day}"/>
-                                    </c:when>
-                                    <c:when test="${calType eq 'leaveCalendar'}">
-                                        <tk:leaveCalendar day="${day}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                    </c:otherwise>
-                                </c:choose>
+                                <tk:payCalendar day="${day}"/>
                                 <%--<div class="create" id="${day.dateString}" style="background-color:#cccccc; height:100%; padding-bottom:20px;"></div>--%>
                             </div>
                         </td>
