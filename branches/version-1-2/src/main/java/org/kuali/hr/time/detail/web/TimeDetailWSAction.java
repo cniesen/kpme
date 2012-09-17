@@ -90,7 +90,16 @@ public class TimeDetailWSAction extends TimesheetAction {
                             continue;
                         }
                         if (!(assignment.getTimeCollectionRule().isClockUserFl() &&
-                                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()))) {
+                                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode())
+                                && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()))) {
+                            Map<String, Object> earnCodeMap = new HashMap<String, Object>();
+                            earnCodeMap.put("assignment", assignment.getAssignmentKey());
+                            earnCodeMap.put("earnCode", earnCode.getEarnCode());
+                            earnCodeMap.put("desc", earnCode.getDescription());
+                            earnCodeMap.put("type", earnCode.getEarnCodeType());
+
+                            earnCodeList.add(earnCodeMap);
+                        } else if(!StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode())){
                             Map<String, Object> earnCodeMap = new HashMap<String, Object>();
                             earnCodeMap.put("assignment", assignment.getAssignmentKey());
                             earnCodeMap.put("earnCode", earnCode.getEarnCode());
@@ -99,6 +108,8 @@ public class TimeDetailWSAction extends TimesheetAction {
 
                             earnCodeList.add(earnCodeMap);
                         }
+
+
                     }
                 }
             }
