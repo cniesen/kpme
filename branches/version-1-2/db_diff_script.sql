@@ -130,3 +130,5 @@ CREATE TABLE `hr_calendar_t` (
 drop table `tk`.`hr_py_calendar_entries_t`;
 
 drop table `tk`.`hr_py_calendar_t`;
+
+alter table `hr_pay_grade_t`ADD COLUMN `sal_group` VARCHAR(20);
