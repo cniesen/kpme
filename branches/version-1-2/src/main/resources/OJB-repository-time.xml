@@ -657,7 +657,7 @@
     <class-descriptor class="org.kuali.hr.time.batch.BatchJobEntry" table="TK_BATCH_JOB_ENTRY_T">
         <field-descriptor name="tkBatchJobEntryId"      column="TK_BATCH_JOB_ENTRY_ID"      jdbc-type="BIGINT"  length="20" nullable="false" autoincrement="true" primarykey="true" sequence-name="TK_BATCH_JOB_ENTRY_S" />
         <field-descriptor name="tkBatchJobId"           column="TK_BATCH_JOB_ID"            jdbc-type="BIGINT" />
-        <field-descriptor name="hrPyCalendarEntryId"    column="HR_PY_CALENDAR_ENTRY_ID"    jdbc-type="VARCHAR" />
+        <field-descriptor name="hrPyCalendarEntryId"    column="HR_CALENDAR_ENTRY_ID"    jdbc-type="VARCHAR" />
         <field-descriptor name="documentId"             column="DOCUMENT_ID"                jdbc-type="VARCHAR" length="40" />
         <field-descriptor name="principalId"            column="PRINCIPAL_ID"               jdbc-type="VARCHAR" length="40" nullable="false" />
         <field-descriptor name="batchJobEntryStatus"    column="BATCH_JOB_ENTRY_STATUS"     jdbc-type="VARCHAR" length="1" />
