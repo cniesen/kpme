@@ -214,7 +214,7 @@
 	<bean id="EarnGroup-lookupDefinition" parent="EarnGroup-lookupDefinition-parentBean" />
 	<bean id="EarnGroup-lookupDefinition-parentBean" abstract="true"
 		parent="LookupDefinition">
-		<property name="lookupableID" value="earnGroupLookupable"></property>
+		<property name="lookupableID" value="earnCodeGroupLookupable"></property>
 		<property name="lookupFields">
 			<list>
 				<bean parent="FieldDefinition" p:attributeName="earnGroup" />
