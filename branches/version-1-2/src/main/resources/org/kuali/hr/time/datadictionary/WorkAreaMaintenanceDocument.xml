@@ -114,7 +114,6 @@
 								p:required="false" />
 							<bean parent="MaintainableFieldDefinition" p:name="positionNumber"
 								p:required="false" />
-							<bean parent="MaintainableFieldDefinition" p:name="userName" />
 							<bean parent="MaintainableFieldDefinition" p:name="roleName"
 								p:required="true"
 								p:defaultValueFinderClass="org.kuali.kfs.sys.businessobject.defaultvalue.TkApproverRoleFinder" />
@@ -155,7 +154,6 @@
 								p:required="false" />
 							<bean parent="MaintainableFieldDefinition" p:name="positionNumber"
 								p:required="false" />
-							<bean parent="MaintainableFieldDefinition" p:name="userName" />
 							<bean parent="MaintainableFieldDefinition" p:name="roleName"
 								p:required="true" p:unconditionallyReadOnly="true"
 								p:defaultValueFinderClass="org.kuali.kfs.sys.businessobject.defaultvalue.TkApproverRoleFinder" />
