@@ -36,7 +36,7 @@
                 <list>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="regEarnCode" p:targetName="earnCode"/>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="hrEarnCodeId" p:targetName="hrEarnCodeId"/>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="ovtEarnCode" p:targetName="ovtEarnCode"/>
+                  <!--<bean parent="PrimitiveAttributeDefinition" p:sourceName="ovtEarnCode" p:targetName="ovtEarnCode"/>-->
                 </list>
               </property>
             </bean>
