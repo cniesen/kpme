@@ -157,7 +157,7 @@ public abstract class KPMETestCase extends RiceInternalSuiteDataTestCase {
 			public void start() throws Exception {
 	            System.setProperty("web.bootstrap.spring.file", "classpath:TestHarnessSpringBeans.xml");
 	            jettyServerLifecycle = new JettyServerLifecycle(HtmlUnitUtil.getPort(), CONTEXT_NAME, RELATIVE_WEBAPP_ROOT);
-	            jettyServerLifecycle.setConfigMode(ConfigMode.OVERRIDE);
+	            jettyServerLifecycle.setConfigMode(ConfigMode.MERGE);
 				jettyServerLifecycle.start();
 			}
 	
