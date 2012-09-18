@@ -25,6 +25,7 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.*;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.notes.Note;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
@@ -582,8 +583,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
     @SuppressWarnings("rawtypes")
     public List getNotesForDocument(String documentNumber) {
-        List notes = KEWServiceLocator.getNoteService()
-                .getNotesByDocumentId(documentNumber);
+        List notes = KewApiServiceLocator.getNoteService().getNotes(documentNumber);
         // add the user name in the note object
         for (Object obj : notes) {
             Note note = (Note) obj;
