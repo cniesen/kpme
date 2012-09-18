@@ -116,7 +116,7 @@ public class HtmlUnitUtil {
 	}
 
     public static String getBaseURL() {
-	    return ConfigContext.getCurrentContextConfig().getProperty("application.url");
+	    return ConfigContext.getCurrentContextConfig().getProperty("appserver.url") + "/kpme-dev";
     }
 
     public static String getTempDir() {
