@@ -22,11 +22,11 @@
 <!--         <loadData tableName="krim_prncpl_t" file="src/test/config/db/test/krim_prncpl_t.csv" /> -->
 <!--     </changeSet> -->
     
-<!--     <changeSet id="3" author="djunk" context="kpme-client-test"> -->
-<!--         <createTable tableName="kr_unittest_t"> -->
-<!--             <column name="foo" type="VARCHAR(1)"/> -->
-<!--         </createTable> -->
-<!--     </changeSet> -->
+    <changeSet id="3" author="djunk" context="kpme-client-test">
+        <createTable tableName="kr_unittest_t">
+            <column name="foo" type="VARCHAR(1)"/>
+        </createTable>
+    </changeSet>
     
 <!--     <changeSet id="4" author="djunk" context="kpme-client-test" dbms="mysql"> -->
 <!--         <insert tableName="hr_calendar_entries_s"> -->
