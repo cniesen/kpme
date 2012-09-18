@@ -78,37 +78,7 @@
                 </select>
             </label>
         </td>
-        <td>
-        	Approval Type:
-        	 <label for="approval types">
-                <select id="selectedApprovalType" name="selectedApprovalType"
-                        onchange="this.form.methodToCall.value='selectNewApprovalType'; this.form.submit();">
-                        <c:choose>
-                        	<c:when test="${Form.selectedApprovalType == 'all'}">
-                        		<option value="all" selected="selected">Show All</option>
-                        	</c:when>
-                        	<c:otherwise>
-                                <option value="all">Show All</option>
-                            </c:otherwise>
-                        </c:choose>
-                        <c:choose>
-                        	<c:when test="${Form.selectedApprovalType == 'time'}">
-                        		<option value="time" selected="selected">Time Sheet Approval</option>
-                        	</c:when>
-                        	<c:otherwise>
-                                <option value="time">Time Sheet Approval</option>
-                            </c:otherwise>
-                        </c:choose>
-                        <c:choose>
-                        	<c:when test="${Form.selectedApprovalType == 'leave'}">
-                        		<option value="leave" selected="selected">Leave Calendar Approval</option>
-                        	</c:when>
-                        	<c:otherwise>
-                                <option value="leave">Leave Calendar Approval</option>
-                            </c:otherwise>
-                        </c:choose>
-                </select>
-        </td>
+
     </tr>
     
 </table>
@@ -165,12 +135,7 @@
     </c:if>
 </table>
 
-<c:if test="${Form.selectedApprovalType == 'time' || Form.selectedApprovalType == 'all'}">
-	<tk:timeApproval />
-</c:if>
-<c:if test="${Form.selectedApprovalType == 'leave' || Form.selectedApprovalType == 'all'}">
-	<lm:leaveApproval />
-</c:if>
+<tk:timeApproval />
 
 <c:if test="${Form.resultSize > 0}">
     <div id="approvals-approve-button">

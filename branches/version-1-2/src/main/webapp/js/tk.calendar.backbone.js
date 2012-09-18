@@ -642,6 +642,8 @@ $(function () {
          * @param fields
          */
         resetTimeBlockDialog : function (timeBlockDiv) {
+            //Clear out the id of the selected block
+            $('#tkTimeBlockId').val('');
             // We don't want to clear out the selected assignment when there is only one assignment and it's a hidden text field
             $("input:not(#selectedAssignment), select", timeBlockDiv).val("");
             // This is not the best solution, but we can probably live with this for now.
