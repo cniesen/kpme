@@ -1,8 +1,8 @@
 package org.kuali.hr.time.workflow;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.Logger;
@@ -15,19 +15,15 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.core.api.uif.RemotableAttributeError;
 import org.kuali.rice.kew.api.identity.Id;
 import org.kuali.rice.kew.api.identity.PrincipalId;
 import org.kuali.rice.kew.api.rule.RoleName;
-import org.kuali.rice.kew.api.rule.RuleExtension;
 import org.kuali.rice.kew.engine.RouteContext;
 import org.kuali.rice.kew.routeheader.DocumentContent;
+import org.kuali.rice.kew.rule.AbstractRoleAttribute;
 import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
-import org.kuali.rice.kew.rule.RoleAttribute;
-import org.kuali.rice.kew.rule.RuleExtensionValue;
-import org.kuali.rice.kns.web.ui.Row;
 
-public class TkWorkflowTimesheetAttribute implements RoleAttribute {
+public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
 
     private static final Logger LOG = Logger.getLogger(TkWorkflowTimesheetAttribute.class);
 
@@ -72,7 +68,7 @@ public class TkWorkflowTimesheetAttribute implements RoleAttribute {
         }
 
         List<Id> principals = new ArrayList<Id>();
-        Long routeHeaderId = new Long(routeContext.getDocument().getDocumentId());
+        String routeHeaderId = routeContext.getDocument().getDocumentId();
         TkRoleService roleService = TkServiceLocator.getTkRoleService();
         TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
         WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
@@ -113,66 +109,8 @@ public class TkWorkflowTimesheetAttribute implements RoleAttribute {
     }
 
     @Override
-    public boolean isMatch(DocumentContent docContent,
-                           List<RuleExtension> ruleExtensions) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public List<Row> getRuleRows() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<Row> getRoutingDataRows() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getDocContent() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<RuleExtensionValue> getRuleExtensionValues() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<RemotableAttributeError> validateRoutingData(
-            Map<String, String> paramMap) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public List<RemotableAttributeError> validateRuleData(
-            Map<String, String> paramMap) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setRequired(boolean required) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public boolean isRequired() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
     public List<RoleName> getRoleNames() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.EMPTY_LIST;
     }
 
 }
