@@ -58,12 +58,6 @@ public class CalendarMaintTest extends KPMETestCase {
 	    
 	    setFieldValue(page, "document.newMaintainableObject.calendarName", "testCal");
 	    setFieldValue(page, "document.newMaintainableObject.calendarDescriptions", "testDes");
-	    // when calendar type is leave, flsa day and time are NOT required
-	    setFieldValue(page, "document.newMaintainableObject.calendarTypesLeave", "on");
-	  	page = page.getElementByName("methodToCall.route").click();
-	  	Assert.assertFalse("page text contains:\n" + FLSA_DAY_REQUIRED, page.asText().contains(FLSA_DAY_REQUIRED));
-	  	Assert.assertFalse("page text contains:\n" + FLSA_TIME_REQUIRED, page.asText().contains(FLSA_TIME_REQUIRED));
-	    
 	    // when calendar type is Pay, flsa day and time are required
 	    setFieldValue(page, "document.newMaintainableObject.calendarTypesPay", "on");
 	    page = page.getElementByName("methodToCall.route").click();
