@@ -18,68 +18,68 @@ import org.kuali.rice.kns.document.MaintenanceDocument;
  */
 public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
+	
+	public void setJobNumber(Job job) {
+		Long jobNumber = new Long("0");
+		Job maxJob = TkServiceLocator.getJobService().getMaxJob(job.getPrincipalId());
+		
+		if(maxJob != null) {
+			// get the max of job number of the collection
+			jobNumber = maxJob.getJobNumber() +1;
+		}		
+		job.setJobNumber(jobNumber);
+	}
+	/**
+	 * Override to populate user information in Maintenance page
+	 */
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Map populateBusinessObject(Map<String, String> fieldValues,
+			MaintenanceDocument maintenanceDocument, String methodToCall) {
+		if (fieldValues.containsKey("principalId")
+				&& StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
+			Person p = KimApiServiceLocator.getPersonService().getPerson(
+					fieldValues.get("principalId"));
+			if (p != null) {
+				fieldValues.put("name", p.getName());
+			}else{
+				fieldValues.put("name", "");
+			}
+		}
+		if(StringUtils.equals(getMaintenanceAction(),"New")){
+			if (!fieldValues.containsKey("jobNumber") || StringUtils.isEmpty(fieldValues.get("jobNumber"))) {
+				if (fieldValues.containsKey("principalId") && StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
+					Job maxJob = TkServiceLocator.getJobService().getMaxJob(fieldValues.get("principalId"));
+					if(maxJob != null) {
+						fieldValues.put("jobNumber", Long.toString(maxJob.getJobNumber() +1));
+					} else {
+						fieldValues.put("jobNumber", "0");
+					}
+				}
+			} 
+		}
+		
+		return super.populateBusinessObject(fieldValues, maintenanceDocument,
+				methodToCall); 
+	}
 
-    public void setJobNumber(Job job) {
-        Long jobNumber = new Long("0");
-        Job maxJob = TkServiceLocator.getJobService().getMaxJob(job.getPrincipalId());
+	@Override
+	public HrBusinessObject getObjectById(String id) {
+		return (HrBusinessObject)TkServiceLocator.getJobService().getJob(id);
+	}
 
-        if(maxJob != null) {
-            // get the max of job number of the collection
-            jobNumber = maxJob.getJobNumber() +1;
-        }
-        job.setJobNumber(jobNumber);
-    }
-    /**
-     * Override to populate user information in Maintenance page
-     */
-    @SuppressWarnings("rawtypes")
-    @Override
-    public Map populateBusinessObject(Map<String, String> fieldValues,
-                                      MaintenanceDocument maintenanceDocument, String methodToCall) {
-        if (fieldValues.containsKey("principalId")
-                && StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-            Person p = KimApiServiceLocator.getPersonService().getPerson(
-                    fieldValues.get("principalId"));
-            if (p != null) {
-                fieldValues.put("name", p.getName());
-            }else{
-                fieldValues.put("name", "");
-            }
-        }
-        if(StringUtils.equals(getMaintenanceAction(),"New")){
-            if (!fieldValues.containsKey("jobNumber") || StringUtils.isEmpty(fieldValues.get("jobNumber"))) {
-                if (fieldValues.containsKey("principalId") && StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-                    Job maxJob = TkServiceLocator.getJobService().getMaxJob(fieldValues.get("principalId"));
-                    if(maxJob != null) {
-                        fieldValues.put("jobNumber", Long.toString(maxJob.getJobNumber() +1));
-                    } else {
-                        fieldValues.put("jobNumber", "0");
-                    }
-                }
-            }
-        }
-
-        return super.populateBusinessObject(fieldValues, maintenanceDocument,
-                methodToCall);
-    }
-
-    @Override
-    public HrBusinessObject getObjectById(String id) {
-        return (HrBusinessObject)TkServiceLocator.getJobService().getJob(id);
-    }
-
-    @Override
-    public void customSaveLogic(HrBusinessObject hrObj) {
-        if(StringUtils.equals(getMaintenanceAction(),"New")){
-            Job job = (Job)hrObj;
-            this.setJobNumber(job);
-        }
-    }
-
-
+	@Override
+	public void customSaveLogic(HrBusinessObject hrObj) {
+		if(StringUtils.equals(getMaintenanceAction(),"New")){
+			Job job = (Job)hrObj;
+			this.setJobNumber(job);
+		}
+	}
+	
+	
 }

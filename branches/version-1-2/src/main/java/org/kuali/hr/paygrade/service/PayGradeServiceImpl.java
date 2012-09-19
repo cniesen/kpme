@@ -1,9 +1,9 @@
 package org.kuali.hr.paygrade.service;
 
-import java.sql.Date;
-
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.paygrade.dao.PayGradeDao;
+
+import java.sql.Date;
 
 public class PayGradeServiceImpl implements PayGradeService{
 

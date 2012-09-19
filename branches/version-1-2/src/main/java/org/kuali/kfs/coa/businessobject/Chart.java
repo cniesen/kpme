@@ -15,11 +15,11 @@
  */
 package org.kuali.kfs.coa.businessobject;
 
+import java.util.LinkedHashMap;
+
 import org.apache.commons.lang.StringUtils;
 import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-
-import java.util.LinkedHashMap;
 
 /**
  *

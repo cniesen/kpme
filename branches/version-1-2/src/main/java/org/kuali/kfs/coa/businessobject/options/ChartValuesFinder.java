@@ -32,17 +32,17 @@ public class ChartValuesFinder extends KeyValuesBase {
 
     /**
      * Creates a list of {@link Chart} using their code as the key and their code "-" description
-     *
-     *
+     * 
+     * @see org.kuali.rice.kns.lookup.keyvalues.KeyValuesFinder#getKeyValues()
      */
 
-
-
+	
+	
     public List getKeyValues() {
+    	
+    	Collection<Chart> chartCodes = KRADServiceLocator.getKeyValuesService().findAll(Chart.class);
 
-        Collection<Chart> chartCodes = KRADServiceLocator.getKeyValuesService().findAll(Chart.class);
-
-        List<KeyValue> chartKeyLabels = new ArrayList<KeyValue>();
+    	List<KeyValue> chartKeyLabels = new ArrayList<KeyValue>();
         chartKeyLabels.add(new ConcreteKeyValue("", ""));
 
         for (Chart element : chartCodes) {
@@ -54,7 +54,7 @@ public class ChartValuesFinder extends KeyValuesBase {
         //TODO remove temp hard coded values
         //chartKeyLabels.add(new KeyLabelPair("SC", "SC Description Temp"));
         return chartKeyLabels;
-
+    	
     }
 
 }

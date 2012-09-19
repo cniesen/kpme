@@ -1,8 +1,8 @@
 package org.kuali.hr.paygrade.dao;
 
-import java.sql.Date;
-
 import org.kuali.hr.paygrade.PayGrade;
+
+import java.sql.Date;
 
 public interface PayGradeDao {
 	/**

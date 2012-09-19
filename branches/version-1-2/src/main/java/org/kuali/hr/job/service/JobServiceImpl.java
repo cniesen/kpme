@@ -59,8 +59,9 @@ public class JobServiceImpl implements JobService {
                       boolean chkDetails) {
         Job job = jobDao.getJob(principalId, jobNumber, asOfDate);
         if (job == null && chkDetails) {
-            throw new RuntimeException("No job for principal : " + principalId
-                    + " Job Number: " + jobNumber);
+            return null;
+            //throw new RuntimeException("No job for principal : " + principalId
+            //        + " Job Number: " + jobNumber);
         }
         if (chkDetails) {
             String hrPayType = job.getHrPayType();
@@ -118,20 +119,18 @@ public class JobServiceImpl implements JobService {
 
         return jobDao.getJobs(principalId, jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory);
     }
-
+    
     public int getJobCount(String principalId, Long jobNumber, String dept) {
-        return jobDao.getJobCount(principalId, jobNumber, dept);
+    	return jobDao.getJobCount(principalId, jobNumber, dept);
     }
-
-
+    
     @Override
     public BigDecimal getStandardHoursSumForJobs(List<Job> jobs) {
-        BigDecimal hoursSum = new BigDecimal(0);
-        for(Job aJob : jobs) {
-            hoursSum = hoursSum.add(aJob.getStandardHours());
-        }
-        return hoursSum;
+    	BigDecimal hoursSum = new BigDecimal(0);
+    	for(Job aJob : jobs) {
+    		hoursSum = hoursSum.add(aJob.getStandardHours());
+    	}
+    	return hoursSum;
     }
-
 
 }

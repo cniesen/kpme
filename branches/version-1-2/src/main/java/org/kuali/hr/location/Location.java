@@ -2,7 +2,6 @@ package org.kuali.hr.location;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.LinkedHashMap;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
@@ -23,7 +22,6 @@ public class Location extends HrBusinessObject {
 	private String description;
 	private String userPrincipalId;
 	private String history;
-
 
 	public String getHrLocationId() {
 		return hrLocationId;
