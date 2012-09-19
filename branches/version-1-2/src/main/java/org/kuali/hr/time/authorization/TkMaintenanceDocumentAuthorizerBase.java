@@ -42,10 +42,10 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
     public boolean isAuthorized(BusinessObject businessObject, String namespaceCode, String permissionName, String principalId, Map<String, String> additionalPermissionDetails, Map<String, String> additionalRoleQualifiers) {
         return true;
     }
-
+    
     @Override
     public boolean isAuthorizedByTemplate(Object dataObject, String namespaceCode, String permissionTemplateName, String principalId, Map<String, String> additionalPermissionDetails, Map<String, String> additionalRoleQualifiers) {
-        return true;
+    	return true;
     }
 
     @Override
@@ -87,13 +87,13 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
     }
 
     // Methods from DocumentAuthorizer
-
+    
 
     /**
      * Copied from DocumentAuthorizerBase
      */
-    @Override
-    public Set<String> getDocumentActions(Document document, Person user, Set<String> documentActions) {
+	@Override
+	public Set<String> getDocumentActions(Document document, Person user, Set<String> documentActions) {
         if (documentActions.contains(KRADConstants.KUALI_ACTION_CAN_EDIT) && !canEdit(document, user)) {
             documentActions.remove(KRADConstants.KUALI_ACTION_CAN_EDIT);
         }
@@ -171,7 +171,7 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
         }
 
         return documentActions;
-    }
+	}
 
     @Override
     /**
@@ -183,91 +183,91 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
 
     @Override
     /**
-     *
+     * 
      * One Reference in KualiDocumentActionBase:366
      */
     public boolean canOpen(Document document, Person user) {
-        return this.rolesIndicateGeneralReadAccess();
+    	return this.rolesIndicateGeneralReadAccess();
     }
-
+    
     @Override
     public boolean canEdit(Document document, Person user) {
-        return this.rolesIndicateGeneralWriteAccess();
+    	return this.rolesIndicateGeneralWriteAccess();
     }
-
+    
     @Override
     public boolean canAnnotate(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canReload(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canClose(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canSave(Document document, Person user) {
-        return this.rolesIndicateGeneralWriteAccess();
+    	return this.rolesIndicateGeneralWriteAccess();
     }
 
     @Override
     public boolean canRoute(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canCancel(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canCopy(Document document, Person user) {
-        return this.rolesIndicateGeneralWriteAccess();
+    	return this.rolesIndicateGeneralWriteAccess();
     }
 
     @Override
     public boolean canPerformRouteReport(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canBlanketApprove(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canApprove(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canDisapprove(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canSendNoteFyi(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canEditDocumentOverview(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canFyi(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canAcknowledge(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
@@ -285,10 +285,10 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
         return true;
     }
 
-    @Override
-    public boolean canViewNoteAttachment(Document document,String attachmentTypeCode, Person user) {
-        return true;
-    }
+	@Override
+	public boolean canViewNoteAttachment(Document document,String attachmentTypeCode, Person user) {
+		return true;
+	}
 
     @Override
     public boolean canViewNoteAttachment(Document document, String attachmentTypeCode, String authorUniversalIdentifier, Person user) {
@@ -299,38 +299,38 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
     public boolean canSendAdHocRequests(Document document, String actionRequestCd, Person user) {
         return true;
     }
-
+    
     @Override
     public boolean canSendAnyTypeAdHocRequests(Document document, Person user) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean canTakeRequestedAction(Document document, String actionRequestCode, Person user) {
-        return true;
+    	return true;
     }
-
+    
     @Override
     public boolean canRecall(Document document, Person user) {
-        return true;
+    	return true;
     }
-
+    
     // Methods from DataObjectAuthorizer
-
+    
     @Override
     public boolean isAuthorized(Object dataObject, String namespaceCode, String permissionName, String principalId) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean isAuthorizedByTemplate(Object dataObject, String namespaceCode, String permissionTemplateName, String principalId) {
-        return true;
+    	return true;
     }
 
     @Override
     public boolean isAuthorized(Object dataObject, String namespaceCode, String permissionName, String principalId,
-                                Map<String, String> additionalPermissionDetails, Map<String, String> additionalRoleQualifiers) {
-        return true;
+            Map<String, String> additionalPermissionDetails, Map<String, String> additionalRoleQualifiers) {
+    	return true;
     }
 
 

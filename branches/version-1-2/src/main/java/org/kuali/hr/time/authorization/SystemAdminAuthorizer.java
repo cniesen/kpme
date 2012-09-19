@@ -16,251 +16,251 @@ import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
 public class SystemAdminAuthorizer implements MaintenanceDocumentAuthorizer, DocumentAuthorizer {
+	
+	public boolean isSystemAdmin(){
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isSystemAdmin();
+	}
+	
+	public boolean isGlobalViewOnly(){
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isGlobalViewOnly();
+	}
 
-    public boolean isSystemAdmin(){
-        return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isSystemAdmin();
-    }
+	@Override
+	public boolean canInitiate(String documentTypeName, Person user) {
+		return isSystemAdmin() || isGlobalViewOnly();
+	}
 
-    public boolean isGlobalViewOnly(){
-        return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isGlobalViewOnly();
-    }
+	@Override
+	public boolean canOpen(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canInitiate(String documentTypeName, Person user) {
-        return isSystemAdmin() || isGlobalViewOnly();
-    }
+	@Override
+	public boolean canReceiveAdHoc(Document document, Person user,
+			String actionRequestCode) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canOpen(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canAddNoteAttachment(Document document,
+			String attachmentTypeCode, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canReceiveAdHoc(Document document, Person user,
-                                   String actionRequestCode) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canDeleteNoteAttachment(Document document,
+			String attachmentTypeCode, String createdBySelfOnly, Person user) {
+		return isSystemAdmin();
+	}
+	
+	@Override
+	public boolean canViewNoteAttachment(Document document,
+			String attachmentTypeCode, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canAddNoteAttachment(Document document,
-                                        String attachmentTypeCode, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canViewNoteAttachment(Document document, 
+			String attachmentTypeCode, String authorUniversalIdentifier, Person user) {
+		return isSystemAdmin();
+	}
+	
+	@Override
+	public boolean canSendAdHocRequests(Document document,
+			String actionRequestCd, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canDeleteNoteAttachment(Document document,
-                                           String attachmentTypeCode, String createdBySelfOnly, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorized(BusinessObject businessObject,
+			String namespaceCode, String permissionName, String principalId) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canViewNoteAttachment(Document document,
-                                         String attachmentTypeCode, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorizedByTemplate(BusinessObject businessObject,
+			String namespaceCode, String permissionTemplateName,
+			String principalId) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canViewNoteAttachment(Document document,
-                                         String attachmentTypeCode, String authorUniversalIdentifier, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorized(BusinessObject businessObject,
+			String namespaceCode, String permissionName, String principalId,
+			Map<String, String> additionalPermissionDetails,
+			Map<String, String> additionalRoleQualifiers) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canSendAdHocRequests(Document document,
-                                        String actionRequestCd, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorizedByTemplate(Object dataObject,
+			String namespaceCode, String permissionTemplateName,
+			String principalId,
+			Map<String, String> additionalPermissionDetails,
+			Map<String, String> additionalRoleQualifiers) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean isAuthorized(BusinessObject businessObject,
-                                String namespaceCode, String permissionName, String principalId) {
-        return isSystemAdmin();
-    }
+	@Override
+	public Map<String, String> getCollectionItemRoleQualifications(
+			BusinessObject collectionItemBusinessObject) {
+		return new HashMap<String,String>();
+	}
 
-    @Override
-    public boolean isAuthorizedByTemplate(BusinessObject businessObject,
-                                          String namespaceCode, String permissionTemplateName,
-                                          String principalId) {
-        return isSystemAdmin();
-    }
+	@Override
+	public Map<String, String> getCollectionItemPermissionDetails(
+			BusinessObject collectionItemBusinessObject) {
+		return new HashMap<String,String>();
+	}
 
-    @Override
-    public boolean isAuthorized(BusinessObject businessObject,
-                                String namespaceCode, String permissionName, String principalId,
-                                Map<String, String> additionalPermissionDetails,
-                                Map<String, String> additionalRoleQualifiers) {
-        return isSystemAdmin();
-    }
+	@Override
+	public Set<String> getSecurePotentiallyHiddenSectionIds() {
+		return new HashSet<String>();
+	}
 
-    @Override
-    public boolean isAuthorizedByTemplate(Object dataObject,
-                                          String namespaceCode, String permissionTemplateName,
-                                          String principalId,
-                                          Map<String, String> additionalPermissionDetails,
-                                          Map<String, String> additionalRoleQualifiers) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canCreate(Class boClass, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public Map<String, String> getCollectionItemRoleQualifications(
-            BusinessObject collectionItemBusinessObject) {
-        return new HashMap<String,String>();
-    }
+	@Override
+	public boolean canMaintain(Object dataObject, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public Map<String, String> getCollectionItemPermissionDetails(
-            BusinessObject collectionItemBusinessObject) {
-        return new HashMap<String,String>();
-    }
+	@Override
+	public boolean canCreateOrMaintain(MaintenanceDocument maintenanceDocument, 
+			Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public Set<String> getSecurePotentiallyHiddenSectionIds() {
-        return new HashSet<String>();
-    }
+	@Override
+	public Set<String> getSecurePotentiallyReadOnlySectionIds() {
+		return new HashSet<String>();
+	}
 
-    @Override
-    public boolean canCreate(Class boClass, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canEdit(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canMaintain(Object dataObject, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canAnnotate(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canCreateOrMaintain(MaintenanceDocument maintenanceDocument,
-                                       Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canReload(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public Set<String> getSecurePotentiallyReadOnlySectionIds() {
-        return new HashSet<String>();
-    }
+	@Override
+	public boolean canClose(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canEdit(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canSave(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canAnnotate(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canRoute(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canReload(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canCancel(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canClose(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canCopy(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canSave(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canPerformRouteReport(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canRoute(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canBlanketApprove(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canCancel(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canApprove(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canCopy(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canDisapprove(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canPerformRouteReport(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canSendNoteFyi(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canBlanketApprove(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canEditDocumentOverview(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canApprove(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canFyi(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canDisapprove(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canAcknowledge(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canSendNoteFyi(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canSendAnyTypeAdHocRequests(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canEditDocumentOverview(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canTakeRequestedAction(Document document,
+			String actionRequestCode, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canFyi(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean canRecall(Document document, Person user) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canAcknowledge(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorized(Object dataObject, String namespaceCode,
+			String permissionName, String principalId) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canSendAnyTypeAdHocRequests(Document document, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorizedByTemplate(Object dataObject,
+			String namespaceCode, String permissionTemplateName,
+			String principalId) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canTakeRequestedAction(Document document,
-                                          String actionRequestCode, Person user) {
-        return isSystemAdmin();
-    }
+	@Override
+	public boolean isAuthorized(Object dataObject, String namespaceCode,
+			String permissionName, String principalId,
+			Map<String, String> additionalPermissionDetails,
+			Map<String, String> additionalRoleQualifiers) {
+		return isSystemAdmin();
+	}
 
-    @Override
-    public boolean canRecall(Document document, Person user) {
-        return isSystemAdmin();
-    }
-
-    @Override
-    public boolean isAuthorized(Object dataObject, String namespaceCode,
-                                String permissionName, String principalId) {
-        return isSystemAdmin();
-    }
-
-    @Override
-    public boolean isAuthorizedByTemplate(Object dataObject,
-                                          String namespaceCode, String permissionTemplateName,
-                                          String principalId) {
-        return isSystemAdmin();
-    }
-
-    @Override
-    public boolean isAuthorized(Object dataObject, String namespaceCode,
-                                String permissionName, String principalId,
-                                Map<String, String> additionalPermissionDetails,
-                                Map<String, String> additionalRoleQualifiers) {
-        return isSystemAdmin();
-    }
-
-    /**
-     * Copied from org.kuali.rice.kns.document.authorization.DocumentAuthorizerBase
-     */
-    @Override
-    public Set<String> getDocumentActions(Document document, Person user, Set<String> documentActions) {
+	/**
+	 * Copied from org.kuali.rice.kns.document.authorization.DocumentAuthorizerBase
+	 */
+	@Override
+	public Set<String> getDocumentActions(Document document, Person user, Set<String> documentActions) {
         if (documentActions.contains(KRADConstants.KUALI_ACTION_CAN_EDIT) && !canEdit(document, user)) {
             documentActions.remove(KRADConstants.KUALI_ACTION_CAN_EDIT);
         }
@@ -338,6 +338,6 @@ public class SystemAdminAuthorizer implements MaintenanceDocumentAuthorizer, Doc
         }
 
         return documentActions;
-    }
+	}
 
 }

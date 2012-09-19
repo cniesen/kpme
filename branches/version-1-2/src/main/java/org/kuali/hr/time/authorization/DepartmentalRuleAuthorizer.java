@@ -20,12 +20,12 @@ import org.kuali.rice.krad.bo.BusinessObject;
  */
 public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerBase {
 
-    private static final Logger LOG = Logger.getLogger(DepartmentalRuleAuthorizer.class);
+      private static final Logger LOG = Logger.getLogger(DepartmentalRuleAuthorizer.class);
 
     @Override
     public boolean rolesIndicateGeneralReadAccess() {
         return getRoles().isSystemAdmin() ||
-                getRoles().isGlobalViewOnly() ||
+        		getRoles().isGlobalViewOnly() ||
                 getRoles().getOrgAdminCharts().size() > 0 ||
                 getRoles().getOrgAdminDepartments().size() > 0 ||
                 getRoles().getDepartmentViewOnlyDepartments().size() > 0 ||
@@ -96,7 +96,7 @@ public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerB
                     dr.getWorkArea().equals(TkConstants.WILDCARD_LONG)) {
                 // case 1
                 ret = TKContext.getUser().getApproverWorkAreas().size() > 0 || TKContext.getUser().getLocationAdminAreas().size() > 0 ||
-                        TKContext.getUser().getDepartmentAdminAreas().size() > 0;
+                		TKContext.getUser().getDepartmentAdminAreas().size() > 0;
             } else if (StringUtils.equals(dr.getDept(), TkConstants.WILDCARD_CHARACTER)) {
                 // case 2 *
                 // Should not encounter this case.
@@ -106,7 +106,7 @@ public class DepartmentalRuleAuthorizer extends TkMaintenanceDocumentAuthorizerB
                 ret = TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
             } else {
                 ret = TKContext.getUser().getApproverWorkAreas().contains(dr.getWorkArea()) ||
-                        TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
+                		TKContext.getUser().getDepartmentAdminAreas().contains(dr.getDept());
             }
         }
 
