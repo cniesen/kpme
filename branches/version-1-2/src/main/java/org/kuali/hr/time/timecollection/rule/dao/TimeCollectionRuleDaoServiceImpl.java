@@ -224,6 +224,8 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
 
         effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
         effdt.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        effdt.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
+
         if (StringUtils.isNotBlank(dept)) {
             effdt.addEqualTo("dept", dept);
         }
@@ -235,6 +237,7 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
 
         timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
         timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+        timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
         if (StringUtils.isNotBlank(dept)) {
             timestamp.addEqualTo("dept", dept);
         }
