@@ -30,7 +30,7 @@
     <property name="maintainableItems">
       <list>
         <bean parent="MaintainableFieldDefinition" p:name="principalId" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="calendarName" p:required="true"/>
+        <bean parent="MaintainableFieldDefinition" p:name="pyCalendarGroup" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="hrCalendarEntriesId" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="beginAndEndDateTime" />
         <bean parent="MaintainableFieldDefinition" p:name="documentId" p:unconditionallyReadOnly="true" />

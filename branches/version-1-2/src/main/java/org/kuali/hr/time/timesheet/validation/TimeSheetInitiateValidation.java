@@ -14,7 +14,7 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
     protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
         boolean valid = true;
         TimeSheetInitiate timeInit = (TimeSheetInitiate)this.getNewBo();
-        Calendar pc = TkServiceLocator.getCalendarService().getCalendarByGroup(timeInit.getCalendarName());
+        Calendar pc = TkServiceLocator.getCalendarService().getCalendarByGroup(timeInit.getPyCalendarGroup());
         if(pc == null) {
             this.putFieldError("calendarName", "timeSheetInit.payCalendar.Invalid");
             valid = false;

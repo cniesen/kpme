@@ -132,3 +132,5 @@ drop table `tk`.`hr_py_calendar_entries_t`;
 drop table `tk`.`hr_py_calendar_t`;
 
 alter table `hr_pay_grade_t`ADD COLUMN `sal_group` VARCHAR(20);
+
+alter table `tk_time_sheet_init_t` change `calendar_group` `PY_CALENDAR_GROUP` varchar(30);

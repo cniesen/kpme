@@ -25,15 +25,10 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
 
     private String hrCalendarEntriesId;
 
-    public String getCalendarName() {
-        return calendarName;
-    }
 
-    public void setCalendarName(String calendarName) {
-        this.calendarName = calendarName;
-    }
 
-    private String calendarName;
+
+    private String pyCalendarGroup;
     private String documentId;
 
     private Person principal;
@@ -100,5 +95,11 @@ public class TimeSheetInitiate extends PersistableBusinessObjectBase {
         return (payCalendarEntriesObj != null) ?
                 payCalendarEntriesObj.getBeginPeriodDateTime().toString() + " - "+ payCalendarEntriesObj.getEndPeriodDateTime().toString() : "";
     }
+    public String getPyCalendarGroup() {
+        return pyCalendarGroup;
+    }
 
+    public void setPyCalendarGroup(String pyCalendarGroup) {
+        this.pyCalendarGroup = pyCalendarGroup;
+    }
 }
