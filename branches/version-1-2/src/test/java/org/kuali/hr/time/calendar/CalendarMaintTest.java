@@ -17,7 +17,6 @@ public class CalendarMaintTest extends KPMETestCase {
 	public static final String TEST_USER = "admin";
 	private static final String CAL_NAME_REQUIRED = "Calendar Name (Calendar Name) is a required field.";
 	private static final String CAL_DESP_REQUIRED = "Calendar Descriptions (Calendar Descriptions) is a required field.";
-	private static final String CAL_TYPES_REQUIRED = "Calendar Types (Calendar Types) is a required field.";
 	private static final String FLSA_DAY_REQUIRED = "FLSA Begin Day is a required field.";
 	private static final String FLSA_TIME_REQUIRED = "FLSA Begin Time is a required field.";
 	
@@ -54,7 +53,6 @@ public class CalendarMaintTest extends KPMETestCase {
 	  	Assert.assertFalse("page text contains: Incident Report", page.asText().contains("Incident Report"));
 	  	Assert.assertTrue("page text does not contain:\n" + CAL_NAME_REQUIRED, page.asText().contains(CAL_NAME_REQUIRED));
 	  	Assert.assertTrue("page text does not contain:\n" + CAL_DESP_REQUIRED, page.asText().contains(CAL_DESP_REQUIRED));
-	  	Assert.assertTrue("page text does not contain:\n" + CAL_TYPES_REQUIRED, page.asText().contains(CAL_TYPES_REQUIRED));
 	  	Assert.assertFalse("page text contains:\n" + FLSA_DAY_REQUIRED, page.asText().contains(FLSA_DAY_REQUIRED));
 	  	Assert.assertFalse("page text contains:\n" + FLSA_TIME_REQUIRED, page.asText().contains(FLSA_TIME_REQUIRED));
 	    

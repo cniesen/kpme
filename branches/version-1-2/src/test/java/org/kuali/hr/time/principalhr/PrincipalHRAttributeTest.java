@@ -23,7 +23,6 @@ public class PrincipalHRAttributeTest extends KPMETestCase {
     	HtmlUnitUtil.createTempFile(page);
     	Assert.assertTrue("Test that maintenance screen rendered", page.asText().contains("fred"));
     	Assert.assertTrue("Test that maintenance screen rendered", page.asText().contains("Pay Calendar"));
-    	Assert.assertTrue("Test that maintenance screen rendered", page.asText().contains("Leave Calendar"));
 	}
 	
 	// KPME-1442 Kagata
