@@ -11,275 +11,275 @@ import org.kuali.kfs.coa.businessobject.SubAccount;
 import org.kuali.kfs.coa.businessobject.SubObjectCode;
 
 public class AssignmentAccount extends HrBusinessObject {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String tkAssignAcctId;
+	private String finCoaCd;
+	private String accountNbr;
+	private String subAcctNbr;
+	private String finObjectCd;
+	private String finSubObjCd;
+	private String projectCd;
+	private String orgRefId;
+	private BigDecimal percent;
+	private String earnCode;
+	private String tkAssignmentId;
+	private Assignment assignmentObj;
+	
+	private Account accountObj;
+	private SubAccount subAccountObj;
+	private ObjectCode objectCodeObj;
+	private SubObjectCode subObjectCodeObj;
+	private ProjectCode projectCodeObj;
+	private EarnCode earnCodeObj;
+	
+	public Assignment getAssignmentObj() {
+		return assignmentObj;
+	}
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    private String tkAssignAcctId;
-    private String finCoaCd;
-    private String accountNbr;
-    private String subAcctNbr;
-    private String finObjectCd;
-    private String finSubObjCd;
-    private String projectCd;
-    private String orgRefId;
-    private BigDecimal percent;
-    private String earnCode;
-    private String tkAssignmentId;
-    private Assignment assignmentObj;
 
-    private Account accountObj;
-    private SubAccount subAccountObj;
-    private ObjectCode objectCodeObj;
-    private SubObjectCode subObjectCodeObj;
-    private ProjectCode projectCodeObj;
-    private EarnCode earnCodeObj;
 
-    public Assignment getAssignmentObj() {
-        return assignmentObj;
-    }
+	public void setAssignmentObj(Assignment assignmentObj) {
+		this.assignmentObj = assignmentObj;
+	}
 
 
+	public String getFinCoaCd() {
+		return finCoaCd;
+	}
 
-    public void setAssignmentObj(Assignment assignmentObj) {
-        this.assignmentObj = assignmentObj;
-    }
 
 
-    public String getFinCoaCd() {
-        return finCoaCd;
-    }
+	public void setFinCoaCd(String finCoaCd) {
+		this.finCoaCd = finCoaCd;
+	}
 
 
 
-    public void setFinCoaCd(String finCoaCd) {
-        this.finCoaCd = finCoaCd;
-    }
+	public String getAccountNbr() {
+		return accountNbr;
+	}
 
 
 
-    public String getAccountNbr() {
-        return accountNbr;
-    }
+	public void setAccountNbr(String accountNbr) {
+		this.accountNbr = accountNbr;
+	}
 
 
 
-    public void setAccountNbr(String accountNbr) {
-        this.accountNbr = accountNbr;
-    }
+	public String getSubAcctNbr() {
+		return subAcctNbr;
+	}
 
 
 
-    public String getSubAcctNbr() {
-        return subAcctNbr;
-    }
+	public void setSubAcctNbr(String subAcctNbr) {
+		this.subAcctNbr = subAcctNbr;
+	}
 
 
 
-    public void setSubAcctNbr(String subAcctNbr) {
-        this.subAcctNbr = subAcctNbr;
-    }
+	public String getFinObjectCd() {
+		return finObjectCd;
+	}
 
 
 
-    public String getFinObjectCd() {
-        return finObjectCd;
-    }
+	public void setFinObjectCd(String finObjectCd) {
+		this.finObjectCd = finObjectCd;
+	}
 
 
 
-    public void setFinObjectCd(String finObjectCd) {
-        this.finObjectCd = finObjectCd;
-    }
+	public String getFinSubObjCd() {
+		return finSubObjCd;
+	}
 
 
 
-    public String getFinSubObjCd() {
-        return finSubObjCd;
-    }
+	public void setFinSubObjCd(String finSubObjCd) {
+		this.finSubObjCd = finSubObjCd;
+	}
 
 
 
-    public void setFinSubObjCd(String finSubObjCd) {
-        this.finSubObjCd = finSubObjCd;
-    }
+	public String getProjectCd() {
+		return projectCd;
+	}
 
 
 
-    public String getProjectCd() {
-        return projectCd;
-    }
+	public void setProjectCd(String projectCd) {
+		this.projectCd = projectCd;
+	}
 
 
 
-    public void setProjectCd(String projectCd) {
-        this.projectCd = projectCd;
-    }
+	public String getOrgRefId() {
+		return orgRefId;
+	}
 
 
 
-    public String getOrgRefId() {
-        return orgRefId;
-    }
+	public void setOrgRefId(String orgRefId) {
+		this.orgRefId = orgRefId;
+	}
 
 
 
-    public void setOrgRefId(String orgRefId) {
-        this.orgRefId = orgRefId;
-    }
+	public BigDecimal getPercent() {
+		return percent;
+	}
 
 
 
-    public BigDecimal getPercent() {
-        return percent;
-    }
+	public void setPercent(BigDecimal percent) {
+		this.percent = percent;
+	}
 
 
 
-    public void setPercent(BigDecimal percent) {
-        this.percent = percent;
-    }
+	public boolean isActive() {
+		return active;
+	}
 
 
 
-    public boolean isActive() {
-        return active;
-    }
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 
+    
+	public String getTkAssignAcctId() {
+		return tkAssignAcctId;
+	}
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
 
+	public void setTkAssignAcctId(String tkAssignAcctId) {
+		this.tkAssignAcctId = tkAssignAcctId;
+	}
 
-    public String getTkAssignAcctId() {
-        return tkAssignAcctId;
-    }
 
 
+	public String getTkAssignmentId() {
+		return tkAssignmentId;
+	}
 
-    public void setTkAssignAcctId(String tkAssignAcctId) {
-        this.tkAssignAcctId = tkAssignAcctId;
-    }
 
 
+	public void setTkAssignmentId(String tkAssignmentId) {
+		this.tkAssignmentId = tkAssignmentId;
+	}
 
-    public String getTkAssignmentId() {
-        return tkAssignmentId;
-    }
 
 
+	public String getEarnCode() {
+		return earnCode;
+	}
 
-    public void setTkAssignmentId(String tkAssignmentId) {
-        this.tkAssignmentId = tkAssignmentId;
-    }
 
 
+	public void setEarnCode(String earnCode) {
+		this.earnCode = earnCode;
+	}
 
-    public String getEarnCode() {
-        return earnCode;
-    }
 
 
+	public Account getAccountObj() {
+		return accountObj;
+	}
 
-    public void setEarnCode(String earnCode) {
-        this.earnCode = earnCode;
-    }
 
 
+	public void setAccountObj(Account accountObj) {
+		this.accountObj = accountObj;
+	}
 
-    public Account getAccountObj() {
-        return accountObj;
-    }
 
 
+	public SubAccount getSubAccountObj() {
+		return subAccountObj;
+	}
 
-    public void setAccountObj(Account accountObj) {
-        this.accountObj = accountObj;
-    }
 
 
+	public void setSubAccountObj(SubAccount subAccountObj) {
+		this.subAccountObj = subAccountObj;
+	}
 
-    public SubAccount getSubAccountObj() {
-        return subAccountObj;
-    }
 
 
+	public ObjectCode getObjectCodeObj() {
+		return objectCodeObj;
+	}
 
-    public void setSubAccountObj(SubAccount subAccountObj) {
-        this.subAccountObj = subAccountObj;
-    }
 
 
+	public void setObjectCodeObj(ObjectCode objectCodeObj) {
+		this.objectCodeObj = objectCodeObj;
+	}
 
-    public ObjectCode getObjectCodeObj() {
-        return objectCodeObj;
-    }
 
 
+	public SubObjectCode getSubObjectCodeObj() {
+		return subObjectCodeObj;
+	}
 
-    public void setObjectCodeObj(ObjectCode objectCodeObj) {
-        this.objectCodeObj = objectCodeObj;
-    }
 
 
+	public void setSubObjectCodeObj(SubObjectCode subObjectCodeObj) {
+		this.subObjectCodeObj = subObjectCodeObj;
+	}
 
-    public SubObjectCode getSubObjectCodeObj() {
-        return subObjectCodeObj;
-    }
 
 
+	public ProjectCode getProjectCodeObj() {
+		return projectCodeObj;
+	}
 
-    public void setSubObjectCodeObj(SubObjectCode subObjectCodeObj) {
-        this.subObjectCodeObj = subObjectCodeObj;
-    }
 
 
+	public void setProjectCodeObj(ProjectCode projectCodeObj) {
+		this.projectCodeObj = projectCodeObj;
+	}
 
-    public ProjectCode getProjectCodeObj() {
-        return projectCodeObj;
-    }
 
 
+	public EarnCode getEarnCodeObj() {
+		return earnCodeObj;
+	}
 
-    public void setProjectCodeObj(ProjectCode projectCodeObj) {
-        this.projectCodeObj = projectCodeObj;
-    }
 
 
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
+		this.earnCodeObj = earnCodeObj;
+	}
 
-    public EarnCode getEarnCodeObj() {
-        return earnCodeObj;
-    }
 
 
+	@Override
+	public String getUniqueKey() {
+		return earnCode +"_"+accountNbr+"_"+subAcctNbr;
+	}
 
-    public void setEarnCodeObj(EarnCode earnCodeObj) {
-        this.earnCodeObj = earnCodeObj;
-    }
 
 
+	@Override
+	public String getId() {
+		return tkAssignAcctId;
+	}
 
-    @Override
-    public String getUniqueKey() {
-        return earnCode +"_"+accountNbr+"_"+subAcctNbr;
-    }
 
 
-
-    @Override
-    public String getId() {
-        return tkAssignAcctId;
-    }
-
-
-
-    @Override
-    public void setId(String id) {
-        setTkAssignAcctId(id);
-    }
-
+	@Override
+	public void setId(String id) {
+		setTkAssignAcctId(id);
+	}
+	
 }

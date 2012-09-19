@@ -61,7 +61,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     @Override
     public List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
-                                              String dept, String workArea, String active, String showHistory) {
+                                           String dept, String workArea, String active, String showHistory) {
         return assignmentDao.searchAssignments(fromEffdt, toEffdt, principalId, jobNumber, dept, workArea, active, showHistory);
     }
 
@@ -230,9 +230,9 @@ public class AssignmentServiceImpl implements AssignmentService {
         return assignments;
     }
 
-
     @Override
     public Assignment getMaxTimestampAssignment(String principalId) {
-        return assignmentDao.getMaxTimestampAssignment(principalId);
+    	return assignmentDao.getMaxTimestampAssignment(principalId);
     }
+
 }

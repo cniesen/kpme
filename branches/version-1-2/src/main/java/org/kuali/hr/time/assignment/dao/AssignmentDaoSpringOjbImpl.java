@@ -330,7 +330,7 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 
     @Override
     public List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
-                                              String dept, String workArea, String active, String showHistory) {
+                                           String dept, String workArea, String active, String showHistory) {
 
         Criteria crit = new Criteria();
         Criteria effdt = new Criteria();
@@ -410,12 +410,12 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         }
         return results;
     }
-
+    
     @Override
     public Assignment getMaxTimestampAssignment(String principalId) {
-        Criteria root = new Criteria();
+    	Criteria root = new Criteria();
         Criteria crit = new Criteria();
-
+        
         crit.addEqualTo("principalId", principalId);
         ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Assignment.class, crit);
         timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
