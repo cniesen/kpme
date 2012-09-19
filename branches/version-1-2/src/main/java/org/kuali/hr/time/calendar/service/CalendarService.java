@@ -61,7 +61,7 @@ public interface CalendarService {
 	 * @param asOfDate
 	 * @return
 	 */
-	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate, boolean findLeaveCalendar);
+	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate, boolean findLeaveCal);
 
 	/**
 	 * 
