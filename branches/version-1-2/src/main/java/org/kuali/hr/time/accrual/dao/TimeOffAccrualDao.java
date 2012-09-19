@@ -1,9 +1,9 @@
 package org.kuali.hr.time.accrual.dao;
 
+import org.kuali.hr.time.accrual.TimeOffAccrual;
+
 import java.sql.Date;
 import java.util.List;
-
-import org.kuali.hr.time.accrual.TimeOffAccrual;
 
 public interface TimeOffAccrualDao {
 	/**

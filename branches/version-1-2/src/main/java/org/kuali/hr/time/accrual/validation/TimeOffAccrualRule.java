@@ -18,7 +18,7 @@ public class TimeOffAccrualRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for ClockLocationRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject)this.getNewBo();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		if (pbo instanceof TimeOffAccrual) {
 			TimeOffAccrual tof = (TimeOffAccrual) pbo;
 			if (tof != null) {
