@@ -1,5 +1,9 @@
 package org.kuali.hr.time.batch.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
@@ -8,10 +12,6 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class BatchJobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements BatchJobDao {
 
@@ -54,7 +54,7 @@ public class BatchJobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
         List<BatchJob> jobs = new ArrayList<BatchJob>();
         jobs.addAll(c);
-
+ 
         return jobs;
     }
 }

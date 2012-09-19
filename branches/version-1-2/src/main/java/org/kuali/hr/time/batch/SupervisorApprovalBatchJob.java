@@ -11,7 +11,7 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 public class SupervisorApprovalBatchJob extends BatchJob {
-    private Logger LOG = Logger.getLogger(SupervisorApprovalBatchJob.class);
+    private Logger LOG = Logger.getLogger(PayPeriodEndBatchJob.class);
     private CalendarEntries payCalendarEntry;
 
     public SupervisorApprovalBatchJob(String hrPyCalendarEntryId) {

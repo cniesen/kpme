@@ -1,17 +1,16 @@
 package org.kuali.hr.time.batch.dao;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.batch.BatchJobEntry;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public class BatchJobEntryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements BatchJobEntryDao {
 

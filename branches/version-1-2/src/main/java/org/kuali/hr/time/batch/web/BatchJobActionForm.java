@@ -1,18 +1,17 @@
 package org.kuali.hr.time.batch.web;
 
-import org.kuali.hr.time.base.web.TkForm;
-import org.kuali.hr.time.batch.BatchJobEntry;
-import org.kuali.hr.time.util.TkConstants;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.kuali.hr.time.base.web.TkForm;
+import org.kuali.hr.time.batch.BatchJobEntry;
+import org.kuali.hr.time.util.TkConstants;
+
 public class BatchJobActionForm extends TkForm {
-    /**
-     *
-     */
+
     private static final long serialVersionUID = 385904747462568474L;
+    
     private List<String> batchJobNames = new ArrayList<String>();
     private List<String> batchJobStatuses = new ArrayList<String>();
     private List<BatchJobEntry> batchJobEntries = new LinkedList<BatchJobEntry>();

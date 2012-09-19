@@ -23,18 +23,18 @@ public class InitiateBatchJob extends BatchJob {
         this.setPayCalendarEntryId(hrPyCalendarEntryId);
     }
 
-    @Override
-    public void doWork() {
-        Date asOfDate = TKUtils.getCurrentDate();
-        List<Assignment> lstAssignments = TkServiceLocator.getAssignmentService().getActiveAssignments(asOfDate);
-        CalendarEntries payCalendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getPayCalendarEntryId());
-        for(Assignment assign : lstAssignments){
-            TimesheetDocumentHeader tkDocHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(assign.getPrincipalId(), payCalendarEntry.getBeginPeriodDateTime(), payCalendarEntry.getEndPeriodDateTime());
-            if(tkDocHeader == null || StringUtils.equals(tkDocHeader.getDocumentStatus(),TkConstants.ROUTE_STATUS.CANCEL)){
-                populateBatchJobEntry(assign);
-            }
-        }
-    }
+	@Override
+	public void doWork() {
+		Date asOfDate = TKUtils.getCurrentDate();
+		List<Assignment> lstAssignments = TkServiceLocator.getAssignmentService().getActiveAssignments(asOfDate);
+		CalendarEntries payCalendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(this.getPayCalendarEntryId());
+		for(Assignment assign : lstAssignments){
+			TimesheetDocumentHeader tkDocHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(assign.getPrincipalId(), payCalendarEntry.getBeginPeriodDateTime(), payCalendarEntry.getEndPeriodDateTime());
+			if(tkDocHeader == null || StringUtils.equals(tkDocHeader.getDocumentStatus(),TkConstants.ROUTE_STATUS.CANCEL)){
+				populateBatchJobEntry(assign);
+			}
+		}
+	}
 
 
     @Override
