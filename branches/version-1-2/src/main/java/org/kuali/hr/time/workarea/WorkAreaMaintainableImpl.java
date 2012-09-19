@@ -139,6 +139,8 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         workArea.setRoles(roles);
         for (TkRole role : roles) {
             role.setWorkAreaObj(workArea);
+            //Be sure department is not set for current state of role query
+            role.setDepartment(null);
             role.setUserPrincipalId(TKContext.getPrincipalId());
         }
         TkServiceLocator.getTkRoleService().saveOrUpdate(roles);
