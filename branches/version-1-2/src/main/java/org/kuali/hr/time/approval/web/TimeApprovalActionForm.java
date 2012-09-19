@@ -1,13 +1,18 @@
 package org.kuali.hr.time.approval.web;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.kuali.hr.time.base.web.TkCommonCalendarForm;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.roles.TkUserRoles;
-import org.kuali.hr.time.util.TKContext;
-import org.kuali.hr.time.util.TKUser;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.*;
 
 public class TimeApprovalActionForm extends TkCommonCalendarForm {
 
@@ -31,23 +36,21 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     private String payEndDateForSearch;
     private String roleName;
 
-    private List<String> payCalendarLabels = new ArrayList<String>();
+	private List<String> payCalendarLabels = new ArrayList<String>();
     private CalendarEntries payCalendarEntries;
 
-    private List<ApprovalTimeSummaryRow> approvalRows;
+	private List<ApprovalTimeSummaryRow> approvalRows;
     private Long workArea = null;
     private Set<Long> deptWorkareas = new HashSet<Long>();
     private String documentId;
     private String employeeWorkArea;
     private List<String> assignmentPrincipalIds = new LinkedList<String>();
-
+    
     private Set<String> principalIds = new HashSet<String>();
-
+    
     private Map<Long,String> workAreaDescr = new HashMap<Long,String>();
 
-
-
-    /**
+	/**
      * Used for ajax dynamic row updating
      */
     private String outputString;
@@ -73,13 +76,13 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     private String calNav = null;
 
     public String getRoleName() {
-        return roleName;
-    }
+		return roleName;
+	}
 
-    public void setRoleName(String roleName) {
-        this.roleName = roleName;
-    }
-
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+	
     public String getCalNav() {
         return calNav;
     }
@@ -142,12 +145,12 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     }
 
     public CalendarEntries getPayCalendarEntries() {
-        return payCalendarEntries;
-    }
+		return payCalendarEntries;
+	}
 
-    public void setPayCalendarEntries(CalendarEntries payCalendarEntries) {
-        this.payCalendarEntries = payCalendarEntries;
-    }
+	public void setPayCalendarEntries(CalendarEntries payCalendarEntries) {
+		this.payCalendarEntries = payCalendarEntries;
+	}
 
     public String getDocumentId() {
         return documentId;
@@ -368,19 +371,19 @@ public class TimeApprovalActionForm extends TkCommonCalendarForm {
     }
 
     public Set<String> getPrincipalIds() {
-        return principalIds;
-    }
+		return principalIds;
+	}
 
-    public void setPrincipalIds(Set<String> principalIds) {
-        this.principalIds = principalIds;
-    }
+	public void setPrincipalIds(Set<String> principalIds) {
+		this.principalIds = principalIds;
+	}
 
-    public Map<Long,String> getWorkAreaDescr() {
-        return workAreaDescr;
-    }
+	public Map<Long,String> getWorkAreaDescr() {
+		return workAreaDescr;
+	}
 
-    public void setWorkAreaDescr(Map<Long,String> workAreaDescr) {
-        this.workAreaDescr = workAreaDescr;
-    }
+	public void setWorkAreaDescr(Map<Long,String> workAreaDescr) {
+		this.workAreaDescr = workAreaDescr;
+	}
 
 }
