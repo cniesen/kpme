@@ -606,11 +606,11 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	public List getNotesForDocument(String documentNumber) {
         List notes = KewApiServiceLocator.getNoteService().getNotes(documentNumber);
 		// add the user name in the note object
-		for (Object obj : notes) {
-			Note note = (Note) obj;
-			note.setNoteAuthorFullName(KimApiServiceLocator.getPersonService()
-					.getPerson(note.getNoteAuthorWorkflowId()).getName());
-		}
+//		for (Object obj : notes) {
+//			Note note = (Note) obj;
+//			note.setNoteAuthorFullName(KimApiServiceLocator.getPersonService()
+//					.getPerson(note.getNoteAuthorWorkflowId()).getName());
+//		}
 		return notes;
 	}
 
