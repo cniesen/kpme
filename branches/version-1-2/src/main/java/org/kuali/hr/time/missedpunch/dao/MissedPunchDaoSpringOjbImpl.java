@@ -18,7 +18,7 @@ public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impleme
 
     @Override
     public MissedPunchDocument getMissedPunchByRouteHeader(String headerId) {
-        MissedPunchDocument mp = null;
+    	MissedPunchDocument mp = null;
 
         Criteria root = new Criteria();
         root.addEqualTo("documentNumber", headerId);
@@ -27,10 +27,10 @@ public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impleme
 
         return mp;
     }
-
+    
     @Override
     public MissedPunchDocument getMissedPunchByClockLogId(String clockLogId) {
-        MissedPunchDocument mp = null;
+    	MissedPunchDocument mp = null;
 
         Criteria root = new Criteria();
         root.addEqualTo("tkClockLogId", clockLogId);
@@ -39,32 +39,32 @@ public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impleme
 
         return mp;
     }
-
+    
     @Override
     public List<MissedPunchDocument> getMissedPunchDocsByBatchJobEntry(BatchJobEntry batchJobEntry) {
-        List<MissedPunchDocument> results = new ArrayList<MissedPunchDocument>();
-        Criteria root = new Criteria();
-
-        root.addEqualTo("principalId", batchJobEntry.getPrincipalId());
-        root.addEqualTo("documentStatus", TkConstants.ROUTE_STATUS.ENROUTE);
-        Query query = QueryFactory.newQuery(MissedPunchDocument.class, root);
-        List<MissedPunchDocument> aList = (List<MissedPunchDocument>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-
-        String pcdId = batchJobEntry.getHrPyCalendarEntryId();
-        CalendarEntries pcd = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(pcdId.toString());
-        if(pcd != null) {
-            for(MissedPunchDocument aDoc : aList) {
-                String tscId = aDoc.getTimesheetDocumentId();
-                TimesheetDocumentHeader tsdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tscId);
-                if(tsdh != null) {
-                    if(tsdh.getPayBeginDate().equals(pcd.getBeginPeriodDate()) && tsdh.getPayEndDate().equals(pcd.getEndPeriodDate())) {
-                        results.add(aDoc);
-                    }
-                }
-            }
-        }
-
-        return results;
+    	List<MissedPunchDocument> results = new ArrayList<MissedPunchDocument>();
+		Criteria root = new Criteria();
+		
+		root.addEqualTo("principalId", batchJobEntry.getPrincipalId());
+	    root.addEqualTo("documentStatus", TkConstants.ROUTE_STATUS.ENROUTE);
+	    Query query = QueryFactory.newQuery(MissedPunchDocument.class, root);
+	    List<MissedPunchDocument> aList = (List<MissedPunchDocument>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+	    
+	    String pcdId = batchJobEntry.getHrPyCalendarEntryId();
+	    CalendarEntries pcd = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(pcdId.toString());
+	    if(pcd != null) {
+		    for(MissedPunchDocument aDoc : aList) {
+		    	String tscId = aDoc.getTimesheetDocumentId();
+		    	TimesheetDocumentHeader tsdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tscId);
+		    	if(tsdh != null) {
+		    		if(tsdh.getPayBeginDate().equals(pcd.getBeginPeriodDate()) && tsdh.getPayEndDate().equals(pcd.getEndPeriodDate())) {
+		    			results.add(aDoc);
+		    		}
+		    	}
+		    }
+	    }
+	    
+    	return results;
     }
-
+    
 }

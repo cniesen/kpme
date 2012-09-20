@@ -1,14 +1,13 @@
 package org.kuali.hr.time.overtime.weekly.rule;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.persistence.Transient;
 
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-public class WeeklyOvertimeRuleGroup extends PersistableBusinessObjectBase {
+public class WeeklyOvertimeRuleGroup extends PersistableBusinessObjectBase{
 	/**
 	 * 
 	 */

@@ -13,34 +13,34 @@ import org.kuali.rice.krad.util.KRADConstants;
 
 public class MissedPunchAuthorizer extends TransactionalDocumentAuthorizerBase {
 
-    private Logger LOG = Logger.getLogger(MissedPunchAuthorizer.class);
+	private Logger LOG = Logger.getLogger(MissedPunchAuthorizer.class);
+	
+	@Override
+	public boolean canEditDocumentOverview(Document document, Person user) {
+		return true;
+	}
 
-    @Override
-    public boolean canEditDocumentOverview(Document document, Person user) {
-        return true;
-    }
-
-    @Override
-    public Set<String> getDocumentActions(Document document, Person user,
-                                          Set<String> documentActions) {
-        Set<String> author =  super.getDocumentActions(document, user, documentActions);
-        MissedPunchDocument mpDoc = (MissedPunchDocument)document;
-        if(StringUtils.equals(mpDoc.getDocumentStatus(),"R") ){
-            if(KewApiServiceLocator.getWorkflowDocumentActionsService().isFinalApprover(mpDoc.getDocumentNumber(), TKContext.getPrincipalId())){
-                author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
-                author.add(KRADConstants.KUALI_ACTION_CAN_APPROVE);
-
-                author.remove(KRADConstants.KUALI_ACTION_CAN_DISAPPROVE);
-            }
-        } else if(!StringUtils.equals(mpDoc.getDocumentStatus(), "A")){
-            author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
-            author.add(KRADConstants.KUALI_ACTION_CAN_ROUTE);
-        }
-        author.remove(KRADConstants.KUALI_ACTION_CAN_ADD_ADHOC_REQUESTS);
-        author.remove(KRADConstants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS);
-        return author;
-    }
-
-
-
+	@Override
+	public Set<String> getDocumentActions(Document document, Person user,
+			Set<String> documentActions) {
+		Set<String> author =  super.getDocumentActions(document, user, documentActions);
+		MissedPunchDocument mpDoc = (MissedPunchDocument)document;
+		if(StringUtils.equals(mpDoc.getDocumentStatus(),"R") ){
+			if(KewApiServiceLocator.getWorkflowDocumentActionsService().isFinalApprover(mpDoc.getDocumentNumber(), TKContext.getPrincipalId())){
+				author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
+				author.add(KRADConstants.KUALI_ACTION_CAN_APPROVE);
+				
+				author.remove(KRADConstants.KUALI_ACTION_CAN_DISAPPROVE);
+			}
+		} else if(!StringUtils.equals(mpDoc.getDocumentStatus(), "A")){
+			author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
+			author.add(KRADConstants.KUALI_ACTION_CAN_ROUTE);
+		}
+		author.remove(KRADConstants.KUALI_ACTION_CAN_ADD_ADHOC_REQUESTS);
+		author.remove(KRADConstants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS);
+		return author;
+	}
+	
+	
+	
 }

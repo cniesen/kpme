@@ -44,55 +44,55 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
             mpDoc.setTimesheetDocumentId(tdocId);
             // set default document description
             if(StringUtils.isEmpty(mpDoc.getDocumentHeader().getDocumentDescription())) {
-                mpDoc.getDocumentHeader().setDocumentDescription("Missed Punch: " + timesheetDocument.getPrincipalId());
+            	mpDoc.getDocumentHeader().setDocumentDescription("Missed Punch: " + timesheetDocument.getPrincipalId());
             }
-
+            
             ClockLog lastClock = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
             if(lastClock != null) {
-                MissedPunchDocument lastDoc = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(lastClock.getTkClockLogId());
-                if(lastDoc != null) {	// last action was a missed punch
-                    mpDoc.setAssignment(lastDoc.getAssignment());
-                } else {	// last action was not a missed punch
-                    AssignmentDescriptionKey adk = new AssignmentDescriptionKey(lastClock.getJobNumber().toString(), lastClock.getWorkArea().toString(), lastClock.getTask().toString());
-                    mpDoc.setAssignment(adk.toAssignmentKeyString());
-                }
+	            MissedPunchDocument lastDoc = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(lastClock.getTkClockLogId());
+	            if(lastDoc != null) {	// last action was a missed punch
+	            	mpDoc.setAssignment(lastDoc.getAssignment());
+	            } else {	// last action was not a missed punch
+	            	AssignmentDescriptionKey adk = new AssignmentDescriptionKey(lastClock.getJobNumber().toString(), lastClock.getWorkArea().toString(), lastClock.getTask().toString());
+	            	mpDoc.setAssignment(adk.toAssignmentKeyString());
+	            }
             }
         }
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-                || StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
+        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
             Person p = KimApiServiceLocator.getPersonService().getPerson(mpDoc.getPrincipalId());
             TKContext.getUser().setTargetPerson(p);
             mpForm.setDocId(mpDoc.getDocumentNumber());
         }
-
+        
         mpForm.setAssignmentReadOnly(false);
         TkClockActionValuesFinder finder = new TkClockActionValuesFinder();
         List<KeyValue> keyLabels = (List<KeyValue>) finder.getKeyValues();
         if(keyLabels.size() == 2){
 //        		&& !mpForm.getDocumentActions().containsKey(KNSConstants.KUALI_ACTION_CAN_EDIT)) {
-            Set<String> actions = TkConstants.CLOCK_ACTION_TRANSITION_MAP.get(TkConstants.CLOCK_IN);
-            boolean flag = true;
-            for (String entry : actions) {
-                if(!keyLabels.contains(new ConcreteKeyValue(entry, TkConstants.CLOCK_ACTION_STRINGS.get(entry)))) {
-                    flag = false;
-                }
-            }
-            if(flag) {
-                mpForm.setAssignmentReadOnly(true);
-            }
+        	Set<String> actions = TkConstants.CLOCK_ACTION_TRANSITION_MAP.get(TkConstants.CLOCK_IN);
+        	boolean flag = true;
+        	 for (String entry : actions) {
+                 if(!keyLabels.contains(new ConcreteKeyValue(entry, TkConstants.CLOCK_ACTION_STRINGS.get(entry)))) {
+                	 flag = false;
+                 }
+             }
+        	 if(flag) {
+        		 mpForm.setAssignmentReadOnly(true); 
+        	 }
         } else if(keyLabels.size() == 1){
-            Set<String> actions = TkConstants.CLOCK_ACTION_TRANSITION_MAP.get(TkConstants.LUNCH_IN);
-            boolean flag = true;
-            for (String entry : actions) {
+        	Set<String> actions = TkConstants.CLOCK_ACTION_TRANSITION_MAP.get(TkConstants.LUNCH_IN);
+        	boolean flag = true;
+        	for (String entry : actions) {
                 if(!keyLabels.contains(new ConcreteKeyValue(entry, TkConstants.CLOCK_ACTION_STRINGS.get(entry)))) {
-                    flag = false;
+               	 flag = false;
                 }
             }
-            if(flag) {
-                mpForm.setAssignmentReadOnly(true);
-            }
+       	 	if(flag) {
+       		 mpForm.setAssignmentReadOnly(true); 
+       	 	}
         }
-
+        
         return act;
     }
 
@@ -127,15 +127,15 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         ActionForward fwd = super.approve(mapping, form, request, response);
         return fwd;
     }
-
-    @Override
-    public ActionForward reload(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        MissedPunchForm mpForm = (MissedPunchForm) form;
-        MissedPunchDocument mpDoc = (MissedPunchDocument) mpForm.getDocument();
-        request.setAttribute(TkConstants.DOCUMENT_ID_REQUEST_NAME, mpDoc.getDocumentNumber());
-        request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
-        return super.reload(mapping, form, request, response);
-    }
+    
+  @Override
+  public ActionForward reload(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+	  MissedPunchForm mpForm = (MissedPunchForm) form;
+      MissedPunchDocument mpDoc = (MissedPunchDocument) mpForm.getDocument();
+      request.setAttribute(TkConstants.DOCUMENT_ID_REQUEST_NAME, mpDoc.getDocumentNumber());
+      request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
+  	  return super.reload(mapping, form, request, response);
+  }
 
 
 }

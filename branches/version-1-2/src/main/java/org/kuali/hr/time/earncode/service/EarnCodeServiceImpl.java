@@ -14,18 +14,15 @@ import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class EarnCodeServiceImpl implements EarnCodeService {
 
-    private EarnCodeDao earnCodeDao;
+	private EarnCodeDao earnCodeDao;
 
-    public void setEarnCodeDao(EarnCodeDao earnCodeDao) {
-        this.earnCodeDao = earnCodeDao;
-    }
+	public void setEarnCodeDao(EarnCodeDao earnCodeDao) {
+		this.earnCodeDao = earnCodeDao;
+	}
 
 
     @Override
@@ -63,28 +60,24 @@ public class EarnCodeServiceImpl implements EarnCodeService {
                     || earnTypeCode.equals(dec.getEarnCodeType())
                     ) {
 
-                boolean addEc = false;
-
+                boolean addEarnCode = false;
                 // Check employee flag
                 if (dec.isEmployee() &&
                         (StringUtils.equals(TKUser.getCurrentTargetPerson().getEmployeeId(), GlobalVariables.getUserSession().getPerson().getEmployeeId()))) {
-                    addEc = true;
+                    addEarnCode = true;
                 }
-
                 // Check approver flag
-                if (!addEc && dec.isApprover()) {
+                if (!addEarnCode && dec.isApprover()) {
                     Set<Long> workAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
                     for (Long wa : workAreas) {
                         WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
                         if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
-                            // TODO: All Good, and then Break
-                            addEc = true;
+                            addEarnCode = true;
                             break;
                         }
                     }
                 }
-
-                if (addEc) {
+                if (addEarnCode) {
                     EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
                     if(ec!=null){
                         earnCodes.add(ec);
@@ -110,76 +103,40 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         return earnCodeObj.getEarnCodeType();
     }
 
-    @Override
-    public EarnCode getEarnCodeById(String earnCodeId) {
-        return earnCodeDao.getEarnCodeById(earnCodeId);
-    }
-
-    public List<EarnCode> getOvertimeEarnCodes(Date asOfDate){
-        return earnCodeDao.getOvertimeEarnCodes(asOfDate);
-    }
-
-    public List<String> getOvertimeEarnCodesStrs(Date asOfDate){
-        List<String> ovtEarnCodeStrs = new ArrayList<String>();
-        List<EarnCode> ovtEarnCodes = getOvertimeEarnCodes(asOfDate);
-        if(ovtEarnCodes != null){
-            for(EarnCode ovtEc : ovtEarnCodes){
-                ovtEarnCodeStrs.add(ovtEc.getEarnCode());
-            }
-        }
-        return ovtEarnCodeStrs;
-    }
-
-    @Override
-    public int getEarnCodeCount(String earnCode) {
-        return earnCodeDao.getEarnCodeCount(earnCode);
-    }
-
-    @Override
-    public int getNewerEarnCodeCount(String earnCode, Date effdt) {
-        return earnCodeDao.getNewerEarnCodeCount(earnCode, effdt);
-    }
-
-
-//    @Override
-//    public Map<String, String> getEarnCodesForDisplay(String principalId) {
-//        return getEarnCodesForDisplayWithEffectiveDate(principalId, TKUtils.getCurrentDate());
-//    }
-//
-//    @Override
-//    public Map<String, String> getEarnCodesForDisplayWithEffectiveDate(String principalId, Date asOfDate) {
-//        List<EarnCode> earnCodes = this.getEarnCodes(principalId, asOfDate);
-//
-//        Date currentDate = TKUtils.getCurrentDate();
-//        boolean futureDate = asOfDate.after(currentDate);
-//        List<EarnCode> copyList = new ArrayList<EarnCode>();
-//        copyList.addAll(earnCodes);
-//        for (EarnCode earnCode : copyList) {
-//            if ( futureDate
-//                    && !earnCode.getAllowScheduledLeave().equalsIgnoreCase("Y")) {
-//                earnCodes.remove(earnCode);
-//            }
-//        }
-//        Comparator<EarnCode> earnCodeComparator = new Comparator<EarnCode>() {
-//            @Override
-//            public int compare(EarnCode ec1, EarnCode ec2) {
-//                return ec1.getEarnCode().compareToIgnoreCase(ec2.getEarnCode());
-//            }
-//        };
-//        // Order by leaveCode ascending
-//        Ordering<EarnCode> ordering = Ordering.from(earnCodeComparator);
-//
-//        Map<String, String> earnCodesForDisplay = new LinkedHashMap<String, String>();
-//        for (EarnCode earnCode : ordering.sortedCopy(earnCodes)) {
-//            earnCodesForDisplay.put(earnCode.getEarnCodeKeyForDisplay(), earnCode.getEarnCodeValueForDisplay());
-//        }
-//        return earnCodesForDisplay;
-//    }
+	@Override
+	public EarnCode getEarnCodeById(String earnCodeId) {
+		return earnCodeDao.getEarnCodeById(earnCodeId);
+	}
+	
+	public List<EarnCode> getOvertimeEarnCodes(Date asOfDate){
+		return earnCodeDao.getOvertimeEarnCodes(asOfDate);
+	}
+	
+	public List<String> getOvertimeEarnCodesStrs(Date asOfDate){
+		List<String> ovtEarnCodeStrs = new ArrayList<String>();
+		List<EarnCode> ovtEarnCodes = getOvertimeEarnCodes(asOfDate);
+		if(ovtEarnCodes != null){
+			for(EarnCode ovtEc : ovtEarnCodes){
+				ovtEarnCodeStrs.add(ovtEc.getEarnCode());
+			}
+		}
+		return ovtEarnCodeStrs;
+	}
+	
+	@Override
+	public int getEarnCodeCount(String earnCode) {
+		return earnCodeDao.getEarnCodeCount(earnCode);
+	}
+	
+	@Override
+	public int getNewerEarnCodeCount(String earnCode, Date effdt) {
+		return earnCodeDao.getNewerEarnCodeCount(earnCode, effdt);
+	}
 
     /* not using yet, may not be needed
     @Override
-    public Map<String, String> getEarnCodesForDisplayWithAssignment(Assignment assignment, Date asOfDate) {
-        List<EarnCode> earnCodes = this.getEarnCodes(assignment, asOfDate);
+    public Map<String, String> getEarnCod e s ForDisplayWithAssignment(Assignment assignment, Date asOfDate) {
+        List<EarnCode> earnCodes = this.getEarnCod e s ( assignment, asOfDate);
 
         Date currentDate = TKUtils.getCurrentDate();
         boolean futureDate = asOfDate.after(currentDate);

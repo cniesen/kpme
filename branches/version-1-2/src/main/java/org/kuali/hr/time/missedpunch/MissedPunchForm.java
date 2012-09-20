@@ -27,12 +27,12 @@ public class MissedPunchForm extends KualiTransactionalDocumentFormBase {
         }
     }
 
-    public boolean isAssignmentReadOnly() {
-        return assignmentReadOnly;
-    }
+	public boolean isAssignmentReadOnly() {
+		return assignmentReadOnly;
+	}
 
-    public void setAssignmentReadOnly(boolean assignmentReadOnly) {
-        this.assignmentReadOnly = assignmentReadOnly;
-    }
+	public void setAssignmentReadOnly(boolean assignmentReadOnly) {
+		this.assignmentReadOnly = assignmentReadOnly;
+	}
 
 }

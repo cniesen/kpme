@@ -1,19 +1,17 @@
 package org.kuali.hr.time.earncode;
 
-import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.time.HrBusinessObject;
-import org.kuali.hr.time.accrual.AccrualCategory;
-import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kns.service.KNSServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
+
+import org.kuali.hr.core.KPMEConstants;
+import org.kuali.hr.time.accrual.AccrualCategory;
+import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class EarnCode extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "EarnCode";
@@ -25,12 +23,7 @@ public class EarnCode extends HrBusinessObject {
 	private String hrEarnCodeId;
 	private String earnCode;
 	private String description;
-	//used for clock in and out
-//	private Boolean recordHours;
-//	//used for recording time
-//	private Boolean recordTime;
-//	private Boolean recordAmount;
-    private String recordMethod;
+	
     private Boolean ovtEarnCode;
 	private String accrualCategory;
 	private BigDecimal inflateMinHours;
@@ -40,13 +33,23 @@ public class EarnCode extends HrBusinessObject {
 
 	private AccrualCategory accrualCategoryObj;
 
-    public Long getDefaultAmountofTime() {
-        return defaultAmountofTime;
-    }
+	private String recordMethod;
+    
+	public String getRecordMethod() {
+		return recordMethod;
+	}
 
-    public void setDefaultAmountofTime(Long defaultAmountofTime) {
-        this.defaultAmountofTime = defaultAmountofTime;
-    }
+	public void setRecordMethod(String recordMethod) {
+		this.recordMethod = recordMethod;
+	}
+
+	public Long getDefaultAmountofTime() {
+		return defaultAmountofTime;
+	}
+
+	public void setDefaultAmountofTime(Long defaultAmountofTime) {
+		this.defaultAmountofTime = defaultAmountofTime;
+	}
 
 	public String getEarnCode() {
 		return earnCode;
@@ -96,38 +99,6 @@ public class EarnCode extends HrBusinessObject {
 		this.hrEarnCodeId = hrEarnCodeId;
 	}
 
-//	public Boolean getRecordHours() {
-//		return recordHours;
-//	}
-//
-//	public void setRecordHours(Boolean recordHours) {
-//		this.recordHours = recordHours;
-//	}
-//
-//	public Boolean getRecordTime() {
-//		return recordTime;
-//	}
-//
-//	public void setRecordTime(Boolean recordTime) {
-//		this.recordTime = recordTime;
-//	}
-//
-//	public Boolean getRecordAmount() {
-//		return recordAmount;
-//	}
-//
-//	public void setRecordAmount(Boolean recordAmount) {
-//		this.recordAmount = recordAmount;
-//	}
-
-    public String getRecordMethod() {
-        return recordMethod;
-    }
-
-    public void setRecordMethod(String recordMethod) {
-        this.recordMethod = recordMethod;
-    }
-
 	public Timestamp getTimestamp() {
 		return timestamp;
 	}
@@ -146,11 +117,11 @@ public class EarnCode extends HrBusinessObject {
 
 	public AccrualCategory getAccrualCategoryObj() {
 		if(accrualCategoryObj == null && !this.getAccrualCategory().isEmpty()) {
-			this.assignAccrualCategoryObj();
+			this.assingAccrualCategoryObj();
 		}
 		return accrualCategoryObj;
 	}
-	public void assignAccrualCategoryObj() {
+	public void assingAccrualCategoryObj() {
 		Map<String,Object> parameters = new HashMap<String,Object>();
 		parameters.put("accrualCategory", getAccrualCategory());
 		Collection c = KRADServiceLocator.getBusinessObjectService().findMatching(AccrualCategory.class, parameters);
@@ -205,8 +176,8 @@ public class EarnCode extends HrBusinessObject {
 //		else {
 //			return "";
 //		}
-        return this.recordMethod;
-    }
+		return this.recordMethod;
+	}
 
 	@Override
 	public String getUniqueKey() {
@@ -222,4 +193,19 @@ public class EarnCode extends HrBusinessObject {
 	public void setId(String id) {
 		setHrEarnCodeId(id);
 	}
+	
+    public String getEarnCodeKeyForDisplay() {
+//    	String unitTime = null;
+//    	AccrualCategory acObj = null;
+//    	if(this.accrualCategory != null) {
+//    		acObj = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate);
+//    	}
+//    	unitTime = (acObj!= null ? acObj.getUnitOfTime() : this.recordMethod) ;
+//        return hrEarnCodeId + ":" + unitTime;
+    	return hrEarnCodeId;
+    }
+    
+    public String getEarnCodeValueForDisplay() {
+        return earnCode + " : " + description;
+    }
 }

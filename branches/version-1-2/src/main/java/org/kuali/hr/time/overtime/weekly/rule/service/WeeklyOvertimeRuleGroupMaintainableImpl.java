@@ -12,30 +12,30 @@ import org.kuali.rice.krad.util.KRADConstants;
 
 public class WeeklyOvertimeRuleGroupMaintainableImpl extends KualiMaintainableImpl{
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 
-    @Override
+	@Override
     public void addNewLineToCollection(String collectionName) {
         if (collectionName.equals("lstWeeklyOvertimeRules")) {
-            WeeklyOvertimeRule aRule = (WeeklyOvertimeRule)newCollectionLines.get(collectionName );
+        	WeeklyOvertimeRule aRule = (WeeklyOvertimeRule)newCollectionLines.get(collectionName );
             if ( aRule != null ) {
-                WeeklyOvertimeRuleGroup aGroup = (WeeklyOvertimeRuleGroup)this.getBusinessObject();
-                Set<BigDecimal> steps = new HashSet<BigDecimal>();
-                for(WeeklyOvertimeRule wotr : aGroup.getLstWeeklyOvertimeRules()){
-                    steps.add(wotr.getStep());
-                }
-                if(steps.contains(aRule.getStep())){
-                    GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"lstWeeklyOvertimeRules",
-                            "weeklyOvertimeRule.duplicate.step",aRule.getStep().toString());
-                    return;
-                }
+            	WeeklyOvertimeRuleGroup aGroup = (WeeklyOvertimeRuleGroup)this.getBusinessObject();
+            	Set<BigDecimal> steps = new HashSet<BigDecimal>();
+            	for(WeeklyOvertimeRule wotr : aGroup.getLstWeeklyOvertimeRules()){
+            		steps.add(wotr.getStep());
+            	}
+            	if(steps.contains(aRule.getStep())){
+            		GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"lstWeeklyOvertimeRules", 
+            				"weeklyOvertimeRule.duplicate.step",aRule.getStep().toString());
+            		return;
+    			} 
             }
         }
-        super.addNewLineToCollection(collectionName);
+       super.addNewLineToCollection(collectionName);
     }
 
 }
