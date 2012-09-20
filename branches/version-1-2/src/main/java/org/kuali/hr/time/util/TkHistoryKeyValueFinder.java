@@ -9,12 +9,12 @@ import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
 public class TkHistoryKeyValueFinder extends KeyValuesBase {
 
-    @Override
-    public List getKeyValues() {
-        List<KeyValue> keyValues = new ArrayList<KeyValue>();
-        keyValues.add(new ConcreteKeyValue("Y", "Yes"));
-        keyValues.add(new ConcreteKeyValue("N", "No"));
+	@Override
+	public List getKeyValues() {
+		List<KeyValue> keyValues = new ArrayList<KeyValue>();
+        keyValues.add(new ConcreteKeyValue("Y", "Yes"));     		
+        keyValues.add(new ConcreteKeyValue("N", "No"));     		
         return keyValues;
-    }
+	}
 
 }

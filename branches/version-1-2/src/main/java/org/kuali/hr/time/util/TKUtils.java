@@ -153,21 +153,21 @@ public class TKUtils {
                 || assignment.getJobNumber() == null) {
             return "";     // getAssignment() of AssignmentService can return an empty assignment
         }
-
-        String stringTemp = assignment.getWorkAreaObj().getDescription() + " : $"
-                + assignment.getJob().getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE)
-                + " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
-        if(assignment.getTask()!= null) {
-            Task aTask = TkServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveDate());
-            if(aTask != null) {
-                // do not display task description if the task is the default one
-                // default task is created in getTask() of TaskService
-                if(!aTask.getDescription().equals(TkConstants.TASK_DEFAULT_DESP)) {
-                    stringTemp += " " +  aTask.getDescription();
-                }
-            }
-        }
-        return stringTemp;
+        
+       String stringTemp = assignment.getWorkAreaObj().getDescription() + " : $" 
+       				+ assignment.getJob().getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE) 
+       				+ " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
+       if(assignment.getTask()!= null) {
+	       	Task aTask = TkServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveDate());
+	       	if(aTask != null) {
+	       		// do not display task description if the task is the default one
+	        	// default task is created in getTask() of TaskService
+	        	if(!aTask.getDescription().equals(TkConstants.TASK_DEFAULT_DESP)) {
+	        		stringTemp += " " +  aTask.getDescription();
+	        	}
+	       	} 
+       }
+       return stringTemp;
     }
 
     /**
@@ -194,7 +194,7 @@ public class TKUtils {
 
         return dayIntervals;
     }
-
+    
 
     /**
      * Includes partial weeks if the time range provided does not divide evenly
@@ -290,7 +290,7 @@ public class TKUtils {
 
         return new Timestamp(dateTime.getMillis());
     }
-
+    
     public static Timestamp convertDateStringToTimestampWithoutZone(String dateStr, String timeStr) {
         // the date/time format is defined in tk.calendar.js. For now, the format is 11/17/2010 8:0
         String[] date = dateStr.split("/");
@@ -310,8 +310,8 @@ public class TKUtils {
 
         return new Timestamp(dateTime.getMillis());
     }
-
-    public static String getIPAddressFromRequest(HttpServletRequest request) {
+    
+   public static String getIPAddressFromRequest(HttpServletRequest request) {
         // Check for IPv6 addresses - Not sure what to do with them at this point.
         // TODO: IPv6 - I see these on my local machine.
         String ip = request.getRemoteAddr();
@@ -353,22 +353,22 @@ public class TKUtils {
         return sdf.format(dt);
     }
 
-
+    
     public static String formatDateTime(Timestamp timestamp){
-        Date dt = new Date(timestamp.getTime());
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    	Date dt = new Date(timestamp.getTime());
+    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
         return sdf.format(dt);
     }
-
+    
     public static Date formatDateString(String date){
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
-        try {
-            return new Date(sdf.parse(date).getTime());
-        } catch (ParseException e) {
-            return null;
-        }
+    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    	try {
+			return new Date(sdf.parse(date).getTime());
+		} catch (ParseException e) {
+			return null;
+		}
     }
-
+    
     /**
      * Method to obtain the timezone offset string for the specified date time.
      *
@@ -411,7 +411,7 @@ public class TKUtils {
                 ? 2700 :
                 Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ConfigSettings.SESSION_TIMEOUT));
     }
-
+    
     /**
      * Creates a Timestamp object using Jodatime as an intermediate data structure
      * from the provided date and time string. (From the form POST and javascript
@@ -439,11 +439,11 @@ public class TKUtils {
         return new Timestamp(dateTime.getMillis());
     }
 
-
+    
     public static Timestamp getCurrentTimestamp() {
         return new Timestamp(System.currentTimeMillis());
     }
-
+    
     public static List<Interval> createDaySpan(DateTime beginDateTime, DateTime endDateTime, DateTimeZone zone) {
         beginDateTime = beginDateTime.toDateTime(zone);
         endDateTime = endDateTime.toDateTime(zone);
@@ -459,7 +459,7 @@ public class TKUtils {
 
         return dayIntervals;
     }
-
+    
     public static List<Interval> getDaySpanForCalendarEntry(CalendarEntries calendarEntry) {
         return getDaySpanForCalendarEntry(calendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
     }
@@ -467,7 +467,7 @@ public class TKUtils {
     public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntries calendarEntry) {
         return getFullWeekDaySpanForCalendarEntry(calendarEntry, TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
     }
-
+    
     public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntries calendarEntry, DateTimeZone timeZone) {
         DateTime beginDateTime = calendarEntry.getBeginLocalDateTime().toDateTime(timeZone);
         DateTime endDateTime = calendarEntry.getEndLocalDateTime().toDateTime(timeZone);
@@ -496,51 +496,51 @@ public class TKUtils {
 
         return dayIntervals;
     }
-
-    public static java.util.Date removeTime(java.util.Date date) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(date);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
+    
+    public static java.util.Date removeTime(java.util.Date date) {    
+        Calendar cal = Calendar.getInstance();  
+        cal.setTime(date);  
+        cal.set(Calendar.HOUR_OF_DAY, 0);  
+        cal.set(Calendar.MINUTE, 0);  
+        cal.set(Calendar.SECOND, 0);  
+        cal.set(Calendar.MILLISECOND, 0);  
+        return cal.getTime(); 
     }
-
+    
     public static int getWorkDays(java.util.Date startDate, java.util.Date endDate) {
-        int dayCounts = 0;
-        if(startDate.after(endDate)) {
-            return 0;
-        }
-        Calendar cal1 = Calendar.getInstance();
-        cal1.setTime(startDate);
-        Calendar cal2 = Calendar.getInstance();
-        cal2.setTime(endDate);
-
-        while(!cal1.after(cal2)) {
-            if(cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY
-                    && cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
-                dayCounts ++;
-            }
-            cal1.add(Calendar.DATE, 1);
-        }
-        return dayCounts;
+    	int dayCounts = 0;
+    	if(startDate.after(endDate)) {
+    		return 0;
+    	}
+    	Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(startDate);
+		Calendar cal2 = Calendar.getInstance();
+		cal2.setTime(endDate);
+		
+		while(!cal1.after(cal2)) {
+			if(cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY 
+					&& cal1.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY) {
+				dayCounts ++;		
+			}
+			cal1.add(Calendar.DATE, 1);
+		}
+    	return dayCounts;
     }
-
+    
     public static boolean isWeekend(java.util.Date aDate) {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(aDate);
-        if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY
-                || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-            return true;
-        }
-        return false;
+    	Calendar cal = Calendar.getInstance();
+		cal.setTime(aDate);
+    	if(cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY 
+				|| cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+			return true;		
+		}
+    	return false;
     }
-
+    
     public static java.util.Date addDates(java.util.Date aDate, int aNumber) {
-        Calendar gc = new GregorianCalendar();
-        gc.setTime(aDate);
-        gc.add(Calendar.DAY_OF_YEAR, aNumber);
-        return gc.getTime();
+    	Calendar gc = new GregorianCalendar();
+		gc.setTime(aDate);
+		gc.add(Calendar.DAY_OF_YEAR, aNumber);
+		return gc.getTime();
     }
 }

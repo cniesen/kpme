@@ -1,12 +1,13 @@
 package org.kuali.hr.time.util;
 
-import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.rice.krad.util.GlobalVariables;
-
-import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 public class TKContext {
 
@@ -21,7 +22,7 @@ public class TKContext {
 		}
 	};
 
-    public static TimesheetDocument getCurrentTimesheetDoucment() {
+    public static TimesheetDocument getCurrentTimesheetDocument() {
         return (TimesheetDocument)TKContext.getStorageMap().get(TDOC_OBJ_KEY);
     }
 
@@ -45,27 +46,23 @@ public class TKContext {
         TKContext.getStorageMap().put(TDOC_KEY, timesheetDocumentId);
     }
 
-    /**
-     * TKUser has the internal concept of Backdoor User vs.Actual User.
-     * @return
-     */
-    public static TKUser getUser() {
+	/**
+	 * TKUser has the internal concept of Backdoor User vs.Actual User.
+	 * @return
+	 */
+	public static TKUser getUser() {
         //TODO, this method isn't needed if everything in TKUser is accessed in a static fashion...
         return new TKUser();
-        //return (TKUser) GlobalVariables.getUserSession().retrieveObject(USER_KEY);
-    }
-//
-//	public static void setUser(TKUser user) {
-//		TKContext.getStorageMap().put(USER_KEY, user);
-//	}
+		//return (TKUser) GlobalVariables.getUserSession().retrieveObject(USER_KEY);
+	}
 
-//	public static UserSession getUserSession(){
-//		return (UserSession) getHttpServletRequest().getSession().getAttribute(KEWConstants.USER_SESSION_KEY);
-//	}
+	//public static void setUser(TKUser user) {
+	//	GlobalVariables.getUserSession().addObject(USER_KEY, user);
+	//}
 
-    public static String getPrincipalId(){
-        return GlobalVariables.getUserSession().getPrincipalId();
-    }
+	public static String getPrincipalId(){
+		return GlobalVariables.getUserSession().getPrincipalId();
+	}
 
     public static String getTargetPrincipalId() {
         return TKUser.getCurrentTargetPerson().getPrincipalId();

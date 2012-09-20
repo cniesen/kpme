@@ -43,12 +43,12 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
         if (TKContext.getUser().isSystemAdmin()) {
             addTimeBlock = true;
         } else {
-            boolean docFinal = TKContext.getCurrentTimesheetDoucment()
+            boolean docFinal = TKContext.getCurrentTimesheetDocument()
                     .getDocumentHeader().getDocumentStatus()
                     .equals(TkConstants.ROUTE_STATUS.FINAL);
             if (!docFinal) {
                 if (StringUtils
-                        .equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(),
+                        .equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(),
                                 GlobalVariables.getUserSession().getPrincipalId())
                         || TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).isSystemAdmin()
                         || TKContext.getUser().isLocationAdmin()

@@ -35,7 +35,7 @@ public class TimesheetAction extends TkAction {
     protected void checkTKAuthorization(ActionForm form, String methodToCall) throws AuthorizationException {
         TKUser user = TKContext.getUser();
         UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
 
         if (!roles.isDocumentReadable(doc)) {
             throw new AuthorizationException(GlobalVariables.getUserSession().getPrincipalId(), "TimesheetAction: docid: " + doc.getDocumentId(), "");

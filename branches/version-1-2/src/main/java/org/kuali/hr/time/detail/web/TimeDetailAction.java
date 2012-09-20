@@ -54,7 +54,7 @@ public class TimeDetailAction extends TimesheetAction {
         super.checkTKAuthorization(form, methodToCall); // Checks for read access first.
         TKUser user = TKContext.getUser();
         UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
 
         // Check for write access to Timeblock.
         if (StringUtils.equals(methodToCall, "addTimeBlock") || StringUtils.equals(methodToCall, "deleteTimeBlock") || StringUtils.equals(methodToCall, "updateTimeBlock")) {
@@ -71,7 +71,7 @@ public class TimeDetailAction extends TimesheetAction {
             return forward;
         }
         TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
-        tdaf.setAssignmentDescriptions(TkServiceLocator.getAssignmentService().getAssignmentDescriptions(TKContext.getCurrentTimesheetDoucment(), false));
+        tdaf.setAssignmentDescriptions(TkServiceLocator.getAssignmentService().getAssignmentDescriptions(TKContext.getCurrentTimesheetDocument(), false));
 
         // Handle User preference / timezone information (pushed up from TkCalendar to avoid duplication)
         // Set calendar
@@ -79,7 +79,7 @@ public class TimeDetailAction extends TimesheetAction {
         Calendar payCalendar = TkServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId());
         
         //List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(Long.parseLong(tdaf.getTimesheetDocument().getDocumentHeader().getTimesheetDocumentId()));
-        List<TimeBlock> timeBlocks = TKContext.getCurrentTimesheetDoucment().getTimeBlocks();
+        List<TimeBlock> timeBlocks = TKContext.getCurrentTimesheetDocument().getTimeBlocks();
 		
         this.assignStypeClassMapForTimeSummary(tdaf,timeBlocks);
         
@@ -93,9 +93,9 @@ public class TimeDetailAction extends TimesheetAction {
 
         tdaf.setTimeBlockString(ActionFormUtils.getTimeBlocksJson(aggregate.getFlattenedTimeBlockList()));
 
-        tdaf.setOvertimeEarnCodes(TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDoucment().getAsOfDate()));
+        tdaf.setOvertimeEarnCodes(TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDocument().getAsOfDate()));
 
-        if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())) {
+        if (StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())) {
         	tdaf.setWorkingOnItsOwn("true");
         }
         
@@ -103,9 +103,9 @@ public class TimeDetailAction extends TimesheetAction {
         if (TKContext.getUser().isSystemAdmin()) {
             tdaf.setDocEditable("true");
         } else {
-            boolean docFinal = TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
+            boolean docFinal = TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
             if (!docFinal) {
-                if(StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
+                if(StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
                         || TKContext.getUser().isSystemAdmin()
                         || TKContext.getUser().isLocationAdmin()
                         || TKContext.getUser().isDepartmentAdmin()
@@ -115,9 +115,9 @@ public class TimeDetailAction extends TimesheetAction {
                 }
             	
 	            //if the timesheet has been approved by at least one of the approvers, the employee should not be able to edit it
-	            if (StringUtils.equals(TKContext.getCurrentTimesheetDoucment().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
-	            		&& TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)) {
-		        	Collection actions = KEWServiceLocator.getActionTakenService().findByDocIdAndAction(TKContext.getCurrentTimesheetDoucment().getDocumentHeader().getDocumentId(), TkConstants.TIMESHEET_ACTIONS.APPROVE);
+	            if (StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
+	            		&& TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)) {
+		        	Collection actions = KEWServiceLocator.getActionTakenService().findByDocIdAndAction(TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentId(), TkConstants.DOCUMENT_ACTIONS.APPROVE);
 	        		if(!actions.isEmpty()) {
 	        			tdaf.setDocEditable("false");  
 	        		}
@@ -130,8 +130,8 @@ public class TimeDetailAction extends TimesheetAction {
 
     // use lists of time blocks and leave blocks to build the style class map and assign css class to associated summary rows
 	private void assignStypeClassMapForTimeSummary(TimeDetailActionForm tdaf, List<TimeBlock> timeBlocks) throws Exception {
-        TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(TKContext.getCurrentTimesheetDoucment());
-        tdaf.setAssignStyleClassMap(ActionFormUtils.buildAssignmentStyleClassMap(TKContext.getCurrentTimesheetDoucment().getTimeBlocks()));
+        TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(TKContext.getCurrentTimesheetDocument());
+        tdaf.setAssignStyleClassMap(ActionFormUtils.buildAssignmentStyleClassMap(TKContext.getCurrentTimesheetDocument().getTimeBlocks()));
         Map<String, String> aMap = tdaf.getAssignStyleClassMap();
         // set css classes for each assignment row
         for (EarnGroupSection earnGroupSection : ts.getSections()) {

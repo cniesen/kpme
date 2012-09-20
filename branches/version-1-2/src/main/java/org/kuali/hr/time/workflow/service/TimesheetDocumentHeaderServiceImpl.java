@@ -40,7 +40,7 @@ public class TimesheetDocumentHeaderServiceImpl implements TimesheetDocumentHead
 
     @Override
     public TimesheetDocumentHeader getPrevOrNextDocumentHeader(String prevOrNext, String principalId) {
-        TimesheetDocument currentTimesheet = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument currentTimesheet = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tsdh;
         if (StringUtils.equals(prevOrNext, TkConstants.PREV_TIMESHEET)) {
             tsdh = documentHeaderDao.getPreviousDocumentHeader(principalId, currentTimesheet.getDocumentHeader().getPayBeginDate());

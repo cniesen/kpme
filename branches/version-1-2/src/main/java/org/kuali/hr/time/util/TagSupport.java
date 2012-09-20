@@ -1,23 +1,10 @@
 package org.kuali.hr.time.util;
 
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class TagSupport {
-
-    private String principalId;
-
-    public String getPrincipalId() {
-        return principalId;
-    }
-
-    public void setPrincipalId(String principalId) {
-        this.principalId = principalId;
-    }
 
     public Map<String, String> getDocumentStatus() {
         return TkConstants.DOCUMENT_STATUS;
@@ -33,13 +20,4 @@ public class TagSupport {
 
         return ipAddresses;
     }
-
-    public String getPrincipalFullName(){
-        Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
-        if(person != null){
-            return person.getName();
-        }
-        return "";
-    }
-
 }

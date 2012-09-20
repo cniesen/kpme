@@ -20,7 +20,7 @@ public class WorkflowTagSupport {
 
     public boolean isDisplayingRouteButton() {
         TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         if(tdh.getDocumentStatus().equals("S") || tdh.getDocumentStatus().equals("I")){
             return roles.canSubmitTimesheet(doc);
@@ -33,20 +33,20 @@ public class WorkflowTagSupport {
      * @return true if the route button should render as enabled.
      */
     public boolean isRouteButtonEnabled() {
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         return (tdh.getDocumentStatus().equals("I") || tdh.getDocumentStatus().equals("S"));
     }
 
     public boolean isDisplayingApprovalButtons() {
         UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         boolean tookActionAlready = KEWServiceLocator.getActionTakenService().hasUserTakenAction(TKContext.getPrincipalId(), doc.getDocumentId());
         return !tookActionAlready && roles.isApproverForTimesheet(doc) && !StringUtils.equals(doc.getDocumentHeader().getDocumentStatus(), "F");
     }
 
     public boolean isApprovalButtonsEnabled() {
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         boolean isEnroute = tdh.getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE);
         if(isEnroute){
@@ -58,7 +58,7 @@ public class WorkflowTagSupport {
         return false;
     }
 
-    public String getRouteAction() { return TkConstants.TIMESHEET_ACTIONS.ROUTE; }
-    public String getApproveAction() { return TkConstants.TIMESHEET_ACTIONS.APPROVE; }
-    public String getDisapproveAction() { return TkConstants.TIMESHEET_ACTIONS.DISAPPROVE; }
+    public String getRouteAction() { return TkConstants.DOCUMENT_ACTIONS.ROUTE; }
+    public String getApproveAction() { return TkConstants.DOCUMENT_ACTIONS.APPROVE; }
+    public String getDisapproveAction() { return TkConstants.DOCUMENT_ACTIONS.DISAPPROVE; }
 }

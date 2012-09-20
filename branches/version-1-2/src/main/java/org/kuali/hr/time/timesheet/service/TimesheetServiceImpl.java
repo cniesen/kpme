@@ -35,7 +35,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
     @Override
     public void routeTimesheet(String principalId, TimesheetDocument timesheetDocument) {
-        routeTimesheet(TkConstants.TIMESHEET_ACTIONS.ROUTE, principalId, timesheetDocument);
+        routeTimesheet(TkConstants.DOCUMENT_ACTIONS.ROUTE, principalId, timesheetDocument);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
     @Override
     public void approveTimesheet(String principalId, TimesheetDocument timesheetDocument) {
-        timesheetAction(TkConstants.TIMESHEET_ACTIONS.APPROVE, principalId, timesheetDocument);
+        timesheetAction(TkConstants.DOCUMENT_ACTIONS.APPROVE, principalId, timesheetDocument);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
     @Override
     public void disapproveTimesheet(String principalId, TimesheetDocument timesheetDocument) {
-        timesheetAction(TkConstants.TIMESHEET_ACTIONS.DISAPPROVE, principalId, timesheetDocument);
+        timesheetAction(TkConstants.DOCUMENT_ACTIONS.DISAPPROVE, principalId, timesheetDocument);
     }
 
     protected void timesheetAction(String action, String principalId, TimesheetDocument timesheetDocument) {
@@ -64,11 +64,11 @@ public class TimesheetServiceImpl implements TimesheetService {
                 String rhid = timesheetDocument.getDocumentId();
                 wd = WorkflowDocumentFactory.loadDocument(principalId, rhid);
 
-                if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.ROUTE)) {
+                if (StringUtils.equals(action, TkConstants.DOCUMENT_ACTIONS.ROUTE)) {
                     wd.route("Routing for Approval");
                 } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE)) {
                     wd.route("Batch job routing for Approval");
-                } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.APPROVE)) {
+                } else if (StringUtils.equals(action, TkConstants.DOCUMENT_ACTIONS.APPROVE)) {
                     if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin() &&
                             !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
                         wd.superUserBlanketApprove("Superuser approving timesheet.");
@@ -77,7 +77,7 @@ public class TimesheetServiceImpl implements TimesheetService {
                     }
                 } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
                     wd.superUserBlanketApprove("Batch job superuser approving timesheet.");
-                } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.DISAPPROVE)) {
+                } else if (StringUtils.equals(action, TkConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
                     if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin()
                             && !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
                         wd.superUserDisapprove("Superuser disapproving timesheet.");
