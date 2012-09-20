@@ -20,6 +20,8 @@
     <c:set var="employeeName" value="${UserSession.person.name}" />
     <c:set var="backdoorInUse" value="${UserSession.backdoorInUse == 'true'}" />
     <c:set var="targetInUse" value='<%=org.kuali.hr.time.util.TKUser.isTargetInUse()%>' />
+    <c:set var="systemAdmin" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isSystemAdmin()%>' />
+    <c:set var="locationAdmin" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isLocationAdmin()%>' />
 </c:if>
 
 <c:if test="${backdoorInUse}">
@@ -36,7 +38,8 @@
 
 <div id="tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
     <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all ${highlight} ${targetuser}">
-			<span class="title ${backdoor}">
+        <div style="float: left;">
+            <span class="title ${backdoor}">
 	            <img src="images/kpme_logo.png" style="width:4em;"/> 
 	        </span>
 	        <span class="yellowbanner">
@@ -47,6 +50,23 @@
 	                       onclick="location.href='<%=request.getContextPath() %>/changeTargetPerson.do?methodToCall=clearTargetPerson'" />
            		 </c:if>
 	         </span>
+        <div class="go-to-portal">
+            <c:if test="${systemAdmin || locationAdmin}">
+                <table align="left" width="100%">
+                    <tr>
+                        <td width="10%"></td>
+                        <td><select id="goToPortal" name="goToPortal"
+                                    ONCHANGE="location = this.options[this.selectedIndex].value;"
+                                    style="width: 150px">
+                            <option value="" selected="selected">Go To...</option>
+                            <option value="<%=request.getContextPath()%>/portal.do">
+                                KPME Home</option>
+                        </select></td>
+                    </tr>
+                </table>
+            </c:if>
+        </div>
+</div>
 
         <div class="person-info">
             <table class="${backdoor}">

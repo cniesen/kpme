@@ -994,5 +994,12 @@ label.error {
     padding: 3px;
 }
 
+.go-to-portal table {
+    border-collapse: collapse;
+    color: black;
+    font-size: .8em;
+    font-weight: normal;
+}
+
 
 
