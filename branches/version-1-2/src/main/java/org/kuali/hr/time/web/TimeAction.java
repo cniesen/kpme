@@ -19,7 +19,7 @@ import org.kuali.rice.krad.util.GlobalVariables;
 
 public class TimeAction extends TkAction {
 
-    private static final Logger LOG = Logger.getLogger(TimeAction.class);
+	private static final Logger LOG = Logger.getLogger(TimeAction.class);
 
     @Override
     protected void checkTKAuthorization(ActionForm form, String methodToCall) throws AuthorizationException {
@@ -31,45 +31,45 @@ public class TimeAction extends TkAction {
             // necessarily be a system administrator.
         } else {
             if (!TKContext.getUser().isSystemAdmin()
-                    && !TKContext.getUser().isLocationAdmin()
-                    && !TKContext.getUser().isDepartmentAdmin()
-                    && !TKContext.getUser().isGlobalViewOnly()
-                    && !TKContext.getUser().isDeptViewOnly()
-                    && (tkForm.getDocumentId() != null && !TKContext.getUser().isApproverForTimesheet(tkForm.getDocumentId()))
-                    && (tkForm.getDocumentId() != null && !TKContext.getUser().isDocumentReadable(tkForm.getDocumentId())))  {
+        			&& !TKContext.getUser().isLocationAdmin()
+        			&& !TKContext.getUser().isDepartmentAdmin()
+        			&& !TKContext.getUser().isGlobalViewOnly()
+        			&& !TKContext.getUser().isDeptViewOnly()
+        			&& (tkForm.getDocumentId() != null && !TKContext.getUser().isApproverForTimesheet(tkForm.getDocumentId()))
+        			&& (tkForm.getDocumentId() != null && !TKContext.getUser().isDocumentReadable(tkForm.getDocumentId())))  {
                 throw new AuthorizationException("", "TimeAction", "");
             }
         }
     }
 
-
+    
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form,
-                                 HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
-        TKUser user = TKContext.getUser();
-        if (user != null) {
-            if (TKContext.getUser().isSystemAdmin()) {
-                return new ActionRedirect("/portal.do");
-            } else if (TKContext.getUser().isDepartmentAdmin()
-                    && !user.isSynchronous()) {
-                return new ActionRedirect("/portal.do");
-            } else if (TKContext.getUser().isApprover()
-                    && !user.isSynchronous()) {
-                return new ActionRedirect("/TimeApproval.do");
-            } else if (TKContext.getUser().isReviewer()
-                    && !user.isSynchronous()) {
-                return new ActionRedirect("/TimeApproval.do");
-            } else if (user.isActiveEmployee()
-                    && !user.isSynchronous()) {
-                return new ActionRedirect("/TimeDetail.do");
-            } else if (user.isSynchronous()) {
-                return new ActionRedirect("/Clock.do");
-            } else {
-                return new ActionRedirect("/PersonInfo.do");
-            }
-        }
-        return super.execute(mapping, form, request, response);
-    }
-
+	public ActionForward execute(ActionMapping mapping, ActionForm form,
+			HttpServletRequest request, HttpServletResponse response)
+			throws Exception {
+    	TKUser user = TKContext.getUser();
+		if (user != null) {
+			if (TKContext.getUser().isSystemAdmin()) {
+				return new ActionRedirect("/portal.do");
+			} else if (TKContext.getUser().isDepartmentAdmin()
+					&& !user.isSynchronous()) {
+				return new ActionRedirect("/portal.do");
+			} else if (TKContext.getUser().isApprover()
+					&& !user.isSynchronous()) {
+				return new ActionRedirect("/TimeApproval.do");
+			} else if (TKContext.getUser().isReviewer()
+					&& !user.isSynchronous()) {
+				return new ActionRedirect("/TimeApproval.do");
+			} else if (user.isActiveEmployee()
+					&& !user.isSynchronous()) {
+				return new ActionRedirect("/TimeDetail.do");
+			} else if (user.isSynchronous()) {
+				return new ActionRedirect("/Clock.do");
+			} else {
+				return new ActionRedirect("/PersonInfo.do");
+			}
+		}
+	return super.execute(mapping, form, request, response);
+}
+    
 }

@@ -7,12 +7,12 @@ public class WorkAreaMaintenanceDocument extends MaintenanceDocumentBase {
 
 
     /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 
-    public WorkAreaMaintenanceDocument() {
+	public WorkAreaMaintenanceDocument() {
         super();
     }
 
@@ -20,7 +20,7 @@ public class WorkAreaMaintenanceDocument extends MaintenanceDocumentBase {
         super(documentTypeName);
     }
 
-
+	
     @Override
     public void doRouteStatusChange(DocumentRouteStatusChange statusChangeEvent) {
         super.doRouteStatusChange(statusChangeEvent);

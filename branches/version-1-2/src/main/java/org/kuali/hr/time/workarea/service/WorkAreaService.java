@@ -1,18 +1,19 @@
 package org.kuali.hr.time.workarea.service;
 
 import org.kuali.hr.time.workarea.WorkArea;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 
 import java.sql.Date;
 import java.util.List;
 
 public interface WorkAreaService {
-    /**
-     * Fetch WorkArea as of a particular date
-     * @param workArea
-     * @param asOfDate
-     * @return
-     */
+	/**
+	 * Fetch WorkArea as of a particular date
+	 * @param workArea
+	 * @param asOfDate
+	 * @return
+	 */
     @Cacheable(value= WorkArea.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
     public WorkArea getWorkArea(Long workArea, Date asOfDate);
 
@@ -31,6 +32,7 @@ public interface WorkAreaService {
      * Save or Update given work area
      * @param workArea
      */
+    @CacheEvict(value={WorkArea.CACHE_NAME}, allEntries = true)
     public void saveOrUpdate(WorkArea workArea);
 
     /**
@@ -45,12 +47,12 @@ public interface WorkAreaService {
 
     @Cacheable(value= WorkArea.CACHE_NAME, key="'tkWorkAreaId=' + #p0")
     public WorkArea getWorkArea(String tkWorkAreaId);
-
+    
     public Long getNextWorkAreaKey();
-
+    
     public List<WorkArea> getWorkAreas(String dept, String workArea, String workAreaDescr, Date fromEffdt, Date toEffdt,
-                                       String active, String showHistory);
-
+			String active, String showHistory);
+    
     /**
      * Fetch the count of the work areas with the given department and workarea
      * @param dept

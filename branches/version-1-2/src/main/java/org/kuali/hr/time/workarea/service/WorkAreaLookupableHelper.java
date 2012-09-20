@@ -31,103 +31,103 @@ public class WorkAreaLookupableHelper extends TkAuthorizedLookupableHelperBase {
         return (bo instanceof DepartmentalRule) && DepartmentalRuleAuthorizer.hasAccessToRead((DepartmentalRule)bo);
     }
 
-    @Override
-    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-        List<HtmlData> customActionUrls = new ArrayList<HtmlData>();
+	@Override
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+		List<HtmlData> customActionUrls = new ArrayList<HtmlData>();
+		
+		List<HtmlData> defaultCustomActionUrls = super.getCustomActionUrls(businessObject, pkNames);
+		
+		WorkArea workArea = (WorkArea) businessObject;
+		String tkWorkAreaId = workArea.getTkWorkAreaId();
+		String location = TkServiceLocator.getDepartmentService().getDepartment(workArea.getDept(), TKUtils.getCurrentDate()).getLocation();
+		String department = workArea.getDept();
+		
+		boolean systemAdmin = TKContext.getUser().isSystemAdmin();
+		boolean locationAdmin = TKContext.getUser().getLocationAdminAreas().contains(location);
+		boolean departmentAdmin = TKContext.getUser().getDepartmentAdminAreas().contains(department);
+		
+		for (HtmlData defaultCustomActionUrl : defaultCustomActionUrls){
+			if (StringUtils.equals(defaultCustomActionUrl.getMethodToCall(), "edit")) {
+				if (systemAdmin || locationAdmin || departmentAdmin) {
+					customActionUrls.add(defaultCustomActionUrl);
+				}
+			} else {
+				customActionUrls.add(defaultCustomActionUrl);
+			}
+		}
+		
+		Properties params = new Properties();
+		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
+		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
+		params.put("tkWorkAreaId", tkWorkAreaId);
+		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
+		viewUrl.setDisplayText("view");
+		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
+		customActionUrls.add(viewUrl);
+		
+		return customActionUrls;
+	}
 
-        List<HtmlData> defaultCustomActionUrls = super.getCustomActionUrls(businessObject, pkNames);
-
-        WorkArea workArea = (WorkArea) businessObject;
-        String tkWorkAreaId = workArea.getTkWorkAreaId();
-        String location = TkServiceLocator.getDepartmentService().getDepartment(workArea.getDept(), TKUtils.getCurrentDate()).getLocation();
-        String department = workArea.getDept();
-
-        boolean systemAdmin = TKContext.getUser().isSystemAdmin();
-        boolean locationAdmin = TKContext.getUser().getLocationAdminAreas().contains(location);
-        boolean departmentAdmin = TKContext.getUser().getDepartmentAdminAreas().contains(department);
-
-        for (HtmlData defaultCustomActionUrl : defaultCustomActionUrls){
-            if (StringUtils.equals(defaultCustomActionUrl.getMethodToCall(), "edit")) {
-                if (systemAdmin || locationAdmin || departmentAdmin) {
-                    customActionUrls.add(defaultCustomActionUrl);
-                }
-            } else {
-                customActionUrls.add(defaultCustomActionUrl);
-            }
-        }
-
-        Properties params = new Properties();
-        params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
-        params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-        params.put("tkWorkAreaId", tkWorkAreaId);
-        AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
-        viewUrl.setDisplayText("view");
-        viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
-        customActionUrls.add(viewUrl);
-
-        return customActionUrls;
-    }
-
-    @Override
-    public HtmlData getReturnUrl(BusinessObject businessObject,
-                                 LookupForm lookupForm, List returnKeys,
-                                 BusinessObjectRestrictions businessObjectRestrictions) {
-        if (lookupForm.getFieldConversions().containsKey("effectiveDate")) {
-            lookupForm.getFieldConversions().remove("effectiveDate");
-        }
-        if (returnKeys.contains("effectiveDate")) {
-            returnKeys.remove("effectiveDate");
-        }
-        if (lookupForm.getFieldConversions().containsKey("dept")) {
-            lookupForm.getFieldConversions().remove("dept");
-        }
-        if (returnKeys.contains("dept")) {
-            returnKeys.remove("dept");
-        }
-
-        if(lookupForm.getFieldConversions().containsKey("tkWorkAreaId")){
-            lookupForm.getFieldConversions().remove("tkWorkAreaId");
-        }
-        if(returnKeys.contains("tkWorkAreaId")){
-            returnKeys.remove("tkWorkAreaId");
-        }
-        return super.getReturnUrl(businessObject, lookupForm, returnKeys,
-                businessObjectRestrictions);
-    }
-
-
-
-    @Override
-    protected void validateSearchParameterWildcardAndOperators(
-            String attributeName, String attributeValue) {
-        if (!StringUtils.equals(attributeValue, "%")) {
-            super.validateSearchParameterWildcardAndOperators(attributeName,
-                    attributeValue);
-        }
-    }
+	@Override
+	public HtmlData getReturnUrl(BusinessObject businessObject,
+			LookupForm lookupForm, List returnKeys,
+			BusinessObjectRestrictions businessObjectRestrictions) {
+		if (lookupForm.getFieldConversions().containsKey("effectiveDate")) {
+			lookupForm.getFieldConversions().remove("effectiveDate");
+		}
+		if (returnKeys.contains("effectiveDate")) {
+			returnKeys.remove("effectiveDate");
+		}
+		if (lookupForm.getFieldConversions().containsKey("dept")) {
+			lookupForm.getFieldConversions().remove("dept");
+		}
+		if (returnKeys.contains("dept")) {
+			returnKeys.remove("dept");
+		}
+		
+		if(lookupForm.getFieldConversions().containsKey("tkWorkAreaId")){
+			lookupForm.getFieldConversions().remove("tkWorkAreaId");
+		}
+		if(returnKeys.contains("tkWorkAreaId")){
+			returnKeys.remove("tkWorkAreaId");
+		}
+		return super.getReturnUrl(businessObject, lookupForm, returnKeys,
+				businessObjectRestrictions);
+	}
+	
 
 
-    @SuppressWarnings("unchecked")
-    @Override
-    /**
-     * Custom work area search logic
-     *
-     */
-    public List<? extends BusinessObject> getSearchResults(
-            Map<String, String> fieldValues) {
-
-        String dept = fieldValues.get("dept");
-        String workArea = fieldValues.get("workArea");
-        String descr = fieldValues.get("description");
-        String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
-        String toEffdt = StringUtils.isNotBlank(fieldValues.get("effectiveDate")) ? fieldValues.get("effectiveDate").replace("<=", "") : "";
-        String active = fieldValues.get("active");
-        String showHist = fieldValues.get("history");
-
-
-        return TkServiceLocator.getWorkAreaService().getWorkAreas(dept, workArea, descr, TKUtils.formatDateString(fromEffdt),
-                TKUtils.formatDateString(toEffdt), active, showHist);
-
+	@Override
+	protected void validateSearchParameterWildcardAndOperators(
+			String attributeName, String attributeValue) {
+		if (!StringUtils.equals(attributeValue, "%")) {
+			super.validateSearchParameterWildcardAndOperators(attributeName,
+					attributeValue);
+		}
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	/**
+	 * Custom work area search logic
+	 * 
+	 */
+	public List<? extends BusinessObject> getSearchResults(
+			Map<String, String> fieldValues) {
+		
+		String dept = fieldValues.get("dept");
+		String workArea = fieldValues.get("workArea");
+		String descr = fieldValues.get("description");
+		String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
+		String toEffdt = StringUtils.isNotBlank(fieldValues.get("effectiveDate")) ? fieldValues.get("effectiveDate").replace("<=", "") : "";
+		String active = fieldValues.get("active");
+		String showHist = fieldValues.get("history");
+		
+		
+		return TkServiceLocator.getWorkAreaService().getWorkAreas(dept, workArea, descr, TKUtils.formatDateString(fromEffdt), 
+													TKUtils.formatDateString(toEffdt), active, showHist);
+		
 //		if (fieldValues.containsKey("jobNumber")
 //				&& StringUtils.equals(fieldValues.get("jobNumber"), "%")) {
 //			fieldValues.put("jobNumber", "");
@@ -280,9 +280,9 @@ public class WorkAreaLookupableHelper extends TkAuthorizedLookupableHelperBase {
 //
 //		return new CollectionIncomplete(finalBusinessObjectList, matchingResultsCount);
 
-    }
+	}
 
 
 
-
+	
 }

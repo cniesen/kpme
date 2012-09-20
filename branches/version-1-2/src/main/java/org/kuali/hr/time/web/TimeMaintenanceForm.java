@@ -16,42 +16,42 @@ import org.kuali.rice.krad.service.ModuleService;
  */
 public class TimeMaintenanceForm extends KualiMaintenanceForm {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-    /*
-      * This was cut and pasted from the parent, with some modification.
-      */
-    @Override
-    protected String getPersonInquiryUrlLink(Person user, String linkBody) {
+	/*
+	 * This was cut and pasted from the parent, with some modification.
+	 */
+	@Override
+	protected String getPersonInquiryUrlLink(Person user, String linkBody) {
         StringBuffer urlBuffer = new StringBuffer();
-
+                
         if(user != null && StringUtils.isNotEmpty(linkBody) ) {
-            ModuleService moduleService = KRADServiceLocatorWeb.getKualiModuleService().getResponsibleModuleService(Person.class);
-            Map<String, String[]> parameters = new HashMap<String, String[]>();
-            parameters.put(KimConstants.AttributeConstants.PRINCIPAL_ID, new String[] { user.getPrincipalId() });
-            String inquiryUrl = moduleService.getExternalizableBusinessObjectInquiryUrl(Person.class, parameters);
+        	ModuleService moduleService = KRADServiceLocatorWeb.getKualiModuleService().getResponsibleModuleService(Person.class);
+        	Map<String, String[]> parameters = new HashMap<String, String[]>();
+        	parameters.put(KimConstants.AttributeConstants.PRINCIPAL_ID, new String[] { user.getPrincipalId() });
+        	String inquiryUrl = moduleService.getExternalizableBusinessObjectInquiryUrl(Person.class, parameters);
             if(!StringUtils.equals(KimConstants.EntityTypes.SYSTEM, user.getEntityTypeCode())){
-                urlBuffer.append("<a href='");
-                urlBuffer.append(inquiryUrl);
-                urlBuffer.append("' ");
-                urlBuffer.append("target='_blank'");
-                urlBuffer.append("title='Person Inquiry'>");
-                urlBuffer.append(linkBody);
-                urlBuffer.append("</a>");
-
-                // Added re: KPME-207 (https://jira.kuali.org/browse/KPME-207)
-                urlBuffer.append(" (");
-                urlBuffer.append(user.getName());
-                urlBuffer.append(")");
+	            urlBuffer.append("<a href='");
+	            urlBuffer.append(inquiryUrl);
+	            urlBuffer.append("' ");
+	            urlBuffer.append("target='_blank'");
+	            urlBuffer.append("title='Person Inquiry'>");
+	            urlBuffer.append(linkBody);
+	            urlBuffer.append("</a>");
+	            
+	            // Added re: KPME-207 (https://jira.kuali.org/browse/KPME-207)
+	            urlBuffer.append(" (");
+	            urlBuffer.append(user.getName());
+	            urlBuffer.append(")");
             } else{
-                urlBuffer.append(linkBody);
+            	urlBuffer.append(linkBody);
             }
         }
-
+        
         return urlBuffer.toString();
-    }
+	}
 
 }

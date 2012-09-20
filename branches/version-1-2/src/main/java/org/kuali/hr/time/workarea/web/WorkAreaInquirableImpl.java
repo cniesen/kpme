@@ -9,12 +9,12 @@ import org.kuali.rice.krad.bo.BusinessObject;
 
 public class WorkAreaInquirableImpl extends KualiInquirableImpl {
 
-    @Override
-    public BusinessObject getBusinessObject(Map fieldValues) {
-        WorkArea workArea = (WorkArea) super.getBusinessObject(fieldValues);
+	@Override
+	public BusinessObject getBusinessObject(Map fieldValues) {
+		WorkArea workArea = (WorkArea) super.getBusinessObject(fieldValues);
 
-        TkServiceLocator.getWorkAreaService().populateWorkAreaRoles(workArea);
+		TkServiceLocator.getWorkAreaService().populateWorkAreaRoles(workArea);
 
-        return workArea;
-    }
+		return workArea;
+	}
 }

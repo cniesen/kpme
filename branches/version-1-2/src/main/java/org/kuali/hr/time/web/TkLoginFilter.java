@@ -47,7 +47,7 @@ public class TkLoginFilter implements Filter {
 
     @Override
     public void destroy() {
-        dummyLoginFilter.destroy();
+    	dummyLoginFilter.destroy();
     }
 
     protected static void setTestMode() {

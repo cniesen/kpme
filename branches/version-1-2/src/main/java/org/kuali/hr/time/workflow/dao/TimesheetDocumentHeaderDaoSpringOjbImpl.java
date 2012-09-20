@@ -29,7 +29,7 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
             this.getPersistenceBrokerTemplate().store(documentHeader);
         }
     }
-
+    
     public void deleteTimesheetHeader(String documentId){
         Criteria crit = new Criteria();
         crit.addEqualTo("documentId", documentId);
@@ -89,9 +89,9 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
         return lstDocumentHeaders;
 
     }
-
+    
     public List<TimesheetDocumentHeader> getDocumentHeadersForPrincipalId(String principalId) {
-        Criteria crit = new Criteria();
+   	 	Criteria crit = new Criteria();
         List<TimesheetDocumentHeader> lstDocumentHeaders = new ArrayList<TimesheetDocumentHeader>();
 
         crit.addEqualTo("principalId", principalId);
@@ -101,31 +101,41 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
             lstDocumentHeaders.addAll(c);
         }
         return lstDocumentHeaders;
-    }
+   }
+   
+   public List<TimesheetDocumentHeader> getDocumentHeadersForYear(String principalId, String year) {
+	   	 Criteria crit = new Criteria();
+	     List<TimesheetDocumentHeader> lstDocumentHeaders = new ArrayList<TimesheetDocumentHeader>();
+	     
+	     try {
+	    	 crit.addEqualTo("principalId", principalId);
+	    	 DateFormat df = new SimpleDateFormat("yyyy");
+	    	 java.util.Date cYear = df.parse(year);
+	    	 String nextYear = Integer.toString((Integer.parseInt(year) + 1));
+	    	 java.util.Date nYear = df.parse(nextYear);
+	    	 
+			crit.addGreaterOrEqualThan("payBeginDate", cYear);
+		    crit.addLessThan("payBeginDate", nYear );
+		    QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
+		    Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+		    if (c != null) {
+		        lstDocumentHeaders.addAll(c);
+			}
+		  } catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+		  }
+		  return lstDocumentHeaders;
+   }
+   
+   public TimesheetDocumentHeader getDocumentHeaderForDate(String principalId, Date asOfDate) {
+	   Criteria crit = new Criteria();
+       crit.addEqualTo("principalId", principalId);
+       crit.addLessOrEqualThan("payBeginDate", asOfDate);
+       crit.addGreaterOrEqualThan("payEndDate", asOfDate);
+       
+       QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
 
-    public List<TimesheetDocumentHeader> getDocumentHeadersForYear(String principalId, String year) {
-        Criteria crit = new Criteria();
-        List<TimesheetDocumentHeader> lstDocumentHeaders = new ArrayList<TimesheetDocumentHeader>();
-
-        try {
-            crit.addEqualTo("principalId", principalId);
-            DateFormat df = new SimpleDateFormat("yyyy");
-            java.util.Date cYear = df.parse(year);
-            String nextYear = Integer.toString((Integer.parseInt(year) + 1));
-            java.util.Date nYear = df.parse(nextYear);
-
-            crit.addGreaterOrEqualThan("payBeginDate", cYear);
-            crit.addLessThan("payBeginDate", nYear );
-            QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
-            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-            if (c != null) {
-                lstDocumentHeaders.addAll(c);
-            }
-        } catch (ParseException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        return lstDocumentHeaders;
-    }
-
+       return (TimesheetDocumentHeader) this.getPersistenceBrokerTemplate().getObjectByQuery(query); 
+   }
 }

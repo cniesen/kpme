@@ -27,30 +27,30 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
 
     private static final Logger LOG = Logger.getLogger(TkWorkflowTimesheetAttribute.class);
 
-    @Override
-    public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
-        List<String> roles = new ArrayList<String>();
-        Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
-        TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
+	@Override
+	public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
+		List<String> roles = new ArrayList<String>();
+		Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
+		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
 
-        if (timesheetDocument != null) {
-            List<Assignment> assignments = timesheetDocument.getAssignments();
-            for (Assignment assignment : assignments) {
-                String roleStr = roleName + "_" +assignment.getWorkArea();
-                if(!roles.contains(roleStr)){
-                    roles.add(roleStr);
-                }
-            }
-        }
-        return roles;
-    }
+		if (timesheetDocument != null) {
+			List<Assignment> assignments = timesheetDocument.getAssignments();
+			for (Assignment assignment : assignments) {
+				String roleStr = roleName + "_" +assignment.getWorkArea();
+				if(!roles.contains(roleStr)){
+					roles.add(roleStr);
+				}
+			}
+		}
+		return roles;
+	}
 
-    /**
-     * Role name is passed in in the routing rule.
-     */
-    @Override
-    public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
-        ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
+	/**
+	 * Role name is passed in in the routing rule.
+	 */
+	@Override
+	public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
+		ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
         Long workAreaNumber = null;
 
         try {
@@ -67,50 +67,50 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
             throw new RuntimeException("Unable to resolve work area during routing.");
         }
 
-        List<Id> principals = new ArrayList<Id>();
-        String routeHeaderId = routeContext.getDocument().getDocumentId();
-        TkRoleService roleService = TkServiceLocator.getTkRoleService();
-        TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
-        WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
+		List<Id> principals = new ArrayList<Id>();
+		String routeHeaderId = routeContext.getDocument().getDocumentId();
+		TkRoleService roleService = TkServiceLocator.getTkRoleService();
+		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
+		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
 
         // KPME-1071
         List<TkRole> approvers = roleService.getWorkAreaRoles(workAreaNumber, roleName, TKUtils.getCurrentDate());
         List<TkRole> approverDelegates = roleService.getWorkAreaRoles(workAreaNumber, TkConstants.ROLE_TK_APPROVER_DELEGATE, TKUtils.getCurrentDate());
-        List<TkRole> roles = new ArrayList<TkRole>();
+		List<TkRole> roles = new ArrayList<TkRole>();
         roles.addAll(approvers);
         roles.addAll(approverDelegates);
 
-        for (TkRole role : roles) {
-            //Position routing
-            if(StringUtils.isEmpty(role.getPrincipalId())){
-                String positionNumber = role.getPositionNumber();
-                List<Job> lstJobsForPosition = TkServiceLocator.getJobService().getActiveJobsForPosition(positionNumber, timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime());
-                for(Job job : lstJobsForPosition){
-                    PrincipalId pid = new PrincipalId(job.getPrincipalId());
-                    if (!principals.contains(pid)) {
-                        principals.add(pid);
-                    }
-                }
-            } else {
-                PrincipalId pid = new PrincipalId(role.getPrincipalId());
-                if (!principals.contains(pid)) {
-                    principals.add(pid);
-                }
-            }
-        }
+		for (TkRole role : roles) {
+			//Position routing
+			if(StringUtils.isEmpty(role.getPrincipalId())){
+				String positionNumber = role.getPositionNumber();
+				List<Job> lstJobsForPosition = TkServiceLocator.getJobService().getActiveJobsForPosition(positionNumber, timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime());
+				for(Job job : lstJobsForPosition){
+					PrincipalId pid = new PrincipalId(job.getPrincipalId());
+					if (!principals.contains(pid)) {
+						principals.add(pid);
+					}
+				}
+			} else {
+				PrincipalId pid = new PrincipalId(role.getPrincipalId());
+					if (!principals.contains(pid)) {
+						principals.add(pid);
+					}
+			}
+		}
 
-        if (principals.size() == 0)
-            throw new RuntimeException("No principals to route to. Push to exception routing.");
+		if (principals.size() == 0)
+			throw new RuntimeException("No principals to route to. Push to exception routing.");
 
-        rqr.setRecipients(principals);
-        rqr.setAnnotation("Dept: "+ workArea.getDept()+", Work Area: "+workArea.getWorkArea());
+		rqr.setRecipients(principals);
+		rqr.setAnnotation("Dept: "+ workArea.getDept()+", Work Area: "+workArea.getWorkArea());
 
-        return rqr;
-    }
+		return rqr;
+	}
 
-    @Override
-    public List<RoleName> getRoleNames() {
+	@Override
+	public List<RoleName> getRoleNames() {
         return Collections.EMPTY_LIST;
-    }
+	}
 
 }

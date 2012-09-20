@@ -20,7 +20,7 @@ public class TkWarningServiceImpl implements TkWarningService {
 
         return warnings;
     }
-
+    
     public List<String> getWarnings(String pId, List<TimeBlock> tbList, Date asOfDate) {
         //Validate accrual hours
         List<String> warnings;
@@ -28,7 +28,7 @@ public class TkWarningServiceImpl implements TkWarningService {
 
         return warnings;
     }
-
+    
     @Override
     public List<String> getWarnings(TimesheetDocument td) {
         //Validate accrual hours

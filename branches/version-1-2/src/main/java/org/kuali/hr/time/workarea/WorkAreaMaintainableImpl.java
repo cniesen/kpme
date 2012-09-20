@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.roles.TkRole;
@@ -54,7 +55,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
             if ( aRole != null ) {
                 if(!StringUtils.isEmpty(aRole.getPrincipalId()) && !StringUtils.isEmpty(aRole.getPositionNumber())) {
                     GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
-                            "error.role.principalId.positonNubmer", aRole.getPrincipalId());
+            				"error.role.principalId.positonNumber", aRole.getPrincipalId());
                     return;
                 }
                 if(aRole.getPrincipalId() != null && !aRole.getPrincipalId().isEmpty()) {
@@ -181,6 +182,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         hrObj.setId(null);
 
         KRADServiceLocator.getBusinessObjectService().save(hrObj);
+        CacheUtils.flushCache(WorkArea.CACHE_NAME);
     }
 
 }

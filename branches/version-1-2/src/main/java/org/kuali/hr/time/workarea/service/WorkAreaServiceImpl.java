@@ -11,13 +11,13 @@ import java.util.List;
 
 public class WorkAreaServiceImpl implements WorkAreaService {
 
-    @SuppressWarnings("unused")
-    private static final Logger LOG = Logger.getLogger(WorkAreaServiceImpl.class);
+	@SuppressWarnings("unused")
+	private static final Logger LOG = Logger.getLogger(WorkAreaServiceImpl.class);
 
-    private WorkAreaDao workAreaDao;
+	private WorkAreaDao workAreaDao;
 
-    public WorkAreaServiceImpl() {
-    }
+	public WorkAreaServiceImpl() {
+	}
 
     @Override
     public List<WorkArea> getWorkAreas(String department, Date asOfDate) {
@@ -26,31 +26,31 @@ public class WorkAreaServiceImpl implements WorkAreaService {
         // Load Roles
         // TODO: We may not need to do this, as this method is currently only grabbing WorkArea objects to build role structures for users.
         //for (WorkArea w : wa) {
-        // populateWorkAreaRoles(w);
-        //  }
+           // populateWorkAreaRoles(w);
+      //  }
 
         return wa;
     }
 
     @Override
-    public WorkArea getWorkArea(Long workArea, Date asOfDate) {
+	public WorkArea getWorkArea(Long workArea, Date asOfDate) {
         WorkArea w = workAreaDao.getWorkArea(workArea, asOfDate);
         populateWorkAreaRoles(w);
-        return w;
-    }
+		return w;
+	}
 
-    @Override
-    public void saveOrUpdate(WorkArea workArea) {
-        workAreaDao.saveOrUpdate(workArea);
-    }
+	@Override
+	public void saveOrUpdate(WorkArea workArea) {
+		workAreaDao.saveOrUpdate(workArea);
+	}
 
-    public WorkAreaDao getWorkAreaDao() {
-        return workAreaDao;
-    }
+	public WorkAreaDao getWorkAreaDao() {
+		return workAreaDao;
+	}
 
-    public void setWorkAreaDao(WorkAreaDao workAreaDao) {
-        this.workAreaDao = workAreaDao;
-    }
+	public void setWorkAreaDao(WorkAreaDao workAreaDao) {
+		this.workAreaDao = workAreaDao;
+	}
 
     @Override
     public void populateWorkAreaRoles(WorkArea workArea) {
@@ -63,34 +63,34 @@ public class WorkAreaServiceImpl implements WorkAreaService {
                     )
             );
             workArea.setInactiveRoles(
-                    TkServiceLocator.getTkRoleService().getInActiveWorkAreaRoles(
-                            workArea.getWorkArea(),
-                            TkConstants.ROLE_TK_APPROVER,
-                            workArea.getEffectiveDate()
-                    )
+            		TkServiceLocator.getTkRoleService().getInActiveWorkAreaRoles(
+            				workArea.getWorkArea(),
+            				TkConstants.ROLE_TK_APPROVER,
+            				workArea.getEffectiveDate()
+            		)
             );
         }
     }
 
-    @Override
-    public WorkArea getWorkArea(String tkWorkAreaId) {
-        return workAreaDao.getWorkArea(tkWorkAreaId);
-    }
+	@Override
+	public WorkArea getWorkArea(String tkWorkAreaId) {
+		return workAreaDao.getWorkArea(tkWorkAreaId);
+	}
 
-    @Override
-    public Long getNextWorkAreaKey() {
-        return workAreaDao.getNextWorkAreaKey();
-    }
+	@Override
+	public Long getNextWorkAreaKey() {
+		return workAreaDao.getNextWorkAreaKey();
+	}
 
-    @Override
-    public List<WorkArea> getWorkAreas(String dept, String workArea,
-                                       String workAreaDescr, Date fromEffdt, Date toEffdt, String active,
-                                       String showHistory) {
-        return workAreaDao.getWorkAreas(dept, workArea, workAreaDescr, fromEffdt, toEffdt, active, showHistory);
-    }
-
-    @Override
+	@Override
+	public List<WorkArea> getWorkAreas(String dept, String workArea,
+			String workAreaDescr, Date fromEffdt, Date toEffdt, String active,
+			String showHistory) {
+		return workAreaDao.getWorkAreas(dept, workArea, workAreaDescr, fromEffdt, toEffdt, active, showHistory);
+	}
+	
+	@Override
     public int getWorkAreaCount(String dept, Long workArea) {
-        return workAreaDao.getWorkAreaCount(dept, workArea);
+		return workAreaDao.getWorkAreaCount(dept, workArea);
     }
 }
