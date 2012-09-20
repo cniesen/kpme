@@ -71,7 +71,7 @@ public class MissedPunchDocumentTest extends KPMETestCase {
 				
 		// get tdocid 
 		HtmlTableDataCell htmlTable = (HtmlTableDataCell) page.getByXPath(
-				"//tbody//tr//td").get(7);
+				"//tbody//tr//td").get(8);
 		System.out.println("htmlTable.getTextContent();"
 				+ htmlTable.getTextContent());
 

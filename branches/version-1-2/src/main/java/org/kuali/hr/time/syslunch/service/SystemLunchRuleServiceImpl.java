@@ -8,36 +8,36 @@ import org.kuali.hr.time.util.TKUtils;
 import java.sql.Date;
 
 public class SystemLunchRuleServiceImpl implements SystemLunchRuleService {
-    public SystemLunchRuleDao systemLunchRuleDao;
+	public SystemLunchRuleDao systemLunchRuleDao;
 
-    @Override
-    public SystemLunchRule getSystemLunchRule(Date asOfDate) {
-        return systemLunchRuleDao.getSystemLunchRule(asOfDate);
-    }
+	@Override
+	public SystemLunchRule getSystemLunchRule(Date asOfDate) {
+		return systemLunchRuleDao.getSystemLunchRule(asOfDate);
+	}
 
-    public SystemLunchRuleDao getSystemLunchRuleDao() {
-        return systemLunchRuleDao;
-    }
+	public SystemLunchRuleDao getSystemLunchRuleDao() {
+		return systemLunchRuleDao;
+	}
 
-    public void setSystemLunchRuleDao(SystemLunchRuleDao systemLunchRuleDao) {
-        this.systemLunchRuleDao = systemLunchRuleDao;
-    }
+	public void setSystemLunchRuleDao(SystemLunchRuleDao systemLunchRuleDao) {
+		this.systemLunchRuleDao = systemLunchRuleDao;
+	}
 
-    @Override
-    public boolean isShowLunchButton() {
+	@Override
+	public boolean isShowLunchButton() {
 
-        Boolean isShowLunchButton = false;
-        SystemLunchRule systemLunchrule = TkServiceLocator.getSystemLunchRuleService().getSystemLunchRule(TKUtils.getCurrentDate());
-        if(systemLunchrule != null) {
-            isShowLunchButton = systemLunchrule.getShowLunchButton();
-        }
+    	Boolean isShowLunchButton = false;
+    	SystemLunchRule systemLunchrule = TkServiceLocator.getSystemLunchRuleService().getSystemLunchRule(TKUtils.getCurrentDate());
+    	if(systemLunchrule != null) {
+    		isShowLunchButton = systemLunchrule.getShowLunchButton();
+    	}
 
-        return isShowLunchButton;
-    }
+		return isShowLunchButton;
+	}
 
-    @Override
-    public SystemLunchRule getSystemLunchRule(String tkSystemLunchRuleId) {
-        return systemLunchRuleDao.getSystemLunchRule(tkSystemLunchRuleId);
-    }
+	@Override
+	public SystemLunchRule getSystemLunchRule(String tkSystemLunchRuleId) {
+		return systemLunchRuleDao.getSystemLunchRule(tkSystemLunchRuleId);
+	}
 
 }
