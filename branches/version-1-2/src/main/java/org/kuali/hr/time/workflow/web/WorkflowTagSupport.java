@@ -18,7 +18,7 @@ public class WorkflowTagSupport {
         return TKContext.getCurrentTimesheetDocumentId();
     }
 
-    private boolean isDisplayingRouteButton() {
+    public boolean isDisplayingRouteButton() {
         TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
         TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
