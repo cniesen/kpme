@@ -1,6 +1,5 @@
 package org.kuali.hr.time.roles.validation;
 
-
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.roles.TkRoleGroup;
@@ -12,8 +11,6 @@ import org.kuali.rice.krad.bo.PersistableBusinessObject;
 public class TkRoleValidation extends MaintenanceDocumentRuleBase{
 
     private static final String ADD_LINE_LOCATION = "add.roles.";
-
-   
 
     protected boolean validateTkRole(TkRole role, String fieldPrefix) {
         boolean valid = true;
@@ -61,7 +58,7 @@ public class TkRoleValidation extends MaintenanceDocumentRuleBase{
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = true;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject)this.getNewBo();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		if (pbo instanceof TkRole) {
 			TkRole role = (TkRole)pbo;
             valid = validateTkRole(role, null);

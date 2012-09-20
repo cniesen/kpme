@@ -20,76 +20,76 @@ public class TkRoleServiceImpl implements TkRoleService {
 
     private static final Logger LOG = Logger.getLogger(TkRoleServiceImpl.class);
 
-    private TkRoleDao tkRoleDao;
+	private TkRoleDao tkRoleDao;
 
-    @Override
-    public List<TkRole> getDepartmentRoles(String department, Date asOfDate) {
-        return tkRoleDao.findRoles(null, asOfDate, null, null, department, null);
-    }
+	@Override
+	public List<TkRole> getDepartmentRoles(String department, Date asOfDate) {
+		return tkRoleDao.findRoles(null, asOfDate, null, null, department, null);
+	}
 
-    @Override
-    public List<TkRole> getDepartmentRoles(String department, String roleName, Date asOfDate) {
-        return tkRoleDao.findRoles(null, asOfDate, roleName, null, department, null);
-    }
+	@Override
+	public List<TkRole> getDepartmentRoles(String department, String roleName, Date asOfDate) {
+		return tkRoleDao.findRoles(null, asOfDate, roleName, null, department, null);
+	}
+	
+	@Override
+	public List<TkRole> getDepartmentInactiveRoles(String department, String roleName, Date asOfDate) {
+		return tkRoleDao.findInActiveRoles(null, asOfDate, roleName, null, department, null);
+	}
 
-    @Override
-    public List<TkRole> getDepartmentInactiveRoles(String department, String roleName, Date asOfDate) {
-        return tkRoleDao.findInActiveRoles(null, asOfDate, roleName, null, department, null);
-    }
+	@Override
+	public List<TkRole> getWorkAreaRoles(Long workArea, Date asOfDate) {
+		return tkRoleDao.findRoles(null, asOfDate, null, workArea, null, null);
+	}
 
-    @Override
-    public List<TkRole> getWorkAreaRoles(Long workArea, Date asOfDate) {
-        return tkRoleDao.findRoles(null, asOfDate, null, workArea, null, null);
-    }
+	@Override
+	public List<TkRole> getWorkAreaRoles(Long workArea, String roleName, Date asOfDate) {
+		return tkRoleDao.findRoles(null, asOfDate, roleName, workArea, null, null);
+	}
 
-    @Override
-    public List<TkRole> getWorkAreaRoles(Long workArea, String roleName, Date asOfDate) {
-        return tkRoleDao.findRoles(null, asOfDate, roleName, workArea, null, null);
-    }
+	@Override
+	public List<TkRole> getInActiveWorkAreaRoles(Long workArea, String roleName, Date asOfDate) {
+		return tkRoleDao.findInActiveRoles(null, asOfDate, roleName, workArea, null, null);
+	}
 
-    @Override
-    public List<TkRole> getInActiveWorkAreaRoles(Long workArea, String roleName, Date asOfDate) {
-        return tkRoleDao.findInActiveRoles(null, asOfDate, roleName, workArea, null, null);
-    }
+	public void setTkRoleDao(TkRoleDao tkRoleDao) {
+		this.tkRoleDao = tkRoleDao;
+	}
 
-    public void setTkRoleDao(TkRoleDao tkRoleDao) {
-        this.tkRoleDao = tkRoleDao;
-    }
+	@Override
+	public void saveOrUpdate(List<TkRole> roles) {
+		this.tkRoleDao.saveOrUpdateRoles(roles);
+	}
 
-    @Override
-    public void saveOrUpdate(List<TkRole> roles) {
-        this.tkRoleDao.saveOrUpdateRoles(roles);
-    }
+	@Override
+	public void saveOrUpdate(TkRole role) {
+		this.tkRoleDao.saveOrUpdateRole(role);
+	}
 
-    @Override
-    public void saveOrUpdate(TkRole role) {
-        this.tkRoleDao.saveOrUpdateRole(role);
-    }
+	/**
+	 * Returns all active roles for the given principal as of the indi
+	 */
+	public List<TkRole> getRoles(String principalId, Date asOfDate) {
+		return tkRoleDao.findRoles(principalId, asOfDate, null, null, null, null);
+	}
 
-    /**
-     * Returns all active roles for the given principal as of the indi
-     */
-    public List<TkRole> getRoles(String principalId, Date asOfDate) {
-        return tkRoleDao.findRoles(principalId, asOfDate, null, null, null, null);
-    }
-
-    /**
-     * Returns all active roles for the given principal as of the indi
-     */
-    public List<TkRole> getInactiveRoles(String principalId, Date asOfDate) {
-        return tkRoleDao.findInActiveRoles(principalId, asOfDate, null, null, null, null);
-    }
-
-    /**
-     * Return a List of TkRoles that match the principal ID and roleName.
-     *
-     * ex:
-     *
-     * admin,TK_APPROVER will return all TK_APPROVER roles for the user admin.
-     */
-    public List<TkRole> getRoles(String principalId, String roleName, Date asOfDate) {
-        return this.tkRoleDao.findRoles(principalId, asOfDate, roleName, null, null, null);
-    }
+	/**
+	 * Returns all active roles for the given principal as of the indi
+	 */
+	public List<TkRole> getInactiveRoles(String principalId, Date asOfDate) {
+		return tkRoleDao.findInActiveRoles(principalId, asOfDate, null, null, null, null);
+	}
+	
+	/**
+	 * Return a List of TkRoles that match the principal ID and roleName.
+	 *
+	 * ex:
+	 *
+	 * admin,TK_APPROVER will return all TK_APPROVER roles for the user admin.
+	 */
+	public List<TkRole> getRoles(String principalId, String roleName, Date asOfDate) {
+		return this.tkRoleDao.findRoles(principalId, asOfDate, roleName, null, null, null);
+	}
 
     /**
      * Return a List of TkRoles that matches criteria.
@@ -107,16 +107,16 @@ public class TkRoleServiceImpl implements TkRoleService {
 
     //TODO: this won't work at all.  We can't use TKUser here, as that just grabs stuff from the session
     // we need a wrapper class for TKUser, though I'm not sure why we can't just return Person, or Entity...
-    public List<TKUser> getEmployeesForWorkArea(Long workArea, Date asOfDate){
-        List<TKUser> lstEmployees = new ArrayList<TKUser>();
-        List<Assignment> lstActiveAssignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(workArea, asOfDate);
+	public List<TKUser> getEmployeesForWorkArea(Long workArea, Date asOfDate){
+		List<TKUser> lstEmployees = new ArrayList<TKUser>();
+		List<Assignment> lstActiveAssignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(workArea, asOfDate);
 
         for(Assignment assign: lstActiveAssignments){
-            TKUser tkUser = TKUser.getUser(assign.getPrincipal(), assign.getEffectiveDate());
-            lstEmployees.add(tkUser);
-        }
-        return lstEmployees;
-    }
+			TKUser tkUser = TKUser.getUser(assign.getPrincipal(), assign.getEffectiveDate());
+			lstEmployees.add(tkUser);
+		}
+		return lstEmployees;
+	}
 
     @Override
     public List<String> getResponsibleParties(Assignment a, String roleName, Date asOfDate) {
@@ -124,15 +124,15 @@ public class TkRoleServiceImpl implements TkRoleService {
 
         List<TkRole> roles = this.getWorkAreaRoles(a.getWorkArea(), roleName, asOfDate);
         for (TkRole role: roles) {
-            if(StringUtils.isNotBlank(role.getPrincipalId())){
-                users.add(role.getPrincipalId());
-            } else if(StringUtils.isNotBlank(role.getPositionNumber())){
-                List<Job> lstJobs = TkServiceLocator.getJobService().getActiveJobsForPosition(role.getPositionNumber(), asOfDate);
-                for(Job job : lstJobs){
-                    users.add(job.getPrincipalId());
-                }
-
-            }
+        	if(StringUtils.isNotBlank(role.getPrincipalId())){
+        		users.add(role.getPrincipalId());
+        	} else if(StringUtils.isNotBlank(role.getPositionNumber())){
+        		List<Job> lstJobs = TkServiceLocator.getJobService().getActiveJobsForPosition(role.getPositionNumber(), asOfDate);
+        		for(Job job : lstJobs){
+        			users.add(job.getPrincipalId());
+        		}
+        	
+        	}
         }
 
         return users;
@@ -170,23 +170,23 @@ public class TkRoleServiceImpl implements TkRoleService {
         return principals;
     }
 
-    @Override
-    public TkRole getRole(String tkRoleId) {
-        return tkRoleDao.getRole(tkRoleId);
-    }
+	@Override
+	public TkRole getRole(String tkRoleId) {
+		return tkRoleDao.getRole(tkRoleId);
+	}
+	
+	@Override
+	public TkRole getRolesByPosition(String positionNumber) {
+		return tkRoleDao.getRolesByPosition(positionNumber);
+	}
+	
+	@Override
+	public TkRole getInactiveRolesByPosition(String positionNumber) {
+		return tkRoleDao.getInactiveRolesByPosition(positionNumber);
+	}
 
-    @Override
-    public TkRole getRolesByPosition(String positionNumber) {
-        return tkRoleDao.getRolesByPosition(positionNumber);
-    }
-
-    @Override
-    public TkRole getInactiveRolesByPosition(String positionNumber) {
-        return tkRoleDao.getInactiveRolesByPosition(positionNumber);
-    }
-
-    @Override
-    public List<TkRole> getPositionRolesForWorkArea(Long workArea, Date asOfDate) {
-        return tkRoleDao.getPositionRolesForWorkArea(workArea, asOfDate);
-    }
+	@Override
+	public List<TkRole> getPositionRolesForWorkArea(Long workArea, Date asOfDate) {
+		return tkRoleDao.getPositionRolesForWorkArea(workArea, asOfDate);
+	}
 }

@@ -35,12 +35,12 @@ public class TkUserRoles implements UserRoles {
 
     private Map<String, TkRole> deptViewOnlyRoles = new HashMap<String, TkRole>();
     private Set<String> activeAssignmentIds = new HashSet<String>();
-
+    
     public static TkUserRoles getUserRoles(String principalId) {
-        List<TkRole> roles = TkServiceLocator.getTkRoleService().getRoles(principalId, TKUtils.getCurrentDate());
-        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getCurrentDate());
-
-        return new TkUserRoles(principalId, roles, assignments);
+    	List<TkRole> roles = TkServiceLocator.getTkRoleService().getRoles(principalId, TKUtils.getCurrentDate());
+		List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getCurrentDate());
+		
+		return new TkUserRoles(principalId, roles, assignments);
     }
 
     /**
@@ -132,14 +132,14 @@ public class TkUserRoles implements UserRoles {
     public boolean isSynchronous() {
         return synchronousAssignments;
     }
+    
+	public boolean isReviewer() {
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getReviewerWorkAreas().size() > 0;
+	}
 
-    public boolean isReviewer() {
-        return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getReviewerWorkAreas().size() > 0;
-    }
-
-    public boolean isApprover() {
-        return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().size() > 0;
-    }
+	public boolean isApprover() {
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().size() > 0;
+	}
 
     /**
      * Place the TkRole objects in the provided List into their appropriate
@@ -153,7 +153,8 @@ public class TkUserRoles implements UserRoles {
                 approverRoles.put(role.getWorkArea(), role);
             } else if (role.getRoleName().equals(TkConstants.ROLE_TK_APPROVER_DELEGATE)) {
                 approverDelegateRoles.put(role.getWorkArea(), role);
-            } else if (role.getRoleName().equals(TkConstants.ROLE_TK_LOCATION_ADMIN)) {
+            } else if (role.getRoleName().equals(TkConstants.ROLE_TK_LOCATION_ADMIN) ||
+            			role.getRoleName().equals(TkConstants.ROLE_LV_DEPT_ADMIN)) {
                 if (!StringUtils.isEmpty(role.getChart())) {
                     orgAdminRolesChart.put(role.getChart(), role);
                     List<Department> ds = TkServiceLocator.getDepartmentService().getDepartments(role.getChart(), TKUtils.getCurrentDate());
@@ -264,8 +265,8 @@ public class TkUserRoles implements UserRoles {
             for (Assignment assignment : assignments) {
                 String dept = assignment.getDept();
                 Long wa = assignment.getWorkArea();
-
-                writable |= this.orgAdminRolesDept.containsKey(dept);
+                // Dept admins should not have write access
+                //writable |= this.orgAdminRolesDept.containsKey(dept);
                 writable |= this.approverRoles.containsKey(wa);
                 writable |= this.approverDelegateRoles.containsKey(wa);
                 writable |= this.reviewerRoles.containsKey(wa);
@@ -386,7 +387,7 @@ public class TkUserRoles implements UserRoles {
         // Department admin
         // Department view only
         if (userRoles.isDepartmentAdmin() || userRoles.isDeptViewOnly()) {
-            List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
+        	List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
             for (Job job : jobs) {
                 if (getOrgAdminDepartments().contains(job.getDept())) {
                     return true;
