@@ -11,16 +11,7 @@ public interface PrincipalHRAttributesDao {
 	public void saveOrUpdate(List<PrincipalHRAttributes> lstPrincipalCalendar);
 
 	public PrincipalHRAttributes getPrincipalCalendar(String principalId, Date asOfDate);
-	
-	/**
-	 * KPME-1250 Kagata
-	 * Get a list of active employees based on leave plan and as of a particular date 
-	 * @param leavePlan
-	 * @param asOfDate
-	 * @return
-	 */
-	public List<PrincipalHRAttributes> getActiveEmployeesForLeavePlan(String leavePlan, Date asOfDate);
-	
+
 // this method is not needed anymore since we changed the primary key of
 //	PrincipalHRAttributes table from principalId to hrPrincipalAttributeId
 //	use getPrincipalCalendar(String principalId, Date asOfDate) instead

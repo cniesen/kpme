@@ -14,17 +14,7 @@ public interface PrincipalHRAttributesService {
 	 */
     @Cacheable(value= PrincipalHRAttributes.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public PrincipalHRAttributes getPrincipalCalendar(String principalId, Date asOfDate);
-	
-	/**
-	 * KPME-1250 Kagata
-	 * Get a list of active employees based on leave plan and as of a particular date 
-	 * @param leavePlan
-	 * @param asOfDate
-	 * @return
-	 */
-    @Cacheable(value= PrincipalHRAttributes.CACHE_NAME, key="'leavePlan=' + #p0 + '|' + 'asOfDate=' + #p1")
-    public List<PrincipalHRAttributes> getActiveEmployeesForLeavePlan(String leavePlan, Date asOfDate);
-    
+
 	/**
 	 * Fetch inactive PrincipalHRAttributes object at a particular date
 	 * @param principalId

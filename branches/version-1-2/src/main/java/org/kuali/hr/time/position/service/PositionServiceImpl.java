@@ -5,24 +5,24 @@ import org.kuali.hr.time.position.dao.PositionDao;
 
 public class PositionServiceImpl implements PositionService {
 
-    private PositionDao positionDao;
-
-    @Override
-    public Position getPosition(String hrPositionId) {
-        return positionDao.getPosition(hrPositionId);
-    }
-
-    @Override
-    public Position getPositionByPositionNumber(String hrPositionNbr) {
-        return positionDao.getPositionByPositionNumber(hrPositionNbr);
-    }
+	private PositionDao positionDao;
+	
+	@Override
+	public Position getPosition(String hrPositionId) {
+		return positionDao.getPosition(hrPositionId);
+	}
+	
+	@Override
+	public Position getPositionByPositionNumber(String hrPositionNbr) {
+		return positionDao.getPositionByPositionNumber(hrPositionNbr);
+	}
 
     public PositionDao getPositionDao() {
-        return positionDao;
-    }
+		return positionDao;
+	}
 
-    public void setPositionDao(PositionDao positionDao) {
-        this.positionDao = positionDao;
-    }
+	public void setPositionDao(PositionDao positionDao) {
+		this.positionDao = positionDao;
+	}
 
 }

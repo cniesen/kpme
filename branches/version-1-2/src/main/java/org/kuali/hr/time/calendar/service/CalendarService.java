@@ -61,15 +61,6 @@ public interface CalendarService {
 	 * @param asOfDate
 	 * @return
 	 */
-	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate, boolean findLeaveCal);
-
-	/**
-	 * 
-	 * @param principalId
-	 * @param currentDate
-	 * @return
-	 */
-    @Cacheable(value= Calendar.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'currentDate=' + #p1")
-	public CalendarEntries getCurrentCalendarDatesForLeaveCalendar(String principalId, Date currentDate);
+	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate);
 
 }

@@ -1,11 +1,10 @@
 package org.kuali.hr.time.paytype.service;
 
-import java.util.Date;
-import java.util.List;
-
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.paytype.dao.PayTypeDao;
-import org.kuali.hr.time.util.TkConstants;
+
+import java.util.Date;
+import java.util.List;
 
 public class PayTypeServiceImpl implements PayTypeService {
 

@@ -6,16 +6,16 @@ import org.kuali.hr.time.earncode.EarnCode;
 
 public class PayType extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayType";
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    private String hrPayTypeId;
-    private String payType;
-    private String descr;
-    private String regEarnCode;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private String hrPayTypeId;
+	private String payType;
+	private String descr;
+	private String regEarnCode;
     /** Used for lookup */
-    private String hrEarnCodeId;
+	private String hrEarnCodeId;
     private EarnCode regEarnCodeObj;
     private String history;
     private Boolean ovtEarnCode;
@@ -28,76 +28,76 @@ public class PayType extends HrBusinessObject {
         this.regEarnCodeObj = regEarnCodeObj;
     }
 
-    public String getPayType() {
-        return payType;
-    }
+	public String getPayType() {
+		return payType;
+	}
 
-    public void setPayType(String payType) {
-        this.payType = payType;
-    }
+	public void setPayType(String payType) {
+		this.payType = payType;
+	}
 
-    public String getDescr() {
-        return descr;
-    }
+	public String getDescr() {
+		return descr;
+	}
 
-    public void setDescr(String descr) {
-        this.descr = descr;
-    }
-    public String getRegEarnCode() {
-        return regEarnCode;
-    }
+	public void setDescr(String descr) {
+		this.descr = descr;
+	}
+	public String getRegEarnCode() {
+		return regEarnCode;
+	}
 
-    public void setRegEarnCode(String regEarnCode) {
-        this.regEarnCode = regEarnCode;
-    }
-    public String getHrPayTypeId() {
-        return hrPayTypeId;
-    }
-
-
-    public void setHrPayTypeId(String hrPayTypeId) {
-        this.hrPayTypeId = hrPayTypeId;
-    }
+	public void setRegEarnCode(String regEarnCode) {
+		this.regEarnCode = regEarnCode;
+	}
+	public String getHrPayTypeId() {
+		return hrPayTypeId;
+	}
 
 
+	public void setHrPayTypeId(String hrPayTypeId) {
+		this.hrPayTypeId = hrPayTypeId;
+	}
 
-    public String getHrEarnCodeId() {
-        return hrEarnCodeId;
-    }
 
-    public void setHrEarnCodeId(String hrEarnCodeId) {
-        this.hrEarnCodeId = hrEarnCodeId;
-    }
 
-    @Override
-    public String getUniqueKey() {
-        return payType;
-    }
+	public String getHrEarnCodeId() {
+		return hrEarnCodeId;
+	}
 
-    public String getHistory() {
-        return history;
-    }
+	public void setHrEarnCodeId(String hrEarnCodeId) {
+		this.hrEarnCodeId = hrEarnCodeId;
+	}
 
-    public void setHistory(String history) {
-        this.history = history;
-    }
+	@Override
+	public String getUniqueKey() {
+		return payType;
+	}
 
-    public Boolean getOvtEarnCode() {
-        return ovtEarnCode;
-    }
+	public String getHistory() {
+		return history;
+	}
 
-    public void setOvtEarnCode(Boolean ovtEarnCode) {
-        this.ovtEarnCode = ovtEarnCode;
-    }
+	public void setHistory(String history) {
+		this.history = history;
+	}
 
-    @Override
-    public String getId() {
-        return getHrPayTypeId();
-    }
+	public Boolean getOvtEarnCode() {
+		return ovtEarnCode;
+	}
 
-    @Override
-    public void setId(String id) {
-        setHrPayTypeId(id);
-    }
+	public void setOvtEarnCode(Boolean ovtEarnCode) {
+		this.ovtEarnCode = ovtEarnCode;
+	}
 
+	@Override
+	public String getId() {
+		return getHrPayTypeId();
+	}
+
+	@Override
+	public void setId(String id) {
+		setHrPayTypeId(id);
+	}
+	
 }

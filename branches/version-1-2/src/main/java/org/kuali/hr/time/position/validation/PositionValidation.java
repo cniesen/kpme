@@ -1,12 +1,12 @@
 package org.kuali.hr.time.position.validation;
 
+import java.sql.Date;
+
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-
-import java.sql.Date;
 
 public class PositionValidation extends MaintenanceDocumentRuleBase {
 

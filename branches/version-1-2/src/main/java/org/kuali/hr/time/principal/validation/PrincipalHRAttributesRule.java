@@ -30,17 +30,6 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 			return true;
 		}
 	}
-	
-	private boolean validateLeaveCalendar(PrincipalHRAttributes principalHRAttr) {
-		if (principalHRAttr.getLeaveCalendar() != null
-				&& !ValidationUtils.validateCalendarByType(principalHRAttr.getLeaveCalendar(), "Leave")) {
-			this.putFieldError("leaveCalendar", "error.existence",
-					"Leave Calendar '" + principalHRAttr.getLeaveCalendar() + "'");
-			return false;
-		} else {
-			return true;
-		}
-	}
 
 	
 	boolean validateEffectiveDate(PrincipalHRAttributes principalHRAttr) {

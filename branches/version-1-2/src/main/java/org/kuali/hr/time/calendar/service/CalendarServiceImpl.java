@@ -43,7 +43,7 @@ public class CalendarServiceImpl implements CalendarService {
 	@Override
 	public CalendarEntries getCurrentCalendarDates(String principalId, Date currentDate) {
 		CalendarEntries pcd = null;
-        Calendar calendar = getCalendarByPrincipalIdAndDate(principalId, currentDate, false);
+        Calendar calendar = getCalendarByPrincipalIdAndDate(principalId, currentDate);
         if(calendar != null) {
 		    pcd = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(calendar.getHrCalendarId(), currentDate);
 		    if(pcd != null) {
@@ -78,20 +78,10 @@ public class CalendarServiceImpl implements CalendarService {
             if(principalCalendar == null){
                 throw new RuntimeException("Null principal calendar for principalid "+principalId);
             }
-            if(!findLeaveCal) {
-            	pcal = principalCalendar.getCalendar();
-            	if (pcal == null){
-            		pcal = principalCalendar.getLeaveCalObj();
-            		if(pcal == null){
-            			throw new RuntimeException("Null principal calendar for principalId " + principalId);
-            		}
-            	}
-            } else {
-        		pcal = principalCalendar.getLeaveCalObj();
-        		if(pcal == null){
-        			throw new RuntimeException("Null principal calendar for principalId " + principalId);
-        		}
-            }
+            pcal = principalCalendar.getCalendar();
+        	if(pcal == null){
+    			throw new RuntimeException("Null principal calendar for principalId " + principalId);
+    		}
         }
 
         return pcal;
@@ -103,7 +93,7 @@ public class CalendarServiceImpl implements CalendarService {
 	}
 
 	@Override
-	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate, boolean findLeaveCal) {
+	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate) {
 		Calendar pcal = null;
         List<Job> currentJobs = TkServiceLocator.getJobService().getJobs(principalId, asOfDate);
         if(currentJobs.size() < 1){
@@ -120,37 +110,13 @@ public class CalendarServiceImpl implements CalendarService {
             if(principalCalendar == null){
                 return pcal;
             }
-            if(!findLeaveCal) {
-            	pcal = principalCalendar.getCalendar();
-            	if (pcal == null){
-            		pcal = principalCalendar.getLeaveCalObj();
-            		if(pcal == null){
-            			return pcal;
-            		}
-            	}
-            } else {
-        		pcal = principalCalendar.getLeaveCalObj();
-        		if(pcal == null){
-        			return pcal;
-        		}
-            }
+            pcal = principalCalendar.getCalendar();
+        	if (pcal == null){
+        		return pcal;
+        	}
         }
 
         return pcal;
-	}
-
-	@Override
-	public CalendarEntries getCurrentCalendarDatesForLeaveCalendar(
-			String principalId, Date currentDate) {
-		CalendarEntries pcd = null;
-        Calendar calendar = getCalendarByPrincipalIdAndDate(principalId, currentDate, true);
-        if(calendar != null) {
-		    pcd = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(calendar.getHrCalendarId(), currentDate);
-		    if(pcd != null) {
-		    	pcd.setCalendarObj(calendar);
-		    }
-        }
-		return pcd;
 	}
 
 }

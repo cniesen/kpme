@@ -8,96 +8,96 @@ import org.kuali.hr.time.workarea.WorkArea;
 
 public class Position extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Position";
-    /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	private String hrPositionId;
+	private String positionNumber;
+	private String description;
+	private String history;
+	private Long workArea;
+	private WorkArea workAreaObj;
 
-    private String hrPositionId;
-    private String positionNumber;
-    private String description;
-    private String history;
-    private Long workArea;
-    private WorkArea workAreaObj;
+	public String getHrPositionId() {
+		return hrPositionId;
+	}
 
-    public String getHrPositionId() {
-        return hrPositionId;
-    }
+	public void setHrPositionId(String hrPositionId) {
+		this.hrPositionId = hrPositionId;
+	}
 
-    public void setHrPositionId(String hrPositionId) {
-        this.hrPositionId = hrPositionId;
-    }
+	public String getPositionNumber() {
+		return positionNumber;
+	}
 
-    public String getPositionNumber() {
-        return positionNumber;
-    }
+	public void setPositionNumber(String positionNumber) {
+		this.positionNumber = positionNumber;
+	}
 
-    public void setPositionNumber(String positionNumber) {
-        this.positionNumber = positionNumber;
-    }
+	public String getDescription() {
+		return description;
+	}
 
-    public String getDescription() {
-        return description;
-    }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+	public boolean isActive() {
+		return active;
+	}
 
-    public boolean isActive() {
-        return active;
-    }
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
 
-    public Timestamp getTimestamp() {
-        return timestamp;
-    }
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
-    }
+	@Override
+	public String getUniqueKey() {
+		return positionNumber + "";
+	}
 
-    @Override
-    public String getUniqueKey() {
-        return positionNumber + "";
-    }
+	public String getHistory() {
+		return history;
+	}
 
-    public String getHistory() {
-        return history;
-    }
+	public void setHistory(String history) {
+		this.history = history;
+	}
 
-    public void setHistory(String history) {
-        this.history = history;
-    }
+	@Override
+	public String getId() {
+		return getHrPositionId();
+	}
 
-    @Override
-    public String getId() {
-        return getHrPositionId();
-    }
+	@Override
+	public void setId(String id) {
+		setHrPositionId(id);
+	}
 
-    @Override
-    public void setId(String id) {
-        setHrPositionId(id);
-    }
+	
+	public WorkArea getWorkAreaObj() {
+		return workAreaObj;
+	}
 
+	public void setWorkAreaObj(WorkArea workAreaObj) {
+		this.workAreaObj = workAreaObj;
+	}
 
-    public WorkArea getWorkAreaObj() {
-        return workAreaObj;
-    }
+	public Long getWorkArea() {
+		return workArea;
+	}
 
-    public void setWorkAreaObj(WorkArea workAreaObj) {
-        this.workAreaObj = workAreaObj;
-    }
-
-    public Long getWorkArea() {
-        return workArea;
-    }
-
-    public void setWorkArea(Long workArea) {
-        this.workArea = workArea;
-    }
-
+	public void setWorkArea(Long workArea) {
+		this.workArea = workArea;
+	}
+	
 }

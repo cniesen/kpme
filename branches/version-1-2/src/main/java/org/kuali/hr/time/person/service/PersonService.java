@@ -1,8 +1,8 @@
 package org.kuali.hr.time.person.service;
 
-import java.util.List;
-
 import org.kuali.hr.time.person.TKPerson;
+
+import java.util.List;
 
 public interface PersonService {
 

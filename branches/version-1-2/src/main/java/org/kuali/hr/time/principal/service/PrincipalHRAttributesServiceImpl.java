@@ -18,21 +18,9 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
 		PrincipalHRAttributes pc =  this.principalHRAttributesDao.getPrincipalCalendar(principalId, asOfDate);
 		if(pc != null) {
 			pc.setCalendar(TkServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar()));
-			pc.setLeaveCalObj(TkServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar()));
 		}
 		return pc;
 	}
-	
-	/**
-     * KPME-1250 Kagata
-     * Get a list of active employees based on leave plan and as of a particular date
-     */
-    @Override
-    public List<PrincipalHRAttributes> getActiveEmployeesForLeavePlan(String leavePlan, Date asOfDate) {
-        List<PrincipalHRAttributes> principals = principalHRAttributesDao.getActiveEmployeesForLeavePlan(leavePlan, asOfDate);
-
-        return principals;
-    }
     
 //    @Override
 //	public PrincipalHRAttributes getPrincipalHRAttributes(String principalId) {

@@ -1,13 +1,13 @@
 package org.kuali.hr.time.principal;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.sql.Date;
-import java.sql.Timestamp;
 
 public class PrincipalHRAttributes extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PrincipalHRAttributes";
@@ -17,9 +17,7 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	private static final long serialVersionUID = 1L;
 	private String hrPrincipalAttributeId;
 	private String principalId;
-	private String leaveCalendar;
 	private String payCalendar;
-	private String leavePlan;
 	private Date serviceDate;
 	private boolean fmlaEligible;
 	private boolean workmansCompEligible;
@@ -31,7 +29,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 //	private String recordLeave;
 	
 	private Calendar calendar;
-	private Calendar leaveCalObj;
 	private Person person;
 
 
@@ -57,14 +54,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 
 	public void setPayCalendar(String payCalendar) {
 		this.payCalendar = payCalendar;
-	}
-
-	public String getLeavePlan() {
-		return leavePlan;
-	}
-
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
 	}
 
 	public Date getServiceDate() {
@@ -149,17 +138,7 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 
 	@Override
 	protected String getUniqueKey() {
-		return principalId + "_" + payCalendar == null ? "" : payCalendar + "_"
-				+ leaveCalendar == null ? "" : leaveCalendar;
-	}
-
-
-	public String getLeaveCalendar() {
-		return leaveCalendar;
-	}
-
-	public void setLeaveCalendar(String leaveCalendar) {
-		this.leaveCalendar = leaveCalendar;
+		return principalId + "_" + payCalendar == null ? "" : payCalendar;
 	}
 
 	@Override
@@ -170,14 +149,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	public String getId() {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public Calendar getLeaveCalObj() {
-		return leaveCalObj;
-	}
-
-	public void setLeaveCalObj(Calendar leaveCalObj) {
-		this.leaveCalObj = leaveCalObj;
 	}
 
 	public String getHrPrincipalAttributeId() {

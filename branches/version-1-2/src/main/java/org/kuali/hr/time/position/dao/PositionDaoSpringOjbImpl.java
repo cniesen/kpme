@@ -28,4 +28,17 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
         return (Position) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
+    /*@Override
+    public PositionNumber getNextUniquePositionNumber() {
+        Criteria crit = new Criteria();
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(PositionNumber.class, crit);
+        query.setAttributes(new String[]{"max(id)"});
+        return (PositionNumber) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+    }
+
+    @Override
+    public void saveOrUpdate(PositionNumber positionNumber) {
+        this.getPersistenceBrokerTemplate().store(positionNumber);
+    }*/
+
 }
