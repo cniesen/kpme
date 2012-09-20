@@ -51,6 +51,7 @@ public class EarnGroupMaintenanceTest extends KPMETestCase {
         earnCode.setActive(true);
         earnCode.setEarnCode("RGG");
         earnCode.setEffectiveDate(TEST_DATE);
+        earnCode.setRecordMethod("T");
         earnCode.setDescription("RGG");
         earnCode.setOvtEarnCode(false);
         earnCode.setInflateMinHours(BigDecimal.ZERO);
