@@ -6,10 +6,8 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
-import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.graceperiod.rule.GracePeriodRule;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
 public class GracePeriodDaoImpl extends PlatformAwareDaoBaseOjb implements GracePeriodDao {
 	public GracePeriodRule getGracePeriodRule(Date asOfDate){

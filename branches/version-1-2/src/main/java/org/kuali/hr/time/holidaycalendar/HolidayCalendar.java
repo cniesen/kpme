@@ -1,11 +1,10 @@
 package org.kuali.hr.time.holidaycalendar;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 public class HolidayCalendar extends PersistableBusinessObjectBase {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "HolidayCalendar";
@@ -20,7 +19,6 @@ public class HolidayCalendar extends PersistableBusinessObjectBase {
 	private boolean active = true;
 	
 	private List<HolidayCalendarDateEntry> dateEntries = new ArrayList<HolidayCalendarDateEntry>();
-
 
 
 	public String getHrHolidayCalendarId() {
