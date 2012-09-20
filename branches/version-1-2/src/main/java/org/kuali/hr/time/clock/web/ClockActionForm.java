@@ -1,15 +1,5 @@
 package org.kuali.hr.time.clock.web;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kuali.hr.time.assignment.Assignment;
@@ -22,6 +12,9 @@ import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+
+import java.sql.Timestamp;
+import java.util.*;
 
 public class ClockActionForm extends TimesheetActionForm {
 
@@ -68,6 +61,10 @@ public class ClockActionForm extends TimesheetActionForm {
 
  // this is for the ajax call
 	private String outputString;
+	
+    public String getTargetUserTimezone() {
+        return TkServiceLocator.getTimezoneService().getUserTimezone(TKUser.getCurrentTargetPerson().getPrincipalId());
+    }
 
     public Date getLastClockTimeWithZone() {
         return lastClockTimeWithZone;
@@ -439,9 +436,5 @@ public class ClockActionForm extends TimesheetActionForm {
 	public void setShowMissedPunchButton(boolean showMissedPunchButton) {
 		this.showMissedPunchButton = showMissedPunchButton;
 	}
-
-    public String getTargetUserTimezone() {
-        return TkServiceLocator.getTimezoneService().getUserTimezone(TKUser.getCurrentTargetPerson().getPrincipalId());
-    }
 	
 }

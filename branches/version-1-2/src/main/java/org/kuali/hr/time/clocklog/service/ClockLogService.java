@@ -9,10 +9,10 @@ import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 public interface ClockLogService {
-    /**
-     * Save clock log
-     * @param clockLog
-     */
+	/**
+	 * Save clock log 
+	 * @param clockLog
+	 */
     public void saveClockLog(ClockLog clockLog);
     /**
      * Fetch last clock log for principal id
@@ -20,7 +20,7 @@ public interface ClockLogService {
      * @return
      */
     public ClockLog getLastClockLog(String principalId);
-
+    
     /**
      * Fetch last clock log for principal id and clock action
      * @param principalId
@@ -38,29 +38,29 @@ public interface ClockLogService {
      * @param ip
      * @return
      */
-    public ClockLog buildClockLog(Timestamp clockTimestamp, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip);
+	public ClockLog buildClockLog(Timestamp clockTimestamp, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip);
+	
+	/**
+	 * Fetch open clock logs by pay calendar entry
+	 * @param payCalendarEntry
+	 * @return
+	 */
+	public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry);
 
-    /**
-     * Fetch open clock logs by pay calendar entry
-     * @param payCalendarEntry
-     * @return
-     */
-    public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry);
-
-    /**
-     * Process clock log created
-     * @param clockTimestamp
-     * @param assignment
-     * @param pe
-     * @param ip
-     * @param asOfDate
-     * @param td
-     * @param clockAction
-     * @param principalId
-     * @return
-     */
+	/**
+	 * Process clock log created
+	 * @param clockTimestamp
+	 * @param assignment
+	 * @param pe
+	 * @param ip
+	 * @param asOfDate
+	 * @param td
+	 * @param clockAction
+	 * @param principalId
+	 * @return
+	 */
     ClockLog processClockLog(Timestamp clockTimestamp, Assignment assignment, CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId);
-
+    
     /**
      * Fetch clock log by id
      * @param tkClockLogId

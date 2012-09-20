@@ -1,5 +1,7 @@
 package org.kuali.hr.time.clocklog.dao;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -10,8 +12,6 @@ import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
-import java.util.List;
-
 public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements ClockLogDao {
 
     private static final Logger LOG = Logger.getLogger(ClockLogDaoSpringOjbImpl.class);
@@ -21,11 +21,11 @@ public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
     }
     
     public void saveOrUpdate(List<ClockLog> clockLogList) {
-	if (clockLogList != null) {
-	    for (ClockLog clockLog : clockLogList) {
-		this.getPersistenceBrokerTemplate().store(clockLog);
-	    }
-	}
+    	if (clockLogList != null) {
+	    	for (ClockLog clockLog : clockLogList) {
+	    		this.getPersistenceBrokerTemplate().store(clockLog);
+	    	}
+		}
     }
     
     public ClockLog getClockLog(String tkClockLogId){
@@ -86,29 +86,28 @@ public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
     	
     	return (ClockLog)this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(ClockLog.class,currentRecordCriteria));
     }
-
-
+    
     @SuppressWarnings("unchecked")
-    public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry){
-        Criteria criteria = new Criteria();
-        criteria.addIn("clockAction", TkConstants.ON_THE_CLOCK_CODES);
+	public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry){
+    	Criteria criteria = new Criteria();
+    	criteria.addIn("clockAction", TkConstants.ON_THE_CLOCK_CODES);
 
-        Criteria clockTimeJoinCriteria = new Criteria();
+    	Criteria clockTimeJoinCriteria = new Criteria();
         clockTimeJoinCriteria.addBetween("clockTimestamp", payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
-        clockTimeJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-        ReportQueryByCriteria clockTimeSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimeJoinCriteria);
-        clockTimeSubQuery.setAttributes(new String[] {new StringBuffer("max(").append("clockTimestamp").append(")").toString() });
-
-        criteria.addEqualTo("clockTimestamp", clockTimeSubQuery);
-
-        Criteria clockTimestampJoinCriteria = new Criteria();
+    	clockTimeJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+    	ReportQueryByCriteria clockTimeSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimeJoinCriteria);
+    	clockTimeSubQuery.setAttributes(new String[] {new StringBuffer("max(").append("clockTimestamp").append(")").toString() });
+    	
+    	criteria.addEqualTo("clockTimestamp", clockTimeSubQuery);
+    	
+    	Criteria clockTimestampJoinCriteria = new Criteria();
         clockTimestampJoinCriteria.addBetween("clockTimestamp", payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
-        clockTimestampJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-        ReportQueryByCriteria clockTimestampSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimestampJoinCriteria);
-        clockTimestampSubQuery.setAttributes(new String[] { new StringBuffer("max(").append("timestamp").append(")").toString()});
-
-        criteria.addEqualTo("timestamp", clockTimestampSubQuery);
-        return (List<ClockLog>)this.getPersistenceBrokerTemplate().getCollectionByQuery((QueryFactory.newQuery(ClockLog.class, criteria)));
+    	clockTimestampJoinCriteria.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+    	ReportQueryByCriteria clockTimestampSubQuery = QueryFactory.newReportQuery(ClockLog.class, clockTimestampJoinCriteria);
+    	clockTimestampSubQuery.setAttributes(new String[] { new StringBuffer("max(").append("timestamp").append(")").toString()});
+    	
+    	criteria.addEqualTo("timestamp", clockTimestampSubQuery);
+    	return (List<ClockLog>)this.getPersistenceBrokerTemplate().getCollectionByQuery((QueryFactory.newQuery(ClockLog.class, criteria)));
     }
 
 }
