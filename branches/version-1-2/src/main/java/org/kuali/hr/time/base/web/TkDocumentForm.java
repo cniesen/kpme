@@ -9,48 +9,48 @@ import org.kuali.rice.kns.web.struts.form.KualiDocumentFormBase;
 
 public class TkDocumentForm extends KualiDocumentFormBase {
 
-    /**
-     *
+	/**
+     * 
      */
-    private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-    private String documentId;
+	private String documentId;
 
-    private String methodToCall;
+	private String methodToCall;
 
-    public String getMethodToCall() {
-        return methodToCall;
-    }
+	public String getMethodToCall() {
+		return methodToCall;
+	}
 
-    public void setMethodToCall(String methodToCall) {
-        this.methodToCall = methodToCall;
-    }
+	public void setMethodToCall(String methodToCall) {
+		this.methodToCall = methodToCall;
+	}
 
-    public String getDocumentId() {
-        return documentId;
-    }
+	public String getDocumentId() {
+		return documentId;
+	}
 
-    public void setDocumentId(String documentId) {
-        this.documentId = documentId;
-    }
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
 
-    @Override
-    public boolean isPropertyEditable(String propertyName) {
-        return true;
-    }
+	@Override
+	public boolean isPropertyEditable(String propertyName) {
+		return true;
+	}
 
-    @Override
-    public boolean isPropertyNonEditableButRequired(String propertyName) {
-        return true;
-    }
+	@Override
+	public boolean isPropertyNonEditableButRequired(String propertyName) {
+		return true;
+	}
 
-    @Override
-    public void populate(HttpServletRequest request) {
+	@Override
+	public void populate(HttpServletRequest request) {
         super.populate(request);
-        ((ActionFormUtilMap) getActionFormUtilMap()).setCacheValueFinderResults(false);
-
-        if (this.getMethodToCall() == null || StringUtils.isEmpty(this.getMethodToCall())) {
-            setMethodToCall(WebUtils.parseMethodToCall(this, request));
-        }
-    }
+		((ActionFormUtilMap) getActionFormUtilMap()).setCacheValueFinderResults(false);
+        
+		if (this.getMethodToCall() == null || StringUtils.isEmpty(this.getMethodToCall())) {
+			setMethodToCall(WebUtils.parseMethodToCall(this, request));
+		}
+	}
 }

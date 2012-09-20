@@ -39,5 +39,6 @@ public interface TkPermissionsService {
 	   public boolean canAddSystemLevelRole();
 	   public boolean canAddLocationLevelRoles();
 	   public boolean canAddDepartmentLevelRoles();
-	   public boolean canAddWorkareaLevelRoles();
+	   public boolean canAddWorkareaLevelRoles();	   
+	   public boolean canViewTimeTabs();
 }

@@ -1,5 +1,9 @@
 package org.kuali.hr.time.permissions;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.earncodesec.EarnCodeSecurity;
@@ -10,12 +14,15 @@ import org.kuali.hr.time.authorization.DepartmentalRule;
 import org.kuali.hr.time.authorization.DepartmentalRuleAuthorizer;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.paytype.PayType;
+import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
@@ -24,9 +31,6 @@ import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.sql.Date;
-import java.util.List;
 
 public class TkPermissionsServiceImpl implements TkPermissionsService {
     private static final Logger LOG = Logger
@@ -230,8 +234,8 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             if (userId.equals(TKContext.getTargetPrincipalId())
                     && tb.getClockLogCreated()) {
                 return false;
-                // But if the timeblock was created by the employee himeself and is an async timeblock,
-                // the user should be able to delete that timeblock
+            // But if the timeblock was created by the employee himeself and is an async timeblock,
+            // the user should be able to delete that timeblock
             } else if (userId.equals(TKContext.getTargetPrincipalId()) && !tb.getClockLogCreated() ) {
                 return true;
             } else {
@@ -582,36 +586,36 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             return TKContext.getUser().getDepartmentAdminAreas().contains(workArea.getDepartment());
         }
     }
-
+    
     /*
-    * @see org.kuali.hr.time.permissions.TkPermissionsService#canEditRegEarnCode(org.kuali.hr.time.timeblock.TimeBlock)
-    * this method is used in calendar.tag
-    * it's only used when a user is working on its own timesheet, regular earn code cannot be editable on clock entered time block
-    */
+     * @see org.kuali.hr.time.permissions.TkPermissionsService#canEditRegEarnCode(org.kuali.hr.time.timeblock.TimeBlock)
+     * this method is used in calendar.tag
+     * it's only used when a user is working on its own timesheet, regular earn code cannot be editable on clock entered time block
+     */
     @Override
     public boolean canEditRegEarnCode(TimeBlock tb) {
-        AssignmentDescriptionKey adk = new AssignmentDescriptionKey(tb.getJobNumber().toString(), tb.getWorkArea().toString(), tb.getTask().toString());
+    	AssignmentDescriptionKey adk = new AssignmentDescriptionKey(tb.getJobNumber().toString(), tb.getWorkArea().toString(), tb.getTask().toString());
         Assignment anAssignment = TkServiceLocator.getAssignmentService().getAssignment(adk, tb.getBeginDate());
         if(anAssignment != null) {
-            // use timesheet's end date to get Time Collection Rule
-            TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tb.getDocumentId());
-            Date aDate =  tb.getBeginDate();
-            if(tdh != null && tdh.getPayEndDate() != null) {
-                aDate = new java.sql.Date(tdh.getPayEndDate().getTime());
-            }
-            TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService()
-                    .getTimeCollectionRule(anAssignment.getDept(), anAssignment.getWorkArea()
-                            , anAssignment.getJob().getHrPayType(), aDate);
-            if(tcr != null && tcr.isClockUserFl()) {
-                // use assignment to get the payType object, then check if the regEarnCode of the paytyep matches the earn code of the timeblock
-                // if they do match, then return false
-                PayType pt = TkServiceLocator.getPayTypeService().getPayType(anAssignment.getJob().getHrPayType(), anAssignment.getJob().getEffectiveDate());
-                if(pt != null && pt.getRegEarnCode().equals(tb.getEarnCode())) {
-                    return false;
-                }
-            }
+        	// use timesheet's end date to get Time Collection Rule
+        	TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tb.getDocumentId());
+        	Date aDate =  tb.getBeginDate();
+        	if(tdh != null && tdh.getPayEndDate() != null) {
+        		aDate = new java.sql.Date(tdh.getPayEndDate().getTime());
+        	}
+        	TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService()
+        								.getTimeCollectionRule(anAssignment.getDept(), anAssignment.getWorkArea()
+        										, anAssignment.getJob().getHrPayType(), aDate);
+        	if(tcr != null && tcr.isClockUserFl()) {
+        		// use assignment to get the payType object, then check if the regEarnCode of the paytyep matches the earn code of the timeblock
+        		// if they do match, then return false
+        		PayType pt = TkServiceLocator.getPayTypeService().getPayType(anAssignment.getJob().getHrPayType(), anAssignment.getJob().getEffectiveDate());
+        		if(pt != null && pt.getRegEarnCode().equals(tb.getEarnCode())) {
+        			return false;
+        		}
+        	}
         }
-        return true;
+    	return true;
     }
 
     @Override
@@ -645,7 +649,44 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
 
     public boolean hasManagerialRolesOnWorkArea(TimeBlock tb) {
         return TKContext.getUser().getApproverWorkAreas().contains(tb.getWorkArea())
-                || TKContext.getUser().getReviewerWorkAreas().contains(tb.getWorkArea());
+               || TKContext.getUser().getReviewerWorkAreas().contains(tb.getWorkArea());
     }
-
+    
+    @Override
+    public boolean canViewTimeTabs() {
+    	boolean canViewTimeTabs = false;
+    	Date asOfDate = TKUtils.getTimelessDate(null);
+    	String flsaStatus = TkConstants.FLSA_STATUS_NON_EXEMPT;
+    	// find active assignments as of currentDate
+    	String principalId = TKUser.getCurrentTargetPerson().getPrincipalId();
+    	if(isActiveAssignmentFoundOnJobFlsaStatus(principalId, flsaStatus)) {
+    		//find timecalendar defined
+    		canViewTimeTabs = isCalendarDefined(principalId, asOfDate);
+    	}
+    	return canViewTimeTabs;
+    }
+    
+    private boolean isActiveAssignmentFoundOnJobFlsaStatus(String principalId, String flsaStatus) {
+    	boolean isActiveAssFound = false;
+    	Date asOfDate = TKUtils.getTimelessDate(null);
+     	List<Assignment> activeAssignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, asOfDate);
+     	if(activeAssignments != null && !activeAssignments.isEmpty()) {
+     		for(Assignment assignment : activeAssignments) {
+     			if(assignment != null && assignment.getJob() != null && assignment.getJob().getFlsaStatus() != null && assignment.getJob().getFlsaStatus().equalsIgnoreCase(flsaStatus)) {
+     				isActiveAssFound = true;
+     				break;
+     			}  
+     		}
+     	}
+    	return isActiveAssFound;
+    }
+    
+    private boolean isCalendarDefined(String principalId, Date asOfDate){
+    	boolean calDefined = false;
+    	PrincipalHRAttributes principalHRAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, asOfDate);
+    	if(principalHRAttributes != null) {
+    		calDefined = principalHRAttributes.getPayCalendar() != null ? true : false;
+    	}
+    	return calDefined;
+    }
 }
