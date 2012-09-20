@@ -1,11 +1,26 @@
 package org.kuali.hr.time.detail.web;
 
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONValue;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -15,10 +30,6 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class ActionFormUtils {
 
@@ -187,36 +198,43 @@ public class ActionFormUtils {
     }
 
     public static Map<String, String> getPayPeriodsMap(List<CalendarEntries> payPeriods) {
-        // use linked map to keep the order of the pay periods
-        Map<String, String> pMap = Collections.synchronizedMap(new LinkedHashMap<String, String>());
-        if (payPeriods == null || payPeriods.isEmpty()) {
+    	// use linked map to keep the order of the pay periods
+    	Map<String, String> pMap = Collections.synchronizedMap(new LinkedHashMap<String, String>());
+    	if (payPeriods == null || payPeriods.isEmpty()) {
             return pMap;
         }
-        payPeriods.removeAll(Collections.singletonList(null));
-        Collections.sort(payPeriods);  // sort the pay period list by getBeginPeriodDate
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+    	payPeriods.removeAll(Collections.singletonList(null));
+    	Collections.sort(payPeriods);  // sort the pay period list by getBeginPeriodDate
+    	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         for (CalendarEntries pce : payPeriods) {
-            if(pce != null && pce.getHrCalendarEntriesId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null) {
-                pMap.put(pce.getHrCalendarEntriesId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format(pce.getEndPeriodDate()));
-            }
+        	if(pce != null && pce.getHrCalendarEntriesId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null) {
+        		pMap.put(pce.getHrCalendarEntriesId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format(pce.getEndPeriodDate()));
+        	}
         }
-
-        return pMap;
+        
+    	return pMap;
     }
-
+    
     // detect if the passed-in calendar entry is the current one
     public static boolean getOnCurrentPeriodFlag(CalendarEntries pce) {
-        Date currentDate = TKUtils.getTimelessDate(null);
-        String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
-        CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal, currentDate);
+    	Date currentDate = TKUtils.getTimelessDate(null);
+    	String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+        CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
 
         if(pce != null && calendarEntry != null && calendarEntry.equals(pce)) {
-            return true;
-        }
-        return false;
+    		return true;
+    	}
+    	return false;
     }
-
-
-
+    
+    public static String getUnitOfTimeForEarnCode(EarnCode earnCode) {
+    	AccrualCategory acObj = null;
+    	if(earnCode.getAccrualCategory() != null) {
+    		acObj = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCode.getAccrualCategory(), TKUtils.getCurrentDate());
+    	}
+    	String unitTime = (acObj!= null ? acObj.getUnitOfTime() : earnCode.getRecordMethod()) ;
+    	return unitTime;
+    }
+    
 }
 

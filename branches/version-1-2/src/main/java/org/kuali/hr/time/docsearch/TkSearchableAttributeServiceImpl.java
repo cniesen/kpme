@@ -18,11 +18,11 @@ import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 
 public class TkSearchableAttributeServiceImpl implements
-        TkSearchableAttributeService {
+		TkSearchableAttributeService {
 
     private static final Logger LOG = Logger.getLogger(TkSearchableAttributeServiceImpl.class);
 
-    public void updateSearchableAttribute(TimesheetDocument document, Date asOfDate){
+	public void updateSearchableAttribute(TimesheetDocument document, Date asOfDate){
         WorkflowDocument workflowDocument = null;
         //
         // djunk - Need to actually look at why this call is here for every
@@ -39,7 +39,7 @@ public class TkSearchableAttributeServiceImpl implements
                     if(workflowDocument.getInitiatorPrincipalId().equals(TKContext.getPrincipalId())){
                         workflowDocument.saveDocument("");
                     }else{
-                        workflowDocument.saveDocumentData();
+                    	workflowDocument.saveDocumentData();
                     }
                 }else{
                     workflowDocument.saveDocument("");
@@ -51,56 +51,56 @@ public class TkSearchableAttributeServiceImpl implements
                 throw new RuntimeException(e);
             }
         }
-    }
+	}
 
-    @Override
-    public String createSearchableAttributeXml(TimesheetDocument document, Date asOfDate) {
-        List<Long> workAreas = new ArrayList<Long>();
-        Map<String,List<Long>> deptToListOfWorkAreas = new HashMap<String,List<Long>>();
-        List<String> salGroups = new ArrayList<String>();
+	@Override
+	public String createSearchableAttributeXml(TimesheetDocument document, Date asOfDate) {
+		List<Long> workAreas = new ArrayList<Long>();
+		Map<String,List<Long>> deptToListOfWorkAreas = new HashMap<String,List<Long>>();
+		List<String> salGroups = new ArrayList<String>();
 
-        for(Assignment assign: document.getAssignments()){
-            if(!workAreas.contains(assign.getWorkArea())){
-                workAreas.add(assign.getWorkArea());
-            }
-            Job job = TkServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), document.getAsOfDate());
+		for(Assignment assign: document.getAssignments()){
+			if(!workAreas.contains(assign.getWorkArea())){
+				workAreas.add(assign.getWorkArea());
+			}
+			Job job = TkServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), document.getAsOfDate());
 
-            if(!salGroups.contains(job.getHrSalGroup())){
-                salGroups.add(job.getHrSalGroup());
-            }
-        }
+			if(!salGroups.contains(job.getHrSalGroup())){
+				salGroups.add(job.getHrSalGroup());
+			}
+		}
 
-        for(Long workArea : workAreas){
-            WorkArea workAreaObj = TkServiceLocator.getWorkAreaService().getWorkArea(workArea, TKUtils.getTimelessDate(asOfDate));
-            if(deptToListOfWorkAreas.containsKey(workAreaObj.getDept())){
-                List<Long> deptWorkAreas = deptToListOfWorkAreas.get(workAreaObj.getDept());
-                deptWorkAreas.add(workArea);
-            } else {
-                List<Long> deptWorkAreas = new ArrayList<Long>();
-                deptWorkAreas.add(workArea);
-                deptToListOfWorkAreas.put(workAreaObj.getDept(), deptWorkAreas);
-            }
-        }
-        StringBuilder sb = new StringBuilder();
+		for(Long workArea : workAreas){
+			WorkArea workAreaObj = TkServiceLocator.getWorkAreaService().getWorkArea(workArea, TKUtils.getTimelessDate(asOfDate));
+			if(deptToListOfWorkAreas.containsKey(workAreaObj.getDept())){
+				List<Long> deptWorkAreas = deptToListOfWorkAreas.get(workAreaObj.getDept());
+				deptWorkAreas.add(workArea);
+			} else {
+				List<Long> deptWorkAreas = new ArrayList<Long>();
+				deptWorkAreas.add(workArea);
+				deptToListOfWorkAreas.put(workAreaObj.getDept(), deptWorkAreas);
+			}
+		}
+		StringBuilder sb = new StringBuilder();
         sb.append("<documentContext><applicationContent><TimesheetDocument>");
-        sb.append("<DEPARTMENTS>");
-        for(String dept : deptToListOfWorkAreas.keySet()){
-            sb.append("<DEPARTMENT value=\""+dept+"\">");
-            List<Long> deptWorkAreas = deptToListOfWorkAreas.get(dept);
-            for(Long workArea : deptWorkAreas){
-                sb.append("<WORKAREA value=\""+workArea+"\"/>");
-            }
-            sb.append("</DEPARTMENT>");
-        }
-        sb.append("</DEPARTMENTS>");
-        for(String salGroup : salGroups){
-            sb.append("<SALGROUP value=\""+salGroup+"\"/>");
-        }
+		sb.append("<DEPARTMENTS>");
+		for(String dept : deptToListOfWorkAreas.keySet()){
+			sb.append("<DEPARTMENT value=\""+dept+"\">");
+			List<Long> deptWorkAreas = deptToListOfWorkAreas.get(dept);
+			for(Long workArea : deptWorkAreas){
+				sb.append("<WORKAREA value=\""+workArea+"\"/>");
+			}
+			sb.append("</DEPARTMENT>");
+		}
+		sb.append("</DEPARTMENTS>");
+		for(String salGroup : salGroups){
+			sb.append("<SALGROUP value=\""+salGroup+"\"/>");
+		}
 
-        sb.append("<PAYENDDATE value=\""+asOfDate+"\"/>");
-        sb.append("</TimesheetDocument></applicationContent></documentContext>");
+		sb.append("<PAYENDDATE value=\""+asOfDate+"\"/>");
+		sb.append("</TimesheetDocument></applicationContent></documentContext>");
 
-        return sb.toString();
-    }
+		return sb.toString();
+	}
 
 }

@@ -11,7 +11,6 @@ import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
@@ -102,7 +101,7 @@ public class TimeDetailValidationService {
             errors.add("The time or date is not valid.");
         }
         if (errors.size() > 0) return errors;
-
+        
         // KPME-1446 
         // -------------------------------
         // check if there is a weekend day when the include weekends flag is checked
@@ -174,23 +173,23 @@ public class TimeDetailValidationService {
         //if the user is clocked in, check if this time block overlaps with the clock action
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
         if(lastClockLog != null &&
-                (lastClockLog.getClockAction().equals(TkConstants.CLOCK_IN)
-                        || lastClockLog.getClockAction().equals(TkConstants.LUNCH_IN))) {
-            Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
-            String lastClockZone = lastClockLog.getClockTimestampTimezone();
-            if (StringUtils.isEmpty(lastClockZone)) {
-                lastClockZone = TKUtils.getSystemTimeZone();
-            }
-            DateTimeZone zone = DateTimeZone.forID(lastClockZone);
-            DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
-            DateTime currentTime = new DateTime(System.currentTimeMillis(), zone);
-            Interval currentClockInInterval = new Interval(clockWithZone.getMillis(), currentTime.getMillis());
-            if (addedTimeblockInterval.overlaps(currentClockInInterval)) {
-                errors.add("The time block you are trying to add overlaps with the current clock action.");
-                return errors;
-            }
+        		(lastClockLog.getClockAction().equals(TkConstants.CLOCK_IN) 
+        				|| lastClockLog.getClockAction().equals(TkConstants.LUNCH_IN))) {
+        	 Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
+             String lastClockZone = lastClockLog.getClockTimestampTimezone();
+             if (StringUtils.isEmpty(lastClockZone)) {
+                 lastClockZone = TKUtils.getSystemTimeZone();
+             }
+             DateTimeZone zone = DateTimeZone.forID(lastClockZone);
+             DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
+             DateTime currentTime = new DateTime(System.currentTimeMillis(), zone);
+             Interval currentClockInInterval = new Interval(clockWithZone.getMillis(), currentTime.getMillis());
+             if (addedTimeblockInterval.overlaps(currentClockInInterval)) {
+                 errors.add("The time block you are trying to add overlaps with the current clock action.");
+                 return errors;
+             }
         }
-
+       
         if (acrossDays) {
             DateTime start = new DateTime(startTime);
             DateTime end = new DateTime(TKUtils.convertDateStringToTimestamp(startDateS, endTimeS).getTime());
@@ -268,18 +267,18 @@ public class TimeDetailValidationService {
 
     // KPME-1446
     public static List<String> validateSpanningWeeks(boolean spanningWeeks, DateTime startTemp, DateTime endTemp) {
-        List<String> errors = new ArrayList<String>();
-        boolean valid = true;
+    	List<String> errors = new ArrayList<String>();
+    	boolean valid = true;
         while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && valid) {
-            if (!spanningWeeks &&
-                    (startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-                valid = false;
-            }
-            startTemp = startTemp.plusDays(1);
+        	if (!spanningWeeks && 
+        		(startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
+        		valid = false;
+        	}
+        	startTemp = startTemp.plusDays(1);
         }
         if (!valid) {
-            errors.add("Weekend day is selected, but include weekends checkbox is not checked");
+        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");
         }
-        return errors;
+    	return errors;
     }
 }

@@ -1,5 +1,14 @@
 package org.kuali.hr.time.detail.web;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -18,13 +27,6 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
 public class TimeDetailWSAction extends TimesheetAction {
 
@@ -108,8 +110,6 @@ public class TimeDetailWSAction extends TimesheetAction {
 
                             earnCodeList.add(earnCodeMap);
                         }
-
-
                     }
                 }
             }

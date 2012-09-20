@@ -8,12 +8,12 @@ import org.kuali.rice.krad.bo.BusinessObject;
 
 public class DepartmentInquirableImpl extends KualiInquirableImpl {
 
-    @Override
-    public BusinessObject getBusinessObject(Map fieldValues) {
-        Department department = (Department) super.getBusinessObject(fieldValues);
+	@Override
+	public BusinessObject getBusinessObject(Map fieldValues) {
+		Department department = (Department) super.getBusinessObject(fieldValues);
 
-        TkServiceLocator.getDepartmentService().populateDepartmentRoles(department);
+		TkServiceLocator.getDepartmentService().populateDepartmentRoles(department);
 
-        return department;
-    }
+		return department;
+	}
 }

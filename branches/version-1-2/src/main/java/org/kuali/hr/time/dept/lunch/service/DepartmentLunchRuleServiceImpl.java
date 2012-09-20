@@ -15,51 +15,51 @@ import java.sql.Date;
 import java.util.List;
 
 public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleService {
-    public DepartmentLunchRuleDao deptLunchRuleDao;
-    private static final Logger LOG = Logger.getLogger(DepartmentLunchRuleServiceImpl.class);
+	public DepartmentLunchRuleDao deptLunchRuleDao;
+	private static final Logger LOG = Logger.getLogger(DepartmentLunchRuleServiceImpl.class);
 
-    @Override
-    public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea,
-                                                String principalId, Long jobNumber, Date asOfDate) {
-        DeptLunchRule deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, principalId, jobNumber, asOfDate);
-        if(deptLunchRule!=null){
-            return deptLunchRule;
-        }
-        deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, principalId, -1L, asOfDate);
-        if(deptLunchRule!=null){
-            return deptLunchRule;
-        }
-        deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, "%", -1L, asOfDate);
+	@Override
+	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea,
+			String principalId, Long jobNumber, Date asOfDate) {
+		DeptLunchRule deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, principalId, jobNumber, asOfDate);
+		if(deptLunchRule!=null){
+			return deptLunchRule;
+		}
+		deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, principalId, -1L, asOfDate);
+		if(deptLunchRule!=null){
+			return deptLunchRule;
+		}
+		deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, "%", -1L, asOfDate);
 
-        if(deptLunchRule!=null){
-            return deptLunchRule;
-        }
-        deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, -1L, "%", -1L, asOfDate);
+		if(deptLunchRule!=null){
+			return deptLunchRule;
+		}
+		deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, -1L, "%", -1L, asOfDate);
 
-        if(deptLunchRule!=null){
-            return deptLunchRule;
-        }
-        deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, -1L, principalId, -1L, asOfDate);
-        return deptLunchRule;
-    }
+		if(deptLunchRule!=null){
+			return deptLunchRule;
+		}
+		deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, -1L, principalId, -1L, asOfDate);
+		return deptLunchRule;
+	}
 
-    /**
-     * If the hours is greater or equal than the shift hours, deduct the hour from the deduction_mins field
-     */
-    @Override
-    public void applyDepartmentLunchRule(List<TimeBlock> timeblocks) {
-        for(TimeBlock timeBlock : timeblocks) {
+	/**
+	 * If the hours is greater or equal than the shift hours, deduct the hour from the deduction_mins field
+	 */
+	@Override
+	public void applyDepartmentLunchRule(List<TimeBlock> timeblocks) {
+		for(TimeBlock timeBlock : timeblocks) {
             if (timeBlock.isLunchDeleted()) {
                 continue;
             }
-            TimesheetDocumentHeader doc = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(timeBlock.getDocumentId());
-            String dept = TkServiceLocator.getJobService().getJob(doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime())).getDept();
-            DeptLunchRule deptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(dept, timeBlock.getWorkArea(), doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime()));
-            if(timeBlock.getClockLogCreated() && deptLunchRule!= null && deptLunchRule.getDeductionMins() != null && timeBlock.getHours().compareTo(deptLunchRule.getShiftHours()) >= 0) {
+			TimesheetDocumentHeader doc = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(timeBlock.getDocumentId());
+			String dept = TkServiceLocator.getJobService().getJob(doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime())).getDept();
+			DeptLunchRule deptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(dept, timeBlock.getWorkArea(), doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime()));
+			if(timeBlock.getClockLogCreated() && deptLunchRule!= null && deptLunchRule.getDeductionMins() != null && timeBlock.getHours().compareTo(deptLunchRule.getShiftHours()) >= 0) {
                 applyLunchRuleToDetails(timeBlock, deptLunchRule);
-            }
-        }
-    }
+			}
+		}
+	}
 
     private void applyLunchRuleToDetails(TimeBlock block, DeptLunchRule rule) {
         List<TimeHourDetail> details = block.getTimeHourDetails();
@@ -75,10 +75,10 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
             lunchDetail.setHours(lunchHours.multiply(TkConstants.BIG_DECIMAL_NEGATIVE_ONE));
             lunchDetail.setEarnCode(TkConstants.LUNCH_EARN_CODE);
             lunchDetail.setTkTimeBlockId(block.getTkTimeBlockId());
-
+            
             //Deduct from total for worked hours
             block.setHours(block.getHours().subtract(lunchHours,TkConstants.MATH_CONTEXT));
-
+            
             details.add(lunchDetail);
         } else {
             // TODO : Determine what to do in this case.
@@ -86,18 +86,18 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
         }
     }
 
-    public DepartmentLunchRuleDao getDeptLunchRuleDao() {
-        return deptLunchRuleDao;
-    }
+	public DepartmentLunchRuleDao getDeptLunchRuleDao() {
+		return deptLunchRuleDao;
+	}
 
 
-    public void setDeptLunchRuleDao(DepartmentLunchRuleDao deptLunchRuleDao) {
-        this.deptLunchRuleDao = deptLunchRuleDao;
-    }
+	public void setDeptLunchRuleDao(DepartmentLunchRuleDao deptLunchRuleDao) {
+		this.deptLunchRuleDao = deptLunchRuleDao;
+	}
 
-    @Override
-    public DeptLunchRule getDepartmentLunchRule(String tkDeptLunchRuleId) {
-        return deptLunchRuleDao.getDepartmentLunchRule(tkDeptLunchRuleId);
-    }
+	@Override
+	public DeptLunchRule getDepartmentLunchRule(String tkDeptLunchRuleId) {
+		return deptLunchRuleDao.getDepartmentLunchRule(tkDeptLunchRuleId);
+	}
 
 }

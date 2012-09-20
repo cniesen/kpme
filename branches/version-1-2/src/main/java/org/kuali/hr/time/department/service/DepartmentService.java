@@ -7,14 +7,14 @@ import java.sql.Date;
 import java.util.List;
 
 public interface DepartmentService {
-    /**
-     * Get Department as of a particular date passed in
-     * @param department
-     * @param asOfDate
-     * @return
-     */
+	/**
+	 * Get Department as of a particular date passed in
+	 * @param department
+	 * @param asOfDate
+	 * @return
+	 */
     @Cacheable(value= Department.CACHE_NAME, key="'department=' + #p0 + '|' + 'asOfDate=' + #p1")
-    public Department getDepartment(String department, Date asOfDate);
+	public Department getDepartment(String department, Date asOfDate);
 
     /**
      * Fetches a list of Department objects as of the specified date all of which
@@ -36,7 +36,7 @@ public interface DepartmentService {
      * @param department The department for which we need roles populated.
      */
     public void populateDepartmentRoles(Department department);
-
+    
     /**
      * Fetch department by id
      * @param hrDeptId
@@ -52,9 +52,9 @@ public interface DepartmentService {
     @Cacheable(value= Department.CACHE_NAME, key="'location=' + #p0")
     public List<Department> getDepartmentByLocation(String location);
     /**
-     * get count of department with given department
-     * @param department
-     * @return int
-     */
-    public int getDepartmentCount(String department);
+	 * get count of department with given department
+	 * @param department
+	 * @return int
+	 */
+	public int getDepartmentCount(String department);
 }

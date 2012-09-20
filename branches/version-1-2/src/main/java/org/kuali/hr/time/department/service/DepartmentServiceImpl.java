@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private DepartmentDao departmentDao;
+	private DepartmentDao departmentDao;
 
     @Override
     public List<Department> getDepartments(String chart, Date asOfDate) {
@@ -25,75 +25,75 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department getDepartment(String department, Date asOfDate) {
+	public Department getDepartment(String department, Date asOfDate) {
         Department d = departmentDao.getDepartment(department, asOfDate);
         populateDepartmentRoles(d);
 
-        return d;
-    }
+		return d;
+	}
 
-    public void setDepartmentDao(DepartmentDao departmentDao) {
-        this.departmentDao = departmentDao;
-    }
+	public void setDepartmentDao(DepartmentDao departmentDao) {
+		this.departmentDao = departmentDao;
+	}
 
     @Override
     public void populateDepartmentRoles(Department department) {
         if (department != null) {
-            List<TkRole> deptAdminRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(
+        	List<TkRole> deptAdminRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(
                     department.getDept(),
                     TkConstants.ROLE_TK_DEPT_ADMIN,
-                    department.getEffectiveDate());
-            List<TkRole> deptViewOnlyRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(department.getDept(),
+                    department.getEffectiveDate()); 
+        	List<TkRole> deptViewOnlyRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(department.getDept(),
                     TkConstants.ROLE_TK_DEPT_VO,
                     department.getEffectiveDate());
-            List<TkRole> deptAdminInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(
+        	List<TkRole> deptAdminInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(
                     department.getDept(),
                     TkConstants.ROLE_TK_DEPT_ADMIN,
-                    department.getEffectiveDate());
-            List<TkRole> deptViewOnlyInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(department.getDept(),
+                    department.getEffectiveDate()); 
+        	List<TkRole> deptViewOnlyInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(department.getDept(),
                     TkConstants.ROLE_TK_DEPT_VO,
                     department.getEffectiveDate());
-
-            department.getRoles().addAll(deptAdminRoles);
-            department.getRoles().addAll(deptViewOnlyRoles);
-            department.getInactiveRoles().addAll(deptAdminInactiveRoles);
-            department.getInactiveRoles().addAll(deptViewOnlyInactiveRoles);
-
-            //kpme1411, chen, 05/08/12
-            List<TkRole> leaveDeptAdminRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(
+        	
+        	department.getRoles().addAll(deptAdminRoles);
+        	department.getRoles().addAll(deptViewOnlyRoles);
+        	department.getInactiveRoles().addAll(deptAdminInactiveRoles);
+        	department.getInactiveRoles().addAll(deptViewOnlyInactiveRoles);
+        	
+        	//kpme1411, chen, 05/08/12
+        	List<TkRole> leaveDeptAdminRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(
                     department.getDept(),
                     TkConstants.ROLE_LV_DEPT_ADMIN,
-                    department.getEffectiveDate());
-            List<TkRole> leaveDeptViewOnlyRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(department.getDept(),
+                    department.getEffectiveDate()); 
+        	List<TkRole> leaveDeptViewOnlyRoles = TkServiceLocator.getTkRoleService().getDepartmentRoles(department.getDept(),
                     TkConstants.ROLE_LV_DEPT_VO,
                     department.getEffectiveDate());
-            List<TkRole> leaveDeptAdminInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(
+        	List<TkRole> leaveDeptAdminInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(
                     department.getDept(),
                     TkConstants.ROLE_LV_DEPT_ADMIN,
-                    department.getEffectiveDate());
-            List<TkRole> leaveDeptViewOnlyInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(department.getDept(),
+                    department.getEffectiveDate()); 
+        	List<TkRole> leaveDeptViewOnlyInactiveRoles = TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(department.getDept(),
                     TkConstants.ROLE_LV_DEPT_VO,
                     department.getEffectiveDate());
-
-            department.getRoles().addAll(leaveDeptAdminRoles);
-            department.getRoles().addAll(leaveDeptViewOnlyRoles);
-            department.getInactiveRoles().addAll(leaveDeptAdminInactiveRoles);
-            department.getInactiveRoles().addAll(leaveDeptViewOnlyInactiveRoles);
+        	
+        	department.getRoles().addAll(leaveDeptAdminRoles);
+        	department.getRoles().addAll(leaveDeptViewOnlyRoles);
+        	department.getInactiveRoles().addAll(leaveDeptAdminInactiveRoles);
+        	department.getInactiveRoles().addAll(leaveDeptViewOnlyInactiveRoles);
         }
     }
 
-    @Override
-    public Department getDepartment(String hrDeptId) {
-        return departmentDao.getDepartment(hrDeptId);
-    }
-
-    @Override
-    public List<Department> getDepartmentByLocation(String location) {
-        return departmentDao.getDepartmentByLocation(location);
-    }
-
-    @Override
-    public int getDepartmentCount(String department) {
-        return departmentDao.getDepartmentCount(department);
-    }
+	@Override
+	public Department getDepartment(String hrDeptId) {
+		return departmentDao.getDepartment(hrDeptId);
+	}
+	
+	@Override
+	public List<Department> getDepartmentByLocation(String location) {
+		return departmentDao.getDepartmentByLocation(location);
+	}
+	
+	@Override
+	public int getDepartmentCount(String department) {
+		return departmentDao.getDepartmentCount(department);
+	}
 }
