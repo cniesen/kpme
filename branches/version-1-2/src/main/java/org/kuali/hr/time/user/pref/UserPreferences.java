@@ -9,36 +9,36 @@ import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 public class UserPreferences extends PersistableBusinessObjectBase {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "UserPreferences";
     /**
-     *
-     */
-    private static final long serialVersionUID = 1L;
-    private String principalId;
-    private String timezone;
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	private String principalId;
+	private String timezone;
 
-    public UserPreferences(){}
+	public UserPreferences(){}
 
-    public UserPreferences(String principalId, String timeZone){
-        this.principalId = principalId;
-        this.timezone = timeZone;
-    }
+	public UserPreferences(String principalId, String timeZone){
+		this.principalId = principalId;
+		this.timezone = timeZone;
+	}
 
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
 
-    public String getTimezone() {
+	public String getTimezone() {
         if (StringUtils.isEmpty(timezone))
             return TKUtils.getSystemTimeZone();
 
-        return timezone;
-    }
+		return timezone;
+	}
 
-    public String getPrincipalId() {
-        return principalId;
-    }
+	public String getPrincipalId() {
+		return principalId;
+	}
 
-    public void setPrincipalId(String principalId) {
-        this.principalId = principalId;
-    }
+	public void setPrincipalId(String principalId) {
+		this.principalId = principalId;
+	}
 
 }

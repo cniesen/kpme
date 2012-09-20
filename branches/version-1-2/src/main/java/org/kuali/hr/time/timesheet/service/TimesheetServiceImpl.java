@@ -61,37 +61,37 @@ public class TimesheetServiceImpl implements TimesheetService {
     protected void timesheetAction(String action, String principalId, TimesheetDocument timesheetDocument) {
         WorkflowDocument wd = null;
         if (timesheetDocument != null) {
-            String rhid = timesheetDocument.getDocumentId();
-            wd = WorkflowDocumentFactory.loadDocument(principalId, rhid);
+                String rhid = timesheetDocument.getDocumentId();
+                wd = WorkflowDocumentFactory.loadDocument(principalId, rhid);
 
-            if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.ROUTE)) {
-                wd.route("Routing for Approval");
-            } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE)) {
-                wd.route("Batch job routing for Approval");
-            } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.APPROVE)) {
-                if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin() &&
-                        !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
-                    wd.superUserBlanketApprove("Superuser approving timesheet.");
-                } else {
-                    wd.approve("Approving timesheet.");
+                if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.ROUTE)) {
+                    wd.route("Routing for Approval");
+                } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE)) {
+                    wd.route("Batch job routing for Approval");
+                } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.APPROVE)) {
+                    if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin() &&
+                            !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
+                        wd.superUserBlanketApprove("Superuser approving timesheet.");
+                    } else {
+                        wd.approve("Approving timesheet.");
+                    }
+                } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
+                    wd.superUserBlanketApprove("Batch job superuser approving timesheet.");
+                } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.DISAPPROVE)) {
+                    if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin()
+                            && !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
+                        wd.superUserDisapprove("Superuser disapproving timesheet.");
+                    } else {
+                        wd.disapprove("Disapproving timesheet.");
+                    }
                 }
-            } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
-                wd.superUserBlanketApprove("Batch job superuser approving timesheet.");
-            } else if (StringUtils.equals(action, TkConstants.TIMESHEET_ACTIONS.DISAPPROVE)) {
-                if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin()
-                        && !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
-                    wd.superUserDisapprove("Superuser disapproving timesheet.");
-                } else {
-                    wd.disapprove("Disapproving timesheet.");
+
+                String kewStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(timesheetDocument.getDocumentId());                		
+                if (!kewStatus.equals(timesheetDocument.getDocumentHeader().getDocumentStatus())) {
+                    timesheetDocument.getDocumentHeader().setDocumentStatus(kewStatus);
+                    TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(timesheetDocument.getDocumentHeader());
                 }
-            }
-
-            String kewStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(timesheetDocument.getDocumentId());
-            if (!kewStatus.equals(timesheetDocument.getDocumentHeader().getDocumentStatus())) {
-                timesheetDocument.getDocumentHeader().setDocumentStatus(kewStatus);
-                TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(timesheetDocument.getDocumentHeader());
-            }
-
+                
         }
     }
 

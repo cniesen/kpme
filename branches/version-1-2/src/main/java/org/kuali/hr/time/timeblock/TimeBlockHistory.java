@@ -17,7 +17,7 @@ public class TimeBlockHistory extends TimeBlock {
 	private String tkTimeBlockHistoryId = null;
 	private String actionHistory;
 	private String modifiedByPrincipalId;
-    private Timestamp timestampModified;
+	private Timestamp timestampModified;
 	private Person principal;
 	private Person userPrincipal;
 	private List<TimeBlockHistoryDetail> timeBlockHistoryDetails = new ArrayList<TimeBlockHistoryDetail>();

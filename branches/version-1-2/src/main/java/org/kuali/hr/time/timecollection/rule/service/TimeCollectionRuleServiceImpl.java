@@ -8,31 +8,31 @@ import java.sql.Date;
 import java.util.List;
 
 public class TimeCollectionRuleServiceImpl implements TimeCollectionRuleService{
-    private TimeCollectionRuleDaoService timeCollectRuleDao;
+	private TimeCollectionRuleDaoService timeCollectRuleDao;
 
     @Override
-    public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea, String payType, Date asOfDate){
-        return timeCollectRuleDao.getTimeCollectionRule(dept, workArea, payType, asOfDate);
-    }
+	public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea, String payType, Date asOfDate){
+		return timeCollectRuleDao.getTimeCollectionRule(dept, workArea, payType, asOfDate);
+	}
 
     @Override
-    public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea,Date asOfDate){
-        return timeCollectRuleDao.getTimeCollectionRule(dept, workArea, asOfDate);
-    }
+	public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea,Date asOfDate){
+		return timeCollectRuleDao.getTimeCollectionRule(dept, workArea, asOfDate);
+	}
 
-    public TimeCollectionRuleDaoService getTimeCollectRuleDao() {
-        return timeCollectRuleDao;
-    }
+	public TimeCollectionRuleDaoService getTimeCollectRuleDao() {
+		return timeCollectRuleDao;
+	}
 
-    public void setTimeCollectRuleDao(
-            TimeCollectionRuleDaoService timeCollectRuleDao) {
-        this.timeCollectRuleDao = timeCollectRuleDao;
-    }
+	public void setTimeCollectRuleDao(
+			TimeCollectionRuleDaoService timeCollectRuleDao) {
+		this.timeCollectRuleDao = timeCollectRuleDao;
+	}
 
-    @Override
-    public TimeCollectionRule getTimeCollectionRule(String tkTimeCollectionRuleId) {
-        return timeCollectRuleDao.getTimeCollectionRule(tkTimeCollectionRuleId);
-    }
+	@Override
+	public TimeCollectionRule getTimeCollectionRule(String tkTimeCollectionRuleId) {
+		return timeCollectRuleDao.getTimeCollectionRule(tkTimeCollectionRuleId);
+	}
 
     @Override
     public List<TimeCollectionRule> getTimeCollectionRules(String dept, String workArea, String payType, String active) {

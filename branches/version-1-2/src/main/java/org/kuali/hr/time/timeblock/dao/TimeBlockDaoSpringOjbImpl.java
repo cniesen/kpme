@@ -1,5 +1,11 @@
 package org.kuali.hr.time.timeblock.dao;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
@@ -8,12 +14,6 @@ import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
-
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 public class TimeBlockDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimeBlockDao {
 

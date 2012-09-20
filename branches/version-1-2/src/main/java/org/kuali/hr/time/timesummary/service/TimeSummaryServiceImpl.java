@@ -27,28 +27,28 @@ import java.math.BigDecimal;
 import java.util.*;
 
 public class TimeSummaryServiceImpl implements TimeSummaryService {
-    private static final String OTHER_EARN_GROUP = "Other";
+	private static final String OTHER_EARN_GROUP = "Other";
 
     @Override
-    public TimeSummary getTimeSummary(TimesheetDocument timesheetDocument) {
-        TimeSummary timeSummary = new TimeSummary();
+	public TimeSummary getTimeSummary(TimesheetDocument timesheetDocument) {
+		TimeSummary timeSummary = new TimeSummary();
 
-        if(timesheetDocument.getTimeBlocks() == null) {
-            return timeSummary;
-        }
+		if(timesheetDocument.getTimeBlocks() == null) {
+			return timeSummary;
+		}
 
         List<Boolean> dayArrangements = new ArrayList<Boolean>();
 
-        timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getPayCalendarEntry(), dayArrangements));
-        TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getPayCalendarEntry(), TkServiceLocator.getCalendarService().getCalendar(timesheetDocument.getPayCalendarEntry().getHrCalendarId()), true);
-        timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
+		timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getPayCalendarEntry(), dayArrangements));
+		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getPayCalendarEntry(), TkServiceLocator.getCalendarService().getCalendar(timesheetDocument.getPayCalendarEntry().getHrCalendarId()), true);
+		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, dayArrangements, timesheetDocument.getAsOfDate());
         timeSummary.setSections(earnGroupSections);
 
-        return timeSummary;
-    }
-
+		return timeSummary;
+	}
+	
     /**
      * Aggregates timeblocks into the appropriate earngroup-> earncode -> assignment rows
      * @param tkTimeBlockAggregate
@@ -57,158 +57,158 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * @param asOfDate
      * @return
      */
-    public List<EarnGroupSection> getEarnGroupSections(TkTimeBlockAggregate tkTimeBlockAggregate, int numEntries, List<Boolean> dayArrangements, Date asOfDate ){
-        List<EarnGroupSection> earnGroupSections = new ArrayList<EarnGroupSection>();
-        List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
-        Map<String, EarnCodeSection> earnCodeToEarnCodeSection = new HashMap<String, EarnCodeSection>();
-        Map<String, EarnGroupSection> earnGroupToEarnGroupSection = new HashMap<String, EarnGroupSection>();
+	public List<EarnGroupSection> getEarnGroupSections(TkTimeBlockAggregate tkTimeBlockAggregate, int numEntries, List<Boolean> dayArrangements, Date asOfDate ){
+		List<EarnGroupSection> earnGroupSections = new ArrayList<EarnGroupSection>();
+		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+		Map<String, EarnCodeSection> earnCodeToEarnCodeSection = new HashMap<String, EarnCodeSection>();
+		Map<String, EarnGroupSection> earnGroupToEarnGroupSection = new HashMap<String, EarnGroupSection>();
+		
+		int dayCount = 0;
+		
+		//TODO remove this and correct the aggregate .. not sure what the down stream changes are
+		//so leaving this for initial release
+		List<FlsaWeek> trimmedFlsaWeeks = new ArrayList<FlsaWeek>();
+		for(FlsaWeek flsaWeek : flsaWeeks){
+			if(flsaWeek.getFlsaDays().size() > 0){
+				trimmedFlsaWeeks.add(flsaWeek);
+			}
+		}
+		
+		//For every flsa week and day aggegate each time hour detail 
+		// buckets it by earn code section first
+		for(FlsaWeek flsaWeek : trimmedFlsaWeeks){
+			int weekSize = 0;
+			List<FlsaDay> flsaDays = flsaWeek.getFlsaDays();
+			for(FlsaDay flsaDay : flsaDays){
+				Map<String, List<TimeBlock>> earnCodeToTimeBlocks = flsaDay.getEarnCodeToTimeBlocks();
+				
+				for(String earnCode : earnCodeToTimeBlocks.keySet()){
+					for(TimeBlock timeBlock : earnCodeToTimeBlocks.get(earnCode)){
+						for(TimeHourDetail thd : timeBlock.getTimeHourDetails()){
+							if(StringUtils.equals(TkConstants.LUNCH_EARN_CODE, thd.getEarnCode())){
+								continue;
+							}
+							EarnCodeSection earnCodeSection = earnCodeToEarnCodeSection.get(thd.getEarnCode());
+							if(earnCodeSection == null){
+								earnCodeSection = new EarnCodeSection();
+								earnCodeSection.setEarnCode(thd.getEarnCode());
+								EarnCode earnCodeObj = TkServiceLocator.getEarnCodeService().getEarnCode(thd.getEarnCode(), TKUtils.getTimelessDate(asOfDate));
+								earnCodeSection.setDescription(earnCodeObj.getDescription());
+								earnCodeSection.setIsAmountEarnCode((earnCodeObj.getRecordMethod()!= null && earnCodeObj.getRecordMethod().equalsIgnoreCase(TkConstants.EARN_CODE_AMOUNT)) ? true : false);
+								for(int i = 0;i<(numEntries-1);i++){
+									earnCodeSection.getTotals().add(BigDecimal.ZERO);
+								}
+								
+								earnCodeToEarnCodeSection.put(thd.getEarnCode(), earnCodeSection);
+							}
+							String assignKey = timeBlock.getAssignmentKey();
+							AssignmentRow assignRow = earnCodeSection.getAssignKeyToAssignmentRowMap().get(assignKey);
+							if(assignRow == null){
+								assignRow = new AssignmentRow();
+								assignRow.setAssignmentKey(assignKey);
+								AssignmentDescriptionKey assignmentKey = TkServiceLocator.getAssignmentService().getAssignmentDescriptionKey(assignKey);
+								Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, TKUtils.getTimelessDate(asOfDate));
+								//TODO push this up to the assignment fetch/fully populated instead of like this
+								if(assignment != null){
+									if(assignment.getJob() == null){
+										assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(),assignment.getJobNumber(),TKUtils.getTimelessDate(asOfDate)));
+									}
+									if(assignment.getWorkAreaObj() == null){
+										assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), TKUtils.getTimelessDate(asOfDate)));
+									}
+									assignRow.setDescr(assignment.getAssignmentDescription());
+								}
+								for(int i = 0;i<(numEntries-1);i++){
+									assignRow.getTotal().add(BigDecimal.ZERO);
+									assignRow.getAmount().add(BigDecimal.ZERO);
+								}
+								assignRow.setEarnCodeSection(earnCodeSection);
+								earnCodeSection.addAssignmentRow(assignRow);
+							}
+							assignRow.addToTotal(dayCount, thd.getHours());
+							assignRow.addToAmount(dayCount, thd.getAmount());
+						}
+					}
+				}
+				dayCount++;
+				weekSize++;
+			}
+			//end of flsa week accumulate weekly totals
+			for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
+				earnCodeSection.addWeeklyTotal(dayCount, weekSize);
+			}			
+			weekSize = 0;
 
-        int dayCount = 0;
-
-        //TODO remove this and correct the aggregate .. not sure what the down stream changes are
-        //so leaving this for initial release
-        List<FlsaWeek> trimmedFlsaWeeks = new ArrayList<FlsaWeek>();
-        for(FlsaWeek flsaWeek : flsaWeeks){
-            if(flsaWeek.getFlsaDays().size() > 0){
-                trimmedFlsaWeeks.add(flsaWeek);
-            }
-        }
-
-        //For every flsa week and day aggegate each time hour detail
-        // buckets it by earn code section first
-        for(FlsaWeek flsaWeek : trimmedFlsaWeeks){
-            int weekSize = 0;
-            List<FlsaDay> flsaDays = flsaWeek.getFlsaDays();
-            for(FlsaDay flsaDay : flsaDays){
-                Map<String, List<TimeBlock>> earnCodeToTimeBlocks = flsaDay.getEarnCodeToTimeBlocks();
-
-                for(String earnCode : earnCodeToTimeBlocks.keySet()){
-                    for(TimeBlock timeBlock : earnCodeToTimeBlocks.get(earnCode)){
-                        for(TimeHourDetail thd : timeBlock.getTimeHourDetails()){
-                            if(StringUtils.equals(TkConstants.LUNCH_EARN_CODE, thd.getEarnCode())){
-                                continue;
-                            }
-                            EarnCodeSection earnCodeSection = earnCodeToEarnCodeSection.get(thd.getEarnCode());
-                            if(earnCodeSection == null){
-                                earnCodeSection = new EarnCodeSection();
-                                earnCodeSection.setEarnCode(thd.getEarnCode());
-                                EarnCode earnCodeObj = TkServiceLocator.getEarnCodeService().getEarnCode(thd.getEarnCode(), TKUtils.getTimelessDate(asOfDate));
-                                earnCodeSection.setDescription(earnCodeObj.getDescription());
-                                earnCodeSection.setIsAmountEarnCode((earnCodeObj.getRecordMethod()!= null && earnCodeObj.getRecordMethod().equalsIgnoreCase(TkConstants.EARN_CODE_AMOUNT)) ? true : false);
-                                for(int i = 0;i<(numEntries-1);i++){
-                                    earnCodeSection.getTotals().add(BigDecimal.ZERO);
-                                }
-
-                                earnCodeToEarnCodeSection.put(thd.getEarnCode(), earnCodeSection);
-                            }
-                            String assignKey = timeBlock.getAssignmentKey();
-                            AssignmentRow assignRow = earnCodeSection.getAssignKeyToAssignmentRowMap().get(assignKey);
-                            if(assignRow == null){
-                                assignRow = new AssignmentRow();
-                                assignRow.setAssignmentKey(assignKey);
-                                AssignmentDescriptionKey assignmentKey = TkServiceLocator.getAssignmentService().getAssignmentDescriptionKey(assignKey);
-                                Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, TKUtils.getTimelessDate(asOfDate));
-                                //TODO push this up to the assignment fetch/fully populated instead of like this
-                                if(assignment != null){
-                                    if(assignment.getJob() == null){
-                                        assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(),assignment.getJobNumber(),TKUtils.getTimelessDate(asOfDate)));
-                                    }
-                                    if(assignment.getWorkAreaObj() == null){
-                                        assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), TKUtils.getTimelessDate(asOfDate)));
-                                    }
-                                    assignRow.setDescr(assignment.getAssignmentDescription());
-                                }
-                                for(int i = 0;i<(numEntries-1);i++){
-                                    assignRow.getTotal().add(BigDecimal.ZERO);
-                                    assignRow.getAmount().add(BigDecimal.ZERO);
-                                }
-                                assignRow.setEarnCodeSection(earnCodeSection);
-                                earnCodeSection.addAssignmentRow(assignRow);
-                            }
-                            assignRow.addToTotal(dayCount, thd.getHours());
-                            assignRow.addToAmount(dayCount, thd.getAmount());
-                        }
-                    }
-                }
-                dayCount++;
-                weekSize++;
-            }
-            //end of flsa week accumulate weekly totals
-            for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
-                earnCodeSection.addWeeklyTotal(dayCount, weekSize);
-            }
-            weekSize = 0;
-
-            dayCount++;
-        }
-
-        dayCount = 0;
-        //now create all teh earn group sections and aggregate accordingly
-        for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
-            String earnCode = earnCodeSection.getEarnCode();
+			dayCount++;
+		}
+		
+		dayCount = 0;
+		//now create all teh earn group sections and aggregate accordingly
+		for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
+			String earnCode = earnCodeSection.getEarnCode();
             EarnGroup earnGroupObj = TkServiceLocator.getEarnGroupService().getEarnGroupSummaryForEarnCode(earnCode, TKUtils.getTimelessDate(asOfDate));
-            String earnGroup = null;
-            if(earnGroupObj == null){
-                earnGroup = OTHER_EARN_GROUP;
-            } else{
-                earnGroup = earnGroupObj.getDescr();
-            }
-
-            EarnGroupSection earnGroupSection = earnGroupToEarnGroupSection.get(earnGroup);
-            if(earnGroupSection == null){
-                earnGroupSection = new EarnGroupSection();
-                earnGroupSection.setEarnGroup(earnGroup);
-                for(int i =0;i<(numEntries-1);i++){
-                    earnGroupSection.getTotals().add(BigDecimal.ZERO);
-                }
-                earnGroupToEarnGroupSection.put(earnGroup, earnGroupSection);
-            }
-            earnGroupSection.addEarnCodeSection(earnCodeSection, dayArrangements);
-
-        }
-        for(EarnGroupSection earnGroupSection : earnGroupToEarnGroupSection.values()){
-            earnGroupSections.add(earnGroupSection);
-        }
-        return earnGroupSections;
-    }
-
-    /**
-     * Generate a list of string describing this pay calendar entry for the summary
-     * @param payCalEntry
-     * @return
-     */
-    protected List<String> getSummaryHeader(CalendarEntries payCalEntry){
-        List<String> summaryHeader = new ArrayList<String>();
-        int dayCount = 0;
-        Date beginDateTime = payCalEntry.getBeginPeriodDateTime();
-        Date endDateTime = payCalEntry.getEndPeriodDateTime();
-        boolean virtualDays = false;
+			String earnGroup = null;
+			if(earnGroupObj == null){
+				earnGroup = OTHER_EARN_GROUP;
+			} else{
+				earnGroup = earnGroupObj.getDescr();
+			}
+			
+			EarnGroupSection earnGroupSection = earnGroupToEarnGroupSection.get(earnGroup);
+			if(earnGroupSection == null){
+				earnGroupSection = new EarnGroupSection();
+				earnGroupSection.setEarnGroup(earnGroup);
+				for(int i =0;i<(numEntries-1);i++){
+					earnGroupSection.getTotals().add(BigDecimal.ZERO);
+				}
+				earnGroupToEarnGroupSection.put(earnGroup, earnGroupSection);
+			}
+			earnGroupSection.addEarnCodeSection(earnCodeSection, dayArrangements);
+			
+		}
+		for(EarnGroupSection earnGroupSection : earnGroupToEarnGroupSection.values()){
+			earnGroupSections.add(earnGroupSection);
+		}
+		return earnGroupSections;
+	}
+	
+	/**
+	 * Generate a list of string describing this pay calendar entry for the summary
+	 * @param payCalEntry
+	 * @return
+	 */
+	protected List<String> getSummaryHeader(CalendarEntries payCalEntry){
+		List<String> summaryHeader = new ArrayList<String>();
+		int dayCount = 0;
+		Date beginDateTime = payCalEntry.getBeginPeriodDateTime();
+		Date endDateTime = payCalEntry.getEndPeriodDateTime();
+		boolean virtualDays = false;
         LocalDateTime endDate = payCalEntry.getEndLocalDateTime();
 
         if (endDate.get(DateTimeFieldType.hourOfDay()) != 0 || endDate.get(DateTimeFieldType.minuteOfHour()) != 0 ||
                 endDate.get(DateTimeFieldType.secondOfMinute()) != 0){
             virtualDays = true;
         }
-
-        Date currDateTime = beginDateTime;
-        java.util.Calendar cal = GregorianCalendar.getInstance();
-
-        while(currDateTime.before(endDateTime)){
-            LocalDateTime currDate = new LocalDateTime(currDateTime);
-            summaryHeader.add(makeHeaderDiplayString(currDate, virtualDays));
-
-            dayCount++;
-            if((dayCount % 7) == 0){
-                summaryHeader.add("Week "+ ((dayCount / 7)));
-            }
-            cal.setTime(currDateTime);
-            cal.add(java.util.Calendar.HOUR, 24);
-            currDateTime = cal.getTime();
-        }
-
-        summaryHeader.add("Period Total");
-        return summaryHeader;
-    }
+		
+		Date currDateTime = beginDateTime;
+		java.util.Calendar cal = GregorianCalendar.getInstance();
+		
+		while(currDateTime.before(endDateTime)){
+			LocalDateTime currDate = new LocalDateTime(currDateTime);
+			summaryHeader.add(makeHeaderDiplayString(currDate, virtualDays));
+			
+			dayCount++;
+			if((dayCount % 7) == 0){
+				summaryHeader.add("Week "+ ((dayCount / 7)));
+			}
+			cal.setTime(currDateTime);
+			cal.add(java.util.Calendar.HOUR, 24);
+			currDateTime = cal.getTime();
+		}
+		
+		summaryHeader.add("Period Total");
+		return summaryHeader;
+	}
 
     /**
      * Provides the number of hours worked for the pay period indicated in the

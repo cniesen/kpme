@@ -272,7 +272,7 @@
 
     <class-descriptor class="org.kuali.hr.time.timesheet.TimeSheetInitiate" table="TK_TIME_SHEET_INIT_T">
         <field-descriptor name="tkTimeSheetInitId"      column="TK_TIME_SHEET_INIT_ID"  jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="TK_TIME_SHEET_INIT_S" />
-        <field-descriptor name="hrCalendarEntriesId"  column="PY_CALENDAR_ENTRIES_ID" jdbc-type="VARCHAR" length="60" primarykey="false" />
+        <field-descriptor name="hrPyCalendarEntriesId"  column="PY_CALENDAR_ENTRIES_ID" jdbc-type="VARCHAR" length="60" primarykey="false" />
         <field-descriptor name="principalId"            column="PRINCIPAL_ID"           jdbc-type="VARCHAR" length="40" primarykey="false" />
         <field-descriptor name="documentId"             column="DOCUMENT_ID"            jdbc-type="VARCHAR" length="14" primarykey="false" />
         <field-descriptor name="pyCalendarGroup"        column="PY_CALENDAR_GROUP"      jdbc-type="VARCHAR" length="30" nullable="true" primarykey="false" />

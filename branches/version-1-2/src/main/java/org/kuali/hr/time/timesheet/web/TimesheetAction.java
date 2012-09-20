@@ -29,7 +29,7 @@ import org.kuali.rice.krad.util.GlobalVariables;
 
 public class TimesheetAction extends TkAction {
 
-    private static final Logger LOG = Logger.getLogger(TimesheetAction.class);
+	private static final Logger LOG = Logger.getLogger(TimesheetAction.class);
 
     @Override
     protected void checkTKAuthorization(ActionForm form, String methodToCall) throws AuthorizationException {
@@ -43,19 +43,19 @@ public class TimesheetAction extends TkAction {
     }
 
     @Override
-    public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        TimesheetActionForm taForm = (TimesheetActionForm)form;
-        TKUser user = TKContext.getUser();
-        String documentId = taForm.getDocumentId();
+	public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		TimesheetActionForm taForm = (TimesheetActionForm)form;
+		TKUser user = TKContext.getUser();
+		String documentId = taForm.getDocumentId();
 
         LOG.debug("DOCID: " + documentId);
 
         // Here - viewPrincipal will be the principal of the user we intend to
         // view, be it target user, backdoor or otherwise.
         String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
-        CalendarEntries payCalendarEntries;
-        TimesheetDocument td;
-        TimesheetDocumentHeader tsdh;
+		CalendarEntries payCalendarEntries;
+		TimesheetDocument td;
+		TimesheetDocumentHeader tsdh;
 
         // By handling the prev/next in the execute method, we are saving one
         // fetch/construction of a TimesheetDocument. If it were broken out into
@@ -72,35 +72,35 @@ public class TimesheetAction extends TkAction {
 
         // Set the TKContext for the current timesheet document id.
         if (td != null) {
-            setupDocumentOnFormContext(taForm, td);
+           setupDocumentOnFormContext(taForm, td);
         } else {
             LOG.error("Null timesheet document in TimesheetAction.");
         }
 
         // Do this at the end, so we load the document first,
         // then check security permissions via the superclass execution chain.
-        return super.execute(mapping, form, request, response);
-    }
-
+		return super.execute(mapping, form, request, response);
+	}
+    
     public ActionForward docHandler(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-                || StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
-            final String docId = (String)request.getParameter("docId");
-            TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
-            final String principalName = KimApiServiceLocator.getPersonService().getPerson(td.getPrincipalId()).getPrincipalName();
-
-            return new ActionRedirect("/changeTargetPerson.do?methodToCall=changeTargetPerson&documentId" + docId + "&principalName=" + principalName + "&targetUrl=TimeDetail.do%3FdocmentId=" + docId + "&returnUrl=TimeApproval.do");
+        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
+        	final String docId = (String)request.getParameter("docId");
+        	TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
+        	final String principalName = KimApiServiceLocator.getPersonService().getPerson(td.getPrincipalId()).getPrincipalName();
+        	
+        	return new ActionRedirect("/changeTargetPerson.do?methodToCall=changeTargetPerson&documentId" + docId + "&principalName=" + principalName + "&targetUrl=TimeDetail.do%3FdocmentId=" + docId + "&returnUrl=TimeApproval.do");
         }
-
-        return mapping.findForward("basic");
+    	
+    	return mapping.findForward("basic");
     }
 
     protected void setupDocumentOnFormContext(TimesheetActionForm taForm, TimesheetDocument td){
-        String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
-        TKContext.setCurrentTimesheetDocumentId(td.getDocumentId());
+    	String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+    	TKContext.setCurrentTimesheetDocumentId(td.getDocumentId());
         TKContext.setCurrentTimesheetDocument(td);
-        taForm.setTimesheetDocument(td);
-        taForm.setDocumentId(td.getDocumentId());
+	    taForm.setTimesheetDocument(td);
+	    taForm.setDocumentId(td.getDocumentId());
         TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPrevOrNextDocumentHeader(TkConstants.PREV_TIMESHEET, viewPrincipal);
         TimesheetDocumentHeader nextTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPrevOrNextDocumentHeader(TkConstants.NEXT_TIMESHEET, viewPrincipal);
         if( prevTdh != null ) {

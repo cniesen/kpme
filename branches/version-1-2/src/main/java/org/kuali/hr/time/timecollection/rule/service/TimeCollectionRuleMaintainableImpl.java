@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
@@ -41,25 +42,26 @@ public class TimeCollectionRuleMaintainableImpl extends KualiMaintainableImpl {
     public void saveBusinessObject() {
         TimeCollectionRule timeCollectionRule = (TimeCollectionRule) this.getBusinessObject();
 
-        //Inactivate the old time collection rule as of the effective date of new time collection rule
-        if(timeCollectionRule.getTkTimeCollectionRuleId()!=null && timeCollectionRule.isActive()){
-            TimeCollectionRule oldTimeCollectRule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(timeCollectionRule.getTkTimeCollectionRuleId());
-            if(timeCollectionRule.getEffectiveDate().equals(oldTimeCollectRule.getEffectiveDate())){
-                timeCollectionRule.setTimestamp(null);
-            } else{
-                if(oldTimeCollectRule!=null){
-                    oldTimeCollectRule.setActive(false);
-                    //NOTE this is done to prevent the timestamp of the inactive one to be greater than the
-                    oldTimeCollectRule.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(System.currentTimeMillis())));
-                    oldTimeCollectRule.setEffectiveDate(timeCollectionRule.getEffectiveDate());
-                    KRADServiceLocator.getBusinessObjectService().save(oldTimeCollectRule);
-                }
-                timeCollectionRule.setTimestamp(new Timestamp(System.currentTimeMillis()));
-                timeCollectionRule.setTkTimeCollectionRuleId(null);
-            }
-        }
-
-        KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule);
+		//Inactivate the old time collection rule as of the effective date of new time collection rule
+		if(timeCollectionRule.getTkTimeCollectionRuleId()!=null && timeCollectionRule.isActive()){
+			TimeCollectionRule oldTimeCollectRule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(timeCollectionRule.getTkTimeCollectionRuleId());
+			if(timeCollectionRule.getEffectiveDate().equals(oldTimeCollectRule.getEffectiveDate())){
+				timeCollectionRule.setTimestamp(null);
+			} else{
+				if(oldTimeCollectRule!=null){
+					oldTimeCollectRule.setActive(false);
+					//NOTE this is done to prevent the timestamp of the inactive one to be greater than the 
+					oldTimeCollectRule.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(System.currentTimeMillis())));
+					oldTimeCollectRule.setEffectiveDate(timeCollectionRule.getEffectiveDate());
+					KRADServiceLocator.getBusinessObjectService().save(oldTimeCollectRule);
+				}
+				timeCollectionRule.setTimestamp(new Timestamp(System.currentTimeMillis()));
+				timeCollectionRule.setTkTimeCollectionRuleId(null);
+			}
+		}
+		
+		KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule);
+        CacheUtils.flushCache(TimeCollectionRule.CACHE_NAME);
     }
 
 

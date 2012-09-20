@@ -1,11 +1,11 @@
 package org.kuali.hr.time.timeblock;
 
+import java.math.BigDecimal;
+
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-import java.math.BigDecimal;
-
-public class TimeHourDetail extends PersistableBusinessObjectBase {
+public class TimeHourDetail extends PersistableBusinessObjectBase{
 
 	/**
 	 *

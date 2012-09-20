@@ -11,14 +11,14 @@ import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
 
 public class TimeZoneKeyValue extends KeyValuesBase{
-    @SuppressWarnings("unchecked")
-    @Override
-    public List getKeyValues(){
+	@SuppressWarnings("unchecked")
+	@Override
+	public List getKeyValues(){
         List<KeyValue> keyValues = new ArrayList<KeyValue>();
         for(int i=0; i< TkConstants.TIME_ZONES.size(); i++)
         {
-            keyValues.add(new ConcreteKeyValue(TkConstants.TIME_ZONES.get(i),TkConstants.TIME_ZONES.get(i)));
-        }
+        	keyValues.add(new ConcreteKeyValue(TkConstants.TIME_ZONES.get(i),TkConstants.TIME_ZONES.get(i)));
+        }        		
         return keyValues;
-    }
+	}
 }

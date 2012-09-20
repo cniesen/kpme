@@ -17,11 +17,11 @@ public interface TimezoneService {
      */
     public DateTimeZone getUserTimezoneWithFallback();
 
-    /**
-     * Fetch user time zone of the current on-context user.
-     * @return
-     */
-    public String getUserTimezone();
+	/**
+	 * Fetch user time zone of the current on-context user.
+	 * @return
+	 */
+	public String getUserTimezone();
 
     /**
      * (this call may be cached)
@@ -36,21 +36,21 @@ public interface TimezoneService {
     @Cacheable(value= KPMEConstants.KPME_GLOBAL_CACHE_NAME, key="'{UserTimezone}' + 'principalId=' + #p0")
     public String getUserTimezone(String principalId);
 
-    /**
-     * Translate TimeBlocks to a given timezone
-     * @param timeBlocks
-     * @param timezone
-     * @return
-     */
-    public List<TimeBlock> translateForTimezone(List<TimeBlock> timeBlocks, String timezone);
+	/**
+	 * Translate TimeBlocks to a given timezone
+	 * @param timeBlocks
+	 * @param timezone
+	 * @return
+	 */
+	public List<TimeBlock> translateForTimezone(List<TimeBlock> timeBlocks, String timezone);
 
     public void translateForTimezone(List<TimeBlock> timeBlocks);
 
-    /**
-     * Determine if Timezone is same as server timezone
-     * @return
-     */
-    public boolean isSameTimezone();
-
-    public long getTimezoneOffsetFromServerTime(DateTimeZone dtz);
+	/**
+	 * Determine if Timezone is same as server timezone
+	 * @return
+	 */
+	public boolean isSameTimezone();
+	
+	public long getTimezoneOffsetFromServerTime(DateTimeZone dtz);
 }

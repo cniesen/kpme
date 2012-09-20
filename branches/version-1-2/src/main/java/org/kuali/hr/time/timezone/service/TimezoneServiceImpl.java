@@ -36,12 +36,12 @@ public class TimezoneServiceImpl implements TimezoneService {
     }
 
     /**
-     * Used to determine if an override condition exists for a user timezone
-     */
-    @Override
-    public String getUserTimezone() {
+	 * Used to determine if an override condition exists for a user timezone
+	 */
+	@Override
+	public String getUserTimezone() {
         return getUserTimezone(TKContext.getPrincipalId());
-    }
+	}
 
     @Override
     public DateTimeZone getUserTimezoneWithFallback() {
@@ -53,46 +53,46 @@ public class TimezoneServiceImpl implements TimezoneService {
         }
     }
 
-    /**
-     * Translation needed for UI Display
-     * @param timeBlocks
-     * @param timezone
-     * @return timeblock list modified with times offset for timezone
-     */
-    public List<TimeBlock> translateForTimezone(List<TimeBlock> timeBlocks, String timezone){
-        for(TimeBlock tb : timeBlocks){
-            //No need for translation if it matches the current timezone
-            if(StringUtils.equals(timezone, TKUtils.getSystemTimeZone())){
-                tb.setBeginTimeDisplay(new DateTime(tb.getBeginTimestamp()));
-                tb.setEndTimeDisplay(new DateTime(tb.getEndTimestamp()));
-            }
-            else {
-                tb.setBeginTimeDisplay(new DateTime(tb.getBeginTimestamp(),DateTimeZone.forID(timezone)));
-                tb.setEndTimeDisplay(new DateTime(tb.getEndTimestamp(), DateTimeZone.forID(timezone)));
-            }
-        }
-        return timeBlocks;
-    }
+	/**
+	 * Translation needed for UI Display
+	 * @param timeBlocks
+	 * @param timezone
+	 * @return timeblock list modified with times offset for timezone
+	 */
+	public List<TimeBlock> translateForTimezone(List<TimeBlock> timeBlocks, String timezone){
+		for(TimeBlock tb : timeBlocks){
+			//No need for translation if it matches the current timezone
+			if(StringUtils.equals(timezone, TKUtils.getSystemTimeZone())){
+				tb.setBeginTimeDisplay(new DateTime(tb.getBeginTimestamp()));
+				tb.setEndTimeDisplay(new DateTime(tb.getEndTimestamp()));
+			}
+			else {
+				tb.setBeginTimeDisplay(new DateTime(tb.getBeginTimestamp(),DateTimeZone.forID(timezone)));
+				tb.setEndTimeDisplay(new DateTime(tb.getEndTimestamp(), DateTimeZone.forID(timezone)));
+			}
+		}
+		return timeBlocks;
+	}
 
     public void translateForTimezone(List<TimeBlock> timeBlocks) {
         translateForTimezone(timeBlocks, getUserTimezone());
     }
 
-    @Override
-    public boolean isSameTimezone() {
-        String userTimezone = getUserTimezone();
-        if(StringUtils.isNotBlank(userTimezone)) {
-            return StringUtils.equals(TKUtils.getSystemTimeZone(), userTimezone);
-        }
-        return true;
-    }
-
-
-    public long getTimezoneOffsetFromServerTime(DateTimeZone dtz){
-        long systemOffsetUTC = TKUtils.getSystemDateTimeZone().getOffset(null);
-        long tzOffsetUTC = dtz.getOffset(null);
-        return tzOffsetUTC - systemOffsetUTC;
-    }
+	@Override
+	public boolean isSameTimezone() {
+		String userTimezone = getUserTimezone();
+		if(StringUtils.isNotBlank(userTimezone)) {
+			return StringUtils.equals(TKUtils.getSystemTimeZone(), userTimezone);
+		}
+		return true;
+	}
+	
+	
+	public long getTimezoneOffsetFromServerTime(DateTimeZone dtz){
+		long systemOffsetUTC = TKUtils.getSystemDateTimeZone().getOffset(null);
+		long tzOffsetUTC = dtz.getOffset(null);
+		return tzOffsetUTC - systemOffsetUTC;
+	}
 
 
 

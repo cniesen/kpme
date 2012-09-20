@@ -1,7 +1,5 @@
 package org.kuali.hr.time.timeblock;
 
-import java.util.LinkedHashMap;
-
 import org.kuali.rice.kim.api.identity.Person;
 
 public class TimeBlockHistoryDetail extends TimeHourDetail{

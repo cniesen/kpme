@@ -64,13 +64,13 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
     private String assignmentKey;
     private String overtimePref;
     private boolean lunchDeleted;
-
+    
     @Transient
     private Boolean deleteable;
-
+    
     @Transient
     private Boolean overtimeEditable;
-
+    
     @Transient
     private Boolean regEarnCodeEditable;
 
@@ -81,7 +81,7 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
 
     private TimesheetDocumentHeader timesheetDocumentHeader;
     private Person user;
-
+    
     private List<TimeHourDetail> timeHourDetails = new ArrayList<TimeHourDetail>();
     private List<TimeBlockHistory> timeBlockHistories = new ArrayList<TimeBlockHistory>();
 
@@ -617,17 +617,17 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
         return false;
     }
 
-    public Boolean getDeleteable() {
-        return TkServiceLocator.getPermissionsService().canDeleteTimeBlock(this);
-    }
+	public Boolean getDeleteable() {
+		return TkServiceLocator.getPermissionsService().canDeleteTimeBlock(this);
+	}
 
-    public Boolean getOvertimeEditable() {
-        return TkServiceLocator.getPermissionsService().canEditOvertimeEarnCode(this);
-    }
-
-    public Boolean getRegEarnCodeEditable() {
-        return TkServiceLocator.getPermissionsService().canEditRegEarnCode(this);
-    }
+	public Boolean getOvertimeEditable() {
+		return TkServiceLocator.getPermissionsService().canEditOvertimeEarnCode(this);
+	}
+	
+	public Boolean getRegEarnCodeEditable() {
+		return TkServiceLocator.getPermissionsService().canEditRegEarnCode(this);
+	}
 
     public boolean isLunchDeleted() {
         return lunchDeleted;
@@ -637,11 +637,11 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
         this.lunchDeleted = lunchDeleted;
     }
 
-    public Person getUser() {
-        return user;
-    }
+	public Person getUser() {
+		return user;
+	}
 
-    public void setUser(Person user) {
-        this.user = user;
-    }
+	public void setUser(Person user) {
+		this.user = user;
+	}
 }
