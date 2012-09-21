@@ -40,36 +40,30 @@
         
         <dba.environment>dba</dba.environment>
         <build.environment>dev</build.environment>
-        <build.version>NO VERSION</build.version>
     </properties>
     
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-antrun-plugin</artifactId>
-	                <version>1.7</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.7</version>
                 </plugin>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-invoker-plugin</artifactId>
-	                <version>1.6</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-invoker-plugin</artifactId>
+                    <version>1.6</version>
                 </plugin>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-resources-plugin</artifactId>
-	                <version>2.5</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.5</version>
                 </plugin>
                 <plugin>
-	                <groupId>org.apache.maven.plugins</groupId>
-	                <artifactId>maven-scm-plugin</artifactId>
-	                <version>1.6</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.1</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-plugin</artifactId>
+                    <version>1.6</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
@@ -107,8 +101,8 @@
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>org.kuali.maven.plugins</groupId>
-						                <artifactId>maven-impex-plugin</artifactId>
-						                <versionRange>[1.0.2-SNAPSHOT,)</versionRange>
+                                        <artifactId>maven-impex-plugin</artifactId>
+                                        <versionRange>[1.0.2-SNAPSHOT,)</versionRange>
                                         <goals>
                                             <goal>exportschema</goal>
                                             <goal>exportdata</goal>
@@ -141,17 +135,17 @@
                     </configuration>
                 </plugin>
                 <plugin>
-	                <groupId>org.kuali.maven.plugins</groupId>
-	                <artifactId>maven-impex-plugin</artifactId>
-	                <version>1.1.0</version>
-	                <dependencies>
-	                    <dependency>
-	                        <groupId>mysql</groupId>
-	                        <artifactId>mysql-connector-java</artifactId>
-	                        <version>5.1.5</version>
-	                    </dependency>
-	                </dependencies>
-	            </plugin>
+                    <groupId>org.kuali.maven.plugins</groupId>
+                    <artifactId>maven-impex-plugin</artifactId>
+                    <version>1.1.0</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                            <version>5.1.5</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
@@ -162,182 +156,182 @@
             <build>
                 <plugins>
                      <plugin>
-		                <groupId>org.kuali.maven.plugins</groupId>
-		                <artifactId>maven-impex-plugin</artifactId>
-		                <executions>
-		                    <execution>
-		                        <id>export-krdba</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>exportdata</goal>
-		                            <goal>exportschema</goal>
-		                            <goal>datadtd</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${krdba.dataSource.database}</artifactId>
-		                            <dateFormat>yyyyMMddHHmmss</dateFormat>
-		                            <driver>${krdba.dataSource.driver}</driver>
-		                            <url>${krdba.dataSource.jdbcUrl}</url>
-		                            <username>${krdba.dataSource.username}</username>
-		                            <password>${krdba.dataSource.password}</password>
-		                            <outputDir>${project.build.directory}/impex/</outputDir>
-		                            <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
-		                            <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>export-kpmedba</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>exportdata</goal>
-		                            <goal>exportschema</goal>
-		                            <goal>datadtd</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${kpmedba.dataSource.database}</artifactId>
-		                            <dateFormat>yyyyMMddHHmmss</dateFormat>
-		                            <driver>${kpmedba.dataSource.driver}</driver>
-		                            <url>${kpmedba.dataSource.jdbcUrl}</url>
-		                            <username>${kpmedba.dataSource.username}</username>
-		                            <password>${kpmedba.dataSource.password}</password>
-		                            <outputDir>${project.build.directory}/impex/</outputDir>
-		                            <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
-		                            <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-schema-krdba-oracle</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>schemasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>oracle</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
-		                            <outputDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</outputDir>
-		                            <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-schema-krdba-mysql</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>schemasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>mysql</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
-		                            <outputDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</outputDir>
-		                            <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-schema-kpmedba-oracle</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>schemasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>oracle</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
-		                            <outputDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</outputDir>
-		                            <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-schema-kpmedba-mysql</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>schemasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>mysql</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
-		                            <outputDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</outputDir>
-		                            <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-data-krdba-oracle</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>datasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>oracle</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
-		                            <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
-		                            <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml</dataXMLExcludes>
-		                            <dataDTD>${project.build.directory}/impex/${krdba.dataSource.database}.dtd</dataDTD>
-		                            <outputDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</outputDir>
-		                            <runOnlyOnChange>false</runOnlyOnChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-data-krdba-mysql</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>datasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>mysql</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
-		                            <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
-		                            <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml</dataXMLExcludes>
-		                            <dataDTD>${project.build.directory}/impex/${krdba.dataSource.database}.dtd</dataDTD>
-		                            <outputDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</outputDir>
-		                            <runOnlyOnChange>false</runOnlyOnChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-data-kpmedba-oracle</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>datasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>oracle</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
-		                            <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
-		                            <dataDTD>${project.build.directory}/impex/${kpmedba.dataSource.database}.dtd</dataDTD>
-		                            <outputDir>${project.build.directory}/data-sql/${kpmedba.dataSource.database}</outputDir>
-		                            <runOnlyOnChange>false</runOnlyOnChange>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>convert-data-kpmedba-mysql</id>
-		                        <phase>generate-sources</phase>
-		                        <goals>
-		                            <goal>datasql</goal>
-		                        </goals>
-		                        <configuration>
-		                            <targetDatabase>mysql</targetDatabase>
-		                            <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
-		                            <schemaDir>${project.build.directory}/impex</schemaDir>
-		                            <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
-		                            <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
-		                            <dataDTD>${project.build.directory}/impex/${kpmedba.dataSource.database}.dtd</dataDTD>
-		                            <outputDir>${project.build.directory}/data-sql/${kpmedba.dataSource.database}</outputDir>
-		                            <runOnlyOnChange>false</runOnlyOnChange>
-		                        </configuration>
-		                    </execution>
-		                </executions>
-		            </plugin>
-		            <plugin>
+                        <groupId>org.kuali.maven.plugins</groupId>
+                        <artifactId>maven-impex-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>export-krdba</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>exportdata</goal>
+                                    <goal>exportschema</goal>
+                                    <goal>datadtd</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${krdba.dataSource.database}</artifactId>
+                                    <dateFormat>yyyyMMddHHmmss</dateFormat>
+                                    <driver>${krdba.dataSource.driver}</driver>
+                                    <url>${krdba.dataSource.jdbcUrl}</url>
+                                    <username>${krdba.dataSource.username}</username>
+                                    <password>${krdba.dataSource.password}</password>
+                                    <outputDir>${project.build.directory}/impex/</outputDir>
+                                    <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
+                                    <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>export-kpmedba</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>exportdata</goal>
+                                    <goal>exportschema</goal>
+                                    <goal>datadtd</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kpmedba.dataSource.database}</artifactId>
+                                    <dateFormat>yyyyMMddHHmmss</dateFormat>
+                                    <driver>${kpmedba.dataSource.driver}</driver>
+                                    <url>${kpmedba.dataSource.jdbcUrl}</url>
+                                    <username>${kpmedba.dataSource.username}</username>
+                                    <password>${kpmedba.dataSource.password}</password>
+                                    <outputDir>${project.build.directory}/impex/</outputDir>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-schema-krdba-oracle</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>schemasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>oracle</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</outputDir>
+                                    <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-schema-krdba-mysql</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>schemasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>mysql</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</outputDir>
+                                    <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-schema-kpmedba-oracle</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>schemasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>oracle</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</outputDir>
+                                    <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-schema-kpmedba-mysql</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>schemasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>mysql</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kpmedba.dataSource.database}</outputDir>
+                                    <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-data-krdba-oracle</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>datasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>oracle</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
+                                    <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml</dataXMLExcludes>
+                                    <dataDTD>${project.build.directory}/impex/${krdba.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</outputDir>
+                                    <runOnlyOnChange>false</runOnlyOnChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-data-krdba-mysql</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>datasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>mysql</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${krdba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${krdba.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${krdba.dataSource.database}</dataXMLDir>
+                                    <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml</dataXMLExcludes>
+                                    <dataDTD>${project.build.directory}/impex/${krdba.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</outputDir>
+                                    <runOnlyOnChange>false</runOnlyOnChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-data-kpmedba-oracle</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>datasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>oracle</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
+                                    <dataDTD>${project.build.directory}/impex/${kpmedba.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kpmedba.dataSource.database}</outputDir>
+                                    <runOnlyOnChange>false</runOnlyOnChange>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>convert-data-kpmedba-mysql</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>datasql</goal>
+                                </goals>
+                                <configuration>
+                                    <targetDatabase>mysql</targetDatabase>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpmedba.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaDir>${project.build.directory}/impex</schemaDir>
+                                    <schemaIncludes>${kpmedba.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpmedba.dataSource.database}</dataXMLDir>
+                                    <dataDTD>${project.build.directory}/impex/${kpmedba.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kpmedba.dataSource.database}</outputDir>
+                                    <runOnlyOnChange>false</runOnlyOnChange>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -426,8 +420,8 @@
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
-		                                            <replaceregex pattern="^" replace="DELIMITER /${line.separator}" />
-		                                            <replaceregex pattern="$" replace="${line.separator}DELIMITER ;" />
+                                                    <replaceregex pattern="^" replace="DELIMITER /${line.separator}" />
+                                                    <replaceregex pattern="$" replace="${line.separator}DELIMITER ;" />
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
@@ -555,9 +549,9 @@
                             </execution>
                         </executions>
                     </plugin>
-		        </plugins>
-		    </build>
-		</profile>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>import</id>
             <build>
@@ -567,24 +561,24 @@
                         <artifactId>maven-impex-plugin</artifactId>
                         <executions>
                             <execution>
-		                        <id>reset-kr</id>
-		                        <phase>process-sources</phase>
-		                        <goals>
-		                            <goal>reset</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${admin.dataSource.database}</artifactId>
-		                            <driver>${admin.dataSource.driver}</driver>
-		                            <url>${admin.dataSource.jdbcUrl}</url>
-		                            <username>${admin.dataSource.username}</username>
-		                            <password>${admin.dataSource.password}</password>
-		                            <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
-		                            <database>${kr.dataSource.database}</database>
-		                            <databaseUser>${kr.dataSource.username}</databaseUser>
-		                            <databasePassword>${kr.dataSource.password}</databasePassword>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
+                                <id>reset-kr</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>reset</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${admin.dataSource.database}</artifactId>
+                                    <driver>${admin.dataSource.driver}</driver>
+                                    <url>${admin.dataSource.jdbcUrl}</url>
+                                    <username>${admin.dataSource.username}</username>
+                                    <password>${admin.dataSource.password}</password>
+                                    <serverUrl>${admin.dataSource.jdbcUrl}</serverUrl>
+                                    <database>${kr.dataSource.database}</database>
+                                    <databaseUser>${kr.dataSource.username}</databaseUser>
+                                    <databasePassword>${kr.dataSource.password}</databasePassword>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>reset-kpme</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -602,54 +596,54 @@
                                     <databasePassword>${kpme.dataSource.password}</databasePassword>
                                 </configuration>
                             </execution>
-		                    <execution>
-		                        <id>import-schema-kr</id>
-		                        <phase>process-sources</phase>
-		                        <goals>
-		                            <goal>import</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${kr.dataSource.database}</artifactId>
-		                            <driver>${kr.dataSource.driver}</driver>
-		                            <url>${kr.dataSource.jdbcUrl}</url>
-		                            <username>${kr.dataSource.username}</username>
-		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
-		                            <importDirIncludes>${krdba.dataSource.database}.sql</importDirIncludes>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>import-data-kr</id>
-		                        <phase>process-sources</phase>
-		                        <goals>
-		                            <goal>import</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${kr.dataSource.database}</artifactId>
-		                            <driver>${kr.dataSource.driver}</driver>
-		                            <url>${kr.dataSource.jdbcUrl}</url>
-		                            <username>${kr.dataSource.username}</username>
-		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</importDir>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
-		                        <id>import-constraints-kr</id>
-		                        <phase>process-sources</phase>
-		                        <goals>
-		                            <goal>import</goal>
-		                        </goals>
-		                        <configuration>
-		                            <artifactId>${kr.dataSource.database}</artifactId>
-		                            <driver>${kr.dataSource.driver}</driver>
-		                            <url>${kr.dataSource.jdbcUrl}</url>
-		                            <username>${kr.dataSource.username}</username>
-		                            <password>${kr.dataSource.password}</password>
-		                            <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
-		                            <importDirIncludes>${krdba.dataSource.database}-constraints.sql</importDirIncludes>
-		                        </configuration>
-		                    </execution>
-		                    <execution>
+                            <execution>
+                                <id>import-schema-kr</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kr.dataSource.database}</artifactId>
+                                    <driver>${kr.dataSource.driver}</driver>
+                                    <url>${kr.dataSource.jdbcUrl}</url>
+                                    <username>${kr.dataSource.username}</username>
+                                    <password>${kr.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
+                                    <importDirIncludes>${krdba.dataSource.database}.sql</importDirIncludes>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>import-data-kr</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kr.dataSource.database}</artifactId>
+                                    <driver>${kr.dataSource.driver}</driver>
+                                    <url>${kr.dataSource.jdbcUrl}</url>
+                                    <username>${kr.dataSource.username}</username>
+                                    <password>${kr.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/data-sql/${krdba.dataSource.database}</importDir>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>import-constraints-kr</id>
+                                <phase>process-sources</phase>
+                                <goals>
+                                    <goal>import</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactId>${kr.dataSource.database}</artifactId>
+                                    <driver>${kr.dataSource.driver}</driver>
+                                    <url>${kr.dataSource.jdbcUrl}</url>
+                                    <username>${kr.dataSource.username}</username>
+                                    <password>${kr.dataSource.password}</password>
+                                    <importDir>${project.build.directory}/schema-sql/${krdba.dataSource.database}</importDir>
+                                    <importDirIncludes>${krdba.dataSource.database}-constraints.sql</importDirIncludes>
+                                </configuration>
+                            </execution>
+                            <execution>
                                 <id>import-schema-kpme</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -696,143 +690,121 @@
                                     <importDirIncludes>${kpmedba.dataSource.database}-constraints.sql</importDirIncludes>
                                 </configuration>
                             </execution>
-		                </executions>
-		            </plugin>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
         <profile>
             <id>deploy</id>
             <build>
-		        <resources>
-		            <resource>
-		                <directory>src/main/resources/${dba.environment}</directory>
-		                <targetPath>${project.build.directory}/environment/${dba.environment}</targetPath>
-		                <filtering>true</filtering>
-		            </resource>
-		            <resource>
-		                <directory>src/main/resources/${build.environment}</directory>
-		                <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
-		                <filtering>true</filtering>
-		            </resource>
-		        </resources>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources/${dba.environment}</directory>
+                        <targetPath>${project.build.directory}/environment/${dba.environment}</targetPath>
+                        <filtering>true</filtering>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resources/${build.environment}</directory>
+                        <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
                 <plugins>
                     <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-resources-plugin</artifactId>
-		                <configuration>
-		                    <useDefaultDelimiters>false</useDefaultDelimiters>
-		                    <delimiters>
-		                        <delimiter>@</delimiter>
-		                    </delimiters>
-		                </configuration>
-		            </plugin>
-		            <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-antrun-plugin</artifactId>
-		                <executions>
-		                    <execution>
-		                        <phase>process-resources</phase>
-		                        <goals>
-		                            <goal>run</goal>
-		                        </goals>
-		                        <configuration>
-		                            <target>
-		                                <copy toDir="${user.home}/kuali/main">
-		                                    <fileset dir="${project.build.directory}/environment" />
-		                                </copy>
-		                            </target>
-		                        </configuration>
-		                    </execution>
-		                </executions>
-		            </plugin>
-		            <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-scm-plugin</artifactId>
-		                <dependencies>
-		                    <dependency>
-		                        <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
-		                        <artifactId>maven-scm-provider-svnjava</artifactId>
-		                        <version>1.15</version>
-		                    </dependency>
-		                </dependencies>
-		                <configuration>
-		                    <providerImplementations>
-		                        <svn>javasvn</svn>
-		                    </providerImplementations>
-		                    
-		                    <scmVersionType>${scmVersionType}</scmVersionType>
-		                    <scmVersion>${scmVersion}</scmVersion>
-		                </configuration>
-		                <executions>
-		                    <execution>
-		                        <id>project-checkout</id>
-		                        <phase>compile</phase>
-		                        <goals>
-		                            <goal>checkout</goal>
-		                        </goals>
-		                        <configuration>
-		                            <checkoutDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</checkoutDirectory>
-		                        </configuration>
-		                    </execution>
-		                </executions>
-		            </plugin>
-					<plugin>
-						<groupId>org.codehaus.mojo</groupId>
-						<artifactId>buildnumber-maven-plugin</artifactId>
-						<configuration>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-resources-plugin</artifactId>
+                        <configuration>
+                            <useDefaultDelimiters>false</useDefaultDelimiters>
+                            <delimiters>
+                                <delimiter>@</delimiter>
+                            </delimiters>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy toDir="${user.home}/kuali/main">
+                                            <fileset dir="${project.build.directory}/environment" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-scm-plugin</artifactId>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+                                <artifactId>maven-scm-provider-svnjava</artifactId>
+                                <version>1.15</version>
+                            </dependency>
+                        </dependencies>
+                        <configuration>
                             <providerImplementations>
                                 <svn>javasvn</svn>
                             </providerImplementations>
                             
-							<doCheck>false</doCheck>
-							<doUpdate>false</doUpdate>
-							<scmDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</scmDirectory>
-						</configuration>
-						<executions>
-							<execution>
-								<phase>compile</phase>
-								<goals>
-									<goal>create</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
-		            <plugin>
-		                <groupId>org.apache.maven.plugins</groupId>
-		                <artifactId>maven-invoker-plugin</artifactId>
-		                <configuration>
-		                    <streamLogs>true</streamLogs>
-		                    <projectsDirectory>${project.build.directory}/checkout/kpme/${scmVersionUrl}/${scmVersion}</projectsDirectory>
-		                    <cloneProjectsTo>${project.build.directory}/build</cloneProjectsTo>
-		                    <settingsFile>${user.home}/.m2/settings.xml</settingsFile>
-		                    <cloneClean>true</cloneClean>
-		                    <pomIncludes>
-		                        <pomInclude>pom.xml</pomInclude>
-		                    </pomIncludes>
+                            <scmVersionType>${scmVersionType}</scmVersionType>
+                            <scmVersion>${scmVersion}</scmVersion>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>project-checkout</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>checkout</goal>
+                                </goals>
+                                <configuration>
+                                    <checkoutDirectory>${project.build.directory}/build</checkoutDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-invoker-plugin</artifactId>
+                        <configuration>
+                            <streamLogs>true</streamLogs>
+                            <projectsDirectory>${project.build.directory}/build</projectsDirectory>
+                            <settingsFile>${user.home}/.m2/settings.xml</settingsFile>
+                            <pomIncludes>
+                                <pomInclude>pom.xml</pomInclude>
+                            </pomIncludes>
                             <profiles>
                                 <profile>kpme-main</profile>
                                 <profile>${build.environment}</profile>
+                                <profile>kuali-release</profile>
                             </profiles>
-		                    <goals>
-		                        <goal>clean</goal>
-		                        <goal>package</goal>
-		                    </goals>
-		                    <properties>
-		                        <build.environment>${build.environment}</build.environment>
-		                        <build.version>build-${buildNumber}</build.version>
-		                        <maven.test.skip>true</maven.test.skip>
-		                    </properties>
-		                </configuration>
-		                <executions>
-		                    <execution>
-		                        <phase>compile</phase>
-		                        <goals>
-		                            <goal>run</goal>
-		                        </goals>
-		                    </execution>
-		                </executions>
-		            </plugin>
+                            <goals>
+                                <goal>clean</goal>
+                                <goal>package</goal>
+                            </goals>
+                            <properties>
+                                <maven.test.skip>true</maven.test.skip>
+                                <decrypt.phase>none</decrypt.phase>
+                                <kuali.gpg.phase>none</kuali.gpg.phase>
+                            </properties>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
                 </plugins>
             </build>
         </profile>
