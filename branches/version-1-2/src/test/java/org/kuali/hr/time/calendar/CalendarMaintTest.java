@@ -53,9 +53,7 @@ public class CalendarMaintTest extends KPMETestCase {
 	  	Assert.assertFalse("page text contains: Incident Report", page.asText().contains("Incident Report"));
 	  	Assert.assertTrue("page text does not contain:\n" + CAL_NAME_REQUIRED, page.asText().contains(CAL_NAME_REQUIRED));
 	  	Assert.assertTrue("page text does not contain:\n" + CAL_DESP_REQUIRED, page.asText().contains(CAL_DESP_REQUIRED));
-	  	Assert.assertFalse("page text contains:\n" + FLSA_DAY_REQUIRED, page.asText().contains(FLSA_DAY_REQUIRED));
-	  	Assert.assertFalse("page text contains:\n" + FLSA_TIME_REQUIRED, page.asText().contains(FLSA_TIME_REQUIRED));
-	    
+
 	    setFieldValue(page, "document.newMaintainableObject.calendarName", "testCal");
 	    setFieldValue(page, "document.newMaintainableObject.calendarDescriptions", "testDes");
 	    // when calendar type is Pay, flsa day and time are required
