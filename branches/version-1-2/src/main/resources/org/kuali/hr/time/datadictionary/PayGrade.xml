@@ -18,7 +18,7 @@
 			<list>
 				<ref bean="PayGrade-hrPayGradeId" />
 				<ref bean="PayGrade-payGrade" />
-				<ref bean="PayGrade-salGrade" />
+				<ref bean="PayGrade-salGroup" />
 				<ref bean="PayGrade-description" />
 				<ref bean="PayGrade-effectiveDate" />
 				<ref bean="PayGrade-active" />
@@ -26,6 +26,20 @@
 				<ref bean="PayGrade-timestamp" />
 			</list>
 		</property>	 
+		<property name="relationships">
+			<list>
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="salGroupObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="salGroup"
+								p:targetName="hrSalGroup" />
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+
 	</bean>
 
 	<!-- Attribute Definitions -->
@@ -64,21 +78,21 @@
 		<property name="label" value="PayGrade" />
 	</bean>
 	
-	<bean id="PayGrade-salGrade" parent="PayGrade-salGrade-parentBean" />
-	<bean id="PayGrade-salGrade-parentBean" abstract="true"
+	<bean id="PayGrade-salGroup" parent="PayGrade-salGroup-parentBean" />
+	<bean id="PayGrade-salGroup-parentBean" abstract="true"
 		parent="AttributeDefinition">
-		<property name="shortLabel" value="salGrade" />
-		<property name="maxLength" value="20" />
+		<property name="shortLabel" value="Sal Group" />
+		<property name="maxLength" value="10" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="false" />
+				<property name="allowWhitespace" value="true" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="20" />
+			<bean parent="TextControlDefinition" p:size="10" />
 		</property>
-		<property name="name" value="salGrade" />
-		<property name="label" value="SalGrade" />
+		<property name="name" value="salGroup" />
+		<property name="label" value="Salary Group" />
 	</bean>
 
 	<bean id="PayGrade-description" parent="PayGrade-description-parentBean" />

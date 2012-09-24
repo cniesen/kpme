@@ -38,9 +38,6 @@
         <addColumn tableName="HR_PRINCIPAL_ATTRIBUTES_T">
             <column name="WORKSMAN_ELIGIBLE" type="VARCHAR(1)" defaultValue="N" />
         </addColumn>
-        <addColumn tableName="HR_PRINCIPAL_ATTRIBUTES_T">
-            <column name="LEAVE_CALENDAR" type="VARCHAR(15)" />
-        </addColumn>
         <dropColumn tableName="HR_PRINCIPAL_ATTRIBUTES_T" columnName="PY_CALENDAR_GROUP" />
     </changeSet>
 

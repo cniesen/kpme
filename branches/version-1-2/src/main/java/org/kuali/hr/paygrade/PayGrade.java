@@ -2,10 +2,10 @@ package org.kuali.hr.paygrade;
 
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.LinkedHashMap;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.salgroup.SalGroup;
 
 public class PayGrade extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayGrade";
@@ -18,7 +18,7 @@ public class PayGrade extends HrBusinessObject {
 	private String description;
 	private String userPrincipalId;
     private String salGroup;
-    private String salGrade;
+    private SalGroup salGroupObj;
 
     public String getHrPayGradeId() {
 		return hrPayGradeId;
@@ -35,14 +35,6 @@ public class PayGrade extends HrBusinessObject {
 	public void setPayGrade(String payGrade) {
 		this.payGrade = payGrade;
 	}
-
-    public String getSalGrade() {
-        return salGrade;
-    }
-
-    public void setSalGrade(String salGrade) {
-        this.salGrade = salGrade;
-    }
 
 	public String getDescription() {
 		return description;
@@ -106,4 +98,13 @@ public class PayGrade extends HrBusinessObject {
     public void setSalGroup(String salGroup) {
         this.salGroup = salGroup;
     }
+
+	public SalGroup getSalGroupObj() {
+		return salGroupObj;
+	}
+
+	public void setSalGroupObj(SalGroup salGroupObj) {
+		this.salGroupObj = salGroupObj;
+	}
+
 }
