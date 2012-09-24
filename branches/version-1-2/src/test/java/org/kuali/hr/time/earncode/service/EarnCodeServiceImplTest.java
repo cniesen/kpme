@@ -103,10 +103,7 @@ public class EarnCodeServiceImplTest extends KPMETestCase {
 		inputForDescription.setValueAttribute("Description");
 //		setFieldValue(maintPage, "document.newMaintainableObject.fractionalTimeAllowed", "99");
 //		setFieldValue(maintPage, "document.newMaintainableObject.roundingOption", "T");
-		
-		HtmlRadioButtonInput hb = maintPage.getHtmlElementById("document.newMaintainableObject.fractionalTimeAllowed99");
-		hb.setChecked(true);
-		
+
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");
 		System.out.println(resultantPageAfterEdit.asText());
