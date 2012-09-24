@@ -41,6 +41,8 @@
       </property> 
 		 
 	</bean>
+	
+
 
 	<!-- Attribute Definitions -->
 
@@ -82,14 +84,14 @@
 	<bean id="Position-description-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Description" />
-		<property name="maxLength" value="30" />
+		<property name="maxLength" value="40" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="true" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="30" />
+			<bean parent="TextControlDefinition" p:size="40" />
 		</property>
 		<property name="name" value="description" />
 		<property name="label" value="Description" />

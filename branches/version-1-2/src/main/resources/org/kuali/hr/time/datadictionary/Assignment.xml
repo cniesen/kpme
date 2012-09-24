@@ -131,7 +131,7 @@
 		<property name="name" value="principalId" />
 		<property name="label" value="Principal Id" />
 	</bean>
-<!-- 
+
 	<bean id="Assignment-name" parent="Assignment-name-parentBean" />
 	<bean id="Assignment-name-parentBean" abstract="true"
 		parent="AttributeDefinition">
@@ -143,7 +143,7 @@
 		<property name="name" value="name" />
 		<property name="label" value="Name" />
 	</bean>
- -->
+
 
 	<bean id="Assignment-jobNumber" parent="Assignment-jobNumber-parentBean" />
 	<bean id="Assignment-jobNumber-parentBean" abstract="true"

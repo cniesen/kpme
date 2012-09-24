@@ -21,7 +21,7 @@
 		<property name="attributes">
 			<list>
 				<ref bean="GracePeriodRule-hourFactor" />
-				<ref bean="GracePeriodRule-effectiveDate" />
+				<ref bean="GracePeriodRule-effDt" />
 				<ref bean="GracePeriodRule-active" />
 				<ref bean="GracePeriodRule-userPrincipalId" />
 				<ref bean="GracePeriodRule-timestamp" />
@@ -48,9 +48,9 @@
 	</bean>
 
 
-	<bean id="GracePeriodRule-effectiveDate" parent="GracePeriodRule-effectiveDate-parentBean" />
+	<bean id="GracePeriodRule-effDt" parent="GracePeriodRule-effDt-parentBean" />
 
-	<bean id="GracePeriodRule-effectiveDate-parentBean" abstract="true"
+	<bean id="GracePeriodRule-effDt-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Eff Date" />
 		<property name="maxLength" value="10" />

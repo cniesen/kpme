@@ -39,7 +39,7 @@
 				</bean>
 			</list>
 		</property>
-
+		
 	</bean>
 
 	<!-- Attribute Definitions -->
@@ -77,7 +77,7 @@
 		<property name="name" value="payGrade" />
 		<property name="label" value="PayGrade" />
 	</bean>
-	
+
 	<bean id="PayGrade-salGroup" parent="PayGrade-salGroup-parentBean" />
 	<bean id="PayGrade-salGroup-parentBean" abstract="true"
 		parent="AttributeDefinition">
