@@ -154,11 +154,11 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         ReportQueryByCriteria effdtSubQuery;
         ReportQueryByCriteria timestampSubQuery;
 
+        // EFFECTIVE DATE / TIMESTAMP
         effdt.addEqualToField("roleName", Criteria.PARENT_QUERY_PREFIX + "roleName");
         effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
         effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-
-        // EFFECTIVE DATE --
+        
         if (workArea != null || StringUtils.isNotEmpty(department) || StringUtils.isNotEmpty(chart)) {
             if (workArea != null)
                 effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
@@ -168,13 +168,6 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
                 effdt.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart");
         }
 
-        effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-
-
-        // TIMESTAMP --
-
-        //Configure the actual "criteria" in the where clause
         timestamp.addEqualToField("roleName", Criteria.PARENT_QUERY_PREFIX + "roleName");
         timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
         timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
@@ -191,12 +184,13 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         timestampSubQuery = QueryFactory.newReportQuery(TkRole.class, timestamp);
         timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
 
+        effdt.addEqualTo("timestamp", timestampSubQuery);
 
-        // Filter by Max(EffDt) / Max(Timestamp)
+        effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
+        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+
         root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
 
-        // Optional ROOT criteria added :
         if (workArea != null) {
             root.addEqualTo("workArea", workArea);
         }
