@@ -150,14 +150,14 @@
 	<bean id="EarnCodeSecurity-location-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Location" />
-		<property name="maxLength" value="30" />
+		<property name="maxLength" value="10" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="15" />
+			<bean parent="TextControlDefinition" p:size="10" />
 		</property>
 		<property name="name" value="location" />
 		<property name="label" value="Location" />

@@ -84,7 +84,7 @@
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
+			<bean parent="TextControlDefinition" p:size="40" />
 		</property>
 		<property name="name" value="principalId" />
 		<property name="label" value="Principal Id" />

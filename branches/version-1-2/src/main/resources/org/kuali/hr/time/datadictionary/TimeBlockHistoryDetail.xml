@@ -15,7 +15,7 @@
         <property name="titleAttribute" value="tkTimeBlockHistoryDetailId"/>
         <property name="attributes">
             <list>
-                <!--<ref bean="TimeBlockHistoryDetail-timeBlockHistory.tkTimeBlockHistoryId"/>-->
+                <ref bean="TimeBlockHistoryDetail-timeBlockHistory.tkTimeBlockId"/>
                 <ref bean="TimeBlockHistoryDetail-timeBlockHistory.documentId"/>
                 <ref bean="TimeBlockHistoryDetail-earnCode"/>
                 <ref bean="TimeBlockHistoryDetail-timeBlockHistory.beginTimestamp"/>

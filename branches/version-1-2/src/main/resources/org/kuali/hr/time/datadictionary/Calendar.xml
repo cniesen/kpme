@@ -113,7 +113,6 @@
     <property name="lookupFields">
       <list>
         <bean parent="FieldDefinition" p:attributeName="calendarName"/>
-        <!--<bean parent="FieldDefinition" p:attributeName="calendarTypes"/>-->
         <bean parent="FieldDefinition" p:attributeName="flsaBeginDay"/>
         <bean parent="FieldDefinition" p:attributeName="flsaBeginTime"/>
        </list>
@@ -143,7 +142,6 @@
 					<list>
 						<bean parent="FieldDefinition" p:attributeName="calendarName"/>
 						<bean parent="FieldDefinition" p:attributeName="calendarDescriptions"/>
-						<!--<bean parent="FieldDefinition" p:attributeName="calendarTypes"/>-->
 				        <bean parent="FieldDefinition" p:attributeName="flsaBeginDay"/>
 				        <bean parent="FieldDefinition" p:attributeName="flsaBeginTime"/>
 					</list>

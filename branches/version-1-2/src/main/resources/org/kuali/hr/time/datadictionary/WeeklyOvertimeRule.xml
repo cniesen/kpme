@@ -74,14 +74,14 @@
 	<bean id="WeeklyOvertimeRule-maxHoursEarnGroup-parentBean"
 		abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Max Hour EarnGroup" />
-		<property name="maxLength" value="3" />
+		<property name="maxLength" value="10" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="3" />
+			<bean parent="TextControlDefinition" p:size="10" />
 		</property>
 		<property name="name" value="maxHoursEarnGroup" />
 		<property name="label" value="Max Hour EarnGroup" />
@@ -90,14 +90,14 @@
 	<bean id="WeeklyOvertimeRule-convertFromEarnGroup-parentBean"
 		abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Convert from EarnGroup" />
-		<property name="maxLength" value="3" />
+		<property name="maxLength" value="10" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="3" />
+			<bean parent="TextControlDefinition" p:size="10" />
 		</property>
 		<property name="name" value="convertFromEarnGroup" />
 		<property name="label" value="Convert from EarnGroup" />

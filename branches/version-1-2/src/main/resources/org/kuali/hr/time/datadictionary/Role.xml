@@ -83,14 +83,14 @@
 	<bean id="Role-tkWorkAreaId" parent="Role-tkWorkAreaId-parentBean" />
 	<bean id="Role-tkWorkAreaId-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="WorkArea Id" />
-		<property name="maxLength" value="40" />
+		<property name="maxLength" value="60" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="40" />
+			<bean parent="TextControlDefinition" p:size="60" />
 		</property>
 		<property name="name" value="tkWorkAreaId" />
 		<property name="label" value="WorkArea Id" />
