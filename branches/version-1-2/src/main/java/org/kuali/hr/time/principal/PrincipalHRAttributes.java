@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
@@ -31,6 +32,15 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	private Calendar calendar;
 	private Person person;
 
+    public HolidayCalendar getHolidayCalendar() {
+        return holidayCalendar;
+    }
+
+    public void setHolidayCalendar(HolidayCalendar holidayCalendar) {
+        this.holidayCalendar = holidayCalendar;
+    }
+
+    private HolidayCalendar holidayCalendar;
 
 	public String getPrincipalId() {
 		return principalId;

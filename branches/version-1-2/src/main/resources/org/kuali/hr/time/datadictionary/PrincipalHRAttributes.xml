@@ -50,6 +50,14 @@
                 </list>
               </property>
             </bean>
+              <bean parent="RelationshipDefinition">
+                  <property name="objectAttributeName" value="holidayCalendar"/>
+                  <property name="primitiveAttributes">
+                      <list>
+                          <bean parent="PrimitiveAttributeDefinition" p:sourceName="holidayCalendarGroup" p:targetName="holidayCalendarGroup"/>
+                      </list>
+                  </property>
+              </bean>
         </list>
     </property>  		
 	</bean>
@@ -100,13 +108,11 @@
 	
     <bean id="PrincipalHRAttributes-holidayCalendarGroup" parent="PrincipalHRAttributes-holidayCalendarGroup-parentBean"/>
     <bean id="PrincipalHRAttributes-holidayCalendarGroup-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="shortLabel" value="Pay Calendar"/>
+        <property name="shortLabel" value="Holiday Calendar Group"/>
         <property name="maxLength" value="3" />
-		<property name="validationPattern">
-			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="false" />
-			</bean>
-		</property>
+        <property name="validationPattern">
+            <bean parent="AlphaNumericValidationPattern" />
+        </property>
 		<property name="control">
 			<bean parent="TextControlDefinition" p:size="3" />
 		</property>
