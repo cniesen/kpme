@@ -71,7 +71,8 @@ public interface EarnCodeService {
     @Cacheable(value= EarnCode.CACHE_NAME, key="'{getOvertimeEarnCodesStrs}' + 'asOfDate=' + #p0")
     public List<String> getOvertimeEarnCodesStrs(Date asOfDate);
 
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1")
+    //make caching by who is looking at this as it is based on that what shows up
+    //@Cacheable(value= EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1")
     public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate);
 
     /**
