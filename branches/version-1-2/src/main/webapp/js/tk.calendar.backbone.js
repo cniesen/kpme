@@ -169,7 +169,7 @@ $(function () {
             $("#" + id.split("Hour")[0]).val(dateTime.toString(CONSTANTS.TIME_FORMAT.TIME_FOR_SYSTEM));
         },
 
-        showTimeEntryDialog : function (startDate, endDate) {
+        showTimeEntryDialog : function (startDate, endDate, timeBlock) {
             // check user permmissions before opening the dialog.
             var isValid = this.checkPermissions();
 
@@ -214,9 +214,11 @@ $(function () {
                         "Add" : function () {
                             /**
                              * In case we have more needs to auto-adjust user's input, we should consider moving them to a separate method.
+                             * https://jira.kuali.org/browse/KPME-1805 - We need to only increment the midnight day if it is an add
                              */
+                            var updateTimeBlock = !_.isEmpty($(timeBlock)) && !_.isEmpty($(timeBlock.id));
 
-                            if (!_.isEmpty($("#endTime").val())) {
+                            if (!updateTimeBlock && !_.isEmpty($("#endTime").val())) {
                                 // If the end time is 12:00 am, change the end date to the next day
                                 var midnight = Date.parse($('#endDate').val()).set({
                                     hour : 0,
@@ -313,7 +315,7 @@ $(function () {
             var key = _(e).parseEventKey();
             // Retrieve the selected timeblock
             var timeBlock = timeBlockCollection.get(key.id);
-            this.showTimeEntryDialog(timeBlock.get("startDate"), timeBlock.get("endDate"));
+            this.showTimeEntryDialog(timeBlock.get("startDate"), timeBlock.get("endDate"),timeBlock);
             _.replaceDialogButtonText("Add", "Update");
 
             // Deferred is a jQuery method which makes sure things happen in the order you want.
@@ -849,7 +851,7 @@ $(function () {
             startDay = Date.parse(startDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
             endDay = Date.parse(endDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
 
-            app.showTimeEntryDialog(startDay, endDay);
+            app.showTimeEntryDialog(startDay, endDay,null);
 
             // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
             if ($("#selectedAssignment").is("input")) {

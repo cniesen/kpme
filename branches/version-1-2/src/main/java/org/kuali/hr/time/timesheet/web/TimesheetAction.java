@@ -84,7 +84,7 @@ public class TimesheetAction extends TkAction {
         // then check security permissions via the superclass execution chain.
 		return super.execute(mapping, form, request, response);
 	}
-    
+
     public ActionForward docHandler(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
         		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {

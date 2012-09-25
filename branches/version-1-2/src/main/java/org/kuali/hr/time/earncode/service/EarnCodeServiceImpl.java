@@ -133,6 +133,52 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 		return earnCodeDao.getNewerEarnCodeCount(earnCode, effdt);
 	}
 
+
+    public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate) {
+        if (a == null) throw new RuntimeException("No assignment parameter.");
+        Job job = a.getJob();
+        if (job == null || job.getPayTypeObj() == null) throw new RuntimeException("Null job or null job pay type on assignment.");
+
+        List<EarnCode> earnCodes = new LinkedList<EarnCode>();
+
+        EarnCode regularEarnCode = getEarnCode(job.getPayTypeObj().getRegEarnCode(), asOfDate);
+        if (regularEarnCode == null) {
+            throw new RuntimeException("No regular earn code defined for job pay type.");
+        } else {
+            earnCodes.add(regularEarnCode);
+        }
+        List<EarnCodeSecurity> decs = TkServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
+        for (EarnCodeSecurity dec : decs) {
+                boolean addEarnCode = false;
+                // Check employee flag
+                if (dec.isEmployee() &&
+                        (StringUtils.equals(TKUser.getCurrentTargetPerson().getEmployeeId(), GlobalVariables.getUserSession().getPerson().getEmployeeId()))) {
+                    addEarnCode = true;
+                }
+                // Check approver flag
+                if (!addEarnCode && dec.isApprover()) {
+                    Set<Long> workAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+                    for (Long wa : workAreas) {
+                        WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+                        if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
+                            addEarnCode = true;
+                            break;
+                        }
+                    }
+                }
+                if (addEarnCode) {
+                    EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
+                    if(ec!=null){
+                        earnCodes.add(ec);
+                    }
+                }
+        }
+
+
+        return earnCodes;
+    }
+
+
     /* not using yet, may not be needed
     @Override
     public Map<String, String> getEarnCod e s ForDisplayWithAssignment(Assignment assignment, Date asOfDate) {
