@@ -67,6 +67,9 @@ public class TimesheetAction extends TkAction {
             // Default to whatever is active for "today".
             Date currentDate = TKUtils.getTimelessDate(null);
             payCalendarEntries = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
+            if(payCalendarEntries == null){
+                throw new RuntimeException("No pay calendar entry for " + viewPrincipal);
+            }
             td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, payCalendarEntries);
         }
 
