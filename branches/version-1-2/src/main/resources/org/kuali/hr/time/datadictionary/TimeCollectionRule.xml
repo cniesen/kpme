@@ -22,7 +22,7 @@
 				<ref bean="TimeCollectionRule-dept" />
 				<ref bean="TimeCollectionRule-workArea" />
 				<ref bean="TimeCollectionRule-payType" />
-				<ref bean="TimeCollectionRule-effectiveDate" />
+				<ref bean="TimeCollectionRule-effDate" />
 				<ref bean="TimeCollectionRule-clockUserFl" />
 				<ref bean="TimeCollectionRule-hrsDistributionF" />
 				<ref bean="TimeCollectionRule-userPrincipalId" />

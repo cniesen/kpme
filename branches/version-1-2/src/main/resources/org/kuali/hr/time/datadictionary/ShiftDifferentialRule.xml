@@ -151,7 +151,6 @@
 		<property name="name" value="history" />
 		<property name="label" value="Show History" />
 	</bean>
-	
 
 	<!-- hrSalGroup -->
 	<bean id="ShiftDifferentialRule-hrSalGroup" parent="ShiftDifferentialRule-hrSalGroup-parentBean" />
@@ -451,7 +450,7 @@
 		<property name="name" value="pyCalendarGroup" />
 		<property name="label" value="Pay Calendar Group" />
 	</bean>
-	
+		
 	<bean id="ShiftDifferentialRule-hrSalGroupId" parent="ShiftDifferentialRule-hrSalGroupId-parentBean" />
 	<bean id="ShiftDifferentialRule-hrSalGroupId-parentBean" abstract="true"
 		parent="AttributeDefinition">
@@ -469,7 +468,7 @@
 			<bean parent="HiddenControlDefinition" />
 		</property>
 	</bean>
-	
+		
 	<bean id="ShiftDifferentialRule-hrPayGradeId" parent="ShiftDifferentialRule-hrPayGradeId-parentBean" />
 	<bean id="ShiftDifferentialRule-hrPayGradeId-parentBean" abstract="true"
 		parent="AttributeDefinition">
@@ -478,7 +477,6 @@
 			<bean parent="HiddenControlDefinition" />
 		</property>
 	</bean>
-	
 	<!--  Inquiry Definitions  -->
   
   	<bean id="ShiftDifferentialRule-inquiryDefinition" parent="ShiftDifferentialRule-inquiryDefinition-parentBean" />

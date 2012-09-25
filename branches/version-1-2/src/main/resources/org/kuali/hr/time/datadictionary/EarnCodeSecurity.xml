@@ -19,7 +19,7 @@
 		</property>
 		<property name="attributes">
 			<list>
-				<ref bean="EarnCodeSecurity-dept" /> 
+				<ref bean="EarnCodeSecurity-dept" />
 				<ref bean="EarnCodeSecurity-hrSalGroup" />
 				<ref bean="EarnCodeSecurity-earnCode" />
 				<ref bean="EarnCodeSecurity-location" />
