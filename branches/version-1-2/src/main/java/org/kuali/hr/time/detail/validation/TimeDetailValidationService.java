@@ -101,13 +101,6 @@ public class TimeDetailValidationService {
             errors.add("The time or date is not valid.");
         }
         if (errors.size() > 0) return errors;
-        
-        // KPME-1446 
-        // -------------------------------
-        // check if there is a weekend day when the include weekends flag is checked
-        //--------------------------------
-        errors.addAll(validateSpanningWeeks(spanningWeeks, startTemp, endTemp));
-        if (errors.size() > 0) return errors;
 
         //------------------------
         // check if the overnight shift is across days
@@ -265,20 +258,4 @@ public class TimeDetailValidationService {
         return errors;
     }
 
-    // KPME-1446
-    public static List<String> validateSpanningWeeks(boolean spanningWeeks, DateTime startTemp, DateTime endTemp) {
-    	List<String> errors = new ArrayList<String>();
-    	boolean valid = true;
-        while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && valid) {
-        	if (!spanningWeeks && 
-        		(startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		valid = false;
-        	}
-        	startTemp = startTemp.plusDays(1);
-        }
-        if (!valid) {
-        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");
-        }
-    	return errors;
-    }
 }
