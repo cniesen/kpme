@@ -3,7 +3,6 @@
 <jsp:useBean id="tagSupport" class="org.kuali.hr.time.util.TagSupport"/>
 
 <div id="time-approval">
-	<span style="font-size: 1.5em; vertical-align: middle;">Time Sheet Approval</span>
 	<display:table name="${Form.approvalRows}" requestURI="TimeApproval.do?methodToCall=loadApprovalTab" excludedParams="*"
 	               pagesize="20" id="row"
 	               class="approvals-table" partialList="true" size="${Form.resultSize}" sort="external" defaultsort="0">
