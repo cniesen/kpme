@@ -95,7 +95,7 @@
             <forward name="basic" path="/portal.jsp"/>
         </action>
         
-        <action path="/DepartmentAdmin" name="KualiForm" type="org.kuali.rice.kns.web.struts.action.KualiSimpleAction">
+        <action path="/DepartmentAdmin" name="TkForm" type="org.kuali.hr.time.base.web.TkAction">
             <forward name="basic" path="/WEB-INF/jsp/departmentAdmin.jsp"/>
         </action>
         
