@@ -322,53 +322,6 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 				.contains("RGN - 2.00 hours"));
 
 	}
-	
-	// KPME-1446
-	@Test
-	public void testValidateTimeBlock() throws Exception {
 
-		EarnCode earnCode = null;
-		HtmlPage page = loginAndGetTimeDetailsHtmlPage(USER_PRINCIPAL_ID,
-				tdocId, true);
-
-		HtmlForm form = page.getFormByName("TimeDetailActionForm");
-		Assert.assertNotNull(form);
-
-		// Assignment of user
-		Assignment assToBeSelected = assignmentsOfUser.get(4);
-
-        // retrieving earncode for the assignment
-		List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assToBeSelected, TIME_SHEET_DATE);
-		if (earnCodes != null && !earnCodes.isEmpty()) {
-			earnCode = earnCodes.get(0);
-		}
-
-		DateTime startTime = new DateTime(2011, 2, 17, 9, 0, 0, 0,
-				TKUtils.getSystemDateTimeZone());  // Friday
-		DateTime endTime = new DateTime(2011, 2, 20, 11, 0, 0, 0,
-				TKUtils.getSystemDateTimeZone());  // Monday
-
-		// Setup TimeDetailActionForm1
-		TimeDetailActionFormBase addTB = TimeDetailTestUtils
-				.buildDetailActionForm(timeDoc, assToBeSelected, earnCode,
-						startTime, endTime, null, true, null, true); // last argument true = include weekends
-		List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form,
-				addTB);
-		// Check for errors - spanning weeks includes weekends, and include weekends box is checked - should give no error
-		Assert.assertEquals(
-				"There should no error in this time detail submission", 0,
-				errors.size());
-
-
-		// Setup TimeDetailActionForm2
-		addTB = TimeDetailTestUtils
-				.buildDetailActionForm(timeDoc, assToBeSelected, earnCode,
-						startTime, endTime, null, true, null, false); // last argument false = do not include weekends
-		errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
-		// Check for errors - spanning weeks includes weekends, and include weekends box is not not checked - should give an error
-		Assert.assertEquals(
-				"There should an error in this time detail submission", 1,
-				errors.size());
-	}
 
 }
