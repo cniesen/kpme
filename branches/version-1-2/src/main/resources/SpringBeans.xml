@@ -160,7 +160,7 @@
     <bean id="commonDefaultAdvisorAutoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
     
     <bean id="docHandlerUrlPrefixPublishingService" class="org.kuali.hr.core.service.DocHandlerUrlPrefixPublishingServiceImpl">
-        <property name="parameterApplicationId" value="${application.id}" />
+        <property name="parameterApplicationId" value="KUALI" />
         <property name="parameterNamespaceCode" value="KR-WKFLW" />
         <property name="parameterTypeCode" value="CONFG" />
         <property name="parameterComponentCode" value="All" />
