@@ -1,5 +1,5 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp" %>
-
+You do not have permission to create a rule for department
 <div class="portlet">
     <div class="header">HR/Payroll</div>
     <div class="body">
