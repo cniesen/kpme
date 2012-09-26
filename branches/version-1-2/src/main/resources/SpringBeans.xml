@@ -115,6 +115,10 @@
         <property name="serviceName" value="kualiModuleService" />
     </bean>
     
+    <bean id="parameterService" class="org.kuali.rice.krad.config.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="parameterService" />
+    </bean>
+    
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="properties" value="#{T(org.kuali.rice.core.api.config.property.ConfigContext).getCurrentContextConfig().getProperties()}" />
     </bean>
@@ -154,6 +158,17 @@
     <bean id="annotationTransactionAttributeSource" class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource" />
     
     <bean id="commonDefaultAdvisorAutoProxyCreator" class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+    
+    <bean id="docHandlerUrlPrefixPublishingService" class="org.kuali.hr.core.service.DocHandlerUrlPrefixPublishingServiceImpl">
+        <property name="parameterApplicationId" value="${application.id}" />
+        <property name="parameterNamespaceCode" value="KR-WKFLW" />
+        <property name="parameterTypeCode" value="CONFG" />
+        <property name="parameterComponentCode" value="All" />
+        <property name="parameterName" value="kuali.docHandler.url.prefix" />
+        <property name="parameterValue" value="${application.url}" />
+
+        <property name="parameterService" ref="parameterService" />
+    </bean>
     
     <bean id="platformAwareDao" class="org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb" abstract="true">
         <property name="jcdAlias" value="kradApplicationDataSource" />
