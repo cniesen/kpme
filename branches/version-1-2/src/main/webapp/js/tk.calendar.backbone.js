@@ -706,6 +706,10 @@ $(function () {
                 $(self.el).append(self.template(earnCode.toJSON()));
             });
 
+            if($("#selectedEarnCode option").size() == 0) {
+                $("#selectedEarnCode").html("<option value=''> -- no earn codes available --");
+            }
+
             return this;
         }
     });
