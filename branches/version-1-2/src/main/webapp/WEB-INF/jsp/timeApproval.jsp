@@ -39,127 +39,17 @@
 <script src="js/tk.approval.backbone.js"></script>
 
 <div class="approvals">
-<table id="approvals-filter">
-    <tr>
-        <td>
-            Pay Calendar Group:
-            <label for="pay calendar groups">
-                <select id="selectedPayCalendarGroup" name="selectedPayCalendarGroup"
-                        onchange="this.form.methodToCall.value='selectNewPayCalendar'; this.form.submit();">
-                    <c:forEach var="payCalendarGroup" items="${Form.payCalendarGroups}">
-                        <c:choose>
-                            <c:when test="${Form.selectedPayCalendarGroup eq payCalendarGroup}">
-                                <option value="${payCalendarGroup}" selected="selected">${payCalendarGroup}</option>
-                            </c:when>
-                            <c:otherwise>
-                                <option value="${payCalendarGroup}">${payCalendarGroup}</option>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                </select>
-            </label>
-        </td>
-        <td>
-            Department:
-            <select id="selectedDept" name="selectedDept"
-                    onchange="this.form.methodToCall.value='selectNewDept'; this.form.submit();">
-                <option value="">-- Select a department --</option>
-                <c:forEach var="dept" items="${Form.departments}">
-                    <c:choose>
-                        <c:when test="${Form.selectedDept eq dept}">
-                            <option value="${dept}" selected="selected">${dept}</option>
-                        </c:when>
-                        <c:otherwise>
-                            <option value="${dept}">${dept}</option>
-                        </c:otherwise>
-                    </c:choose>
-                </c:forEach>
-            </select>
-        </td>
-        <td>
-            Work Area:
-            <label for="work areas">
-                <select id="selectedWorkArea" name="selectedWorkArea"
-                        onchange="this.form.methodToCall.value='selectNewWorkArea'; this.form.submit();">
-                    <option value="">Show All</option>
-                    <c:forEach var="deptWorkarea" items="${Form.workAreaDescr}">
-                        <c:choose>
-                            <c:when test="${Form.selectedWorkArea eq deptWorkarea.key}">
-                                <option value="${deptWorkarea.key}" selected="selected">${deptWorkarea.value}</option>
-                            </c:when>
-                            <c:otherwise>
-                                <option value="${deptWorkarea.key}">${deptWorkarea.value}</option>
-                            </c:otherwise>
-                        </c:choose>
-                    </c:forEach>
-                </select>
-            </label>
-        </td>
 
-    </tr>
-    
-</table>
+	<tk:approvalFilter />
 
-<table class="navigation">
     <c:if test="${fn:length(Form.approvalRows) != 0}">
-        <tr>
-            <td class="left">
-                Search By :
-                <label for="search field">
-                    <select id="searchField" name="searchField">
-                        <option value="principalName">Principal Id</option>
-                        <option value="documentId">Document Id</option>
-                    </select>
-                </label>
-                Value :
-                <label for="search value">
-           			<input id="searchValue" name="searchValue" type="text" value="${Form.searchTerm}" placeholder="enter at least 3 chars" />
-                    <span id='loading-value' style="display:none;"><img src='images/ajax-loader.gif'></span>
-                    <input type="button" id='search' value="Search"
-                           class="ui-button ui-widget ui-state-default ui-corner-all"/>
-                </label>
-            </td>
-            <td>
-                <div style="text-align: center">
-                    <c:if test="${Form.prevPayCalendarId ne null}">
-                        <input type="button" class="prev" value="Previous" name="Previous"
-                               onclick="this.form.hrPyCalendarEntriesId.value='${Form.prevPayCalendarId}'; this.form.methodToCall.value='loadApprovalTab'; this.form.submit();"/>
-                    </c:if>
-                    <span id="payBeginDate" style="font-size: 1.5em; vertical-align: middle;"><fmt:formatDate
-                            value="${Form.payBeginDate}" pattern="MM/dd/yyyy"/></span> -
-                    <span id="payEndDate" style="font-size: 1.5em; vertical-align: middle;"><fmt:formatDate
-                            value="${Form.payEndDate}" pattern="MM/dd/yyyy"/></span>
-                    <c:if test="${Form.nextPayCalendarId ne null}">
-                        <input type="button" class="next" value="Next" name="Next"
-                               onclick="this.form.hrPyCalendarEntriesId.value='${Form.nextPayCalendarId}'; this.form.methodToCall.value='loadApprovalTab'; this.form.submit();"/>
-                    </c:if>
-                </div>
-            </td>
-            <td></td>
-        </tr>
-        <tr>
-        	<td></td>
-        	<c:if test="${!Form.onCurrentPeriod}" >
-	        	<td align="center">
-	        		<a href="${KualiForm.backLocation}?methodToCall=gotoCurrentPayPeriod"
-	                  	 target="_self" id="cppLink">Go to Current Period</a>
-	        	</td>
-        	</c:if>
-        </tr>
+		<tk:approvalSearch searchId="searchValue" />
+    
+    	<tk:timeApproval />
+    
+    	<tk:approvalButtons refreshId="refresh" />
+    
     </c:if>
-</table>
-
-<tk:timeApproval />
-
-<c:if test="${Form.resultSize > 0}">
-    <div id="approvals-approve-button">
-        <input type="submit" class="approve" value="Approve" name="Approve"
-               onclick="this.form.methodToCall.value='approve'; this.form.submit();"/>
-        <input type="button" id='refresh' value="Refresh Status"
-               class="ui-button ui-widget ui-state-default ui-corner-all"/>
-    </div>
-
-</c:if>
 
 </div>
 </html:form>
