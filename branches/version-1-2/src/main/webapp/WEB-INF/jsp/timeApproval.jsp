@@ -118,9 +118,6 @@
                     </c:if>
                 </div>
             </td>
-            <td>
-            	<tk:payCalendarSelect />
-            </td>
             <td></td>
         </tr>
         <tr>
