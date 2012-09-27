@@ -16,7 +16,7 @@
 
         <div class="event ${last} ${block.assignmentClass}">
             <c:set var="editableClass" value="event-title-false"/>
-            <c:if test="${Form.docEditable}">
+            <c:if test="${Form.docEditable && block.timeBlock.timeBlockEditable}">
                 <c:set var="editableClass" value="event-title-true"/>
             </c:if>
             <div id="timeblock_${block.timeBlock.tkTimeBlockId}"
@@ -28,7 +28,14 @@
                     </div>
                 </c:if>
 
-                <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>
+                <c:choose>
+                <c:when test="${block.timeBlock.timeBlockEditable}">
+                    <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>
+                </c:when>
+                <c:otherwise>
+                    <div>${block.title}</div>
+                </c:otherwise>
+                </c:choose>
             </div>
                 ${block.timeRange}
             <div>
