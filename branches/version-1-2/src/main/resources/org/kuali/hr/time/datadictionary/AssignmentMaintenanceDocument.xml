@@ -43,9 +43,9 @@
 					p:required="true" p:noLookup="true"/>
 				<bean parent="MaintainableFieldDefinition" p:name="principalId"
 					p:required="true" />
-<!-- 				<bean parent="MaintainableFieldDefinition" p:name="name" 
+				<bean parent="MaintainableFieldDefinition" p:name="name" 
 					p:noLookup="true"/>
- -->				<bean parent="MaintainableFieldDefinition" p:name="jobNumber"
+				<bean parent="MaintainableFieldDefinition" p:name="jobNumber"
 					p:required="true" />
 				<bean parent="MaintainableFieldDefinition" p:name="dept" p:lookupReadOnly="true"
 					p:noLookup="true"/>

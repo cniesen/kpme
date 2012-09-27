@@ -19,6 +19,7 @@
 			<list>
 				<ref bean="Assignment-tkAssignmentId" />
 				<ref bean="Assignment-principalId" />
+				<ref bean="Assignment-name" />
 				<ref bean="Assignment-jobNumber" />
 				<ref bean="Assignment-hrJobId" />
 				<ref bean="Assignment-effectiveDate" />
