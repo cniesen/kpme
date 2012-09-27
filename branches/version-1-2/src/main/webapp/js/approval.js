@@ -86,6 +86,9 @@ $(document).ready(function () {
 //        });
 //    });
 
+    /*
+     * for search on TimeApproval page
+     */
     $('#searchValue').autocomplete({
         source:function (request, response) {
             $('#loading-value').ajaxStart(function () {
@@ -99,9 +102,15 @@ $(document).ready(function () {
             var hrPyCalendarEntriesId = $("#pceid").val();
             var selectedPayCalendarGroup = $("#selectedPayCalendarGroup").val();
 
+			var urlString = 'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val()
+				+ '&searchTerm=' + request.term
+				 + "&payBeginDateForSearch=" + $("#payBeginDate").html()
+				 + "&payEndDateForSearch=" + $("#payEndDate").html() 
+				 + '&selectedPayCalendarGroup=' + selectedPayCalendarGroup 
+				 + '&selectedDept=' + $('#selectedDept').val() 
+				 + '&selectedWorkArea=' + $('#selectedWorkArea').val();
             $.ajax({
-                url:'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val() + '&searchTerm=' + request.term + "&payBeginDateForSearch=" + $("#payBeginDate").html() + "&payEndDateForSearch=" + $("#payEndDate").html() +
-                        '&selectedPayCalendarGroup=' + selectedPayCalendarGroup + '&selectedDept=' + $('#selectedDept').val() + '&selectedWorkArea=' + $('#selectedWorkArea').val(),
+                url: urlString,
                 dataType:"json",
                 success:function (data) {
                     response($.map(data, function (item) {
@@ -221,6 +230,7 @@ $(document).ready(function () {
 //        }
 //    });
 
+    /* for TimeApproval page */
     $("#refresh").click(function(){
        // location.reload();
         location.replace('TimeApproval.do?methodToCall=loadApprovalTab');
