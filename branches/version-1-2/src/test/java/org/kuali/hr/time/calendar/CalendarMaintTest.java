@@ -17,8 +17,8 @@ public class CalendarMaintTest extends KPMETestCase {
 	public static final String TEST_USER = "admin";
 	private static final String CAL_NAME_REQUIRED = "Calendar Name (Calendar Name) is a required field.";
 	private static final String CAL_DESP_REQUIRED = "Calendar Descriptions (Calendar Descriptions) is a required field.";
-	private static final String FLSA_DAY_REQUIRED = "FLSA Begin Day is a required field.";
-	private static final String FLSA_TIME_REQUIRED = "FLSA Begin Time is a required field.";
+	private static final String FLSA_DAY_REQUIRED = "Flsa Begin Day (Flsa Begin Day) is a required field.";
+	private static final String FLSA_TIME_REQUIRED = "Flsa Begin Time (00:00 AM) (Flsa Begin Time) is a required field.";
 	
 	@Test
 	public void testDisplayCalendarTypeRadioOptions() throws Exception {
