@@ -68,14 +68,8 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         for (Interval dayIn : dayInt) {
             if (dayIn.contains(beginDt)) {
                 if (dayIn.contains(endDt) || dayIn.getEnd().equals(endDt)) {
-                	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-                	if (StringUtils.isEmpty(spanningWeeks) && 
-                		(dayIn.getStart().getDayOfWeek() == DateTimeConstants.SATURDAY ||dayIn.getStart().getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-                		// do nothing
-                	} else {
                         firstTimeBlock = createTimeBlock(timesheetDocument, beginTimestamp, new Timestamp(endDt.getMillis()), assignment, earnCode, hours, amount, false, isLunchDeleted);
-                        lstTimeBlocks.add(firstTimeBlock);                		
-                	}
+                        lstTimeBlocks.add(firstTimeBlock);
                 } else {
                     //TODO move this to prerule validation
                     //throw validation error if this case met error
@@ -88,16 +82,11 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         long diffInMillis = endOfFirstDay.minus(beginDt.getMillis()).getMillis();
         DateTime currTime = beginDt.plusDays(1);
         while (currTime.isBefore(endTime) || currTime.isEqual(endTime)) {
-        	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-        	if (StringUtils.isEmpty(spanningWeeks) && 
-        		(currTime.getDayOfWeek() == DateTimeConstants.SATURDAY || currTime.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		// do nothing
-        	} else {
-	            Timestamp begin = new Timestamp(currTime.getMillis());
-	            Timestamp end = new Timestamp((currTime.plus(diffInMillis).getMillis()));
-	            TimeBlock tb = createTimeBlock(timesheetDocument, begin, end, assignment, earnCode, hours, amount, false, isLunchDeleted);
-	            lstTimeBlocks.add(tb);
-        	}
+	        Timestamp begin = new Timestamp(currTime.getMillis());
+	        Timestamp end = new Timestamp((currTime.plus(diffInMillis).getMillis()));
+	        TimeBlock tb = createTimeBlock(timesheetDocument, begin, end, assignment, earnCode, hours, amount, false, isLunchDeleted);
+	        lstTimeBlocks.add(tb);
+
         	currTime = currTime.plusDays(1);
         }
         return lstTimeBlocks;
