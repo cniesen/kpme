@@ -23,7 +23,7 @@ import org.kuali.rice.kew.api.exception.WorkflowException;
 public class InitiateBatchJobRunnable extends BatchJobEntryRunnable {
 
 	private Logger LOG = Logger.getLogger(InitiateBatchJobRunnable.class);
-
+	
     public InitiateBatchJobRunnable(BatchJobEntry entry) {
         super(entry);
     }

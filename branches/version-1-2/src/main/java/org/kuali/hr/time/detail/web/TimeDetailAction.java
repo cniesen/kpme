@@ -95,7 +95,7 @@ public class TimeDetailAction extends TimesheetAction {
         
         //List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(Long.parseLong(tdaf.getTimesheetDocument().getDocumentHeader().getTimesheetDocumentId()));
         List<TimeBlock> timeBlocks = TKContext.getCurrentTimesheetDocument().getTimeBlocks();
-		
+        
         this.assignStypeClassMapForTimeSummary(tdaf,timeBlocks);
         
         List<Interval> intervals = TKUtils.getFullWeekDaySpanForCalendarEntry(payCalendarEntry);
@@ -120,12 +120,12 @@ public class TimeDetailAction extends TimesheetAction {
         } else {
             boolean docFinal = TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
             if (!docFinal) {
-                if(StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
-                        || TKContext.getUser().isSystemAdmin()
-                        || TKContext.getUser().isLocationAdmin()
-                        || TKContext.getUser().isDepartmentAdmin()
-                        || TKContext.getUser().isReviewer()
-                        || TKContext.getUser().isApprover()) {
+            	if(StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
+	            		|| TKContext.getUser().isSystemAdmin() 
+	            		|| TKContext.getUser().isLocationAdmin() 
+	            		|| TKContext.getUser().isDepartmentAdmin() 
+	            		|| TKContext.getUser().isReviewer() 
+	            		|| TKContext.getUser().isApprover()) {
                     tdaf.setDocEditable("true");
                 }
             	
@@ -145,8 +145,8 @@ public class TimeDetailAction extends TimesheetAction {
 
     // use lists of time blocks and leave blocks to build the style class map and assign css class to associated summary rows
 	private void assignStypeClassMapForTimeSummary(TimeDetailActionForm tdaf, List<TimeBlock> timeBlocks) throws Exception {
-        TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(TKContext.getCurrentTimesheetDocument());
-        tdaf.setAssignStyleClassMap(ActionFormUtils.buildAssignmentStyleClassMap(TKContext.getCurrentTimesheetDocument().getTimeBlocks()));
+		TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(TKContext.getCurrentTimesheetDocument());
+        tdaf.setAssignStyleClassMap(ActionFormUtils.buildAssignmentStyleClassMap(timeBlocks));
         Map<String, String> aMap = tdaf.getAssignStyleClassMap();
         // set css classes for each assignment row
         for (EarnGroupSection earnGroupSection : ts.getSections()) {
@@ -256,7 +256,7 @@ public class TimeDetailAction extends TimesheetAction {
      */
     public ActionForward addTimeBlock(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
-        this.changeTimeBlocks(tdaf);
+        	this.changeTimeBlocks(tdaf);
         
         ActionFormUtils.validateHourLimit(tdaf);
         ActionFormUtils.addWarningTextFromEarnGroup(tdaf);
@@ -282,7 +282,7 @@ public class TimeDetailAction extends TimesheetAction {
     }
     
     
-    // add/update leave blocks 
+    // add/update time blocks 
 	private void changeTimeBlocks(TimeDetailActionForm tdaf) {
 		Timestamp overtimeBeginTimestamp = null;
         Timestamp overtimeEndTimestamp = null;

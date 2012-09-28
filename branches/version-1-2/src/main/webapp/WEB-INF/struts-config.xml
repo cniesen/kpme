@@ -26,17 +26,16 @@
         <form-bean name="KualiForm" type="org.kuali.rice.kns.web.struts.form.KualiForm" />
         <form-bean name="KualiLogoutForm" type="org.kuali.rice.kns.web.struts.form.KualiLogoutForm" />
         <!-- Rice content End -->
-
+        
         <form-bean name="ChangeTargetPersonForm" type="org.kuali.hr.time.admin.web.ChangeTargetPersonForm"/>
 		<form-bean name="DeleteTimesheetForm" type="org.kuali.hr.time.admin.web.DeleteTimesheetForm"/>
-		<form-bean name="BatchJobActionForm" type="org.kuali.hr.time.batch.web.BatchJobActionForm"/>
+        <form-bean name="BatchJobActionForm" type="org.kuali.hr.time.batch.web.BatchJobActionForm"/>
         <form-bean name="CalendarEntryActionForm" type="org.kuali.hr.time.calendar.web.CalendarEntryActionForm"/>
         <form-bean name="ClockActionForm" type="org.kuali.hr.time.clock.web.ClockActionForm"/>
         <form-bean name="TimeDetailActionForm" type="org.kuali.hr.time.detail.web.TimeDetailActionForm"/>
         <form-bean name="TimeDetailWSActionForm" type="org.kuali.hr.time.detail.web.TimeDetailWSActionForm"/>
         <form-bean name="TimeApprovalActionForm" type="org.kuali.hr.time.approval.web.TimeApprovalActionForm"/>
         <form-bean name="TimeApprovalWSActionForm" type="org.kuali.hr.time.approval.web.TimeApprovalWSActionForm"/>
-        <form-bean name="AdminActionForm" type="org.kuali.hr.time.admin.web.AdminActionForm"/>
         <form-bean name="PersonInfoActionForm" type="org.kuali.hr.time.base.web.PersonInfoActionForm"/>
         <form-bean name="TimeOffAccrualActionForm" type="org.kuali.hr.time.accrual.web.TimeOffAccrualActionForm"/>
         <form-bean name="TimesheetActionForm" type="org.kuali.hr.time.timesheet.web.TimesheetActionForm"/>
@@ -45,7 +44,6 @@
         <form-bean name="HelpActionForm" type="org.kuali.hr.time.help.web.HelpActionForm"/>
         <form-bean name="SessionInvalidateForm" type="org.kuali.hr.time.web.SessionInvalidateForm"/>
         <form-bean name="TkForm" type="org.kuali.hr.time.base.web.TkForm"/>
-
     </form-beans>
 
     <global-exceptions>
@@ -67,10 +65,10 @@
         <forward name="portal" path="/portal.jsp" redirect="true" />
         <forward name="route_report" path="/WEB-INF/jsp/RoutingReportForward.jsp"/>
         <forward name="updateTextArea" path="/kr/WEB-INF/jsp/TextArea.jsp" />
-        <forward name="exceptionIncidentHandler" path="/kr/kualiExceptionIncidentReport.do"/>
+        <forward name="exceptionIncidentHandler" path="/kr/kualiExceptionIncidentReport.do" />
         <forward name="authorizationExceptionHandler" path="/kr/authorizationExceptionReport.do"/>
         <!-- Rice content End -->
-
+        
         <forward name="unauthorized" path="/WEB-INF/jsp/unauthorized.jsp"/>
     </global-forwards>
 
@@ -101,7 +99,6 @@
         <action path="/deleteTimesheet" name="DeleteTimesheetForm" type="org.kuali.hr.time.admin.web.DeleteTimesheetAction">
             <forward name="basic" path="/portal.jsp"/>
         </action>
-
         
         <action path="/batchJob" name="BatchJobActionForm" type="org.kuali.hr.time.batch.web.BatchJobAction">
             <forward name="basic" path="/portal.jsp"/>
@@ -110,7 +107,7 @@
         <action path="/calendarEntry" name="CalendarEntryActionForm" type="org.kuali.hr.time.calendar.web.CalendarEntryAction">
             <forward name="basic" path="/portal.jsp"/>
         </action>
-        
+
         <action path="/DepartmentAdmin" name="TkForm" type="org.kuali.hr.time.base.web.TkAction">
             <forward name="basic" path="/WEB-INF/jsp/departmentAdmin.jsp"/>
         </action>

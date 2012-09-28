@@ -77,7 +77,7 @@ public class BatchJob {
         timeElapsed = (runtime > 0) ? runtime / 1000 : 0; // set to 0, and avoid div by 0.
         this.setBatchJobStatus(TkConstants.BATCH_JOB_ENTRY_STATUS.FINISHED);
         TkServiceLocator.getBatchJobService().saveBatchJob(this);
-        LOG.info("Batch job '" + this.getBatchJobName() + "' ("+this.getPayCalendarEntryId()+") complete after " + timeElapsed + " seconds.");
+        LOG.info("Batch job '" + this.getBatchJobName() + "' ("+this.getHrPyCalendarEntryId()+") complete after " + timeElapsed + " seconds.");
     }
 
     public String getNextIpAddressInCluster(){
@@ -121,13 +121,13 @@ public class BatchJob {
         this.batchJobStatus = batchJobStatus;
     }
 
-    public String getPayCalendarEntryId() {
-        return hrPyCalendarEntryId;
-    }
+	public String getHrPyCalendarEntryId() {
+		return hrPyCalendarEntryId;
+	}
 
-    public void setPayCalendarEntryId(String hrPyCalendarEntryId) {
-        this.hrPyCalendarEntryId = hrPyCalendarEntryId;
-    }
+	public void setHrPyCalendarEntryId(String hrPyCalendarEntryId) {
+		this.hrPyCalendarEntryId = hrPyCalendarEntryId;
+	}
 
     public Long getTimeElapsed() {
         return timeElapsed;
@@ -151,7 +151,7 @@ public class BatchJob {
         entry.setBatchJobEntryStatus(TkConstants.BATCH_JOB_ENTRY_STATUS.SCHEDULED);
         entry.setBatchJobName(batchJobName);
         entry.setIpAddress(ip);
-        entry.setHrPyCalendarEntryId(this.getPayCalendarEntryId());
+        entry.setHrPyCalendarEntryId(this.getHrPyCalendarEntryId());
         entry.setPrincipalId(principal);
         entry.setTkBatchJobId(this.getTkBatchJobId());
         entry.setDocumentId(documentId);

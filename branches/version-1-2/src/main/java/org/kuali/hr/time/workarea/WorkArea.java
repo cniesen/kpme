@@ -55,7 +55,6 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule {
     private Task taskObj;
     private EarnCode defaultOvertimeEarnCodeObj;
 
-
     public Date getEffectiveDate() {
         return effectiveDate;
     }
