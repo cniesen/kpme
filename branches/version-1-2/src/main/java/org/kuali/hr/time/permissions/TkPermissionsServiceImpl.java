@@ -185,11 +185,21 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
                     TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),tb.getBeginDate());
-                    if(!tcr.isClockUserFl()){
+
+                    //If you are a clock user and you have only one assignment you should not be allowed to change the assignment
+                    //TODO eventually move this logic to one concise place for editable portions of the timeblock
+                    List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKContext.getPrincipalId(),tb.getBeginDate());
+                    if(assignments.size() == 1){
+                        if(!tcr.isClockUserFl() ){
+                            return true;
+                        }  else{
+                            return false;
+                        }
+                    }   else {
                         return true;
-                    }  else{
-                        return false;
                     }
+
+
 
                 }
 
