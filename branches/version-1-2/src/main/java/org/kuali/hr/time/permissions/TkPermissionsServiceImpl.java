@@ -292,8 +292,7 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                 for (EarnCodeSecurity dec : deptEarnCodes) {
                     if (dec.isEmployee()
                             && StringUtils.equals(dec.getEarnCode(),
-                            tb.getEarnCode())
-                            && hasManagerialRolesOnWorkArea(tb)) {
+                            tb.getEarnCode())) {
                         return true;
                     }
                 }
