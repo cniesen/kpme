@@ -184,7 +184,7 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
 
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
-                    TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),tb.getBeginDate());
+                    TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),job.getHrPayType(),tb.getBeginDate());
 
                     //If you are a clock user and you have only one assignment you should not be allowed to change the assignment
                     //TODO eventually move this logic to one concise place for editable portions of the timeblock
@@ -237,6 +237,8 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             PayType payType = TkServiceLocator.getPayTypeService().getPayType(
                     job.getHrPayType(), tb.getEndDate());
 
+            TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),payType.getPayType(),tb.getEndDate());
+
             if (TKContext.getUser().isTimesheetApprover()
                     && TKContext.getUser().getApproverWorkAreas().contains(tb.getWorkArea())
                     || TKContext.getUser().isTimesheetReviewer()
@@ -260,19 +262,27 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                 }
             }
 
-            // If the timeblock was created by the employee himeself and is a sync timeblock,
-            // the user can't delete the timeblock
-            if (userId.equals(TKContext.getTargetPrincipalId())
-                    && tb.getClockLogCreated()) {
-                return false;
-            // But if the timeblock was created by the employee himeself and is an async timeblock,
-            // the user should be able to delete that timeblock
-            } else if (userId.equals(TKContext.getTargetPrincipalId()) && !tb.getClockLogCreated() ) {
-                return true;
-            } else {
+//            // If the timeblock was created by the employee himeself and is a sync timeblock,
+//            // the user can't delete the timeblock
+//            if (userId.equals(TKContext.getTargetPrincipalId())
+//                    && tb.getClockLogCreated()) {
+//                return false;
+//            // But if the timeblock was created by the employee himeself and is an async timeblock,
+//            // the user should be able to delete that timeblock
+//            } else if (userId.equals(TKContext.getTargetPrincipalId()) && !tb.getClockLogCreated() ) {
+//                return true;
+//            } else {
+
+                //if on a regular earncode
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
-                    return true;
+                    //and the user is a clock user and this is the users timesheet do not allow to be deleted
+                    if(tcr.isClockUserFl() && StringUtils.equals(userId,TKContext.getTargetPrincipalId())) {
+                        return false;
+                    }  else {
+                        return true;
+                    }
+
                 }
 
                 List<EarnCodeSecurity> deptEarnCodes = TkServiceLocator
@@ -287,7 +297,6 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                         return true;
                     }
                 }
-            }
 
         }
 
