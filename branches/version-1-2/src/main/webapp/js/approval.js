@@ -37,16 +37,15 @@ $(document).ready(function () {
     $('.sortable').click(function() {
         var field = $(this).text().replace(/\s/g, '');
 
-        var rows = $('.approvals-table > tbody > tr').length;
-        var isAscending = getParameterByName("ascending");
+        var ascending = getParameterByName('sort' + field + 'Ascending');
 
-        if (isAscending == "true") {
-            isAscending = false;
+        if (ascending == "true") {
+            ascending = false;
         } else {
-            isAscending = true;
+            ascending = true;
         }
 
-        $('.sortable a').attr('href', $('.sortable a').attr('href') + '&sortField=' + field + '&ascending=' + isAscending);
+        $('.sortable a').attr('href', $('.sortable a').attr('href') + '&sortField=' + field + '&sort' + field + 'Ascending=' + ascending);
     });
 
     /**
@@ -117,13 +116,13 @@ $(document).ready(function () {
             var hrPyCalendarEntriesId = $("#pceid").val();
             var selectedPayCalendarGroup = $("#selectedPayCalendarGroup").val();
 
-			var urlString = 'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val()
-				+ '&searchTerm=' + request.term
-				 + "&payBeginDateForSearch=" + $("#payBeginDate").html()
-				 + "&payEndDateForSearch=" + $("#payEndDate").html() 
-				 + '&selectedPayCalendarGroup=' + selectedPayCalendarGroup 
-				 + '&selectedDept=' + $('#selectedDept').val() 
-				 + '&selectedWorkArea=' + $('#selectedWorkArea').val();
+            var urlString = 'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val() 
+            	+ '&searchTerm=' + request.term 
+            	+ "&payBeginDateForSearch=" + $("#payBeginDate").html() 
+            	+ "&payEndDateForSearch=" + $("#payEndDate").html() 
+            	+ '&selectedPayCalendarGroup=' + selectedPayCalendarGroup 
+            	+ '&selectedDept=' + $('#selectedDept').val() 
+            	+ '&selectedWorkArea=' + $('#selectedWorkArea').val();
             $.ajax({
                 url: urlString,
                 dataType:"json",

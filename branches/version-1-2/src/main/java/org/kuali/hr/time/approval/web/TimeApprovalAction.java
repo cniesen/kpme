@@ -230,23 +230,24 @@ public class TimeApprovalAction extends ApprovalAction{
 		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, getSubListPrincipalIds(request, persons));
 		    
 		    final String sortField = request.getParameter("sortField");
-		    final boolean isAscending = Boolean.parseBoolean(request.getParameter("ascending"));
 		    if (StringUtils.equals(sortField, "Name")) {
+			    final boolean sortNameAscending = Boolean.parseBoolean(request.getParameter("sortNameAscending"));
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
 					@Override
 					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
-						if (isAscending) {
-							return ObjectUtils.compare(row1.getName(), row2.getName());
+						if (sortNameAscending) {
+							return ObjectUtils.compare(StringUtils.lowerCase(row1.getName()), StringUtils.lowerCase(row2.getName()));
 						} else {
-							return ObjectUtils.compare(row2.getName(), row1.getName());
+							return ObjectUtils.compare(StringUtils.lowerCase(row2.getName()), StringUtils.lowerCase(row1.getName()));
 						}
 					}
 		    	});
 		    } else if (StringUtils.equals(sortField, "DocumentID")) {
+			    final boolean sortDocumentIdAscending = Boolean.parseBoolean(request.getParameter("sortDocumentIDAscending"));
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
 					@Override
 					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
-						if (isAscending) {
+						if (sortDocumentIdAscending) {
 							return ObjectUtils.compare(NumberUtils.toInt(row1.getDocumentId()), NumberUtils.toInt(row2.getDocumentId()));
 						} else {
 							return ObjectUtils.compare(NumberUtils.toInt(row2.getDocumentId()), NumberUtils.toInt(row1.getDocumentId()));
@@ -268,9 +269,8 @@ public class TimeApprovalAction extends ApprovalAction{
 		// resets the common fields for approval pages
 		super.resetMainFields(form);
 		TimeApprovalActionForm taaf = (TimeApprovalActionForm)form;
-        // KPME-909
+		// KPME-909
         taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
-		
 		return loadApprovalTab(mapping, form, request, response);
 	}
 	
@@ -298,7 +298,7 @@ public class TimeApprovalAction extends ApprovalAction{
  	      }
 	}
 	
-	@Override
+    @Override
     protected void populateCalendarAndPayPeriodLists(HttpServletRequest request, ApprovalForm taf) {
     	TimeApprovalActionForm taaf = (TimeApprovalActionForm)taf;
 		// set calendar year list
