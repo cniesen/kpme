@@ -1,8 +1,0 @@
-<config>
-    <param name="keystore.alias">hr</param>      
-    <param name="keystore.password">zse45rdx</param>
-    <param name="keystore.file">/opt/sa_forms/java/unt/edu/iu/uis/security/hr/webservices-keystore</param>
-    <param name="workflowdocument.javaservice.endpoint">https://es-nd.ucs.indiana.edu:9000/en-unt/remoting/%7BKEW%7DWorkflowDocumentActionsService</param>
-    <param name="workflowutility.javaservice.endpoint">https://es-nd.ucs.indiana.edu:9000/en-unt/remoting/%7BKEW%7DWorkflowUtilityService</param>
- </config>
- 
