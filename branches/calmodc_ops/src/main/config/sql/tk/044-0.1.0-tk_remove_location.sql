@@ -1,1 +1,0 @@
-alter table tk_holiday_calendar_t drop column location;
