@@ -1,18 +1,3 @@
-/*
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 $(document).ready(function () {
 
     // select All
@@ -31,21 +16,71 @@ $(document).ready(function () {
         }
     });
 
-    /**
-     *  Sort the sortable columns
-     */
-    $('.sortable').click(function() {
-        var field = $(this).text().replace(/\s/g, '');
 
-        var ascending = getParameterByName('sort' + field + 'Ascending');
+    // sort by the clicked column
+//    $('#approvals-table tr th').click(function() {
+//    	// replace all occurrence of white space, including space, tab, newline, etc
+//        var field = $(this).text().replace(/\s/g, '');
+//        //no sorting for notes and warnings pop-up
+//        if(field == "Creator" || field == "CreatedDate" || field == "Content" || field == "Notes:" || field == "Warnings:") {
+//        	return false;
+//        }
+//        var rows = $('#approvals-table tbody tr').length;
+//        var isAscending = getParameterByName("ascending");
+//
+//        if (isAscending == null) {
+//            isAscending = true;
+//        } else if (isAscending == "true") {
+//            isAscending = false;
+//        } else {
+//            isAscending = true;
+//        }
+//
+//        // submit the page for sorting
+//        if (field != 'Action' && field != 'Select') {
+//            window.location = 'TimeApproval.do?sortField=' + field + '&ascending=' + isAscending + '&rowsToShow=' + rows + "&hrPyCalendarId=" + $("#pcid").val() + "&hrPyCalendarEntriesId=" + $("#pceid").val() + "&selectedPayCalendarGroup=" + $("#selectedPayCalendarGroup").val();
+//        }
+//    });
 
-        if (ascending == "true") {
-            ascending = false;
-        } else {
-            ascending = true;
-        }
+    // this is to determine which fields are sortable
+//    $('#approvals-table tr th').filter(
+//            function(index) {
+//                return $(this).html().replace(/ /, '') == "DocumentId" || $(this).html().replace(/ /, '') == "PrincipalName" || $(this).html().replace(/ /, '') == "Status";
+//            }).addClass("sort");
+//
+//    // add acs/desc icon to a sorted field
+//    if (getParameterByName("ascending") != '') {
+//        var klass = getParameterByName("ascending") == "true" ? 'headerSortDown' : 'headerSortUp';
+//
+//        $('#approvals-table tr th').filter(
+//                function(index) {
+//                    return $(this).html().replace(/ /, '') == getParameterByName("sortField");
+//                }).addClass(klass);
+//    }
 
-        $('.sortable a').attr('href', $('.sortable a').attr('href') + '&sortField=' + field + '&sort' + field + 'Ascending=' + ascending);
+
+    // fetch more document headers
+    $('a#next').click(function () {
+        $('div#loader').html('<img src="images/ajax-loader.gif">');
+        $.post('TimeApproval.do?methodToCall=getMoreDocument&lastDocumentId=' + $('span.document:last').attr('id'),
+                function (data) {
+                    // remove blank lines
+                    data = data.replace(/[\s\r\n]+$/, '');
+                    if (data != 0) {
+                        //$('span.document:last').hide().append(data).fadeIn();
+                        // scroll to where the link is
+                        //window.scrollTo(0, $('a#next').position().top);
+                        // append the data to the table body through ajax
+                        $('#approval tbody').append(data);
+                    }
+                    else {
+                        // if there is no more document available, remove the link and scroll to the bottom
+                        $('a#next').remove();
+                        //window.scrollTo(0, $('span.document:last').position().top);
+                    }
+                    $('div#loader').empty();
+                });
+
     });
 
     /**
@@ -100,9 +135,6 @@ $(document).ready(function () {
 //        });
 //    });
 
-    /*
-     * for search on TimeApproval page
-     */
     $('#searchValue').autocomplete({
         source:function (request, response) {
             $('#loading-value').ajaxStart(function () {
@@ -116,15 +148,10 @@ $(document).ready(function () {
             var hrPyCalendarEntriesId = $("#pceid").val();
             var selectedPayCalendarGroup = $("#selectedPayCalendarGroup").val();
 
-            var urlString = 'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val() 
-            	+ '&searchTerm=' + request.term 
-            	+ "&payBeginDateForSearch=" + $("#payBeginDate").html() 
-            	+ "&payEndDateForSearch=" + $("#payEndDate").html() 
-            	+ '&selectedPayCalendarGroup=' + selectedPayCalendarGroup 
-            	+ '&selectedDept=' + $('#selectedDept').val() 
-            	+ '&selectedWorkArea=' + $('#selectedWorkArea').val();
             $.ajax({
-                url: urlString,
+                url:'TimeApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val() + '&searchTerm=' + request.term + "&payBeginDateForSearch=" + $("#beginDate").html() + "&payEndDateForSearch=" + $("#endDate").html() +
+                    //                        '&hrPyCalendarEntriesId=' + hrPyCalendarEntriesId +
+                        '&selectedPayCalendarGroup=' + selectedPayCalendarGroup,
                 dataType:"json",
                 success:function (data) {
                     response($.map(data, function (item) {
@@ -141,54 +168,6 @@ $(document).ready(function () {
             var rows = $('#approvals-table tbody tr').length;
             var isAscending = getParameterByName("ascending");
             window.location = 'TimeApproval.do?methodToCall=searchResult&searchField=principalName&searchTerm=' + data.item.id;
-        },
-        open:function () {
-            $(this).removeClass("ui-corner-all");
-        },
-        close:function () {
-            $(this).removeClass("ui-corner-top");
-        }
-    });
-    
-    /*
-     * for search on LeaveApproval page
-     */
-    $('#leaveSearchValue').autocomplete({
-        source:function (request, response) {
-            $('#loading-value').ajaxStart(function () {
-                $(this).show();
-            });
-            $('#loading-value').ajaxStop(function () {
-                $(this).hide();
-            });
-            var hrPyCalendarEntriesId = $("#pceid").val();
-            var selectedPayCalendarGroup = $("#selectedPayCalendarGroup").val();
-            
-            var urlString = 'LeaveApprovalWS.do?methodToCall=searchApprovalRows&searchField=' + $('#searchField').val() 
-            	+ '&searchTerm=' + request.term 
-            	+ "&payBeginDateForSearch=" + $("#payBeginDate").html() 
-            	+ "&payEndDateForSearch=" + $("#payEndDate").html() 
-            	+ '&selectedPayCalendarGroup=' + selectedPayCalendarGroup 
-            	+ '&selectedDept=' + $('#selectedDept').val() 
-            	+ '&selectedWorkArea=' + $('#selectedWorkArea').val();
-            $.ajax({
-                url: urlString,
-                dataType:"json",
-                success:function (data) {
-                    response($.map(data, function (item) {
-                        return {
-                            value:item.id,
-                            id:item.result
-                        };
-                    }));
-                }
-            });
-        },
-        minLength:3,
-        select:function (event, data) {
-            var rows = $('#approvals-table tbody tr').length;
-            var isAscending = getParameterByName("ascending");
-            window.location = 'LeaveApproval.do?methodToCall=searchResult&searchField=principalName&searchTerm=' + data.item.id;
         },
         open:function () {
             $(this).removeClass("ui-corner-all");
@@ -237,71 +216,55 @@ $(document).ready(function () {
     // display warning and notes
     $(" .approvals-warning, .approvals-note").tooltip({ effect:'slide'});
 
-//    $('span[id^=showDetailButton]').click(function (e) {
-//
-//        var docId = e.target.id.split("_")[1];
-//
-//        $.get("TimeApprovalWS.do?methodToCall=getTimeSummary&documentId=" + docId, function(data) {
-//
-//            console.log(data);
-//        });
-//    });
-
     // toggle the button for the assignment details
-//    $('.rowInfo').click(function () {
-//        // figure out the columns in the approval table
-//        var columns = $(".approvals-table > tbody > tr.odd > td").length;
-//        // get the row id
-//        var seq = $(this).attr("id").split("_")[1];
-//
-//        if ($(this).hasClass('ui-icon-plus')) {
-//            /**
-//             * The code below is a DOM manipulation which grabs the
-//             * current time summary layout and rerender it to match
-//             * with the layout / styles of the approval table.
-//             *
-//             * The original layout comes from the same code that
-//             * renders the time summary table on the time detail
-//             * page.
-//             */
-//            $timeSummaryRow = undefined;
-//            // create a clone of the time summary row
-//            $timeSummaryRow = $('.timeSummaryRow_' + seq).clone(true);
-//            // remove the date header
-//            $(".ui-state-default, tbody tr:first", $timeSummaryRow).remove();
-//            // find the time summary table
-//            var parent = $('.timeSummaryRow_' + seq).closest("tr");
-//            // grab all the TRs from the summary table
-//            $trs = $("table tr", $timeSummaryRow);
-//            // add a unique id in order to show / hide the new summary table
-//            $trs.attr("class", "timeHourDetail_" + seq);
-//            // merge columns
-//            $("td:nth-child(1)", $trs).attr("colspan", 3);
-//
-//            // append the new summary table after the total row
-//            parent.after($trs);
-//
-//            // change the icon from - to +
-//            $(this).removeClass('ui-icon-plus').addClass('ui-icon-minus');
-//        }
-//        else {
-//            // remove the summary when - button is clicked
-//            $('.timeHourDetail_' + seq).remove();
-//            // change the icon from + to -
-//            $(this).removeClass('ui-icon-minus').addClass('ui-icon-plus');
-//        }
-//    });
-    
-    /* for TimeApproval page */
+    $('.rowInfo').click(function () {
+        // figure out the columns in the approval table
+        var columns = $(".approvals-table > tbody > tr.odd > td").length;
+        // get the row id
+        var seq = $(this).attr("id").split("_")[1];
+
+        if ($(this).hasClass('ui-icon-plus')) {
+            /**
+             * The code below is a DOM manipulation which grabs the
+             * current time summary layout and rerender it to match
+             * with the layout / styles of the approval table.
+             *
+             * The original layout comes from the same code that
+             * renders the time summary table on the time detail
+             * page.
+             */
+            $timeSummaryRow = undefined;
+            // create a clone of the time summary row
+            $timeSummaryRow = $('.timeSummaryRow_' + seq).clone(true);
+            // remove the date header
+            $(".ui-state-default, tbody tr:first", $timeSummaryRow).remove();
+            // find the time summary table
+            var parent = $('.timeSummaryRow_' + seq).closest("tr");
+            // grab all the TRs from the summary table
+            $trs = $("table tr", $timeSummaryRow);
+            // add a unique id in order to show / hide the new summary table
+            $trs.attr("class", "timeHourDetail_" + seq);
+            // merge columns
+            $("td:nth-child(1)", $trs).attr("colspan", 3);
+
+            // append the new summary table after the total row
+            parent.after($trs);
+
+            // change the icon from - to +
+            $(this).removeClass('ui-icon-plus').addClass('ui-icon-minus');
+        }
+        else {
+            // remove the summary when - button is clicked
+            $('.timeHourDetail_' + seq).remove();
+            // change the icon from + to -
+            $(this).removeClass('ui-icon-minus').addClass('ui-icon-plus');
+        }
+    });
+
     $("#refresh").click(function(){
        // location.reload();
         location.replace('TimeApproval.do?methodToCall=loadApprovalTab');
     });
-    
-    /* for LeaveApproval page */
-    $("#leaveRefresh").click(function(){
-         location.replace('LeaveApproval.do?methodToCall=loadApprovalTab');
-     });
 
     // add css styles to the note and warning buttons
 //    $(".rowInfo").hover(function() {

@@ -1,69 +1,47 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.syslunch.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.syslunch.rule.SystemLunchRule;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
-import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
-import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.util.KRADConstants;
-import org.kuali.rice.krad.util.UrlFactory;
 
-public class SystemLunchRuleLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
+public class SystemLunchRuleLookupableHelper extends
+		HrEffectiveDateActiveLookupableHelper {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 6752606867867978501L;
-
+	@SuppressWarnings("serial")
 	@Override
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-		List<HtmlData> customActionUrls = new ArrayList<HtmlData>();
-		
-		List<HtmlData> defaultCustomActionUrls = super.getCustomActionUrls(businessObject, pkNames);
-		
-		SystemLunchRule systemLunchRule = (SystemLunchRule) businessObject;
-		String tkSystemLunchRuleId = systemLunchRule.getTkSystemLunchRuleId();
-		
-		boolean systemAdmin = TKContext.getUser().isSystemAdmin();
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
+			@SuppressWarnings("rawtypes") List pkNames) {
+		List<HtmlData> customActionUrls = super.getCustomActionUrls(
+				businessObject, pkNames);
+		if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
+			SystemLunchRule systemLunchRule = (SystemLunchRule) businessObject;
+			final String className = this.getBusinessObjectClass().getName();
+			final String tkSystemLunchRuleId = systemLunchRule
+					.getTkSystemLunchRuleId();
+			HtmlData htmlData = new HtmlData() {
 
-		for (HtmlData defaultCustomActionUrl : defaultCustomActionUrls){
-			if (StringUtils.equals(defaultCustomActionUrl.getMethodToCall(), "edit")) {
-				if (systemAdmin) {
-					customActionUrls.add(defaultCustomActionUrl);
+				@Override
+				public String constructCompleteHtmlTag() {
+					return "<a target=\"_blank\" href=\"inquiry.do?businessObjectClassName="
+							+ className
+							+ "&methodToCall=start&tkSystemLunchRuleId="
+							+ tkSystemLunchRuleId + "\">view</a>";
 				}
-			} else {
-				customActionUrls.add(defaultCustomActionUrl);
-			}
+			};
+			customActionUrls.add(htmlData);
+		} else if (customActionUrls.size() != 0) {
+			customActionUrls.remove(0);
 		}
-		
-		Properties params = new Properties();
-		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
-		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("tkSystemLunchRuleId", tkSystemLunchRuleId);
-		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
-		viewUrl.setDisplayText("view");
-		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
-		customActionUrls.add(viewUrl);
-		
 		return customActionUrls;
 	}
+
 
 }

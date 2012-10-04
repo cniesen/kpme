@@ -1,31 +1,16 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.base.web;
 
-import java.math.BigDecimal;
+import org.kuali.hr.job.Job;
+import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.roles.TkRole;
+import org.kuali.rice.kim.bo.Person;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.roles.TkRole;
-import org.kuali.rice.kim.api.identity.Person;
+
 
 public class PersonInfoActionForm extends TkForm {
 
@@ -33,17 +18,6 @@ public class PersonInfoActionForm extends TkForm {
     
     private String principalId;
     private String principalName;
-    private String name;
-    //KPME-1441
-    private String serviceDate;
-    private String totalFTE;
-    
-    private List<AccrualCategory> accrualCategories = new ArrayList<AccrualCategory>();
-    private Map<String, BigDecimal> accrualCategoryRates = new HashMap<String, BigDecimal>();
-    private Map<String, String> accrualEarnIntervals = new HashMap<String, String>();
-    private Map<String, String> unitOfTime = new HashMap<String, String>();
-    
-    //KPME-1441
     private List<Job> jobs = new ArrayList<Job>();
     private Map<Long,List<Assignment>> jobNumberToListAssignments = new HashMap<Long,List<Assignment>>();
 	
@@ -61,22 +35,6 @@ public class PersonInfoActionForm extends TkForm {
 	private Map<Long,List<Person>> workAreaToApproverPerson = new HashMap<Long, List<Person>>();
     private Map<String,List<Person>> deptToDeptAdminPerson = new HashMap<String, List<Person>>();
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public String getServiceDate() {
-		return serviceDate;
-	}
-
-	public void setServiceDate(String serviceDate) {
-		this.serviceDate = serviceDate;
-	}
-	
 
 	public Map<Long, List<Assignment>> getJobNumberToListAssignments() {
 		return jobNumberToListAssignments;
@@ -117,38 +75,6 @@ public class PersonInfoActionForm extends TkForm {
 
 	public void setWorkAreaToApproverPerson(Map<Long,List<Person>> workAreaToApproverPerson) {
 		this.workAreaToApproverPerson = workAreaToApproverPerson;
-	}
-
-	public List<AccrualCategory> getAccrualCategories() {
-		return accrualCategories;
-	}
-
-	public void setAccrualCategories(List<AccrualCategory> accrualCategories) {
-		this.accrualCategories = accrualCategories;
-	}
-	
-	public Map<String, BigDecimal> getAccrualCategoryRates() {
-		return accrualCategoryRates;
-	}
-	
-	public void setAccrualCategoryRates(Map<String, BigDecimal> accrualCategoryRates) {
-		this.accrualCategoryRates = accrualCategoryRates;
-	}
-	
-	public Map<String, String> getAccrualEarnIntervals() {
-		return accrualEarnIntervals;
-	}
-
-	public void setAccrualEarnIntervals(Map<String, String> accrualEarnIntervals) {
-		this.accrualEarnIntervals = accrualEarnIntervals;
-	}
-
-	public Map<String, String> getUnitOfTime() {
-		return unitOfTime;
-	}
-
-	public void setUnitOfTime(Map<String, String> unitOfTime) {
-		this.unitOfTime = unitOfTime;
 	}
 
 	public List<Job> getJobs() {
@@ -238,12 +164,4 @@ public class PersonInfoActionForm extends TkForm {
     public void setDeptToDeptAdminPerson(Map<String, List<Person>> deptToDeptAdminPerson) {
         this.deptToDeptAdminPerson = deptToDeptAdminPerson;
     }
-
-	public String getTotalFTE() {
-		return totalFTE;
-	}
-
-	public void setTotalFTE(String totalFTE) {
-		this.totalFTE = totalFTE;
-	} 
 }

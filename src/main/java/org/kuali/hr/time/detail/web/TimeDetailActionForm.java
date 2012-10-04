@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.detail.web;
 
 import org.apache.commons.lang.StringUtils;
@@ -43,14 +28,9 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 	private TimeSummary timeSummary;
 	private Map<String, String> assignStyleClassMap = new HashMap<String, String>();
     private String timeBlockString;
-    private String leaveBlockString;
     private TkCalendar calendar;
     private String docEditable;
-    private String workingOnItsOwn;	// true if the user is working on its own timesheet
     private List<String> overtimeEarnCodes = new ArrayList<String>();
-    private String tkTimeHourDetailId;
-    private String isLunchDeleted;
-    private boolean canAddTimeblock;
 
     public TkCalendar getTkCalendar() {
         return calendar;
@@ -106,7 +86,7 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 	}
 
 	public String getServerTimezone() {
-		return TKUtils.getSystemTimeZone();
+		return TkConstants.SYSTEM_TIME_ZONE;
 	}
 
 	public String getUserTimezone() {
@@ -154,44 +134,5 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 
 	public void setOvertimeEarnCodes(List<String> overtimeEarnCodes) {
 		this.overtimeEarnCodes = overtimeEarnCodes;
-	}
-
-    public String getTkTimeHourDetailId() {
-        return tkTimeHourDetailId;
-    }
-
-    public void setTkTimeHourDetailId(String tkTimeHourDetailId) {
-        this.tkTimeHourDetailId = tkTimeHourDetailId;
-    }
-
-    public String getLunchDeleted() {
-        return isLunchDeleted;
-    }
-
-    public void setLunchDeleted(String lunchDeleted) {
-        isLunchDeleted = lunchDeleted;
-    }
-
-    public boolean isCanAddTimeblock() {
-        return TkServiceLocator.getPermissionsService().canAddTimeBlock();
-    }
-
-	public String getWorkingOnItsOwn() {
-		if(StringUtils.isEmpty(workingOnItsOwn)) {
-			workingOnItsOwn="false";
-		}
-		return workingOnItsOwn;
-	}
-
-	public void setWorkingOnItsOwn(String workingOnItsOwn) {
-		this.workingOnItsOwn = workingOnItsOwn;
-	}
-
-	public String getLeaveBlockString() {
-		return leaveBlockString;
-	}
-
-	public void setLeaveBlockString(String leaveBlockString) {
-		this.leaveBlockString = leaveBlockString;
 	}
 }

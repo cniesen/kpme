@@ -1,35 +1,22 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.department;
 
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.kfs.coa.businessobject.Chart;
 import org.kuali.kfs.coa.businessobject.Organization;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+
 public class Department extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Department";
+
+    /**
+     *
+     */
     private static final long serialVersionUID = 1L;
 
     private String hrDeptId;
@@ -44,7 +31,14 @@ public class Department extends HrBusinessObject {
     private Location locationObj;
     
     private List<TkRole> roles = new LinkedList<TkRole>();
-    private List<TkRole> inactiveRoles = new ArrayList<TkRole>();
+
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @Override
+    protected LinkedHashMap toStringMapper() {
+    	LinkedHashMap<String, String> lhm = new LinkedHashMap<String,String>();
+    	lhm.put(dept, dept);
+    	return lhm;
+    }
 
     public String getDescription() {
         return description;
@@ -133,19 +127,9 @@ public class Department extends HrBusinessObject {
 	public void setRoles(List<TkRole> roles) {
 		this.roles = roles;
 	}
-	
-	public List<TkRole> getInactiveRoles() {
-		return inactiveRoles;
-	}
-
-
-	public void setInactiveRoles(List<TkRole> inactiveRoles) {
-		this.inactiveRoles = inactiveRoles;
-	}
-
 
 	@Override
-	public String getUniqueKey() {
+	protected String getUniqueKey() {
 		return getDept() + "_" + getOrg() + "_" + getChart() + getRoles().size();
 	}
 

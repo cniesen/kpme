@@ -1,35 +1,12 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timesheet.web;
-
-import java.sql.Date;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.apache.struts.action.ActionRedirect;
 import org.kuali.hr.time.base.web.TkAction;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.detail.web.ActionFormUtils;
-import org.kuali.hr.time.roles.TkUserRoles;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
@@ -38,22 +15,26 @@ import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.exception.AuthorizationException;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.exception.AuthorizationException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
 
 public class TimesheetAction extends TkAction {
 
+	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(TimesheetAction.class);
+
 
     @Override
     protected void checkTKAuthorization(ActionForm form, String methodToCall) throws AuthorizationException {
         TKUser user = TKContext.getUser();
-        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
+        UserRoles roles = user.getCurrentRoles(); // either backdoor or actual
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
 
         if (!roles.isDocumentReadable(doc)) {
-            throw new AuthorizationException(GlobalVariables.getUserSession().getPrincipalId(), "TimesheetAction: docid: " + doc.getDocumentId(), "");
+            throw new AuthorizationException(user.getPrincipalId(), "TimesheetAction: docid: " + doc.getDocumentId(), "");
         }
     }
 
@@ -67,8 +48,8 @@ public class TimesheetAction extends TkAction {
 
         // Here - viewPrincipal will be the principal of the user we intend to
         // view, be it target user, backdoor or otherwise.
-        String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
-		CalendarEntries payCalendarEntries;
+        String viewPrincipal = user.getTargetPrincipalId();
+		PayCalendarEntries payCalendarEntries;
 		TimesheetDocument td;
 		TimesheetDocumentHeader tsdh;
 
@@ -81,10 +62,7 @@ public class TimesheetAction extends TkAction {
         } else {
             // Default to whatever is active for "today".
             Date currentDate = TKUtils.getTimelessDate(null);
-            payCalendarEntries = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
-            if(payCalendarEntries == null){
-                throw new RuntimeException("No Calendar Entry setup for "+viewPrincipal);
-            }
+            payCalendarEntries = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(viewPrincipal,  currentDate);
             td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, payCalendarEntries);
         }
 
@@ -99,22 +77,9 @@ public class TimesheetAction extends TkAction {
         // then check security permissions via the superclass execution chain.
 		return super.execute(mapping, form, request, response);
 	}
-    
-    public ActionForward docHandler(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
-        	final String docId = (String)request.getParameter("docId");
-        	TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
-        	final String principalName = KimApiServiceLocator.getPersonService().getPerson(td.getPrincipalId()).getPrincipalName();
-        	
-        	return new ActionRedirect("/changeTargetPerson.do?methodToCall=changeTargetPerson&documentId" + docId + "&principalName=" + principalName + "&targetUrl=TimeDetail.do%3FdocmentId=" + docId + "&returnUrl=TimeApproval.do");
-        }
-    	
-    	return mapping.findForward("basic");
-    }
 
     protected void setupDocumentOnFormContext(TimesheetActionForm taForm, TimesheetDocument td){
-    	String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
+    	String viewPrincipal = TKContext.getUser().getTargetPrincipalId();
     	TKContext.setCurrentTimesheetDocumentId(td.getDocumentId());
         TKContext.setCurrentTimesheetDocument(td);
 	    taForm.setTimesheetDocument(td);
@@ -127,8 +92,7 @@ public class TimesheetAction extends TkAction {
         if( nextTdh != null) {
             taForm.setNextDocumentId(nextTdh.getDocumentId());
         }
-        taForm.setPayCalendarDates(td.getCalendarEntry());
-        taForm.setOnCurrentPeriod(ActionFormUtils.getOnCurrentPeriodFlag(taForm.getPayCalendarDates()));
+        taForm.setPayCalendarDates(td.getPayCalendarEntry());
     }
 
 }

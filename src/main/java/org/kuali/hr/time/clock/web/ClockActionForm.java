@@ -1,19 +1,14 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clock.web;
+
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -24,12 +19,7 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
-import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
-
-import java.sql.Timestamp;
-import java.util.*;
 
 public class ClockActionForm extends TimesheetActionForm {
 
@@ -51,7 +41,6 @@ public class ClockActionForm extends TimesheetActionForm {
     private TimeBlock timeBlock;
     private boolean showLunchButton;
     private boolean showDistributeButton;
-    private boolean showMissedPunchButton;
     private Map<String, List<TimeBlock>> timeBlocksMap;
     private List<String> assignDescriptionsList;
 
@@ -63,7 +52,6 @@ public class ClockActionForm extends TimesheetActionForm {
     private String currentAssignmentDescription;
     private String currentAssignmentKey;
     private String tbId;
-    private String tsDocId;
 
     private String newAssignDesCol;
     private String newBDCol;
@@ -76,10 +64,6 @@ public class ClockActionForm extends TimesheetActionForm {
 
  // this is for the ajax call
 	private String outputString;
-	
-    public String getTargetUserTimezone() {
-        return TkServiceLocator.getTimezoneService().getUserTimezone(TKUser.getCurrentTargetPerson().getPrincipalId());
-    }
 
     public Date getLastClockTimeWithZone() {
         return lastClockTimeWithZone;
@@ -290,7 +274,7 @@ public class ClockActionForm extends TimesheetActionForm {
 		 String pId = this.getPrincipalId();
 		 if(pId != null) {
 			 TimesheetDocument td = this.getTimesheetDocument();
-			 if(td != null && !td.getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
+			 if(td != null) {
 				 List<TimeBlock> tbList = new ArrayList<TimeBlock>();
 				 if(td != null) {
 					 for(TimeBlock tbTemp : td.getTimeBlocks()) {
@@ -434,22 +418,6 @@ public class ClockActionForm extends TimesheetActionForm {
 
 	public void setDesList(LinkedHashMap<String, String> desList) {
 		this.desList = desList;
-	}
-
-	public String getTsDocId() {
-		return tsDocId;
-	}
-
-	public void setTsDocId(String tsDocId) {
-		this.tsDocId = tsDocId;
-	}
-
-	public boolean isShowMissedPunchButton() {
-		return showMissedPunchButton;
-	}
-
-	public void setShowMissedPunchButton(boolean showMissedPunchButton) {
-		this.showMissedPunchButton = showMissedPunchButton;
 	}
 	
 }

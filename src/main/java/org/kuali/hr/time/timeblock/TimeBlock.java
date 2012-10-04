@@ -1,30 +1,5 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timeblock;
 
-import java.math.BigDecimal;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import javax.persistence.Transient;
-
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.kuali.hr.time.assignment.Assignment;
@@ -33,8 +8,16 @@ import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+
+import javax.persistence.Transient;
+import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class TimeBlock extends PersistableBusinessObjectBase implements Comparable {
 
@@ -75,20 +58,13 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
     private String endTimestampTimezone;
     private DateTime beginTimeDisplay;
     private DateTime endTimeDisplay;
+
     private String clockLogBeginId;
     private String clockLogEndId;
+
     private String assignmentKey;
+
     private String overtimePref;
-    private boolean lunchDeleted;
-    
-    @Transient
-    private Boolean deleteable;
-    
-    @Transient
-    private Boolean overtimeEditable;
-    
-    @Transient
-    private Boolean regEarnCodeEditable;
 
 
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
@@ -96,12 +72,27 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
     private Boolean pushBackward = false;
 
     private TimesheetDocumentHeader timesheetDocumentHeader;
-    private Person user;
-    
+
     private List<TimeHourDetail> timeHourDetails = new ArrayList<TimeHourDetail>();
     private List<TimeBlockHistory> timeBlockHistories = new ArrayList<TimeBlockHistory>();
 
     public TimeBlock() {
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected LinkedHashMap toStringMapper() {
+        LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String, Object>();
+        toStringMap.put("tkTimeBlockId", tkTimeBlockId);
+        toStringMap.put("earnCode", earnCode);
+        toStringMap.put("hours", hours);
+        toStringMap.put("beginTimestamp", beginTimestamp);
+        toStringMap.put("endTimestamp", endTimestamp);
+        for (TimeHourDetail thd : timeHourDetails) {
+            toStringMap.put("thd:earnCode:" + thd.getEarnCode(), thd.getHours());
+            toStringMap.put("thd:earnCode:" + thd.getEarnCode(), thd.getHours());
+        }
+        return toStringMap;
     }
 
     public String getDocumentId() {
@@ -296,12 +287,12 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
         this.task = task;
     }
 
-    public String getHrJobId() {
-        return hrJobId;
+    public Long getHrJobId() {
+        return Long.parseLong(hrJobId);
     }
 
-    public void setHrJobId(String hrJobId) {
-        this.hrJobId = hrJobId;
+    public void setHrJobId(Long hrJobId) {
+        this.hrJobId = hrJobId.toString();
     }
 
     public String getTkWorkAreaId() {
@@ -328,11 +319,32 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
         this.timeHourDetails = timeHourDetails;
     }
 
+    public String getAssignString() {
+        return this.jobNumber + "_" + this.workArea + "_" + this.task;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (hashCode() == obj.hashCode()) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        StringBuilder key = new StringBuilder(getAssignString() + "_" + getEarnCode() + "_" + "_" + getBeginTimestamp() + "_" + getEndTimestamp() + "_" + getHours());
+        for (TimeHourDetail timeHourDetail : getTimeHourDetails()) {
+            key.append(timeHourDetail.getEarnCode() + "_" + timeHourDetail.getAmount() + "_" + timeHourDetail.getHours());
+        }
+        return HashCodeBuilder.reflectionHashCode(key);
+    }
+
     public Boolean isPushBackward() {
         return pushBackward;
     }
 
-	public void setPushBackward(Boolean pushBackward) {
+    public void setPushBackward(Boolean pushBackward) {
         this.pushBackward = pushBackward;
     }
 
@@ -611,75 +623,4 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
 
         return false;
     }
-
-	public Boolean getDeleteable() {
-		return TkServiceLocator.getPermissionsService().canDeleteTimeBlock(this);
-	}
-
-	public Boolean getOvertimeEditable() {
-		return TkServiceLocator.getPermissionsService().canEditOvertimeEarnCode(this);
-	}
-	
-	public Boolean getRegEarnCodeEditable() {
-		return TkServiceLocator.getPermissionsService().canEditRegEarnCode(this);
-	}
-
-    public Boolean getTimeBlockEditable(){
-        return TkServiceLocator.getPermissionsService().canEditTimeBlock(this);
-    }
-
-    public boolean isLunchDeleted() {
-        return lunchDeleted;
-    }
-
-    public void setLunchDeleted(boolean lunchDeleted) {
-        this.lunchDeleted = lunchDeleted;
-    }
-
-	public Person getUser() {
-		return user;
-	}
-
-	public void setUser(Person user) {
-		this.user = user;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) { 
-			return false;
-		}
-		if (obj == this) { 
-			return true;
-		}
-		if (obj.getClass() != getClass()) {
-			return false;
-		}
-		TimeBlock timeBlock = (TimeBlock) obj;
-		return new EqualsBuilder()
-			.append(jobNumber, timeBlock.jobNumber)
-			.append(workArea, timeBlock.workArea)
-			.append(task, timeBlock.task)
-			.append(earnCode, timeBlock.earnCode)
-			.append(beginTimestamp, timeBlock.beginTimestamp)
-			.append(endTimestamp, timeBlock.endTimestamp)
-			.append(hours, timeBlock.hours)
-			.append(timeHourDetails, timeBlock.timeHourDetails)
-			.isEquals();
-	}
-
-    @Override
-    public int hashCode() {
-    	return new HashCodeBuilder(17, 31)
-    		.append(jobNumber)
-    		.append(workArea)
-    		.append(task)
-    		.append(earnCode)
-    		.append(beginTimestamp)
-    		.append(endTimestamp)
-    		.append(hours)
-    		.append(timeHourDetails)
-    		.toHashCode();
-    }
-    
 }

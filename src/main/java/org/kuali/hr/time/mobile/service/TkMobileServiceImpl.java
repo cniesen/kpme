@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.mobile.service;
 
 import java.sql.Date;
@@ -24,17 +9,17 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kew.api.exception.WorkflowException;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kew.exception.WorkflowException;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
 
 import com.google.gson.Gson;
 
@@ -67,12 +52,14 @@ public class TkMobileServiceImpl implements TkMobileService {
 
         // Set person on the context
         // This is primary for getting the assignment, since we get the assignment by using the target principal id on the context
-        Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
-        TKUser.setTargetPerson(person);
+        TKUser user = new TKUser();
+        Person person = KIMServiceLocator.getPersonService().getPerson(principalId);
+        user.setActualPerson(person);
+        TKContext.setUser(user);
 
 		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(assignmentKey), TKUtils.getCurrentDate());
         Date currentDate = TKUtils.getCurrentDate();
-        CalendarEntries calendarEntries = TkServiceLocator.getCalendarService().getCurrentCalendarDates(principalId,  currentDate);
+        PayCalendarEntries calendarEntries = TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(principalId,  currentDate);
         TimesheetDocument td;
 		try {
 			td = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId, calendarEntries);
@@ -85,7 +72,7 @@ public class TkMobileServiceImpl implements TkMobileService {
 
         // processClockLog is the correct method to use. It creates and persists a clock log and a time block if necessary.
         // buildClockLog just creates a clock log object.
-        TkServiceLocator.getClockLogService().processClockLog(currentTs, assignment, td.getCalendarEntry(), ip,
+        TkServiceLocator.getClockLogService().processClockLog(currentTs, assignment, td.getPayCalendarEntry(), ip,
                 new java.sql.Date(currentTs.getTime()), td, getCurrentClockAction(), principalId);
 
         // TODO: not sure what we want to return for the errorWarningMap

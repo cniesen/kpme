@@ -1,35 +1,19 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timesheet;
+
+import org.kuali.hr.job.Job;
+import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.timeblock.TimeBlock;
+import org.kuali.hr.time.timesummary.TimeSummary;
+import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
-import org.kuali.hr.job.Job;
-import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.timeblock.TimeBlock;
-import org.kuali.hr.time.timesummary.TimeSummary;
-import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
-
-public class TimesheetDocument implements CalendarDocumentContract {
+public class TimesheetDocument  {
 
 	public static final String TIMESHEET_DOCUMENT_TYPE = "TimesheetDocument";
 	public static final String TIMESHEET_DOCUMENT_TITLE = "TimesheetDocument";
@@ -38,7 +22,7 @@ public class TimesheetDocument implements CalendarDocumentContract {
 	private List<Assignment> assignments = new LinkedList<Assignment>();
 	private List<Job> jobs = new LinkedList<Job>();
 	private List<TimeBlock> timeBlocks = new LinkedList<TimeBlock>();
-	private CalendarEntries calendarEntry = null; // Was a Hidden NPE, now more exposed // new PayCalendarEntries();
+	private PayCalendarEntries payCalendarEntry = null; // Was a Hidden NPE, now more exposed // new PayCalendarEntries();
 	private TimeSummary timeSummary = new TimeSummary();
 	private Map<Long, Job> jobNumberToJobMap = new HashMap<Long,Job>();
 
@@ -46,7 +30,6 @@ public class TimesheetDocument implements CalendarDocumentContract {
 		this.documentHeader = documentHeader;
 	}
 
-    @Override
 	public TimesheetDocumentHeader getDocumentHeader() {
 		return documentHeader;
 	}
@@ -55,7 +38,6 @@ public class TimesheetDocument implements CalendarDocumentContract {
 		this.documentHeader = documentHeader;
 	}
 
-    @Override
 	public List<Assignment> getAssignments() {
 		return assignments;
 	}
@@ -86,13 +68,12 @@ public class TimesheetDocument implements CalendarDocumentContract {
 		this.timeBlocks = timeBlocks;
 	}
 
-    @Override
-	public CalendarEntries getCalendarEntry() {
-		return calendarEntry;
+	public PayCalendarEntries getPayCalendarEntry() {
+		return payCalendarEntry;
 	}
 
-	public void setCalendarEntry(CalendarEntries calendarEntry) {
-		this.calendarEntry = calendarEntry;
+	public void setPayCalendarEntry(PayCalendarEntries payCalendarEntry) {
+		this.payCalendarEntry = payCalendarEntry;
 	}
 
 	public void setTimeSummary(TimeSummary timeSummary) {
@@ -111,9 +92,8 @@ public class TimesheetDocument implements CalendarDocumentContract {
 		return jobNumberToJobMap.get(jobNumber);
 	}
 
-    @Override
 	public java.sql.Date getAsOfDate(){
-		return new java.sql.Date(getCalendarEntry().getBeginPeriodDateTime().getTime());
+		return new java.sql.Date(getPayCalendarEntry().getBeginPeriodDateTime().getTime());
 	}
 
 	public String getDocumentId(){

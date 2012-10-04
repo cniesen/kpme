@@ -1,32 +1,16 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workschedule;
 
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
 
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @Ignore
-public class WorkScheduleMaintTest extends KPMETestCase{
+public class WorkScheduleMaintTest extends TkTestCase{
 	
 	private static final String TEST_CODE = "test-schedule";		
 		
@@ -50,7 +34,7 @@ public class WorkScheduleMaintTest extends KPMETestCase{
 				.gotoPageAndLogin(TkTestConstants.Urls.WORK_SCHEDULE_MAINT_URL);
 		workScheduleLookUp = HtmlUnitUtil.clickInputContainingText(
 				workScheduleLookUp, "search");
-		Assert.assertTrue("Page contains test workSchedule",
+		assertTrue("Page contains test workSchedule",
 				workScheduleLookUp.asText().contains(TEST_CODE));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				workScheduleLookUp, "edit",
@@ -63,7 +47,7 @@ public class WorkScheduleMaintTest extends KPMETestCase{
 		inputForDescription.setValueAttribute("Description");
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");		
-		Assert.assertTrue("Maintenance Page contains error message for dept",
+		assertTrue("Maintenance Page contains error message for dept",
 				resultantPageAfterEdit.asText().contains(
 						"The specified department '" + TEST_CODE_DEPT_INVALID
 								+ "' does not exist."));
@@ -82,7 +66,7 @@ public class WorkScheduleMaintTest extends KPMETestCase{
 				.gotoPageAndLogin(TkTestConstants.Urls.WORK_SCHEDULE_MAINT_URL);
 		workScheduleLookUp = HtmlUnitUtil.clickInputContainingText(
 				workScheduleLookUp, "search");
-		Assert.assertTrue("Page contains test workSchedule",
+		assertTrue("Page contains test workSchedule",
 				workScheduleLookUp.asText().contains(TEST_CODE));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				workScheduleLookUp, "edit",
@@ -95,7 +79,7 @@ public class WorkScheduleMaintTest extends KPMETestCase{
 		inputForDescription.setValueAttribute("Description");
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");		
-		Assert.assertTrue("Maintenance Page contains contains error message for workarea",
+		assertTrue("Maintenance Page contains contains error message for workarea",
 				resultantPageAfterEdit.asText().contains(
 						"The specified workarea '" + TEST_CODE_WORKAREA_INVALID
 								+ "' does not exist."));
@@ -107,13 +91,13 @@ public class WorkScheduleMaintTest extends KPMETestCase{
 				.gotoPageAndLogin(TkTestConstants.Urls.WORK_SCHEDULE_MAINT_URL);
 		workScheduleLookUp = HtmlUnitUtil.clickInputContainingText(
 				workScheduleLookUp, "search");
-		Assert.assertTrue("Page contains test workSchedule",
+		assertTrue("Page contains test workSchedule",
 				workScheduleLookUp.asText().contains(
 						TEST_CODE.toString()));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				workScheduleLookUp, "edit",
 				workScheduleWithInvalidDept.toString());
-		Assert.assertTrue("Maintenance Page contains test WorkSchedule ",
+		assertTrue("Maintenance Page contains test WorkSchedule ",
 				maintPage.asText().contains(TEST_CODE.toString()));
 	}
 }

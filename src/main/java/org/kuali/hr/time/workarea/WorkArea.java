@@ -1,26 +1,11 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workarea;
 
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.authorization.DepartmentalRule;
 import org.kuali.hr.time.department.Department;
@@ -29,7 +14,7 @@ import org.kuali.hr.time.roles.TkRole;
 import org.kuali.hr.time.task.Task;
 
 public class WorkArea extends HrBusinessObject implements DepartmentalRule {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "WorkArea";
+
     private static final long serialVersionUID = 1L;
 
     private String tkWorkAreaId;
@@ -54,6 +39,15 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule {
     private Department department;
     private Task taskObj;
     private EarnCode defaultOvertimeEarnCodeObj;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected LinkedHashMap toStringMapper() {
+	LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
+	toStringMap.put("workArea", workArea);
+	return toStringMap;
+    }
+
 
     public Date getEffectiveDate() {
         return effectiveDate;
@@ -242,7 +236,7 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule {
 
 
 	@Override
-	public String getUniqueKey() {
+	protected String getUniqueKey() {
 		return workArea != null ? workArea.toString() : "" +"_"+dept;
 	}
 

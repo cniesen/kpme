@@ -1,32 +1,16 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timecollection.rule.service;
 
 import java.sql.Timestamp;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class TimeCollectionRuleMaintainableImpl extends KualiMaintainableImpl {
     /**
@@ -68,15 +52,14 @@ public class TimeCollectionRuleMaintainableImpl extends KualiMaintainableImpl {
 					//NOTE this is done to prevent the timestamp of the inactive one to be greater than the 
 					oldTimeCollectRule.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(System.currentTimeMillis())));
 					oldTimeCollectRule.setEffectiveDate(timeCollectionRule.getEffectiveDate());
-					KRADServiceLocator.getBusinessObjectService().save(oldTimeCollectRule);
+					KNSServiceLocator.getBusinessObjectService().save(oldTimeCollectRule);
 				}
 				timeCollectionRule.setTimestamp(new Timestamp(System.currentTimeMillis()));
 				timeCollectionRule.setTkTimeCollectionRuleId(null);
 			}
 		}
 		
-		KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule);
-        CacheUtils.flushCache(TimeCollectionRule.CACHE_NAME);
+		KNSServiceLocator.getBusinessObjectService().save(timeCollectionRule);
     }
 
 

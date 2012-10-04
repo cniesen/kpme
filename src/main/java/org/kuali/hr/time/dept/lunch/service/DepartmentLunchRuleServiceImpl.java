@@ -1,21 +1,11 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.dept.lunch.service;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.List;
+
 import org.apache.log4j.Logger;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.dept.lunch.DeptLunchRule;
 import org.kuali.hr.time.dept.lunch.dao.DepartmentLunchRuleDao;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -25,15 +15,12 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.List;
-
 public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleService {
 	public DepartmentLunchRuleDao deptLunchRuleDao;
 	private static final Logger LOG = Logger.getLogger(DepartmentLunchRuleServiceImpl.class);
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea,
 			String principalId, Long jobNumber, Date asOfDate) {
 		DeptLunchRule deptLunchRule = deptLunchRuleDao.getDepartmentLunchRule(dept, workArea, principalId, jobNumber, asOfDate);
@@ -64,11 +51,8 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
 	@Override
 	public void applyDepartmentLunchRule(List<TimeBlock> timeblocks) {
 		for(TimeBlock timeBlock : timeblocks) {
-            if (timeBlock.isLunchDeleted()) {
-                continue;
-            }
 			TimesheetDocumentHeader doc = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(timeBlock.getDocumentId());
-			String dept = TkServiceLocator.getJobService().getJob(doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime())).getDept();
+			String dept = TkServiceLocator.getJobSerivce().getJob(doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime())).getDept();
 			DeptLunchRule deptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(dept, timeBlock.getWorkArea(), doc.getPrincipalId(), timeBlock.getJobNumber(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime()));
 			if(timeBlock.getClockLogCreated() && deptLunchRule!= null && deptLunchRule.getDeductionMins() != null && timeBlock.getHours().compareTo(deptLunchRule.getShiftHours()) >= 0) {
                 applyLunchRuleToDetails(timeBlock, deptLunchRule);
@@ -83,7 +67,7 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
             TimeHourDetail detail = details.get(0);
 
             BigDecimal lunchHours = TKUtils.convertMinutesToHours(rule.getDeductionMins());
-            BigDecimal newHours = detail.getHours().subtract(lunchHours).setScale(TkConstants.BIG_DECIMAL_SCALE, TkConstants.BIG_DECIMAL_SCALE_ROUNDING);
+            BigDecimal newHours = detail.getHours().subtract(lunchHours).setScale(TkConstants.BIG_DECIMAL_SCALE);
             detail.setHours(newHours);
 
             TimeHourDetail lunchDetail = new TimeHourDetail();
@@ -111,6 +95,7 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
 	}
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public DeptLunchRule getDepartmentLunchRule(String tkDeptLunchRuleId) {
 		return deptLunchRuleDao.getDepartmentLunchRule(tkDeptLunchRuleId);
 	}

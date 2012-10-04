@@ -1,21 +1,7 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workarea.service;
 
 import org.apache.log4j.Logger;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
@@ -35,6 +21,7 @@ public class WorkAreaServiceImpl implements WorkAreaService {
 	}
 
     @Override
+    @CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
     public List<WorkArea> getWorkAreas(String department, Date asOfDate) {
         List<WorkArea> wa = workAreaDao.getWorkArea(department, asOfDate);
 
@@ -48,6 +35,7 @@ public class WorkAreaServiceImpl implements WorkAreaService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public WorkArea getWorkArea(Long workArea, Date asOfDate) {
         WorkArea w = workAreaDao.getWorkArea(workArea, asOfDate);
         populateWorkAreaRoles(w);
@@ -73,12 +61,14 @@ public class WorkAreaServiceImpl implements WorkAreaService {
             workArea.setRoles(
                     TkServiceLocator.getTkRoleService().getWorkAreaRoles(
                             workArea.getWorkArea(),
+                            TkConstants.ROLE_TK_APPROVER,
                             workArea.getEffectiveDate()
                     )
             );
             workArea.setInactiveRoles(
             		TkServiceLocator.getTkRoleService().getInActiveWorkAreaRoles(
             				workArea.getWorkArea(),
+            				TkConstants.ROLE_TK_APPROVER,
             				workArea.getEffectiveDate()
             		)
             );
@@ -86,6 +76,7 @@ public class WorkAreaServiceImpl implements WorkAreaService {
     }
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public WorkArea getWorkArea(String tkWorkAreaId) {
 		return workAreaDao.getWorkArea(tkWorkAreaId);
 	}
@@ -94,16 +85,4 @@ public class WorkAreaServiceImpl implements WorkAreaService {
 	public Long getNextWorkAreaKey() {
 		return workAreaDao.getNextWorkAreaKey();
 	}
-
-	@Override
-	public List<WorkArea> getWorkAreas(String dept, String workArea,
-			String workAreaDescr, Date fromEffdt, Date toEffdt, String active,
-			String showHistory) {
-		return workAreaDao.getWorkAreas(dept, workArea, workAreaDescr, fromEffdt, toEffdt, active, showHistory);
-	}
-	
-	@Override
-    public int getWorkAreaCount(String dept, Long workArea) {
-		return workAreaDao.getWorkAreaCount(dept, workArea);
-    }
 }

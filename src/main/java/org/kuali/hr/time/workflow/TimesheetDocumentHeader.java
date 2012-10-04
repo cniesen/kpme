@@ -1,33 +1,36 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workflow;
 
 import java.util.Date;
+import java.util.LinkedHashMap;
 
-import org.kuali.hr.core.document.CalendarDocumentHeaderContract;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
-public class TimesheetDocumentHeader extends PersistableBusinessObjectBase implements CalendarDocumentHeaderContract {
+public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 
 	private static final long serialVersionUID = 1L;
 	private String documentId;
 	private String principalId;
-	private Date beginDate;
-	private Date endDate;
+	private Date payBeginDate;
+	private Date payEndDate;
 	private String documentStatus;
+	private String objectId;
+	private Long versionNumber;
+	
+	public String getObjectId() {
+		return objectId;
+	}
+
+	public void setObjectId(String objectId) {
+		this.objectId = objectId;
+	}
+
+	public Long getVersionNumber() {
+		return versionNumber;
+	}
+
+	public void setVersionNumber(long versionNumber) {
+		this.versionNumber = versionNumber;
+	}
 
 	public TimesheetDocumentHeader() {
 		
@@ -36,12 +39,11 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 	public TimesheetDocumentHeader(String documentId, String principalId, Date payBeginDate, Date payEndDate, String documentStatus) {
 		this.documentId = documentId;
 		this.principalId = principalId;
-		this.beginDate = payBeginDate;
-		this.endDate = payEndDate;
+		this.payBeginDate = payBeginDate;
+		this.payEndDate = payEndDate;
 		this.documentStatus = documentStatus;
 	}
 
-    @Override
 	public String getDocumentId() {
 		return documentId;
 	}
@@ -50,7 +52,6 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.documentId = documentId;
 	}
 
-    @Override
 	public String getPrincipalId() {
 		return principalId;
 	}
@@ -59,16 +60,14 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.principalId = principalId;
 	}
 
-    @Override
-	public Date getEndDate() {
-		return endDate;
+	public Date getPayEndDate() {
+		return payEndDate;
 	}
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setPayEndDate(Date payEndDate) {
+		this.payEndDate = payEndDate;
 	}
 
-    @Override
 	public String getDocumentStatus() {
 		return documentStatus;
 	}
@@ -77,13 +76,18 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.documentStatus = documentStatus;
 	}
 
-    @Override
-	public Date getBeginDate() {
-		return beginDate;
+	public Date getPayBeginDate() {
+		return payBeginDate;
 	}
 
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
+	public void setPayBeginDate(Date payBeginDate) {
+		this.payBeginDate = payBeginDate;
+	}
+
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

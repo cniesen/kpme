@@ -1,30 +1,15 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.salgroup.dao;
-
-import java.sql.Date;
 
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.salgroup.SalGroup;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class SalGroupDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements SalGroupDao {
+import java.sql.Date;
+
+public class SalGroupDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements SalGroupDao {
 
 	@Override
 	public void saveOrUpdate(SalGroup salGroup) {
@@ -67,13 +52,6 @@ public class SalGroupDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 		
 		Query query = QueryFactory.newQuery(SalGroup.class, crit);
 		return (SalGroup)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
-	}
-	@Override
-	public int getSalGroupCount(String salGroup) {
-		Criteria crit = new Criteria();
-		crit.addEqualTo("hrSalGroup", salGroup);
-		Query query = QueryFactory.newQuery(SalGroup.class, crit);
-		return this.getPersistenceBrokerTemplate().getCount(query);
 	}
 
 }

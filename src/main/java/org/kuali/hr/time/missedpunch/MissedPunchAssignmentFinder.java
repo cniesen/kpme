@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.missedpunch;
 
 import java.util.ArrayList;
@@ -24,11 +9,10 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.core.api.util.ConcreteKeyValue;
-import org.kuali.rice.core.api.util.KeyValue;
+import org.kuali.rice.core.util.KeyLabelPair;
+import org.kuali.rice.kns.lookup.keyvalues.KeyValuesBase;
 import org.kuali.rice.kns.web.struts.form.KualiForm;
 import org.kuali.rice.kns.web.struts.form.KualiTransactionalDocumentFormBase;
-import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
 public class MissedPunchAssignmentFinder extends KeyValuesBase {
 
@@ -40,7 +24,7 @@ public class MissedPunchAssignmentFinder extends KeyValuesBase {
      * NOTE: These are Clock-Only assignments.
      */
     public List getKeyValues() {
-        List<KeyValue> labels = new ArrayList<KeyValue>();
+        List<KeyLabelPair> labels = new ArrayList<KeyLabelPair>();
         String tdocId = "";
         String mpDocId = (String)TKContext.getHttpServletRequest().getParameter(TkConstants.DOCUMENT_ID_REQUEST_NAME);
         if(StringUtils.isBlank(mpDocId)){
@@ -78,7 +62,7 @@ public class MissedPunchAssignmentFinder extends KeyValuesBase {
             Map<String,String> adMap = TkServiceLocator.getAssignmentService().getAssignmentDescriptions(tdoc, true); // Grab clock only assignments
 
             for (Map.Entry entry : adMap.entrySet()) {
-                labels.add(new ConcreteKeyValue((String)entry.getKey(), (String)entry.getValue()));
+                labels.add(new KeyLabelPair(entry.getKey(), (String)entry.getValue()));
             }
         } 
 

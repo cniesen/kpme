@@ -1,28 +1,15 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog;
 
-import java.sql.Timestamp;
-
 import org.kuali.hr.job.Job;
+import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
+
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
 
 public class ClockLog extends PersistableBusinessObjectBase {
 
@@ -53,6 +40,31 @@ public class ClockLog extends PersistableBusinessObjectBase {
     private Task taskObj;
 
     private Person principal;
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected LinkedHashMap toStringMapper() {
+    	LinkedHashMap<String,Object> toStringMapper = new LinkedHashMap<String,Object>();
+    	toStringMapper.put("tkClockLogId", tkClockLogId);
+    	toStringMapper.put("tkClockLogId", principalId);
+    	toStringMapper.put("tkClockLogId", jobNumber);
+    	toStringMapper.put("tkClockLogId", workArea);
+    	toStringMapper.put("tkClockLogId", task);
+    	toStringMapper.put("tkClockLogId", tkWorkAreaId);
+    	toStringMapper.put("tkClockLogId", tkTaskId);
+    	toStringMapper.put("tkClockLogId", clockTimestamp);
+    	toStringMapper.put("tkClockLogId", clockTimestampTimezone);
+    	toStringMapper.put("tkClockLogId", clockAction);
+    	toStringMapper.put("tkClockLogId", ipAddress);
+    	toStringMapper.put("tkClockLogId", userPrincipalId);
+    	toStringMapper.put("tkClockLogId", hrJobId);
+    	toStringMapper.put("tkClockLogId", timestamp);
+    	toStringMapper.put("tkClockLogId", job);
+    	toStringMapper.put("tkClockLogId", workAreaObj);
+    	toStringMapper.put("tkClockLogId", taskObj);
+
+    	return toStringMapper;
+    }
 
 	public Job getJob() {
 		return job;

@@ -1,29 +1,18 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.overtime.daily.rule.validation;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule;
-import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 
@@ -35,7 +24,12 @@ public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 					+ ruleObj.getWorkArea() + "'");
 			valid = false;
 		} else if (!ruleObj.getWorkArea().equals(TkConstants.WILDCARD_LONG)) {
-			int count= TkServiceLocator.getWorkAreaService().getWorkAreaCount(ruleObj.getDept(), ruleObj.getWorkArea());
+			Criteria crit = new Criteria();
+			crit.addEqualTo("dept", ruleObj.getDept());
+			crit.addEqualTo("workArea", ruleObj.getWorkArea());
+			Query query = QueryFactory.newQuery(WorkArea.class, crit);
+			int count = PersistenceBrokerFactory.defaultPersistenceBroker()
+					.getCount(query);
 			valid = (count > 0);
 			if (!valid) {
 				this.putFieldError("workArea", "dept.workarea.invalid.sync",
@@ -84,7 +78,7 @@ public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 						.getFromEarnGroup(), dailyOvertimeRule
 						.getEffectiveDate())) {
 			this.putFieldError("fromEarnGroup", "error.existence",
-					"from EarnCodeGroup '" + dailyOvertimeRule.getFromEarnGroup()
+					"from EarnGroup '" + dailyOvertimeRule.getFromEarnGroup()
 							+ "'");
 			return false;
 		}
@@ -132,7 +126,7 @@ public class DailyOvertimeRuleRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for DailyOvertimeRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof DailyOvertimeRule) {
 			DailyOvertimeRule dailyOvertimeRule = (DailyOvertimeRule) pbo;
 			dailyOvertimeRule.setUserPrincipalId(GlobalVariables

@@ -2,14 +2,6 @@
 
 <%@ attribute name="editingMode" required="true" description="used to decide if items may be edited" type="java.util.Map"%>
 <c:set var="readOnly" value="${!KualiForm.documentActions[Constants.KUALI_ACTION_CAN_EDIT]}" />
-<c:choose>
-	<c:when test="${readOnly}">
-		<c:set var="assignmentReadOnly" value="${readOnly}" />
-	</c:when>
-	<c:otherwise>
-		<c:set var="assignmentReadOnly" value="${KualiForm.assignmentReadOnly}" />
-	</c:otherwise>
-</c:choose>
 
 <kul:tab tabTitle="Missed Punch" defaultOpen="true" 
 	tabErrorKey="document.timesheetDocumentId,document.principalId,document.assignment,document.clockAction,document.actionDate,document.actionTime">
@@ -49,7 +41,7 @@
 				<kul:htmlControlAttribute 
 	                  	attributeEntry="${boeAttributes.assignment}"
 	                  	property="document.assignment"
-	                  	readOnly="${assignmentReadOnly}"/>
+	                  	readOnly="${readOnly}"/>
             </td>
 		</tr>
 		<tr>
@@ -66,8 +58,7 @@
 		<tr>
 			<kul:htmlAttributeHeaderCell 
 				labelFor="document.missedPunch.actionDate"
-				attributeEntry="${boeAttributes.actionDate}"
-				useShortLabel="false" 
+				attributeEntry="${boeAttributes.actionDate}" 
 				horizontal="true" />
 			<td align="left" valign="middle">
 				<kul:htmlControlAttribute 
@@ -78,8 +69,7 @@
 		</tr>			
 		<tr>
 			<kul:htmlAttributeHeaderCell 
-				attributeEntry="${boeAttributes.actionTime}"
-				useShortLabel="false"
+				attributeEntry="${boeAttributes.actionTime}" 
 				horizontal="true" />
 			<td align="left" valign="middle">
 				<kul:htmlControlAttribute 

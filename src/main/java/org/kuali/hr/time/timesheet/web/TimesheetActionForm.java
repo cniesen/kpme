@@ -1,29 +1,14 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timesheet.web;
 
 import org.apache.struts.action.ActionMapping;
-import org.kuali.hr.time.base.web.TkCommonCalendarForm;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.base.web.TkForm;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-public class TimesheetActionForm extends TkCommonCalendarForm {
+public class TimesheetActionForm extends TkForm {
 
 	/**
 	 *
@@ -36,7 +21,7 @@ public class TimesheetActionForm extends TkCommonCalendarForm {
 	private Map<Long,String> earnCodeDescriptions;
 	/** String (concat(job number, work_area, task)) -> Formatted Assignment Descriptions */
 	private Map<String,String>  assignmentDescriptions;
-	private CalendarEntries payCalendarDates;
+	private PayCalendarEntries payCalendarDates;
 	private String selectedAssignment;
 	private String selectedEarnCode;
 
@@ -95,11 +80,11 @@ public class TimesheetActionForm extends TkCommonCalendarForm {
 		this.selectedEarnCode = selectedEarnCode;
 	}
 
-	public CalendarEntries getPayCalendarDates() {
+	public PayCalendarEntries getPayCalendarDates() {
 		return payCalendarDates;
 	}
 
-	public void setPayCalendarDates(CalendarEntries payCalendarDates) {
+	public void setPayCalendarDates(PayCalendarEntries payCalendarDates) {
 		this.payCalendarDates = payCalendarDates;
 	}
 

@@ -1,25 +1,10 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.assignment;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.util.TkConstants;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AssignmentDescriptionKey {
 	private static final Logger LOG = Logger.getLogger(AssignmentDescriptionKey.class);
@@ -58,7 +43,7 @@ public class AssignmentDescriptionKey {
 		Pattern keyPattern = Pattern.compile("^\\d{1,}_\\d{1,}_\\d{1,}");
 		Matcher match = keyPattern.matcher(assignmentKey);
 		if(!match.matches()) {
-			throw new RuntimeException("the format of the assignment key is wrong. it should be jobNumber_workArea_task");
+			throw new RuntimeException("the format of the assignment key is wrong. it should be jobNubmer_workArea_task");
 		}
 
 		String[] key = assignmentKey.split(TkConstants.ASSIGNMENT_KEY_DELIMITER);

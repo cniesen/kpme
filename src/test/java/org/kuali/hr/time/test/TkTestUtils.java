@@ -1,65 +1,38 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.test;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.gargoylesoftware.htmlunit.html.*;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Days;
 import org.joda.time.Duration;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 import org.junit.Assert;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timeblock.service.TimeBlockService;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
-import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
-import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kew.exception.WorkflowException;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlInput;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSelect;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.*;
 
 public class TkTestUtils {
 
@@ -67,9 +40,9 @@ public class TkTestUtils {
 
 	public static TimesheetDocument populateBlankTimesheetDocument(Date calDate) {
 		try {
-			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKUser.getCurrentTargetPerson().getPrincipalId(),
-							TkServiceLocator.getCalendarService().getCurrentCalendarDates(TKUser.getCurrentTargetPerson().getPrincipalId(),
-                                    calDate));
+			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKContext.getUser().getTargetPrincipalId(),
+							TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(TKContext.getUser().getTargetPrincipalId(),
+							  calDate));
 			for(TimeBlock timeBlock : timesheet.getTimeBlocks()){
 				TkServiceLocator.getTimeBlockService().deleteTimeBlock(timeBlock);
 			}
@@ -82,28 +55,23 @@ public class TkTestUtils {
 
 	public static TimesheetDocument populateTimesheetDocument(Date calDate) {
 		try {
-			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKUser.getCurrentTargetPerson().getPrincipalId(),
-							TkServiceLocator.getCalendarService().getCurrentCalendarDates(TKUser.getCurrentTargetPerson().getPrincipalId(),
-                                    calDate));
+			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKContext.getUser().getTargetPrincipalId(),
+							TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(TKContext.getUser().getTargetPrincipalId(),
+							  calDate));
 			for(TimeBlock timeBlock : timesheet.getTimeBlocks()){
 				TkServiceLocator.getTimeBlockService().deleteTimeBlock(timeBlock);
 			}
 
 			//refetch clean document
-			timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKUser.getCurrentTargetPerson().getPrincipalId(),
-					TkServiceLocator.getCalendarService().getCurrentCalendarDates(TKUser.getCurrentTargetPerson().getPrincipalId(),
-                            calDate));
+			timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(TKContext.getUser().getTargetPrincipalId(),
+					TkServiceLocator.getPayCalendarSerivce().getCurrentPayCalendarDates(TKContext.getUser().getTargetPrincipalId(),
+					   calDate));
 			List<TimeBlock> timeBlocks = new LinkedList<TimeBlock>();
 			for(int i = 0;i<5;i++){
 				TimeBlock timeBlock = createTimeBlock(timesheet, i+1, 10);
 				timeBlocks.add(timeBlock);
 				timesheet.setTimeBlocks(timeBlocks);
 			}
-			
-			//Add a TEX accrual earn code
-			TimeBlock timeBlock = createTimeBlock(timesheet, 1, 4,"TEX");
-			timeBlocks.add(timeBlock);
-			timesheet.setTimeBlocks(timeBlocks);
 			return timesheet;
 
 		} catch (WorkflowException e) {
@@ -170,37 +138,31 @@ public class TkTestUtils {
 		return block;
 	}
 
+
 	public static TimeBlock createTimeBlock(TimesheetDocument timesheetDocument, int dayInPeriod, int numHours){
-		return createTimeBlock(timesheetDocument, dayInPeriod, numHours,"RGN");
-	}
-	public static TimeBlock createTimeBlock(TimesheetDocument timesheetDocument, int dayInPeriod, int numHours, String earnCode){
 		TimeBlock timeBlock = new TimeBlock();
 		Calendar cal = GregorianCalendar.getInstance();
-		cal.setTimeInMillis(timesheetDocument.getCalendarEntry().getBeginPeriodDateTime().getTime());
+		cal.setTimeInMillis(timesheetDocument.getPayCalendarEntry().getBeginPeriodDateTime().getTime());
 		for(int i = 1; i< dayInPeriod;i++){
 			cal.add(Calendar.DAY_OF_MONTH, 1);
 		}
 		cal.set(Calendar.HOUR, 8);
 		cal.set(Calendar.MINUTE, 0);
 
-		timeBlock.setDocumentId(timesheetDocument.getDocumentId());
-		timeBlock.setBeginTimeDisplay(new DateTime(cal.getTimeInMillis()));
-		
 		timeBlock.setBeginTimestamp(new Timestamp(cal.getTimeInMillis()));
 		timeBlock.setBeginTimestampTimezone("EST");
-		timeBlock.setEarnCode(earnCode);
+		timeBlock.setEarnCode("RGN");
 		timeBlock.setJobNumber(1L);
 		timeBlock.setWorkArea(1234L);
 		timeBlock.setHours((new BigDecimal(numHours)).setScale(TkConstants.BIG_DECIMAL_SCALE, TkConstants.BIG_DECIMAL_SCALE_ROUNDING));
 		cal.add(Calendar.HOUR, numHours);
 		timeBlock.setEndTimestamp(new Timestamp(cal.getTimeInMillis()));
-		timeBlock.setEndTimeDisplay(new DateTime(cal.getTimeInMillis()));
 
 		return timeBlock;
 	}
 
 	public static List<Job> getJobs(Date calDate){
-		return TkServiceLocator.getJobService().getJobs(TKContext.getPrincipalId(), calDate);
+		return TkServiceLocator.getJobSerivce().getJobs(TKContext.getPrincipalId(), calDate);
 	}
 	/**
 	 *
@@ -299,7 +261,7 @@ public class TkTestUtils {
 
 	/**
 	 *
-	 * @param page: current html page //NOTE doesnt seem to work currently for js setting of form variables
+	 * @param page: current html page
 	 * @param name: the button name
 	 * @return
 	 * @throws Exception
@@ -307,23 +269,6 @@ public class TkTestUtils {
 	public static HtmlPage clickButton(HtmlPage page, String name) throws Exception {
 		HtmlForm form = HtmlUnitUtil.getDefaultForm(page);
 		HtmlSubmitInput input = form.getInputByName(name);
-		return (HtmlPage) input.click();
-	}
-	
-	public static HtmlPage clickClockInOrOutButton(HtmlPage page) throws Exception {
-		HtmlForm form = HtmlUnitUtil.getDefaultForm(page);
-		
-		HtmlSubmitInput input = form.getInputByName("clockAction");
-		form.getInputByName("methodToCall").setValueAttribute("clockAction");
-		return (HtmlPage) input.click();
-	}
-	
-	public static HtmlPage clickLunchInOrOutButton(HtmlPage page, String lunchAction) throws Exception {
-		HtmlForm form = HtmlUnitUtil.getDefaultForm(page);
-		
-		HtmlSubmitInput input = form.getInputByName("clockAction");
-		form.getInputByName("methodToCall").setValueAttribute("clockAction");
-		form.getInputByName("currentClockAction").setValueAttribute(lunchAction);
 		return (HtmlPage) input.click();
 	}
 
@@ -400,7 +345,7 @@ public class TkTestUtils {
 			Timestamp tsin = new Timestamp(ci.getMillis());
 			Timestamp tsout = new Timestamp(co.getMillis());
 
-			blocks.addAll(service.buildTimeBlocks(assignment, earnCode, timesheetDocument, tsin, tsout, hours, amount, false, false));
+			blocks.addAll(service.buildTimeBlocks(assignment, earnCode, timesheetDocument, tsin, tsout, hours, amount, false));
 		}
 
 		return blocks;

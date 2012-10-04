@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog.service;
 
 import java.util.ArrayList;
@@ -30,9 +15,9 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
-import org.kuali.rice.krad.bo.BusinessObject;
 
 public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 	/**
@@ -59,7 +44,7 @@ public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 				overrideUrls.add(actionUrl);
 			}
 		}
-		if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
+		if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
 			clockLog = (ClockLog) businessObject;
 			final String className = this.getBusinessObjectClass().getName();
 			final String tkClockLogId = clockLog.getTkClockLogId();
@@ -93,7 +78,7 @@ public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 				List<TkRole> tkRoles = TkServiceLocator.getTkRoleService()
 						.getRoles(TKContext.getPrincipalId(),
 								TKUtils.getCurrentDate());
-				Job job = TkServiceLocator.getJobService().getJob(
+				Job job = TkServiceLocator.getJobSerivce().getJob(
 						cl.getUserPrincipalId(), cl.getJobNumber(),
 						TKUtils.getCurrentDate(), false);
 				boolean valid = false;

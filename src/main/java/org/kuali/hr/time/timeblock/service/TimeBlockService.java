@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timeblock.service;
 
 import org.kuali.hr.time.assignment.Assignment;
@@ -21,7 +6,6 @@ import org.kuali.hr.time.timeblock.TimeBlockHistory;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -48,12 +32,10 @@ public interface TimeBlockService {
 	 * @param hours
      * @param amount
 	 * @param isClockLogCreated
-     * @param isLunchDeleted
 	 * @return
 	 */
 	public List<TimeBlock> buildTimeBlocks(Assignment assignment, String earnCode, TimesheetDocument timesheetDocument,
-											Timestamp beginTimestamp, Timestamp endTimestamp, BigDecimal hours, BigDecimal amount,
-                                            Boolean isClockLogCreated, Boolean isLunchDeleted);
+											Timestamp beginTimestamp, Timestamp endTimestamp, BigDecimal hours, BigDecimal amount, Boolean isClockLogCreated);
 	/**
 	 * Save a list of new TimeBlocks
 	 * does a comparison for the old versus the new and only saves changed/new/deleted TimeBlocks
@@ -77,7 +59,7 @@ public interface TimeBlockService {
 	 * @param documentId
 	 * @return
 	 */
-	public List<TimeBlock> getTimeBlocks(String documentId);	
+	public List<TimeBlock> getTimeBlocks(Long documentId);	
 	/**
 	 * Get the List of TimeBlock of a given Assignment
 	 * @param assign
@@ -94,13 +76,10 @@ public interface TimeBlockService {
 	 * @param hours
      * @param amount
 	 * @param isClockLogCreated
-     * @param isLunchDeleted
-     * @param spanningWeeks
 	 * @return
 	 */
 	public List<TimeBlock> buildTimeBlocksSpanDates(Assignment assignment, String earnCode, TimesheetDocument timesheetDocument,
-												Timestamp beginTimestamp, Timestamp endTimestamp, BigDecimal hours, BigDecimal amount,
-                                                Boolean isClockLogCreated, Boolean isLunchDeleted, String spanningWeeks);
+												Timestamp beginTimestamp, Timestamp endTimestamp, BigDecimal hours, BigDecimal amount, Boolean isClockLogCreated);
 	/**
 	 * Create a TimeBlock for the given criteria
 	 * @param timesheetDocument
@@ -111,12 +90,10 @@ public interface TimeBlockService {
 	 * @param hours
      * @param amount
 	 * @param isClockLogCreated
-	 * @param isLunchDeleted
 	 * @return
 	 */
 	public TimeBlock createTimeBlock(TimesheetDocument timesheetDocument, Timestamp beginTime, Timestamp endTime,
-										Assignment assignment, String earnCode, BigDecimal hours, BigDecimal amount,
-                                        Boolean isClockLogCreated, Boolean isLunchDeleted);
+										Assignment assignment, String earnCode, BigDecimal hours, BigDecimal amount, Boolean isClockLogCreated);
 
 	public void deleteTimeBlocksAssociatedWithDocumentId(String documentId);
 
@@ -149,12 +126,4 @@ public interface TimeBlockService {
 	
 	public List<TimeBlockHistory> createTimeBlockHistories(TimeBlock tb, String actionHistory);
 
-    void deleteLunchDeduction(String tkTimeHourDetailId);
-	/*
-	 * Get all the active time blocks with the given earn code and effectiveDate
-	 * @param earnCode
-	 * @param effDate
-	 * @return List<TimeBlock>	 * 
-	 */
-    public List<TimeBlock> getTimeBlocksWithEarnCode(String earnCode, Date effDate);
 }

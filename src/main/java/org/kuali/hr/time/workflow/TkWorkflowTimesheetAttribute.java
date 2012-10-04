@@ -1,23 +1,4 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workflow;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.apache.cxf.common.util.StringUtils;
 import org.apache.log4j.Logger;
@@ -30,22 +11,25 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.kew.api.identity.Id;
-import org.kuali.rice.kew.api.identity.PrincipalId;
-import org.kuali.rice.kew.api.rule.RoleName;
 import org.kuali.rice.kew.engine.RouteContext;
+import org.kuali.rice.kew.identity.Id;
+import org.kuali.rice.kew.identity.PrincipalId;
 import org.kuali.rice.kew.routeheader.DocumentContent;
-import org.kuali.rice.kew.rule.AbstractRoleAttribute;
 import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
+import org.kuali.rice.kew.rule.Role;
+import org.kuali.rice.kew.rule.RoleAttribute;
 
-public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
+import java.util.ArrayList;
+import java.util.List;
+
+public class TkWorkflowTimesheetAttribute implements RoleAttribute {
 
     private static final Logger LOG = Logger.getLogger(TkWorkflowTimesheetAttribute.class);
 
 	@Override
 	public List<String> getQualifiedRoleNames(String roleName, DocumentContent documentContent) {
 		List<String> roles = new ArrayList<String>();
-		Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
+		Long routeHeaderId = documentContent.getRouteContext().getDocument().getRouteHeaderId();
 		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
 
 		if (timesheetDocument != null) {
@@ -60,10 +44,20 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
 		return roles;
 	}
 
+	@Override
+	public List<Role> getRoleNames() {
+		// This is a list of "RoleNames" that this RoleAttribute supports -
+		// we can use this to have branching logic in the resolveQualifiedRole()
+		// method for different types of "Roles"
+		// and have different principal Resolution.
+		// ... Now whether or not we need this is another question
+		throw new UnsupportedOperationException("Not supported in TkWorkflowTimesheetAttribute");
+	}
+
+	@Override
 	/**
 	 * Role name is passed in in the routing rule.
 	 */
-	@Override
 	public ResolvedQualifiedRole resolveQualifiedRole(RouteContext routeContext, String roleName, String qualifiedRole) {
 		ResolvedQualifiedRole rqr = new ResolvedQualifiedRole();
         Long workAreaNumber = null;
@@ -83,7 +77,7 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
         }
 
 		List<Id> principals = new ArrayList<Id>();
-		String routeHeaderId = routeContext.getDocument().getDocumentId();
+		Long routeHeaderId = routeContext.getDocument().getRouteHeaderId();
 		TkRoleService roleService = TkServiceLocator.getTkRoleService();
 		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(routeHeaderId.toString());
 		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, timesheetDocument.getAsOfDate());
@@ -99,7 +93,7 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
 			//Position routing
 			if(StringUtils.isEmpty(role.getPrincipalId())){
 				String positionNumber = role.getPositionNumber();
-				List<Job> lstJobsForPosition = TkServiceLocator.getJobService().getActiveJobsForPosition(positionNumber, timesheetDocument.getCalendarEntry().getEndPeriodDateTime());
+				List<Job> lstJobsForPosition = TkServiceLocator.getJobSerivce().getActiveJobsForPosition(positionNumber, timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime());
 				for(Job job : lstJobsForPosition){
 					PrincipalId pid = new PrincipalId(job.getPrincipalId());
 					if (!principals.contains(pid)) {
@@ -121,11 +115,6 @@ public class TkWorkflowTimesheetAttribute extends AbstractRoleAttribute {
 		rqr.setAnnotation("Dept: "+ workArea.getDept()+", Work Area: "+workArea.getWorkArea());
 
 		return rqr;
-	}
-
-	@Override
-	public List<RoleName> getRoleNames() {
-        return Collections.EMPTY_LIST;
 	}
 
 }

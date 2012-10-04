@@ -1,25 +1,10 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.clocklog.dao.ClockLogDao;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -44,12 +29,12 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId) {
+    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment, PayCalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId) {
         return processClockLog(clockTimeStamp, assignment, pe, ip, asOfDate, td, clockAction, principalId, TKContext.getPrincipalId());
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment, PayCalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
         // process rules
         Timestamp roundedClockTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockTimeStamp, new java.sql.Date(pe.getBeginPeriodDateTime().getTime()));
 
@@ -67,7 +52,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         return clockLog;
     }
 
-    private void processTimeBlock(ClockLog clockLog, Assignment assignment, CalendarEntries pe, TimesheetDocument td, String clockAction, String principalId) {
+    private void processTimeBlock(ClockLog clockLog, Assignment assignment, PayCalendarEntries pe, TimesheetDocument td, String clockAction, String principalId) {
         ClockLog lastLog = null;
         Timestamp lastClockTimestamp = null;
         String beginClockLogId = null;
@@ -98,7 +83,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         }
 
         // Add TimeBlocks after we store our reference object!
-        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginTimestamp, endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false);
+        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginTimestamp, endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true);
         for (TimeBlock tb : aList) {
             tb.setClockLogBeginId(beginClockLogId);
             tb.setClockLogEndId(endClockLogId);
@@ -166,7 +151,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         return clockLogDao.getLastClockLog(principalId, clockAction);
     }
 
-    public List<ClockLog> getOpenClockLogs(  CalendarEntries payCalendarEntry) {
+    public List<ClockLog> getOpenClockLogs(PayCalendarEntries payCalendarEntry) {
         return clockLogDao.getOpenClockLogs(payCalendarEntry);
     }
 

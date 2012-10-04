@@ -1,52 +1,44 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.salgroup.service;
-
-import java.util.List;
-import java.util.Properties;
 
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.salgroup.SalGroup;
+import org.kuali.hr.time.util.TKContext;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.lookup.HtmlData;
-import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
-import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.util.KRADConstants;
-import org.kuali.rice.krad.util.UrlFactory;
 
-public class SalaryGroupLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
+import java.util.List;
 
-	private static final long serialVersionUID = 4826886027602440306L;
+public class SalaryGroupLookupableHelper extends
+		HrEffectiveDateActiveLookupableHelper {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
+	@SuppressWarnings({ "rawtypes", "serial" })
 	@Override
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);		
-		
-		SalGroup salGroup = (SalGroup) businessObject;
-		String hrSalGroupId = salGroup.getHrSalGroupId();
-		
-		Properties params = new Properties();
-		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
-		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("hrSalGroupId", hrSalGroupId);
-		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
-		viewUrl.setDisplayText("view");
-		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
-		customActionUrls.add(viewUrl);
-		
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
+			List pkNames) {
+		List<HtmlData> customActionUrls = super.getCustomActionUrls(
+				businessObject, pkNames);
+		if (TKContext.getUser().getCurrentRoles().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
+			SalGroup salGroup = (SalGroup) businessObject;
+			final String className = this.getBusinessObjectClass().getName();
+			final String hrSalGroupId = salGroup.getHrSalGroupId();
+			HtmlData htmlData = new HtmlData() {
+
+				@Override
+				public String constructCompleteHtmlTag() {
+					return "<a target=\"_blank\" href=\"inquiry.do?businessObjectClassName="
+							+ className
+							+ "&methodToCall=start&hrSalGroupId="
+							+ hrSalGroupId + "\">view</a>";
+				}
+			};
+			customActionUrls.add(htmlData);
+		} else if (customActionUrls.size() != 0) {
+			customActionUrls.remove(0);
+		}
 		return customActionUrls;
 	}
-	
 }

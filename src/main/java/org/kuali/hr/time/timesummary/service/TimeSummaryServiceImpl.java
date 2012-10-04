@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timesummary.service;
 
 import org.apache.commons.lang.StringUtils;
@@ -20,12 +5,12 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDateTime;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.Calendar;
-import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
+import org.kuali.hr.time.paycalendar.PayCalendar;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
@@ -46,6 +31,11 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
     @Override
 	public TimeSummary getTimeSummary(TimesheetDocument timesheetDocument) {
+		return this.getTimeSummary(timesheetDocument, timesheetDocument.getTimeBlocks());
+	}
+
+    @Override
+	public TimeSummary getTimeSummary(TimesheetDocument timesheetDocument, List<TimeBlock> timeBlocks) {
 		TimeSummary timeSummary = new TimeSummary();
 
 		if(timesheetDocument.getTimeBlocks() == null) {
@@ -54,8 +44,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
         List<Boolean> dayArrangements = new ArrayList<Boolean>();
 
-		timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getCalendarEntry(), dayArrangements));
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getCalendarEntry(), TkServiceLocator.getCalendarService().getCalendar(timesheetDocument.getCalendarEntry().getHrCalendarId()), true);
+		timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getPayCalendarEntry(), dayArrangements));
+		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timeBlocks, timesheetDocument.getPayCalendarEntry(), TkServiceLocator.getPayCalendarSerivce().getPayCalendar(timesheetDocument.getPayCalendarEntry().getHrPyCalendarId()), true);
 		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, dayArrangements, timesheetDocument.getAsOfDate());
@@ -109,7 +99,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								earnCodeSection.setEarnCode(thd.getEarnCode());
 								EarnCode earnCodeObj = TkServiceLocator.getEarnCodeService().getEarnCode(thd.getEarnCode(), TKUtils.getTimelessDate(asOfDate));
 								earnCodeSection.setDescription(earnCodeObj.getDescription());
-								earnCodeSection.setIsAmountEarnCode((earnCodeObj.getRecordMethod()!= null && earnCodeObj.getRecordMethod().equalsIgnoreCase(TkConstants.EARN_CODE_AMOUNT)) ? true : false);
+								earnCodeSection.setIsAmountEarnCode(earnCodeObj.getRecordAmount());
 								for(int i = 0;i<(numEntries-1);i++){
 									earnCodeSection.getTotals().add(BigDecimal.ZERO);
 								}
@@ -126,7 +116,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								//TODO push this up to the assignment fetch/fully populated instead of like this
 								if(assignment != null){
 									if(assignment.getJob() == null){
-										assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(),assignment.getJobNumber(),TKUtils.getTimelessDate(asOfDate)));
+										assignment.setJob(TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(),assignment.getJobNumber(),TKUtils.getTimelessDate(asOfDate)));
 									}
 									if(assignment.getWorkAreaObj() == null){
 										assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), TKUtils.getTimelessDate(asOfDate)));
@@ -161,7 +151,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		//now create all teh earn group sections and aggregate accordingly
 		for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
 			String earnCode = earnCodeSection.getEarnCode();
-			EarnCodeGroup earnGroupObj = TkServiceLocator.getEarnCodeGroupService().getEarnCodeGroupSummaryForEarnCode(earnCode, TKUtils.getTimelessDate(asOfDate));
+			EarnGroup earnGroupObj = TkServiceLocator.getEarnGroupService().getEarnGroupSummaryForEarnCode(earnCode, TKUtils.getTimelessDate(asOfDate));
 			String earnGroup = null;
 			if(earnGroupObj == null){
 				earnGroup = OTHER_EARN_GROUP;
@@ -192,7 +182,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 	 * @param payCalEntry
 	 * @return
 	 */
-	protected List<String> getSummaryHeader(CalendarEntries payCalEntry){
+	protected List<String> getSummaryHeader(PayCalendarEntries payCalEntry){
 		List<String> summaryHeader = new ArrayList<String>();
 		int dayCount = 0;
 		Date beginDateTime = payCalEntry.getBeginPeriodDateTime();
@@ -206,7 +196,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         }
 		
 		Date currDateTime = beginDateTime;
-		java.util.Calendar cal = GregorianCalendar.getInstance();
+		Calendar cal = GregorianCalendar.getInstance();
 		
 		while(currDateTime.before(endDateTime)){
 			LocalDateTime currDate = new LocalDateTime(currDateTime);
@@ -217,7 +207,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 				summaryHeader.add("Week "+ ((dayCount / 7)));
 			}
 			cal.setTime(currDateTime);
-			cal.add(java.util.Calendar.HOUR, 24);
+			cal.add(Calendar.HOUR, 24);
 			currDateTime = cal.getTime();
 		}
 		
@@ -266,7 +256,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * for FLSA week boundaries in the pay period.
      */
     @Override
-    public List<String> getHeaderForSummary(CalendarEntries cal, List<Boolean> dayArrangements) {
+    public List<String> getHeaderForSummary(PayCalendarEntries cal, List<Boolean> dayArrangements) {
         List<String> header = new ArrayList<String>();
 
         // Maps directly to joda time day of week constants.
@@ -338,11 +328,11 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * @param calEntry Calendar entry we are using for lookup.
      * @return The PayCalendar that owns the provided entry.
      */
-    private Calendar getPayCalendarForEntry(CalendarEntries calEntry) {
-        Calendar cal = null;
+    private PayCalendar getPayCalendarForEntry(PayCalendarEntries calEntry) {
+        PayCalendar cal = null;
 
         if (calEntry != null) {
-            cal = TkServiceLocator.getCalendarService().getCalendar(calEntry.getHrCalendarId());
+            cal = TkServiceLocator.getPayCalendarSerivce().getPayCalendar(calEntry.getHrPyCalendarId());
         }
 
         return cal;

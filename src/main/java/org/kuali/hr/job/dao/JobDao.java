@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.job.dao;
 
 import org.kuali.hr.job.Job;
@@ -88,26 +73,4 @@ public interface JobDao {
 	 * @return
 	 */
 	public Job getMaxJob(String principalId);
-
-    List<Job> getJobs(String principalId, String jobNumber,
-                      String dept, String positionNbr, String payType,
-                      java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory);
-    
-    /**
-     * Fetch the count of the jobs with the given principalId and jobNumber
-     * @param principalId
-     * @param jobNumber
-     * @return the count of the jobs with the given principalId and jobNumber
-     */
-    public int getJobCount(String principalId, Long jobNumber, String dept);
-    
-    public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate);
-    
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate);
-    
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, Date startDate, Date endDate);
-    
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate);
-    
-    public Job getMaxTimestampJob(String principalId);
 }

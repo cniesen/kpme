@@ -1,26 +1,9 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.assignment.service;
 
-import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.sql.Date;
 import java.util.List;
@@ -33,7 +16,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
     public List<Assignment> getAssignments(String principalId, Date asOfDate);
     /**
      * Reverse lookup of an assignment based on the assignment key and the document
@@ -47,7 +29,6 @@ public interface AssignmentService {
      * @param tkAssignmentId
      * @return
      */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'tkAssignmentId=' + #p0")
     public Assignment getAssignment(String tkAssignmentId);
     /**
      * Get Assignment Description key based off of description
@@ -74,7 +55,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, Date asOfDate);
 
 	/**
@@ -84,7 +64,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'asOfDate=' + #p0")
 	public List<Assignment> getActiveAssignments(Date asOfDate);
 
 
@@ -111,21 +90,7 @@ public interface AssignmentService {
      * @param payCalendarEntry
      * @return
      */
-    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry);
-    /**
-     * Get assignments for Time Calendar by calendar entry
-     * @param principalId
-     * @param calendarEntry
-     * @return
-     */
-    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntries calendarEntry);
-    /**
-     * Get assignments for Leave Calendar by calendar entry
-     * @param principalId
-     * @param calendarEntry
-     * @return
-     */
-    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntries calendarEntry);
+    public List<Assignment> getAssignmentsByPayEntry(String principalId, PayCalendarEntries payCalendarEntry);
     
     /**
 	 * KPME-1129 Kagata
@@ -135,40 +100,6 @@ public interface AssignmentService {
 	 * @param asOfDate
 	 * @return
 	 */
-    @Cacheable(value= Assignment.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'jobNumber=' + #p1 + '|' + 'asOfDate=' + #p2")
     public List<Assignment> getActiveAssignmentsForJob(String principalId, Long jobNumber, Date asOfDate);
-
-    List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
-                                    String dept, String workArea, String active, String showHistory);
     
-    
-    /**
-     * Get all assignment descriptions for a document
-     * @param td
-     * @param clockOnlyAssignments
-     * @return
-     */
-    public Map<String,String> getAssignmentDescriptions(LeaveCalendarDocument lcd);
-    
-    /**
-     * Get all assignment descriptions for given list of Assignments
-     * @param assignments
-     * @return
-     */
-    public Map<String, String> getAssignmentDescriptionsForAssignments(List<Assignment>  assignments);
-    
-    public Assignment getAssignment(LeaveCalendarDocument leaveCalendarDocument, String assignmentKey);
-    
-    public Assignment getAssignment(List<Assignment> assignments, String assignmentKey, Date beginDate);
-    
-    public Assignment getMaxTimestampAssignment(String principalId);
-    
-    /**
-     * Filter the given list of assignments with given criteria
-     * @param assignments
-     * @param flsaStatus
-     * @param chkForLeaveEligible
-     * @return List<Assignment>
-     */
-    public List<Assignment> filterAssignments(List<Assignment> assignments, String flsaStatus, boolean chkForLeaveEligible);
 }

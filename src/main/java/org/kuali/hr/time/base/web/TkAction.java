@@ -1,22 +1,4 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.base.web;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -26,10 +8,14 @@ import org.apache.struts.action.ActionRedirect;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kew.web.UserLoginFilter;
+import org.kuali.rice.kew.web.session.UserSession;
+import org.kuali.rice.kns.exception.AuthorizationException;
+import org.kuali.rice.kns.util.GlobalVariables;
 import org.kuali.rice.kns.web.struts.action.KualiAction;
-import org.kuali.rice.krad.UserSession;
-import org.kuali.rice.krad.exception.AuthorizationException;
-import org.kuali.rice.krad.util.GlobalVariables;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 public class TkAction extends KualiAction {
 
@@ -57,6 +43,40 @@ public class TkAction extends KualiAction {
 
         return super.execute(mapping, form, request, response);
     }
+
+    /**
+	 * Action to clear the current users back door setting.  Clears both
+	 * workflow and TK backdoor settings.
+	 */
+	public ActionForward clearBackdoor(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+		UserSession userSession = UserLoginFilter.getUserSession(request);
+
+		// There are two different UserSession objects in rice.
+		// We will clear them both.
+		if (userSession != null) {
+			userSession.clearBackdoor();
+			GlobalVariables.getUserSession().clearBackdoorUser();
+		}
+
+		TKUser tkUser = TKContext.getUser();
+		if (tkUser != null) {
+			tkUser.clearBackdoorUser();
+		}
+
+		return mapping.findForward("basic");
+	}
+
+	public ActionForward clearChangeUser(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        UserSession userSession = UserLoginFilter.getUserSession(request);
+
+        String returnAction = (String)userSession.getObjectMap().get(TkConstants.TK_TARGET_USER_RETURN);
+        if (returnAction == null) returnAction = "/PersonInfo.do";
+
+        userSession.getObjectMap().remove(TkConstants.TK_TARGET_USER_PERSON);
+        TKContext.getUser().clearTargetUser();
+
+        return new ActionRedirect(returnAction);
+	}
 
 	public ActionForward userLogout(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TKContext.clear();

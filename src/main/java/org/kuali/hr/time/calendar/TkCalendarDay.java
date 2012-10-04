@@ -1,33 +1,16 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.calendar;
-
-import org.kuali.hr.lm.leaveblock.LeaveBlock;
-import org.kuali.hr.time.timeblock.TimeBlock;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TkCalendarDay extends CalendarDay{
+import org.kuali.hr.time.timeblock.TimeBlock;
+
+public class TkCalendarDay {
 	private List<TimeBlock> timeblocks = new ArrayList<TimeBlock>();
     private List<TimeBlockRenderer> blockRenderers = new ArrayList<TimeBlockRenderer>();
     private String dayNumberString;
+    private int dayNumberDelta;
     private Boolean gray;
-    private List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
-    private List<LeaveBlockRenderer> leaveBlockRenderers = new ArrayList<LeaveBlockRenderer>();
 
 	public List<TimeBlock> getTimeblocks() {
 		return timeblocks;
@@ -52,6 +35,14 @@ public class TkCalendarDay extends CalendarDay{
         this.dayNumberString = dayNumberString;
     }
 
+    public int getDayNumberDelta() {
+        return dayNumberDelta;
+    }
+
+    public void setDayNumberDelta(int dayNumberDelta) {
+        this.dayNumberDelta = dayNumberDelta;
+    }
+
 	public Boolean getGray() {
 		return gray;
 	}
@@ -59,24 +50,4 @@ public class TkCalendarDay extends CalendarDay{
 	public void setGray(Boolean gray) {
 		this.gray = gray;
 	}
-
-	public List<LeaveBlock> getLeaveBlocks() {
-		return leaveBlocks;
-	}
-
-	public void setLeaveBlocks(List<LeaveBlock> leaveBlocks) {
-		this.leaveBlocks = leaveBlocks;
-        for (LeaveBlock lb : leaveBlocks) {
-            leaveBlockRenderers.add(new LeaveBlockRenderer(lb));
-        }
-	}
-
-	public List<LeaveBlockRenderer> getLeaveBlockRenderers() {
-		return leaveBlockRenderers;
-	}
-
-	public void setLeaveBlockRenderers(List<LeaveBlockRenderer> leaveBlockRenderers) {
-		this.leaveBlockRenderers = leaveBlockRenderers;
-	}
-
 }

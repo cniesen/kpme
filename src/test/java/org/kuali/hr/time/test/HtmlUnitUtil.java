@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.test;
 
 import java.io.File;
@@ -24,8 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.kuali.hr.time.web.TkLoginFilter;
-import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.config.ConfigContext;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
@@ -34,7 +18,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.kuali.rice.krad.util.GlobalVariables;
 
 public class HtmlUnitUtil {
 
@@ -131,11 +114,7 @@ public class HtmlUnitUtil {
 	}
 
     public static String getBaseURL() {
-	    return ConfigContext.getCurrentContextConfig().getProperty("application.url");
-    }
-    
-    public static String getContext() {
-    	return "/" + ConfigContext.getCurrentContextConfig().getProperty("app.context.name");
+	return "http://localhost:" + getPort() + "/tk-dev";
     }
 
     public static String getTempDir() {

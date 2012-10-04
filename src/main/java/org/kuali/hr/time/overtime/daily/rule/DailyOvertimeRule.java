@@ -1,36 +1,24 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.overtime.daily.rule;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.workarea.WorkArea;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.LinkedHashMap;
+
 
 public class DailyOvertimeRule extends TkRule {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "DailyOvertimeRule";
+
+	/**
+	 *
+	 */
 	private static final long serialVersionUID = 1L;
 	private String tkDailyOvertimeRuleId;
 
@@ -57,9 +45,16 @@ public class DailyOvertimeRule extends TkRule {
 	private Department departmentObj;
 	private PayType payTypeObj;
 
-	private EarnCodeGroup fromEarnGroupObj;
+	private EarnGroup fromEarnGroupObj;
 	private EarnCode earnCodeObj;
 	private Location locationObj;
+
+
+	@SuppressWarnings({ "rawtypes" })
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		return null;
+	}
 
 	public String getTkDailyOvertimeRuleId() {
 		return tkDailyOvertimeRuleId;
@@ -189,11 +184,11 @@ public class DailyOvertimeRule extends TkRule {
 		this.minHours = minHours;
 	}
 
-	public EarnCodeGroup getFromEarnGroupObj() {
+	public EarnGroup getFromEarnGroupObj() {
 		return fromEarnGroupObj;
 	}
 
-	public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
+	public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
 		this.fromEarnGroupObj = fromEarnGroupObj;
 	}
 
@@ -254,7 +249,7 @@ public class DailyOvertimeRule extends TkRule {
 	}
 
 	@Override
-	public String getUniqueKey() {
+	protected String getUniqueKey() {
 		return location + "_" + dept + "_" + workArea + "_" + paytype;
 	}
 

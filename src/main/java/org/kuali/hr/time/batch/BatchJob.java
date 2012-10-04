@@ -1,29 +1,14 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.batch;
-
-import java.sql.Timestamp;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.config.ConfigContext;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+
+import java.sql.Timestamp;
 
 public class BatchJob {
     private Logger LOG = Logger.getLogger(BatchJob.class);
@@ -77,7 +62,7 @@ public class BatchJob {
         timeElapsed = (runtime > 0) ? runtime / 1000 : 0; // set to 0, and avoid div by 0.
         this.setBatchJobStatus(TkConstants.BATCH_JOB_ENTRY_STATUS.FINISHED);
         TkServiceLocator.getBatchJobService().saveBatchJob(this);
-        LOG.info("Batch job '" + this.getBatchJobName() + "' ("+this.getHrPyCalendarEntryId()+") complete after " + timeElapsed + " seconds.");
+        LOG.info("Batch job '" + this.getBatchJobName() + "' ("+this.getPayCalendarEntryId()+") complete after " + timeElapsed + " seconds.");
     }
 
 	public String getNextIpAddressInCluster(){
@@ -121,11 +106,11 @@ public class BatchJob {
 		this.batchJobStatus = batchJobStatus;
 	}
 
-	public String getHrPyCalendarEntryId() {
+	public String getPayCalendarEntryId() {
 		return hrPyCalendarEntryId;
 	}
 
-	public void setHrPyCalendarEntryId(String hrPyCalendarEntryId) {
+	public void setPayCalendarEntryId(String hrPyCalendarEntryId) {
 		this.hrPyCalendarEntryId = hrPyCalendarEntryId;
 	}
 
@@ -151,7 +136,7 @@ public class BatchJob {
         entry.setBatchJobEntryStatus(TkConstants.BATCH_JOB_ENTRY_STATUS.SCHEDULED);
         entry.setBatchJobName(batchJobName);
         entry.setIpAddress(ip);
-        entry.setHrPyCalendarEntryId(this.getHrPyCalendarEntryId());
+        entry.setHrPyCalendarEntryId(this.getPayCalendarEntryId());
         entry.setPrincipalId(principal);
         entry.setTkBatchJobId(this.getTkBatchJobId());
         entry.setDocumentId(documentId);

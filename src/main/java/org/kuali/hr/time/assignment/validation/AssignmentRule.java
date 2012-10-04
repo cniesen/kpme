@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.assignment.validation;
 
 import java.sql.Date;
@@ -26,6 +11,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentAccount;
@@ -35,13 +24,14 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.kfs.coa.businessobject.Account;
 import org.kuali.kfs.coa.businessobject.ObjectCode;
 import org.kuali.kfs.coa.businessobject.SubObjectCode;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 public class AssignmentRule extends MaintenanceDocumentRuleBase {
 
@@ -54,7 +44,12 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 						+ assignment.getWorkArea() + "'");
 				valid = false;
 			} else {
-				int count = TkServiceLocator.getWorkAreaService().getWorkAreaCount(assignment.getDept(), assignment.getWorkArea());
+				Criteria crit = new Criteria();
+				crit.addEqualTo("dept", assignment.getDept());
+				crit.addEqualTo("workArea", assignment.getWorkArea());
+				Query query = QueryFactory.newQuery(WorkArea.class, crit);
+				int count = PersistenceBrokerFactory.defaultPersistenceBroker()
+						.getCount(query);
 				valid = (count > 0);
 				if (!valid) {
 					this.putFieldError("workArea", "dept.workarea.invalid.sync");
@@ -82,7 +77,12 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 	protected boolean validateDepartment(Assignment assignment) {
 		boolean valid = true;
 		if (assignment.getDept() != null) {
-				int count = TkServiceLocator.getJobService().getJobCount(null, assignment.getJobNumber(), assignment.getDept());
+				Criteria crit = new Criteria();
+				crit.addEqualTo("dept", assignment.getDept());
+				crit.addEqualTo("jobNumber", assignment.getJobNumber());
+				Query query = QueryFactory.newQuery(Job.class, crit);
+				int count = PersistenceBrokerFactory.defaultPersistenceBroker()
+						.getCount(query);
 				valid = (count > 0);
 				if (!valid) {
 					this.putFieldError("dept", "dept.jobnumber.invalid.sync");
@@ -94,8 +94,8 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 
 	protected boolean validateJob(Assignment assignment) {
 		boolean valid = false;
-		LOG.debug("Validating job: " + assignment.getPrincipalId() +" Job number: "+assignment.getJobNumber());
-		Job job = TkServiceLocator.getJobService().getJob(
+		LOG.debug("Validating job: " + assignment.getJob());
+		Job job = TkServiceLocator.getJobSerivce().getJob(
 				assignment.getPrincipalId(), assignment.getJobNumber(),
 				assignment.getEffectiveDate(), false);
 		// Job job =
@@ -178,9 +178,9 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		LOG.debug("Validating Regular pay EarnCodes: " + assignment.getAssignmentAccounts().size());
 		for(AssignmentAccount assignmentAccount : assignment.getAssignmentAccounts()){
 			if(assignment.getJobNumber()!=null && assignment.getPrincipalId()!=null){
-				Job job = TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate(), false);
+				Job job = TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveDate(), false);
 				if(job !=null){
-					PayType payType = TkServiceLocator.getPayTypeService().getPayType(job.getHrPayType(), assignment.getEffectiveDate());
+					PayType payType = TkServiceLocator.getPayTypeSerivce().getPayType(job.getHrPayType(), assignment.getEffectiveDate());
 					if(StringUtils.equals(assignmentAccount.getEarnCode(), payType.getRegEarnCode())){
 						valid = true;
 						break;
@@ -201,7 +201,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		LOG.debug("Validating Account: " + assignmentAccount.getAccountNbr());
 		Map<String, String> fields = new HashMap<String, String>();
 		fields.put("accountNumber", assignmentAccount.getAccountNbr());
-		Collection account = KRADServiceLocator.getBusinessObjectService()
+		Collection account = KNSServiceLocator.getBusinessObjectDao()
 				.findMatching(Account.class, fields);
 		valid = account.size() > 0;
 		if (!valid) {
@@ -217,7 +217,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 				+ assignmentAccount.getFinObjectCd());
 		Map<String, String> fields = new HashMap<String, String>();
 		fields.put("financialObjectCode", assignmentAccount.getFinObjectCd());
-		Collection objectCode = KRADServiceLocator.getBusinessObjectService()
+		Collection objectCode = KNSServiceLocator.getBusinessObjectDao()
 				.findMatching(ObjectCode.class, fields);
 		valid = objectCode.size() > 0;
 		if (!valid) {
@@ -235,7 +235,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			Map<String, String> fields = new HashMap<String, String>();
 			fields.put("financialSubObjectCode", assignmentAccount
 					.getFinSubObjCd());
-			Collection subObjectCode = KRADServiceLocator.getBusinessObjectService()
+			Collection subObjectCode = KNSServiceLocator.getBusinessObjectDao()
 					.findMatching(SubObjectCode.class, fields);
 			valid = subObjectCode.size() > 0;
 			if (!valid) {
@@ -284,7 +284,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for DeptLunchRule");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof Assignment) {
 			Assignment assignment = (Assignment) pbo;
 			if (assignment != null) {

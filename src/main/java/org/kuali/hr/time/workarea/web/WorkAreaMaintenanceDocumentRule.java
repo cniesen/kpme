@@ -1,23 +1,4 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.workarea.web;
-
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -32,10 +13,12 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.ValidationUtils;
 import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+
+import java.sql.Date;
+import java.util.List;
 
 public class WorkAreaMaintenanceDocumentRule extends
 		MaintenanceDocumentRuleBase {
@@ -137,12 +120,12 @@ public class WorkAreaMaintenanceDocumentRule extends
 			MaintenanceDocument document) {
 		boolean valid = false;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof WorkArea) {
 			WorkArea wa = (WorkArea) pbo;
 			valid = validateDepartment(wa.getDept(), wa.getEffectiveDate());
 			if(!DepartmentalRuleAuthorizer.hasAccessToWrite((DepartmentalRule)pbo)) {
-				String[] params = new String[]{GlobalVariables.getUserSession().getPrincipalName(), wa.getDept()};
+				String[] params = new String[]{TKContext.getUser().getPrincipalName(), wa.getDept()};
 				this.putFieldError("dept", "dept.user.unauthorized", params);
 			}
 			valid &= validateRoles(wa.getRoles(), wa.getEffectiveDate());
@@ -151,9 +134,8 @@ public class WorkAreaMaintenanceDocumentRule extends
 				valid &= validateDefaultOTEarnCode(wa.getDefaultOvertimeEarnCode(),
 						wa.getEffectiveDate());
 			}
-			
+			List<Assignment> assignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(wa.getWorkArea(), TKUtils.getCurrentDate());
 			if(!wa.isActive()){
-				List<Assignment> assignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(wa.getWorkArea(), wa.getEffectiveDate());
 				for(Assignment assignment: assignments){
 					if(assignment.getWorkArea().equals(wa.getWorkArea())){
 						this.putGlobalError("workarea.active.required");
@@ -162,25 +144,16 @@ public class WorkAreaMaintenanceDocumentRule extends
 					}
 				}
 			}else{
-				List<Long> inactiveTasks = new ArrayList<Long>();
-				for (Task task : wa.getTasks()) {
-					if(!task.isActive()){
-						inactiveTasks.add(task.getTask());
-					}
-				}
-				
-				if(!inactiveTasks.isEmpty()){
-					List<Assignment> assignments = TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(wa.getWorkArea(), wa.getEffectiveDate());
-					for(Assignment assignment : assignments){
-						for(Long inactiveTask : inactiveTasks){
-							if(inactiveTask.equals(assignment.getTask())){
-								this.putGlobalError("task.active.required", inactiveTask.toString());
-								valid = false;
-							}
+				for (Assignment assignment : assignments) {
+					for (Task task : wa.getTasks()) {
+						if (task.getTask().equals(assignment.getTask())
+								&& !task.isActive()) {
+							this.putGlobalError("task.active.required", task
+									.getTask().toString());
+							valid = false;
 						}
 					}
 				}
-				
 			}
 		}
 
@@ -225,10 +198,9 @@ public class WorkAreaMaintenanceDocumentRule extends
 		} else if ((pbo instanceof TkRole && pboWorkArea instanceof WorkArea)) {
 			TkRole tkRole = (TkRole)pbo;
 			valid = true;
-			if(StringUtils.isEmpty(tkRole.getPrincipalId())) {
-				if (tkRole.getPositionNumber() == null || StringUtils.isEmpty(tkRole.getPositionNumber().toString())){
-					this.putGlobalError("principal.position.required");
-				}
+			if(StringUtils.isEmpty(tkRole.getPrincipalId()) && (tkRole.getPositionNumber() == null || StringUtils.isEmpty(tkRole.getPositionNumber().toString()))){
+				this.putFieldError("add.roles.principalId", "principal.position.required");
+				valid = false;
 			}
 		}
 		

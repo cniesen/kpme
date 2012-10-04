@@ -1,48 +1,28 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.timesheet.web;
 
-import java.sql.Date;
-import java.util.List;
-import java.util.Map;
-
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-import org.junit.Assert;
 import org.junit.Ignore;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
-import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.web.TkLoginFilter;
-import org.kuali.hr.util.filter.TestAutoLoginFilter;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.kuali.rice.krad.util.GlobalVariables;
+import java.sql.Date;
+import java.util.List;
+import java.util.Map;
 
 @Ignore
-public class TimesheetWebTestBase extends KPMETestCase {
+public class TimesheetWebTestBase extends TkTestCase {
 
-    public static final Date JAN_AS_OF_DATE = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
+    public static final Date JAN_AS_OF_DATE = new Date((new DateTime(2010, 1, 1, 0, 0, 0, 0, TkConstants.SYSTEM_DATE_TIME_ZONE)).getMillis());
     public static final String USER_PRINCIPAL_ID = "admin";
     public static String BASE_DETAIL_URL = ""; // moved to setUp() method -- initialization order for TkTestConstants problem.
 
@@ -58,8 +38,7 @@ public class TimesheetWebTestBase extends KPMETestCase {
     @Override
     public void tearDown() throws Exception {
         super.tearDown();
-        //TkLoginFilter.TEST_ID = "admin";
-        TestAutoLoginFilter.OVERRIDE_ID = "";
+        TkLoginFilter.TEST_ID = "admin";
     }
 
     public static String getTimesheetDocumentUrl(String tdocId) {
@@ -70,23 +49,20 @@ public class TimesheetWebTestBase extends KPMETestCase {
      * Uses an ID hack to manipulate the current Test user Login.
      *
      */
-    public static synchronized HtmlPage loginAndGetTimeDetailsHtmlPage(String principalId, String tdocId, boolean assertValid) throws Exception {
+    public static HtmlPage loginAndGetTimeDetailsHtmlPage(String principalId, String tdocId) throws Exception {
+        TkLoginFilter.TEST_ID = principalId;
 
-        Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
-        Assert.assertNotNull(person);
-        Assert.assertEquals(person.getPrincipalId(), principalId);
-        TestAutoLoginFilter.OVERRIDE_ID = principalId;
+        Person person = KIMServiceLocator.getPersonService().getPerson(principalId);
+        assertNotNull(person);
+        assertEquals(person.getPrincipalId(), principalId);
+
         HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getTimesheetDocumentUrl(tdocId));
-        TestAutoLoginFilter.OVERRIDE_ID = "";
-        Assert.assertNotNull(page);
-        HtmlUnitUtil.createTempFile(page, "Login-"+principalId);
+        assertNotNull(page);
 
         String pageAsText = page.asText();
-        if (assertValid) {
-        	Assert.assertTrue("Login info not present.", pageAsText.contains("Employee Id:"));
-        	Assert.assertTrue("Login info not present for " + person.getName() , pageAsText.contains(person.getName()));
-        	Assert.assertTrue("Wrong Document Loaded.", pageAsText.contains(tdocId));
-        }
+        assertTrue("Login info not present.", pageAsText.contains("Employee Id:"));
+        assertTrue("Login info not present.", pageAsText.contains(person.getName()));
+        assertTrue("Wrong Document Loaded.", pageAsText.contains(tdocId));
 
         return page;
     }

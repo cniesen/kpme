@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.roles;
 
 import java.util.ArrayList;
@@ -25,8 +10,8 @@ import java.util.Set;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
-import org.kuali.rice.krad.bo.BusinessObject;
 
 // chen, KPME-938, implement the view link on lookup page
 public class TkRoleGroupInquirableImpl extends KualiInquirableImpl {
@@ -35,7 +20,7 @@ public class TkRoleGroupInquirableImpl extends KualiInquirableImpl {
 	public BusinessObject getBusinessObject(Map fieldValues) {
 		TkRoleGroup tkRoleGroup = (TkRoleGroup) super.getBusinessObject(fieldValues);
 		
-		List<Job> jobs = TkServiceLocator.getJobService().getJobs(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
+		List<Job> jobs = TkServiceLocator.getJobSerivce().getJobs(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
 		List<TkRole> positionRoles = new ArrayList<TkRole>();
 		List<TkRole> inactivePositionRoles = new ArrayList<TkRole>();
 		Set<String> positionNumbers = new HashSet<String>(); 
@@ -54,7 +39,7 @@ public class TkRoleGroupInquirableImpl extends KualiInquirableImpl {
 		tkRoleGroup.setPositionRoles(positionRoles);
 		
 		List<TkRole> tkRoles = TkServiceLocator.getTkRoleService().getRoles(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
-		List<TkRole> tkInActiveRoles = TkServiceLocator.getTkRoleService().getInactiveRoles(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
+		List<TkRole> tkInActiveRoles = TkServiceLocator.getTkRoleService().getInActiveRoles(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
 		Iterator<TkRole> itr = tkRoles.iterator();
 		// remove position roles from the active/inactive roles lists
 		while (itr.hasNext()) {

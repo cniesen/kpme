@@ -1,33 +1,18 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog.dao;
-
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
-import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
-public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements ClockLogDao {
+import java.util.List;
+
+public class ClockLogDaoSpringOjbImpl extends PersistenceBrokerDaoSupport implements ClockLogDao {
 
     private static final Logger LOG = Logger.getLogger(ClockLogDaoSpringOjbImpl.class);
     
@@ -36,11 +21,11 @@ public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
     }
     
     public void saveOrUpdate(List<ClockLog> clockLogList) {
-    	if (clockLogList != null) {
-	    	for (ClockLog clockLog : clockLogList) {
-	    		this.getPersistenceBrokerTemplate().store(clockLog);
-	    	}
-		}
+	if (clockLogList != null) {
+	    for (ClockLog clockLog : clockLogList) {
+		this.getPersistenceBrokerTemplate().store(clockLog);
+	    }
+	}
     }
     
     public ClockLog getClockLog(String tkClockLogId){
@@ -103,7 +88,7 @@ public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
     }
     
     @SuppressWarnings("unchecked")
-	public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry){
+	public List<ClockLog> getOpenClockLogs(PayCalendarEntries payCalendarEntry){
     	Criteria criteria = new Criteria();
     	criteria.addIn("clockAction", TkConstants.ON_THE_CLOCK_CODES);
 

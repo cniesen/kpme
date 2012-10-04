@@ -1,27 +1,12 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog.service;
+
+import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.clocklog.ClockLog;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import java.sql.Timestamp;
 import java.util.List;
-
-import org.kuali.hr.time.assignment.Assignment;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.clocklog.ClockLog;
-import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 public interface ClockLogService {
 	/**
@@ -60,7 +45,7 @@ public interface ClockLogService {
 	 * @param payCalendarEntry
 	 * @return
 	 */
-	public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry);
+	public List<ClockLog> getOpenClockLogs(PayCalendarEntries payCalendarEntry);
 
 	/**
 	 * Process clock log created
@@ -74,7 +59,7 @@ public interface ClockLogService {
 	 * @param principalId
 	 * @return
 	 */
-    ClockLog processClockLog(Timestamp clockTimestamp, Assignment assignment, CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId);
+    ClockLog processClockLog(Timestamp clockTimestamp, Assignment assignment, PayCalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId);
     
     /**
      * Fetch clock log by id
@@ -85,5 +70,5 @@ public interface ClockLogService {
 
     ClockLog buildClockLog(Timestamp clockTimestamp, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId);
 
-    ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment, CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId);
+    ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment, PayCalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId);
 }

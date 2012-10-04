@@ -1,21 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-
-    Copyright 2004-2012 The Kuali Foundation
-
-    Licensed under the Educational Community License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.opensource.org/licenses/ecl2.php
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
--->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
@@ -31,7 +14,7 @@
   		p:businessObjectClass="org.kuali.hr.job.Job"
   		p:businessRulesClass="org.kuali.hr.job.validation.JobValidation"
   		p:maintainableClass="org.kuali.hr.job.service.JobMaintainableImpl"
-  		p:documentAuthorizerClass="org.kuali.hr.time.authorization.DepartmentAdminAuthorizer">
+  		p:documentAuthorizerClass="org.kuali.hr.time.authorization.SystemAdminAuthorizer">
     <property name="maintainableSections">
       <list>
         <ref bean="JobMaintenanceDocument-JobMaintenance"/>
@@ -60,10 +43,7 @@
         <bean parent="MaintainableFieldDefinition" p:name="payGrade" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="compRate" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="standardHours" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="fte" p:unconditionallyReadOnly="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="eligibleForLeave" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="primaryIndicator" p:required="true"/>
-        <bean parent="MaintainableFieldDefinition" p:name="flsaStatus" p:required="true"/>
         <bean parent="MaintainableFieldDefinition" p:name="active" p:defaultValue="true" p:required="true"/>
       </list>
     </property>

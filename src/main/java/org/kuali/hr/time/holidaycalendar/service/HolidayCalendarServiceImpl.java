@@ -1,22 +1,8 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.holidaycalendar.service;
 
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendarDateEntry;
 import org.kuali.hr.time.holidaycalendar.dao.HolidayCalendarDao;
@@ -49,19 +35,21 @@ public class HolidayCalendarServiceImpl implements HolidayCalendarService {
 
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public List<HolidayCalendarDateEntry> getHolidayCalendarDateEntriesForPayPeriod(
 			String hrHolidayCalendarId, Date startDate, Date endDate) {
 		return holidayCalendarDao.getHolidayCalendarDateEntriesForPayPeriod(hrHolidayCalendarId, startDate, endDate);
 	}
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public HolidayCalendarDateEntry getHolidayCalendarDateEntryByDate(String hrHolidayCalendarId, Date startDate) {
 		return holidayCalendarDao.getHolidayCalendarDateEntryByDate(hrHolidayCalendarId, startDate);
 	}
 
 	@Override
 	public Assignment getAssignmentToApplyHolidays(TimesheetDocument timesheetDocument, java.sql.Date payEndDate) {
-		Job primaryJob = TkServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
+		Job primaryJob = TkServiceLocator.getJobSerivce().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
 		for(Assignment assign : timesheetDocument.getAssignments()){
 			if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
 				return assign;

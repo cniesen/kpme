@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.detail.web;
 
 import java.math.BigDecimal;
@@ -22,52 +7,44 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.junit.Assert;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.graceperiod.rule.GracePeriodRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class ActualTimeInquiryWebTest extends KPMETestCase {
+public class ActualTimeInquiryWebTest extends TkTestCase {
 	private String documentId;
 	private TimeBlock timeBlock;
-
-    @Override
-    public void setUp() throws Exception {
-        super.setUp();
-
-        //create current timeshee
-
-
-    }
-
-    @Test
+	@Test
 	public void testActualTimeInquiry() throws Exception {
 		String baseUrl = TkTestConstants.Urls.TIME_DETAIL_URL;
     	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
-    	Assert.assertNotNull(page);
-    	Assert.assertTrue("Clock Page contains Actual Time Inquiry Button", page.asText().contains("Actual Time Inquiry"));
+    	assertNotNull(page);
+    	assertTrue("Clock Page contains Actual Time Inquiry Button", page.asText().contains("Actual Time Inquiry"));
+    	HtmlElement element = page.getElementByName("actualTimeInquiry");
+	  	assertNotNull(element);
 	  	
 	  	String atiUrl = baseUrl + "?methodToCall=actualTimeInquiry";
 		HtmlPage testPage1 = HtmlUnitUtil.gotoPageAndLogin(atiUrl);
-		Assert.assertNotNull(testPage1);
-		Assert.assertTrue("Actual Time Inquiry page contains close Button", testPage1.asText().contains("Close"));
-		Assert.assertTrue("Actual Time Inquiry page contains No value found message", testPage1.asText().contains("No values match this search."));
+		assertNotNull(testPage1);
+    	assertTrue("Actual Time Inquiry page contains close Button", testPage1.asText().contains("Close"));
+    	assertTrue("Actual Time Inquiry page contains No value found message", testPage1.asText().contains("No values match this search."));
     	
     	this.createTB();
     	this.changeGracePeriodRule();
     	atiUrl = baseUrl + "?methodToCall=actualTimeInquiry&documentId=" + documentId;
     	HtmlPage testPage2 = HtmlUnitUtil.gotoPageAndLogin(atiUrl);
-    	Assert.assertTrue("Actual Time Inquiry page contains One item retrived message", testPage2.asText().contains("One item retrieved."));
+    	assertTrue("Actual Time Inquiry page contains One item retrived message", testPage2.asText().contains("One item retrieved."));
 	}
 
 	public void createTB() {
@@ -87,9 +64,6 @@ public class ActualTimeInquiryWebTest extends KPMETestCase {
 		timeBlock.getTimeHourDetails().add(timeHourDetail);
 		timeBlock.setHours(new BigDecimal(2.0));
 		timeBlock.setClockLogCreated(Boolean.TRUE);
-		timeBlock.setTkWorkAreaId("1");
-		timeBlock.setTkTaskId("1");
-		timeBlock.setHrJobId("1");
 		List<TimeBlock> tbList = new ArrayList<TimeBlock>();
 		documentId = this.maxDocumentId().toString();
 		timeBlock.setDocumentId(documentId);
@@ -103,12 +77,12 @@ public class ActualTimeInquiryWebTest extends KPMETestCase {
 	public void changeGracePeriodRule() {
 		GracePeriodRule gracePeriodRule = TkServiceLocator.getGracePeriodService().getGracePeriodRule(timeBlock.getBeginDate());
 		gracePeriodRule.setHourFactor(new BigDecimal("1"));
-		KRADServiceLocator.getBusinessObjectService().save(gracePeriodRule);
+		KNSServiceLocator.getBusinessObjectService().save(gracePeriodRule);
 	}
 	
 	
 	public Long maxDocumentId() {
-		Collection aCol = KRADServiceLocator.getBusinessObjectService().findAll(TimesheetDocumentHeader.class);
+		Collection aCol = KNSServiceLocator.getBusinessObjectService().findAll(TimesheetDocumentHeader.class);
 		Long maxId = new Long(-1);
 		Iterator<TimesheetDocumentHeader> itr = aCol.iterator();
 		while (itr.hasNext()) {

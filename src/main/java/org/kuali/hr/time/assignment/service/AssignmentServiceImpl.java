@@ -1,28 +1,12 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.assignment.service;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.cache.CacheResult;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
@@ -47,6 +31,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getAssignments(String principalId, Date asOfDate) {
         List<Assignment> assignments;
 
@@ -75,14 +60,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         return assignments;
     }
 
-
-    @Override
-    public List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
-                                           String dept, String workArea, String active, String showHistory) {
-        return assignmentDao.searchAssignments(fromEffdt, toEffdt, principalId, jobNumber, dept, workArea, active, showHistory);
-    }
-
-    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry) {
+    public List<Assignment> getAssignmentsByPayEntry(String principalId, PayCalendarEntries payCalendarEntry) {
         List<Assignment> beginPeriodAssign = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate());
         List<Assignment> endPeriodAssign = getAssignments(principalId, payCalendarEntry.getEndPeriodDate());
         List<Assignment> assignsWithPeriod = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
@@ -113,55 +91,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         return finalAssignments;
 
     }
-    
-    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntries payCalendarEntry){
-    	List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results = TkServiceLocator.getAssignmentService().filterAssignments(assignments, TkConstants.FLSA_STATUS_NON_EXEMPT, false);
-    	return results;
-    }
-    
-    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntries payCalendarEntry){
-    	List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results = TkServiceLocator.getAssignmentService().filterAssignments(assignments, null, true);
-    	return results;
-    }
 
-    public List<Assignment> filterAssignments(List<Assignment> assignments, String flsaStatus, boolean chkForLeaveEligible) {
-    	List<Assignment> results = new ArrayList<Assignment>();
-    	for(Assignment assignment : assignments) {
-    		boolean flag = false;
-    		if(StringUtils.isNotEmpty(flsaStatus)) {
-    			if(assignment != null 
-		    			&& assignment.getJob() != null 
-		    			&& assignment.getJob().getFlsaStatus() != null 
-		    			&& assignment.getJob().getFlsaStatus().equalsIgnoreCase(flsaStatus)) {    			
-					if(chkForLeaveEligible) {
-						if(assignment.getJob().isEligibleForLeave()) {
-							flag = true;
-						}
-					}else {
-						flag = true;
-					}
-	    		} 
-    		}else {
-    			if(chkForLeaveEligible) {
-    				if(assignment != null && assignment.getJob() != null && assignment.getJob().isEligibleForLeave()) {
-    					flag = true;
-    				}
-    			} else {
-    				flag = true;
-    			}
-    		}
-    		
-			if(flag) {
-				results.add(assignment);
-			}
-    	}
-    	
-    	return results;
-    	
-    }
-    
     @Override
     public AssignmentDescriptionKey getAssignmentDescriptionKey(String assignmentKey) {
         return new AssignmentDescriptionKey(assignmentKey);
@@ -224,7 +154,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         //No assignment found so fetch the inactive ones for this payBeginDate
-        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, timesheetDocument.getCalendarEntry().getBeginPeriodDate());
+        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, timesheetDocument.getPayCalendarEntry().getBeginPeriodDate());
         if (assign != null) {
             return assign;
         }
@@ -235,12 +165,14 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public Assignment getAssignment(String tkAssignmentId) {
         return getAssignmentDao().getAssignment(tkAssignmentId);
     }
 
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, Date asOfDate) {
         List<Assignment> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea, asOfDate);
         for (Assignment assignment : assignments) {
@@ -250,13 +182,14 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignments(Date asOfDate) {
         return assignmentDao.getActiveAssignments(asOfDate);
     }
 
     private void populateAssignment(Assignment assignment, Date asOfDate) {
-        assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
-        assignment.setTimeCollectionRule(TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),asOfDate));
+        assignment.setJob(TkServiceLocator.getJobSerivce().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
+        assignment.setTimeCollectionRule(TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), asOfDate));
         assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
         assignment.setDeptLunchRule(TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(assignment.getJob().getDept(),
                 assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
@@ -288,59 +221,11 @@ public class AssignmentServiceImpl implements AssignmentService {
      * Get a list of active assignments based on principalId and jobNumber as of a particular date
      */
     @Override
+    @CacheResult(secondsRefreshPeriod = TkConstants.DEFAULT_CACHE_TIME)
     public List<Assignment> getActiveAssignmentsForJob(String principalId, Long jobNumber, Date asOfDate) {
         List<Assignment> assignments = assignmentDao.getActiveAssignmentsForJob(principalId, jobNumber, asOfDate);
 
         return assignments;
     }
-    
-    @Override
-    public Map<String, String> getAssignmentDescriptions(LeaveCalendarDocument lcd) {
-        if (lcd == null) {
-            throw new RuntimeException("leave document is null.");
-        }
-        List<Assignment> assignments = lcd.getAssignments();
-        return TkServiceLocator.getAssignmentService().getAssignmentDescriptionsForAssignments(assignments);
-    }
-    
-    public Map<String, String> getAssignmentDescriptionsForAssignments(List<Assignment>  assignments) {
-    	 Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-         for (Assignment assignment : assignments) {
-                 assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
-         }
-         return assignmentDescriptions;
-    }
 
-    @Override
-    public Assignment getAssignment(LeaveCalendarDocument leaveCalendarDocument, String assignmentKey) {
-        List<Assignment> assignments = leaveCalendarDocument.getAssignments();
-        return TkServiceLocator.getAssignmentService().getAssignment(assignments, assignmentKey, leaveCalendarDocument.getCalendarEntry().getBeginPeriodDate());
-    }
-    
-    public Assignment getAssignment(List<Assignment> assignments, String assignmentKey, Date beginDate) {
-        AssignmentDescriptionKey desc = getAssignmentDescriptionKey(assignmentKey);
-    	if (CollectionUtils.isNotEmpty(assignments)) {
-            for (Assignment assignment : assignments) {
-                if (assignment.getJobNumber().compareTo(desc.getJobNumber()) == 0 &&
-                        assignment.getWorkArea().compareTo(desc.getWorkArea()) == 0 &&
-                        assignment.getTask().compareTo(desc.getTask()) == 0) {
-                    return assignment;
-                }
-            }
-        }
-
-        //No assignment found so fetch the inactive ones for this payBeginDate
-        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, beginDate);
-        if (assign != null) {
-            return assign;
-        }
-
-        LOG.warn("no matched assignment found");
-        return new Assignment();
-    }
-    
-    @Override
-    public Assignment getMaxTimestampAssignment(String principalId) {
-    	return assignmentDao.getMaxTimestampAssignment(principalId);
-    }
 }

@@ -1,24 +1,4 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.missedpunch.service;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -35,10 +15,14 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kew.api.WorkflowDocument;
-import org.kuali.rice.kew.api.WorkflowDocumentFactory;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kew.exception.WorkflowException;
+import org.kuali.rice.kew.service.WorkflowDocument;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MissedPunchServiceImpl implements MissedPunchService {
 
@@ -64,15 +48,6 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         actionDateTime = actionDateTime.plus(actionTimeLocal.getMillisOfDay());
 
         ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(missedPunch.getTkClockLogId());
-        // in case the missedpunch doc has an valication error but the clockLog has been changed at certain time
-        // need to reset the clock log back to the original one
-        if(cl == null) {
-        	MissedPunchDocument mpd = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(missedPunch.getDocumentNumber());
-        	if(mpd != null) {
-        		missedPunch.setTkClockLogId(mpd.getTkClockLogId());
-        		cl = TkServiceLocator.getClockLogService().getClockLog(missedPunch.getTkClockLogId());
-        	}
-        }
 
         if(cl.getClockTimestamp().compareTo(new Timestamp(actionDateTime.getMillis())) != 0){
         	//change occurred between the initial save and the approver
@@ -87,14 +62,14 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         			logEndId = timeBlocks.get(0).getClockLogEndId();
         		}
         	} else {
-        		logBeginId = timeBlocks.get(0).getClockLogBeginId();	// new time blocks should keep the original clockLogBeginId
+        		logBeginId = timeBlocks.get(0).getClockLogBeginId();
         	}
         	
         	//delete existing time blocks
         	for(TimeBlock tb : timeBlocks){
         		TkServiceLocator.getTimeBlockService().deleteTimeBlock(tb);
         	}
-        	KRADServiceLocator.getBusinessObjectService().delete(cl);
+        	KNSServiceLocator.getBusinessObjectService().delete(cl);
         	// delete the existing clock log and add new time blocks
         	addClockLogForMissedPunch(missedPunch, logEndId, logBeginId);
         }
@@ -133,6 +108,10 @@ public class MissedPunchServiceImpl implements MissedPunchService {
             String earnCode = assign.getJob().getPayTypeObj().getRegEarnCode();
             this.buildTimeBlockRunRules(lastClockLog, clockLog, tdoc, assign, earnCode, lastClockLog.getClockTimestamp(), clockLog.getClockTimestamp());
         }
+
+        MissedPunchDocument doc = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(missedPunch.getDocumentNumber());
+        doc.setTkClockLogId(clockLog.getTkClockLogId());
+        KNSServiceLocator.getBusinessObjectService().save(doc);
     }
 
     @Override
@@ -160,35 +139,29 @@ public class MissedPunchServiceImpl implements MissedPunchService {
                 tdoc,
                 missedPunch.getClockAction(),
                 TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()));
+        ClockLog endLog = null;
+        ClockLog beginLog = null;
+        if (logEndId != null) {
+            endLog = TkServiceLocator.getClockLogService().getClockLog(logEndId);
+            beginLog = clockLog;
+        } else if (logBeginId != null) {
+            beginLog = TkServiceLocator.getClockLogService().getClockLog(logBeginId);
+            endLog = clockLog;
+        } else {
+            ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
+            endLog = lastClockLog;
+            beginLog = clockLog;
+        }
         TkServiceLocator.getClockLogService().saveClockLog(clockLog);
         missedPunch.setTkClockLogId(clockLog.getTkClockLogId());
-//        MissedPunchDocument doc = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(missedPunch.getDocumentNumber());
-//        doc.setTkClockLogId(clockLog.getTkClockLogId());
-//        KNSServiceLocator.getBusinessObjectService().save(doc);
-        
-        // if both clock log ids are null, no need to create new time blocks
-        if(!(logEndId == null && logBeginId == null)) {
-	        ClockLog endLog = null;
-	        ClockLog beginLog = null;
-	       if(logEndId != null) {
-	    	   endLog = TkServiceLocator.getClockLogService().getClockLog(logEndId);
-	       } else {
-	    	   endLog = clockLog; 
-	       }
-	       if (logBeginId != null) {
-	           beginLog = TkServiceLocator.getClockLogService().getClockLog(logBeginId);
-	       } else {
-	    	   beginLog = clockLog;
-	       }
-	        
-	       if (beginLog != null && endLog != null && beginLog.getClockTimestamp().before(endLog.getClockTimestamp())) {
-	           String earnCode = assign.getJob().getPayTypeObj().getRegEarnCode();
-	           this.buildTimeBlockRunRules(beginLog, endLog, tdoc, assign, earnCode, beginLog.getClockTimestamp(), endLog.getClockTimestamp());
-	       } else {
-	        	// error
-	    	   GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.invalid.datetime");
-	       }
-        }
+
+        String earnCode = assign.getJob().getPayTypeObj().getRegEarnCode();
+        this.buildTimeBlockRunRules(beginLog, endLog, tdoc, assign, earnCode, beginLog.getClockTimestamp(), endLog.getClockTimestamp());
+
+
+        MissedPunchDocument doc = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(missedPunch.getDocumentNumber());
+        doc.setTkClockLogId(clockLog.getTkClockLogId());
+        KNSServiceLocator.getBusinessObjectService().save(doc);
     }
 
     /**
@@ -206,7 +179,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         // Add TimeBlocks after we store our reference object!
         List<TimeBlock> blocks = TkServiceLocator.getTimeBlockService().buildTimeBlocks(
                 assignment, earnCode, tdoc, beginTimestamp,
-                endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false);
+                endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true);
 
 
         // Add the clock log IDs to the time blocks that were just created.
@@ -222,7 +195,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(
                 TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks,
-                tdoc.getCalendarEntry(),
+                tdoc.getPayCalendarEntry(),
                 tdoc, tdoc.getPrincipalId()
         );
 
@@ -235,12 +208,17 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
     @Override
     public void approveMissedPunch(MissedPunchDocument document) {
+        try {
             String rhid = document.getDocumentNumber();
-            WorkflowDocument wd = WorkflowDocumentFactory.loadDocument(TkConstants.BATCH_JOB_USER_PRINCIPAL_ID, rhid);
-            wd.superUserBlanketApprove("Batch job superuser approving missed punch document.");
+            WorkflowDocument wd = new WorkflowDocument(TkConstants.BATCH_JOB_USER_PRINCIPAL_ID, Long.parseLong(rhid));
+            wd.superUserApprove("Batch job superuser approving missed punch document.");
 
             document.setDocumentStatus(TkConstants.ROUTE_STATUS.FINAL);
-            KRADServiceLocator.getBusinessObjectService().save(document);
+            KNSServiceLocator.getBusinessObjectService().save(document);
+
+        } catch (WorkflowException e) {
+            throw new RuntimeException("Exception during route", e);
+        }
     }
 
     @Override

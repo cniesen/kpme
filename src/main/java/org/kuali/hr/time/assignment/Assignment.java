@@ -1,28 +1,7 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.assignment;
-
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
@@ -31,11 +10,17 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Assignment extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Assignment";
+
 	/**
      *
      */
@@ -54,7 +39,6 @@ public class Assignment extends HrBusinessObject {
 	private DeptLunchRule deptLunchRule;
 	private WorkArea workAreaObj;
 	private Boolean history;
-    private String assignmentKey;
 
 	private Person principal;
 
@@ -83,25 +67,38 @@ public class Assignment extends HrBusinessObject {
 		this.task = taskId;
 	}
 
+	@SuppressWarnings({ "rawtypes" })
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String, Object>();
+		toStringMap.put("tkAssignmentId", tkAssignmentId);
+		toStringMap.put("principalId", principalId);
+		toStringMap.put("jobNumber", jobNumber);
+		toStringMap.put("workArea", workArea);
+		toStringMap.put("task", task);
+
+		return toStringMap;
+	}
+
 	public String getPrincipalId() {
 		return principalId;
 	}
 
 	public void setPrincipalId(String principalId) {
 		this.principalId = principalId;
-		this.setPrincipal(KimApiServiceLocator.getPersonService().getPerson(this.principalId));
+		this.setPrincipal(KIMServiceLocator.getPersonService().getPerson(this.principalId));
 	}
 
 	public String getName() {
 		if (principal == null) {
-        principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
+        principal = KIMServiceLocator.getPersonService().getPerson(this.principalId);
 		}
 		return (principal != null) ? principal.getName() : "";
 	}
 
 	public Job getJob() {
 		if(job == null && this.getJobNumber() != null) {
-			this.setJob(TkServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveDate()));
+			this.setJob(TkServiceLocator.getJobSerivce().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveDate()));
 		}
 		return job;
 	}
@@ -156,8 +153,8 @@ public class Assignment extends HrBusinessObject {
 
 	public String getTkAssignmentId() {
 		return tkAssignmentId;
+	}
 
-    }
 	public void setTkAssignmentId(String tkAssignmentId) {
 		this.tkAssignmentId = tkAssignmentId;
 	}
@@ -182,9 +179,9 @@ public class Assignment extends HrBusinessObject {
 		if(this.getJobNumber()!= null) {
 			if(this.getJob() == null || !this.getJobNumber().equals(this.getJob().getJobNumber())) {
 				if(this.getEffectiveDate()!=null){
-					this.setJob(TkServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveDate(), false));
+					this.setJob(TkServiceLocator.getJobSerivce().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveDate(), false));
 				}else{
-					this.setJob(TkServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), TKUtils.getCurrentDate(), false));
+					this.setJob(TkServiceLocator.getJobSerivce().getJob(this.getPrincipalId(), this.getJobNumber(), TKUtils.getCurrentDate(), false));
 				}
 			}
 			setDept((this.getJob() != null) ? this.getJob().getDept() : "");
@@ -273,7 +270,7 @@ public class Assignment extends HrBusinessObject {
 	}
 
 	@Override
-	public String getUniqueKey() {
+	protected String getUniqueKey() {
 		String jobKey = getPrincipalId()+"_"+getJobNumber()+"_"+getWorkArea()+"_"+
 			(getTask() != null ? getTask().toString() : "");
 		return jobKey;
@@ -315,9 +312,5 @@ public class Assignment extends HrBusinessObject {
 
     public void setCalGroup(String calGroup) {
         this.calGroup = calGroup;
-    }
-
-    public String getAssignmentKey() {
-        return new AssignmentDescriptionKey(this).toAssignmentKeyString();
     }
 }

@@ -1,41 +1,45 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.util;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
-import org.kuali.hr.time.test.HtmlUnitUtil;
-import org.kuali.hr.time.test.TkTestConstants;
-
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.junit.Before;
+import org.junit.Test;
+import org.kuali.hr.time.ApplicationInitializeListener;
+import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.hr.time.test.TkTestConstants;
+import org.kuali.hr.time.web.TKRequestProcessor;
+import org.kuali.hr.time.web.TkLoginFilter;
+import org.kuali.rice.core.config.spring.ConfigFactoryBean;
+import org.kuali.rice.kns.util.ErrorMap;
+import org.kuali.rice.kns.util.GlobalVariables;
+import org.springframework.mock.web.MockHttpServletRequest;
 
-public class PersonInfoTest extends KPMETestCase {
+public class PersonInfoTest extends TkTestCase {
+	
+	@Before
+	public void setUp() throws Exception {
+		super.setUp();
+		ApplicationInitializeListener.ALTERNATE_LOG4J_FILE = "classpath:test_log4j.properties";
+		setContextName("/tk-dev");
+		setRelativeWebappRoot("/src/main/webapp");
+		
+		ConfigFactoryBean.CONFIG_OVERRIDE_LOCATION = "classpath:META-INF/tk-test-config.xml";		
+		TkLoginFilter.TEST_ID = "eric";
+		GlobalVariables.setErrorMap(new ErrorMap());
+		TKContext.setHttpServletRequest(new MockHttpServletRequest());
+		
+		new TKRequestProcessor().setUserOnContext(TKContext.getHttpServletRequest());
+		//this clears the cache that was loaded from the above call.  Do not comment
+		TKContext.setHttpServletRequest(new MockHttpServletRequest());
+	}
 	
 	@Test
 	public void testPersonInfo() throws Exception{	
 		// pass the login filter
 		HtmlPage clockPage = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.PERSON_INFO_URL);
 		HtmlUnitUtil.createTempFile(clockPage);
-		Assert.assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Principal Name"));
-		Assert.assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Name"));
-		Assert.assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("admin, admin"));
-		Assert.assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Job Number"));
-		Assert.assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Department Admin"));
-		
+		assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Job Number"));
+		assertTrue("Person Info Page renders with inappropriate data",clockPage.asText().contains("Department Admin"));
 	}
  
 }

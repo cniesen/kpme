@@ -1,26 +1,12 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.paytype;
 
-import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.earncode.EarnCode;
 
+import java.util.LinkedHashMap;
+
 public class PayType extends HrBusinessObject {
-    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayType";
+
 	/**
 	 *
 	 */
@@ -42,6 +28,13 @@ public class PayType extends HrBusinessObject {
     public void setRegEarnCodeObj(EarnCode regEarnCodeObj) {
         this.regEarnCodeObj = regEarnCodeObj;
     }
+
+    @SuppressWarnings("unchecked")
+	@Override
+	protected LinkedHashMap toStringMapper() {
+		return null;
+	}
+
 
 	public String getPayType() {
 		return payType;
@@ -85,7 +78,7 @@ public class PayType extends HrBusinessObject {
 	}
 
 	@Override
-	public String getUniqueKey() {
+	protected String getUniqueKey() {
 		return payType;
 	}
 

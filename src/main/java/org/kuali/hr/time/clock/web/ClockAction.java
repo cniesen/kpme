@@ -1,31 +1,4 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clock.web;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -41,7 +14,6 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
-import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -52,8 +24,14 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.exception.AuthorizationException;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.exception.AuthorizationException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ClockAction extends TimesheetAction {
 
@@ -66,8 +44,9 @@ public class ClockAction extends TimesheetAction {
         super.checkTKAuthorization(form, methodToCall); // Checks for read access first.
 
         TimesheetActionForm taForm = (TimesheetActionForm) form;
-        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-        TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
+        TKUser user = TKContext.getUser();
+        UserRoles roles = user.getCurrentRoles(); // either backdoor or actual
+        TimesheetDocument doc = TKContext.getCurrentTimesheetDoucment();
 
         // Check for write access to Timeblock.
         if (StringUtils.equals(methodToCall, "clockAction") ||
@@ -103,18 +82,12 @@ public class ClockAction extends TimesheetAction {
             }
             caf.setAssignmentLunchMap(assignmentDeptLunchRuleMap);
         }
-        String principalId = TKUser.getCurrentTargetPerson().getPrincipalId();
+        String principalId = TKContext.getUser().getTargetPrincipalId();
         if (principalId != null) {
             caf.setPrincipalId(principalId);
         }
+        caf.isShowDistributeButton();
         this.assignShowDistributeButton(caf);
-        // if the time sheet document is final or enroute, do not allow missed punch
-        if(caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)
-        		|| caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
-        	caf.setShowMissedPunchButton(false);
-        } else {
-        	caf.setShowMissedPunchButton(true);
-        }
 
         String tbIdString = caf.getEditTimeBlockId();
         if (tbIdString != null) {
@@ -126,7 +99,7 @@ public class ClockAction extends TimesheetAction {
             Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
             String lastClockZone = lastClockLog.getClockTimestampTimezone();
             if (StringUtils.isEmpty(lastClockZone)) {
-                lastClockZone = TKUtils.getSystemTimeZone();
+                lastClockZone = TkConstants.SYSTEM_TIME_ZONE;
             }
             // zone will not be null. At this point is Valid or Exception.
             // Exception would indicate bad data stored in the system. We can wrap this, but
@@ -172,7 +145,7 @@ public class ClockAction extends TimesheetAction {
     		}
     		List<TimeCollectionRule> ruleList = new ArrayList<TimeCollectionRule> ();
     		for(Assignment assignment: assignments) {
-    			TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),assignment.getEffectiveDate());
+    			TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getEffectiveDate());
 		    	if(rule != null) {
 		    		if(rule.isHrsDistributionF()) {
 		    			ruleList.add(rule);
@@ -201,7 +174,7 @@ public class ClockAction extends TimesheetAction {
             caf.setErrorMessage("No assignment selected.");
             return mapping.findForward("basic");
         }
-        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
+        ClockLog previousClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKContext.getUser().getTargetPrincipalId());
         if(previousClockLog != null && StringUtils.equals(caf.getCurrentClockAction(), previousClockLog.getClockAction())){
         	caf.setErrorMessage("The operation is already performed.");
             return mapping.findForward("basic");
@@ -227,7 +200,7 @@ public class ClockAction extends TimesheetAction {
         
                
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new Timestamp(System.currentTimeMillis()), assignment, caf.getPayCalendarDates(), ip,
-                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKUser.getCurrentTargetPerson().getPrincipalId());
+                TKUtils.getCurrentDate(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKContext.getUser().getTargetPrincipalId());
 
         caf.setClockLog(clockLog);
 
@@ -270,7 +243,6 @@ public class ClockAction extends TimesheetAction {
     public ActionForward saveNewTimeBlocks(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
 		ClockActionForm caf = (ClockActionForm)form;
 		String tbId = caf.getTbId();
-		String timesheetDocId = caf.getTsDocId();
 
 		String[] assignments = caf.getNewAssignDesCol().split(SEPERATOR);
 		String[] beginDates = caf.getNewBDCol().split(SEPERATOR);
@@ -288,10 +260,7 @@ public class ClockAction extends TimesheetAction {
 			Timestamp endTS = TKUtils.convertDateStringToTimestamp(endDates[i], endTimes[i]);
 			String assignString = assignments[i];
 			Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(assignString);
-			
-			TimesheetDocument tsDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocId);
-			
-			tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false);
+			tb = TkServiceLocator.getTimeBlockService().createTimeBlock(caf.getTimesheetDocument(), beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false);
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
@@ -337,9 +306,8 @@ public class ClockAction extends TimesheetAction {
 		    }
 
 		    // check if the begin / end time are valid
-		    // should not include time zone in consideration when conparing time intervals
-		    Timestamp beginTS = TKUtils.convertDateStringToTimestampWithoutZone(beginDates[i], beginTimes[i]);
-			Timestamp endTS = TKUtils.convertDateStringToTimestampWithoutZone(endDates[i], endTimes[i]);
+		    Timestamp beginTS = TKUtils.convertDateStringToTimestamp(beginDates[i], beginTimes[i]);
+			Timestamp endTS = TKUtils.convertDateStringToTimestamp(endDates[i], endTimes[i]);
 		    if ((beginTS.compareTo(endTS) > 0 || endTS.compareTo(beginTS) < 0)) {
 		        errorMsgList.add("The time or date for entry " + index + " is not valid.");
 		        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
@@ -353,9 +321,6 @@ public class ClockAction extends TimesheetAction {
 		    newIntervals.add(addedTimeblockInterval);
 		    for (TimeBlock timeBlock : caf.getTimesheetDocument().getTimeBlocks()) {
 		    	if(timeBlock.getTkTimeBlockId().equals(tbId)) {	// ignore the original time block
-		    		continue;
-		    	}
-		    	if(timeBlock.getHours().compareTo(BigDecimal.ZERO) == 0) { // ignore time blocks with zero hours
 		    		continue;
 		    	}
 			    Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());

@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.detail.web;
 
 
@@ -25,15 +10,12 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.kuali.hr.time.base.web.TkAction;
-import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kew.api.document.DocumentStatus;
-import org.kuali.rice.krad.exception.AuthorizationException;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.exception.AuthorizationException;
 
 public class TimesheetSubmitAction extends TkAction {
 
@@ -42,7 +24,7 @@ public class TimesheetSubmitAction extends TkAction {
         TimesheetSubmitActionForm tsaf = (TimesheetSubmitActionForm)form;
 
         String principal = TKContext.getPrincipalId();
-        UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
+        UserRoles roles = TKContext.getUser().getCurrentRoles();
 
         TimesheetDocument document = TkServiceLocator.getTimesheetService().getTimesheetDocument(tsaf.getDocumentId());
         if (!roles.isDocumentWritable(document)) {
@@ -59,17 +41,16 @@ public class TimesheetSubmitAction extends TkAction {
 
         // Switched to grab the target (chain, resolution: target -> backdoor -> actual) user.
         // Approvals still using backdoor > actual
-        if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.ROUTE)) {
-            if (DocumentStatus.INITIATED.getCode().equals(document.getDocumentHeader().getDocumentStatus())
-                    || DocumentStatus.SAVED.getCode().equals(document.getDocumentHeader().getDocumentStatus())) {
+        if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.ROUTE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("I") || document.getDocumentHeader().getDocumentStatus().equals("S")) {
                 TkServiceLocator.getTimesheetService().routeTimesheet(TKContext.getTargetPrincipalId(), document);
             }
-        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.APPROVE)) {
-            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
+        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.APPROVE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("R")) {
                 TkServiceLocator.getTimesheetService().approveTimesheet(TKContext.getPrincipalId(), document);
             }
-        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
-            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
+        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.DISAPPROVE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("R")) {
                 TkServiceLocator.getTimesheetService().disapproveTimesheet(TKContext.getPrincipalId(), document);
             }
         }
@@ -87,20 +68,20 @@ public class TimesheetSubmitAction extends TkAction {
 
         // Switched to grab the target (chain, resolution: target -> backdoor -> actual) user.
         // Approvals still using backdoor > actual
-        if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.ROUTE)) {
-            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.INITIATED.getCode())) {
+        if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.ROUTE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("I")) {
                 TkServiceLocator.getTimesheetService().routeTimesheet(TKContext.getTargetPrincipalId(), document);
             }
-        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.APPROVE)) {
-            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
+        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.APPROVE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("R")) {
                 TkServiceLocator.getTimesheetService().approveTimesheet(TKContext.getPrincipalId(), document);
             }
-        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
-            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
+        } else if (StringUtils.equals(tsaf.getAction(), TkConstants.TIMESHEET_ACTIONS.DISAPPROVE)) {
+            if (document.getDocumentHeader().getDocumentStatus().equals("R")) {
                 TkServiceLocator.getTimesheetService().disapproveTimesheet(TKContext.getPrincipalId(), document);
             }
         }
-        TKContext.getUser().clearTargetUser();
+        TKContext.getUser().clearTargetUserFromSession();
         return new ActionRedirect(mapping.findForward("approverRedirect"));
 
 

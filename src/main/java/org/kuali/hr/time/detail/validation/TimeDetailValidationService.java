@@ -1,38 +1,20 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.detail.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.*;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.detail.web.TimeDetailActionFormBase;
 import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,11 +31,11 @@ public class TimeDetailValidationService {
                 tdaf.getHours(), tdaf.getAmount(), tdaf.getStartTime(), tdaf.getEndTime(),
                 tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getTimesheetDocument(),
                 tdaf.getSelectedEarnCode(), tdaf.getSelectedAssignment(),
-                tdaf.getAcrossDays().equalsIgnoreCase("y"), tdaf.getTkTimeBlockId(), tdaf.getOvertimePref(), tdaf.getSpanningWeeks().equalsIgnoreCase("y")
+                tdaf.getAcrossDays().equalsIgnoreCase("y"), tdaf.getTkTimeBlockId(), tdaf.getOvertimePref()
         );
     }
 
-    public static List<String> validateTimeEntryDetails(BigDecimal hours, BigDecimal amount, String startTimeS, String endTimeS, String startDateS, String endDateS, TimesheetDocument timesheetDocument, String selectedEarnCode, String selectedAssignment, boolean acrossDays, String timeblockId, String overtimePref, boolean spanningWeeks) {
+    public static List<String> validateTimeEntryDetails(BigDecimal hours, BigDecimal amount, String startTimeS, String endTimeS, String startDateS, String endDateS, TimesheetDocument timesheetDocument, String selectedEarnCode, String selectedAssignment, boolean acrossDays, String timeblockId, String overtimePref) {
         List<String> errors = new ArrayList<String>();
 
         if (timesheetDocument == null) {
@@ -61,7 +43,7 @@ public class TimeDetailValidationService {
         }
         if (errors.size() > 0) return errors;
 
-        CalendarEntries payCalEntry = timesheetDocument.getCalendarEntry();
+        PayCalendarEntries payCalEntry = timesheetDocument.getPayCalendarEntry();
         java.sql.Date asOfDate = payCalEntry.getEndPeriodDate();
 
         errors.addAll(TimeDetailValidationService.validateDates(startDateS, endDateS));
@@ -74,10 +56,9 @@ public class TimeDetailValidationService {
         errors.addAll(validateInterval(payCalEntry, startTime, endTime));
         if (errors.size() > 0) return errors;
 
-        EarnCode earnCode = new EarnCode();
         if (StringUtils.isNotBlank(selectedEarnCode)) {
-            earnCode = TkServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, asOfDate);
-            if (earnCode != null && earnCode.getRecordMethod()!= null && earnCode.getRecordMethod().equalsIgnoreCase(TkConstants.EARN_CODE_TIME)) {
+            EarnCode earnCode = TkServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, asOfDate);
+            if (earnCode != null && earnCode.getRecordTime()) {
                 if (startTimeS == null) errors.add("The start time is blank.");
                 if (endTimeS == null) errors.add("The end time is blank.");
                 if (startTime - endTime == 0) errors.add("Start time and end time cannot be equivalent");
@@ -116,13 +97,6 @@ public class TimeDetailValidationService {
             errors.add("The time or date is not valid.");
         }
         if (errors.size() > 0) return errors;
-        
-        // KPME-1446 
-        // -------------------------------
-        // check if there is a weekend day when the include weekends flag is checked
-        //--------------------------------
-        errors.addAll(validateSpanningWeeks(spanningWeeks, startTemp, endTemp));
-        if (errors.size() > 0) return errors;
 
         //------------------------
         // check if the overnight shift is across days
@@ -139,7 +113,7 @@ public class TimeDetailValidationService {
         //------------------------
         // Amount cannot be zero
         //------------------------
-        if (amount != null && earnCode != null && StringUtils.equals(earnCode.getEarnCodeType(), TkConstants.EARN_CODE_AMOUNT)) {
+        if (amount != null) {
             if (amount.equals(BigDecimal.ZERO)) {
                 errors.add("Amount cannot be zero.");
             }
@@ -153,7 +127,7 @@ public class TimeDetailValidationService {
         // check if the hours entered for hourly earn code is greater than 24 hours per day
         // Hours cannot be zero
         //------------------------
-        if (hours != null && earnCode != null && StringUtils.equals(earnCode.getEarnCodeType(), TkConstants.EARN_CODE_HOUR)) {
+        if (hours != null) {
             if (hours.equals(BigDecimal.ZERO)) {
                 errors.add("Hours cannot be zero.");
             }
@@ -185,26 +159,6 @@ public class TimeDetailValidationService {
         Interval addedTimeblockInterval = new Interval(startTime, endTime);
         List<Interval> dayInt = new ArrayList<Interval>();
 
-        //if the user is clocked in, check if this time block overlaps with the clock action
-        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
-        if(lastClockLog != null &&
-        		(lastClockLog.getClockAction().equals(TkConstants.CLOCK_IN) 
-        				|| lastClockLog.getClockAction().equals(TkConstants.LUNCH_IN))) {
-        	 Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
-             String lastClockZone = lastClockLog.getClockTimestampTimezone();
-             if (StringUtils.isEmpty(lastClockZone)) {
-                 lastClockZone = TKUtils.getSystemTimeZone();
-             }
-             DateTimeZone zone = DateTimeZone.forID(lastClockZone);
-             DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
-             DateTime currentTime = new DateTime(System.currentTimeMillis(), zone);
-             Interval currentClockInInterval = new Interval(clockWithZone.getMillis(), currentTime.getMillis());
-             if (addedTimeblockInterval.overlaps(currentClockInInterval)) {
-                 errors.add("The time block you are trying to add overlaps with the current clock action.");
-                 return errors;
-             }
-        }
-       
         if (acrossDays) {
             DateTime start = new DateTime(startTime);
             DateTime end = new DateTime(TKUtils.convertDateStringToTimestamp(startDateS, endTimeS).getTime());
@@ -235,7 +189,7 @@ public class TimeDetailValidationService {
         }
 
         for (TimeBlock timeBlock : timesheetDocument.getTimeBlocks()) {
-            if (errors.size() == 0 && StringUtils.equals(timeBlock.getEarnCodeType(), TkConstants.EARN_CODE_TIME)) {
+            if (errors.size() == 0 && StringUtils.equals(timeBlock.getEarnCodeType(), "TIME")) {
                 Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
                 for (Interval intv : dayInt) {
                     if (timeBlockInterval.overlaps(intv) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
@@ -262,7 +216,7 @@ public class TimeDetailValidationService {
         return errors;
     }
 
-    public static List<String> validateInterval(CalendarEntries payCalEntry, Long startTime, Long endTime) {
+    public static List<String> validateInterval(PayCalendarEntries payCalEntry, Long startTime, Long endTime) {
         List<String> errors = new ArrayList<String>();
         LocalDateTime pcb_ldt = payCalEntry.getBeginLocalDateTime();
         LocalDateTime pce_ldt = payCalEntry.getEndLocalDateTime();
@@ -278,22 +232,5 @@ public class TimeDetailValidationService {
             errors.add("The end date/time is outside the pay period");
         }
         return errors;
-    }
-    
-    // KPME-1446
-    public static List<String> validateSpanningWeeks(boolean spanningWeeks, DateTime startTemp, DateTime endTemp) {
-    	List<String> errors = new ArrayList<String>();
-    	boolean valid = true;
-        while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && valid) {
-        	if (!spanningWeeks && 
-        		(startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		valid = false;
-        	}
-        	startTemp = startTemp.plusDays(1);
-        }
-        if (!valid) {
-        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");
-        }
-    	return errors;
     }
 }

@@ -1,5 +1,5 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
+/*
+ * Copyright 2005 The Kuali Foundation
  *
  * Licensed under the Educational Community License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@ package org.kuali.kfs.coa.businessobject;
 
 import java.util.LinkedHashMap;
 
-import org.kuali.rice.core.api.mo.common.active.Inactivatable;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.Inactivateable;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 /**
  *
  */
-public class ObjectCode extends PersistableBusinessObjectBase implements Inactivatable {
+public class ObjectCode extends PersistableBusinessObjectBase implements Inactivateable {
 
 
 /*    static {

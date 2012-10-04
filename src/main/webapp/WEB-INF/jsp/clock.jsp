@@ -1,20 +1,3 @@
-<%--
-
-    Copyright 2004-2012 The Kuali Foundation
-
-    Licensed under the Educational Community License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.opensource.org/licenses/ecl2.php
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
---%>
 <%@include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 <c:set var="Form" value="${ClockActionForm}" scope="request"/>
 
@@ -68,7 +51,7 @@ var tdocid = ${Form.timesheetDocument.documentId} ;
 			<tr>
 				<td class="sub-header"><bean:message key="clock.workStatus"/> : </td>
 				<td>${lastClockActionMessage}
-				<fmt:timeZone value="${Form.targetUserTimezone}"><fmt:formatDate type="both" value="${Form.lastClockTimeWithZone}" pattern="EEE, MMMM d yyyy hh:mm:ss a, zzzz"/></fmt:timeZone>
+				<fmt:timeZone value="${Form.user.userTimezone}"><fmt:formatDate type="both" value="${Form.lastClockTimeWithZone}" pattern="EEE, MMMM d yyyy HH:mm:ss, zzzz"/></fmt:timeZone>
 				</td>
 			</tr>
 			<tr>
@@ -92,9 +75,7 @@ var tdocid = ${Form.timesheetDocument.documentId} ;
 						   <input type="submit" class="button" value="Return From Lunch" name="lunchIn" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LI';"/>
 						</c:when>
                     </c:choose>
-                    <c:if test="${Form.showMissedPunchButton}">
-						<input type="button" class="button" id="missed-punch-iframe-button" value="Missed Punch" name="missedPunch"/>
-					</c:if>
+					<input type="button" class="button" id="missed-punch-iframe-button" value="Missed Punch" name="missedPunch"/>
 					<c:if test="${Form.showDistributeButton}">
 						<input id="distribute-button" type="button" class="button" value="Distribute Time Blocks"
 							name="distributeTime" onclick="javascrpt: window.open(extractUrlBase()+'/Clock.do?methodToCall=distributeTimeBlocks', 'distributePopup')"/>

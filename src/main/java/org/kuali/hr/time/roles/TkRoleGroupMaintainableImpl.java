@@ -1,38 +1,27 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.roles;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
+import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kim.bo.types.dto.AttributeSet;
+import org.kuali.rice.kim.service.KIMServiceLocator;
+import org.kuali.rice.kns.bo.BusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.Maintainable;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.kns.web.ui.Section;
-import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.sql.Timestamp;
-import java.util.*;
 
 public class TkRoleGroupMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
@@ -57,16 +46,17 @@ public class TkRoleGroupMaintainableImpl extends HrBusinessObjectMaintainableImp
     		}
             for (TkRole role : roles) {
                 if (StringUtils.equals(role.getRoleName(), TkConstants.ROLE_TK_SYS_ADMIN)) {
+                    AttributeSet qualifier = new AttributeSet();
                     String principalId = role.getPrincipalId();
                     if(StringUtils.isBlank(principalId)){
                     	principalId = trg.getPrincipalId();
                     }
                     if(StringUtils.isBlank(principalId)){
-                    	KimApiServiceLocator.getRoleService().assignPrincipalToRole(principalId, TkConstants.ROLE_NAMESAPCE, role.getRoleName(), new HashMap<String,String>());
+                    	KIMServiceLocator.getRoleUpdateService().assignPrincipalToRole(principalId, TkConstants.ROLE_NAMESAPCE, role.getRoleName(), qualifier);
                     }
                 }
                 role.setPrincipalId(trg.getPrincipalId());
-                role.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+                role.setUserPrincipalId(TKContext.getUser().getPrincipalId());
                 
                 HrBusinessObject oldHrObj = this.getObjectById(role.getId());
                 
@@ -82,10 +72,8 @@ public class TkRoleGroupMaintainableImpl extends HrBusinessObjectMaintainableImp
     					oldHrObj.setActive(false);
     					oldHrObj.setId(null);
     				}
-    				KRADServiceLocator.getBusinessObjectService().save(oldHrObj);
-                    CacheUtils.flushCache(TkRole.CACHE_NAME);
-                    CacheUtils.flushCache(TkRoleGroup.CACHE_NAME);
-
+    				KNSServiceLocator.getBusinessObjectService().save(oldHrObj);
+    				
     				role.setTimestamp(new Timestamp(System.currentTimeMillis()));
     				role.setId(null);
     			}
@@ -101,7 +89,7 @@ public class TkRoleGroupMaintainableImpl extends HrBusinessObjectMaintainableImp
 			Map<String, String[]> parameters) {
 		TkRoleGroup tkRoleGroup = (TkRoleGroup)document.getNewMaintainableObject().getBusinessObject();
 		TkRoleGroup tkRoleGroupOld = (TkRoleGroup)document.getOldMaintainableObject().getBusinessObject();
-		List<Job> jobs = TkServiceLocator.getJobService().getJobs(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
+		List<Job> jobs = TkServiceLocator.getJobSerivce().getJobs(tkRoleGroup.getPrincipalId(), TKUtils.getCurrentDate());
 		List<TkRole> positionRoles = new ArrayList<TkRole>();
 		List<TkRole> inactivePositionRoles = new ArrayList<TkRole>();
 		Set<String> positionNumbers = new HashSet<String>(); 

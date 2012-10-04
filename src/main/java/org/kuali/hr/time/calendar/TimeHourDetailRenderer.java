@@ -1,23 +1,10 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.calendar;
+
+import java.util.List;
 
 import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.holidaycalendar.HolidayCalendarDateEntry;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
+import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
@@ -25,24 +12,18 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
-import java.util.List;
-
 public class TimeHourDetailRenderer {
     private TimeHourDetail timeHourDetail;
     private boolean overtimeEarnCode;
-
+    
     public TimeHourDetailRenderer(TimeHourDetail d) {
         this.timeHourDetail = d;
-        List<String> ovtEarnCodes = TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDocument().getAsOfDate());
+        List<String> ovtEarnCodes = TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDoucment().getAsOfDate());
         setOvertimeEarnCode(ovtEarnCodes.contains(d.getEarnCode()));
     }
 
     public TimeHourDetail getTimeHourDetail() {
         return timeHourDetail;
-    }
-
-    public String getTkTimeHourDetailId() {
-        return timeHourDetail.getTkTimeHourDetailId();
     }
 
     public String getTitle() {
@@ -66,7 +47,7 @@ public class TimeHourDetailRenderer {
 			if(timeBlock.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)) {
 				String documentId = timeBlock.getDocumentId();
 				TimesheetDocumentHeader docHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
-				PrincipalHRAttributes principalCalendar = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(docHeader.getPrincipalId(), new java.sql.Date(timeBlock.getBeginDate().getTime()));
+				PrincipalCalendar principalCalendar = TkServiceLocator.getPrincipalCalendarService().getPrincipalCalendar(docHeader.getPrincipalId(), new java.sql.Date(timeBlock.getBeginDate().getTime()));
 				
 				if ( principalCalendar.getHolidayCalendarGroup() != null ){
 					HolidayCalendar holidayCalendar = TkServiceLocator.getHolidayCalendarService().getHolidayCalendarByGroup(principalCalendar.getHolidayCalendarGroup());

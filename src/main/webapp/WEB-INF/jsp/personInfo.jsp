@@ -1,20 +1,3 @@
-<%--
-
-    Copyright 2004-2012 The Kuali Foundation
-
-    Licensed under the Educational Community License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.opensource.org/licenses/ecl2.php
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
---%>
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp" %>
 <c:set var="Form" value="${PersonInfoActionForm}" scope="request"/>
 
@@ -26,37 +9,15 @@
             <div>
                 <table>
                     <tr>
-                        <th>Principal Id</th>
+                        <th >Principal Id</th>
                         <th>Principal Name</th>
-                        <th>Name</th>
-                        <th>Service Date</th>
                     </tr>
                     <tr>
                         <td>${Form.principalId}</td>
                         <td>${Form.principalName}</td>
-                        <td>${Form.name}</td>
-                        <td>${Form.serviceDate}</td>
                     </tr>
                 </table>
-                <br>
-                <table>
-                	<tr>
-          				<th>Accrual Category</th>
-          				<th>Current Rate</th>
-          				<th>Accrual Earn Interval</th>
-          				<th>Unit of Time</th>
-          			</tr>
-          			<c:forEach var="accrualCategory" items="${Form.accrualCategories}">
-          				<tr>
-          					<td>${accrualCategory.accrualCategory} - ${accrualCategory.descr}</td>
-          					<td>${Form.accrualCategoryRates[accrualCategory.accrualCategory]}</td>
-          					<td>${accrualCategory.accrualEarnInterval}</td>
-          					<td>${accrualCategory.unitOfTime}</td>
-          				</tr>
-          			</c:forEach>
-                </table>
             </div>
-            
             <h3><a href="#">Your Jobs:</a></h3>
 
             <div>
@@ -72,8 +33,6 @@
                             <th>Location</th>
                             <th>Compensation Rate</th>
                             <th>Effective Date</th>
-                            <th>Leave Eligible</th>
-                            <th>FTE</th>
                         </tr>
                         <tr>
                             <td>${job.jobNumber}</td>
@@ -85,14 +44,6 @@
                             <td>${job.location }</td>
                             <td><fmt:formatNumber value="${job.compRate }" type="currency"/></td>
                             <td>${job.effectiveDate }</td>
-                            
-                            <c:if test="${job.eligibleForLeave == false}"> 
-                            	<td>No</td>
-                            </c:if>
-                            <c:if test="${job.eligibleForLeave == true}"> 
-                            	<td>Yes</td>
-                            </c:if>
-                            <td>${job.fte }</td>
                         </tr>
                         <c:if test="${fn:length(Form.jobNumberToListAssignments) > 0}">
                             <tr>

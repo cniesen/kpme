@@ -1,31 +1,27 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.clocklog.validation;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+import org.apache.ojb.broker.PersistenceBrokerFactory;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.clock.location.validation.ClockLocationRuleRule;
 import org.kuali.hr.time.clocklog.ClockLog;
-import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.dept.earncode.DepartmentEarnCode;
+import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.salgroup.SalGroup;
+import org.kuali.hr.time.task.Task;
+import org.kuali.hr.time.workarea.WorkArea;
+import org.kuali.rice.kns.bo.PersistableBusinessObject;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.kns.util.GlobalVariables;
 
 public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 
@@ -56,7 +52,11 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 	protected boolean validateWorkArea(ClockLog clockLog ) {
 		boolean valid = false;
 		LOG.debug("Validating workarea: " + clockLog.getWorkArea());
-		int count = TkServiceLocator.getWorkAreaService().getWorkAreaCount(null, clockLog.getWorkArea());
+		Criteria crit = new Criteria();
+		crit.addEqualTo("workArea", clockLog.getWorkArea());
+		Query query = QueryFactory.newQuery(WorkArea.class, crit);
+		int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);
+
 		if (count >0 ) {
 			valid = true;
 			LOG.debug("found workarea.");
@@ -70,7 +70,11 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 	protected boolean validateTask(ClockLog clockLog ) {
 		boolean valid = false;
 		LOG.debug("Validating task: " + clockLog.getTask());
-		int count = TkServiceLocator.getTaskService().getTaskCount(clockLog.getTask());
+		Criteria crit = new Criteria();
+		crit.addEqualTo("task", clockLog.getTask());
+		Query query = QueryFactory.newQuery(Task.class, crit);
+		int count = PersistenceBrokerFactory.defaultPersistenceBroker().getCount(query);
+
 		if (count >0 ) {
 			valid = true;
 			LOG.debug("found task.");
@@ -92,7 +96,7 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for ClockLog");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		PersistableBusinessObject pbo = this.getNewBo();
 		if (pbo instanceof ClockLog) {
 			ClockLog clockLog = (ClockLog) pbo;
 			clockLog.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());

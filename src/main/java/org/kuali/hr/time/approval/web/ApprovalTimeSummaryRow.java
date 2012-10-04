@@ -1,39 +1,23 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.approval.web;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kew.util.KEWConstants;
+import org.kuali.rice.kim.bo.Person;
 
 public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow> {
 	private String name;
@@ -153,10 +137,10 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     	boolean isEnroute =  StringUtils.equals(getApprovalStatus(), "ENROUTE") ;
 
         if(isEnroute){
-        	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(this.getDocumentId());
-        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
+        	DocumentRouteHeaderValue routeHeader = KEWServiceLocator.getRouteHeaderService().getRouteHeader(Long.parseLong(this.getDocumentId()));
+        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getUserSession(), routeHeader, new SecuritySession(TKContext.getUserSession()));
         	if(authorized){
-        		List<String> principalsToApprove = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, this.getDocumentId());
+        		List<String> principalsToApprove = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KEWConstants.ACTION_REQUEST_APPROVE_REQ, routeHeader.getRouteHeaderId());
         		if(!principalsToApprove.isEmpty() && principalsToApprove.contains(TKContext.getPrincipalId())){
             		return true;
             	}
@@ -174,10 +158,9 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     public String getTimesheetUserTargetURLParams() {
         StringBuffer link = new StringBuffer();
 
-        link.append("methodToCall=changeTargetPerson");
+        link.append("methodToCall=changeEmployee");
         link.append("&documentId=").append(this.getDocumentId());
-        Person person = KimApiServiceLocator.getPersonService().getPerson(this.getPrincipalId());
-        link.append("&principalName=").append(person.getPrincipalName());
+        link.append("&changeTargetPrincipalId=").append(this.getPrincipalId());
 
         return link.toString();
     }

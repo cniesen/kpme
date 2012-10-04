@@ -1,23 +1,9 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.overtime.daily.rule.service;
 
 import org.apache.log4j.Logger;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule;
 import org.kuali.hr.time.overtime.daily.rule.dao.DailyOvertimeRuleDao;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -56,6 +42,7 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 	 *
 	 * asOfDate is required.
 	 */
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public DailyOvertimeRule getDailyOvertimeRule(String location, String paytype, String dept, Long workArea, Date asOfDate) {
 		DailyOvertimeRule dailyOvertimeRule = null;
 
@@ -218,7 +205,7 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 			}
 
 			for(DailyOvertimeRule dr : mapDailyOvtRulesToAssignment.keySet() ){
-				Set<String> fromEarnGroup = TkServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(dr.getFromEarnGroup(), TKUtils.getTimelessDate(timesheetDocument.getCalendarEntry().getEndPeriodDateTime()));
+				Set<String> fromEarnGroup = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(dr.getFromEarnGroup(), TKUtils.getTimelessDate(timesheetDocument.getPayCalendarEntry().getEndPeriodDateTime()));
 				List<TimeBlock> blocksForRule = dailyOvtRuleToDayTotals.get(dr);
 				if (blocksForRule == null || blocksForRule.size() == 0)
 					continue; // skip to next rule and check for valid blocks.
@@ -368,6 +355,7 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 	}
 
 	@Override
+	@CacheResult(secondsRefreshPeriod=TkConstants.DEFAULT_CACHE_TIME)
 	public DailyOvertimeRule getDailyOvertimeRule(String tkDailyOvertimeRuleId) {
 		return dailyOvertimeRuleDao.getDailyOvertimeRule(tkDailyOvertimeRuleId);
 	}

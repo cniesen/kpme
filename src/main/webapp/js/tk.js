@@ -1,67 +1,5 @@
-/*
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 /**
- * Datejs date/time format:
- *  Format  Description                                                                  Example
-    ------  ---------------------------------------------------------------------------  -----------------------
-    s      The seconds of the minute between 0-59.                                      "0" to "59"
-    ss     The seconds of the minute with leading zero if required.                     "00" to "59"
-
-    m      The minute of the hour between 0-59.                                         "0"  or "59"
-    mm     The minute of the hour with leading zero if required.                        "00" or "59"
-
-    h      The hour of the day between 1-12.                                            "1"  to "12"
-    hh     The hour of the day with leading zero if required.                           "01" to "12"
-
-    H      The hour of the day between 0-23.                                            "0"  to "23"
-    HH     The hour of the day with leading zero if required.                           "00" to "23"
-
-    d      The day of the month between 1 and 31.                                       "1"  to "31"
-    dd     The day of the month with leading zero if required.                          "01" to "31"
-    ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                  "Mon" to "Sun"
-    dddd   The full day name. Date.CultureInfo.dayNames.                                "Monday" to "Sunday"
-
-    M      The month of the year between 1-12.                                          "1" to "12"
-    MM     The month of the year with leading zero if required.                         "01" to "12"
-    MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.              "Jan" to "Dec"
-    MMMM   The full month name. Date.CultureInfo.monthNames.                            "January" to "December"
-
-    yy     The year as a two-digit number.                                              "99" or "08"
-    yyyy   The full four digit year.                                                    "1999" or "2008"
-
-    t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
-         $C.amDesignator or Date.CultureInfo.pmDesignator
-    tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
-         $C.amDesignator or Date.CultureInfo.pmDesignator
-
-    S      The ordinal suffix ("st, "nd", "rd" or "th") of the current day.            "st, "nd", "rd" or "th"
-
-    Format  Description                                                                  Example ("en-US")
-    ------  ---------------------------------------------------------------------------  -----------------------
-    d      The CultureInfo shortDate Format Pattern                                     "M/d/yyyy"
-    D      The CultureInfo longDate Format Pattern                                      "dddd, MMMM dd, yyyy"
-    F      The CultureInfo fullDateTime Format Pattern                                  "dddd, MMMM dd, yyyy h:mm:ss tt"
-    m      The CultureInfo monthDay Format Pattern                                      "MMMM dd"
-    r      The CultureInfo rfc1123 Format Pattern                                       "ddd, dd MMM yyyy HH:mm:ss GMT"
-    s      The CultureInfo sortableDateTime Format Pattern                              "yyyy-MM-ddTHH:mm:ss"
-    t      The CultureInfo shortTime Format Pattern                                     "h:mm tt"
-    T      The CultureInfo longTime Format Pattern                                      "h:mm:ss tt"
-    u      The CultureInfo universalSortableDateTime Format Pattern                     "yyyy-MM-dd HH:mm:ssZ"
-    y      The CultureInfo yearMonth Format Pattern                                     "MMMM, yyyy"
- *
+ * If you need to change the theme base, the css file is: jquery-ui-1.8.1.custom.css
  */
 
 // CONSTANTS
@@ -71,24 +9,13 @@ var CONSTANTS = {
         OVERTIME : "OVT"
     },
     EARNCODE_TYPE : {
-        HOUR: "H",
-        TIME: "T",
-        AMOUNT: "A"
-    },
-    EARNCODE_UNIT: {
-    	HOUR: "H",
-    	DAY: "D"
+        HOUR: "HOUR",
+        TIME: "TIME",
+        AMOUNT: "AMOUNT"
     },
     ACTIONS : {
         UPDATE_TIME_BLOCK : "updateTimeBlock",
-        ADD_TIME_BLOCK: "addTimeBlock",
-        ADD_LEAVE_BLOCK: "addLeaveBlock",
-        UPDATE_LEAVE_BLOCK: "updateLeaveBlock"
-    },
-    TIME_FORMAT : {
-        DATE_FOR_OUTPUT : 'M/d/yyyy',
-        TIME_FOR_OUTPUT : 'hh:mm tt',
-        TIME_FOR_SYSTEM : 'H:mm'
+        ADD_TIME_BLOCK: "addTimeBlock"
     }
 }
 
@@ -134,82 +61,8 @@ $(document).ready(function() {
         }
     });
 
-
-    var docId = $('#documentId').val();
-    var prevDocId = $('#prevDocumentId').val();
-    var nextDocId = $('#nextDocumentId').val();
-
-
-    // create navigation buttons
-    $('#nav_prev').button({
-        icons: {
-            primary: "ui-icon-triangle-1-w"
-        },
-        text: false
-    });
-
-    $('#nav_prev').click(function() {
-        window.location = 'TimeDetail.do?documentId=' + prevDocId;
-    });
-
-    $('#nav_next').button({
-        icons: {
-            primary: "ui-icon-triangle-1-e"
-        },
-        text: false
-    });
-
-    $('#nav_next').click(function() {
-        window.location = 'TimeDetail.do?documentId=' + nextDocId;
-    });
-    
- // create navigation buttons for leave calendar
-    var calId = $('#calEntryId').val();
-    var prevCalId = $('#prevCalEntryId').val();
-    var nextCalId = $('#nextCalEntryId').val();
-    
-    $('#nav_prev_lc').button({
-        icons: {
-            primary: "ui-icon-triangle-1-w"
-        },
-        text: false
-    });
-
-    $('#nav_prev_lc').click(function() {
-        window.location = 'LeaveCalendar.do?documentId=' + prevDocId+'&calEntryId='+prevCalId;
-    });
-
-    $('#nav_next_lc').button({
-        icons: {
-            primary: "ui-icon-triangle-1-e"
-        },
-        text: false
-    });
-
-    $('#nav_next_lc').click(function() {
-        window.location = 'LeaveCalendar.do?documentId=' + nextDocId+'&calEntryId='+nextCalId;
-    });
-    
-    // create navigation buttons for leave block display
-    $('#nav_lb_prev').button({
-        icons: {
-            primary: "ui-icon-triangle-1-w"
-        },
-        text: false
-    });
-
-
-    $('#nav_lb_next').button({
-        icons: {
-            primary: "ui-icon-triangle-1-e"
-        },
-        text: false
-    });
-
-   
-
     // datepicker
-    $('#startDate, #endDate, #bdRow1, #edRow1, #bdRow2, #edRow2').datepicker({
+    $('#date-range-begin, #date-range-end, #bdRow1, #edRow1, #bdRow2, #edRow2').datepicker({
         changeMonth : true,
         changeYear : true,
         showOn : 'button',
@@ -225,10 +78,7 @@ $(document).ready(function() {
         minDate : new Date($('#beginPeriodDate').val()),
         maxDate : new Date($('#endPeriodDate').val())
     });
-    
-    //KPME-1542
-    $("#startdatepicker, #enddatepicker").datepicker();
-    
+
     // hide the date picker by default
     // https://jira.kuali.org/browse/KPME-395
     $('#ui-datepicker-div').css('display', 'none');
@@ -242,6 +92,12 @@ $(document).ready(function() {
     };
     $(".jClock").jclock(options);
 
+    // elapsed time
+    // http://keith-wood.name/countdown.html
+//    if($("#clock-button").val() == "Clock Out") {
+//        $("#lastClockedInTime").val("");
+//        $("#elapsed-time").val("00:00:00");
+//    }
     var lastClockedInTime = $("#lastClockedInTime").val();
     var clockAction = $("#clockAction").val();
     var startTime = clockAction == 'CO' ? new Date(lastClockedInTime) : new Date(currentServerTime);
@@ -258,7 +114,7 @@ $(document).ready(function() {
     // http://flowplayer.org/tools/tooltip/index.html
     $(" .holidayNameHelp").tooltip({ effect: 'slide'});
 
-    $("#beginTimeHelp, #startTimeHelp, #endTimeHelp, #beginTimeHelp1, #endTimeHelp1, #hourHelp").tooltip({
+    $("#beginTimeHelp, #endTimeHelp, #beginTimeHelp1, #endTimeHelp1, #hourHelp").tooltip({
 
         // place tooltip on the right edge
         position : "center right",
@@ -275,6 +131,12 @@ $(document).ready(function() {
         fadeInSpeed : 500
     });
 
+    // note accordion
+//    $("#note, #routeLog").accordion({
+//        collapsible : true,
+//        active : 2
+//    });
+
     // person detail accordion
     $("#person-detail-accordion").accordion({
         collapsible : true,
@@ -285,7 +147,7 @@ $(document).ready(function() {
     // apply time entry widget to the tabular view
     $(".timesheet-table-week1 :input, .timesheet-table-week2 :input").blur(
             function() {
-            	validateTime(this);
+                magicTime(this);
             }).focus(function() {
                 if (this.className != 'error') this.select();
             });
@@ -327,32 +189,41 @@ $(document).ready(function() {
 
     $("#btRow1, #etRow1").change(function() {
         $(this).removeClass('ui-state-error');
-        cleanTips();
-        formatTime($(this));
+        magicTime($(this));
         recalculateHrs(1);
     });
 
     $("#btRow2, #etRow2").change(function() {
         $(this).removeClass('ui-state-error');
-        cleanTips();
-        formatTime($(this));
+        magicTime($(this));
         recalculateHrs(2);
-    });
-    
-    $("#assignmentRow1").change(function() {
-        $(this).removeClass('ui-state-error');
-        cleanTips();
-    });
-
-    $("#assignmentRow2").change(function() {
-        $(this).removeClass('ui-state-error');
-        cleanTips();
     });
 
 
     $('#saveTimeBlock').click(function() {
+//	   function updateTips(t) {
+//		   $('#validation').text(t)
+//		   			.addClass('ui-state-error')
+//		   			.css({'color':'red','font-weight':'bold'});
+//	   }
         var validFlag = true;
         var validation = $('#validation');
+
+        function updateValidationMessage(t) {
+            validation.text(t)
+                    .addClass('ui-state-error')
+                    .css({'color':'red','font-weight':'bold'});
+        }
+
+        //    cleanTips();
+//	   function checkLength(o, n, min, max) {
+//	         if (o.val().length > max || o.val().length < min) {
+//	             o.addClass('ui-state-error');
+//	             updateValidationMessage(n + " field is not valid");
+//	             return false;
+//	         }
+//	         return true;
+//	   }
         var tbl = document.getElementById('tblNewTimeBlocks');
         var rowLength = tbl.rows.length;
         var assignValueCol = '';
@@ -364,7 +235,6 @@ $(document).ready(function() {
         var valueSeperator = '****';
         var timeBlockId = $("#tbId").val();
         var originalHrs = $("#originHrs").val();
-        var tsDocId = $("#tsDocId").val();
 
 
         var errorMsgs = '';
@@ -376,7 +246,7 @@ $(document).ready(function() {
         var form1 = document.forms[0];
         var originalEndDateTime = new Date(form1.endTimestamp.value);
         var originalBeginDateTime = new Date(form1.beginTimestamp.value);
-        assignValueCol = '';
+
         for (var i = 1; i < rowLength - 1; i++) {
             var assignValue = $("#assignmentRow" + i).val();
             var beginDate = $("#bdRow" + i).val();
@@ -384,11 +254,7 @@ $(document).ready(function() {
             var beginTime = $("#btRow" + i).val();
             var endTime = $("#etRow" + i).val();
             var hrs = $("#hrRow" + i).val();
-            
-            aFlag = checkAssignments($("#assignmentRow" + i), assignValue, assignValueCol);
-            if(!aFlag) {
-            	return false;
-            }
+
             assignValueCol += assignValue + valueSeperator;
             beginDateCol += beginDate + valueSeperator;
             endDateCol += endDate + valueSeperator;
@@ -473,7 +339,6 @@ $(document).ready(function() {
         $("#newETCol").val(endTimeCol);
         $("#newHrsCol").val(hrsCol);
         $("#tbId").val(timeBlockId);
-        $("#tsDocId").val(tsDocId);
 
         var params = {};
         params['newAssignDesCol'] = assignValueCol;
@@ -483,8 +348,7 @@ $(document).ready(function() {
         params['newETCol'] = endTimeCol;
         params['newHrsCol'] = hrsCol;
         params['tbId'] = timeBlockId;
-        params['tsDocId'] = tsDocId;
-        
+
         $.ajax({
             url: "Clock.do?methodToCall=validateNewTimeBlock",
             data: params,
@@ -532,7 +396,7 @@ $(document).ready(function() {
         var ipToChange = value[0];
         var tkBatchJobEntryId = value[1];
 
-        window.location = "batchJob.do?methodToCall=changeIpAddress&ipToChange=" + ipToChange + "&tkBatchJobEntryId=" + tkBatchJobEntryId;
+        window.location = "BatchJob.do?methodToCall=changeIpAddress&ipToChange=" + ipToChange + "&tkBatchJobEntryId=" + tkBatchJobEntryId;
     });
 
 
@@ -548,43 +412,6 @@ $(document).ready(function() {
             primary: "ui-icon-circle-triangle-e"
         },
         text: false
-    });
-    
-    // Leave Request page accordions
-    
-    // Planned Request
-    $("#leave-planned-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Pending Request
-    $("#leave-pending-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Approved Request
-    $("#leave-approved-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-
-    // Disapproved Request
-    $("#leave-disapproved-request").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
-    });
-    
-    // Leave Block Display
-    $("#leave-block-display-accordion").accordion({
-        collapsible : true,
-        active : 0,
-        autoHeight: false
     });
 
 });
@@ -627,15 +454,6 @@ function checkLength(o, n, min, max) {
     return true;
 }
 
-function checkAssignments(o, anAssignment, assignments) {
-    if (assignments.indexOf(anAssignment) >= 0) {
-        o.addClass('ui-state-error');
-        updateValidationMessage("Distributed assignments should all be different.");
-        return false;
-    }
-    return true;
-}
-
 function updateTips(t) {
     $('#validation').text(t)
             .addClass('ui-state-error')
@@ -646,12 +464,6 @@ function cleanTips() {
     $('#validation')
             .text('')
             .removeClass('ui-state-error');
-}
-
-function updateValidationMessage(t) {
-	$('#validation').text(t)
-            .addClass('ui-state-error')
-            .css({'color':'red','font-weight':'bold'});
 }
 
 function addTimeBlockRow(form, tempArr) {
@@ -821,16 +633,9 @@ function addTimeBlockRow(form, tempArr) {
 
     $(timeChangeId).change(function() {
         $(this).removeClass('ui-state-error');
-        cleanTips();
-        formatTime($(this));
+        magicTime($(this));
         recalculateHrs(iteration);
     });
-    
-    $('assignmentRow' + iteration).change(function() {
-        $(this).removeClass('ui-state-error');
-        cleanTips();
-    });
-    
 
 }
 
@@ -870,7 +675,7 @@ function recalculateHrs(itr) {
         }
 
         if (hrsDifferent <= 0) {
-            updateTips("Hours for item " + itr + " not valid");
+            updateTips("Hours for item " + itr + "not valid");
             var hrs = hrsDifferent / 3600000;
             hrs = Math.round(hrs * 100) / 100;
             $("#hrRow" + itr).val(hrs);
@@ -933,48 +738,7 @@ function toggle(eleId) {
 		ele.style.display = "block";
 	}
 }
-// validate the time format
-function validateTime(input){
-    $("#" + input.attr('id') + '-error').html("");
-    try {
-    	parseTimeString(input.val());
-    }
-    catch (e) {
-        return false;
-    }
-}
-function parseTimeString(s) {
-    for (var i = 0; i < timeParsePatterns.length; i++) {
-        var re = timeParsePatterns[i].re;
-        var handler = timeParsePatterns[i].handler;
-        var bits = re.exec(s);
-        if (bits) {
-            // this is to debug which regex it actually used
-            //console.log(i);
-            return handler(bits);
-        }
-    }
-    throw new Error("Invalid time format");
-}
 
-function formatTime(input) {
-	var id = input.attr('id');
-	var value = input.val();
-    // Use Datejs to parse the value
-    var dateTime = Date.parse(value);
-    if (dateTime == null) {
-        // Date.js returns null if it couldn't understand the format from user's input.
-        $("#" + id).addClass("block-error").val(value);
-        return;
-    } else {
-        // Remove the red border if user enters something
-        $("#" + id).removeClass("block-error").val("");
-    }
-    // This magic line first finds the element by the id.
-    // Uses Datejs (a 3rd party js lib) to parse user's input and update the value by the specifed format.
-    // See the list of the formats in tk.js.
-    $("#" + id).val(dateTime.toString(CONSTANTS.TIME_FORMAT.TIME_FOR_OUTPUT));
-}
 
 
 

@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.qunit;
 
 import java.io.File;
@@ -21,11 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -34,9 +18,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-
 @Ignore
-public class QUnitTest extends KPMETestCase {
+public class QUnitTest extends TkTestCase {
 
 	private static final Logger LOG = Logger.getLogger(QUnitTest.class);
 	private List<String> failures;
@@ -47,7 +30,7 @@ public class QUnitTest extends KPMETestCase {
 
 		File qunitDir = new File("src/main/webapp/qunit");
 		if (!qunitDir.exists() || !qunitDir.isDirectory()) {
-			Assert.fail("Test dir does not exist or is not a directory: " + qunitDir);
+			fail("Test dir does not exist or is not a directory: " + qunitDir);
 		}
 
 		for (File file : qunitDir.listFiles()) {
@@ -65,7 +48,7 @@ public class QUnitTest extends KPMETestCase {
 			}
 			LOG.debug("\n\n" + sb.toString() + "\n\n");
 
-			Assert.fail("Tests failed: " + sb.toString());
+			fail("Tests failed: " + sb.toString());
 		}
 	}
 
@@ -78,7 +61,7 @@ public class QUnitTest extends KPMETestCase {
 
 		// pass the login filter
 		// need to change to the testing port 8090
-		HtmlPage page = client.getPage(new URL(HtmlUnitUtil.getBaseURL() + "/TimeDetail.do"));
+		HtmlPage page = client.getPage(new URL("http://localhost:8080/tk-dev/TimeDetail.do"));
 		HtmlForm form = page.getFormByName("login-form");
 		HtmlSubmitInput button = form.getInputByName("login");
 		page = button.click();

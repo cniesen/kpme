@@ -1,18 +1,3 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.web.lookup;
 
 import java.sql.Date;
@@ -21,21 +6,19 @@ import java.util.HashMap;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.test.HtmlUnitUtil;
-import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.krad.service.BusinessObjectService;
-import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.hr.time.test.TkTestCase;
+import org.kuali.rice.kns.service.BusinessObjectService;
+import org.kuali.rice.kns.service.KNSServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class ClockLocationRuleLookupTest extends KPMETestCase {
+public class ClockLocationRuleLookupTest extends TkTestCase {
 
     private static BusinessObjectService boService = null;
     
@@ -46,13 +29,13 @@ public class ClockLocationRuleLookupTest extends KPMETestCase {
     @Before
     public void setUp() throws Exception {
     	super.setUp();
-    	boService = KRADServiceLocator.getBusinessObjectService();
+    	boService = KNSServiceLocator.getBusinessObjectService();
     	clearBusinessObjects(ClockLocationRule.class);
     	
     	ClockLocationRule clr = new ClockLocationRule();
     	clr.setActive(true);
     	clr.setDept("12345");
-    	Date asOfDate = new Date((new DateTime(2010, 8, 1, 12, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
+    	Date asOfDate = new Date((new DateTime(2010, 8, 1, 12, 0, 0, 0, DateTimeZone.forID("EST"))).getMillis());
     	clr.setEffectiveDate(asOfDate);
     	boService.save(clr);
     }
@@ -61,30 +44,30 @@ public class ClockLocationRuleLookupTest extends KPMETestCase {
     
     @Test
     public void testLookup() throws Exception{
-    	String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/lookup.do?__login_user=admin&methodToCall=start&businessObjectClassName=org.kuali.hr.time.clock.location.ClockLocationRule&returnLocation=" + HtmlUnitUtil.getBaseURL() + "/portal.do&hideReturnLink=true&docFormKey=88888888";
+    	String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/lookup.do?__login_user=admin&methodToCall=start&businessObjectClassName=org.kuali.hr.time.clock.location.ClockLocationRule&returnLocation=http://localhost:8080/tk-dev/portal.do&hideReturnLink=true&docFormKey=88888888";	
     	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
-    	Assert.assertNotNull(page);
-    	Assert.assertTrue("Could not find text 'Clock Location Rule Lookup' in page.", StringUtils.contains(page.asText(), "Clock Location Rule Lookup"));
+    	assertNotNull(page);
+    	assertTrue("Could not find text 'Clock Location Rule Lookup' in page.", StringUtils.contains(page.asText(), "Clock Location Rule Lookup"));
     	HtmlForm form = page.getFormByName("KualiForm");
-    	Assert.assertNotNull("Search form was missing from page.", form);
+    	assertNotNull("Search form was missing from page.", form);
     	
     	HtmlInput  input  = HtmlUnitUtil.getInputContainingText(form, "methodToCall.search");
-    	Assert.assertNotNull("Could not locate search submit button", input);
+    	assertNotNull("Could not locate search submit button", input);
     	page = (HtmlPage) input.click();
-    	Assert.assertNotNull("Page not returned from click.", page);
+    	assertNotNull("Page not returned from click.", page);
     	HtmlUnitUtil.createTempFile(page);
-    	Assert.assertTrue("Expected one result.", StringUtils.contains(page.asText(), "One item retrieved"));
+    	assertTrue("Expected one result.", StringUtils.contains(page.asText(), "One item retrieved"));
     	
     	page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
     	form = page.getFormByName("KualiForm");
-    	Assert.assertNotNull("Search form was missing from page.", form);
+    	assertNotNull("Search form was missing from page.", form);
     	HtmlUnitUtil.createTempFile(page);
     	form.getInputByName("dept").setValueAttribute("20");
     	input  = HtmlUnitUtil.getInputContainingText(form, "methodToCall.search");
-    	Assert.assertNotNull("Could not locate search submit button", input);
+    	assertNotNull("Could not locate search submit button", input);
     	page = (HtmlPage) input.click();
-    	Assert.assertNotNull("Page not returned from click.", page);
-    	Assert.assertTrue("Expected zero results.", StringUtils.contains(page.asText(), "No values match this search."));
+    	assertNotNull("Page not returned from click.", page);
+    	assertTrue("Expected zero results.", StringUtils.contains(page.asText(), "No values match this search."));
     }
 
     @SuppressWarnings("unchecked")

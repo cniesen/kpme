@@ -1,20 +1,3 @@
-<%--
-
-    Copyright 2004-2012 The Kuali Foundation
-
-    Licensed under the Educational Community License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.opensource.org/licenses/ecl2.php
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
-
---%>
 <%@include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 <c:set var="Form" value="${ClockActionForm}" scope="request"/>
 
@@ -28,7 +11,6 @@
  			<html:hidden property="newEDCol" value="" styleId="newEDCol"/>
  			<html:hidden property="newETCol" value="" styleId="newETCol"/>
  			<html:hidden property="newHrsCol" value="" styleId="newHrsCol"/>
- 			<html:hidden property="tsDocId" value="${Form.documentId}" styleId="tsDocId"/>
  			<html:hidden property="tbId" value="${Form.editTimeBlockId}"  styleId="tbId"/>
  			<html:hidden property="originHrs" value="${Form.currentTimeBlock.hours}"  styleId="originHrs"/>
 			<html:hidden property="assignmentList" value="${Form.assignDescriptionsList}"/>
@@ -109,7 +91,7 @@
 							<td>
 								<input name="etRow1" id="etRow1" size="10" >
 								<input type="button" style="width: 20px; height: 23px;" id="endTimeHelp1" value="?"
-									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 15:30, 2:30">
+									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530">
 									
 							</td>
 							<td>
@@ -142,7 +124,7 @@
 							<td>
 								<input name="btRow2" id="btRow2" size="10">
 								<input type="button" style="width: 20px; height: 23px;" id="beginTimeHelp1" value="?"
-									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 15:30, 2:30">
+									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530">
 							</td>
 							<td>
 								<input type="text" name="edRow2" id="edRow2" size="10" value="${Form.currentTimeBlock.endTimeDisplayDateOnlyString }" />
@@ -150,7 +132,7 @@
 							<td>
 								<input name="etRow2" id="etRow2" size="10" value="${Form.currentTimeBlock.endTimeDisplayTimeOnlyString}" />
 								<input type="button" style="width: 20px; height: 23px;" id="endTimeHelp1" value="?"
-									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 15:30, 2:30">
+									title="Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30, 1530">
 							</td>
 							<td>
 								<input name="hrRow2" id="hrRow2" size="5" readonly="" >

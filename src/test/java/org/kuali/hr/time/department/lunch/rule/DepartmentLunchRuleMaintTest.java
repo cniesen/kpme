@@ -1,29 +1,13 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.department.lunch.rule;
-import org.junit.Assert;
 import org.junit.Test;
-import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
+import org.kuali.hr.time.test.TkTestCase;
 import org.kuali.hr.time.test.TkTestConstants;
 
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-public class DepartmentLunchRuleMaintTest extends KPMETestCase {
+public class DepartmentLunchRuleMaintTest extends TkTestCase {
 	
 	private static final String TEST_CODE = "admin";		
 	private static String TEST_CODE_DEPT_INVALID = "INVALID";
@@ -45,7 +29,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 				.gotoPageAndLogin(TkTestConstants.Urls.DEPT_LUNCH_RULE_MAINT_URL);
 		departmentLunchRuleLookUp = HtmlUnitUtil.clickInputContainingText(
 				departmentLunchRuleLookUp, "search");
-		Assert.assertTrue("Page contains test DepartmentLunchRule",
+		assertTrue("Page contains test DepartmentLunchRule",
 				departmentLunchRuleLookUp.asText().contains(TEST_CODE));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				departmentLunchRuleLookUp, "edit",
@@ -59,7 +43,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");
 		System.out.println(resultantPageAfterEdit.asText());
-		Assert.assertTrue("Maintenance Page contains error message for dept",
+		assertTrue("Maintenance Page contains error message for dept",
 				resultantPageAfterEdit.asText().contains(
 						"The specified department '" + TEST_CODE_DEPT_INVALID
 								+ "' does not exist."));
@@ -78,7 +62,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 				.gotoPageAndLogin(TkTestConstants.Urls.DEPT_LUNCH_RULE_MAINT_URL);
 		departmentLunchRuleLookUp = HtmlUnitUtil.clickInputContainingText(
 				departmentLunchRuleLookUp, "search");
-		Assert.assertTrue("Page contains test DepartmentLunchRule",
+		assertTrue("Page contains test DepartmentLunchRule",
 				departmentLunchRuleLookUp.asText().contains(TEST_CODE));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				departmentLunchRuleLookUp, "edit",
@@ -94,7 +78,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");		
 		HtmlUnitUtil.createTempFile(resultantPageAfterEdit);
-		Assert.assertTrue("Maintenance Page contains contains error message for workarea",
+		assertTrue("Maintenance Page contains contains error message for workarea",
 				resultantPageAfterEdit.asText().contains(
 						"The specified workArea '" + TEST_CODE_WORKAREA_INVALID
 								+ "' does not exist."));
@@ -106,7 +90,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 				.gotoPageAndLogin(TkTestConstants.Urls.DEPT_LUNCH_RULE_MAINT_URL);
 		departmentLunchRuleLookUp = HtmlUnitUtil.clickInputContainingText(
 				departmentLunchRuleLookUp, "search");
-		Assert.assertTrue("Page contains test DepartmentLunchRule",
+		assertTrue("Page contains test DepartmentLunchRule",
 				departmentLunchRuleLookUp.asText().contains(TEST_CODE));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				departmentLunchRuleLookUp, "edit",
@@ -116,7 +100,7 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 		setFieldValue(maintPage, "document.documentHeader.documentDescription", "test");
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil.clickInputContainingText(maintPage, "submit");		
 		HtmlUnitUtil.createTempFile(resultantPageAfterEdit);
-		Assert.assertTrue("Maintenance Page contains contains error message for Shift Hours",
+		assertTrue("Maintenance Page contains contains error message for Shift Hours",
 				resultantPageAfterEdit.asText().contains("Shift Hour cannot be greater than 24."));
 	}
 	
@@ -126,13 +110,13 @@ public class DepartmentLunchRuleMaintTest extends KPMETestCase {
 				.gotoPageAndLogin(TkTestConstants.Urls.DEPT_LUNCH_RULE_MAINT_URL);
 		departmentLunchRuleLookUp = HtmlUnitUtil.clickInputContainingText(
 				departmentLunchRuleLookUp, "search");
-		Assert.assertTrue("Page contains test DepartmentLunchRule",
+		assertTrue("Page contains test DepartmentLunchRule",
 				departmentLunchRuleLookUp.asText().contains(
 						TEST_CODE.toString()));
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(
 				departmentLunchRuleLookUp, "edit",
 				deptLunchRuleIdWithInvalidDept.toString());
-		Assert.assertTrue("Maintenance Page contains test DepartmentLunchRule",
+		assertTrue("Maintenance Page contains test DepartmentLunchRule",
 				maintPage.asText().contains(TEST_CODE.toString()));
 	}
 }

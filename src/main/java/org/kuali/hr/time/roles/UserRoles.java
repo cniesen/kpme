@@ -1,21 +1,5 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.roles;
 
-import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import java.util.Set;
@@ -122,25 +106,17 @@ public interface UserRoles {
      * @param doc The TimesheetDocument in question.
      * @return true if the doc can be approved by the current user.
      */
-    public boolean isApproverForTimesheet(CalendarDocumentContract doc);
+    public boolean isApproverForTimesheet(TimesheetDocument doc);
     public boolean isApproverForTimesheet(String docId);
 
-    public boolean canSubmitTimesheet(CalendarDocumentContract doc);
+    public boolean canSubmitTimesheet(TimesheetDocument doc);
     public boolean canSubmitTimesheet(String docId);
 
-    public boolean isDocumentReadable(CalendarDocumentContract document);
+    public boolean isDocumentReadable(TimesheetDocument document);
     public boolean isDocumentReadable(String documentId);
 
-    public boolean isDocumentWritable(CalendarDocumentContract document);
+    public boolean isDocumentWritable(TimesheetDocument document);
     public boolean isDocumentWritable(String documentId);
     
     public boolean isApproverForPerson(String principalId);
-
-    boolean isDepartmentAdminForPerson(String principalId);
-
-    boolean isDeptViewOnlyForPerson(String principalId);
-
-    boolean isLocationAdminForPerson(String principalId);
-
-    boolean isTimesheetReviewerForPerson(String principalId);
 }

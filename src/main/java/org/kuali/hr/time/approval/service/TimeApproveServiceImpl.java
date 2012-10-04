@@ -1,28 +1,15 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time.approval.service;
 
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -34,27 +21,23 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Hours;
-import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.calendar.Calendar;
-import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.cache.CacheResult;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
-import org.kuali.hr.time.person.TKPerson;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
-import org.kuali.hr.time.roles.TkUserRoles;
+import org.kuali.hr.time.paycalendar.PayCalendar;
+import org.kuali.hr.time.paycalendar.PayCalendarEntries;
+import org.kuali.hr.time.principal.calendar.PrincipalCalendar;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
@@ -62,12 +45,9 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.notes.Note;
-import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.kim.bo.Person;
+import org.kuali.rice.kim.service.KIMServiceLocator;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
 import com.google.common.collect.HashMultimap;
@@ -80,14 +60,14 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 	public static final int DAYS_WINDOW_DELTA = 31;
 
-	public Map<String, CalendarEntries> getPayCalendarEntriesForDept(
+	public Map<String, PayCalendarEntries> getPayCalendarEntriesForDept(
 			String dept, Date currentDate) {
 		DateTime minDt = new DateTime(currentDate,
-				TKUtils.getSystemDateTimeZone());
+				TkConstants.SYSTEM_DATE_TIME_ZONE);
 		minDt = minDt.minusDays(DAYS_WINDOW_DELTA);
 		java.sql.Date windowDate = TKUtils.getTimelessDate(minDt.toDate());
 
-		Map<String, CalendarEntries> pceMap = new HashMap<String, CalendarEntries>();
+		Map<String, PayCalendarEntries> pceMap = new HashMap<String, PayCalendarEntries>();
 		Set<String> principals = new HashSet<String>();
 		List<WorkArea> workAreasForDept = TkServiceLocator.getWorkAreaService()
 				.getWorkAreas(dept, new java.sql.Date(currentDate.getTime()));
@@ -114,46 +94,47 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		}
 
 		// Get the pay calendars
-		Set<Calendar> payCals = new HashSet<Calendar>();
+		Set<PayCalendar> payCals = new HashSet<PayCalendar>();
 		for (String pid : principals) {
-			PrincipalHRAttributes pc = TkServiceLocator
-					.getPrincipalHRAttributeService().getPrincipalCalendar(pid,
+			PrincipalCalendar pc = TkServiceLocator
+					.getPrincipalCalendarService().getPrincipalCalendar(pid,
 							currentDate);
 			if (pc == null)
-				pc = TkServiceLocator.getPrincipalHRAttributeService()
+				pc = TkServiceLocator.getPrincipalCalendarService()
 						.getPrincipalCalendar(pid, windowDate);
 
 			if (pc != null) {
-				payCals.add(pc.getCalendar());
+				payCals.add(pc.getPayCalendar());
 			} else {
 				LOG.warn("PrincipalCalendar null for principal: '" + pid + "'");
 			}
 		}
 
 		// Grab the pay calendar entries + groups
-		for (Calendar pc : payCals) {
-			CalendarEntries pce = TkServiceLocator
-					.getCalendarEntriesService()
-					.getCurrentCalendarEntriesByCalendarId(
-                            pc.getHrCalendarId(), currentDate);
-			pceMap.put(pc.getCalendarName(), pce);
+		for (PayCalendar pc : payCals) {
+			PayCalendarEntries pce = TkServiceLocator
+					.getPayCalendarEntriesSerivce()
+					.getCurrentPayCalendarEntriesByPayCalendarId(
+							pc.getHrPyCalendarId(), currentDate);
+			pceMap.put(pc.getPyCalendarGroup(), pce);
 		}
 
 		return pceMap;
 	}
 
 	@Override
-	public Map<String, CalendarEntries> getPayCalendarEntriesForApprover(
+	public Map<String, PayCalendarEntries> getPayCalendarEntriesForApprover(
 			String principalId, Date currentDate, String dept) {
 		TKUser tkUser = TKContext.getUser();
 
-		Map<String, CalendarEntries> pceMap = new HashMap<String, CalendarEntries>();
+		Map<String, PayCalendarEntries> pceMap = new HashMap<String, PayCalendarEntries>();
 		Set<String> principals = new HashSet<String>();
 		DateTime minDt = new DateTime(currentDate,
-				TKUtils.getSystemDateTimeZone());
+				TkConstants.SYSTEM_DATE_TIME_ZONE);
 		minDt = minDt.minusDays(DAYS_WINDOW_DELTA);
 		java.sql.Date windowDate = TKUtils.getTimelessDate(minDt.toDate());
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+		Set<Long> approverWorkAreas = tkUser.getCurrentRoles()
+				.getApproverWorkAreas();
 
 		// Get all of the principals within our window of time.
 		for (Long waNum : approverWorkAreas) {
@@ -166,32 +147,42 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 					principals.add(assignment.getPrincipalId());
 				}
 			}
+			// else {
+			// assignments =
+			// TkServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(waNum,
+			// windowDate);
+			// if (assignments != null) {
+			// for (Assignment assignment : assignments) {
+			// principals.add(assignment.getPrincipalId());
+			// }
+			// }
+			// }
 		}
 
 		// Get the pay calendars
-		Set<Calendar> payCals = new HashSet<Calendar>();
+		Set<PayCalendar> payCals = new HashSet<PayCalendar>();
 		for (String pid : principals) {
-			PrincipalHRAttributes pc = TkServiceLocator
-					.getPrincipalHRAttributeService().getPrincipalCalendar(pid,
-                            currentDate);
+			PrincipalCalendar pc = TkServiceLocator
+					.getPrincipalCalendarService().getPrincipalCalendar(pid,
+							currentDate);
 			if (pc == null)
-				pc = TkServiceLocator.getPrincipalHRAttributeService()
+				pc = TkServiceLocator.getPrincipalCalendarService()
 						.getPrincipalCalendar(pid, windowDate);
 
 			if (pc != null) {
-				payCals.add(pc.getCalendar());
+				payCals.add(pc.getPayCalendar());
 			} else {
 				LOG.warn("PrincipalCalendar null for principal: '" + pid + "'");
 			}
 		}
 
 		// Grab the pay calendar entries + groups
-		for (Calendar pc : payCals) {
-			CalendarEntries pce = TkServiceLocator
-					.getCalendarEntriesService()
-					.getCurrentCalendarEntriesByCalendarId(
-                            pc.getHrCalendarId(), currentDate);
-			pceMap.put(pc.getCalendarName(), pce);
+		for (PayCalendar pc : payCals) {
+			PayCalendarEntries pce = TkServiceLocator
+					.getPayCalendarEntriesSerivce()
+					.getCurrentPayCalendarEntriesByPayCalendarId(
+							pc.getHrPyCalendarId(), currentDate);
+			pceMap.put(pc.getPyCalendarGroup(), pce);
 		}
 
 		return pceMap;
@@ -202,7 +193,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		SortedSet<String> pcg = new TreeSet<String>();
 
 		TKUser tkUser = TKContext.getUser();
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+		Set<Long> approverWorkAreas = tkUser.getCurrentRoles()
+				.getApproverWorkAreas();
 		List<Assignment> assignments = new ArrayList<Assignment>();
 
 		for (Long workArea : approverWorkAreas) {
@@ -220,13 +212,20 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 								principalId, payBeginDate, payEndDate);
 				if (tdh != null) {
 					String pyCalendarGroup = TkServiceLocator
-							.getPrincipalHRAttributeService()
-							.getPrincipalCalendar(principalId, tdh.getBeginDate())
-							.getCalendar().getCalendarName();
+							.getPrincipalCalendarService()
+							.getPrincipalCalendar(principalId, payBeginDate)
+							.getPyCalendarGroup();
 					pcg.add(pyCalendarGroup);
 				}
 			}
 		}
+
+		// Handle the situation where pay calendar is null. This shouldn't
+		// happen but just in case.
+		// if (pcg.size() == 0) {
+		// throw new RuntimeException("Pay calendar group is null");
+		// }
+
 		return pcg;
 	}
 
@@ -234,67 +233,73 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(
 			Date payBeginDate, Date payEndDate, String calGroup,
-			List<TKPerson> persons, List<String> payCalendarLabels,
-			CalendarEntries payCalendarEntries) {
+			List<String> principalIds) {
 		List<ApprovalTimeSummaryRow> rows = new LinkedList<ApprovalTimeSummaryRow>();
 		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumehtHeader(
-				persons, payBeginDate, payEndDate);
+				principalIds, payBeginDate, payEndDate);
 
-		Calendar payCalendar = TkServiceLocator.getCalendarService()
-				.getCalendar(payCalendarEntries.getHrCalendarId());
-		DateTimeZone dateTimeZone = TkServiceLocator.getTimezoneService()
-				.getUserTimezoneWithFallback();
-		List<Interval> dayIntervals = TKUtils
-				.getDaySpanForCalendarEntry(payCalendarEntries);
-
-		for (TKPerson person : persons) {
+		for (String principalId : principalIds) {
 			TimesheetDocumentHeader tdh = new TimesheetDocumentHeader();
 			String documentId = "";
-			if (principalDocumentHeader.containsKey(person.getPrincipalId())) {
-				tdh = principalDocumentHeader.get(person.getPrincipalId());
-				documentId = principalDocumentHeader.get(
-						person.getPrincipalId()).getDocumentId();
+			if (principalDocumentHeader.containsKey(principalId)) {
+				tdh = principalDocumentHeader.get(principalId);
+				documentId = principalDocumentHeader.get(principalId)
+						.getDocumentId();
 			}
 			List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>();
 			List notes = new ArrayList();
 			List<String> warnings = new ArrayList<String>();
 
-			ApprovalTimeSummaryRow approvalSummaryRow = new ApprovalTimeSummaryRow();
-
-			if (principalDocumentHeader.containsKey(person.getPrincipalId())) {
-				approvalSummaryRow
-						.setApprovalStatus(TkConstants.DOC_ROUTE_STATUS.get(tdh
-								.getDocumentStatus()));
-			}
-
+			// TimesheetDocumentHeader tdh =
+			// TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId,
+			// payBeginDate, payEndDate);
 			if (StringUtils.isNotBlank(documentId)) {
 				timeBlocks = TkServiceLocator.getTimeBlockService()
-						.getTimeBlocks(documentId);
+						.getTimeBlocks(Long.parseLong(documentId));
 				notes = this.getNotesForDocument(documentId);
-                TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
-				warnings = TkServiceLocator.getWarningService().getWarnings(td);
+				warnings = TkServiceLocator.getWarningService().getWarnings(
+						documentId);
 			}
 
-			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
-					person.getPrincipalId(), payEndDate, payCalendarLabels,
-					timeBlocks, null, payCalendarEntries, payCalendar,
-					dateTimeZone, dayIntervals);
+			Person person = KIMServiceLocator.getPersonService().getPerson(
+					principalId);
+			PayCalendarEntries payCalendarEntry = TkServiceLocator
+					.getPayCalendarSerivce().getPayCalendarDatesByPayEndDate(
+							principalId, TKUtils.getTimelessDate(payEndDate));
 
-			approvalSummaryRow.setName(person.getPrincipalName());
+			List<String> pyCalendarLabels = TkServiceLocator
+					.getTimeSummaryService().getHeaderForSummary(
+							payCalendarEntry, new ArrayList<Boolean>());
+
+			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
+					principalId, payEndDate, pyCalendarLabels, timeBlocks, null);
+
+			ApprovalTimeSummaryRow approvalSummaryRow = new ApprovalTimeSummaryRow();
+			approvalSummaryRow.setName(person.getName());
 			approvalSummaryRow.setPrincipalId(person.getPrincipalId());
 			approvalSummaryRow.setPayCalendarGroup(calGroup);
 			approvalSummaryRow.setDocumentId(documentId);
+			approvalSummaryRow.setLstTimeBlocks(timeBlocks);
+			if (principalDocumentHeader.containsKey(principalId)) {
+				approvalSummaryRow
+						.setApprovalStatus(TkConstants.DOC_ROUTE_STATUS.get(tdh
+								.getDocumentStatus()));
+				TimesheetDocument td = TkServiceLocator.getTimesheetService()
+						.getTimesheetDocument(tdh.getDocumentId());
+				TimeSummary ts = TkServiceLocator.getTimeSummaryService()
+						.getTimeSummary(td);
+				approvalSummaryRow.setTimeSummary(ts);
+			}
 			approvalSummaryRow.setHoursToPayLabelMap(hoursToPayLabelMap);
 			approvalSummaryRow.setPeriodTotal(hoursToPayLabelMap
 					.get("Period Total"));
-			approvalSummaryRow.setLstTimeBlocks(timeBlocks);
 			approvalSummaryRow.setNotes(notes);
 			approvalSummaryRow.setWarnings(warnings);
 
 			// Compare last clock log versus now and if > threshold
 			// highlight entry
 			ClockLog lastClockLog = TkServiceLocator.getClockLogService()
-					.getLastClockLog(person.getPrincipalId());
+					.getLastClockLog(principalId);
 			approvalSummaryRow
 					.setClockStatusMessage(createLabelForLastClockLog(lastClockLog));
 			if (lastClockLog != null
@@ -317,6 +322,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			}
 			rows.add(approvalSummaryRow);
 		}
+		Collections.sort(rows);
 		return rows;
 	}
 
@@ -338,6 +344,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	/**
 	 * Get pay calendar labels for approval tab
 	 */
+	@CacheResult
 	public List<String> getPayCalendarLabelsForApprovalTab(Date payBeginDate,
 			Date payEndDate) {
 		// :)
@@ -532,18 +539,20 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public Map<String, BigDecimal> getHoursToPayDayMap(String principalId,
 			Date payEndDate, List<String> payCalendarLabels,
-			List<TimeBlock> lstTimeBlocks, Long workArea,
-			CalendarEntries payCalendarEntries, Calendar payCalendar,
-			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
+			List<TimeBlock> lstTimeBlocks, Long workArea) {
 		Map<String, BigDecimal> hoursToPayLabelMap = new LinkedHashMap<String, BigDecimal>();
 		List<BigDecimal> dayTotals = new ArrayList<BigDecimal>();
-
+		PayCalendarEntries payCalendarEntry = TkServiceLocator
+				.getPayCalendarSerivce().getPayCalendarDatesByPayEndDate(
+						principalId, payEndDate);
+		// TODO: we should just pass in the timeblocks instead of calling
+		// TkTimeBlockAggregate twice..
 		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(
-				lstTimeBlocks, payCalendarEntries, payCalendar, true,
-				dayIntervals);
-		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate
-				.getFlsaWeeks(dateTimeZone);
-		for (FlsaWeek week : flsaWeeks) {
+				lstTimeBlocks, payCalendarEntry, TkServiceLocator
+						.getPayCalendarSerivce().getPayCalendar(
+								payCalendarEntry.getHrPyCalendarId()), true);
+		for (FlsaWeek week : tkTimeBlockAggregate.getFlsaWeeks(TkServiceLocator
+				.getTimezoneService().getUserTimezoneWithFallback())) {
 			for (FlsaDay day : week.getFlsaDays()) {
 				BigDecimal total = new BigDecimal(0.00);
 				for (TimeBlock tb : day.getAppliedTimeBlocks()) {
@@ -574,14 +583,12 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			} else if (StringUtils.contains(payCalendarLabel, "Period Total")) {
 				hoursToPayLabelMap.put(payCalendarLabel, periodTotal);
 			} else {
-				if(dayCount < dayTotals.size()) {
-					hoursToPayLabelMap.put(payCalendarLabel,
-							dayTotals.get(dayCount));
-					weekTotal = weekTotal.add(dayTotals.get(dayCount),
-							TkConstants.MATH_CONTEXT);
-					periodTotal = periodTotal.add(dayTotals.get(dayCount));
-					dayCount++;
-				}
+				hoursToPayLabelMap.put(payCalendarLabel,
+						dayTotals.get(dayCount));
+				weekTotal = weekTotal.add(dayTotals.get(dayCount),
+						TkConstants.MATH_CONTEXT);
+				periodTotal = periodTotal.add(dayTotals.get(dayCount));
+				dayCount++;
 
 			}
 
@@ -592,7 +599,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	public boolean doesApproverHavePrincipalsForCalendarGroup(Date asOfDate,
 			String calGroup) {
 		TKUser tkUser = TKContext.getUser();
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+		Set<Long> approverWorkAreas = tkUser.getCurrentRoles()
+				.getApproverWorkAreas();
 		for (Long workArea : approverWorkAreas) {
 			List<Assignment> assignments = TkServiceLocator
 					.getAssignmentService().getActiveAssignmentsForWorkArea(
@@ -606,10 +614,10 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			}
 
 			for (String principalId : principalIds) {
-				PrincipalHRAttributes principalCal = TkServiceLocator
-						.getPrincipalHRAttributeService().getPrincipalCalendar(
+				PrincipalCalendar principalCal = TkServiceLocator
+						.getPrincipalCalendarService().getPrincipalCalendar(
 								principalId, asOfDate);
-				if (StringUtils.equals(principalCal.getPayCalendar(),
+				if (StringUtils.equals(principalCal.getPyCalendarGroup(),
 						calGroup)) {
 					return true;
 				}
@@ -620,134 +628,248 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 	@SuppressWarnings("rawtypes")
 	public List getNotesForDocument(String documentNumber) {
-        List notes = KewApiServiceLocator.getNoteService().getNotes(documentNumber);
-		// add the user name in the note object
-//		for (Object obj : notes) {
-//			Note note = (Note) obj;
-//			note.setNoteAuthorFullName(KimApiServiceLocator.getPersonService()
-//					.getPerson(note.getNoteAuthorWorkflowId()).getName());
-//		}
+		List notes = KEWServiceLocator.getNoteService()
+				.getNotesByRouteHeaderId(Long.parseLong(documentNumber));
 		return notes;
 	}
 
+	// private static final String UNIQUE_PY_GROUP_SQL =
+	// "select distinct py_calendar_group from hr_py_calendar_t where active = 'Y'";
+	private static final String UNIQUE_PY_GROUP_SQL = "SELECT DISTINCT P.py_calendar_group FROM tk_work_area_t W, hr_principal_calendar_t P WHERE P.active = 'Y' AND ";
+
 	@Override
-	public List<String> getUniquePayGroups() {
-		String sql = "SELECT DISTINCT P.pay_calendar FROM hr_principal_attributes_t P WHERE P.active = 'Y'";
+	public List<String> getUniquePayGroups(Set<Long> approverWorkAreas) {
+		if (approverWorkAreas.isEmpty()) {
+			return new ArrayList<String>();
+		}
+
+		StringBuilder workAreas = new StringBuilder();
+		for (long workarea : approverWorkAreas) {
+			workAreas.append("W.work_area = " + workarea + " or ");
+		}
+		String workAreasForQuery = workAreas.substring(0,
+				workAreas.length() - 3);
+		String sql = UNIQUE_PY_GROUP_SQL + workAreasForQuery;
 		SqlRowSet rs = TkServiceLocator.getTkJdbcTemplate().queryForRowSet(sql);
 		List<String> pyGroups = new LinkedList<String>();
 		while (rs.next()) {
-			pyGroups.add(rs.getString("pay_calendar"));
+			pyGroups.add(rs.getString("py_calendar_group"));
 		}
+
 		return pyGroups;
 	}
 
-	@Override
-	public List<String> getPrincipalIdsByDeptWorkAreaRolename(String roleName,
-			String department, String workArea, java.sql.Date payBeginDate,
-			java.sql.Date payEndDate, String calGroup) {
-		List<String> principalIds = getPrincipalIdsWithActiveAssignmentsForCalendarGroupByDeptAndWorkArea(
-				roleName, department, workArea, calGroup, payEndDate,
-				payBeginDate, payEndDate);
+	// public List<String> getPrincipalIdsByAssignment(Set<Long> workAreas,
+	// java.sql.Date payEndDate, String calGroup, Integer start, Integer end) {
+	// Set<String> list = getPrincipalIdsByWorkAreas(workAreas, payEndDate,
+	// calGroup);
+	// return list.subList(start, end);
+	// }
+
+	@CacheResult
+	/**
+	 * This method is cacheable unlike the method that does the work as it can only be cached with primitive types
+	 * workAreasAsString must be comma delimited
+	 * @param workAreasAsString 
+	 * @param payBeginDate
+	 * @param payEndDate
+	 * @param calGroup
+	 * @return
+	 */
+	public Set<String> getPrincipalIdsByWorkAreas(String workAreasAsString,
+			java.sql.Date payBeginDate, java.sql.Date payEndDate,
+			String calGroup) {
+		Set<String> principalIds = new HashSet<String>();
+		Set<Long> workAreas = new HashSet<Long>();
+		if (StringUtils.isNotBlank(workAreasAsString)) {
+			String[] was = workAreasAsString.split(",");
+			for (String wa : was) {
+				if (StringUtils.isNotBlank(wa)) {
+					workAreas.add(Long.parseLong(wa));
+				}
+			}
+			if (!workAreas.isEmpty()) {
+				getPrincipalIdsByWorkAreas(workAreas, payBeginDate, payEndDate,
+						calGroup);
+			}
+		}
+
 		return principalIds;
 	}
-	
-	protected List<String> getPrincipalIdsWithActiveAssignmentsForCalendarGroupByDeptAndWorkArea(
-		      String roleName, String department, String workArea,
-		      String payCalendarGroup, java.sql.Date effdt,
-		      java.sql.Date beginDate, java.sql.Date endDate) {
-	    String sql = null;
 
-        List<Job> jobs = TkServiceLocator.getJobService().getJobs(TKUser.getCurrentTargetPerson().getPrincipalId(), effdt);
-        String jobPositionNumbersList = "'";
-        for (Job job : jobs) {
-                        jobPositionNumbersList += job.getPositionNumber() + "','";
-        }
-        /* the sql statement will enclose this string in single quotes, so we do not want the leading quote, or the trailing quote, comma, and quote. */
-        if (jobPositionNumbersList.length() > 3) {
-            jobPositionNumbersList = jobPositionNumbersList.substring(1, jobPositionNumbersList.length()-3) ;
-        } else {
-            jobPositionNumbersList = jobPositionNumbersList.substring(1);
-        }
+	@Override
+	public Set<String> getPrincipalIdsByWorkAreas(Set<Long> workAreas,
+			java.sql.Date payBeginDate, java.sql.Date payEndDate,
+			String calGroup) {
+		Set<String> principalIds = getPrincipalIdsWithActiveAssignmentsForCalendarGroup(
+				workAreas, calGroup, payEndDate, payBeginDate, payEndDate);
+		return principalIds;
+	}
 
-	    if (department == null || department.isEmpty()) {
-	      return new ArrayList<String>();
-	    } else {
-	      List<String> principalIds = new ArrayList<String>();
-	      SqlRowSet rs = null;
-          sql = "SELECT DISTINCT A0.PRINCIPAL_ID FROM TK_ASSIGNMENT_T A0, HR_ROLES_T R0, TK_WORK_AREA_T W0, HR_PRINCIPAL_ATTRIBUTES_T P0  WHERE "
-        		  + "((A0.EFFDT =  (SELECT MAX(EFFDT)  FROM TK_ASSIGNMENT_T  WHERE PRINCIPAL_ID = A0.PRINCIPAL_ID  AND EFFDT <= ? AND WORK_AREA = A0.WORK_AREA  AND TASK = A0.TASK AND JOB_NUMBER = A0.JOB_NUMBER) AND "
-                  + "A0.TIMESTAMP =  (SELECT MAX(TIMESTAMP)  FROM TK_ASSIGNMENT_T  WHERE PRINCIPAL_ID = A0.PRINCIPAL_ID  AND EFFDT = A0.EFFDT AND WORK_AREA = A0.WORK_AREA AND TASK = A0.TASK AND JOB_NUMBER = A0.JOB_NUMBER) AND "
-                  + "A0.ACTIVE = 'Y') OR (A0.ACTIVE = 'N'  AND A0.EFFDT >= ? AND A0.EFFDT <= ?)) AND "
-                  + "R0.WORK_AREA = A0.WORK_AREA AND "
-                  + "R0.ROLE_NAME IN ('TK_APPROVER', 'TK_APPROVER_DELEGATE', 'TK_REVIEWER') AND "
-                  + "R0.ACTIVE = 'Y' AND "
-                  + "( (R0.PRINCIPAL_ID = ? AND "
-                  + "R0.EFFDT = (SELECT MAX(EFFDT)  FROM HR_ROLES_T  WHERE ROLE_NAME = R0.ROLE_NAME AND PRINCIPAL_ID = R0.PRINCIPAL_ID AND EFFDT <= ? AND WORK_AREA = R0.WORK_AREA) AND "
-                  + "R0.TIMESTAMP = (SELECT MAX(TIMESTAMP)  FROM HR_ROLES_T  WHERE ROLE_NAME = R0.ROLE_NAME AND PRINCIPAL_ID = R0.PRINCIPAL_ID AND EFFDT = R0.EFFDT AND WORK_AREA = R0.WORK_AREA) "
-                  + ") or ("
-                  + "R0.POSITION_NBR in (?) AND "
-                  + "R0.EFFDT = (SELECT MAX(EFFDT)  FROM HR_ROLES_T  WHERE ROLE_NAME = R0.ROLE_NAME AND POSITION_NBR = R0.POSITION_NBR AND EFFDT <= ? AND WORK_AREA = R0.WORK_AREA) AND "
-                  + "R0.TIMESTAMP = (SELECT MAX(TIMESTAMP)  FROM HR_ROLES_T  WHERE ROLE_NAME = R0.ROLE_NAME AND POSITION_NBR = R0.POSITION_NBR AND EFFDT = R0.EFFDT AND WORK_AREA = R0.WORK_AREA) "
-                  + ") ) AND "
-                  + "W0.WORK_AREA = A0.WORK_AREA AND "
-                  + "W0.DEPT = ? AND "
-                  + "W0.EFFDT = (SELECT MAX(EFFDT) FROM TK_WORK_AREA_T WHERE EFFDT <= ? AND WORK_AREA = W0.WORK_AREA) AND "
-                  + "W0.TIMESTAMP =  (SELECT MAX(TIMESTAMP)  FROM TK_WORK_AREA_T  WHERE WORK_AREA = W0.WORK_AREA  AND EFFDT = W0.EFFDT) AND "
-                  + "W0.ACTIVE = 'Y' AND "
-                  + "P0.PRINCIPAL_ID = A0.PRINCIPAL_ID AND "
-                  + "P0.PAY_CALENDAR = ?";
+	@Override
+	public Set<String> getPrincipalIdsByDeptAndWorkArea(String department,
+			String workArea, java.sql.Date payBeginDate,
+			java.sql.Date payEndDate, String calGroup) {
+		Set<String> principalIds = getPrincipalIdsWithActiveAssignmentsForCalendarGroupByDeptAndWorkArea(
+				department, workArea, calGroup, payEndDate, payBeginDate,
+				payEndDate);
+		return principalIds;
+	}
 
+	private static final String GET_PRINCIPAL_ID_SQL_PRE = "SELECT DISTINCT P.principal_id FROM hr_principal_calendar_t P, tk_assignment_t T WHERE P.py_calendar_group = ? AND P.principal_id in ("
+			+ "SELECT DISTINCT A0.principal_id "
+			+ "FROM tk_assignment_t A0 "
+			+ "WHERE (((A0.effdt = "
+			+ "(SELECT max(effdt) "
+			+ "FROM tk_assignment_t B0 "
+			+ "WHERE ((((B0.job_number = A0.job_number) AND B0.work_area = A0.work_area) AND B0.task = A0.task)) AND B0.principal_id = A0.principal_id)) AND A0.timestamp = "
+			+ "(SELECT max(B0.timestamp) "
+			+ "FROM tk_assignment_t B0 "
+			+ "WHERE "
+			+ "((((B0.job_number = A0.job_number) AND B0.work_area = A0.work_area) AND B0.task = A0.task) AND B0.effdt = A0.effdt) AND B0.principal_id = A0.principal_id))) AND ( ";
 
-	       int[] params = null;
-	       Object[] values = null;
-	       if (workArea != null) {
-	          sql += " AND A0.WORK_AREA = ? ";
-	          params = new int[] {java.sql.Types.DATE,
-	              java.sql.Types.DATE,
-	              java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR, 
-	              java.sql.Types.DATE,
-                  java.sql.Types.VARCHAR,
-                  java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR,
-	              java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR,
-	              java.sql.Types.INTEGER };
-	          values = new Object[] {effdt, beginDate, endDate, TKUser.getCurrentTargetPerson().getPrincipalId(), effdt, jobPositionNumbersList, effdt, department, effdt, payCalendarGroup, workArea };
-	        }else {
-	          params = new int[] {java.sql.Types.DATE,
-	              java.sql.Types.DATE,
-	              java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR, 
-	              java.sql.Types.DATE,
-                  java.sql.Types.VARCHAR,
-                  java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR,
-	              java.sql.Types.DATE,
-	              java.sql.Types.VARCHAR};
-	          values = new Object[] {effdt, beginDate, endDate, TKUser.getCurrentTargetPerson().getPrincipalId(), effdt, jobPositionNumbersList, effdt, department, effdt, payCalendarGroup};
-	        }
-	        rs = TkServiceLocator.getTkJdbcTemplate().queryForRowSet(
-	            sql, values, params);
-	      while (rs.next()) {
-	        principalIds.add(rs.getString("principal_id"));
-	      }
-	      return principalIds;
-	    }
+	private static final String GET_PRINCIPAL_ID_SQL_POST = " ) AND ((A0.effdt <= ? AND A0.active = 'Y') OR "
+			+ "(A0.active = 'N' AND (A0.effdt >= ? AND A0.effdt <= ?))"
+			+ " AND exists (select C0.principal_id from tk_assignment_t C0 where C0.principal_id = A0.principal_id and C0.job_number = A0.job_number "
+			+ " AND C0.work_area = A0.work_area and C0.task = A0.task and C0.effdt <= ? and C0.active = 'Y')))";
+
+	private Set<String> getPrincipalIdsWithActiveAssignmentsForCalendarGroup(
+			Set<Long> approverWorkAreas, String payCalendarGroup,
+			java.sql.Date effdt, java.sql.Date beginDate, java.sql.Date endDate) {
+		if (approverWorkAreas.size() == 0) {
+			return new LinkedHashSet<String>();
+		}
+
+		Set<String> principalIds = new LinkedHashSet<String>();
+		StringBuilder workAreas = new StringBuilder();
+		for (long workarea : approverWorkAreas) {
+			workAreas.append("A0.work_area = " + workarea + " or ");
+		}
+		String workAreasForQuery = workAreas.substring(0,
+				workAreas.length() - 3);
+		String sql = GET_PRINCIPAL_ID_SQL_PRE + workAreasForQuery
+				+ GET_PRINCIPAL_ID_SQL_POST;
+
+		SqlRowSet rs = TkServiceLocator.getTkJdbcTemplate().queryForRowSet(
+				sql,
+				new Object[] { payCalendarGroup, effdt, beginDate, endDate,
+						endDate },
+				new int[] { java.sql.Types.VARCHAR, java.sql.Types.DATE,
+						java.sql.Types.DATE, java.sql.Types.DATE,
+						java.sql.Types.DATE });
+		while (rs.next()) {
+			principalIds.add(rs.getString("principal_id"));
+		}
+
+		return principalIds;
+	}
+
+	private Set<String> getPrincipalIdsWithActiveAssignmentsForCalendarGroupByDeptAndWorkArea(
+			String department, String workArea, String payCalendarGroup,
+			java.sql.Date effdt, java.sql.Date beginDate, java.sql.Date endDate) {
+		String sql = "SELECT "
+				+ "    DISTINCT PRINCIPAL_ID "
+				+ " FROM"
+				+ "  	 HR_PRINCIPAL_CALENDAR_T "
+				+ " WHERE "
+				+ " 	PY_CALENDAR_GROUP = ? AND "
+				+ " 	PRINCIPAL_ID IN ( "
+				+ " 		SELECT "
+				+ "    		DISTINCT A0.PRINCIPAL_ID "
+				+ " 		FROM "
+				+ "			  TK_ASSIGNMENT_T A0 "		  
+				+ "				INNER JOIN HR_PRINCIPAL_CALENDAR_T P0 "  		
+				+ "					ON (A0.PRINCIPAL_ID = P0.PRINCIPAL_ID) "
+				+ "				INNER JOIN TK_WORK_AREA_T W0 " 		 
+				+ "				    ON (A0.WORK_AREA = W0.WORK_AREA) " 	 
+				+ "				LEFT OUTER JOIN HR_ROLES_T R0 " 	
+				+ "				    ON (W0.WORK_AREA = R0.WORK_AREA) " 		 
+				+ " 		WHERE "
+                + " 			((A0.ACTIVE='Y'AND A0.EFFDT<= ?) OR (A0.ACTIVE='N' AND A0.EFFDT>=? AND A0.EFFDT<=?)) AND "
+				+ "				W0.DEPT=? AND "
+                + "				R0.PRINCIPAL_ID=? AND "
+                + "				R0.ACTIVE='Y' AND "
+                + " 			(R0.DEPT IS NULL OR R0.DEPT = ?) AND "
+                + "				A0.ACTIVE = 'Y' ";
+
+		if (department == null || department.isEmpty()) {
+			return new LinkedHashSet<String>();
+		} else {
+
+			Set<String> principalIds = new LinkedHashSet<String>();
+			
+			SqlRowSet rs = null;
+			if (workArea != null) {
+				sql += " AND A0.WORK_AREA = ?) ";
+				
+				rs = TkServiceLocator.getTkJdbcTemplate().queryForRowSet(
+						sql,
+						new Object[] { payCalendarGroup, effdt, beginDate,
+								endDate, department, TKContext.getUser().getPrincipalId(), department, workArea},
+						new int[] { java.sql.Types.VARCHAR,
+								java.sql.Types.DATE,
+								java.sql.Types.DATE,
+								java.sql.Types.DATE, 
+								java.sql.Types.VARCHAR, 
+								java.sql.Types.VARCHAR,
+								java.sql.Types.VARCHAR,
+								java.sql.Types.INTEGER});
+			} else {
+				sql += ") ";
+				rs = TkServiceLocator
+						.getTkJdbcTemplate()
+						.queryForRowSet(
+								sql,
+								new Object[] { payCalendarGroup, effdt,
+										beginDate, endDate, department, TKContext.getUser().getPrincipalId(), department},
+								new int[] { java.sql.Types.VARCHAR,
+										java.sql.Types.DATE,
+										java.sql.Types.DATE,
+										java.sql.Types.DATE,
+										java.sql.Types.VARCHAR,
+										java.sql.Types.VARCHAR,
+										java.sql.Types.VARCHAR });
+			}
+
+			while (rs.next()) {
+				principalIds.add(rs.getString("principal_id"));
+			}
+
+			return principalIds;
+		}
 	}
 
 	@Override
 	public Map<String, TimesheetDocumentHeader> getPrincipalDocumehtHeader(
-			List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
-		Map<String, TimesheetDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, TimesheetDocumentHeader>();
-		for (TKPerson person : persons) {
-			String principalId = person.getPrincipalId();
-			
-			TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
-			if(tdh != null) {
-				principalDocumentHeader.put(principalId, tdh);	
-			}
+			List<String> principalIds, Date payBeginDate, Date payEndDate) {
+
+		if (principalIds.size() == 0) {
+			return new LinkedHashMap<String, TimesheetDocumentHeader>();
 		}
+
+		StringBuilder ids = new StringBuilder();
+		for (String principalId : principalIds) {
+			ids.append("principal_id = '" + principalId + "' or ");
+		}
+		String idsForQuery = ids.substring(0, ids.length() - 4);
+		String sql = "SELECT document_id, principal_id, document_status "
+				+ "FROM tk_document_header_t " + "WHERE (" + idsForQuery
+				+ ") AND pay_begin_dt = ? AND pay_end_dt = ?";
+		Map<String, TimesheetDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, TimesheetDocumentHeader>();
+		SqlRowSet rs = TkServiceLocator.getTkJdbcTemplate().queryForRowSet(sql,
+				new Object[] { payBeginDate, payEndDate },
+				new int[] { Types.DATE, Types.DATE });
+		while (rs.next()) {
+			TimesheetDocumentHeader tdh = new TimesheetDocumentHeader();
+			tdh.setPrincipalId(rs.getString("principal_id"));
+			String docId = StringUtils.isBlank(rs.getString("document_id")) ? ""
+					: rs.getString("document_id");
+			tdh.setDocumentId(docId);
+			tdh.setDocumentStatus(rs.getString("document_status"));
+
+			principalDocumentHeader.put(rs.getString("principal_id"), tdh);
+		}
+
 		return principalDocumentHeader;
 	}
 
@@ -759,10 +881,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		if (approverWorkAreas.size() > 0) {
 			// prepare the OR statement for query
 			StringBuilder workAreas = new StringBuilder();
-			for (Long workarea : approverWorkAreas) {
-				if(workarea != null) {
-					workAreas.append("work_area = " + workarea + " or ");
-				}
+			for (long workarea : approverWorkAreas) {
+				workAreas.append("work_area = " + workarea + " or ");
 			}
 			String workAreasForQuery = workAreas.substring(0,
 					workAreas.length() - 3);
@@ -818,45 +938,4 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		}
 		return deptWorkAreas;
 	}
-
-	public DocumentRouteHeaderValue getRouteHeader(String documentId) {
-		return KEWServiceLocator.getRouteHeaderService().getRouteHeader(documentId);
-	}
-	
-	@Override
-	public List<CalendarEntries> getAllPayCalendarEntriesForApprover(String principalId, Date currentDate) {
-		TKUser tkUser = TKContext.getUser();
-		Set<String> principals = new HashSet<String>();
-		DateTime minDt = new DateTime(currentDate,
-				TKUtils.getSystemDateTimeZone());
-		minDt = minDt.minusDays(DAYS_WINDOW_DELTA);
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
-
-		// Get all of the principals within our window of time.
-		for (Long waNum : approverWorkAreas) {
-			List<Assignment> assignments = TkServiceLocator
-					.getAssignmentService().getActiveAssignmentsForWorkArea(waNum, TKUtils.getTimelessDate(currentDate));
-
-			if (assignments != null) {
-				for (Assignment assignment : assignments) {
-					principals.add(assignment.getPrincipalId());
-				}
-			}
-		}
-		List<TimesheetDocumentHeader> documentHeaders = new ArrayList<TimesheetDocumentHeader>();
-		for(String pid : principals) {
-			documentHeaders.addAll(TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeadersForPrincipalId(pid));
-		}
-		Set<CalendarEntries> payPeriodSet = new HashSet<CalendarEntries>();
-		for(TimesheetDocumentHeader tdh : documentHeaders) {
-    		CalendarEntries pe = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(tdh.getBeginDate(), tdh.getEndDate());
-    		if(pe != null) {
-    			payPeriodSet.add(pe);
-    		}
-        }
-		List<CalendarEntries> ppList = new ArrayList<CalendarEntries>(payPeriodSet);
-        
-		return ppList;
-	}
-	
 }

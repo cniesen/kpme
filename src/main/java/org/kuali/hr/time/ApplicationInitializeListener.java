@@ -1,37 +1,25 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
- * Licensed under the Educational Community License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.opensource.org/licenses/ecl2.php
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.kuali.hr.time;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.core.web.format.DateFormatter;
-import org.kuali.rice.core.web.format.Formatter;
-import org.kuali.rice.core.web.listener.KualiInitializeListener;
+import org.kuali.rice.core.config.RiceConfigurer;
+import org.kuali.rice.kns.web.format.DateFormatter;
+import org.kuali.rice.kns.web.format.Formatter;
+import org.springframework.web.context.ContextLoaderListener;
 
-public class ApplicationInitializeListener extends KualiInitializeListener {
+public class ApplicationInitializeListener extends ContextLoaderListener implements ServletContextListener {
 	
     private static Logger LOG = Logger.getLogger(ApplicationInitializeListener.class);
-    //private RiceConfigurer rice;
+    private RiceConfigurer rice;
     public static String ALTERNATE_LOG4J_FILE = null;
     
     public void contextInitialized(ServletContextEvent servletContextEvent) {
+	TkConfiguration.baseApplicationSetup();
     	servletContextEvent.getServletContext().setAttribute("TkConstants", new TkConstants());
         LOG.info("Started contextInitialized(ServletContextEvent servletContextEvent) Method");
         try{
@@ -48,12 +36,20 @@ public class ApplicationInitializeListener extends KualiInitializeListener {
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         LOG.info("Started contextDestroyed(ServletContextEvent servletContextEvent) Method");
         try {
-		    //TkServiceLocator.stop();
-		} catch (Exception e) {
-			LOG.error("Failed to stop TK app lifecycle", e);
-			throw new RuntimeException("Failed to stop TK app lifecycle", e);
-		}
+	    TkServiceLocator.stop();
+	} catch (Exception e) {
+		LOG.error("Failed to stop TK app lifecycle", e);
+		throw new RuntimeException("Failed to stop TK app lifecycle", e);
+	}
         super.contextDestroyed(servletContextEvent);
+    	if (rice != null) {
+    		try {
+    		    rice.stop();
+    		} catch (Exception e) {
+    			LOG.error("Failed to shutdown Rice and Workflow.", e);
+    		}
+    	}
+    	rice = null;
         LOG.info("Finished contextDestroyed(ServletContextEvent servletContextEvent) Method");
         LogManager.shutdown();
     }

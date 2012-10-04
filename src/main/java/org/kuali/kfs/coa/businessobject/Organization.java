@@ -1,12 +1,12 @@
-/**
- * Copyright 2004-2012 The Kuali Foundation
- *
+/*
+ * Copyright 2005 The Kuali Foundation
+ * 
  * Licensed under the Educational Community License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.opensource.org/licenses/ecl2.php
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,13 @@ import java.util.LinkedHashMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kuali.rice.core.api.mo.common.active.Inactivatable;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.kns.bo.Inactivateable;
+import org.kuali.rice.kns.bo.PersistableBusinessObjectBase;
 
 /**
  * 
  */
-public class Organization extends PersistableBusinessObjectBase implements Inactivatable {
+public class Organization extends PersistableBusinessObjectBase implements Inactivateable {
     private static final Logger LOG = Logger.getLogger(Organization.class);
 
     private static final long serialVersionUID = 121873645110037203L;
