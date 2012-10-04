@@ -1,1 +1,0 @@
-DELETE FROM `hr_position_t` WHERE `hr_position_id` > '1000';
