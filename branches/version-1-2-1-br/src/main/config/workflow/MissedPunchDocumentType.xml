@@ -1,0 +1,103 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright 2004-2012 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<data xmlns="ns:workflow" xmlns:fo="http://www.w3.org/1999/XSL/Format"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="ns:workflow resource:WorkflowData">
+    <documentTypes xmlns="ns:workflow/DocumentType"
+        xsi:schemaLocation="ns:workflow/DocumentType resource:DocumentType">
+        <documentType>
+            <name>MissedPunchDocumentType</name>
+            <parent>RiceDocument</parent>
+            <superUserWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</superUserWorkgroupName>
+            <blanketApproveWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</blanketApproveWorkgroupName>
+            <defaultExceptionWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</defaultExceptionWorkgroupName>
+            <description>Missed Punch Document</description>
+            <label>Missed Punch Document</label>
+            <postProcessorName>org.kuali.hr.time.workflow.postprocessor.TkMissedPunchPostProcessor</postProcessorName>
+            <docHandler>${kuali.docHandler.url.prefix}/missedPunch.do?methodToCall=docHandler</docHandler>
+            <active>true</active>
+            <routingVersion>1</routingVersion>
+            <routePaths>
+                <routePath>
+                    <start name="adhoc" nextNode="Missed Punch" />
+                    <requests name="Missed Punch" />
+                </routePath>
+            </routePaths>
+            <routeNodes>
+                <start name="adhoc">
+                    <exceptionWorkgroup>KPME-WKFLW:TK_SYSTEM_ADMIN</exceptionWorkgroup>
+                    <activationType>S</activationType>
+                    <mandatoryRoute>false</mandatoryRoute>
+                    <finalApproval>false</finalApproval>
+                </start>
+                <requests name="Missed Punch">
+                    <exceptionWorkgroup>KPME-WKFLW:TK_SYSTEM_ADMIN</exceptionWorkgroup>
+                    <activationType>S</activationType>
+                    <ruleTemplate>TkWorkflowMissedPunchTemplate</ruleTemplate>
+                    <mandatoryRoute>true</mandatoryRoute>
+                    <finalApproval>true</finalApproval>
+                </requests>
+            </routeNodes>
+        </documentType>
+    </documentTypes>
+
+    <ruleAttributes xmlns="ns:workflow/RuleAttribute"
+        xsi:schemaLocation="ns:workflow/RuleAttribute resource:RuleAttribute">
+        <ruleAttribute>
+            <name>TkWorkflowMissedPunchAttribute</name>
+            <className>org.kuali.hr.time.workflow.TkWorkflowMissedPunchAttribute</className>
+            <label>TkWorkflowMissedPunchAttribute</label>
+            <description>TkWorkflowMissedPunchAttribute</description>
+            <type>RuleAttribute</type>
+        </ruleAttribute>
+    </ruleAttributes>
+
+    <ruleTemplates xmlns="ns:workflow/RuleTemplate"
+        xsi:schemaLocation="ns:workflow/RuleTemplate resource:RuleTemplate">
+        <ruleTemplate allowOverwrite="true">
+            <name>TkWorkflowMissedPunchTemplate</name>
+            <description>TkWorkflowMissedPunchTemplate</description>
+            <attributes>
+                <attribute>
+                    <name>TkWorkflowMissedPunchAttribute</name>
+                    <required>false</required>
+                </attribute>
+            </attributes>
+        </ruleTemplate>
+    </ruleTemplates>
+
+    <rules xmlns="ns:workflow/Rule"
+        xsi:schemaLocation="ns:workflow/Rule resource:Rule">
+        <rule>
+            <name>TkWorkflowMissedPunchRule</name>
+            <documentType>MissedPunchDocumentType</documentType>
+            <ruleTemplate>TkWorkflowMissedPunchTemplate</ruleTemplate>
+            <description>TkWorkflow Missed Punch</description>
+            <forceAction>true</forceAction>
+            <responsibilities>
+                <responsibility>
+                    <role>org.kuali.hr.time.workflow.TkWorkflowMissedPunchAttribute!TK_APPROVER</role>
+                    <approvePolicy>F</approvePolicy>
+                    <actionRequested>A</actionRequested>
+                    <priority>1</priority>
+                </responsibility>
+            </responsibilities>
+        </rule>
+    </rules>
+</data>
