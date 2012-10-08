@@ -31,7 +31,7 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1")
     public List<EarnCode> getEarnCodes(Assignment a, Date asOfDate);
 
     /**
@@ -40,7 +40,7 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'earnTypeCode=' + #p2")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'earnTypeCode=' + #p2")
     public List<EarnCode> getEarnCodes(Assignment a, Date asOfDate, String earnTypeCode);
 
     /**
@@ -49,7 +49,7 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'earnCode=' + #p0 + '|' + 'asOfDate=' + #p1")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'earnCode=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public EarnCode getEarnCode(String earnCode, Date asOfDate);
 
     /**
@@ -58,7 +58,7 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'{getEarnCodeType}' + 'earnCode=' + #p0 + '|' + 'asOfDate=' + #p1")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'{getEarnCodeType}' + 'earnCode=' + #p0 + '|' + 'asOfDate=' + #p1")
     String getEarnCodeType(String earnCode, Date asOfDate);
     
     /**
@@ -66,7 +66,7 @@ public interface EarnCodeService {
      * @param earnCodeId
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'earnCodeId=' + #p0")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'earnCodeId=' + #p0")
     public EarnCode getEarnCodeById(String earnCodeId);
     
     /**
@@ -74,7 +74,7 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'{getOvertimeEarnCodes}' + 'asOfDate=' + #p0")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'{getOvertimeEarnCodes}' + 'asOfDate=' + #p0")
     public List<EarnCode> getOvertimeEarnCodes(Date asOfDate);
 
 
@@ -83,12 +83,8 @@ public interface EarnCodeService {
      * @param asOfDate
      * @return
      */
-    @Cacheable(value= EarnCode.CACHE_NAME, key="'{getOvertimeEarnCodesStrs}' + 'asOfDate=' + #p0")
+    @Cacheable(value=EarnCode.CACHE_NAME, key="'{getOvertimeEarnCodesStrs}' + 'asOfDate=' + #p0")
     public List<String> getOvertimeEarnCodesStrs(Date asOfDate);
-
-    //make caching by who is looking at this as it is based on that what shows up
-    //@Cacheable(value= EarnCode.CACHE_NAME, key="'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1")
-    public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate);
 
     /**
 	 * get count of earn code with give earnCode
