@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kuali.kpme</groupId>
     <artifactId>kpme-web</artifactId>
-    <version>1.2.0</version>
+    <version>1.2.1-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Kuali People Management for the Enterprise</name>
     <description>Kuali People Management for the Enterprise (KPME) is an open-source, comprehensive HR/Payroll System built by higher education for higher education.</description>
@@ -894,9 +894,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:svn:https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.0</connection>
-        <developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.0</developerConnection>
-        <url>https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.0</url>
+        <connection>scm:svn:https://svn.kuali.org/repos/kpme/branches/version-1-2</connection>
+        <developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/branches/version-1-2</developerConnection>
+        <url>https://svn.kuali.org/repos/kpme/branches/version-1-2</url>
     </scm>
 
 </project>
