@@ -101,30 +101,12 @@ public class TimeDetailWSAction extends TimesheetAction {
                         assignment.getTask().compareTo(key.getTask()) == 0) {
                     List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, tdaf.getTimesheetDocument().getAsOfDate());
                     for (EarnCode earnCode : earnCodes) {
-                        // TODO: minimize / compress the crazy if logics below
-                        if (earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
-                                && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover())) {
-                            continue;
-                        }
-                        if (!(assignment.getTimeCollectionRule().isClockUserFl() &&
-                                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode())
-                                && StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()))) {
-                            Map<String, Object> earnCodeMap = new HashMap<String, Object>();
-                            earnCodeMap.put("assignment", assignment.getAssignmentKey());
-                            earnCodeMap.put("earnCode", earnCode.getEarnCode());
-                            earnCodeMap.put("desc", earnCode.getDescription());
-                            earnCodeMap.put("type", earnCode.getEarnCodeType());
-
-                            earnCodeList.add(earnCodeMap);
-                        } else if(!StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode())){
-                            Map<String, Object> earnCodeMap = new HashMap<String, Object>();
-                            earnCodeMap.put("assignment", assignment.getAssignmentKey());
-                            earnCodeMap.put("earnCode", earnCode.getEarnCode());
-                            earnCodeMap.put("desc", earnCode.getDescription());
-                            earnCodeMap.put("type", earnCode.getEarnCodeType());
-
-                            earnCodeList.add(earnCodeMap);
-                        }
+                        Map<String, Object> earnCodeMap = new HashMap<String, Object>();
+                        earnCodeMap.put("assignment", assignment.getAssignmentKey());
+                        earnCodeMap.put("earnCode", earnCode.getEarnCode());
+                        earnCodeMap.put("desc", earnCode.getDescription());
+                        earnCodeMap.put("type", earnCode.getEarnCodeType());
+                        earnCodeList.add(earnCodeMap);
                     }
                 }
             }
