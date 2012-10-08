@@ -131,7 +131,7 @@
       <bean parent="TextControlDefinition" p:size="20"/>
     </property>
     <property name="name" value="hrPyCalendarEntriesId"/>
-    <property name="label" value="Pay Calendar Entry Id"/>
+    <property name="label" value="HR Calendar Entry Id"/>
   </bean>	
 	
 	<bean id="TimeSheetInitiate-pyCalendarGroup" parent="TimeSheetInitiate-pyCalendarGroup-parentBean" />

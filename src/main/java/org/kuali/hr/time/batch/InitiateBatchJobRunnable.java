@@ -39,8 +39,8 @@ public class InitiateBatchJobRunnable extends BatchJobEntryRunnable {
 		} catch (WorkflowException e) {
 			LOG.info("Workflow error found"+ e);
             throw e;
-		}
+        }
 
-	}
+    }
 
 }

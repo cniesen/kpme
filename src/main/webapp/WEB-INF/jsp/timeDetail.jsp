@@ -153,12 +153,6 @@
                                 $ <input id="amount" name="amount"/>
                             </td>
                         </tr>
-                        <tr class="leaveAmountSection" style="display: none;">
-                            <td><label for="leaveAmountField" id="unitOfTime">* Leave Amount</label> : </label></td>
-                            <td>
-                                <input id="leaveAmount" name="leaveAmount" />
-                            </td>
-                        </tr>
                         <tr>
                             <td></td>
                             <td>
@@ -166,14 +160,7 @@
                                 <label for="acrossDays">Apply time to each day</label>
                             </td>
                         </tr>
-                        <!--  KPME-1446  -->
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="checkbox" name="spanningWeeks" id="spanningWeeks" value="n" title="Check if you want to span weeks over weekend"/>
-                                <label for="spanningWeeks">Include weekends</label>
-                            </td>
-                        </tr>
+
                     </table>
                 </div>
             </html:form>

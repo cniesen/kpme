@@ -140,21 +140,6 @@ public class JobServiceImpl implements JobService {
     }
     
     @Override
-    public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate) {
-    	return jobDao.getActiveLeaveJobs(principalId, asOfDate);
-    }
-    
-    @Override
-    public BigDecimal getFteSumForJobs(List<Job> jobs) {
-    	BigDecimal fteSum = new BigDecimal(0);
-    	for(Job aJob : jobs) {
-    		fteSum = fteSum.add(aJob.getFte());
-    	}
-    	return fteSum;
-    	
-    }
-    
-    @Override
     public BigDecimal getStandardHoursSumForJobs(List<Job> jobs) {
     	BigDecimal hoursSum = new BigDecimal(0);
     	for(Job aJob : jobs) {
@@ -162,24 +147,5 @@ public class JobServiceImpl implements JobService {
     	}
     	return hoursSum;
     }
-   
-    @Override
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate) {
-    	return jobDao.getAllActiveLeaveJobs(principalId, asOfDate);
-    }
-    
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, Date startDate, Date endDate) {
-    	return jobDao.getInactiveLeaveJobs(jobNumber, startDate, endDate);
-    }
-    
-    @Override
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate) {
-    	return jobDao.getAllInActiveLeaveJobsInRange(principalId, startDate, endDate);
-    }
-    
-    @Override
-    public Job getMaxTimestampJob(String principalId) {
-    	return jobDao.getMaxTimestampJob(principalId);
-    }
-    
+
 }

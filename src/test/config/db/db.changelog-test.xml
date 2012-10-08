@@ -55,10 +55,10 @@
         <insert tableName="hr_dept_s">
             <column name="id" value="110" />
         </insert>
-        <insert tableName="hr_earn_code_group_def_s">
+        <insert tableName="hr_earn_group_def_s">
             <column name="id" value="109" />
         </insert>
-        <insert tableName="hr_earn_code_group_s">
+        <insert tableName="hr_earn_group_s">
             <column name="id" value="104" />
         </insert>
         <insert tableName="hr_earn_code_s">
@@ -82,7 +82,7 @@
         <insert tableName="hr_sal_group_s">
             <column name="id" value="14" />
         </insert>
-        <insert tableName="lm_accrual_category_s">
+        <insert tableName="lm_accrual_categories_s">
             <column name="id" value="1" />
         </insert>
         <insert tableName="lm_accruals_s">
@@ -115,8 +115,8 @@
         <loadData tableName="hr_calendar_entries_t" file="src/test/config/db/test/hr_calendar_entries_t.csv" />
         <loadData tableName="hr_calendar_t" file="src/test/config/db/test/hr_calendar_t.csv" />
         <loadData tableName="hr_dept_t" file="src/test/config/db/test/hr_dept_t.csv" />
-        <loadData tableName="hr_earn_code_group_def_t" file="src/test/config/db/test/hr_earn_code_group_def_t.csv" />
-        <loadData tableName="hr_earn_code_group_t" file="src/test/config/db/test/hr_earn_code_group_t.csv" />
+        <loadData tableName="hr_earn_group_def_t" file="src/test/config/db/test/hr_earn_group_def_t.csv" />
+        <loadData tableName="hr_earn_group_t" file="src/test/config/db/test/hr_earn_group_t.csv" />
         <loadData tableName="hr_earn_code_security_t" file="src/test/config/db/test/hr_earn_code_security_t.csv" />
         <loadData tableName="hr_earn_code_t" file="src/test/config/db/test/hr_earn_code_t.csv" />
         <loadData tableName="hr_job_t" file="src/test/config/db/test/hr_job_t.csv" />
@@ -124,7 +124,7 @@
         <loadData tableName="hr_principal_attributes_t" file="src/test/config/db/test/hr_principal_attributes_t.csv" />
         <loadData tableName="hr_roles_t" file="src/test/config/db/test/hr_roles_t.csv" />
         <loadData tableName="hr_sal_group_t" file="src/test/config/db/test/hr_sal_group_t.csv" />
-        <loadData tableName="lm_accrual_category_t" file="src/test/config/db/test/lm_accrual_category_t.csv" />
+        <loadData tableName="lm_accrual_categories_t" file="src/test/config/db/test/lm_accrual_categories_t.csv" />
         <loadData tableName="lm_accruals_t" file="src/test/config/db/test/lm_accruals_t.csv" />
         <loadData tableName="tk_assignment_t" file="src/test/config/db/test/tk_assignment_t.csv" />
         <loadData tableName="tk_dept_lunch_rl_t" file="src/test/config/db/test/tk_dept_lunch_rl_t.csv" />

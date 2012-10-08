@@ -83,7 +83,7 @@ public class TimesheetAction extends TkAction {
             Date currentDate = TKUtils.getTimelessDate(null);
             payCalendarEntries = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
             if(payCalendarEntries == null){
-                throw new RuntimeException("No Calendar Entry setup for "+viewPrincipal);
+                throw new RuntimeException("No pay calendar entry for " + viewPrincipal);
             }
             td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, payCalendarEntries);
         }
@@ -99,7 +99,7 @@ public class TimesheetAction extends TkAction {
         // then check security permissions via the superclass execution chain.
 		return super.execute(mapping, form, request, response);
 	}
-    
+
     public ActionForward docHandler(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
         		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
@@ -127,7 +127,7 @@ public class TimesheetAction extends TkAction {
         if( nextTdh != null) {
             taForm.setNextDocumentId(nextTdh.getDocumentId());
         }
-        taForm.setPayCalendarDates(td.getCalendarEntry());
+        taForm.setPayCalendarDates(td.getPayCalendarEntry());
         taForm.setOnCurrentPeriod(ActionFormUtils.getOnCurrentPeriodFlag(taForm.getPayCalendarDates()));
     }
 

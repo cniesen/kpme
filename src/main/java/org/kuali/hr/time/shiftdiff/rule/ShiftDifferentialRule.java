@@ -24,7 +24,7 @@ import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.salgroup.SalGroup;
 
@@ -62,7 +62,7 @@ public class ShiftDifferentialRule extends TkRule {
 	
 	private EarnCode earnCodeObj;
 	private SalGroup salGroupObj;
-    private EarnCodeGroup fromEarnGroupObj;
+    private EarnGroup fromEarnGroupObj;
     private Calendar payCalendar;
     private Location locationObj;
     private PayGrade payGradeObj;
@@ -258,11 +258,11 @@ public class ShiftDifferentialRule extends TkRule {
 		this.salGroupObj = salGroupObj;
 	}
 
-    public EarnCodeGroup getFromEarnGroupObj() {
+    public EarnGroup getFromEarnGroupObj() {
         return fromEarnGroupObj;
     }
 
-    public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
+    public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
         this.fromEarnGroupObj = fromEarnGroupObj;
     }
 

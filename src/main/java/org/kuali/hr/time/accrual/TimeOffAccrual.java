@@ -19,7 +19,6 @@ import java.math.BigDecimal;
 import java.sql.Date;
 
 import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.impl.identity.PersonImpl;

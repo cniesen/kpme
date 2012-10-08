@@ -18,19 +18,18 @@ package org.kuali.hr.time.earncode;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class EarnCode extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "EarnCode";
-    private static final String[] PRIVATE_CACHES_FOR_FLUSH = {EarnCodeSecurity.CACHE_NAME, EarnCode.CACHE_NAME};
-    public static final List<String> CACHE_FLUSH = Collections.unmodifiableList(Arrays.asList(PRIVATE_CACHES_FOR_FLUSH));
 	/**
      *
      */
@@ -44,134 +43,19 @@ public class EarnCode extends HrBusinessObject {
 	private String accrualCategory;
 	private BigDecimal inflateMinHours;
 	private BigDecimal inflateFactor;
-
+    private Long defaultAmountofTime;
 	private boolean history;
 
 	private AccrualCategory accrualCategoryObj;
-	private EarnCode rollupToEarnCodeObj;
-	
-	private String leavePlan;
-	private String accrualBalanceAction;
-	private String fractionalTimeAllowed;
-	private String roundingOption;
-	private String eligibleForAccrual;
-	private String affectPay;
-	private String allowScheduledLeave;
-	private String fmla;
-	private String workmansComp;
-	private Long defaultAmountofTime;
-	private String allowNegativeAccrualBalance;
-	private String rollupToEarnCode;
+
 	private String recordMethod;
-	private String usageLimit;
-	
-	public String getUsageLimit() {
-		return usageLimit;
-	}
-
-	public void setUsageLimit(String usageLimit) {
-		this.usageLimit = usageLimit;
-	}
-
+    
 	public String getRecordMethod() {
 		return recordMethod;
 	}
 
 	public void setRecordMethod(String recordMethod) {
 		this.recordMethod = recordMethod;
-	}
-
-	public String getRollupToEarnCode() {
-		return rollupToEarnCode;
-	}
-
-	public void setRollupToEarnCode(String rollupToEarnCode) {
-		this.rollupToEarnCode = rollupToEarnCode;
-	}
-
-	public EarnCode getRollupToEarnCodeObj() {
-		return rollupToEarnCodeObj;
-	}
-
-	public void setRollupToEarnCodeObj(EarnCode rollupToEarnCodeObj) {
-		this.rollupToEarnCodeObj = rollupToEarnCodeObj;
-	}
-
-	public String getLeavePlan() {
-		AccrualCategory myAccrualCategoryObj = new AccrualCategory();
-		if(this.accrualCategory != null) {
-			myAccrualCategoryObj =  TkServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate);
-	    }
-		this.leavePlan =(myAccrualCategoryObj != null) ? myAccrualCategoryObj.getLeavePlan() : ""; 
-	    return leavePlan;
-	}
-
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
-
-	public String getAccrualBalanceAction() {
-		return accrualBalanceAction;
-	}
-
-	public void setAccrualBalanceAction(String accrualBalanceAction) {
-		this.accrualBalanceAction = accrualBalanceAction;
-	}
-
-	public String getFractionalTimeAllowed() {
-		return fractionalTimeAllowed;
-	}
-
-	public void setFractionalTimeAllowed(String fractionalTimeAllowed) {
-		this.fractionalTimeAllowed = fractionalTimeAllowed;
-	}
-
-	public String getRoundingOption() {
-		return roundingOption;
-	}
-
-	public void setRoundingOption(String roundingOption) {
-		this.roundingOption = roundingOption;
-	}
-
-	public String getEligibleForAccrual() {
-		return eligibleForAccrual;
-	}
-
-	public void setEligibleForAccrual(String eligibleForAccrual) {
-		this.eligibleForAccrual = eligibleForAccrual;
-	}
-
-	public String getAffectPay() {
-		return affectPay;
-	}
-
-	public void setAffectPay(String affectPay) {
-		this.affectPay = affectPay;
-	}
-
-	public String getAllowScheduledLeave() {
-		return allowScheduledLeave;
-	}
-
-	public void setAllowScheduledLeave(String allowScheduledLeave) {
-		this.allowScheduledLeave = allowScheduledLeave;
-	}
-
-	public String getFmla() {
-		return fmla;
-	}
-
-	public void setFmla(String fmla) {
-		this.fmla = fmla;
-	}
-
-	public String getWorkmansComp() {
-		return workmansComp;
-	}
-
-	public void setWorkmansComp(String workmansComp) {
-		this.workmansComp = workmansComp;
 	}
 
 	public Long getDefaultAmountofTime() {
@@ -181,15 +65,6 @@ public class EarnCode extends HrBusinessObject {
 	public void setDefaultAmountofTime(Long defaultAmountofTime) {
 		this.defaultAmountofTime = defaultAmountofTime;
 	}
-
-	public String getAllowNegativeAccrualBalance() {
-		return allowNegativeAccrualBalance;
-	}
-
-	public void setAllowNegativeAccrualBalance(String allowNegativeAccrualBalance) {
-		this.allowNegativeAccrualBalance = allowNegativeAccrualBalance;
-	}
-
 
 	public String getEarnCode() {
 		return earnCode;

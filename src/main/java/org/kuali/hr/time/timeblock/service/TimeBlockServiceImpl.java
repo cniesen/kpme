@@ -21,8 +21,8 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
+import org.kuali.hr.earncodesec.EarnCodeSecurity;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.paytype.PayType;
@@ -62,20 +62,14 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         DateTime endDt = beginDt.toLocalDate().toDateTime((new DateTime(endTimestamp.getTime(), zone)).toLocalTime(), zone);
         if (endDt.isBefore(beginDt)) endDt = endDt.plusDays(1);
     	
-        List<Interval> dayInt = TKUtils.getDaySpanForCalendarEntry(timesheetDocument.getCalendarEntry());
+        List<Interval> dayInt = TKUtils.getDaySpanForCalendarEntry(timesheetDocument.getPayCalendarEntry());
         TimeBlock firstTimeBlock = new TimeBlock();
         List<TimeBlock> lstTimeBlocks = new ArrayList<TimeBlock>();
         for (Interval dayIn : dayInt) {
             if (dayIn.contains(beginDt)) {
                 if (dayIn.contains(endDt) || dayIn.getEnd().equals(endDt)) {
-                	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-                	if (StringUtils.isEmpty(spanningWeeks) && 
-                		(dayIn.getStart().getDayOfWeek() == DateTimeConstants.SATURDAY ||dayIn.getStart().getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-                		// do nothing
-                	} else {
                         firstTimeBlock = createTimeBlock(timesheetDocument, beginTimestamp, new Timestamp(endDt.getMillis()), assignment, earnCode, hours, amount, false, isLunchDeleted);
-                        lstTimeBlocks.add(firstTimeBlock);                		
-                	}
+                        lstTimeBlocks.add(firstTimeBlock);
                 } else {
                     //TODO move this to prerule validation
                     //throw validation error if this case met error
@@ -88,16 +82,11 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         long diffInMillis = endOfFirstDay.minus(beginDt.getMillis()).getMillis();
         DateTime currTime = beginDt.plusDays(1);
         while (currTime.isBefore(endTime) || currTime.isEqual(endTime)) {
-        	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-        	if (StringUtils.isEmpty(spanningWeeks) && 
-        		(currTime.getDayOfWeek() == DateTimeConstants.SATURDAY || currTime.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		// do nothing
-        	} else {
-	            Timestamp begin = new Timestamp(currTime.getMillis());
-	            Timestamp end = new Timestamp((currTime.plus(diffInMillis).getMillis()));
-	            TimeBlock tb = createTimeBlock(timesheetDocument, begin, end, assignment, earnCode, hours, amount, false, isLunchDeleted);
-	            lstTimeBlocks.add(tb);
-        	}
+	        Timestamp begin = new Timestamp(currTime.getMillis());
+	        Timestamp end = new Timestamp((currTime.plus(diffInMillis).getMillis()));
+	        TimeBlock tb = createTimeBlock(timesheetDocument, begin, end, assignment, earnCode, hours, amount, false, isLunchDeleted);
+	        lstTimeBlocks.add(tb);
+
         	currTime = currTime.plusDays(1);
         }
         return lstTimeBlocks;
@@ -111,7 +100,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         //Create 1 or many timeblocks if the span of timeblocks exceed more than one
         //day that is determined by pay period day(24 hrs + period begin date)
         Interval firstDay = null;
-        List<Interval> dayIntervals = TKUtils.getDaySpanForCalendarEntry(timesheetDocument.getCalendarEntry());
+        List<Interval> dayIntervals = TKUtils.getDaySpanForCalendarEntry(timesheetDocument.getPayCalendarEntry());
         List<TimeBlock> lstTimeBlocks = new ArrayList<TimeBlock>();
         Timestamp beginTemp = beginTimestamp;
 

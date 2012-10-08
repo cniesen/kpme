@@ -61,7 +61,6 @@ public class Job extends HrBusinessObject {
 	
 	private String hrDeptId;
 	private String hrPayTypeId;
-	private boolean eligibleForLeave;
 	
 	private Person principal;
 	private Department deptObj;
@@ -360,11 +359,5 @@ public class Job extends HrBusinessObject {
 	public void setId(String id) {
 		setHrJobId(id);
 	}
-	public boolean isEligibleForLeave() {
-		return eligibleForLeave;
-	}
 
-	public void setEligibleForLeave(boolean eligibleForLeave) {
-		this.eligibleForLeave = eligibleForLeave;
-	}
 }

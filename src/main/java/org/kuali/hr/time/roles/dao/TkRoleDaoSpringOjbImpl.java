@@ -173,7 +173,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addEqualToField("roleName", Criteria.PARENT_QUERY_PREFIX + "roleName");
         effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
         effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-
+        
         if (workArea != null || StringUtils.isNotEmpty(department) || StringUtils.isNotEmpty(chart)) {
             if (workArea != null)
                 effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
@@ -182,7 +182,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
             if (chart != null)
                 effdt.addEqualToField("chart", Criteria.PARENT_QUERY_PREFIX + "chart");
         }
-        
+
         timestamp.addEqualToField("roleName", Criteria.PARENT_QUERY_PREFIX + "roleName");
         timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
         timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
@@ -198,7 +198,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
 
         timestampSubQuery = QueryFactory.newReportQuery(TkRole.class, timestamp);
         timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-        
+
         effdt.addEqualTo("timestamp", timestampSubQuery);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
@@ -209,6 +209,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         if (workArea != null) {
             root.addEqualTo("workArea", workArea);
         }
+
         if (StringUtils.isNotEmpty(department)) {
             departmentCriteria.addEqualTo("department", department);
             Collection<WorkArea> collectionWorkAreas = TkServiceLocator.getWorkAreaService().getWorkAreas(department, asOfDate);

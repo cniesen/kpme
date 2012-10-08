@@ -45,7 +45,7 @@ public final class TkTestConstants {
 		public static final String WEEKLY_OVERTIME_RULE_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRule&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
-		public static final String EARN_CODE_SECURITY_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.earncodesec.EarnCodeSecurity&returnLocation="+
+		public static final String EARN_CODE_SECURITY_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.earncodesec.EarnCodeSecurity&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
 		public static final String DAILY_OVERTIME_RULE_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.overtime.daily.rule.DailyOvertimeRule&returnLocation="+
@@ -57,7 +57,7 @@ public final class TkTestConstants {
 		public static final String DEPT_LUNCH_RULE_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.dept.lunch.DeptLunchRule&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
-		public static final String ACCRUAL_CATEGORY_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.accrual.AccrualCategory&returnLocation="+
+		public static final String ACCRUAL_CATEGORY_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.accrual.AccrualCategory&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
 		public static final String SAL_GROUP_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.salgroup.SalGroup&returnLocation="+
@@ -72,7 +72,7 @@ public final class TkTestConstants {
 		public static final String EARN_CODE_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.earncode.EarnCode&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
-		public static final String EARN_CODE_GROUP_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.earncodegroup.EarnCodeGroup&returnLocation="+
+		public static final String EARN_GROUP_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.earngroup.EarnGroup&returnLocation="+
 		BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 
 		public static final String JOB_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.job.Job&returnLocation="+
@@ -119,24 +119,6 @@ public final class TkTestConstants {
 		public static final String WEEKLY_OVERTIME_RULE_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.time.overtime.weekly.rule.WeeklyOvertimeRuleGroup&tkWeeklyOvertimeRuleGroupId=1&returnLocation=" + BASE_URL + "/portal.do&methodToCall=edit";
 		
 		public static final String SHIFT_DIFFERENTIAL_RULE_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.time.shiftdiff.rule.ShiftDifferentialRule&methodToCall=start#topOfForm";
-
-		public static final String EMPLOYEE_OVERRIDE_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.employeeoverride.EmployeeOverride&methodToCall=start";
-		
-		public static final String LEAVE_ADJUSTMENT_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.leaveadjustment.LeaveAdjustment&methodToCall=start";
-		
-		public static final String ACCURAL_CATEGORY_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.accrual.AccrualCategory&methodToCall=start";
-
-		public static final String TIME_OFF_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.timeoff.SystemScheduledTimeOff&methodToCall=start";
-		
-		public static final String PRIN_HR_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.time.principal.PrincipalHRAttributes&methodToCall=start";
-		
-		public static final String LEAVE_CODE_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.leavecode.LeaveCode&methodToCall=start";
-		
-		public static final String LEAVE_DONATION_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.leavedonation.LeaveDonation&methodToCall=start";
-		
-		public static final String LEAVE_PLAN_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.lm.leaveplan.LeavePlan&methodToCall=start";
-		
-		public static final String LEAVE_PLAN_MAINT_URL = BASE_URL + "/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveplan.LeavePlan&returnLocation="+BASE_URL + "/portal.do&hideReturnLink=true&docFormKey=88888888";
 		
 		public static final String POSITION_MAINT_NEW_URL = BASE_URL + "/kr/maintenance.do?businessObjectClassName=org.kuali.hr.time.position.Position&methodToCall=start";
 		
@@ -157,12 +139,6 @@ public final class TkTestConstants {
 		public static final String TIME_DETAIL_URL = BASE_URL + "/TimeDetail.do";
 
 		public static final String PERSON_INFO_URL = BASE_URL + "/PersonInfo.do";
-        
-        public static final String LEAVE_REQUEST_PAGE_URL = BASE_URL + "/LeaveRequest.do";
-        
-        public static final String LEAVE_BLOCK_DISPLAY_URL = BASE_URL + "/LeaveBlockDisplay.do";
-        
-        public static final String LEAVE_CALENDAR_URL = BASE_URL + "/LeaveCalendar.do";
         
 	}
 

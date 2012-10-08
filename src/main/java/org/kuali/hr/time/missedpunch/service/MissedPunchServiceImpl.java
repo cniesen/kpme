@@ -222,7 +222,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(
                 TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks,
-                tdoc.getCalendarEntry(),
+                tdoc.getPayCalendarEntry(),
                 tdoc, tdoc.getPrincipalId()
         );
 

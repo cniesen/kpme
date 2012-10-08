@@ -15,7 +15,6 @@
  */
 package org.kuali.hr.time.base.web;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,13 +23,10 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.accrual.AccrualCategoryRule;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkRole;
@@ -72,43 +68,6 @@ public class PersonInfoAction extends TkAction {
 			personForm.setServiceDate("");
 		}
 		// KPME-1441
-		
-		if (principalHRAttributes != null && principalHRAttributes.getLeavePlan() != null) {
-			List<AccrualCategory> accrualCategories = new ArrayList<AccrualCategory>();
-			Map<String, BigDecimal> accrualCategoryRates = new HashMap<String, BigDecimal>();
-		    Map<String, String> accrualEarnIntervals = new HashMap<String, String>();
-		    Map<String, String> unitOfTime = new HashMap<String, String>();
-			
-			List<AccrualCategory> allAccrualCategories = TkServiceLocator.getAccrualCategoryService().getActiveLeaveAccrualCategoriesForLeavePlan(principalHRAttributes.getLeavePlan(), TKUtils.getCurrentDate());
-		    for (AccrualCategory accrualCategory : allAccrualCategories) {
-				if (StringUtils.equalsIgnoreCase(accrualCategory.getHasRules(), "Y")) {
-					AccrualCategoryRule accrualCategoryRule = TkServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCategory, TKUtils.getCurrentDate(), principalHRAttributes.getServiceDate());
-					if (accrualCategoryRule != null) {
-						accrualCategories.add(accrualCategory);
-						
-						accrualCategoryRates.put(accrualCategory.getAccrualCategory(), accrualCategoryRule.getAccrualRate());
-
-						for (Map.Entry<String, String> entry : TkConstants.ACCRUAL_EARN_INTERVAL.entrySet()) {					            
-				            if (accrualCategory.getAccrualEarnInterval().equals(entry.getKey())) {
-				            	accrualEarnIntervals.put(accrualCategory.getAccrualCategory(), entry.getValue());
-				            	break;
-				            }
-				        } 
-						
-						for (Map.Entry<String, String> entry : TkConstants.UNIT_OF_TIME.entrySet()) {					            
-				            if (accrualCategory.getUnitOfTime().equals(entry.getKey()) ){
-				            	unitOfTime.put(accrualCategory.getAccrualCategory(), entry.getValue());
-				            	break;
-				            }
-				        } 
-					}
-				}
-			}
-			personForm.setAccrualCategories(accrualCategories);
-			personForm.setAccrualCategoryRates(accrualCategoryRates);
-			personForm.setAccrualEarnIntervals(accrualEarnIntervals);
-			personForm.setUnitOfTime(unitOfTime);
-		}
 		
 		setupRolesOnForm(personForm);
 

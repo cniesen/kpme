@@ -30,41 +30,6 @@ import java.util.List;
 
 public class EarnCodeValidation extends MaintenanceDocumentRuleBase{
 	
-	boolean validateRollupToEarnCode(String earnCode, Date asOfDate) {
-		boolean valid = true;
-		if (!StringUtils.isEmpty(earnCode) && !ValidationUtils.validateEarnCode(earnCode, asOfDate)) {
-			this.putFieldError("rollupToEarnCode", "earncode.rollupToEarnCode.notfound", "Roll up to Earn code "
-					+ earnCode + "'");
-			valid = false;
-		}
-		return valid;
-	}
-	
-	boolean validateDefaultAmountOfTime(Long defaultAmountofTime) {
-		boolean valid = true;
-		if ( defaultAmountofTime != null ){
-			if (defaultAmountofTime.compareTo(new Long(24)) > 0  || defaultAmountofTime.compareTo(new Long(0)) < 0) {
-				this.putFieldError("defaultAmountofTime", "error.leaveCode.hours", "Default Amount of Time '"
-						+ defaultAmountofTime + "'");
-				valid = false;
-			}
-		}
-		return valid;
-	}
-	
-	boolean validateRecordMethod(String recordMethod, String accrualCategory, Date asOfDate){
-		boolean valid = true;
-		if(recordMethod != null) {
-			if(StringUtils.isNotEmpty(accrualCategory)) {
-				valid = ValidationUtils.validateRecordMethod(recordMethod, accrualCategory, asOfDate);
-				if(!valid) {
-					this.putFieldError("recordMethod", "earncode.recordMethod.invalid", "Record Method");
-				}
-			}
-		}
-		return valid;
-	}
-	
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		EarnCode earnCode = (EarnCode)this.getNewBo();
@@ -146,20 +111,6 @@ public class EarnCodeValidation extends MaintenanceDocumentRuleBase{
 				this.putFieldError("earnCode", "earncode.earncode.inactivate", earnCode.getEarnCode());
 				return false;
 			}
-		}
-		
-		if(!(this.validateDefaultAmountOfTime(earnCode.getDefaultAmountofTime()))) {
-			return false;
-		}
-		
-		if(earnCode.getRollupToEarnCode() != null && !StringUtils.isEmpty(earnCode.getRollupToEarnCode())) {
-			if(!(this.validateRollupToEarnCode(earnCode.getRollupToEarnCode(), earnCode.getEffectiveDate()))) {
-				return false;
-			}
-		}
-		
-		if(!validateRecordMethod(earnCode.getRecordMethod(), earnCode.getAccrualCategory(), earnCode.getEffectiveDate())) {
-			return false;
 		}
 		
 		return true;

@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.department.Department;
@@ -229,7 +228,7 @@ public class TkUserRoles implements UserRoles {
 
 
     @Override
-    public boolean isApproverForTimesheet(CalendarDocumentContract doc) {
+    public boolean isApproverForTimesheet(TimesheetDocument doc) {
         boolean approver = false;
 
         if (this.isSystemAdmin()) {
@@ -258,7 +257,7 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean isDocumentWritable(CalendarDocumentContract document) {
+    public boolean isDocumentWritable(TimesheetDocument document) {
         boolean writable = false;
 
         // Quick escape.
@@ -268,7 +267,7 @@ public class TkUserRoles implements UserRoles {
         // Sysadmin
         writable = this.isSystemAdmin();
         // Owner (and not enroute/final)
-        writable |= (StringUtils.equals(this.principalId, document.getDocumentHeader().getPrincipalId())
+        writable |= (StringUtils.equals(this.principalId, document.getPrincipalId())
                 && (StringUtils.equals(TkConstants.ROUTE_STATUS.INITIATED, document.getDocumentHeader().getDocumentStatus()) ||
                 StringUtils.equals(TkConstants.ROUTE_STATUS.SAVED, document.getDocumentHeader().getDocumentStatus()) ||
                 (StringUtils.equals(TkConstants.ROUTE_STATUS.ENROUTE, document.getDocumentHeader().getDocumentStatus()))));
@@ -309,7 +308,7 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean isDocumentReadable(CalendarDocumentContract document) {
+    public boolean isDocumentReadable(TimesheetDocument document) {
         boolean readable = false;
 
         // Quick escape.
@@ -319,7 +318,7 @@ public class TkUserRoles implements UserRoles {
         // Sysadmin
         readable = this.isSystemAdmin();
         // Owner
-        readable |= StringUtils.equals(this.principalId, document.getDocumentHeader().getPrincipalId());
+        readable |= StringUtils.equals(this.principalId, document.getPrincipalId());
         // Global VO
         readable |= this.isGlobalViewOnly();
 
@@ -343,7 +342,7 @@ public class TkUserRoles implements UserRoles {
         return readable;
     }
 
-    private boolean isLocationAdmin(CalendarDocumentContract doc) {
+    private boolean isLocationAdmin(TimesheetDocument doc) {
         for (Assignment assign : doc.getAssignments()) {
             String location = assign.getJob().getLocation();
             return this.orgAdminRolesChart.containsKey(location);
@@ -351,7 +350,7 @@ public class TkUserRoles implements UserRoles {
         return false;
     }
 
-    private boolean isDepartmentAdmin(CalendarDocumentContract doc) {
+    private boolean isDepartmentAdmin(TimesheetDocument doc) {
         for (Assignment assign : doc.getAssignments()) {
             String dept = assign.getDept();
             return this.orgAdminRolesDept.containsKey(dept);
@@ -360,8 +359,8 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean canSubmitTimesheet(CalendarDocumentContract doc) {
-        if (StringUtils.equals(TKContext.getPrincipalId(), doc.getDocumentHeader().getPrincipalId())) {
+    public boolean canSubmitTimesheet(TimesheetDocument doc) {
+        if (StringUtils.equals(TKContext.getPrincipalId(), doc.getPrincipalId())) {
             return true;
         }
 

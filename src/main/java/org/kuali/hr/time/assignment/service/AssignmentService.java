@@ -15,7 +15,6 @@
  */
 package org.kuali.hr.time.assignment.service;
 
-import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
@@ -112,20 +111,6 @@ public interface AssignmentService {
      * @return
      */
     public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry);
-    /**
-     * Get assignments for Time Calendar by calendar entry
-     * @param principalId
-     * @param calendarEntry
-     * @return
-     */
-    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntries calendarEntry);
-    /**
-     * Get assignments for Leave Calendar by calendar entry
-     * @param principalId
-     * @param calendarEntry
-     * @return
-     */
-    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntries calendarEntry);
     
     /**
 	 * KPME-1129 Kagata
@@ -140,35 +125,6 @@ public interface AssignmentService {
 
     List<Assignment> searchAssignments(Date fromEffdt, Date toEffdt, String principalId, String jobNumber,
                                     String dept, String workArea, String active, String showHistory);
-    
-    
-    /**
-     * Get all assignment descriptions for a document
-     * @param td
-     * @param clockOnlyAssignments
-     * @return
-     */
-    public Map<String,String> getAssignmentDescriptions(LeaveCalendarDocument lcd);
-    
-    /**
-     * Get all assignment descriptions for given list of Assignments
-     * @param assignments
-     * @return
-     */
-    public Map<String, String> getAssignmentDescriptionsForAssignments(List<Assignment>  assignments);
-    
-    public Assignment getAssignment(LeaveCalendarDocument leaveCalendarDocument, String assignmentKey);
-    
-    public Assignment getAssignment(List<Assignment> assignments, String assignmentKey, Date beginDate);
-    
+
     public Assignment getMaxTimestampAssignment(String principalId);
-    
-    /**
-     * Filter the given list of assignments with given criteria
-     * @param assignments
-     * @param flsaStatus
-     * @param chkForLeaveEligible
-     * @return List<Assignment>
-     */
-    public List<Assignment> filterAssignments(List<Assignment> assignments, String flsaStatus, boolean chkForLeaveEligible);
 }

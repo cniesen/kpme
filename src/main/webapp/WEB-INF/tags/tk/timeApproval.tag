@@ -70,12 +70,13 @@
 	                    </thead>
 	                    <tbody>
 	                    <c:forEach var="note" items="${row.notes}">
+                            <jsp:setProperty name="tagSupport" property="principalId" value="${note.authorPrincipalId}"/>
 	                        <tr>
-	                            <td>${note.noteAuthorFullName}</td>
-	                            <td style="width: 30px;">${note.noteCreateDate}</td>
+	                            <td>${tagSupport.principalFullName}</td>
+	                            <td style="width: 30px;">${note.createDate}</td>
 	                            <td>
 	                                <div class="warning-note-message">
-	                                        ${note.noteText}
+	                                        ${note.text}
 	                                </div>
 	                            </td>
 	                        </tr>
@@ -104,7 +105,7 @@
 	        </display:column>
 	    </c:forEach>
 	    <display:column title="Action">
-	        <tkApprovalRowButtons appRow="${row}"/>
+	        <tk:tkApprovalRowButtons appRow="${row}"/>
 	    </display:column>
 	    <display:column title="Select All <input type='checkbox' name='Select' id='checkAllAuto'></input>"
 	                    class="last_column_${row_rowNum}">

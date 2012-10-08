@@ -140,7 +140,7 @@ public interface TimeBlockService {
 
     /**
      * Get overnight timeblocks by the clock log begin id
-     * @param clockLogBeginId
+     * @param clockLogEndId
      * @return
      */
     public List<TimeBlock> getOvernightTimeBlocks(String clockLogEndId);

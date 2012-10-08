@@ -43,7 +43,6 @@
                 <ref bean="PayType-active"/>
 				<ref bean="PayType-timestamp" />
 				<ref bean="PayType-hrEarnCodeId" />
-				<ref bean="PayType-ovtEarnCode" />
 			</list>
 		</property>
         <property name="relationships">
@@ -54,7 +53,7 @@
                 <list>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="regEarnCode" p:targetName="earnCode"/>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="hrEarnCodeId" p:targetName="hrEarnCodeId"/>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="ovtEarnCode" p:targetName="ovtEarnCode"/>
+                  <!--<bean parent="PrimitiveAttributeDefinition" p:sourceName="ovtEarnCode" p:targetName="ovtEarnCode"/>-->
                 </list>
               </property>
             </bean>
@@ -189,17 +188,7 @@
 			<bean parent="HiddenControlDefinition" />
 		</property>
 	</bean>
-	
-	<bean id="PayType-ovtEarnCode" parent="PayType-ovtEarnCode-parentBean" />
-	<bean id="PayType-ovtEarnCode-parentBean" abstract="true"
-		parent="AttributeDefinition">
-		<property name="shortLabel" value="ovtEarnCode" />
-		<property name="control">
-			<bean parent="HiddenControlDefinition" />
-		</property>
-		<property name="name" value="ovtEarnCode" />
-		<property name="label" value="ovtEarnCode" />
-	</bean>
+
 	<!--  Inquiry Definitions  -->
   
   	<bean id="PayType-inquiryDefinition" parent="PayType-inquiryDefinition-parentBean" />
@@ -217,7 +206,7 @@
 							<bean parent="FieldDefinition" p:attributeName="descr" />
 							<bean parent="FieldDefinition" p:attributeName="regEarnCode" />
 							<bean parent="FieldDefinition" p:attributeName="active" />
-							<bean parent="FieldDefinition" p:attributeName="ovtEarnCode" />
+							<!--<bean parent="FieldDefinition" p:attributeName="ovtEarnCode" />-->
 						</list>
 					</property>
 					<property name="title" value="PayType" />

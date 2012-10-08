@@ -38,17 +38,17 @@ public class SupervisorApprovalBatchJob extends BatchJob {
 
     @Override
     public void doWork() {
-		Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
-		List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
-		for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
-			populateBatchJobEntry(timesheetDocumentHeader);
-		}
+        Date payBeginDate = payCalendarEntry.getBatchEmployeeApprovalDate();
+        List<TimesheetDocumentHeader> documentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(payBeginDate);
+        for(TimesheetDocumentHeader timesheetDocumentHeader : documentHeaders){
+            populateBatchJobEntry(timesheetDocumentHeader);
+        }
     }
 
 
     @Override
     protected void populateBatchJobEntry(Object o) {
-    	TimesheetDocumentHeader tdh = (TimesheetDocumentHeader)o;
+        TimesheetDocumentHeader tdh = (TimesheetDocumentHeader)o;
         String ip = this.getNextIpAddressInCluster();
         if(StringUtils.isNotBlank(ip)){
             //insert a batch job entry here

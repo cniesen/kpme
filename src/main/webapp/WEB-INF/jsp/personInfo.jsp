@@ -38,23 +38,6 @@
                         <td>${Form.serviceDate}</td>
                     </tr>
                 </table>
-                <br>
-                <table>
-                	<tr>
-          				<th>Accrual Category</th>
-          				<th>Current Rate</th>
-          				<th>Accrual Earn Interval</th>
-          				<th>Unit of Time</th>
-          			</tr>
-          			<c:forEach var="accrualCategory" items="${Form.accrualCategories}">
-          				<tr>
-          					<td>${accrualCategory.accrualCategory} - ${accrualCategory.descr}</td>
-          					<td>${Form.accrualCategoryRates[accrualCategory.accrualCategory]}</td>
-          					<td>${accrualCategory.accrualEarnInterval}</td>
-          					<td>${accrualCategory.unitOfTime}</td>
-          				</tr>
-          			</c:forEach>
-                </table>
             </div>
             
             <h3><a href="#">Your Jobs:</a></h3>
@@ -72,7 +55,6 @@
                             <th>Location</th>
                             <th>Compensation Rate</th>
                             <th>Effective Date</th>
-                            <th>Leave Eligible</th>
                             <th>FTE</th>
                         </tr>
                         <tr>
@@ -85,13 +67,6 @@
                             <td>${job.location }</td>
                             <td><fmt:formatNumber value="${job.compRate }" type="currency"/></td>
                             <td>${job.effectiveDate }</td>
-                            
-                            <c:if test="${job.eligibleForLeave == false}"> 
-                            	<td>No</td>
-                            </c:if>
-                            <c:if test="${job.eligibleForLeave == true}"> 
-                            	<td>Yes</td>
-                            </c:if>
                             <td>${job.fte }</td>
                         </tr>
                         <c:if test="${fn:length(Form.jobNumberToListAssignments) > 0}">

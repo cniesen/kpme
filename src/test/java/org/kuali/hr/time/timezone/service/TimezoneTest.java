@@ -33,7 +33,7 @@ public class TimezoneTest extends KPMETestCase {
 	public void testClockInOutWithTimezone() throws Exception {
 		HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.CLOCK_URL,true);
 		Assert.assertNotNull(page);
-    	
+
     	Map<String, Object> criteria = new LinkedHashMap<String, Object>();
     	criteria.put("selectedAssignment", new String[]{TkTestConstants.FormElementTypes.DROPDOWN, "30_30_30"});
     	// choose the first assignment from the drop down
@@ -41,7 +41,7 @@ public class TimezoneTest extends KPMETestCase {
     	Assert.assertNotNull(page);
     	// clock in
     	page = TkTestUtils.clickButton(page, "clockAction");
-    	// clock out 
+    	// clock out
     	page = TkTestUtils.clickButton(page, "clockAction");
     	HtmlUnitUtil.createTempFile(page);
     	Assert.assertTrue("Time zone information is incorrect", page.asText().contains("Eastern"));

@@ -20,28 +20,20 @@
     <ul class="chan">
         <li>
             <portal:portalLink displayTitle="true" title="Accrual Category"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.accrual.AccrualCategory&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
-        </li>
-        <li>
-            <portal:portalLink displayTitle="true" title="Employee Override"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.employeeoverride.EmployeeOverride&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
-        </li>
-        <li>
-            <portal:portalLink displayTitle="true" title="Leave Adjustment"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveadjustment.LeaveAdjustment&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
-        </li>
-        <li>
-            <portal:portalLink displayTitle="true" title="Leave Donation"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leavedonation.LeaveDonation&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
-        </li>
-        <li>
-            <portal:portalLink displayTitle="true" title="Leave Plan"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.leaveplan.LeavePlan&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
-        </li>
-        <li>
-            <portal:portalLink displayTitle="true" title="System Scheduled Time Off"
-                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.lm.timeoff.SystemScheduledTimeOff&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
+                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.accrual.AccrualCategory&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
         </li>
 	</ul>
+    <ul class="chan">
+        <li>
+            <portal:portalLink displayTitle="true" title="Holiday Calendar"
+                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.holidaycalendar.HolidayCalendar&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
+        </li>
+    </ul>
+    <ul class="chan">
+        <li>
+            <portal:portalLink displayTitle="true" title="Time Off Accrual"
+                               url="${ConfigProperties.application.url}/kr/lookup.do?methodToCall=start&businessObjectClassName=org.kuali.hr.time.accrual.TimeOffAccrual&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
+        </li>
+    </ul>
 </div>
 <channel:portalChannelBottom />

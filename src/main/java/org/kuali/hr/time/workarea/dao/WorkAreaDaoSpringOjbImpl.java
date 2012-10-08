@@ -128,7 +128,7 @@ public class WorkAreaDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 		if(StringUtils.isNotBlank(dept)){
 			crit.addLike("dept", dept);
 		}
-		if(StringUtils.isNotBlank(workArea) && StringUtils.isNotEmpty(workArea)){
+		if(StringUtils.isNotBlank(workArea)){
 			crit.addLike("workArea", workArea);
 		}
 		if(StringUtils.isNotBlank(workAreaDescr)){

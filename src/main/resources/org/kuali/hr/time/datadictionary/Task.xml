@@ -137,7 +137,7 @@
     <property name="description" value="Description" />
   </bean>
 
-
+  
   <bean id="Task-administrativeDescription" parent="Task-administrativeDescription-parentBean" />
   <bean id="Task-administrativeDescription-parentBean" abstract="true" parent="AttributeDefinition">
       <property name="forceUppercase" value="true" />

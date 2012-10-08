@@ -23,7 +23,7 @@ import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -54,8 +54,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
         List<Boolean> dayArrangements = new ArrayList<Boolean>();
 
-		timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getCalendarEntry(), dayArrangements));
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getCalendarEntry(), TkServiceLocator.getCalendarService().getCalendar(timesheetDocument.getCalendarEntry().getHrCalendarId()), true);
+		timeSummary.setSummaryHeader(getHeaderForSummary(timesheetDocument.getPayCalendarEntry(), dayArrangements));
+		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getPayCalendarEntry(), TkServiceLocator.getCalendarService().getCalendar(timesheetDocument.getPayCalendarEntry().getHrCalendarId()), true);
 		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, dayArrangements, timesheetDocument.getAsOfDate());
@@ -161,7 +161,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		//now create all teh earn group sections and aggregate accordingly
 		for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSection.values()){
 			String earnCode = earnCodeSection.getEarnCode();
-			EarnCodeGroup earnGroupObj = TkServiceLocator.getEarnCodeGroupService().getEarnCodeGroupSummaryForEarnCode(earnCode, TKUtils.getTimelessDate(asOfDate));
+            EarnGroup earnGroupObj = TkServiceLocator.getEarnGroupService().getEarnGroupSummaryForEarnCode(earnCode, TKUtils.getTimelessDate(asOfDate));
 			String earnGroup = null;
 			if(earnGroupObj == null){
 				earnGroup = OTHER_EARN_GROUP;

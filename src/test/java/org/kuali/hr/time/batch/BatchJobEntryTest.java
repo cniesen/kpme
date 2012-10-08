@@ -29,9 +29,9 @@ import org.kuali.hr.time.util.TkConstants;
 public class BatchJobEntryTest extends KPMETestCase {
 	private static final String BATCH_JOB_NAME = "testJob";
 	private Long bjeId;
-	
+
 	private BatchJobEntryService bjeService;
-	
+
 	@Before
     public void setUp() throws Exception {
     	super.setUp();
@@ -45,7 +45,7 @@ public class BatchJobEntryTest extends KPMETestCase {
 		bje.setIpAddress("1.2.3.4");
 		bje.setPrincipalId("admin");
 		bje.setDocumentId("testDoc");
-		
+
 		Calendar pc = TkServiceLocator.getCalendarService().getCalendarByGroup("BW-CAL");
 		bje.setHrPyCalendarEntryId(pc.getHrCalendarId());
 		List<BatchJob> batchJobs = TkServiceLocator.getBatchJobService().getBatchJobs(pc.getHrCalendarId());
@@ -54,18 +54,18 @@ public class BatchJobEntryTest extends KPMETestCase {
 			batchJobId = batchJobs.get(0).getTkBatchJobId();
 		}
 		bje.setTkBatchJobId(batchJobId);
-		
+
 		bjeService.saveBatchJobEntry(bje);
-		
+
 		bjeId = bje.getTkBatchJobEntryId();
 	}
-	
+
 	@Test
 	public void testSavingAndRetrievingBatchJobEntry() throws Exception {
 		creatAndSaveBatchJobEntry();
 		BatchJobEntry bje = (BatchJobEntry) bjeService.getBatchJobEntry(bjeId);
 		Assert.assertTrue("Batch Job Name not right", bje.getBatchJobName().equals(BATCH_JOB_NAME));
-		
+
 		List<BatchJobEntry> entries = bjeService.getBatchJobEntries(bje.getTkBatchJobId());
 		Assert.assertTrue("Batch Job Entry not empty", (!entries.isEmpty()));
 	}

@@ -162,14 +162,14 @@
 	<bean id="PayGrade-userPrincipalId-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="User Principal Id" />
-		<property name="maxLength" value="10" />
+		<property name="maxLength" value="27" />
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern">
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
 		<property name="control">
-			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+			<bean parent="LookupReadonlyControlDefinition" p:size="27" />
 		</property>
 		<property name="name" value="userPrincipalId" />
 		<property name="label" value="User Principal Id" />

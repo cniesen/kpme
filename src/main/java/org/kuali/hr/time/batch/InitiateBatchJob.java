@@ -29,7 +29,7 @@ import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 
 public class InitiateBatchJob extends BatchJob {
-	private Logger LOG = Logger.getLogger(InitiateBatchJob.class);
+    private Logger LOG = Logger.getLogger(InitiateBatchJob.class);
 
 
     public InitiateBatchJob(String hrPyCalendarEntryId) {
@@ -52,17 +52,17 @@ public class InitiateBatchJob extends BatchJob {
 	}
 
 
-	@Override
-	protected void populateBatchJobEntry(Object o) {
-		Assignment assign = (Assignment)o;
-		String ip = this.getNextIpAddressInCluster();
-		if(StringUtils.isNotBlank(ip)){
-			//insert a batch job entry here
+    @Override
+    protected void populateBatchJobEntry(Object o) {
+        Assignment assign = (Assignment)o;
+        String ip = this.getNextIpAddressInCluster();
+        if(StringUtils.isNotBlank(ip)){
+            //insert a batch job entry here
             BatchJobEntry entry = this.createBatchJobEntry(this.getBatchJobName(), ip, assign.getPrincipalId(), null,null);
             TkServiceLocator.getBatchJobEntryService().saveBatchJobEntry(entry);
-		} else {
-			LOG.info("No ip found in cluster to assign batch jobs");
-		}
-	}
+        } else {
+            LOG.info("No ip found in cluster to assign batch jobs");
+        }
+    }
 
 }

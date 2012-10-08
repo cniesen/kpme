@@ -173,7 +173,6 @@ public class TimeApprovalAction extends ApprovalAction{
 		return mapping.findForward("basic");
 	}
 	
-	@Override
 	public ActionForward loadApprovalTab(ActionMapping mapping, ActionForm form,
 	HttpServletRequest request, HttpServletResponse response)
 				throws Exception {

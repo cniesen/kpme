@@ -116,43 +116,14 @@ public interface JobService {
                       java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory);
     
     public int getJobCount(String principalId, Long jobNumber, String dept);
-    
-	/**
-	 * Get list of active jobs eligible for leave for given principal and date
-	 * @param principalId
-	 * @param asOfDate
-	 * @return
-	 */
-    public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate);
-    
+
+
     /**
-	 * Get sum of fte of given jobs
-	 * @param jobs
-	 * @return
-	 */
-    public BigDecimal getFteSumForJobs(List<Job> jobs);
-    /**
-	 * Get sum of standard hours of given jobs
-	 * @param jobs
-	 * @return
-	 */
-    public BigDecimal getStandardHoursSumForJobs(List<Job> jobs);
-    
-    /**
-	 * Get list of all active jobs eligible for leave for given principal and date range
-	 * @param principalId
-	 * @param asOfDate
-	 * @return
-	 */
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate);
-    
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, Date startDate, Date endDate);
-    
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate);
-    
-    /*
-     * Get the job entry with the max timestamp for given pricipalId
+     * Get sum of standard hours of given jobs
+     * @param jobs
+     * @return
      */
-    public Job getMaxTimestampJob(String principalId);
-    
+    public BigDecimal getStandardHoursSumForJobs(List<Job> jobs);
+
+
 }

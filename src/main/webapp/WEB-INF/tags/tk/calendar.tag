@@ -5,17 +5,6 @@
 <%@ attribute name="calType" required="true" type="java.lang.String" %>
 
 <div id="tkCal" class="ui-widget cal ${calType}" style="margin: 0px auto 0px auto; width:100%;">
-	<c:choose>
-       <c:when test="${calType eq 'payCalendar'}">
-           <c:set var="calendarLocation" value="TimeDetail.do"/>
-       </c:when>
-       <c:when test="${calType eq 'leaveCalendar'}">
-           <c:set var="calendarLocation" value="LeaveCalendar.do"/>
-       </c:when>
-       <c:otherwise>
-      		<c:set var="calendarLocation" value=""/>
-       </c:otherwise>
-     </c:choose>
     <table class="cal-header">
         <tbody>
         <tr>
@@ -46,30 +35,19 @@
                 <table>
                     <tbody>
                         <tr>
-                            <td align="right">
-                            <%--<c:if test="${!Form.onCurrentPeriod}" >--%>
+                            <td align="center">
+                                <c:if test="${!Form.onCurrentPeriod}" >
                                 <span class="header-title-right">
-	       		                    <a href="${calendarLocation}?methodToCall=gotoCurrentPayPeriod"
-                                        target="_self" id="cpplink">Current Pay Period</a>
-                                </span>
-                            <%--</c:if>--%>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="right">
-                            <c:if test="${calType eq 'leaveCalendar'}">
-                                <span class="header-title-right">
-         	                        <a href="LeaveBlockDisplay.do"
-                                        target="_self" id="ledger-link">Ledger View</a>
-                                </span>
-                            </c:if>
+	       		                    <a href="${KualiForm.backLocation}?methodToCall=gotoCurrentPayPeriod"
+                                        target="_self" id="cppLink">Go to Current Period</a>
+                                </c:if>
                             </td>
                         </tr>
                         <tr>
                             <td align="right">
                             <c:if test="${calType eq 'payCalendar'}">
                                 <span class="header-title-right">
-                                    <a href="${calendarLocation}?methodToCall=actualTimeInquiry&documentId=${Form.documentId}"
+                                    <a href="${KualiForm.backLocation}?methodToCall=actualTimeInquiry&documentId=${Form.documentId}"
                                         target="_blank" id="atiLink">Actual Time Inquiry</a>
                                 </span>
                             </c:if>
@@ -113,10 +91,6 @@
                             <c:set var="dayId" value="gray_day"/>
                             <c:set var="dayClass" value="ui-state-default"/>
                         </c:if>
- 						<c:if test="${calType eq 'leaveCalendar' and not day.dayEditable}">
- 						 	<c:set var="dayId" value="readonly_day"/> 						 	
- 							<c:set var="dayClass" value="ui-state-default"/>
- 						</c:if>
 
                         <td id="${dayId}" class="${dayClass}" style="${dayStyle}">
                                 <%-- Day Number --%>
@@ -124,16 +98,7 @@
                                 <%-- Render the Time Blocks --%>
 
                             <div>
-                                <c:choose>
-                                    <c:when test="${calType eq 'payCalendar'}">
-                                        <tk:payCalendar day="${day}"/>
-                                    </c:when>
-                                    <c:when test="${calType eq 'leaveCalendar'}">
-                                        <tk:leaveCalendar day="${day}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                    </c:otherwise>
-                                </c:choose>
+                                <tk:payCalendar day="${day}"/>
                                 <%--<div class="create" id="${day.dateString}" style="background-color:#cccccc; height:100%; padding-bottom:20px;"></div>--%>
                             </div>
                         </td>

@@ -169,7 +169,7 @@ public class AssignmentAccount extends HrBusinessObject {
 	}
 
 
-
+    
 	public String getTkAssignAcctId() {
 		return tkAssignAcctId;
 	}

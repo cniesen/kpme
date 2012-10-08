@@ -16,6 +16,10 @@
 package org.kuali.hr.time.assignment;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,9 +36,9 @@ public class AssignmentAccountMaintTest extends KPMETestCase{
 	private static final String TEST_ASSIGN_ID="23";
 	private static String assignmentAccountId;
 	private BigDecimal TEST_PERCENT =  new BigDecimal(1);
-	
+
 	@Test
-	public void testAssignmentAccountMaint() throws Exception {	 
+	public void testAssignmentAccountMaint() throws Exception {
 		HtmlPage assignmentAccountLookup = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.ASSIGNMENT_ACCOUNT_MAINT_URL);
 		assignmentAccountLookup = HtmlUnitUtil.clickInputContainingText(assignmentAccountLookup, "search");
 		Assert.assertTrue("Page contains test assignmentAccount", assignmentAccountLookup.asText().contains(TEST_ASSIGN_ID.toString()));
@@ -52,7 +56,7 @@ public class AssignmentAccountMaintTest extends KPMETestCase{
 		assignmentAccount.setFinCoaCd(TEST_CODE);
 		assignmentAccount.setFinObjectCd(TEST_CODE);
 		assignmentAccount.setFinSubObjCd(TEST_CODE);
-		assignmentAccount.setPercent(TEST_PERCENT);		
+		assignmentAccount.setPercent(TEST_PERCENT);
 		KRADServiceLocator.getBusinessObjectService().save(assignmentAccount);
 		assignmentAccountId = assignmentAccount.getTkAssignAcctId();
 	}
@@ -63,7 +67,7 @@ public class AssignmentAccountMaintTest extends KPMETestCase{
 		KRADServiceLocator.getBusinessObjectService().delete(assignmentAccountObj);
 		super.tearDown();
 	}
-	
+
 }
 
 

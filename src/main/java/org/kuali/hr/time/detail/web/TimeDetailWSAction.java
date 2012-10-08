@@ -32,7 +32,6 @@ import org.apache.struts.action.ActionMapping;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.leavecalendar.validation.LeaveCalendarValidationService;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.detail.validation.TimeDetailValidationService;
@@ -68,16 +67,8 @@ public class TimeDetailWSAction extends TimesheetAction {
     public ActionForward validateTimeEntry(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeDetailActionFormBase tdaf = (TimeDetailActionFormBase) form;
         JSONArray errorMsgList = new JSONArray();
-        List<String> errors = new ArrayList<String>();
-        
-    	EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument().getAsOfDate());
-    	if(ec != null && ec.getLeavePlan() != null) {	// leave blocks changes
-    		errors = LeaveCalendarValidationService.validateLeaveEntryDetails(tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getSpanningWeeks().equalsIgnoreCase("y"));
-    	} else {	// time blocks changes
-    		errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
-    	}
-        
-//        List<String> errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
+
+        List<String> errors = TimeDetailValidationService.validateTimeEntryDetails(tdaf);
         errorMsgList.addAll(errors);
 
         tdaf.setOutputString(JSONValue.toJSONString(errorMsgList));
@@ -115,12 +106,6 @@ public class TimeDetailWSAction extends TimesheetAction {
                         earnCodeMap.put("earnCode", earnCode.getEarnCode());
                         earnCodeMap.put("desc", earnCode.getDescription());
                         earnCodeMap.put("type", earnCode.getEarnCodeType());
-                        // for leave blocks
-                        earnCodeMap.put("leavePlan", earnCode.getLeavePlan());
-                        if(StringUtils.isNotEmpty(earnCode.getLeavePlan())) {
-                            earnCodeMap.put("fractionalTimeAllowed", earnCode.getFractionalTimeAllowed());
-                            earnCodeMap.put("unitOfTime", ActionFormUtils.getUnitOfTimeForEarnCode(earnCode));
-                        }
                         earnCodeList.add(earnCodeMap);
                     }
                 }
@@ -137,6 +122,10 @@ public class TimeDetailWSAction extends TimesheetAction {
 
         shouldAddEarnCode = earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
                 && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover());
+
+        shouldAddEarnCode |= !(assignment.getTimeCollectionRule().isClockUserFl() &&
+                StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) &&
+                StringUtils.equals(TKContext.getPrincipalId(), assignment.getPrincipalId()));
 
         // If the timeblock is readonly (happens when a sync user is editing a sync timeblock) and the earn code is RGH,
         // it should still add the RGH earn code.

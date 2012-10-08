@@ -33,15 +33,15 @@ public class TimeSummaryTest extends KPMETestCase {
 	public void testTimeBlockTimeHourDetailBreakup() throws Exception{
 		DateTime beginTime = new DateTime(2010, 1, 2, 1, 0, 0, 0);
 		DateTime endTime = new DateTime(2010, 1, 4, 2, 0, 0, 0);
-		
+
 		TimeBlock timeBlock = new TimeBlock();
 		timeBlock.setBeginTimestamp(new Timestamp(beginTime.getMillis()));
 		timeBlock.setEndTimestamp(new Timestamp(endTime.getMillis()));
-		
+
 		TimeHourDetail timeHourDetail = new TimeHourDetail();
-		
+
 		Map<Timestamp, BigDecimal> timeToHrs = TkTestUtils.getDateToHoursMap(timeBlock, timeHourDetail);
 		Assert.assertTrue(timeToHrs!=null);
 	}
-	
+
 }

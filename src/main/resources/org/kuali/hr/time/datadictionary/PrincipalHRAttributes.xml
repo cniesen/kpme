@@ -39,13 +39,10 @@
 				<ref bean="PrincipalHRAttributes-principalId" />
 				<ref bean="PrincipalHRAttributes-name" />
 				<ref bean="PrincipalHRAttributes-payCalendar" />
-				<ref bean="PrincipalHRAttributes-leavePlan" />
-				<ref bean="PrincipalHRAttributes-leaveCalendar" />
+				<ref bean="PrincipalHRAttributes-holidayCalendarGroup" />
 				<ref bean="PrincipalHRAttributes-serviceDate" />
 				<ref bean="PrincipalHRAttributes-fmlaEligible" />
-				<ref bean="PrincipalHRAttributes-workersCompEligible" />
-				<!-- <ref bean="PrincipalHRAttributes-recordTime" />
-				<ref bean="PrincipalHRAttributes-recordLeave" /> -->
+				<ref bean="PrincipalHRAttributes-workmansCompEligible" />
 				<ref bean="PrincipalHRAttributes-timezone" />
 				<ref bean="PrincipalHRAttributes-effectiveDate" />
 				<ref bean="PrincipalHRAttributes-timestamp" />
@@ -66,26 +63,18 @@
               <property name="objectAttributeName" value="calendar"/>
               <property name="primitiveAttributes">
                 <list>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="leaveCalendar" p:targetName="calendarName"/>
-                </list>
-              </property>
-            </bean>
-            <bean parent="RelationshipDefinition">
-              <property name="objectAttributeName" value="calendar"/>
-              <property name="primitiveAttributes">
-                <list>
 					<bean parent="PrimitiveAttributeDefinition" p:sourceName="payCalendar" p:targetName="calendarName"/>
                 </list>
               </property>
             </bean>
-            <bean parent="RelationshipDefinition">
-				<property name="objectAttributeName" value="leavePlanObj" />
-				<property name="primitiveAttributes">
-					<list>
-						<bean parent="PrimitiveAttributeDefinition" p:sourceName="leavePlan" p:targetName="leavePlan" />
-					</list>
-				</property>
-			</bean>
+              <bean parent="RelationshipDefinition">
+                  <property name="objectAttributeName" value="holidayCalendar"/>
+                  <property name="primitiveAttributes">
+                      <list>
+                          <bean parent="PrimitiveAttributeDefinition" p:sourceName="holidayCalendarGroup" p:targetName="holidayCalendarGroup"/>
+                      </list>
+                  </property>
+              </bean>
         </list>
     </property>  		
 	</bean>
@@ -134,38 +123,18 @@
     	<property name="label" value="Pay Calendar"/>
   	</bean>
 	
-	<bean id="PrincipalHRAttributes-leaveCalendar" parent="PrincipalHRAttributes-leaveCalendar-parentBean"/>
- 	<bean id="PrincipalHRAttributes-leaveCalendar-parentBean" abstract="true" parent="AttributeDefinition">
-    	<property name="shortLabel" value="Leave Calendar"/>
-    	<property name="maxLength" value="15" />
-		<property name="validationPattern">
-			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="false" />
-			</bean>
-		</property>
+    <bean id="PrincipalHRAttributes-holidayCalendarGroup" parent="PrincipalHRAttributes-holidayCalendarGroup-parentBean"/>
+    <bean id="PrincipalHRAttributes-holidayCalendarGroup-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Holiday Calendar Group"/>
+        <property name="maxLength" value="3" />
+        <property name="validationPattern">
+            <bean parent="AlphaNumericValidationPattern" />
+        </property>
 		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
+			<bean parent="TextControlDefinition" p:size="3" />
 		</property>
-    	<property name="name" value="leaveCalendar"/>
-    	<property name="label" value="Leave Calendar"/>
-  	</bean>
-  	
-  	<!-- 	leave plan -->
-	<bean id="PrincipalHRAttributes-leavePlan" parent="PrincipalHRAttributes-leavePlan-parentBean" />
-	<bean id="PrincipalHRAttributes-leavePlan-parentBean" abstract="true"
-		parent="AttributeDefinition">
-		<property name="shortLabel" value="Leave Plan" />
-		<property name="maxLength" value="15" />
-		<property name="validationPattern">
-			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="false" />
-			</bean>
-		</property>
-		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
-		</property>
-		<property name="name" value="leavePlan" />
-		<property name="label" value="Leave Plan" />
+        <property name="name" value="holidayCalendarGroup"/>
+        <property name="label" value="Holiday Calendar Group"/>
 	</bean>
 		
 	<bean id="PrincipalHRAttributes-serviceDate" parent="PrincipalHRAttributes-serviceDate-parentBean" />
@@ -254,41 +223,16 @@
     	<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
   	</bean>
 	
- 	<bean id="PrincipalHRAttributes-workersCompEligible" parent="PrincipalHRAttributes-workersCompEligible-parentBean"/>
-  	<bean id="PrincipalHRAttributes-workersCompEligible-parentBean" abstract="true" parent="AttributeDefinition">
+ 	<bean id="PrincipalHRAttributes-workmansCompEligible" parent="PrincipalHRAttributes-workmansCompEligible-parentBean"/>
+  	<bean id="PrincipalHRAttributes-workmansCompEligible-parentBean" abstract="true" parent="AttributeDefinition">
     	<property name="shortLabel" value="Workman's Comp Eligible"/>
     	<property name="control">
       		<bean parent="CheckboxControlDefinition"/>
     	</property>
-    	<property name="name" value="workersCompEligible"/>
-    	<property name="label" value="Worker's Comp Eligible"/>
+    	<property name="name" value="workmansCompEligible"/>
+    	<property name="label" value="Workman's Comp Eligible"/>
     	<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
   	</bean>
-  	
-  	<!-- KPME-1268 Kagata adding recordTime -->
-	<!-- <bean id="PrincipalHRAttributes-recordTime" parent="PrincipalHRAttributes-recordTime-parentBean" />
-	<bean id="PrincipalHRAttributes-recordTime-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="shortLabel" value="Record Time" />
-				<property name="control">
-			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.hr.time.util.TkHistoryKeyValueFinder">
-			</bean>
-		</property>
-		<property name="name" value="recordTime" />
-		<property name="label" value="Record Time" />
-	</bean>
-	
-	KPME-1268 Kagata adding recordLeave
-	<bean id="PrincipalHRAttributes-recordLeave" parent="PrincipalHRAttributes-recordLeave-parentBean" />
-	<bean id="PrincipalHRAttributes-recordLeave-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="shortLabel" value="Record Leave" />
-				<property name="control">
-			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.hr.lm.util.RecordLeaveKeyValueFinder">
-			</bean>
-		</property>
-		<property name="name" value="recordLeave" />
-		<property name="label" value="Record Leave" />
-	</bean> -->
-  	
   	
 	<!--  Inquiry Definitions  -->
   
@@ -304,14 +248,12 @@
 						<list>
 							<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
 							<bean parent="FieldDefinition" p:attributeName="principalId" />
-							<bean parent="FieldDefinition" p:attributeName="name" />
 							<bean parent="FieldDefinition" p:attributeName="payCalendar" />
-							<bean parent="FieldDefinition" p:attributeName="leavePlan" />
-							<bean parent="FieldDefinition" p:attributeName="leaveCalendar" />
+							<bean parent="FieldDefinition" p:attributeName="holidayCalendarGroup" />
 							<bean parent="FieldDefinition" p:attributeName="serviceDate" />
 							<bean parent="FieldDefinition" p:attributeName="timezone" />
 							<bean parent="FieldDefinition" p:attributeName="fmlaEligible" />
-							<bean parent="FieldDefinition" p:attributeName="workersCompEligible" />
+							<bean parent="FieldDefinition" p:attributeName="workmansCompEligible" />
 						</list>
 					</property>
 					<property name="title" value="PrincipalHRAttributes" />
@@ -337,6 +279,7 @@
 			<list>				
 				<bean parent="FieldDefinition" p:attributeName="principalId" />
 				<bean parent="FieldDefinition" p:attributeName="name" />
+                <bean parent="FieldDefinition" p:attributeName="holidayCalendarGroup" />
 				<bean parent="FieldDefinition" p:attributeName="timezone" />				
 				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
 				<bean parent="FieldDefinition" p:attributeName="timestamp" />

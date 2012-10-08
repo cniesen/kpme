@@ -66,7 +66,7 @@ public class SimpleTimeEntryValidationTest extends KPMETestCase {
         List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKContext.getPrincipalId(), JAN_AS_OF_DATE);
         Assignment assignment = assignments.get(0);
 
-        List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, JAN_AS_OF_DATE);
+        List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assignment, JAN_AS_OF_DATE);
         EarnCode earnCode = earnCodes.get(0);
 
 
@@ -112,7 +112,7 @@ public class SimpleTimeEntryValidationTest extends KPMETestCase {
         List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKContext.getPrincipalId(), JAN_AS_OF_DATE);
         Assignment assignment = assignments.get(0);
 
-        List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, JAN_AS_OF_DATE);
+        List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodes(assignment, JAN_AS_OF_DATE);
         EarnCode earnCode = earnCodes.get(0);
 
         TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(tdocId);

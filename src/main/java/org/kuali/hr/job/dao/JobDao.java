@@ -100,14 +100,4 @@ public interface JobDao {
      * @return the count of the jobs with the given principalId and jobNumber
      */
     public int getJobCount(String principalId, Long jobNumber, String dept);
-    
-    public List<Job> getActiveLeaveJobs(String principalId, Date asOfDate);
-    
-    public List<Job> getAllActiveLeaveJobs(String principalId, Date asOfDate);
-    
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, Date startDate, Date endDate);
-    
-    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, Date startDate, Date endDate);
-    
-    public Job getMaxTimestampJob(String principalId);
 }

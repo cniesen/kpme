@@ -15,32 +15,26 @@
  */
 package org.kuali.hr.time.accrual.service;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.kuali.hr.lm.LMConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.accrual.AccrualCategoryRule;
+import org.apache.log4j.Logger;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.hr.time.accrual.dao.TimeOffAccrualDao;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.*;
 
 public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
 
+	private static final Logger LOG = Logger.getLogger(TimeOffAccrualServiceImpl.class);
 	public static final String ACCRUAL_CATEGORY_KEY = "accrualCategory";
-	public static final String ACCRUAL_RATE_KEY = "accrualRate";
 	public static final String ACCRUAL_NAME_KEY = "accrualName";
 	public static final String YEARLY_CARRYOVER_KEY = "yearlyCarryover";
 	public static final String HOURS_ACCRUED_KEY = "hoursAccrued";
@@ -57,60 +51,28 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
 
 	@Override
 	public List<TimeOffAccrual> getTimeOffAccruals(String principalId, Date asOfDate) {
+		java.sql.Date currentDate = TKUtils.getTimelessDate(null);
 		return timeOffAccrualDao.getActiveTimeOffAccruals(principalId, asOfDate);
 	}
 
 	@Override
 	public List<Map<String, Object>> getTimeOffAccrualsCalc(String principalId, Date asOfDate) {
+
 		List<Map<String, Object>> timeOffAccrualsCalc = new ArrayList<Map<String, Object>>();
 		Map<String,String> accrualCatToDescr = new HashMap<String, String>();
-		String accrualRate = "";
-		
-		for (TimeOffAccrual timeOffAccrual : getTimeOffAccruals(principalId, asOfDate)) {
+
+		for(TimeOffAccrual timeOffAccrual : getTimeOffAccruals(principalId, asOfDate)) {
 			String accrualCatDescr = accrualCatToDescr.get(timeOffAccrual.getAccrualCategory());
 			//if no accrual cat description found look up accrual category and find one
-			if (StringUtils.isBlank(accrualCatDescr)){
+			if(StringUtils.isBlank(accrualCatDescr)){
 				AccrualCategory accrualCat = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(timeOffAccrual.getAccrualCategory(), asOfDate);
-				if (accrualCat != null) {
+				if(accrualCat != null){
 					accrualCatDescr = accrualCat.getDescr();
 					accrualCatToDescr.put(accrualCat.getAccrualCategory(), accrualCatDescr);
-				
-					DateTime currentDate = new DateTime();
-					List<AccrualCategoryRule> accrualCategoryRules = accrualCat.getAccrualCategoryRules();
-					
-					PrincipalHRAttributes principalHRAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, asOfDate);
-					if (principalHRAttributes == null) {
-						throw new RuntimeException("Cannot find principal hr attributes for " + principalId);
-					}
-					Date serviceDate = principalHRAttributes.getServiceDate();
-					if (serviceDate == null) {
-						throw new RuntimeException("Cannot find service date on principal hr attribute for " + principalId);
-					}
-					DateTime jodaServiceDate = new DateTime(serviceDate);
-					
-					Long serviceUnits= new Long(0);
-					// for each accrualCategoryRule, compare start/end with the length of service, get corresponding rate and unit
-					for(AccrualCategoryRule accrualCategoryRule : accrualCategoryRules){
-						String serviceUnitOfTime = accrualCategoryRule.getServiceUnitOfTime();
-						
-						if ( serviceUnitOfTime.equals(LMConstants.SERVICE_TIME_YEAR)){
-							serviceUnits = new Long(currentDate.getYear() - jodaServiceDate.getYear()) + 1;
-						}
-						if ( serviceUnitOfTime.equals(LMConstants.SERVICE_TIME_MONTHS)){
-							serviceUnits = new Long(currentDate.getYear() - jodaServiceDate.getYear()) * 12 + 
-							new Long(currentDate.getMonthOfYear() - jodaServiceDate.getMonthOfYear()) ;
-						}
-						
-						if ( serviceUnits >= accrualCategoryRule.getStart() && serviceUnits < accrualCategoryRule.getEnd()){
-							accrualRate = accrualCategoryRule.getAccrualRate().toString() + " " + accrualCat.getUnitOfTime();
-							break;
-						}
-					}
 				}
 			}
 			Map<String, Object> output = new LinkedHashMap<String, Object>();
 			output.put(ACCRUAL_CATEGORY_KEY, accrualCatDescr + "("+timeOffAccrual.getAccrualCategory()+")");
-			output.put(ACCRUAL_RATE_KEY, accrualRate);
 			output.put(ACCRUAL_NAME_KEY, timeOffAccrual.getAccrualCategory());
 			output.put(YEARLY_CARRYOVER_KEY, timeOffAccrual.getYearlyCarryover());
 			output.put(HOURS_ACCRUED_KEY, timeOffAccrual.getHoursAccrued());
@@ -119,8 +81,6 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
 			BigDecimal totalHours = timeOffAccrual.getYearlyCarryover().add(timeOffAccrual.getHoursAccrued().subtract(timeOffAccrual.getHoursTaken()).add(timeOffAccrual.getHoursAdjust()));
 			output.put(TOTAL_HOURS_KEY, totalHours);
 			output.put(EFF_DATE_KEY, timeOffAccrual.getEffectiveDate());
-			
-			
 
 			timeOffAccrualsCalc.add(output);
 		}
@@ -128,6 +88,7 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
 		return timeOffAccrualsCalc;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<String> validateAccrualHoursLimit(TimesheetDocument timesheetDocument) {
     	 String pId = "";
          if (timesheetDocument != null) {
@@ -138,6 +99,7 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
         
     }
 	
+	@SuppressWarnings("unchecked")
 	public List<String> validateAccrualHoursLimit(String pId, List<TimeBlock> tbList, Date asOfDate) {
 		 List<String> warningMessages = new ArrayList<String>();
 

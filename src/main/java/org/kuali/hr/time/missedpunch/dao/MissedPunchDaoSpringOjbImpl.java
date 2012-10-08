@@ -72,7 +72,7 @@ public class MissedPunchDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impleme
 		    	String tscId = aDoc.getTimesheetDocumentId();
 		    	TimesheetDocumentHeader tsdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tscId);
 		    	if(tsdh != null) {
-		    		if(tsdh.getBeginDate().equals(pcd.getBeginPeriodDate()) && tsdh.getEndDate().equals(pcd.getEndPeriodDate())) {
+		    		if(tsdh.getPayBeginDate().equals(pcd.getBeginPeriodDate()) && tsdh.getPayEndDate().equals(pcd.getEndPeriodDate())) {
 		    			results.add(aDoc);
 		    		}
 		    	}

@@ -22,7 +22,7 @@ import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.task.Task;
@@ -57,7 +57,7 @@ public class DailyOvertimeRule extends TkRule {
 	private Department departmentObj;
 	private PayType payTypeObj;
 
-	private EarnCodeGroup fromEarnGroupObj;
+    private EarnGroup fromEarnGroupObj;
 	private EarnCode earnCodeObj;
 	private Location locationObj;
 
@@ -189,11 +189,11 @@ public class DailyOvertimeRule extends TkRule {
 		this.minHours = minHours;
 	}
 
-	public EarnCodeGroup getFromEarnGroupObj() {
+	public EarnGroup getFromEarnGroupObj() {
 		return fromEarnGroupObj;
 	}
 
-	public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
+	public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
 		this.fromEarnGroupObj = fromEarnGroupObj;
 	}
 

@@ -17,8 +17,8 @@
 
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-       xmlns:p="http://www.springframework.org/schema/p" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:beans="http://www.springframework.org/schema/beans"
        xmlns:context="http://www.springframework.org/schema/context"
@@ -58,7 +58,7 @@
 
     <alias name="riceDataSource${connection.pool.impl}" alias="riceDataSource"/>
     <alias name="kpmeDataSource${connection.pool.impl}" alias="kpmeDataSource"/>
-    
+
     <bean id="riceDataSourceXAPool" class="org.kuali.rice.core.framework.persistence.jdbc.datasource.XAPoolDataSource">
         <property name="transactionManager" ref="transactionManagerXAPool" />
         <property name="driverClassName" value="${server.datasource.driver.name}" />
@@ -70,7 +70,7 @@
         <property name="maxWait" value="${server.datasource.pool.maxWait}" />
         <property name="validationQuery" value="${server.datasource.pool.validationQuery}" />
     </bean>
-    
+
     <bean id="kpmeDataSourceXAPool" class="org.kuali.rice.core.framework.persistence.jdbc.datasource.XAPoolDataSource">
         <property name="transactionManager" ref="transactionManagerXAPool" />
         <property name="driverClassName" value="${datasource.driver.name}" />
@@ -93,73 +93,73 @@
     </bean>
 
     <bean id="riceDataSourceBitronix" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init" destroy-method="close" lazy-init="true">
-	    <property name="className" value="${server.datasource.pool.class.non.xa}" />
-	    <property name="uniqueName" ref="ds-random-string" />
-	    <property name="minPoolSize" value="${server.datasource.pool.minSize}" />
-	    <property name="maxPoolSize" value="${server.datasource.pool.maxSize}" />
-	    <property name="testQuery" value="${server.datasource.pool.validationQuery}" />
+        <property name="className" value="${server.datasource.pool.class.non.xa}" />
+        <property name="uniqueName" ref="ds-random-string" />
+        <property name="minPoolSize" value="${server.datasource.pool.minSize}" />
+        <property name="maxPoolSize" value="${server.datasource.pool.maxSize}" />
+        <property name="testQuery" value="${server.datasource.pool.validationQuery}" />
         <property name="useTmJoin" value="true" />
-	    <property name="allowLocalTransactions" value="true" />
-	    <property name="driverProperties">
+        <property name="allowLocalTransactions" value="true" />
+        <property name="driverProperties">
             <props>
                 <prop key="driverClassName">${server.datasource.driver.name}</prop>
                 <prop key="Url">${server.datasource.url}</prop>
                 <prop key="user">${server.datasource.username}</prop>
                 <prop key="password">${server.datasource.password}</prop>
             </props>
-	    </property>
+        </property>
     </bean>
 
     <bean id="kpmeDataSourceBitronix" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init" destroy-method="close" lazy-init="true">
-	    <property name="className" value="${datasource.pool.class.non.xa}" />
-	    <property name="uniqueName" ref="ds-random-string" />
-	    <property name="minPoolSize" value="${datasource.pool.minSize}" />
-	    <property name="maxPoolSize" value="${datasource.pool.maxSize}" />
+        <property name="className" value="${datasource.pool.class.non.xa}" />
+        <property name="uniqueName" ref="ds-random-string" />
+        <property name="minPoolSize" value="${datasource.pool.minSize}" />
+        <property name="maxPoolSize" value="${datasource.pool.maxSize}" />
         <property name="testQuery" value="${datasource.pool.validationQuery}" />
-	    <property name="useTmJoin" value="true" />
-	    <property name="allowLocalTransactions" value="true" />
-	    <property name="driverProperties">
+        <property name="useTmJoin" value="true" />
+        <property name="allowLocalTransactions" value="true" />
+        <property name="driverProperties">
             <props>
                 <prop key="driverClassName">${datasource.driver.name}</prop>
                 <prop key="Url">${datasource.url}</prop>
                 <prop key="user">${datasource.username}</prop>
                 <prop key="password">${datasource.password}</prop>
             </props>
-	    </property>
+        </property>
     </bean>
-  
+
     <bean id="riceDataSourceBitronixXa" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init" destroy-method="close" lazy-init="true">
-	    <property name="className" value="${server.datasource.pool.class}" />
-	    <property name="uniqueName" ref="ds-random-string" />
-	    <property name="minPoolSize" value="${server.datasource.pool.minSize}" />
-	    <property name="maxPoolSize" value="${server.datasource.pool.maxSize}" />
+        <property name="className" value="${server.datasource.pool.class}" />
+        <property name="uniqueName" ref="ds-random-string" />
+        <property name="minPoolSize" value="${server.datasource.pool.minSize}" />
+        <property name="maxPoolSize" value="${server.datasource.pool.maxSize}" />
         <property name="testQuery" value="${server.datasource.pool.validationQuery}" />
-	    <property name="useTmJoin" value="true" />
-	    <property name="allowLocalTransactions" value="true" />
-	    <property name="driverProperties">
+        <property name="useTmJoin" value="true" />
+        <property name="allowLocalTransactions" value="true" />
+        <property name="driverProperties">
             <props>
-		        <prop key="URL">${server.datasource.url}</prop>
-		        <prop key="user">${server.datasource.username}</prop>
-		        <prop key="password">${server.datasource.password}</prop>
+                <prop key="URL">${server.datasource.url}</prop>
+                <prop key="user">${server.datasource.username}</prop>
+                <prop key="password">${server.datasource.password}</prop>
             </props>
-	    </property>
+        </property>
     </bean>
 
     <bean id="kpmeDataSourceBitronixXa" class="bitronix.tm.resource.jdbc.PoolingDataSource" init-method="init" destroy-method="close" lazy-init="true">
-	    <property name="className" value="${datasource.pool.class}" />
-	    <property name="uniqueName" ref="ds-random-string" />
-	    <property name="minPoolSize" value="${datasource.pool.minSize}" />
-	    <property name="maxPoolSize" value="${datasource.pool.maxSize}" />
-	    <property name="testQuery" value="${datasource.pool.validationQuery}" />
-	    <property name="useTmJoin" value="true" />
-	    <property name="allowLocalTransactions" value="true" />
-	    <property name="driverProperties">
-	        <props>
-		        <prop key="URL">${datasource.url}</prop>
-		        <prop key="user">${datasource.username}</prop>
-		        <prop key="password">${datasource.password}</prop>
-	        </props>
-	    </property>
+        <property name="className" value="${datasource.pool.class}" />
+        <property name="uniqueName" ref="ds-random-string" />
+        <property name="minPoolSize" value="${datasource.pool.minSize}" />
+        <property name="maxPoolSize" value="${datasource.pool.maxSize}" />
+        <property name="testQuery" value="${datasource.pool.validationQuery}" />
+        <property name="useTmJoin" value="true" />
+        <property name="allowLocalTransactions" value="true" />
+        <property name="driverProperties">
+            <props>
+                <prop key="URL">${datasource.url}</prop>
+                <prop key="user">${datasource.username}</prop>
+                <prop key="password">${datasource.password}</prop>
+            </props>
+        </property>
     </bean>
 
     <bean id="nonTransactionalDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
@@ -172,6 +172,6 @@
         <property name="minIdle" value="${datasource.minIdle}" />
         <property name="maxActive" value="${datasource.pool.maxActive}"/>
         <property name="accessToUnderlyingConnectionAllowed" value="${datasource.accessToUnderlyingConnectionAllowed}"/>
-   </bean>
-   
+    </bean>
+
 </beans>

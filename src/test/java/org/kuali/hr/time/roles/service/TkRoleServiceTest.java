@@ -39,7 +39,7 @@ public class TkRoleServiceTest  extends KPMETestCase {
 	public static final Long WORK_AREA = 999L;
 
 	private String posRoleId = null;
-	
+
 	@Test
 	public void testGetAnyWorkAreaRoles() throws Exception {
 		Date asOfDate = new Date((new DateTime(2010, 8, 25, 12, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
@@ -65,7 +65,7 @@ public class TkRoleServiceTest  extends KPMETestCase {
 			Assert.assertTrue("Incorrect values.", role.getPrincipalId().equals(ADMIN) || role.getPrincipalId().equals(TEST_USER));
 		}
 	}
-	
+
 	@Test
 	public void testGetRolesForPrincipal() throws Exception {
 		Date asOfDate = new Date((new DateTime(2010, 8, 21, 12, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
@@ -93,7 +93,7 @@ public class TkRoleServiceTest  extends KPMETestCase {
 				&& role.getEffectiveDate().before(asOfDate)));
 		}
 	}
-	
+
 	@Test
 	public void testPositionRole() throws Exception {
 		List<TkRole> lstRoles = TkServiceLocator.getTkRoleService().getRoles("earl", TKUtils.getCurrentDate());
@@ -111,7 +111,7 @@ public class TkRoleServiceTest  extends KPMETestCase {
 		pos.setPositionNumber("123456");
 		KRADServiceLocator.getBusinessObjectService().save(pos);
 		String posNumber = pos.getPositionNumber();
-		
+
 		//setup a job with that position
 		Job job = new Job();
 		job.setPositionNumber(posNumber);
@@ -128,12 +128,11 @@ public class TkRoleServiceTest  extends KPMETestCase {
 		job.setHrPayType("BW1");
 		job.setActive(true);
 		job.setPrimaryIndicator(true);
-		job.setEligibleForLeave(false);
 		job.setHrJobId("9999");
 
 		// This is causing all the unit tests to have an error - needs to be looked into later.
 		TkServiceLocator.getJobService().saveOrUpdate(job);
-		
+
 		TkRole tkRole = new TkRole();
 		tkRole.setPrincipalId(null);
 		tkRole.setRoleName(TkConstants.ROLE_TK_APPROVER);
@@ -143,7 +142,7 @@ public class TkRoleServiceTest  extends KPMETestCase {
 		tkRole.setTimestamp(new Timestamp(System.currentTimeMillis()));
 		tkRole.setActive(true);
 		tkRole.setPositionNumber(posNumber);
-		 
+
 		TkServiceLocator.getTkRoleService().saveOrUpdate(tkRole);
 		posRoleId = tkRole.getHrRolesId();
 	}

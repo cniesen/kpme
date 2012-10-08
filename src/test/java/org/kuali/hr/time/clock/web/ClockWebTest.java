@@ -17,7 +17,11 @@ package org.kuali.hr.time.clock.web;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -236,9 +240,8 @@ public class ClockWebTest extends KPMETestCase {
 
     private HtmlPage clockOut() throws Exception {
         DateTime dateTime = new DateTime();
-        if (dateTime.getSecondOfMinute() >= 58
-                || dateTime.getSecondOfMinute() == 0) {
-            Thread.sleep(4000);
+        if (dateTime.getSecondOfMinute() == 0) {
+            Thread.sleep(2000);
         }
         // Clock out
         HtmlPage page = clockAction(TkConstants.CLOCK_OUT);
@@ -260,9 +263,8 @@ public class ClockWebTest extends KPMETestCase {
      */
     private HtmlPage clockAction(String clockAction) throws Exception {
         DateTime dateTime = new DateTime();
-        if (dateTime.getSecondOfMinute() >= 58
-                || dateTime.getSecondOfMinute() == 0) {
-            Thread.sleep(4000);
+        if (dateTime.getSecondOfMinute() == 0) {
+            Thread.sleep(2000);
         }
         String baseUrl = TkTestConstants.Urls.CLOCK_URL;
         String actionUrl = baseUrl + "?methodToCall=clockAction&selectedAssignment=30_30_30&currentClockAction=" + clockAction;

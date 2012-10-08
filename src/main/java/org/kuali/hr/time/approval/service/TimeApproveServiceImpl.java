@@ -40,7 +40,6 @@ import org.joda.time.Interval;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
@@ -221,7 +220,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 				if (tdh != null) {
 					String pyCalendarGroup = TkServiceLocator
 							.getPrincipalHRAttributeService()
-							.getPrincipalCalendar(principalId, tdh.getBeginDate())
+							.getPrincipalCalendar(principalId, tdh.getPayBeginDate())
 							.getCalendar().getCalendarName();
 					pcg.add(pyCalendarGroup);
 				}
@@ -849,7 +848,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		}
 		Set<CalendarEntries> payPeriodSet = new HashSet<CalendarEntries>();
 		for(TimesheetDocumentHeader tdh : documentHeaders) {
-    		CalendarEntries pe = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(tdh.getBeginDate(), tdh.getEndDate());
+    		CalendarEntries pe = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(tdh.getPayBeginDate(), tdh.getPayEndDate());
     		if(pe != null) {
     			payPeriodSet.add(pe);
     		}

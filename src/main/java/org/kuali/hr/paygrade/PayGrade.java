@@ -32,10 +32,10 @@ public class PayGrade extends HrBusinessObject {
 	private String payGrade;
 	private String description;
 	private String userPrincipalId;
-	private String salGroup;
-	private SalGroup salGroupObj;
+    private String salGroup;
+    private SalGroup salGroupObj;
 
-	public String getHrPayGradeId() {
+    public String getHrPayGradeId() {
 		return hrPayGradeId;
 	}
 
@@ -105,14 +105,14 @@ public class PayGrade extends HrBusinessObject {
 	public void setId(String id) {
 		setHrPayGradeId(id);
 	}
-	
-	public String getSalGroup() {
-		return salGroup;
-	}
 
-	public void setSalGroup(String salGroup) {
-		this.salGroup = salGroup;
-	}
+    public String getSalGroup() {
+        return salGroup;
+    }
+
+    public void setSalGroup(String salGroup) {
+        this.salGroup = salGroup;
+    }
 
 	public SalGroup getSalGroupObj() {
 		return salGroupObj;

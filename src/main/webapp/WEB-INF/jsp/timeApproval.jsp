@@ -41,15 +41,15 @@
 <div class="approvals">
 
 	<tk:approvalFilter />
-	
-	<c:if test="${fn:length(Form.approvalRows) != 0}">
+
+    <c:if test="${fn:length(Form.approvalRows) != 0}">
 		<tk:approvalSearch searchId="searchValue" />
-	
-		<tk:timeApproval />
-	
-	   	<tk:approvalButtons refreshId="refresh" />
-	
-	</c:if>
+    
+    	<tk:timeApproval />
+    
+    	<tk:approvalButtons refreshId="refresh" />
+    
+    </c:if>
 
 </div>
 </html:form>
@@ -84,4 +84,24 @@
         <@ }); @>
     </tr>
     <@ } @>
+</script>
+
+<%-- Leave Calendar detail template --%>
+<script type="text/template" id="leaveDetail-template">
+    <tr class="leaveDetailRow_<@= docId @>">
+		<th colspan="3"/>
+		<@ _.each(section.daysDetail, function() { @>
+               <th/>
+        <@ }); @>
+        <th>Period Usage</th>
+		<th>Available</th>
+    </tr>
+    <tr class="leaveDetailRow_<@= docId @>">
+        <td colspan="3" class="<@= section.cssClass @>"><b><@= section.accrualCategory @></b></td>
+            <@ _.each(section.daysDetail, function(tot) { @>
+                <td><@= tot == 0 ? "" : tot @></td>
+        	<@ }); @>
+		<td><@= section.periodUsage @></td>
+		<td><@= section.availableBalance @></td>
+    </tr>
 </script>

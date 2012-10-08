@@ -120,19 +120,19 @@ public class TimesheetServiceImpl implements TimesheetService {
         TimesheetDocumentHeader header = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, begin, end);
 
         if (header == null) {
-            List<Assignment> activeAssignments = TkServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(principalId, calendarDates);
+            List<Assignment> activeAssignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, calendarDates);
             //TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getTimelessDate(payCalendarDates.getEndPeriodDate()));
             if (activeAssignments.size() == 0) {
                 throw new RuntimeException("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
             }
             timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, TimesheetDocument.TIMESHEET_DOCUMENT_TITLE);
-            timesheetDocument.setCalendarEntry(calendarDates);
+            timesheetDocument.setPayCalendarEntry(calendarDates);
             this.loadTimesheetDocumentData(timesheetDocument, principalId, calendarDates);
-            //TODO switch this to scheduled time offs
-            //this.loadHolidaysOnTimesheet(timesheetDocument, principalId, begin, end);
+
+            this.loadHolidaysOnTimesheet(timesheetDocument, principalId, begin, end);
         } else {
             timesheetDocument = this.getTimesheetDocument(header.getDocumentId());
-            timesheetDocument.setCalendarEntry(calendarDates);
+            timesheetDocument.setPayCalendarEntry(calendarDates);
         }
 
         timesheetDocument.setTimeSummary(TkServiceLocator.getTimeSummaryService().getTimeSummary(timesheetDocument));
@@ -200,10 +200,10 @@ public class TimesheetServiceImpl implements TimesheetService {
 
         if (tdh != null) {
             timesheetDocument = new TimesheetDocument(tdh);
-            CalendarEntries pce = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(tdh.getPrincipalId(), tdh.getEndDate(), null);
+            CalendarEntries pce = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(tdh.getPrincipalId(), tdh.getPayEndDate(), null);
             loadTimesheetDocumentData(timesheetDocument, tdh.getPrincipalId(), pce);
 
-            timesheetDocument.setCalendarEntry(pce);
+            timesheetDocument.setPayCalendarEntry(pce);
         } else {
             throw new RuntimeException("Could not find TimesheetDocumentHeader for DocumentID: " + documentId);
         }
@@ -211,7 +211,7 @@ public class TimesheetServiceImpl implements TimesheetService {
     }
 
     protected void loadTimesheetDocumentData(TimesheetDocument tdoc, String principalId, CalendarEntries payCalEntry) {
-        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(principalId, payCalEntry);
+        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalEntry);
         List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId, TKUtils.getTimelessDate(payCalEntry.getEndPeriodDate()));
         List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(tdoc.getDocumentHeader().getDocumentId());
 

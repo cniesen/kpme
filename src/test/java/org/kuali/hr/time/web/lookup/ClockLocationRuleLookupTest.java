@@ -38,17 +38,17 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class ClockLocationRuleLookupTest extends KPMETestCase {
 
     private static BusinessObjectService boService = null;
-    
+
     /**
      * Load some data to find for all of the tests in this test collection.
      */
-    
+
     @Before
     public void setUp() throws Exception {
     	super.setUp();
     	boService = KRADServiceLocator.getBusinessObjectService();
     	clearBusinessObjects(ClockLocationRule.class);
-    	
+
     	ClockLocationRule clr = new ClockLocationRule();
     	clr.setActive(true);
     	clr.setDept("12345");
@@ -56,9 +56,9 @@ public class ClockLocationRuleLookupTest extends KPMETestCase {
     	clr.setEffectiveDate(asOfDate);
     	boService.save(clr);
     }
-    
-    
-    
+
+
+
     @Test
     public void testLookup() throws Exception{
     	String baseUrl = HtmlUnitUtil.getBaseURL() + "/kr/lookup.do?__login_user=admin&methodToCall=start&businessObjectClassName=org.kuali.hr.time.clock.location.ClockLocationRule&returnLocation=" + HtmlUnitUtil.getBaseURL() + "/portal.do&hideReturnLink=true&docFormKey=88888888";
@@ -67,14 +67,14 @@ public class ClockLocationRuleLookupTest extends KPMETestCase {
     	Assert.assertTrue("Could not find text 'Clock Location Rule Lookup' in page.", StringUtils.contains(page.asText(), "Clock Location Rule Lookup"));
     	HtmlForm form = page.getFormByName("KualiForm");
     	Assert.assertNotNull("Search form was missing from page.", form);
-    	
+
     	HtmlInput  input  = HtmlUnitUtil.getInputContainingText(form, "methodToCall.search");
     	Assert.assertNotNull("Could not locate search submit button", input);
     	page = (HtmlPage) input.click();
     	Assert.assertNotNull("Page not returned from click.", page);
     	HtmlUnitUtil.createTempFile(page);
     	Assert.assertTrue("Expected one result.", StringUtils.contains(page.asText(), "One item retrieved"));
-    	
+
     	page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
     	form = page.getFormByName("KualiForm");
     	Assert.assertNotNull("Search form was missing from page.", form);

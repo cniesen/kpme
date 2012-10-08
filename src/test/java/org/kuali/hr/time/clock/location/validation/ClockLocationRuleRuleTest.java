@@ -22,7 +22,7 @@ public class ClockLocationRuleRuleTest extends Assert {
 
     static String[] validIpAddresses;
     static String[] invalidIpAddresses;
-    
+
     static {
 	validIpAddresses = new String[] {
 		"1.1.1.1",
@@ -41,7 +41,7 @@ public class ClockLocationRuleRuleTest extends Assert {
 		"%",
 		"127.%"
 	};
-	
+
 	invalidIpAddresses = new String[] {
 		"-1.0.0.0",
 		"1.2.3.256",
@@ -56,15 +56,15 @@ public class ClockLocationRuleRuleTest extends Assert {
 		".123.2.4"
 	};
     }
-    
+
     @Test
     public void testValidateIpAddress() throws Exception {
 	ClockLocationRuleRule clrr = new ClockLocationRuleRule();
-	
+
 	for (String ip : validIpAddresses) {
 	    assertTrue("IP address " + ip + " should be valid.", clrr.validateIpAddress(ip));
 	}
-	
+
 	for (String ip : invalidIpAddresses) {
 	    assertFalse("IP address " + ip + " should be invalid.", clrr.validateIpAddress(ip));
 	}

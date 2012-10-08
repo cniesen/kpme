@@ -85,8 +85,8 @@ public class TkBatchManager implements InitializingBean, DisposableBean {
      * @return true if this node is the master node.
      */
     public boolean isMasterBatchNode() {
-		return StringUtils.equals(ConfigContext.getCurrentContextConfig().getProperty(MESSAGE_QUEUE_CHECKER_IP_PARAM), TKUtils.getIPNumber());
-	}
+        return StringUtils.equals(ConfigContext.getCurrentContextConfig().getProperty(MESSAGE_QUEUE_CHECKER_IP_PARAM), TKUtils.getIPNumber());
+    }
 
     /**
      * Helper method to load configuration values, cast to ints, and report errors.
