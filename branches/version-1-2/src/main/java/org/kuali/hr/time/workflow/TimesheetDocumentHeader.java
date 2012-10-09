@@ -27,8 +27,6 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 	private Date payBeginDate;
 	private Date payEndDate;
 	private String documentStatus;
-    private String objectId;
-    private Long versionNumber;
 
 	public TimesheetDocumentHeader() {
 		
@@ -81,21 +79,5 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 	public void setPayBeginDate(Date payBeginDate) {
 		this.payBeginDate = payBeginDate;
 	}
-	
-	public String getObjectId() {
-        return objectId;
-    }
-
-    public void setObjectId(String objectId) {
-        this.objectId = objectId;
-    }
-
-    public Long getVersionNumber() {
-        return versionNumber;
-    }
-
-    public void setVersionNumber(long versionNumber) {
-        this.versionNumber = versionNumber;
-    }
 
 }
