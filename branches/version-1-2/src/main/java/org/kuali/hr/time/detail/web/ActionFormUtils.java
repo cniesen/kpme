@@ -35,11 +35,13 @@ import org.json.simple.JSONValue;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
+import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
@@ -58,6 +60,26 @@ public class ActionFormUtils {
         addUniqueWarningsToForm(tdaf, warningMessages);
     }
 
+    public static void addUnapprovedIPWarningFromClockLog(TimeDetailActionFormBase tdaf) {
+    	List<String> warningMessages = new ArrayList<String>();
+    	Set<String> aSet = new HashSet<String>();
+    	ClockLog cl = TkServiceLocator.getClockLogService().getLastClockLog(TKContext.getTargetPrincipalId());
+    	if(cl != null && TkConstants.ON_THE_CLOCK_CODES.contains(cl.getClockAction())) {
+    		if(cl.getUnapprovedIP()) {
+    			aSet.add(TkServiceLocator.getClockLogService().buildUnapprovedIPWarning(cl));
+    		}
+    	}
+    	if(tdaf.getTimesheetDocument() != null) {
+	    	List<TimeBlock> tbList = tdaf.getTimesheetDocument().getTimeBlocks();
+	    	if(CollectionUtils.isNotEmpty(tbList)) {
+		    	 aSet.addAll(TkServiceLocator.getClockLogService().getUnapprovedIPWarning(tbList));
+		        
+	    	}
+    	}
+    	warningMessages.addAll(aSet);
+    	addUniqueWarningsToForm(tdaf, warningMessages);
+    }
+    
     public static void addUniqueWarningsToForm(TimeDetailActionFormBase tdaf, List<String> warningMessages) {
         if (!warningMessages.isEmpty()) {
             Set<String> aSet = new HashSet<String>();
