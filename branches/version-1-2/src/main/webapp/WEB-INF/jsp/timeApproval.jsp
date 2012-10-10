@@ -47,7 +47,7 @@
     
     	<tk:timeApproval />
     
-    	<tk:approvalButtons refreshId="refresh" />
+    	<tk:approvalButtons refreshId="refresh" approvable="${Form.anyApprovalRowApprovable}" />
     
     </c:if>
 
