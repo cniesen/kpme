@@ -110,6 +110,10 @@ public class TimesheetDocument  {
     public java.sql.Date getAsOfDate(){
 		return new java.sql.Date(getPayCalendarEntry().getBeginPeriodDateTime().getTime());
 	}
+    
+    public java.sql.Date getDocEndDate(){
+		return new java.sql.Date(getPayCalendarEntry().getEndPeriodDateTime().getTime());
+	}
 
 	public String getDocumentId(){
 		return this.getDocumentHeader().getDocumentId();
