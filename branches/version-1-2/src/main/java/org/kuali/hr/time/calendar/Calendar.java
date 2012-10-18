@@ -37,7 +37,7 @@ public class Calendar extends PersistableBusinessObjectBase {
 
 	private String flsaBeginDay;
 	private Time flsaBeginTime;
-	private String calendarTypes;
+	private String calendarTypes = "Pay";
 	private int flsaBeginDayConstant = -1;
 
 	private List<CalendarEntries> calendarEntries = new ArrayList<CalendarEntries>();
