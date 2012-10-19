@@ -752,10 +752,9 @@ $(function () {
         }
     });
 
-
     // Initialize the view. This is the kick-off point.
     var app = new TimeBlockView;
-    
+
     /**
      * Custom util functions.
      * This is the section where you can create your own util methods and inject them to Underscore.
@@ -890,7 +889,7 @@ $(function () {
     var isCtrl,isAlt = false;
 
     // ctrl+alt+a will open the form
-    $(document).keydown(
+    $(this).keydown(
         function(e) {
 
             if (e.ctrlKey) isCtrl = true;
