@@ -194,7 +194,8 @@ $(function () {
                     title : "Add Time Blocks : ",
                     closeOnEscape : true,
                     autoOpen : true,
-					width : '640',
+                    //KPME-1359 At least a temporary fix - widen box to fit defined largest Assignment Descriptor
+					width : '650',
                     modal : true,
                     open : function () {
                         // Set the selected date on start/end time fields
@@ -273,7 +274,7 @@ $(function () {
 
                         }
                     }
-                }).height("auto");
+                }).height("auto");  //KPME-1359 Should cut down on IE creating horizontal scroll bars for quirky reasons.
             }
         },
 
@@ -357,12 +358,12 @@ $(function () {
         checkPermissions : function () {
             var isValid = true;
 
-            // Can't add a new timeblock is the doc is not editable.
+            // Can't add a new timeblock if the doc is not editable.
             if ($('#docEditable').val() == "false") {
                 isValid = false;
             }
 
-            // Can't add / edit / delete a timeblock is canAddTimeBlock is false
+            // Can't add / edit / delete a timeblock if canAddTimeBlock is false
             // This happens when the login user has a view only role, or a dept / location admin
             if ($('#canAddTimeBlock').val() == "false") {
                 isValid = false;
@@ -477,9 +478,6 @@ $(function () {
             var earnCodeType = _.getEarnCodeType(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
             var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection"];
 
-            // reset values everytime when the earn code is changed
-            $("#startTimeHourMinute, #startTime, #endTimeHourMinute, #endTime, #hours, #amount").val("");
-
             // There might be a better way doing this, but we can revisit this later.
             // Currently, the fields variable contains a list of the entry field classes.
             // The Underscore.js _.without function returns an array except the ones you speficied.
@@ -488,13 +486,20 @@ $(function () {
                 $(fieldSections[2]).show();
                 // TODO: figure out why we had to do something crazy like below...
                 $('#startTime, #endTime').val("23:59");
+                // KPME-1793 do not blank hours
+                $('#startTimeHourMinute, #endTimeHourMinute, #amount').val("");
             } else if (earnCodeType == CONSTANTS.EARNCODE_TYPE.AMOUNT) {
                 $(_.without(fieldSections, ".amountSection").join(",")).hide();
                 $(fieldSections[3]).show();
                 $('#startTime, #endTime').val("23:59");
+                // KPME-1793 do not blank amount
+                $('#startTimeHourMinute, #endTimeHourMinute, #hours').val("");
             } else {
+            	// earnCodeType == CONSTANTS.EARNCODE_TYPE.TIME
                 $(_.without(fieldSections, ".clockInSection", ".clockOutSection").join(",")).hide();
                 $(fieldSections[0] + "," + fieldSections[1]).show();
+                // KPME-1793 do not blank startTime, endTime, startTimeHourMinute, endTimeHourMinute
+                $('#hours, #amount').val("");
             }
 
         },
@@ -750,7 +755,7 @@ $(function () {
 
     // Initialize the view. This is the kick-off point.
     var app = new TimeBlockView;
-
+    
     /**
      * Custom util functions.
      * This is the section where you can create your own util methods and inject them to Underscore.
@@ -879,6 +884,33 @@ $(function () {
             selectedDays = [];
         }
     });
+    
+	// KPME-1390 Add shortcut to open Time Entry Dialog
+    // use keyboard to open the form
+    var isCtrl,isAlt = false;
+
+    // ctrl+alt+a will open the form
+    $(document).keydown(
+        function(e) {
+
+            if (e.ctrlKey) isCtrl = true;
+            if (e.altKey) isAlt = true;
+            
+			var startDate = new Date();
+			var endDate = new Date();
+			
+			startDate = Date.parse(startDate).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+			endDate = Date.parse(endDate).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+			
+            if (e.keyCode == 65 && isCtrl && isAlt) {
+                app.showTimeEntryDialog(startDate,endDate,null);
+            }
+
+        }).keyup(function(e) {
+            isCtrl = false;
+            isAlt = false;
+        });
+    // End: KPME-1390
 
     if ($('#docEditable').val() == 'false') {
         $(".cal-table").selectable("destroy");
