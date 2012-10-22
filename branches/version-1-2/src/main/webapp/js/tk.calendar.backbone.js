@@ -842,46 +842,63 @@ $(function () {
     //
     // This discussion thread on stackoverflow was helpful:
     // http://bit.ly/fvRW4X
-
-    var selectedDays = [];
-    var selectingDays = [];
+    var mouseDownIndex = null;
+    var currentMouseIndex = null;
     var beginPeriodDateTimeObj = $('#beginPeriodDate').val() !== undefined ? new Date($('#beginPeriodDate').val()) : d + '/' + m + '/' + y;
     var endPeriodDateTimeObj = $('#endPeriodDate').val() !== undefined ? new Date($('#endPeriodDate').val()) : d + '/' + m + '/' + y;
-
-    $(".cal-table").selectable({
-        filter : "td",
-        distance : 1,
-        selected : function (event, ui) {
-            selectedDays.push(ui.selected.id);
-        },
-        selecting : function (event, ui) {
-            // get the index number of the selected td
-            $(".ui-selecting", this).each(function () {
-                selectingDays.push($(".cal-table td").index(this));
-            });
-
-        },
-
-        stop : function (event, ui) {
-            var currentDay = new Date(beginPeriodDateTimeObj);
-            var startDay = new Date(currentDay);
-            var endDay = new Date(currentDay);
-
-            startDay.addDays(parseInt(_.first(selectedDays).split("_")[1]));
-            endDay.addDays(parseInt(_.last(selectedDays).split("_")[1]));
-
-            startDay = Date.parse(startDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
-            endDay = Date.parse(endDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
-
-            app.showTimeEntryDialog(startDay, endDay,null);
-
-            // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
-            if ($("#selectedAssignment").is("input")) {
-                app.fetchEarnCodeAndLoadFields();
-            }
-
-            selectedDays = [];
+    var tableCells = $("td.create");
+    tableCells.disableSelection();
+    tableCells.mousedown(function() {
+        //alert(this.index);
+        if (mouseDownIndex == undefined) {
+            mouseDownIndex = parseInt(this.id.split("_")[1]);
         }
+        var lower;
+        var higher;
+        //grab start location
+        tableCells.bind('mouseenter',function(){
+            currentMouseIndex = parseInt(this.id.split("_")[1]);
+
+            lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
+            higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
+
+            for (var i=0; i<tableCells.length;i++) {
+                if (i < lower || i > higher) {
+                    $("#day_"+i).removeClass("ui-selecting");
+                } else {
+                    $("#day_"+i).addClass("ui-selecting");
+                }
+            }
+        });
+    });
+    tableCells.mouseup(function() {
+        tableCells.unbind('mouseenter');
+        tableCells.removeClass("ui-selecting");
+        var currentDay = new Date(beginPeriodDateTimeObj);
+        var startDay = new Date(currentDay);
+        var endDay = new Date(currentDay);
+
+        var lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
+        var higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
+        if (lower == undefined) {
+            lower = higher;
+        }
+
+        startDay.addDays(lower);
+        endDay.addDays(higher);
+
+        startDay = Date.parse(startDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+        endDay = Date.parse(endDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+
+        app.showTimeEntryDialog(startDay, endDay,null);
+
+        // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
+        if ($("#selectedAssignment").is("input")) {
+            app.fetchEarnCodeAndLoadFields();
+        }
+        mouseDownIndex = null;
+        currentMouseIndex = null;
+
     });
     
 	// KPME-1390 Add shortcut to open Time Entry Dialog
@@ -913,5 +930,8 @@ $(function () {
 
     if ($('#docEditable').val() == 'false') {
         $(".cal-table").selectable("destroy");
+        $("td.create").unbind("mousedown");
+        $("td.create").unbind('mouseenter');
+        $("td.create").unbind('mouseup');
     }
 });
