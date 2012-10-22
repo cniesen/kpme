@@ -50,11 +50,8 @@
                 <ref bean="TimeBlockHistory-userPrincipalId"/>
                 <ref bean="TimeBlockHistory-principalId"/>
                 <ref bean="TimeBlockHistory-actionHistory"/>
-                <ref bean="TimeBlockHistory-tkWorkAreaId"/>
-                <ref bean="TimeBlockHistory-tkTaskId"/>
                 <ref bean="TimeBlockHistory-modifiedByPrincipalId"/>
                 <ref bean="TimeBlockHistory-timestampModified"/>
-                <ref bean="TimeBlockHistory-hrJobId"/>
                 <ref bean="TimeBlockHistory-timesheetDocumentHeader.documentStatus"/>
             </list>
         </property>
@@ -351,34 +348,6 @@
         <property name="required" value="false"/>
     </bean>
 
-    <bean id="TimeBlockHistory-tkWorkAreaId" parent="TimeBlockHistory-tkWorkAreaId-parentBean"/>
-    <bean id="TimeBlockHistory-tkWorkAreaId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="forceUppercase" value="true"/>
-
-        <property name="maxLength" value="60"/>
-        <property name="control">
-            <bean parent="TextControlDefinition" p:size="20"/>
-        </property>
-
-        <property name="name" value="tkWorkAreaId"/>
-        <property name="label" value="TK Work Area Id"/>
-        <property name="description" value="TK Work Area Id"/>
-    </bean>
-
-    <bean id="TimeBlockHistory-tkTaskId" parent="TimeBlockHistory-tkTaskId-parentBean"/>
-    <bean id="TimeBlockHistory-tkTaskId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="forceUppercase" value="true"/>
-
-        <property name="maxLength" value="60"/>
-        <property name="control">
-            <bean parent="TextControlDefinition" p:size="20"/>
-        </property>
-
-        <property name="name" value="tkTaskId"/>
-        <property name="label" value="TK Task Id"/>
-        <property name="description" value="TK Task Id"/>
-    </bean>
-
     <bean id="TimeBlockHistory-beginTimestampTimezone" parent="TimeBlockHistory-beginTimestampTimezone-parentBean"/>
     <bean id="TimeBlockHistory-beginTimestampTimezone-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="maxLength" value="50"/>
@@ -407,22 +376,6 @@
         </property>
         <property name="name" value="endTimestampTimezone"/>
         <property name="label" value="End Timestamp Timezone"/>
-    </bean>
-
-    <bean id="TimeBlockHistory-hrJobId" parent="TimeBlockHistory-hrJobId-parentBean"/>
-    <bean id="TimeBlockHistory-hrJobId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="shortLabel" value="Job Id"/>
-        <property name="maxLength" value="60"/>
-        <property name="validationPattern">
-            <bean parent="AnyCharacterValidationPattern">
-                <property name="allowWhitespace" value="false"/>
-            </bean>
-        </property>
-        <property name="control">
-            <bean parent="TextControlDefinition" p:size="60"/>
-        </property>
-        <property name="name" value="hrJobId"/>
-        <property name="label" value="Job Id"/>
     </bean>
 
     <bean id="TimeBlockHistory-timestampModified" parent="TimeBlockHistory-timestampModified-parentBean"/>

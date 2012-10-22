@@ -36,9 +36,7 @@
       	<ref bean="TimeBlock-documentId" />
       	<ref bean="TimeBlock-jobNumber"/>
         <ref bean="TimeBlock-workArea" />
-		<ref bean="TimeBlock-tkWorkAreaId"/>
         <ref bean="TimeBlock-task" />
-		<ref bean="TimeBlock-tkTaskId"/>
         <ref bean="TimeBlock-earnCode" />
         <ref bean="TimeBlock-beginTimestamp"/>
         <ref bean="TimeBlock-endTimestamp"/>
@@ -52,7 +50,6 @@
         <ref bean="TimeBlock-endTimestampTimezone"/>
         <ref bean="TimeBlock-clockLogBeginId"/>
         <ref bean="TimeBlock-clockLogEndId"/>
-        <ref bean="TimeBlock-hrJobId"/>
         <ref bean="TimeBlock-overtimePref"/>
         <ref bean="TimeBlock-lunchDeleted"/>
         <ref bean="TimeBlock-timesheetDocumentHeader.documentStatus" />
@@ -140,18 +137,6 @@
     <property name="name" value="workArea"/>
     <property name="label" value="Work Area"/>
   </bean>
-  
-  <bean id="TimeBlock-tkWorkAreaId" parent="TimeBlock-tkWorkAreaId-parentBean"/>
-  <bean id="TimeBlock-tkWorkAreaId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="forceUppercase" value="true"/>
-    <property name="maxLength" value="60"/>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="20"/>
-    </property>
-    <property name="name" value="tkWorkAreaId"/>
-    <property name="label" value="TK Work Area Id"/>
-    <property name="description" value="TK Work Area Id"/>
-  </bean>
 
   <bean id="TimeBlock-task" parent="TimeBlock-task-parentBean"/>
   <bean id="TimeBlock-task-parentBean" abstract="true" parent="AttributeDefinition">
@@ -176,18 +161,6 @@
     <property name="name" value="jobNumber" />
     <property name="label" value="Job Number" />
     <property name="description" value="jobNumber" />
-  </bean>
-
-  <bean id="TimeBlock-tkTaskId" parent="TimeBlock-tkTaskId-parentBean"/>
-  <bean id="TimeBlock-tkTaskId-parentBean" abstract="true" parent="AttributeDefinition">
-    <property name="forceUppercase" value="true"/>
-    <property name="maxLength" value="60"/>
-    <property name="control">
-      <bean parent="TextControlDefinition" p:size="20"/>
-    </property>
-    <property name="name" value="tkTaskId"/>
-    <property name="label" value="TK Task Id"/>
-    <property name="description" value="TK Task Id"/>
   </bean>
   
  <bean id="TimeBlock-earnCode" parent="TimeBlock-earnCode-parentBean" />
@@ -373,22 +346,6 @@
         <property name="name" value="clockLogEndId"/>
         <property name="label" value="Clock Log End Id"/>
         <property name="description" value="Clock Log End Id"/>
-    </bean>
-
-    <bean id="TimeBlock-hrJobId" parent="TimeBlock-hrJobId-parentBean"/>
-    <bean id="TimeBlock-hrJobId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="shortLabel" value="Job Id"/>
-        <property name="maxLength" value="60"/>
-        <property name="validationPattern">
-            <bean parent="AnyCharacterValidationPattern">
-                <property name="allowWhitespace" value="false"/>
-            </bean>
-        </property>
-        <property name="control">
-            <bean parent="TextControlDefinition" p:size="60"/>
-        </property>
-        <property name="name" value="hrJobId"/>
-        <property name="label" value="Job Id"/>
     </bean>
 
     <bean id="TimeBlock-lunchDeleted" parent="TimeBlock-lunchDeleted-parentBean"/>
