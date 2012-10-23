@@ -196,7 +196,7 @@ $(function () {
                     closeOnEscape : true,
                     autoOpen : true,
                     //KPME-1359 At least a temporary fix - widen box to fit defined largest Assignment Descriptor
-					width : '650',
+					width : 'inherit',
                     modal : true,
                     open : function () {
                         // Set the selected date on start/end time fields
