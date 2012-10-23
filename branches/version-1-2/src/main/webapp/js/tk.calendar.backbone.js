@@ -126,7 +126,8 @@ $(function () {
             // <div class="create"></div> is in calendar.tag.
             // We want to trigger the show event on any white space areas.
             "click .event" : "doNothing",
-            "click .create" : "showTimeEntryDialog",
+            "mousedown .create" : "tableCellMouseDown",
+            "mouseup .create" : "tableCellMouseUp",
             "click span[id*=overtime]" : "showOverTimeDialog",
             "blur #startTimeHourMinute, #endTimeHourMinute" : "formatTime",
             // TODO: figure out how to chain the events
@@ -407,6 +408,7 @@ $(function () {
         },
 
         deleteTimeBlock : function (e) {
+            $("td.create").unbind('mouseup');
             var key = _(e).parseEventKey();
             var timeBlock = timeBlockCollection.get(key.id);
 
@@ -427,6 +429,70 @@ $(function () {
             }
         },
 
+        tableCellMouseDown : function(e) {
+            //alert(this.index);
+            if ($('#docEditable').val() == 'false') {
+                return null;
+            }
+            var key = parseInt(_(e).parseEventKey().id);
+            if (mouseDownIndex == undefined) {
+                mouseDownIndex = key;
+            }
+            var lower;
+            var higher;
+            //grab start location
+            tableCells.bind('mouseenter',function(e){
+                //currentMouseIndex = parseInt(_(e).parseEventKey().id);
+                currentMouseIndex = parseInt(this.id.split("_")[1]);
+                lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
+                higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
+
+                for (var i=0; i<tableCells.length;i++) {
+                    if (i < lower || i > higher) {
+                        $("#day_"+i).removeClass("ui-selecting");
+                    } else {
+                        $("#day_"+i).addClass("ui-selecting");
+                    }
+                }
+            });
+        },
+
+        tableCellMouseUp : function(e) {
+            tableCells.unbind('mouseenter');
+            tableCells.removeClass("ui-selecting");
+            if ($('#docEditable').val() == 'false') {
+                return null;
+            }
+            if (_(e).parseEventKey().action == "timeblockDelete") {
+                return null;
+            }
+
+            var currentDay = new Date(beginPeriodDateTimeObj);
+            var startDay = new Date(currentDay);
+            var endDay = new Date(currentDay);
+
+            var lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
+            var higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
+            if (lower == undefined) {
+                lower = higher;
+            }
+
+            startDay.addDays(lower);
+            endDay.addDays(higher);
+
+            startDay = Date.parse(startDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+            endDay = Date.parse(endDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
+
+            app.showTimeEntryDialog(startDay, endDay,null);
+
+            // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
+            if ($("#selectedAssignment").is("input")) {
+                app.fetchEarnCodeAndLoadFields();
+            }
+            mouseDownIndex = null;
+            currentMouseIndex = null;
+
+        },
 
         fetchEarnCode : function (e, isTimeBlockReadOnly) {
 
@@ -842,74 +908,16 @@ $(function () {
     });
 
     /**
-     * Make the calendar cell selectable
+     * Setup for making calendar cells selectable
      */
-    // When making a mouse selection, it creates a "lasso" effect which we want to get rid of.
-    // In the future version of jQuery UI, lasso is going to one of the options where it can be enabled / disabled.
-    // For now, the way to disable it is to modify the css.
-    //
-    // .ui-selectable-helper { border:none; }
-    //
-    // This discussion thread on stackoverflow was helpful:
-    // http://bit.ly/fvRW4X
     var mouseDownIndex = null;
     var currentMouseIndex = null;
     var beginPeriodDateTimeObj = $('#beginPeriodDate').val() !== undefined ? new Date($('#beginPeriodDate').val()) : d + '/' + m + '/' + y;
     var endPeriodDateTimeObj = $('#endPeriodDate').val() !== undefined ? new Date($('#endPeriodDate').val()) : d + '/' + m + '/' + y;
-    var tableCells = $("td.create");
+    var tableCells = $('td[id^="day_"]')
     tableCells.disableSelection();
-    tableCells.mousedown(function() {
-        //alert(this.index);
-        if (mouseDownIndex == undefined) {
-            mouseDownIndex = parseInt(this.id.split("_")[1]);
-        }
-        var lower;
-        var higher;
-        //grab start location
-        tableCells.bind('mouseenter',function(){
-            currentMouseIndex = parseInt(this.id.split("_")[1]);
 
-            lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
-            higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
 
-            for (var i=0; i<tableCells.length;i++) {
-                if (i < lower || i > higher) {
-                    $("#day_"+i).removeClass("ui-selecting");
-                } else {
-                    $("#day_"+i).addClass("ui-selecting");
-                }
-            }
-        });
-    });
-    tableCells.mouseup(function() {
-        tableCells.unbind('mouseenter');
-        tableCells.removeClass("ui-selecting");
-        var currentDay = new Date(beginPeriodDateTimeObj);
-        var startDay = new Date(currentDay);
-        var endDay = new Date(currentDay);
-
-        var lower = mouseDownIndex < currentMouseIndex ? mouseDownIndex : currentMouseIndex;
-        var higher = currentMouseIndex > mouseDownIndex ? currentMouseIndex : mouseDownIndex;
-        if (lower == undefined) {
-            lower = higher;
-        }
-
-        startDay.addDays(lower);
-        endDay.addDays(higher);
-
-        startDay = Date.parse(startDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
-        endDay = Date.parse(endDay).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
-
-        app.showTimeEntryDialog(startDay, endDay,null);
-
-        // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
-        if ($("#selectedAssignment").is("input")) {
-            app.fetchEarnCodeAndLoadFields();
-        }
-        mouseDownIndex = null;
-        currentMouseIndex = null;
-
-    });
     
 	// KPME-1390 Add shortcut to open Time Entry Dialog
     // use keyboard to open the form
@@ -947,8 +955,8 @@ $(function () {
 
     if ($('#docEditable').val() == 'false') {
         $(".cal-table").selectable("destroy");
-        $("td.create").unbind("mousedown");
-        $("td.create").unbind('mouseenter');
-        $("td.create").unbind('mouseup');
+        tableCells.unbind("mousedown");
+        tableCells.unbind('mouseenter');
+        tableCells.unbind('mouseup');
     }
 });
