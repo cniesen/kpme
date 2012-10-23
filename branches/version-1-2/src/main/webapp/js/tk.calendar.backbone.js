@@ -218,6 +218,7 @@ $(function () {
                                         .done(self.showFieldByEarnCodeType());
                             }
                         }
+                        //May need a third condition to check if this method was triggered by shortcut.
 
                     },
                     close : function () {
@@ -436,7 +437,8 @@ $(function () {
             // We want to be able to use this method in creating and editing timeblocks.
             // If assignment is not a string, we'll grab the selected assignment on the form.
             var assignment = _.isString(e) ? e : this.$("#selectedAssignment option:selected").val();
-
+            // We want to remember what the previous selected earn code was.
+			var earnCode = this.$('#selectedEarnCode option:selected').val();
             // Fetch earn codes based on the selected assignment
             // The fetch function is provided by backbone.js which also supports jQuery.ajax options.
             // For more information: http://documentcloud.github.com/backbone/#Collection-fetch
@@ -448,6 +450,13 @@ $(function () {
                     timeBlockReadOnly : isTimeBlockReadOnly
                 }
             });
+            // If there is an earn code in the newly created collection that matches the old
+            // earn code, keep the earn code selected.
+            if(_.contains(EarnCodes.pluck('earnCode'),earnCode)) {
+            	$("#selectedEarnCode option:selected").attr("selected",false);
+            	$("#selectedEarnCode option[value='" + earnCode + "']").attr("selected", "selected");
+            }
+
         },
 
 
@@ -509,6 +518,7 @@ $(function () {
         },
 
         fetchEarnCodeAndLoadFields : function () {
+
             var dfd = $.Deferred();
             dfd.done(this.fetchEarnCode(_.getSelectedAssignmentValue()))
                     .done(this.showFieldByEarnCodeType());
@@ -918,9 +928,16 @@ $(function () {
 			startDate = Date.parse(startDate).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
 			endDate = Date.parse(endDate).toString(CONSTANTS.TIME_FORMAT.DATE_FOR_OUTPUT);
 			
+			//Only passing endDate in order to trigger the false branch in showTimeEntryDialog.open(),
+			//thus populating earn codes for a single selected non-editable assignment.
             if (e.keyCode == 65 && isCtrl && isAlt) {
                 app.showTimeEntryDialog(startDate,endDate,null);
             }
+            
+            // https://uisapp2.iu.edu/jira-prd/browse/TK-1593
+        	if ($("#selectedAssignment").is("input")) {
+           		app.fetchEarnCodeAndLoadFields();
+        	}
 
         }).keyup(function(e) {
             isCtrl = false;
