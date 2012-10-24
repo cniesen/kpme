@@ -125,9 +125,9 @@ public class TimesheetServiceImpl implements TimesheetService {
             if (activeAssignments.size() == 0) {
                 throw new RuntimeException("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
             }
-            timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, TimesheetDocument.TIMESHEET_DOCUMENT_TITLE);
-            timesheetDocument.setPayCalendarEntry(calendarDates);
-            this.loadTimesheetDocumentData(timesheetDocument, principalId, calendarDates);
+            timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, calendarDates, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, TimesheetDocument.TIMESHEET_DOCUMENT_TITLE);
+            //timesheetDocument.setPayCalendarEntry(calendarDates);
+            //this.loadTimesheetDocumentData(timesheetDocument, principalId, calendarDates);
 
             this.loadHolidaysOnTimesheet(timesheetDocument, principalId, begin, end);
         } else {
@@ -165,7 +165,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
     }
 
-    protected TimesheetDocument initiateWorkflowDocument(String principalId, Date payBeginDate, Date payEndDate, String documentType, String title) throws WorkflowException {
+    protected TimesheetDocument initiateWorkflowDocument(String principalId, Date payBeginDate,  Date payEndDate, CalendarEntries calendarEntries, String documentType, String title) throws WorkflowException {
         TimesheetDocument timesheetDocument = null;
         WorkflowDocument workflowDocument = null;
 
@@ -179,7 +179,8 @@ public class TimesheetServiceImpl implements TimesheetService {
 
         TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(documentHeader);
         timesheetDocument = new TimesheetDocument(documentHeader);
-
+        timesheetDocument.setPayCalendarEntry(calendarEntries);
+        loadTimesheetDocumentData(timesheetDocument, principalId, calendarEntries);
         TkServiceLocator.getTkSearchableAttributeService().updateSearchableAttribute(timesheetDocument, payEndDate);
 
         return timesheetDocument;

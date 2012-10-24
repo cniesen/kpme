@@ -914,7 +914,7 @@ $(function () {
     var currentMouseIndex = null;
     var beginPeriodDateTimeObj = $('#beginPeriodDate').val() !== undefined ? new Date($('#beginPeriodDate').val()) : d + '/' + m + '/' + y;
     var endPeriodDateTimeObj = $('#endPeriodDate').val() !== undefined ? new Date($('#endPeriodDate').val()) : d + '/' + m + '/' + y;
-    var tableCells = $('td[id^="day_"]')
+    var tableCells = $('td[id^="day_"]');
     tableCells.disableSelection();
 
 
