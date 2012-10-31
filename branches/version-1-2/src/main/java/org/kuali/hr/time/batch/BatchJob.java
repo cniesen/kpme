@@ -18,6 +18,7 @@ package org.kuali.hr.time.batch;
 import java.sql.Timestamp;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
@@ -80,17 +81,19 @@ public class BatchJob {
         LOG.info("Batch job '" + this.getBatchJobName() + "' ("+this.getHrPyCalendarEntryId()+") complete after " + timeElapsed + " seconds.");
     }
 
-    public String getNextIpAddressInCluster(){
+    public String getNextIpAddressInCluster() {
+    	String nextIpAddressInCluster = "";
+    	
         String clusterIps = ConfigContext.getCurrentContextConfig().getProperty("cluster.ips");
-        String[] ips = StringUtils.split(clusterIps,",");
-        if(ips != null){
-            String ip = ips[lastPlace++];
-            if(lastPlace >=ip.length()){
+        String[] ips = StringUtils.split(clusterIps, ",");
+        if (ArrayUtils.isNotEmpty(ips)) {
+            if (lastPlace >= ips.length) {
                 lastPlace = 0;
             }
-            return ip;
+            nextIpAddressInCluster = ips[lastPlace++];
         }
-        return "";
+        
+        return nextIpAddressInCluster;
     }
 
     protected void populateBatchJobEntry(Object o){
