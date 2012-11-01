@@ -41,7 +41,7 @@
     <param name="keystore.password">r1c3pw</param>
     <param name="encryption.key">7IC64w6kAAAA</param>
     
-    <param name="tk.batch.master.ip">50.16.204.176</param>
-    <param name="cluster.ips">50.16.204.176</param>
+    <param name="tk.batch.master.ip">127.0.0.1</param>
+    <param name="cluster.ips">127.0.0.1</param>
 
 </config>
