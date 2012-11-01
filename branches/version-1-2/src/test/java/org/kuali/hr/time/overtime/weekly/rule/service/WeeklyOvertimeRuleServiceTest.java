@@ -102,8 +102,8 @@ public class WeeklyOvertimeRuleServiceTest extends KPMETestCase {
 		Date endPeriodDate = new Date(new DateTime(2010, 4, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone()).getMillis());
 		CalendarEntries endOfMarch = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(beginPeriodDate, endPeriodDate);
 		TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument("admin", endOfMarch);
-		Assert.assertTrue("No Assignments Found.", tdoc.getAssignments().size() > 0);
-		timeBlocks = TkTestUtils.createUniformActualTimeBlocks(tdoc, tdoc.getAssignments().get(0), "RGN", start, 3, BigDecimal.TEN, BigDecimal.ZERO);
+		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment("admin", new AssignmentDescriptionKey("30_30_30"), beginPeriodDate);
+		timeBlocks = TkTestUtils.createUniformActualTimeBlocks(tdoc, assignment, "RGN", start, 3, BigDecimal.TEN, BigDecimal.ZERO);
 		TkServiceLocator.getTimeBlockService().saveTimeBlocks(new ArrayList<TimeBlock>(), timeBlocks);
 		tdoc.setTimeBlocks(timeBlocks);
 		
