@@ -313,6 +313,7 @@
         <bean parent="FieldDefinition" p:attributeName="location" />
         <bean parent="FieldDefinition" p:attributeName="description" />
         <bean parent="FieldDefinition" p:attributeName="timestamp" />
+        <bean parent="FieldDefinition" p:attributeName="active" />
       </list>
     </property>
     <property name="title" value="Department Lookup" />
