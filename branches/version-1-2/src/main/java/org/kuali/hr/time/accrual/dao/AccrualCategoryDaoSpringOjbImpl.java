@@ -15,12 +15,14 @@
  */
 package org.kuali.hr.time.accrual.dao;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.accrual.AccrualCategory;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
 
@@ -91,4 +93,125 @@ public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
 		return accrualCategories;
     }
 
+    public List<AccrualCategory> getAccrualCategories(String accrualCategory, String accrualCatDescr,
+                                                      Date fromEffdt, Date toEffdt, String active, String showHistory){
+        Criteria crit = new Criteria();
+        Criteria effdt = new Criteria();
+        Criteria timestamp = new Criteria();
+
+        List<AccrualCategory> results = new ArrayList<AccrualCategory>();
+
+        if(StringUtils.isNotBlank(accrualCategory) && StringUtils.isNotEmpty(accrualCategory)){
+            crit.addLike("accrualCategory", accrualCategory);
+        }
+        if(StringUtils.isNotBlank(accrualCatDescr)){
+            crit.addLike("descr", accrualCatDescr);
+        }
+        if(fromEffdt != null){
+            crit.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+        }
+        if(toEffdt != null){
+            crit.addLessOrEqualThan("effectiveDate", toEffdt);
+        } else {
+            crit.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+
+        if(StringUtils.isEmpty(active) && StringUtils.equals(showHistory,"Y")){
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+        }
+        else if(StringUtils.isEmpty(active) && StringUtils.equals(showHistory, "N")){
+            effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            if(toEffdt != null){
+                effdt.addLessOrEqualThan("effectiveDate", toEffdt);
+            }
+            ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, effdt);
+            effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+
+            timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, timestamp);
+            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+//            if(StringUtils.isNotBlank(accrualCategory)){
+//                crit.addEqualTo("accrualCategory", accrualCategory);
+//            }
+            crit.addEqualTo("effectiveDate", effdtSubQuery);
+            crit.addEqualTo("timestamp", timestampSubQuery);
+
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+        }
+
+        else if(StringUtils.equals(active, "Y") && StringUtils.equals("N", showHistory)){
+            effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            if(toEffdt != null){
+                effdt.addLessOrEqualThan("effectiveDate", toEffdt);
+            }
+            ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, effdt);
+            effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+
+            timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, timestamp);
+            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+
+            crit.addEqualTo("effectiveDate", effdtSubQuery);
+            crit.addEqualTo("timestamp", timestampSubQuery);
+
+            Criteria activeFilter = new Criteria(); // Inner Join For Activity
+            activeFilter.addEqualTo("active", true);
+            crit.addAndCriteria(activeFilter);
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+        } //return all active records from the database
+        else if(StringUtils.equals(active, "Y") && StringUtils.equals("Y", showHistory)){
+            Criteria activeFilter = new Criteria(); // Inner Join For Activity
+            activeFilter.addEqualTo("active", true);
+            crit.addAndCriteria(activeFilter);
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+        }
+        //return all inactive records in the database
+        else if(StringUtils.equals(active, "N") && StringUtils.equals(showHistory, "Y")){
+            Criteria activeFilter = new Criteria(); // Inner Join For Activity
+            activeFilter.addEqualTo("active", false);
+            crit.addAndCriteria(activeFilter);
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+        }
+
+        //return the most effective inactive rows if there are no active rows <= the curr date
+        else if(StringUtils.equals(active, "N") && StringUtils.equals(showHistory, "N")){
+            effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            if(toEffdt != null){
+                effdt.addLessOrEqualThan("effectiveDate", toEffdt);
+            }
+            ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, effdt);
+            effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+
+            timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, timestamp);
+            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+//            if(StringUtils.isNotBlank(accrualCategory)){
+//                crit.addEqualTo("accrualCategory", accrualCategory);
+//            }
+            crit.addEqualTo("effectiveDate", effdtSubQuery);
+            crit.addEqualTo("timestamp", timestampSubQuery);
+
+            Criteria activeFilter = new Criteria(); // Inner Join For Activity
+            activeFilter.addEqualTo("active", false);
+            crit.addAndCriteria(activeFilter);
+            Query query = QueryFactory.newQuery(AccrualCategory.class, crit);
+            Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+            results.addAll(c);
+
+        }
+        return results;
+    }
 }

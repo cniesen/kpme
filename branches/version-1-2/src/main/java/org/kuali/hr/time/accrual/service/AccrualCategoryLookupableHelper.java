@@ -18,12 +18,15 @@ package org.kuali.hr.time.accrual.service;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.accrual.AccrualCategory;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Used to override lookup functionality for the accrual category lookup
@@ -69,5 +72,26 @@ public class AccrualCategoryLookupableHelper extends
 		}
 		return overrideUrls;
 	}
+
+    @SuppressWarnings({"unchecked"})
+    @Override
+    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+        //(String accrualCategory, String accrualCatDescr, Date fromRffdt, Date foEffdt, String active, String showHistory);
+        String accrualCategory = fieldValues.get("accrualCategory");
+        String accrualCatDescr = fieldValues.get("descr");
+        String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+        String active = fieldValues.get("active");
+        String showHist = fieldValues.get("history");
+
+        if (StringUtils.equals(accrualCategory, "%")) {
+            accrualCategory = "";
+        }
+
+        List<AccrualCategory> accrualCategories = TkServiceLocator.getAccrualCategoryService().getAccrualCategories(accrualCategory, accrualCatDescr,
+                TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist);
+
+        return accrualCategories;
+    }
 
 }

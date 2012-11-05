@@ -56,4 +56,9 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 	public List <AccrualCategory> getActiveAccrualCategories(Date asOfDate){
 		return accrualCategoryDao.getActiveAccrualCategories(asOfDate);
 	}
+
+    @Override
+    public List<AccrualCategory> getAccrualCategories(String accrualCategory, String accrualCatDescr, Date fromEffdt, Date toEffdt, String active, String showHistory) {
+        return accrualCategoryDao.getAccrualCategories(accrualCategory, accrualCatDescr, fromEffdt, toEffdt, active, showHistory);
+    }
 }
