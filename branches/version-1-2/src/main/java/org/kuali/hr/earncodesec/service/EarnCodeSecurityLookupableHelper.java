@@ -81,7 +81,7 @@ public class EarnCodeSecurityLookupableHelper extends HrEffectiveDateActiveLooku
         String earnCode = fieldValues.get("earnCode");
         String location = fieldValues.get("location");
         String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
-        String toEffdt = StringUtils.isNotBlank(fieldValues.get("effectiveDate")) ? fieldValues.get("effectiveDate").replace("<=", "") : "";
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
         String active = fieldValues.get("active");
         String showHist = fieldValues.get("history");
         System.out.println("field value map is >>> "+fieldValues);
