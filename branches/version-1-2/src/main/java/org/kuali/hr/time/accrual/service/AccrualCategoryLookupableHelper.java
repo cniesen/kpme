@@ -76,7 +76,7 @@ public class AccrualCategoryLookupableHelper extends
     @SuppressWarnings({"unchecked"})
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-        //(String accrualCategory, String accrualCatDescr, Date fromRffdt, Date foEffdt, String active, String showHistory);
+
         String accrualCategory = fieldValues.get("accrualCategory");
         String accrualCatDescr = fieldValues.get("descr");
         String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
