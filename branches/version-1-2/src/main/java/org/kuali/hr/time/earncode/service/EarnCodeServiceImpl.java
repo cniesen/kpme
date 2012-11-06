@@ -148,6 +148,11 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 		return earnCodeDao.getNewerEarnCodeCount(earnCode, effdt);
 	}
 
+    @Override
+    public List<EarnCode> getEarnCodes(String earnCode, String ovtEarnCode, String descr, Date fromEffdt, Date toEffdt, String active, String showHist) {
+        return earnCodeDao.getEarnCodes(earnCode, ovtEarnCode, descr, fromEffdt, toEffdt, active, showHist);
+    }
+
 
     public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate) {
         if (a == null) throw new RuntimeException("No assignment parameter.");

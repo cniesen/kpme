@@ -33,4 +33,6 @@ public interface EarnCodeDao {
 	public int getEarnCodeCount(String earnCode);
 	
 	public int getNewerEarnCodeCount(String earnCode, Date effdt);
+
+    List<EarnCode> getEarnCodes(String earnCode, String ovtEarnCode, String descr, Date fromEffdt, Date toEffdt, String active, String showHist);
 }
