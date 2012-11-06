@@ -30,10 +30,10 @@ import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.accrual.TimeOffAccrual;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
-public class TimeOffAccrualkDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimeOffAccrualDao {
+public class TimeOffAccrualDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimeOffAccrualDao {
 
 	@SuppressWarnings("unused")
-	private static final Logger LOG = Logger.getLogger(TimeOffAccrualkDaoSpringOjbImpl.class);
+	private static final Logger LOG = Logger.getLogger(TimeOffAccrualDaoSpringOjbImpl.class);
 
 	public void saveOrUpdate(TimeOffAccrual timeOffAccrual) {
 		this.getPersistenceBrokerTemplate().store(timeOffAccrual);
