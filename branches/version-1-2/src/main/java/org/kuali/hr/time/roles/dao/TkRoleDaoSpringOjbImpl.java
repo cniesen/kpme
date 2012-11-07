@@ -85,7 +85,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addAndCriteria(orWrapperEd);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
 
 
         // TIMESTAMP --
@@ -202,7 +202,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addEqualTo("timestamp", timestampSubQuery);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
 
         root.addEqualTo("effectiveDate", effdtSubQuery);
 
@@ -310,7 +310,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addAndCriteria(orWrapperEd);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
 
 
         // TIMESTAMP --
@@ -412,7 +412,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
         effdt.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
         ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
         currentRecordCriteria.addEqualTo("effectiveDate", effdtSubQuery);
 
         // Filter for ACTIVE = 'Y'
@@ -434,7 +434,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
         effdt.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
         ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
         currentRecordCriteria.addEqualTo("effectiveDate", effdtSubQuery);
 
         // Filter for ACTIVE = 'N'
@@ -490,7 +490,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         effdt.addAndCriteria(orWrapperEd);
 
         effdtSubQuery = QueryFactory.newReportQuery(TkRole.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
 
 
         // TIMESTAMP --
