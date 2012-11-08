@@ -155,6 +155,10 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
             crit.addLike("principalId", principalId);
         }
 
+        if (StringUtils.isNotEmpty(dept)) {
+            crit.addLike("dept", dept);
+        }
+
         if (StringUtils.isNotEmpty(jobNumber)) {
             crit.addLike("jobNumber", jobNumber);
         }
