@@ -184,14 +184,14 @@ public class PayTypeDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements 
 
         //return the most effective inactive rows if there are no active rows <= the curr date
         else if(StringUtils.equals(active, "N") && StringUtils.equals(showHistory, "N")){
-            effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
+            effdt.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
             if(toEffdt != null){
                 effdt.addLessOrEqualThan("effectiveDate", toEffdt);
             }
             ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PayType.class, effdt);
             effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
 
-            timestamp.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
+            timestamp.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
             timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
             ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PayType.class, timestamp);
             timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
