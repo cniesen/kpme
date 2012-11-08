@@ -2,6 +2,7 @@
 
 <%@ attribute name="day" required="true" type="org.kuali.hr.time.calendar.CalendarDay" %>
 
+<%-- display time blocks for the day --%>
 <c:forEach var="block" items="${day.blockRenderers}" varStatus="status">
     <c:if test="${block.timeBlock.earnCode ne TkConstants.LUNCH_EARN_CODE}">
         <c:choose>
@@ -13,7 +14,7 @@
             </c:otherwise>
         </c:choose>
 
-		<c:set var="editableClass" value="event-title-false"/>
+ 		<c:set var="editableClass" value="event-title-false"/>
         <c:set var="timeBlockDivId" value="doNotShow_${block.timeBlock.tkTimeBlockId}" />
         <c:if test="${Form.docEditable && block.timeBlock.timeBlockEditable}">
         	<c:set var="editableClass" value="event-title-true"/>
@@ -21,8 +22,8 @@
         </c:if>
 
         <div id="${timeBlockDivId}" class="event ${last} ${block.assignmentClass}">
-            <div id="timeblock_${block.timeBlock.tkTimeBlockId}"
-                 class="${editableClass}">
+            <div id="timeblock_${block.timeBlock.tkTimeBlockId}" 
+            	 class="${editableClass}">
                 <c:if test="${Form.docEditable && block.timeBlock.timeBlockEditable && block.timeBlock.deleteable}">
                     <div><img id="timeblockDelete_${block.timeBlock.tkTimeBlockId}"
                               class='event-delete'
@@ -31,12 +32,12 @@
                 </c:if>
 
                 <c:choose>
-                <c:when test="${block.timeBlock.timeBlockEditable}">
-                    <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>
-                </c:when>
-                <c:otherwise>
-                    <div>${block.title}</div>
-                </c:otherwise>
+                    <c:when test="${block.timeBlock.timeBlockEditable}">
+                        <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>
+                    </c:when>
+                    <c:otherwise>
+                        <div>${block.title}</div>
+                    </c:otherwise>
                 </c:choose>
             </div>
                 ${block.timeRange}

@@ -467,7 +467,10 @@ $(function () {
             if ($('#docEditable').val() == 'false') {
                 return null;
             }
-            if (_(e).parseEventKey().action == "timeblockDelete") {
+            var eventAction = _(e).parseEventKey().action;
+            if (eventAction == "timeblockDelete"
+                 || eventAction == "lunchDelete"
+                 || eventAction == "doNotShow") {
                 return null;
             }
 
