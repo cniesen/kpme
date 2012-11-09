@@ -15,7 +15,9 @@
  */
 package org.kuali.hr.time.calendar.service;
 
+import java.sql.Time;
 import java.util.Date;
+import java.util.List;
 
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
@@ -77,5 +79,7 @@ public interface CalendarService {
 	 * @return
 	 */
 	public Calendar getCalendarByPrincipalIdAndDate(String principalId, Date asOfDate);
+
+    public List<Calendar> getCalendars(String calendarName, String flsaBeginDay, String flsaBeginTime);
 
 }
