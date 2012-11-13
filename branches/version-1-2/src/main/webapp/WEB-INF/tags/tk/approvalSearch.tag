@@ -24,8 +24,7 @@ the id is used in approval.js--%>
             <td>
                 <div style="text-align: center">
                     <c:if test="${Form.prevPayCalendarId ne null}">
-                        <button id="nav_prev" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" role="button" title="Previous"
-                                onclick="this.form.hrPyCalendarEntriesId.value='${Form.prevPayCalendarId}'; this.form.methodToCall.value='loadApprovalTab'; this.form.submit();">
+                        <button id="nav_prev_ac" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" role="button" title="Previous">
                             <span class="ui-button-text">Previous</span>
                         </button>
                         <%--<input type="button" class="prev" value="Previous" name="Previous"--%>
@@ -36,8 +35,7 @@ the id is used in approval.js--%>
                     <span id="payEndDate" style="font-size: 1.5em; vertical-align: middle;"><fmt:formatDate
                             value="${Form.payEndDate}" pattern="MM/dd/yyyy"/></span>
                     <c:if test="${Form.nextPayCalendarId ne null}">
-                        <button id="nav_next" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" role="button" title="Next"
-                                onclick="this.form.hrPyCalendarEntriesId.value='${Form.nextPayCalendarId}'; this.form.methodToCall.value='loadApprovalTab'; this.form.submit();">
+                        <button id="nav_next_ac" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only" role="button" title="Next">
                             <span class="ui-button-text">Next</span>
                         </button>
 
