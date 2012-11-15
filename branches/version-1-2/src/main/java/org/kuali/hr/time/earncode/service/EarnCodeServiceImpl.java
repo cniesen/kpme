@@ -17,6 +17,7 @@ package org.kuali.hr.time.earncode.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.earncodesec.EarnCodeSecurity;
+import org.kuali.hr.earncodesec.EarnCodeType;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.earncode.EarnCode;
@@ -42,7 +43,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
     @Override
     public List<EarnCode> getEarnCodes(Assignment a, Date asOfDate) {
-        return getEarnCodes(a, asOfDate, null);
+        return getEarnCodesForTime(a, asOfDate);
     }
 
     @Override
@@ -155,49 +156,110 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
 
     public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate) {
+        // code moved over from earncodeservice in kpme 1.5
         if (a == null) throw new RuntimeException("No assignment parameter.");
         Job job = a.getJob();
         if (job == null || job.getPayTypeObj() == null) throw new RuntimeException("Null job or null job pay type on assignment.");
 
         List<EarnCode> earnCodes = new LinkedList<EarnCode>();
+        String earnTypeCode = EarnCodeType.TIME.getCode();
 
+        boolean isClockUser = a.getTimeCollectionRule().isClockUserFl();
+        boolean isUsersTimesheet = StringUtils.equals(TKContext.getPrincipalId(),a.getPrincipalId());
+
+        // Reg earn codes will typically not be defined in the earn code security table
         EarnCode regularEarnCode = getEarnCode(job.getPayTypeObj().getRegEarnCode(), asOfDate);
         if (regularEarnCode == null) {
             throw new RuntimeException("No regular earn code defined for job pay type.");
         } else {
-            earnCodes.add(regularEarnCode);
+            //  if you are a clock user and this is your timesheet and you are processing the reg earn code, do not add this earn code. Use the clock in/out mechanism.
+            if (isClockUser && isUsersTimesheet) {
+                // do not add reg earn code. use clock.
+            } else {
+                earnCodes.add(regularEarnCode);
+            }
         }
         List<EarnCodeSecurity> decs = TkServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
         for (EarnCodeSecurity dec : decs) {
-                boolean addEarnCode = false;
-                // Check employee flag
-                if (dec.isEmployee() &&
-                        (StringUtils.equals(TKUser.getCurrentTargetPerson().getEmployeeId(), GlobalVariables.getUserSession().getPerson().getEmployeeId()))) {
-                    addEarnCode = true;
+            if (earnTypeCode.equals(dec.getEarnCodeType())
+                    || EarnCodeType.BOTH.getCode().equals(dec.getEarnCodeType())) {
+
+                boolean addEarnCode = addEarnCodeBasedOnEmployeeApproverSettings(dec, a, asOfDate);
+                //  this earn code could possibly be for reg earnings. reg was processed before the earn code security table of earn codes, so it should be skipped here.
+                if ( StringUtils.equals(job.getPayTypeObj().getRegEarnCode(),dec.getEarnCode()) ){
+                    addEarnCode = false;
                 }
-                // Check approver flag
-                if (!addEarnCode && dec.isApprover()) {
-                    Set<Long> workAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
-                    for (Long wa : workAreas) {
-                        WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
-                        if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
-                            addEarnCode = true;
-                            break;
-                        }
-                    }
-                }
+
                 if (addEarnCode) {
                     EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
                     if(ec!=null){
                         earnCodes.add(ec);
                     }
                 }
+            }
         }
 
-
         return earnCodes;
+        //        if (a == null) throw new RuntimeException("No assignment parameter.");
+//        Job job = a.getJob();
+//        if (job == null || job.getPayTypeObj() == null) throw new RuntimeException("Null job or null job pay type on assignment.");
+//
+//        List<EarnCode> earnCodes = new LinkedList<EarnCode>();
+//
+//        EarnCode regularEarnCode = getEarnCode(job.getPayTypeObj().getRegEarnCode(), asOfDate);
+//        if (regularEarnCode == null) {
+//            throw new RuntimeException("No regular earn code defined for job pay type.");
+//        } else {
+//            earnCodes.add(regularEarnCode);
+//        }
+//        List<EarnCodeSecurity> decs = TkServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
+//        for (EarnCodeSecurity dec : decs) {
+//                boolean addEarnCode = false;
+//                // Check employee flag
+//                if (dec.isEmployee() &&
+//                        (StringUtils.equals(TKUser.getCurrentTargetPerson().getEmployeeId(), GlobalVariables.getUserSession().getPerson().getEmployeeId()))) {
+//                    addEarnCode = true;
+//                }
+//                // Check approver flag
+//                if (!addEarnCode && dec.isApprover()) {
+//                    Set<Long> workAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+//                    for (Long wa : workAreas) {
+//                        WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+//                        if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
+//                            addEarnCode = true;
+//                            break;
+//                        }
+//                    }
+//                }
+//                if (addEarnCode) {
+//                    EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
+//                    if(ec!=null){
+//                        earnCodes.add(ec);
+//                    }
+//                }
+//        }
+        // return earnCodes;
     }
 
+    private boolean addEarnCodeBasedOnEmployeeApproverSettings(EarnCodeSecurity security, Assignment a, Date asOfDate) {
+        boolean addEarnCode = false;
+        if (security.isEmployee() &&
+                (StringUtils.equals(TKUser.getCurrentTargetPerson().getEmployeeId(), GlobalVariables.getUserSession().getPerson().getEmployeeId()))) {
+            addEarnCode = true;
+        }
+        // Check approver flag
+        if (!addEarnCode && security.isApprover()) {
+            Set<Long> workAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
+            for (Long wa : workAreas) {
+                WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+                if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
+                    addEarnCode = true;
+                    break;
+                }
+            }
+        }
+        return addEarnCode;
+    }
 
     /* not using yet, may not be needed
     @Override
