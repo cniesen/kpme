@@ -13,7 +13,6 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
-delete from hr_principal_attributes_t where principal_id like('testUser%');
 
 insert into hr_principal_attributes_t (`hr_principal_attribute_id`, `principal_id`, `pay_calendar`, `service_date`, `fmla_eligible`, `timezone`, `EFFDT`, `TIMESTAMP`, `OBJ_ID`, `VER_NBR`, `active`) values('5001', 'testUser', 'BWS-CAL', '2012-03-01', 'Y', null, '2012-03-01', '2012-03-01 00:00:00', uuid(), '1', 'Y');
 insert into hr_principal_attributes_t (`hr_principal_attribute_id`, `principal_id`, `pay_calendar`, `service_date`, `fmla_eligible`, `timezone`, `EFFDT`, `TIMESTAMP`, `OBJ_ID`, `VER_NBR`, `active`) values('5002', 'testUser', 'BWS-CAL', '2012-03-01', 'Y', null, '2012-08-01', '2012-07-20 00:00:00', uuid(), '1', 'N');

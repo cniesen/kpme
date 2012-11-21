@@ -13,4 +13,5 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
+
 delete from hr_principal_attributes_t where principal_id like('testUser%');
