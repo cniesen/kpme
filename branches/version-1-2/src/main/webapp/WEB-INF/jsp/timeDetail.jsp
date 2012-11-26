@@ -19,15 +19,33 @@
 <c:set var="Form" value="${TimeDetailActionForm}" scope="request"/>
 
 
-<tk:tkHeader tabId="timeDetail">
+<tk:tkHeader tabId="timeDetail" noCache="true">
     <script src="js/underscore-1.3.1.min.js"></script>
     <%--<script src="js/underscore.string-2.0.0.js"></script>--%>
     <script src="js/backbone-0.9.1.min.js"></script>
     <script src="js/common.calendar.backbone.js"></script>
     <script src="js/tk.calendar.backbone.js"></script>
     <script src="js/tk.ui.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function()
+        {
+            var d = new Date();
+            d = d.getTime();
+            if (jQuery('#reloadValue').val().length == 0)
+            {
+                jQuery('#reloadValue').val(d);
+                jQuery('body').show();
+            }
+            else
+            {
+                jQuery('#reloadValue').val('');
+                location.reload();
+            }
+        });
+    </script>
 
     <div style="clear:both;" class="">
+        <html:hidden property="reloadValue" value="" styleId="reloadValue"/>
         <html:hidden property="beginPeriodDateTime" value="${Form.beginPeriodDTNoTZ}" styleId="beginPeriodDate"/>
         <html:hidden property="endPeriodDateTime" value="${Form.endPeriodDTNoTZ}" styleId="endPeriodDate"/>
         <html:hidden property="isVirtualWorkDay" value="${Form.isVirtualWorkDay}" styleId="isVirtualWorkDay"/>
