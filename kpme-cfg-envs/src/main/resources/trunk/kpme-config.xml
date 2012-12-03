@@ -41,6 +41,6 @@
     <param name="keystore.password">r1c3pw</param>
     <param name="encryption.key">7IC64w6kAAAA</param>
     
-    <param name="kpme.batch.accrual.cronExpression">0 0 1 * *</param>
+    <param name="kpme.batch.accrual.cronExpression">0 0 0 1 * ?</param>
 
 </config>
