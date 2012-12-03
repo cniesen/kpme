@@ -803,6 +803,7 @@
                             </profiles>
                             <goals>
                                 <goal>clean</goal>
+                                <goal>pre-site</goal>
                                 <goal>package</goal>
                             </goals>
                             <properties>
