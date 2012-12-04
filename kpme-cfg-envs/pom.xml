@@ -319,6 +319,7 @@
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
                                     <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
                                     <dataXMLDir>${project.build.directory}/impex/${kpmebase.dataSource.database}</dataXMLDir>
+                                    <dataXMLExcludes>qrtz_blob_triggers.xml,qrtz_calendars.xml,qrtz_cron_triggers.xml,qrtz_fired_triggers.xml,qrtz_job_details.xml,qrtz_job_listeners.xml,qrtz_paused_trigger_grps.xml,qrtz_scheduler_state.xml,qrtz_simple_triggers.xml,qrtz_trigger_listeners.xml,qrtz_triggers.xml</dataXMLExcludes>
                                     <dataDTD>${project.build.directory}/impex/${kpmebase.dataSource.database}.dtd</dataDTD>
                                     <outputDir>${project.build.directory}/data-sql/${kpmebase.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
@@ -337,6 +338,7 @@
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
                                     <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
                                     <dataXMLDir>${project.build.directory}/impex/${kpmebase.dataSource.database}</dataXMLDir>
+                                    <dataXMLExcludes>qrtz_blob_triggers.xml,qrtz_calendars.xml,qrtz_cron_triggers.xml,qrtz_fired_triggers.xml,qrtz_job_details.xml,qrtz_job_listeners.xml,qrtz_paused_trigger_grps.xml,qrtz_scheduler_state.xml,qrtz_simple_triggers.xml,qrtz_trigger_listeners.xml,qrtz_triggers.xml</dataXMLExcludes>
                                     <dataDTD>${project.build.directory}/impex/${kpmebase.dataSource.database}.dtd</dataDTD>
                                     <outputDir>${project.build.directory}/data-sql/${kpmebase.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
