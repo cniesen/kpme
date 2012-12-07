@@ -189,7 +189,9 @@ public class EarnCodeServiceImpl implements EarnCodeService {
                 if ( StringUtils.equals(job.getPayTypeObj().getRegEarnCode(),dec.getEarnCode()) ){
                     addEarnCode = false;
                 }
-
+                if (!dec.isEmployee()){
+                    addEarnCode = false;
+                }
                 if (addEarnCode) {
                     EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
                     if(ec!=null){
