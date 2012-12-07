@@ -28,7 +28,7 @@
                 <td class="content" valign="top">
                     <departmentAdmin:hrPayroll />
                     <departmentAdmin:timeKeeping />
-                    <departmentAdmin:leaveMaintenance />
+                    <%--<departmentAdmin:leaveMaintenance />--%>
                     <departmentAdmin:administrative />
                 </td>
                 <td class="content" valign="top">
