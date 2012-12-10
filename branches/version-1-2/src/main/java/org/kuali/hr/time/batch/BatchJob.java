@@ -54,7 +54,7 @@ public class BatchJob {
         TkServiceLocator.getBatchJobService().saveBatchJob(this);
     }
 
-    void runJob() {
+    public void runJob() {
         TkServiceLocator.getTransactionTemplate().execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {

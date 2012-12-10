@@ -28,12 +28,19 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.kuali.hr.time.base.web.TkAction;
+import org.kuali.hr.time.batch.BatchApproveMissedPunchJob;
 import org.kuali.hr.time.batch.BatchApproveMissedPunchJobRunnable;
+import org.kuali.hr.time.batch.BatchJob;
 import org.kuali.hr.time.batch.BatchJobEntry;
+import org.kuali.hr.time.batch.EmployeeApprovalBatchJob;
 import org.kuali.hr.time.batch.EmployeeApprovalBatchJobRunnable;
+import org.kuali.hr.time.batch.InitiateBatchJob;
 import org.kuali.hr.time.batch.InitiateBatchJobRunnable;
+import org.kuali.hr.time.batch.PayPeriodEndBatchJob;
 import org.kuali.hr.time.batch.PayPeriodEndBatchJobRunnable;
+import org.kuali.hr.time.batch.SupervisorApprovalBatchJob;
 import org.kuali.hr.time.batch.SupervisorApprovalBatchJobRunnable;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 
@@ -70,14 +77,57 @@ public class BatchJobAction extends TkAction {
     public ActionForward runBatchJob(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         BatchJobActionForm bjaf = (BatchJobActionForm) form;
 
+        createBatchJobEntry(bjaf.getSelectedBatchJob(), bjaf.getHrPyCalendarEntryId());
+        
+        runBatchJobEntry(bjaf.getSelectedBatchJob(), bjaf.getHrPyCalendarEntryId());
+        
+        return mapping.findForward("basic");
+    }
+    
+    private void createBatchJobEntry(String selectedBatchJob, String hrPyCalendarEntryId) {
         Map<String, Object> searchCrit = new HashMap<String, Object>();
-        searchCrit.put("batchJobName", bjaf.getSelectedBatchJob());
-        searchCrit.put("hrPyCalendarEntryId", bjaf.getHrPyCalendarEntryId());
+        searchCrit.put("batchJobName", selectedBatchJob);
+        searchCrit.put("hrPyCalendarEntryId", hrPyCalendarEntryId);
         searchCrit.put("batchJobEntryStatus", TkConstants.BATCH_JOB_ENTRY_STATUS.SCHEDULED);
-
+    	
         List<BatchJobEntry> batchJobEntries = TkServiceLocator.getBatchJobEntryService().getBatchJobEntries(searchCrit);
 
-        for (BatchJobEntry entry : batchJobEntries) {
+        if (batchJobEntries.isEmpty()) {
+        	CalendarEntries calendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(hrPyCalendarEntryId);
+        	
+            if (StringUtils.equals(selectedBatchJob, TkConstants.BATCH_JOB_NAMES.APPROVE)) {
+            	BatchJob job = new EmployeeApprovalBatchJob(calendarEntry);
+                TkServiceLocator.getBatchJobService().saveBatchJob(job);
+                job.runJob();
+            } else if (StringUtils.equals(selectedBatchJob, TkConstants.BATCH_JOB_NAMES.PAY_PERIOD_END)) {
+                BatchJob job = new PayPeriodEndBatchJob(calendarEntry);
+                TkServiceLocator.getBatchJobService().saveBatchJob(job);
+                job.runJob();
+            } else if (StringUtils.equals(selectedBatchJob, TkConstants.BATCH_JOB_NAMES.SUPERVISOR_APPROVAL)) {
+                BatchJob job = new SupervisorApprovalBatchJob(calendarEntry);
+                TkServiceLocator.getBatchJobService().saveBatchJob(job);
+                job.runJob();
+            } else if (StringUtils.equals(selectedBatchJob, TkConstants.BATCH_JOB_NAMES.INITIATE)) {
+                BatchJob job = new InitiateBatchJob(calendarEntry);
+                TkServiceLocator.getBatchJobService().saveBatchJob(job);
+                job.runJob();
+            } else if (StringUtils.equals(selectedBatchJob, TkConstants.BATCH_JOB_NAMES.BATCH_APPROVE_MISSED_PUNCH)) {
+                BatchJob job = new BatchApproveMissedPunchJob(calendarEntry);
+                TkServiceLocator.getBatchJobService().saveBatchJob(job);
+                job.runJob();
+            }
+        }
+    }
+    
+    private void runBatchJobEntry(String selectedBatchJob, String hrPyCalendarEntryId) throws Exception {
+        Map<String, Object> searchCrit = new HashMap<String, Object>();
+        searchCrit.put("batchJobName", selectedBatchJob);
+        searchCrit.put("hrPyCalendarEntryId", hrPyCalendarEntryId);
+        searchCrit.put("batchJobEntryStatus", TkConstants.BATCH_JOB_ENTRY_STATUS.SCHEDULED);
+    	
+    	List<BatchJobEntry> batchJobEntries = TkServiceLocator.getBatchJobEntryService().getBatchJobEntries(searchCrit);
+    	
+    	for (BatchJobEntry entry : batchJobEntries) {
             long startTime = System.currentTimeMillis();
             LOG.debug("Before run.");
             entry.setBatchJobEntryStatus(TkConstants.BATCH_JOB_ENTRY_STATUS.RUNNING);
@@ -114,7 +164,6 @@ public class BatchJobAction extends TkAction {
             }
             TkServiceLocator.getBatchJobEntryService().saveBatchJobEntry(entry);
         }
-        return mapping.findForward("basic");
     }
 
 
