@@ -29,6 +29,7 @@
 
     <param name="dev.mode">false</param>
 
+    <param name="rice.ksb.web.forceEnable">true</param>
     <param name="rice.portal.links.showRiceServerConfig">true</param>
     
     <param name="log4j.settings.path">${user.home}/kuali/main/shared/log4j.properties</param>
