@@ -1,5 +1,7 @@
 <config>
     <!-- Application-specific Parameters -->
+    <param name="application.host">ci.kpme.kuali.org</param>
+    <param name="appserver.url">${application.http.scheme}://${application.host}</param>
     <param name="app.context.name">${app.code}-${environment}</param>
 
     <!-- KPME Client DB -->
@@ -13,7 +15,7 @@
     <param name="server.datasource.password">@kr.dataSource.password@</param>
 
     <!-- Embedded Mode Server URL -->
-    <param name="rice.server.url">http://ci.kpme.kuali.org/kr-${environment}</param>
+    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>    
     <param name="kim.mode">EMBEDDED</param>
     <param name="kcb.mode">EMBEDDED</param>
     <param name="kew.mode">EMBEDDED</param>
