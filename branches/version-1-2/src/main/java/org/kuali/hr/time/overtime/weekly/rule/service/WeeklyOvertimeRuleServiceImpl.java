@@ -32,6 +32,7 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -51,24 +52,39 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		// For the given payperiod, this is our time broken into FLSA weeks.
 		List<FlsaWeek> flsaWeeks = aggregate.getFlsaWeeks(zone);
 		List<FlsaWeek> previousWeeks = null;
+		List<FlsaWeek> nextWeeks = null;
 
 		if (flsaWeeks.size() == 0) {
 			return;
 		}
 
 		FlsaWeek firstWeek = flsaWeeks.get(0);
-
-		// Grab the previous list of FLSA Weeks.
 		if (!firstWeek.isFirstWeekFull()) {
-			 List<TimeBlock> prevBlocks = TkServiceLocator.getTimesheetService().getPrevDocumentTimeBlocks(principalId, timesheetDocument.getDocumentHeader().getPayBeginDate());
-			 if (prevBlocks.size() > 0) {
-				TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(principalId, timesheetDocument.getDocumentHeader().getPayBeginDate());
-				if (prevTdh != null) {
+			TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(principalId, timesheetDocument.getDocumentHeader().getPayBeginDate());
+			if (prevTdh != null) { 
+				List<TimeBlock> prevBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(prevTdh.getDocumentId());
+				if (prevBlocks.size() > 0) {
 					CalendarEntries prevPayCalendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, prevTdh.getPayEndDate(), null);
 					TkTimeBlockAggregate prevTimeAggregate = new TkTimeBlockAggregate(prevBlocks, prevPayCalendarEntry, prevPayCalendarEntry.getCalendarObj(), true);
 					previousWeeks = prevTimeAggregate.getFlsaWeeks(zone);
 					if (previousWeeks.size() == 0) {
 						previousWeeks = null;
+					}
+				}
+			 }
+		}
+		
+		FlsaWeek lastWeek = flsaWeeks.get(flsaWeeks.size() - 1);
+		if (!lastWeek.isLastWeekFull()) {
+			TimesheetDocumentHeader nextTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getNextDocumentHeader(principalId, timesheetDocument.getDocumentHeader().getPayEndDate());
+			if (nextTdh != null) { 
+				List<TimeBlock> nextBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(nextTdh.getDocumentId());
+				if (nextBlocks.size() > 0) {
+					CalendarEntries nextPayCalendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, nextTdh.getPayEndDate(), null);
+					TkTimeBlockAggregate nextTimeAggregate = new TkTimeBlockAggregate(nextBlocks, nextPayCalendarEntry, nextPayCalendarEntry.getCalendarObj(), true);
+					nextWeeks = nextTimeAggregate.getFlsaWeeks(zone);
+					if (nextWeeks.size() == 0) {
+						nextWeeks = null;
 					}
 				}
 			 }
@@ -87,7 +103,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 				BigDecimal maxHoursSum = BigDecimal.ZERO; // To consider whether we've met overtime
 				BigDecimal overtimeHours = BigDecimal.ZERO; // The number of hours to apply
 
-				// TODO : Step 1 - get maxHours from previous pay period week if available.
+				// Step 1 - get maxHours from previous pay period week if available.
 				// We have to consider our previous pay period, last week,
 				// starting from the flsa begin day to the end.
 				if (i == 0 && previousWeeks != null) {
@@ -113,16 +129,37 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 						}
 					}
 				}
+				
+				// TODO : Step 3 - get maxHours from next pay period week if available.
+				// We have to consider our next pay period, next week,
+				// starting from the flsa begin day to the end.
+				if (i == flsaWeeks.size() - 1 && nextWeeks != null) {
+					FlsaWeek nextFirstWeek = nextWeeks.get(0);
+					// We know that this week is all admissible, we have already
+					// filtered by time and days.
+					for (FlsaDay day : nextFirstWeek.getFlsaDays()) {
+						// figure out our reg hours to count towards this week.
+						for (String ec : day.getEarnCodeToHours().keySet()) {
+							if (maxHoursEarnCodes.contains(ec)) {
+								maxHoursSum = maxHoursSum.add(day.getEarnCodeToHours().get(ec), TkConstants.MATH_CONTEXT);
+							}
+						}
+					}
+				}
 
-				// TODO : Compute how many hours to apply
+				// Compute how many hours to apply
 				overtimeHours = maxHoursSum.subtract(wor.getMaxHours(), TkConstants.MATH_CONTEXT);
 				if (overtimeHours.compareTo(BigDecimal.ZERO) <= 0) {
 					// nothing for this week, move to next week.
 					continue;
 				}
 
-				// TODO : Step 3 - Reverse Sort current Time Blocks for this week.
+				// Step 4 - Reverse Sort current Time Blocks for this week.
 				List<FlsaDay> daysOfCurrentWeek = currentWeek.getFlsaDays();
+				if (i == flsaWeeks.size() - 1 && nextWeeks != null) {
+					FlsaWeek nextFirstWeek = nextWeeks.get(0);
+					daysOfCurrentWeek.addAll(nextFirstWeek.getFlsaDays());
+				}
 				if (daysOfCurrentWeek.size() > 0) {
 					for (int j=daysOfCurrentWeek.size()-1; j >= 0; j--) {
 						FlsaDay day = daysOfCurrentWeek.get(j);
@@ -150,6 +187,21 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 						if (otApplied)
 							day.remapTimeHourDetails();
 					}
+				}
+			}
+		}
+		
+		if (previousWeeks != null) {
+			for (FlsaWeek previousWeek : previousWeeks) {
+				for (FlsaDay day : previousWeek.getFlsaDays()) {
+					KRADServiceLocator.getBusinessObjectService().save(day.getAppliedTimeBlocks());
+				}
+			}
+		}
+		if (nextWeeks != null) {
+			for (FlsaWeek nextWeek : nextWeeks) {
+				for (FlsaDay day : nextWeek.getFlsaDays()) {
+					KRADServiceLocator.getBusinessObjectService().save(day.getAppliedTimeBlocks());
 				}
 			}
 		}
@@ -229,6 +281,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 			details.addAll(addDetails);
 			block.setTimeHourDetails(details);
 		}
+		
 
 		return otHours.subtract(applied);
 	}
