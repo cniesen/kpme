@@ -147,15 +147,14 @@ public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
             effdt.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, effdt);
             effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
+            root.addEqualTo("effectiveDate", effdtSubQuery);
             
             Criteria timestamp = new Criteria();
             timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
             timestamp.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, timestamp);
             timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-            effdt.addEqualTo("timestamp", timestampSubQuery);
-            
-            root.addEqualTo("effectiveDate", effdtSubQuery);
+            root.addEqualTo("timestamp", timestampSubQuery);
         }
 
         Query query = QueryFactory.newQuery(AccrualCategory.class, root);
