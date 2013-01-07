@@ -106,9 +106,7 @@ public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
 
 	@Override
     @SuppressWarnings("unchecked")
-	public List<AccrualCategory> getAccrualCategories(String accrualCategory, String accrualCatDescr, Date fromEffdt, Date toEffdt, 
-												      String active, String showHistory) {
-        
+	public List<AccrualCategory> getAccrualCategories(String accrualCategory, String descr, Date fromEffdt, Date toEffdt, String active, String showHistory) {
         List<AccrualCategory> results = new ArrayList<AccrualCategory>();
     	
     	Criteria root = new Criteria();
@@ -117,19 +115,21 @@ public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
             root.addLike("accrualCategory", accrualCategory);
         }
         
-        if (StringUtils.isNotBlank(accrualCatDescr)){
-            root.addLike("descr", accrualCatDescr);
+        if (StringUtils.isNotBlank(descr)){
+            root.addLike("descr", descr);
         }
         
+        Criteria effectiveDateFilter = new Criteria();
         if (fromEffdt != null) {
-            root.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+            effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
         }
-        
         if (toEffdt != null) {
-            root.addLessOrEqualThan("effectiveDate", toEffdt);
-        } else {
-            root.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
         }
+        if (fromEffdt == null && toEffdt == null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+        root.addAndCriteria(effectiveDateFilter);
         
         if (StringUtils.isNotBlank(active)) {
         	Criteria activeFilter = new Criteria();
@@ -144,16 +144,18 @@ public class AccrualCategoryDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
         if (StringUtils.equals(showHistory, "N")) {
             Criteria effdt = new Criteria();
             effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+            effdt.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, effdt);
             effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
-            root.addEqualTo("effectiveDate", effdtSubQuery);
             
             Criteria timestamp = new Criteria();
             timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
-            timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+            timestamp.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(AccrualCategory.class, timestamp);
             timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-            root.addEqualTo("timestamp", timestampSubQuery);
+            effdt.addEqualTo("timestamp", timestampSubQuery);
+            
+            root.addEqualTo("effectiveDate", effdtSubQuery);
         }
 
         Query query = QueryFactory.newQuery(AccrualCategory.class, root);

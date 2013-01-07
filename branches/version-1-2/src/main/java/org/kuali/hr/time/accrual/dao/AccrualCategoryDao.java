@@ -43,5 +43,5 @@ public interface AccrualCategoryDao {
      */
     public List<AccrualCategory> getActiveAccrualCategories(Date asOfDate);
 
-    List<AccrualCategory> getAccrualCategories(String accrualCategory, String accrualCatDescr, Date fromEffdt, Date toEffdt, String active, String showHistory);
+    List<AccrualCategory> getAccrualCategories(String accrualCategory, String descr, Date fromEffdt, Date toEffdt, String active, String showHistory);
 }

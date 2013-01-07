@@ -15,57 +15,38 @@
  */
 package org.kuali.hr.time.earngroup.service;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.List;
+import java.util.Properties;
+
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.earngroup.EarnGroup;
-import org.kuali.hr.time.util.TKContext;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.util.UrlFactory;
 
 public class EarnGroupLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject,
-			@SuppressWarnings("rawtypes") List pkNames) {
-		List<HtmlData> customActionUrls = super.getCustomActionUrls(
-				businessObject, pkNames);
-		List<HtmlData> overrideUrls = new ArrayList<HtmlData>();
-		for(HtmlData actionUrl : customActionUrls){
-			if(!StringUtils.equals(actionUrl.getMethodToCall(), "copy")){
-				overrideUrls.add(actionUrl);
-			}
-		}
-		if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
-			EarnGroup earnGroupObj = (EarnGroup) businessObject;
-			final String className = this.getBusinessObjectClass().getName();
-			final String earnGroup = earnGroupObj.getEarnGroup();
-			final String hrEarnGroupId = earnGroupObj.getHrEarnGroupId();
-			HtmlData htmlData = new HtmlData() {
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-				/**
-				 * 
-				 */
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public String constructCompleteHtmlTag() {
-					return "<a target=\"_blank\" href=\"inquiry.do?businessObjectClassName="
-							+ className
-							+ "&methodToCall=start&hrEarnGroupId="
-							+ hrEarnGroupId + "\">view</a>";
-				}
-			};
-			overrideUrls.add(htmlData);
-		} else if (overrideUrls.size() != 0) {
-			overrideUrls.remove(0);
-		}
-		return overrideUrls;
+		EarnGroup earnGroup = (EarnGroup) businessObject;
+		String hrEarnGroupId = earnGroup.getHrEarnGroupId();
+		
+		Properties params = new Properties();
+		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
+		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
+		params.put("hrEarnGroupId", hrEarnGroupId);
+		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
+		viewUrl.setDisplayText("view");
+		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
+		customActionUrls.add(viewUrl);
+		
+		return customActionUrls;
 	}
+	
 }

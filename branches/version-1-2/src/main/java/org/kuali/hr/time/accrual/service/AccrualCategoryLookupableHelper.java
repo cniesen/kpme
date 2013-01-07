@@ -15,71 +15,52 @@
  */
 package org.kuali.hr.time.accrual.service;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
+import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.util.UrlFactory;
 
 /**
  * Used to override lookup functionality for the accrual category lookup
- * 
- * 
  */
-public class AccrualCategoryLookupableHelper extends
-		HrEffectiveDateActiveLookupableHelper {
-	/**
-	 * 
-	 */
+public class AccrualCategoryLookupableHelper extends HrEffectiveDateActiveLookupableHelper {
+
 	private static final long serialVersionUID = 1L;
 
     @Override
     public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-		List<HtmlData> customActionUrls = super.getCustomActionUrls(
-				businessObject, pkNames);
-			List<HtmlData> overrideUrls = new ArrayList<HtmlData>();
-			for(HtmlData actionUrl : customActionUrls){
-				if(!StringUtils.equals(actionUrl.getMethodToCall(), "copy")){
-					overrideUrls.add(actionUrl);
-				}
-			}
+		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		if (TKContext.getUser().isSystemAdmin() || TKContext.getUser().isGlobalViewOnly()) {
-			AccrualCategory accrualCategory = (AccrualCategory) businessObject;
-			final String className = this.getBusinessObjectClass().getName();
-			final String lmAccrualCategoryId = accrualCategory
-					.getLmAccrualCategoryId();
-			HtmlData htmlData = new HtmlData() {
-
-				@Override
-				public String constructCompleteHtmlTag() {
-					return "<a target=\"_blank\" href=\"inquiry.do?businessObjectClassName="
-							+ className
-							+ "&methodToCall=start&lmAccrualCategoryId="
-							+ lmAccrualCategoryId + "\">view</a>";
-				}
-			};
-			overrideUrls.add(htmlData);
-		} else if (overrideUrls.size() != 0) {
-			overrideUrls.remove(0);
-		}
-		return overrideUrls;
+		AccrualCategory leaveAccrualCategory = (AccrualCategory) businessObject;
+		String lmAccrualCategoryId = leaveAccrualCategory.getLmAccrualCategoryId();
+		
+		Properties params = new Properties();
+		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
+		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
+		params.put("lmAccrualCategoryId", lmAccrualCategoryId);
+		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
+		viewUrl.setDisplayText("view");
+		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
+		customActionUrls.add(viewUrl);
+		
+		return customActionUrls;
 	}
 
-    @SuppressWarnings({"unchecked"})
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-
         String accrualCategory = fieldValues.get("accrualCategory");
-        String accrualCatDescr = fieldValues.get("descr");
-        String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
+        String descr = fieldValues.get("descr");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
         String active = fieldValues.get("active");
         String showHist = fieldValues.get("history");
@@ -88,10 +69,8 @@ public class AccrualCategoryLookupableHelper extends
             accrualCategory = "";
         }
 
-        List<AccrualCategory> accrualCategories = TkServiceLocator.getAccrualCategoryService().getAccrualCategories(accrualCategory, accrualCatDescr,
-                TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist);
-
-        return accrualCategories;
+        return TkServiceLocator.getAccrualCategoryService().getAccrualCategories(accrualCategory, descr, TKUtils.formatDateString(fromEffdt), 
+        		TKUtils.formatDateString(toEffdt), active, showHist);
     }
 
 }

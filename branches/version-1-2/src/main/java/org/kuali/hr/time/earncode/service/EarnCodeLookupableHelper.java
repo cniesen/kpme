@@ -74,11 +74,10 @@ public class EarnCodeLookupableHelper extends HrEffectiveDateActiveLookupableHel
 
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-
         String earnCode = fieldValues.get("earnCode");
         String ovtEarnCode = fieldValues.get("ovtEarnCode");
         String descr = fieldValues.get("description");
-        String fromEffdt = fieldValues.get("rangeLowerBoundKeyPrefix_effectiveDate");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
         String active = fieldValues.get("active");
         String showHist = fieldValues.get("history");

@@ -149,8 +149,8 @@ public class EarnCodeSecurityDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb im
 	
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<EarnCodeSecurity> searchEarnCodeSecurities(String dept, String salGroup, String earnCode, String location, 
-														   java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory) {
+	public List<EarnCodeSecurity> searchEarnCodeSecurities(String dept, String salGroup, String earnCode, String location, Date fromEffdt, Date toEffdt, 
+														   String active, String showHistory) {
 		
 		List<EarnCodeSecurity> results = new ArrayList<EarnCodeSecurity>();
 
@@ -172,15 +172,17 @@ public class EarnCodeSecurityDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb im
             root.addLike("location", location);
         }
 
+        Criteria effectiveDateFilter = new Criteria();
         if (fromEffdt != null) {
-            root.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+            effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
         }
-
         if (toEffdt != null) {
-            root.addLessOrEqualThan("effectiveDate", toEffdt);
-        } else {
-            root.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
         }
+        if (fromEffdt == null && toEffdt == null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+        root.addAndCriteria(effectiveDateFilter);
 
         if (StringUtils.isNotBlank(active)) {
         	Criteria activeFilter = new Criteria();
@@ -198,6 +200,7 @@ public class EarnCodeSecurityDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb im
             effdt.addEqualToField("hrSalGroup", Criteria.PARENT_QUERY_PREFIX + "hrSalGroup");
             effdt.addEqualToField("earnCode", Criteria.PARENT_QUERY_PREFIX + "earnCode");
             effdt.addEqualToField("location", Criteria.PARENT_QUERY_PREFIX + "location");
+            effdt.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EarnCodeSecurity.class, effdt);
             effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
             root.addEqualTo("effectiveDate", effdtSubQuery);
@@ -207,7 +210,7 @@ public class EarnCodeSecurityDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb im
             timestamp.addEqualToField("hrSalGroup", Criteria.PARENT_QUERY_PREFIX + "hrSalGroup");
             timestamp.addEqualToField("earnCode", Criteria.PARENT_QUERY_PREFIX + "earnCode");
             timestamp.addEqualToField("location", Criteria.PARENT_QUERY_PREFIX + "location");
-            timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+            timestamp.addAndCriteria(effectiveDateFilter);
             ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EarnCodeSecurity.class, timestamp);
             timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
             root.addEqualTo("timestamp", timestampSubQuery);
@@ -217,7 +220,6 @@ public class EarnCodeSecurityDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb im
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
 
         return results;
-		
 	}
 	
 	@Override
