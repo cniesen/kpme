@@ -34,7 +34,7 @@ public class WorkflowTagSupport {
     }
 
     public boolean isDisplayingRouteButton() {
-        TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getActualPerson().getPrincipalId());
+        TkUserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
         TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tdh = doc.getDocumentHeader();
         if(tdh.getDocumentStatus().equals("S") || tdh.getDocumentStatus().equals("I")){
