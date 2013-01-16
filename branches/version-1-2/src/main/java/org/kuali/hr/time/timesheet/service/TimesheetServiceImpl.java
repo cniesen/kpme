@@ -42,6 +42,8 @@ import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TimesheetServiceImpl implements TimesheetService {
 
@@ -125,7 +127,13 @@ public class TimesheetServiceImpl implements TimesheetService {
             if (activeAssignments.size() == 0) {
                 throw new RuntimeException("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
             }
-            timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, calendarDates, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, TimesheetDocument.TIMESHEET_DOCUMENT_TITLE);
+            
+            Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
+            String principalName = person != null ? person.getName() : StringUtils.EMPTY;
+            String endDateString = TKUtils.formatDate(new java.sql.Date(end.getTime()));
+            String timesheetDocumentTitle = TimesheetDocument.TIMESHEET_DOCUMENT_TYPE + " - " + principalName + " - " + endDateString;
+            
+            timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, calendarDates, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, timesheetDocumentTitle);
             //timesheetDocument.setPayCalendarEntry(calendarDates);
             //this.loadTimesheetDocumentData(timesheetDocument, principalId, calendarDates);
 
