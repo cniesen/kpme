@@ -35,8 +35,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	private String principalId;
 	private String payCalendar;
 	private Date serviceDate;
-	private boolean fmlaEligible;
-	private boolean workmansCompEligible;
 	private String holidayCalendarGroup;
 	private String timezone;
 	private Boolean history;
@@ -88,22 +86,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 
 	public void setServiceDate(Date serviceDate) {
 		this.serviceDate = serviceDate;
-	}
-
-	public boolean isFmlaEligible() {
-		return fmlaEligible;
-	}
-
-	public void setFmlaEligible(boolean fmlaEligible) {
-		this.fmlaEligible = fmlaEligible;
-	}
-
-	public boolean isWorkmansCompEligible() {
-		return workmansCompEligible;
-	}
-
-	public void setWorkmansCompEligible(boolean workmansCompEligible) {
-		this.workmansCompEligible = workmansCompEligible;
 	}
 
 	public Date getEffectiveDate() {

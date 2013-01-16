@@ -543,8 +543,6 @@
         <field-descriptor name="serviceDate"            column="SERVICE_DATE"               jdbc-type="DATE"        conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" nullable="false" />
         <field-descriptor name="timestamp"              column="TIMESTAMP"                  jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.hr.time.util.TkTimestampConverter" />
         <field-descriptor name="active"                 column="ACTIVE"                     jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="fmlaEligible"           column="FMLA_ELIGIBLE"              jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="workmansCompEligible"   column="WORKSMAN_ELIGIBLE"          jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="objectId"               column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
         <field-descriptor name="versionNumber"          column="VER_NBR" jdbc-type="BIGINT" locking="true" />
         <field-descriptor name="holidayCalendarGroup"   column="HOLIDAY_CALENDAR_GROUP"     jdbc-type="VARCHAR"     length="3" nullable="false" />
