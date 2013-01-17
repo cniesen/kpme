@@ -18,7 +18,7 @@
         <param name="keystore.alias">rice</param>
         <param name="keystore.password">r1c3pw</param>
 
-        <param name="encryption.key" override="false">7IC64w6ksLU</param>
+        <param name="encryption.key" override="false">7IC64w6kAAAA</param>
 
         <param name="filter.login.class">org.kuali.rice.kew.web.DummyLoginFilter</param>
         <param name="filtermapping.login.1">/*</param>
