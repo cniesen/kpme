@@ -131,7 +131,7 @@ public class TimesheetServiceImpl implements TimesheetService {
             Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
             String principalName = person != null ? person.getName() : StringUtils.EMPTY;
             String endDateString = TKUtils.formatDate(new java.sql.Date(end.getTime()));
-            String timesheetDocumentTitle = TimesheetDocument.TIMESHEET_DOCUMENT_TYPE + " - " + principalName + " - " + endDateString;
+            String timesheetDocumentTitle = TimesheetDocument.TIMESHEET_DOCUMENT_TYPE + " - " + principalName + " (" + principalId + ") - " + endDateString;
             
             timesheetDocument = this.initiateWorkflowDocument(principalId, begin, end, calendarDates, TimesheetDocument.TIMESHEET_DOCUMENT_TYPE, timesheetDocumentTitle);
             //timesheetDocument.setPayCalendarEntry(calendarDates);
