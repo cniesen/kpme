@@ -57,5 +57,12 @@ the id is used in approval.js--%>
 	                  	 target="_self" id="cppLink">Go to Current Period</a>
 	        	</td>
         	</c:if>
+        	<td align="center">
+    	       <fieldset style="width:75%;">
+                    <legend>Weekly Status</legend>
+                    <div>Pay Period Week Total: <span style="font-weight: bold;">bold</span></div>
+                    <div>FLSA Week Total: <span style="font-style: italic;">italics</span></div>
+                </fieldset>
+            </td>
         </tr>
 </table>

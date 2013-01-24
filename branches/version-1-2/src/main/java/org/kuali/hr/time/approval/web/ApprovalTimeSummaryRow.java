@@ -49,6 +49,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     private String approvalStatusMessage;
     private String documentId;
     private Map<String,BigDecimal> hoursToPayLabelMap = new HashMap<String,BigDecimal>();
+    private Map<String,BigDecimal> hoursToFlsaPayLabelMap = new HashMap<String,BigDecimal>();
     private String clockStatusMessage;
     private String payCalendarGroup;
     private List notes = new ArrayList();
@@ -121,6 +122,12 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     }
     public Map<String,BigDecimal> getHoursToPayLabelMap() {
         return hoursToPayLabelMap;
+    }
+    public void setHoursToFlsaPayLabelMap(Map<String,BigDecimal> hoursToFlsaPayLabelMap) {
+        this.hoursToFlsaPayLabelMap = hoursToFlsaPayLabelMap;
+    }
+    public Map<String,BigDecimal> getHoursToFlsaPayLabelMap() {
+        return hoursToFlsaPayLabelMap;
     }
     public void setClockStatusMessage(String clockStatusMessage) {
         this.clockStatusMessage = clockStatusMessage;
