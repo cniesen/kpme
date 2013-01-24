@@ -17,8 +17,8 @@ the id is used in approval.js--%>
                 <label for="search value">
            			<input id="${searchId}" name="${searchId}" type="text" value="${Form.searchTerm}" placeholder="enter at least 3 chars" />
                     <span id='loading-value' style="display:none;"><img src='images/ajax-loader.gif'></span>
-                    <input type="button" id='search' value="Search"
-                           class="ui-button ui-widget ui-state-default ui-corner-all"/>
+                    <input type="button" id='search' value="Search" class="ui-button ui-widget ui-state-default ui-corner-all" 
+                           onclick="this.form.methodToCall.value='searchResult'; this.form.submit();" name="searchResult" />
                 </label>
             </td>
             <td>

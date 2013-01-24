@@ -43,7 +43,7 @@
 	<tk:approvalFilter />
 
     <c:if test="${fn:length(Form.approvalRows) != 0}">
-		<tk:approvalSearch searchId="searchValue" />
+		<tk:approvalSearch searchId="searchTerm" />
     
     	<tk:timeApproval />
     
