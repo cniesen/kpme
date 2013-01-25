@@ -41,14 +41,13 @@
 <div class="approvals">
 
 	<tk:approvalFilter />
+	
+	<tk:approvalSearch searchId="searchTerm" />
 
+    <tk:timeApproval />
+    
     <c:if test="${fn:length(Form.approvalRows) != 0}">
-		<tk:approvalSearch searchId="searchTerm" />
-    
-    	<tk:timeApproval />
-    
     	<tk:approvalButtons refreshId="refresh" approvable="${Form.anyApprovalRowApprovable}" />
-    
     </c:if>
 
 </div>
