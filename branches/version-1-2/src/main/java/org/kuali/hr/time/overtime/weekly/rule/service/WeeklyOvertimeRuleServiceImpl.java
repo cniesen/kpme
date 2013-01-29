@@ -253,9 +253,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		BigDecimal applied = BigDecimal.ZERO;
 		List<TimeHourDetail> timeHourDetails = timeBlock.getTimeHourDetails();
 		
-		TimeHourDetail convertTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, convertFromEarnCodes);
 		BigDecimal timeHourDetailsHours = getTimeHourDetailsHours(timeHourDetails);
-		
 		if (timeHourDetailsHours.compareTo(overtimeHours) >= 0) {
 			applied = overtimeHours;
 		} else {
@@ -266,7 +264,6 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		BigDecimal hours = earnCodeObj.getInflateFactor().multiply(applied, TkConstants.MATH_CONTEXT).setScale(TkConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
 		
 		TimeHourDetail overtimeTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, Collections.singletonList(overtimeEarnCode));
-		
 		if (overtimeTimeHourDetail != null) {
 			overtimeTimeHourDetail.setHours(hours);
 		} else {
@@ -278,7 +275,10 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 			timeBlock.addTimeHourDetail(newTimeHourDetail);
 		}
 		
-		convertTimeHourDetail.setHours(timeHourDetailsHours.subtract(applied, TkConstants.MATH_CONTEXT).setScale(TkConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
+		TimeHourDetail convertTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, convertFromEarnCodes);
+		if (convertTimeHourDetail != null) {
+			convertTimeHourDetail.setHours(timeHourDetailsHours.subtract(applied, TkConstants.MATH_CONTEXT).setScale(TkConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
+		}
 		
 		return overtimeHours.subtract(applied);
 	}
@@ -302,7 +302,9 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		}
 		
 		TimeHourDetail convertTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, convertFromEarnCodes);
-		convertTimeHourDetail.setHours(convertTimeHourDetail.getHours().add(applied, TkConstants.MATH_CONTEXT).setScale(TkConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
+		if (convertTimeHourDetail != null) {
+			convertTimeHourDetail.setHours(convertTimeHourDetail.getHours().add(applied, TkConstants.MATH_CONTEXT).setScale(TkConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
+		}
 	}
 	
 	protected TimeHourDetail getTimeHourDetailByEarnCode(List<TimeHourDetail> timeHourDetails, Collection<String> earnCodes) {
