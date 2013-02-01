@@ -1,0 +1,187 @@
+/**
+ * Copyright 2004-2013 The Kuali Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.opensource.org/licenses/ecl2.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kuali.hr.lm.employeeoverride.dao;
+
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
+import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.lm.employeeoverride.EmployeeOverride;
+import org.kuali.hr.time.util.TKUtils;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+
+public class EmployeeOverrideDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements EmployeeOverrideDao{
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<EmployeeOverride> getEmployeeOverrides(String principalId, Date asOfDate) {
+        List<EmployeeOverride> employeeOverrides = new ArrayList<EmployeeOverride>();
+        Criteria root = new Criteria();
+        Criteria effdt = new Criteria();
+        Criteria timestamp = new Criteria();
+
+        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
+        effdt.addEqualTo("principalId", principalId);
+        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, effdt);
+        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+
+        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+        timestamp.addEqualTo("principalId", principalId);
+        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, timestamp);
+        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+
+        root.addEqualTo("principalId", principalId);
+        root.addEqualTo("effectiveDate", effdtSubQuery);
+        root.addEqualTo("timestamp", timestampSubQuery);
+
+        Criteria activeFilter = new Criteria(); // Inner Join For Activity
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(EmployeeOverride.class, root);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+        if (c != null) {
+        	employeeOverrides.addAll(c);
+        }
+        return employeeOverrides;
+    }
+	
+	@Override
+	public EmployeeOverride getEmployeeOverride(String principalId, String leavePlan, String accrualCategory, String overrideType, Date asOfDate) {
+        Criteria root = new Criteria();
+
+        root.addEqualTo("principalId", principalId);
+        root.addEqualTo("leavePlan", leavePlan);
+        root.addEqualTo("accrualCategory", accrualCategory);
+        root.addEqualTo("overrideType", overrideType);
+
+        Criteria effdt = new Criteria();
+        effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        effdt.addEqualToField("leavePlan", Criteria.PARENT_QUERY_PREFIX + "leavePlan");
+        effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+        effdt.addEqualToField("overrideType", Criteria.PARENT_QUERY_PREFIX + "overrideType");
+        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
+        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, effdt);
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
+        root.addEqualTo("effectiveDate", effdtSubQuery);
+        
+        Criteria timestamp = new Criteria();
+        timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        timestamp.addEqualToField("leavePlan", Criteria.PARENT_QUERY_PREFIX + "leavePlan");
+        timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+        timestamp.addEqualToField("overrideType", Criteria.PARENT_QUERY_PREFIX + "overrideType");
+        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, timestamp);
+        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+        root.addEqualTo("timestamp", timestampSubQuery);
+
+        Criteria activeFilter = new Criteria();
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(EmployeeOverride.class, root);
+        return (EmployeeOverride) getPersistenceBrokerTemplate().getObjectByQuery(query);
+	}
+
+	@Override
+	public EmployeeOverride getEmployeeOverride(String lmEmployeeOverrideId) {
+		Criteria crit = new Criteria();
+        crit.addEqualTo("lmEmployeeOverrideId", lmEmployeeOverrideId);
+        Query query = QueryFactory.newQuery(EmployeeOverride.class, crit);
+        return (EmployeeOverride) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+	}
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<EmployeeOverride> getEmployeeOverrides(String principalId, String leavePlan, String accrualCategory, String overrideType,
+                                                       Date fromEffdt, Date toEffdt, String active) {
+
+        List<EmployeeOverride> results = new ArrayList<EmployeeOverride>();
+    	
+    	Criteria root = new Criteria();
+
+        if (StringUtils.isNotBlank(principalId)) {
+        	root.addEqualTo("principalId",principalId);
+        }
+        
+        if (StringUtils.isNotBlank(leavePlan)) {
+        	root.addEqualTo("leavePlan",leavePlan);
+        }
+        
+        if (StringUtils.isNotBlank(accrualCategory)) {
+        	root.addEqualTo("accrualCategory",accrualCategory);
+        }
+        
+        if (StringUtils.isNotBlank(overrideType)) {
+        	root.addEqualTo("overrideType",overrideType);
+        }
+        
+        Criteria effectiveDateFilter = new Criteria();
+        if (fromEffdt != null) {
+            effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+        }
+        if (toEffdt != null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
+        }
+        if (fromEffdt == null && toEffdt == null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+        root.addAndCriteria(effectiveDateFilter);
+
+        if (StringUtils.isNotBlank(active)) {
+            Criteria activeFilter = new Criteria();
+            if (StringUtils.equals(active, "Y")) {
+                activeFilter.addEqualTo("active", true);
+            } else if (StringUtils.equals(active, "N")) {
+                activeFilter.addEqualTo("active", false);
+            }
+            root.addAndCriteria(activeFilter);
+        }
+        
+        Criteria effdt = new Criteria();
+        effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        effdt.addEqualToField("leavePlan", Criteria.PARENT_QUERY_PREFIX + "leavePlan");
+        effdt.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+        effdt.addEqualToField("overrideType", Criteria.PARENT_QUERY_PREFIX + "overrideType");
+        effdt.addAndCriteria(effectiveDateFilter);
+        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, effdt);
+        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
+        root.addEqualTo("effectiveDate", effdtSubQuery);
+
+        Criteria timestamp = new Criteria();
+        timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
+        timestamp.addEqualToField("leavePlan", Criteria.PARENT_QUERY_PREFIX + "leavePlan");
+        timestamp.addEqualToField("accrualCategory", Criteria.PARENT_QUERY_PREFIX + "accrualCategory");
+        timestamp.addEqualToField("overrideType", Criteria.PARENT_QUERY_PREFIX + "overrideType");
+        timestamp.addAndCriteria(effectiveDateFilter);
+        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EmployeeOverride.class, timestamp);
+        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+        root.addEqualTo("timestamp", timestampSubQuery);
+
+        Query query = QueryFactory.newQuery(EmployeeOverride.class, root);
+        results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
+
+        return results;
+    }
+
+}
