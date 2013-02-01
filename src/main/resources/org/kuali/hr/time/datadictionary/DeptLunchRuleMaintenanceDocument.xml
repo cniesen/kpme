@@ -38,7 +38,6 @@
       </list>
     </property>
     <property name="documentTypeName" value="DeptLunchRuleDocumentType"/>
-    <property name="promptBeforeValidationClass" value="org.kuali.hr.time.dept.lunch.validation.DeptLunchRuleEffectiveDatePrompt"/>
   </bean>
 
   <!-- Maintenance Section Definitions -->

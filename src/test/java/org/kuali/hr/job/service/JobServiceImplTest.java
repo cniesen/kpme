@@ -34,14 +34,14 @@ public class JobServiceImplTest extends KPMETestCase {
 	public static final String TEST_USER = "admin";
 
 	JobService jobService = null;
-	
+
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
 		jobService=TkServiceLocator.getJobService();
 	}
-	
+
 	@Test
 	public void testGetJobs() {
 		Date payPeriodEndDate = new Date((new DateTime(2010,7,30,1,0,0,0, TKUtils.getSystemDateTimeZone())).getMillis());
@@ -49,7 +49,7 @@ public class JobServiceImplTest extends KPMETestCase {
 		Assert.assertNotNull("Jobs was null", jobs);
 		Assert.assertEquals("Incorrect number of jobs", 2, jobs.size());
 	}
-	
+
 	@Test
 	public void testGetMaxJob() {
 		Job aJob = jobService.getMaxJob("admin");

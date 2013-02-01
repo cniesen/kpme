@@ -15,15 +15,11 @@
  */
 package org.kuali.hr.time.timesheet.validation;
 
-import java.util.List;
-
-import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimeSheetInitiate;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
@@ -37,11 +33,6 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
         if(pc == null) {
         	this.putFieldError("pyCalendarGroup", "timeSheetInit.payCalendar.Invalid");
         	valid = false;
-        } else {
-        	if(pc.getCalendarTypes() != null && !pc.getCalendarTypes().equalsIgnoreCase(TkConstants.CALENDAR_TYPE_PAY)) {
-        		this.putFieldError("pyCalendarGroup", "timeSheetInit.payCalendar.Invalid");
-            	valid = false;
-        	}
         }
         
     	CalendarEntries pce = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(timeInit.getHrPyCalendarEntriesId());
@@ -49,12 +40,6 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
     		this.putFieldError("hrPyCalendarEntriesId", "timeSheetInit.payCalEntriesId.Invalid");
         	valid = false;
     	}
-    	
-        List<Assignment> activeAssignments = TkServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(timeInit.getPrincipalId(), pce);
-        if (activeAssignments.isEmpty()) {
-        	this.putFieldError("principalId", "timeSheetInit.principalId.Assignments.Empty");
-        	valid = false;
-        }
     	
     	if(valid) {
 			this.createTimeSheetDocument(timeInit, pce);
@@ -65,7 +50,7 @@ public class TimeSheetInitiateValidation extends MaintenanceDocumentRuleBase {
     protected void createTimeSheetDocument(TimeSheetInitiate timeInit, CalendarEntries entries) {
     	try {
     		TimesheetDocument tsd = TkServiceLocator.getTimesheetService().openTimesheetDocument(timeInit.getPrincipalId(), entries);
-    		if (tsd != null) {
+    		if(tsd != null) {
     			timeInit.setDocumentId(tsd.getDocumentId());
     		}
 		} catch (WorkflowException e) {

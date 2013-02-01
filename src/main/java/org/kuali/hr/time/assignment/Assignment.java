@@ -15,6 +15,8 @@
  */
 package org.kuali.hr.time.assignment;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,11 +35,12 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class Assignment extends HrBusinessObject {
-
-	private static final long serialVersionUID = 6347435053054442195L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Assignment";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Assignment";
+	/**
+     *
+     */
+	private static final long serialVersionUID = -3408305833805778653L;
+	//database id
 	private String tkAssignmentId;
 	private String principalId;
 	private Long jobNumber;
@@ -67,6 +70,17 @@ public class Assignment extends HrBusinessObject {
 
 	public void setAssignmentAccounts(List<AssignmentAccount> assignmentAccounts) {
 		this.assignmentAccounts = assignmentAccounts;
+	}
+
+	public Assignment(){}
+
+	public Assignment(String principalId, Long jobNumber, Date effectiveDate,
+			String earnCode, Long workAreaId, Long taskId) {
+		this.principalId = principalId;
+		this.jobNumber = jobNumber;
+		this.effectiveDate = effectiveDate;
+		this.workArea = workAreaId;
+		this.task = taskId;
 	}
 
 	public String getPrincipalId() {
@@ -112,6 +126,22 @@ public class Assignment extends HrBusinessObject {
 		this.hrJobId = hrJobId;
 	}
 
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
 	/**
 	 * Provides us with the text to display to the user for clock actions on
 	 * this assignment.
@@ -130,6 +160,14 @@ public class Assignment extends HrBusinessObject {
     }
 	public void setTkAssignmentId(String tkAssignmentId) {
 		this.tkAssignmentId = tkAssignmentId;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	public void setWorkArea(Long workArea) {
@@ -189,7 +227,7 @@ public class Assignment extends HrBusinessObject {
 	}
 
 	public boolean isSynchronous() {
-		return timeCollectionRule == null ? false : timeCollectionRule.isClockUserFl();
+		return timeCollectionRule.isClockUserFl();
 	}
 
 	public DeptLunchRule getDeptLunchRule() {

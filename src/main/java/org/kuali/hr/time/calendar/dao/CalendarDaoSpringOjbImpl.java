@@ -73,16 +73,13 @@ public class CalendarDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb  implement
 	}
 
     @Override
-    public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime) {
+    public List<Calendar> getCalendars(String calendarName, String flsaBeginDay, String flsaBeginTime) {
         Criteria crit = new Criteria();
 
         List<Calendar> results = new ArrayList<Calendar>();
 
         if(StringUtils.isNotBlank(calendarName) && StringUtils.isNotEmpty(calendarName)){
             crit.addLike("calendarName", calendarName);
-        }
-        if(StringUtils.isNotBlank(calendarTypes) && StringUtils.isNotEmpty(calendarTypes)){
-            crit.addLike("calendarTypes", calendarTypes);
         }
         if(StringUtils.isNotBlank(flsaBeginDay) && StringUtils.isNotEmpty(flsaBeginDay)){
             crit.addLike("flsaBeginDay", flsaBeginDay);

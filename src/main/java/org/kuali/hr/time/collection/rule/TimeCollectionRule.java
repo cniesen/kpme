@@ -23,10 +23,8 @@ import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.workarea.WorkArea;
 
 public class TimeCollectionRule extends HrBusinessObject implements DepartmentalRule {
-
-	private static final long serialVersionUID = 7892616560736184294L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeCollectionRule";
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeCollectionRule";
+	private static final long serialVersionUID = 1L;
 
 	private String tkTimeCollectionRuleId;
 	private String dept;
@@ -96,6 +94,14 @@ public class TimeCollectionRule extends HrBusinessObject implements Departmental
 
 	public void setWorkArea(Long workArea) {
 		this.workArea = workArea;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public boolean isClockUserFl() {

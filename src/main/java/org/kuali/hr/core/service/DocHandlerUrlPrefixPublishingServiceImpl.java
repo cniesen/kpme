@@ -91,6 +91,7 @@ public class DocHandlerUrlPrefixPublishingServiceImpl implements DocHandlerUrlPr
     public void setParameterService(ParameterService parameterService) {
         this.parameterService = parameterService;
     }
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         publishDocHandlerUrlPrefix();

@@ -44,7 +44,6 @@
       		</list>
     	</property>
 		<property name="documentTypeName" value="AssignmentDocumentType" />
-        <property name="promptBeforeValidationClass" value="org.kuali.hr.time.assignment.validation.AssignmentEffectiveDatePrompt"/>
 	</bean>
 
 	<!-- Maintenance Section Definitions -->

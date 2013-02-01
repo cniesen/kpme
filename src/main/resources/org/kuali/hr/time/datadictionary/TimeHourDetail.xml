@@ -28,6 +28,7 @@
     <property name="attributes" >
       <list>
       	<ref bean="TimeHourDetail-tkTimeHourDetailId" />
+      	<ref bean="TimeHourDetail-tkTimeBlockId" />
       	<ref bean="TimeHourDetail-earnCode"/>
       	<ref bean="TimeHourDetail-hours" />
       	<ref bean="TimeHourDetail-amount"/>
@@ -51,6 +52,22 @@
 		</property>
     <property name="name" value="tkTimeHourDetailId"/>
     <property name="label" value="TimeHourDetail Id"/>
+  </bean>
+  
+  <bean id="TimeHourDetail-tkTimeBlockId" parent="TimeHourDetail-tkTimeBlockId-parentBean"/>
+  <bean id="TimeHourDetail-tkTimeBlockId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="tkTimeBlock Id"/>
+    <property name="maxLength" value="60"/>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="60" />
+		</property>
+    <property name="name" value="tkTimeBlockId"/>
+    <property name="label" value="tkTimeBlock Id"/>
   </bean>
   
   <bean id="TimeHourDetail-earnCode" parent="TimeHourDetail-earnCode-parentBean"/>

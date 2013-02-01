@@ -18,9 +18,6 @@ package org.kuali.hr.time.assignment.service;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
@@ -29,7 +26,6 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
 
 import java.sql.Date;
 import java.util.*;
@@ -84,15 +80,11 @@ public class AssignmentServiceImpl implements AssignmentService {
         return assignmentDao.searchAssignments(fromEffdt, toEffdt, principalId, jobNumber, dept, workArea, active, showHistory);
     }
 
+
     public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntries payCalendarEntry) {
-    	DateTime entryEndDate = payCalendarEntry.getEndLocalDateTime().toDateTime();
-        if (entryEndDate.getHourOfDay() == 0) {
-            entryEndDate = entryEndDate.minusDays(1);
-        }
-        Date endDate = new java.sql.Date(entryEndDate.getMillis());
         List<Assignment> beginPeriodAssign = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate());
-        List<Assignment> endPeriodAssign = getAssignments(principalId, endDate);
-        List<Assignment> assignsWithPeriod = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate(), endDate);
+        List<Assignment> endPeriodAssign = getAssignments(principalId, payCalendarEntry.getEndPeriodDate());
+        List<Assignment> assignsWithPeriod = getAssignments(principalId, payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate());
 
         List<Assignment> finalAssignments = new ArrayList<Assignment>();
         Map<String, Assignment> assignKeyToAssignmentMap = new HashMap<String, Assignment>();
@@ -120,63 +112,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         return finalAssignments;
 
     }
-    
-    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntries payCalendarEntry){
-        if (StringUtils.isEmpty(principalId)
-                || payCalendarEntry == null) {
-            return Collections.emptyList();
-        }
-        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results = TkServiceLocator.getAssignmentService().filterAssignments(assignments, TkConstants.FLSA_STATUS_NON_EXEMPT, false);
-    	return results;
-    }
-    
-    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntries payCalendarEntry){
-        if (StringUtils.isEmpty(principalId)
-                || payCalendarEntry == null) {
-            return Collections.emptyList();
-        }
-    	List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results = TkServiceLocator.getAssignmentService().filterAssignments(assignments, null, true);
-    	return results;
-    }
 
-    public List<Assignment> filterAssignments(List<Assignment> assignments, String flsaStatus, boolean chkForLeaveEligible) {
-    	List<Assignment> results = new ArrayList<Assignment>();
-    	for(Assignment assignment : assignments) {
-    		boolean flag = false;
-    		if(StringUtils.isNotEmpty(flsaStatus)) {
-    			if(assignment != null 
-		    			&& assignment.getJob() != null 
-		    			&& assignment.getJob().getFlsaStatus() != null 
-		    			&& assignment.getJob().getFlsaStatus().equalsIgnoreCase(flsaStatus)) {    			
-					if(chkForLeaveEligible) {
-						if(assignment.getJob().isEligibleForLeave()) {
-							flag = true;
-						}
-					}else {
-						flag = true;
-					}
-	    		} 
-    		}else {
-    			if(chkForLeaveEligible) {
-    				if(assignment != null && assignment.getJob() != null && assignment.getJob().isEligibleForLeave()) {
-    					flag = true;
-    				}
-    			} else {
-    				flag = true;
-    			}
-    		}
-    		
-			if(flag) {
-				results.add(assignment);
-			}
-    	}
-    	
-    	return results;
-    	
-    }
-    
     @Override
     public AssignmentDescriptionKey getAssignmentDescriptionKey(String assignmentKey) {
         return new AssignmentDescriptionKey(assignmentKey);
@@ -185,8 +121,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public Map<String, String> getAssignmentDescriptions(TimesheetDocument td, boolean clockOnlyAssignments) {
         if (td == null) {
-            //throw new RuntimeException("timesheet document is null.");
-            return Collections.emptyMap();
+            throw new RuntimeException("timesheet document is null.");
         }
         List<Assignment> assignments = td.getAssignments();
 //		if(assignments.size() < 1) {
@@ -240,7 +175,7 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         //No assignment found so fetch the inactive ones for this payBeginDate
-        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, timesheetDocument.getCalendarEntry().getBeginPeriodDate());
+        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, timesheetDocument.getPayCalendarEntry().getBeginPeriodDate());
         if (assign != null) {
             return assign;
         }
@@ -309,78 +244,10 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         return assignments;
     }
-    
-    @Override
-    public Map<String, String> getAssignmentDescriptions(LeaveCalendarDocument lcd) {
-        if (lcd == null) {
-            throw new RuntimeException("leave document is null.");
-        }
-        List<Assignment> assignments = lcd.getAssignments();
-        return TkServiceLocator.getAssignmentService().getAssignmentDescriptionsForAssignments(assignments);
-    }
-    
-    public Map<String, String> getAssignmentDescriptionsForAssignments(List<Assignment>  assignments) {
-    	 Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-         for (Assignment assignment : assignments) {
-                 assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
-         }
-         return assignmentDescriptions;
-    }
 
-    @Override
-    public Assignment getAssignment(LeaveCalendarDocument leaveCalendarDocument, String assignmentKey) {
-        List<Assignment> assignments = leaveCalendarDocument.getAssignments();
-        return TkServiceLocator.getAssignmentService().getAssignment(assignments, assignmentKey, leaveCalendarDocument.getCalendarEntry().getBeginPeriodDate());
-    }
-    
-    public Assignment getAssignment(List<Assignment> assignments, String assignmentKey, Date beginDate) {
-        AssignmentDescriptionKey desc = getAssignmentDescriptionKey(assignmentKey);
-    	if (CollectionUtils.isNotEmpty(assignments)) {
-            for (Assignment assignment : assignments) {
-                if (assignment.getJobNumber().compareTo(desc.getJobNumber()) == 0 &&
-                        assignment.getWorkArea().compareTo(desc.getWorkArea()) == 0 &&
-                        assignment.getTask().compareTo(desc.getTask()) == 0) {
-                    return assignment;
-                }
-            }
-        }
-
-        //No assignment found so fetch the inactive ones for this payBeginDate
-        Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(desc, beginDate);
-        if (assign != null) {
-            return assign;
-        }
-
-        LOG.warn("no matched assignment found");
-        return new Assignment();
-    }
-    
     @Override
     public Assignment getMaxTimestampAssignment(String principalId) {
     	return assignmentDao.getMaxTimestampAssignment(principalId);
     }
-    
-	public Assignment getAssignmentToApplyScheduledTimeOff(TimesheetDocument timesheetDocument, java.sql.Date payEndDate) {
-		Job primaryJob = TkServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
-		for(Assignment assign : timesheetDocument.getAssignments()){
-			if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
-				return assign;
-			}
-		}
-		return null;
-	}
-	
-	public List<String> getPrincipalIds(List<String> workAreaList, Date effdt, Date startDate, Date endDate) {
-		if (CollectionUtils.isEmpty(workAreaList)) {
-			return new ArrayList<String>();
-		}	
-		return assignmentDao.getPrincipalIds(workAreaList, effdt, startDate, endDate);
-	}
-	
-	 public List<Assignment> getAssignments(List<String> workAreaList, Date effdt, Date startDate, Date endDate) {
-		if (CollectionUtils.isEmpty(workAreaList)) {
-			return new ArrayList<Assignment>();
-		}	
-		return assignmentDao.getAssignments(workAreaList, effdt, startDate, endDate);
-	}
+
 }

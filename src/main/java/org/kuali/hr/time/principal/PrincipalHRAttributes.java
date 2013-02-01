@@ -16,28 +16,26 @@
 package org.kuali.hr.time.principal;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.holidaycalendar.HolidayCalendar;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class PrincipalHRAttributes extends HrBusinessObject {
-
-	private static final long serialVersionUID = 6843318899816055301L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PrincipalHRAttributes";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PrincipalHRAttributes";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String hrPrincipalAttributeId;
 	private String principalId;
-	private String leaveCalendar;
 	private String payCalendar;
-	private String leavePlan;
 	private Date serviceDate;
-	private boolean fmlaEligible;
-	private boolean workersCompEligible;
+	private String holidayCalendarGroup;
 	private String timezone;
 	private Boolean history;
 	// KPME-1268 Kagata added recordTime and recordLeave variables
@@ -46,10 +44,17 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 //	private String recordLeave;
 	
 	private Calendar calendar;
-	private Calendar leaveCalObj;
 	private Person person;
-	private LeavePlan leavePlanObj;
 
+    public HolidayCalendar getHolidayCalendar() {
+        return holidayCalendar;
+    }
+
+    public void setHolidayCalendar(HolidayCalendar holidayCalendar) {
+        this.holidayCalendar = holidayCalendar;
+    }
+
+    private HolidayCalendar holidayCalendar;
 
 	public String getPrincipalId() {
 		return principalId;
@@ -75,14 +80,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 		this.payCalendar = payCalendar;
 	}
 
-	public String getLeavePlan() {
-		return leavePlan;
-	}
-
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
-
 	public Date getServiceDate() {
 		return serviceDate;
 	}
@@ -91,20 +88,28 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 		this.serviceDate = serviceDate;
 	}
 
-	public boolean isFmlaEligible() {
-		return fmlaEligible;
+	public Date getEffectiveDate() {
+		return effectiveDate;
 	}
 
-	public void setFmlaEligible(boolean fmlaEligible) {
-		this.fmlaEligible = fmlaEligible;
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
 
-	public boolean isWorkersCompEligible() {
-		return workersCompEligible;
+	public Timestamp getTimestamp() {
+		return timestamp;
 	}
 
-	public void setWorkersCompEligible(boolean workersCompEligible) {
-		this.workersCompEligible = workersCompEligible;
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	public String getHolidayCalendarGroup() {
+		return holidayCalendarGroup;
+	}
+
+	public void setHolidayCalendarGroup(String holidayCalendarGroup) {
+		this.holidayCalendarGroup = holidayCalendarGroup;
 	}
 
 	public String getTimezone() {
@@ -131,26 +136,17 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 		this.person = person;
 	}
 
-	public LeavePlan getLeavePlanObj() {
-		return leavePlanObj;
+	public Boolean getActive() {
+		return active;
 	}
 
-	public void setLeavePlanObj(LeavePlan leavePlanObj) {
-		this.leavePlanObj = leavePlanObj;
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	@Override
 	protected String getUniqueKey() {
-		return principalId + "_" + payCalendar == null ? "" : payCalendar + "_"
-				+ leaveCalendar == null ? "" : leaveCalendar;
-	}
-
-	public String getLeaveCalendar() {
-		return leaveCalendar;
-	}
-
-	public void setLeaveCalendar(String leaveCalendar) {
-		this.leaveCalendar = leaveCalendar;
+		return principalId + "_" + payCalendar == null ? "" : payCalendar;
 	}
 
 	@Override
@@ -162,14 +158,6 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 		setHrPrincipalAttributeId(id);
 	}
 
-	public Calendar getLeaveCalObj() {
-		return leaveCalObj;
-	}
-
-	public void setLeaveCalObj(Calendar leaveCalObj) {
-		this.leaveCalObj = leaveCalObj;
-	}
-
 	public String getHrPrincipalAttributeId() {
 		return hrPrincipalAttributeId;
 	}
@@ -177,7 +165,7 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 	public void setHrPrincipalAttributeId(String hrPrincipalAttributeId) {
 		this.hrPrincipalAttributeId = hrPrincipalAttributeId;
 	}
-
+	
 	public Boolean getHistory() {
 		return history;
 	}

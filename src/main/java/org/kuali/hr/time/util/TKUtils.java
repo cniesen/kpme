@@ -25,7 +25,6 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -38,7 +37,6 @@ import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.rice.core.api.config.property.ConfigContext;
-import org.springframework.util.NumberUtils;
 
 public class TKUtils {
 
@@ -76,16 +74,6 @@ public class TKUtils {
 
     public static DateTimeZone getSystemDateTimeZone() {
         return DateTimeZone.forID(TKUtils.getSystemTimeZone());
-    }
-
-    public static final Date END_OF_TIME;
-
-    static
-    {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        final Calendar c = new GregorianCalendar(tz);
-        c.setTime(new Date(Long.MAX_VALUE));
-        END_OF_TIME = new java.sql.Date(c.getTime().getTime());
     }
 
     /**
@@ -151,15 +139,20 @@ public class TKUtils {
     }
 
     public static String formatAssignmentKey(Long jobNumber, Long workArea, Long task) {
-    	String jobNumberString = ObjectUtils.toString(jobNumber, "0");
-    	String workAreaString = ObjectUtils.toString(workArea, "0");
-    	String taskString = ObjectUtils.toString(task, "0");
-        return jobNumberString + TkConstants.ASSIGNMENT_KEY_DELIMITER + workAreaString + TkConstants.ASSIGNMENT_KEY_DELIMITER + taskString;
+        Long taskLong = task;
+        if (taskLong == null) {
+            taskLong = new Long("0");
+        }
+        return jobNumber + TkConstants.ASSIGNMENT_KEY_DELIMITER + workArea + TkConstants.ASSIGNMENT_KEY_DELIMITER + taskLong;
     }
 
     public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
+        Long task = assignment.getTask();
+        if (task == null) {
+            task = new Long("0");
+        }
+        String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), task);
         String assignmentDescValue = getAssignmentString(assignment);
         assignmentDescriptions.put(assignmentDescKey, assignmentDescValue);
 
@@ -591,17 +584,6 @@ public class TKUtils {
     	Calendar gc = new GregorianCalendar();
 		gc.setTime(aDate);
 		gc.add(Calendar.DAY_OF_YEAR, aNumber);
-		return gc.getTime();
-    }
-    
-    public static java.util.Date addMonths(java.util.Date aDate, int aNumber) {
-    	Calendar gc = new GregorianCalendar();
-		gc.setTime(aDate);
-		gc.add(Calendar.MONTH, aNumber);
-		if(gc.getActualMaximum(Calendar.DAY_OF_MONTH) < gc.get(Calendar.DATE)) {
-			gc.set(Calendar.DATE, gc.getActualMaximum(Calendar.DAY_OF_MONTH));
-		}
-		
 		return gc.getTime();
     }
     

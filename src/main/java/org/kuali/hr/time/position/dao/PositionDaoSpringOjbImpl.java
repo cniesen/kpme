@@ -41,30 +41,11 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 
 
     @Override
-    public Position getPosition(String positionNumber, Date effectiveDate) {
-        Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
+    public Position getPositionByPositionNumber(String hrPositionNbr) {
+        Criteria crit = new Criteria();
+        crit.addEqualTo("position_nbr", hrPositionNbr);
 
-        effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
-        effdt.addLessOrEqualThan("effectiveDate", effectiveDate);
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Position.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-
-        timestamp.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Position.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-
-        root.addEqualTo("positionNumber", positionNumber);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
-
-        Criteria activeFilter = new Criteria(); // Inner Join For Activity
-        activeFilter.addEqualTo("active", true);
-        root.addAndCriteria(activeFilter);
-
-        Query query = QueryFactory.newQuery(Position.class, root);
+        Query query = QueryFactory.newQuery(Position.class, crit);
         return (Position) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 

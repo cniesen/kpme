@@ -15,8 +15,7 @@
  */
 package org.kuali.hr.time.workarea;
 
-import java.sql.Date;
-
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.hr.test.KPMETestCase;
@@ -26,7 +25,7 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.sql.Date;
 
 public class WorkAreaMaintenanceTest extends KPMETestCase {
 
@@ -57,11 +56,11 @@ public class WorkAreaMaintenanceTest extends KPMETestCase {
 		KRADServiceLocator.getBusinessObjectService().delete(workArea);
 		super.tearDown();
 	}
-	
+
 	@Test
 	public void testWorkAreaFetch() throws Exception{
 		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(1234L, TKUtils.getCurrentDate());
 		Assert.assertTrue("Work area is not null and valid", workArea != null && workArea.getWorkArea().longValue() == 1234L);
 	}
-	
+
 }

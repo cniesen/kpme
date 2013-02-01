@@ -178,34 +178,9 @@ public class CalendarEntriesDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb imp
         return (CalendarEntries) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
     
-    @SuppressWarnings("unchecked")
-	public List<CalendarEntries> getCalendarEntriesEndingBetweenBeginAndEndDate(String hrCalendarId, Date beginDate, Date endDate) {
-        List<CalendarEntries> results = new ArrayList<CalendarEntries>();
-    	
-    	Criteria root = new Criteria();
-        
-        root.addEqualTo("hrCalendarId", hrCalendarId);
-        root.addGreaterOrEqualThan("endPeriodDateTime", beginDate);
-        root.addLessOrEqualThan("endPeriodDateTime", endDate);
-        Query query = QueryFactory.newQuery(CalendarEntries.class, root);
-        
-        results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
-
-        return results;
-    }
-    
     public List<CalendarEntries> getAllCalendarEntriesForCalendarId(String hrCalendarId) {
     	Criteria root = new Criteria();
         root.addEqualTo("hrCalendarId", hrCalendarId);
-        Query query = QueryFactory.newQuery(CalendarEntries.class, root);
-        List<CalendarEntries> ceList = new ArrayList<CalendarEntries> (this.getPersistenceBrokerTemplate().getCollectionByQuery(query));
-        return ceList;
-    }
-    
-    public List<CalendarEntries> getAllCalendarEntriesForCalendarIdUpToCutOffTime(String hrCalendarId, Date cutOffTime) {
-    	Criteria root = new Criteria();
-        root.addEqualTo("hrCalendarId", hrCalendarId);
-        root.addLessOrEqualThan("endPeriodDateTime", cutOffTime);
         Query query = QueryFactory.newQuery(CalendarEntries.class, root);
         List<CalendarEntries> ceList = new ArrayList<CalendarEntries> (this.getPersistenceBrokerTemplate().getCollectionByQuery(query));
         return ceList;

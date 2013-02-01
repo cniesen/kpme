@@ -22,23 +22,22 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.kuali.hr.core.document.CalendarDocumentHeaderContract;
-import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
-import org.kuali.rice.krad.util.GlobalVariables;
 
 public class TkSearchableAttributeServiceImpl implements
 		TkSearchableAttributeService {
 
     private static final Logger LOG = Logger.getLogger(TkSearchableAttributeServiceImpl.class);
 
-	public void updateSearchableAttribute(CalendarDocumentContract document, Date asOfDate){
+	public void updateSearchableAttribute(TimesheetDocument document, Date asOfDate){
         WorkflowDocument workflowDocument = null;
         //
         // djunk - Need to actually look at why this call is here for every
@@ -47,18 +46,17 @@ public class TkSearchableAttributeServiceImpl implements
         //
         if (!document.getDocumentHeader().getDocumentStatus().equals("F")) {
             try {
-                CalendarDocumentHeaderContract docHeader = document.getDocumentHeader();
-                workflowDocument = WorkflowDocumentFactory.loadDocument(docHeader.getPrincipalId(), docHeader.getDocumentId());
+                workflowDocument = WorkflowDocumentFactory.loadDocument(document.getPrincipalId(), document.getDocumentId());
                 workflowDocument.setApplicationContent(createSearchableAttributeXml(document, asOfDate));
                 workflowDocument.saveDocument("");
                 if (!"I".equals(workflowDocument.getStatus().getCode())) {
                     //updateWorkflowTitle(document,workflowDocument);
-                    if (GlobalVariables.getUserSession() != null && workflowDocument.getInitiatorPrincipalId().equals(GlobalVariables.getUserSession().getPrincipalId())) {
+                    if(workflowDocument.getInitiatorPrincipalId().equals(TKContext.getPrincipalId())){
                         workflowDocument.saveDocument("");
-                    } else{
+                    }else{
                     	workflowDocument.saveDocumentData();
                     }
-                } else{
+                }else{
                     workflowDocument.saveDocument("");
                 }
 
@@ -71,7 +69,7 @@ public class TkSearchableAttributeServiceImpl implements
 	}
 
 	@Override
-	public String createSearchableAttributeXml(CalendarDocumentContract document, Date asOfDate) {
+	public String createSearchableAttributeXml(TimesheetDocument document, Date asOfDate) {
 		List<Long> workAreas = new ArrayList<Long>();
 		Map<String,List<Long>> deptToListOfWorkAreas = new HashMap<String,List<Long>>();
 		List<String> salGroups = new ArrayList<String>();
@@ -99,8 +97,7 @@ public class TkSearchableAttributeServiceImpl implements
 			}
 		}
 		StringBuilder sb = new StringBuilder();
-        String className = document.getClass().getSimpleName();
-		sb.append("<documentContext><applicationContent><").append(className).append(">");
+        sb.append("<documentContext><applicationContent><TimesheetDocument>");
 		sb.append("<DEPARTMENTS>");
 		for(String dept : deptToListOfWorkAreas.keySet()){
 			sb.append("<DEPARTMENT value=\""+dept+"\">");
@@ -116,7 +113,7 @@ public class TkSearchableAttributeServiceImpl implements
 		}
 
 		sb.append("<PAYENDDATE value=\""+asOfDate+"\"/>");
-		sb.append("</").append(className).append("></applicationContent></documentContext>");
+		sb.append("</TimesheetDocument></applicationContent></documentContext>");
 
 		return sb.toString();
 	}

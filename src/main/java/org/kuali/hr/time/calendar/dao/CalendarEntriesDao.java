@@ -36,11 +36,7 @@ public interface CalendarEntriesDao {
 
     public CalendarEntries getCalendarEntriesByBeginAndEndDate(Date beginPeriodDate, Date endPeriodDate);
     
-	public List<CalendarEntries> getCalendarEntriesEndingBetweenBeginAndEndDate(String hrCalendarId, Date beginDate, Date endDate);
-
     public List<CalendarEntries> getAllCalendarEntriesForCalendarId(String hrCalendarId);
     
     public List<CalendarEntries> getAllCalendarEntriesForCalendarIdAndYear(String hrCalendarId, String year);
-    
-    public List<CalendarEntries> getAllCalendarEntriesForCalendarIdUpToCutOffTime(String hrCalendarId, Date cutOffTime);
 }

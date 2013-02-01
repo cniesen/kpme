@@ -16,18 +16,19 @@
 package org.kuali.hr.time.overtime.weekly.rule;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.rule.TkRule;
 
 public class WeeklyOvertimeRule extends TkRule {
-
-	private static final long serialVersionUID = 5229797885418317405L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "WeeklyOvertimeRule";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "WeeklyOvertimeRule";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String tkWeeklyOvertimeRuleId;
 	private String maxHoursEarnGroup;
 	private String convertFromEarnGroup;
@@ -39,10 +40,10 @@ public class WeeklyOvertimeRule extends TkRule {
 	
 	private Long tkWeeklyOvertimeRuleGroupId = 1L;
 	
-	private EarnCodeGroup maxHoursEarnGroupObj;
-	private EarnCodeGroup convertFromEarnGroupObj;
+	private EarnGroup maxHoursEarnGroupObj;
+	private EarnGroup convertFromEarnGroupObj;
 	private EarnCode convertToEarnCodeObj;
-	
+
 
 	public String getTkWeeklyOvertimeRuleId() {
 		return tkWeeklyOvertimeRuleId;
@@ -68,12 +69,22 @@ public class WeeklyOvertimeRule extends TkRule {
 		this.convertFromEarnGroup = convertFromEarnGroup;
 	}
 
+	 
+
 	public String getConvertToEarnCode() {
 		return convertToEarnCode;
 	}
 
 	public void setConvertToEarnCode(String convertToEarnCode) {
 		this.convertToEarnCode = convertToEarnCode;
+	}
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
 
 	public BigDecimal getStep() {
@@ -109,19 +120,19 @@ public class WeeklyOvertimeRule extends TkRule {
 		this.ovtEarnCode = ovtEarnCode;
 	}
 
-	public EarnCodeGroup getMaxHoursEarnGroupObj() {
+	public EarnGroup getMaxHoursEarnGroupObj() {
 		return maxHoursEarnGroupObj;
 	}
 
-	public void setMaxHoursEarnGroupObj(EarnCodeGroup maxHoursEarnGroupObj) {
+	public void setMaxHoursEarnGroupObj(EarnGroup maxHoursEarnGroupObj) {
 		this.maxHoursEarnGroupObj = maxHoursEarnGroupObj;
 	}
 
-	public EarnCodeGroup getConvertFromEarnGroupObj() {
+	public EarnGroup getConvertFromEarnGroupObj() {
 		return convertFromEarnGroupObj;
 	}
 
-	public void setConvertFromEarnGroupObj(EarnCodeGroup convertFromEarnGroupObj) {
+	public void setConvertFromEarnGroupObj(EarnGroup convertFromEarnGroupObj) {
 		this.convertFromEarnGroupObj = convertFromEarnGroupObj;
 	}
 

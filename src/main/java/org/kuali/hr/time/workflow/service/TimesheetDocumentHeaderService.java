@@ -62,6 +62,12 @@ public interface TimesheetDocumentHeaderService {
      */
     TimesheetDocumentHeader getPrevOrNextDocumentHeader(String prevOrNext, String principalId);
 	/**
+	 * Fetch document headers for a given pay period begin date
+	 * @param payBeginDate
+	 * @return
+	 */
+    public List<TimesheetDocumentHeader> getDocumentHeaders(Date payBeginDate);
+	/**
 	 * Fetch document headers for a given pay period begin date and end date
 	 * @param payBeginDate
 	 * @param payEndDate
@@ -93,4 +99,5 @@ public interface TimesheetDocumentHeaderService {
      */
     public TimesheetDocumentHeader getDocumentHeaderForDate(String principalId, Date asOfDate);
     
+
 }

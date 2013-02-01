@@ -15,38 +15,38 @@
  */
 package org.kuali.hr.time.batch.service;
 
-import java.util.Date;
+import java.util.List;
 
-import org.kuali.hr.lm.leaveplan.LeavePlan;
-import org.kuali.hr.time.calendar.CalendarEntries;
-import org.quartz.SchedulerException;
+import org.kuali.hr.time.batch.BatchJob;
 
 public interface BatchJobService {
-    
-    void scheduleInitiateJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleInitiateJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
-    
-    void scheduleEndReportingPeriodJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleEndReportingPeriodJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
-    
-    void scheduleEndPayPeriodJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleEndPayPeriodJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
 
-    void scheduleEmployeeApprovalJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleEmployeeApprovalJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
-    
-    void scheduleMissedPunchApprovalJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleMissedPunchApprovalJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
+	/**
+	 * Fetch a BatchJob by a given ID
+	 * @param batchJobId Database ID of the BatchJob to fetch.
+	 * @return The BatchJob matching batchJobId.
+	 */
+	public BatchJob getBatchJob(Long batchJobId);
 
-    void scheduleSupervisorApprovalJobs(CalendarEntries calendarEntry) throws SchedulerException;
-    
-    void scheduleSupervisorApprovalJobs(CalendarEntries calendarEntry, Date scheduleDate) throws SchedulerException;
-    
-    void scheduleLeaveCarryOverJobs(LeavePlan leavePlan) throws SchedulerException;
-    
+    /**
+     * Provides a List of BatchJob objects that match the indicated hrPyCalendarEntryId.
+     * @param hrPyCalendarEntryId The id of PayCalendarEntries objects to match.
+     * @return List of BatchJob objects.
+     */
+    public List<BatchJob> getBatchJobs(String hrPyCalendarEntryId);
+
+    /**
+     * Get a List of BatchJob objects for the given parameters.
+     *
+     * @param hrPyCalendarEntryId The pay calendar entry we are looking for.
+     * @param batchJobStatus Only jobs of this status will be returned.
+     * @return List of BatchJob objects.
+     */
+    public List<BatchJob> getBatchJobs(String hrPyCalendarEntryId, String batchJobStatus);
+
+    /**
+     * Saves or updates the provided BatchJob.
+     * @param batchJob The object to save.
+     */
+    public void saveBatchJob(BatchJob batchJob);
 }

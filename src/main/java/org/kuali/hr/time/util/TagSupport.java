@@ -15,12 +15,12 @@
  */
 package org.kuali.hr.time.util;
 
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TagSupport {
 
@@ -56,4 +56,5 @@ public class TagSupport {
         }
         return "";
     }
+
 }

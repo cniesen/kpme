@@ -52,7 +52,6 @@
 				<ref bean="Job-compRate" />
 				<ref bean="Job-primaryIndicator" />
 				<ref bean="Job-history" />
-				<ref bean="Job-eligibleForLeave" />
 				<ref bean="Job-active" />
 				<ref bean="Job-positionNbr" />
 				<ref bean="Job-hrDeptId" />
@@ -399,13 +398,6 @@
 			value="org.kuali.rice.core.web.format.BooleanFormatter" />
 	</bean>
 
-	<!-- <bean id="Job-hrPyCalendarId" parent="Job-hrPyCalendarId-parentBean" 
-		/> <bean id="Job-hrPyCalendarId-parentBean" abstract="true" parent="AttributeDefinition"> 
-		<property name="shortLabel" value="Job Id" /> <property name="maxLength" 
-		value="7" /> <property name="validationPattern"> <bean parent="NumericValidationPattern" 
-		/> </property> <property name="control"> <bean parent="TextControlDefinition" 
-		p:size="7" /> </property> <property name="name" value="hrPyCalendarId" /> 
-		<property name="label" value="Pay Calendar Id" /> </bean> -->
 
 	<bean id="Job-hrSalGroup" parent="Job-hrSalGroup-parentBean" />
 
@@ -421,20 +413,6 @@
 		<property name="name" value="hrSalGroup" />
 		<property name="label" value="Sal Group" />
 		<property name="description" value="hrSalGroup" />
-	</bean>
-
-	<!-- Eligible For Leave -->
-	<bean id="Job-eligibleForLeave" parent="Job-eligibleForLeave-parentBean" />
-	<bean id="Job-eligibleForLeave-parentBean" abstract="true"
-		parent="AttributeDefinition">
-		<property name="shortLabel" value="Eligible For Leave" />
-		<property name="control">
-			<bean parent="CheckboxControlDefinition" />
-		</property>
-		<property name="name" value="eligibleForLeave" />
-		<property name="label" value="Eligible For Leave" />
-		<property name="formatterClass"
-			value="org.kuali.rice.core.web.format.BooleanFormatter" />
 	</bean>
 
 	<bean id="Job-timestamp" parent="Job-timestamp-parentBean" />
@@ -529,7 +507,6 @@
 							<bean parent="FieldDefinition" p:attributeName="standardHours" />
 							<bean parent="FieldDefinition" p:attributeName="fte" />
 							<bean parent="FieldDefinition" p:attributeName="primaryIndicator" />
-							<bean parent="FieldDefinition" p:attributeName="eligibleForLeave" />
 							<bean parent="FieldDefinition" p:attributeName="flsaStatus" />
 							<bean parent="FieldDefinition" p:attributeName="active" />
 						</list>
@@ -580,7 +557,6 @@
 				<bean parent="FieldDefinition" p:attributeName="dept" />
 				<bean parent="FieldDefinition" p:attributeName="location" />
 				<bean parent="FieldDefinition" p:attributeName="positionNumber" />
-				<bean parent="FieldDefinition" p:attributeName="eligibleForLeave" />
 				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
 				<bean parent="FieldDefinition" p:attributeName="timestamp" />
 				<bean parent="FieldDefinition" p:attributeName="primaryIndicator" />

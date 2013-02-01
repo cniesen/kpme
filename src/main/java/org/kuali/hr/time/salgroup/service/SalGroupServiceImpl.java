@@ -22,27 +22,27 @@ import java.sql.Date;
 import java.util.List;
 
 public class SalGroupServiceImpl implements SalGroupService {
-	
-	private SalGroupDao salGroupDao;
 
-	@Override
-	public SalGroup getSalGroup(String salGroup, Date asOfDate) {
-		return salGroupDao.getSalGroup(salGroup, asOfDate);
-	}
+    private SalGroupDao salGroupDao;
 
-	public void setSalGroupDao(SalGroupDao salGroupDao) {
-		this.salGroupDao = salGroupDao;
-	}
+    @Override
+    public SalGroup getSalGroup(String salGroup, Date asOfDate) {
+        return salGroupDao.getSalGroup(salGroup, asOfDate);
+    }
 
-	@Override
-	public SalGroup getSalGroup(String hrSalGroupId) {
-		return salGroupDao.getSalGroup(hrSalGroupId);
-	}
-	
-	@Override
-	public int getSalGroupCount(String salGroup) {
-		return salGroupDao.getSalGroupCount(salGroup);
-	}
+    public void setSalGroupDao(SalGroupDao salGroupDao) {
+        this.salGroupDao = salGroupDao;
+    }
+
+    @Override
+    public SalGroup getSalGroup(String hrSalGroupId) {
+        return salGroupDao.getSalGroup(hrSalGroupId);
+    }
+
+    @Override
+    public int getSalGroupCount(String salGroup) {
+        return salGroupDao.getSalGroupCount(salGroup);
+    }
 
     @Override
     public List<SalGroup> getSalGroups(String salGroup, String descr, Date fromEffdt, Date toEffdt, String active, String showHist) {

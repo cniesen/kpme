@@ -16,6 +16,8 @@
 package org.kuali.hr.job;
 
 import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
@@ -28,12 +30,17 @@ import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
+/**
+ * 
+ * Job representation
+ *
+ */
 public class Job extends HrBusinessObject {
-
-	private static final long serialVersionUID = 1369595897637935064L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Job";
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Job";
+	/*
+	 * Standard field included for serialization support
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private String location;
 	private String hrPayType;
@@ -54,7 +61,6 @@ public class Job extends HrBusinessObject {
 	
 	private String hrDeptId;
 	private String hrPayTypeId;
-	private boolean eligibleForLeave;
 	
 	private Person principal;
 	private Department deptObj;
@@ -158,12 +164,36 @@ public class Job extends HrBusinessObject {
 		this.jobNumber = jobNumber;
 	}
 
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	public Boolean getHistory() {
 		return history;
 	}
 
 	public void setHistory(Boolean history) {
 		this.history = history;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 	
 	public void setLocation(String location) {
@@ -329,12 +359,5 @@ public class Job extends HrBusinessObject {
 	public void setId(String id) {
 		setHrJobId(id);
 	}
-	public boolean isEligibleForLeave() {
-		return eligibleForLeave;
-	}
 
-	public void setEligibleForLeave(boolean eligibleForLeave) {
-		this.eligibleForLeave = eligibleForLeave;
-	}
-	
 }

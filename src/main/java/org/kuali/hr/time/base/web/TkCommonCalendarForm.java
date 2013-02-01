@@ -29,7 +29,6 @@ public class TkCommonCalendarForm extends TkForm {
     private String selectedCalendarYear;
     private String selectedPayPeriod;
     private boolean onCurrentPeriod;
-    private List<String> warnings;
     
 	public List<String> getCalendarYears() {
 		return calendarYears;
@@ -62,12 +61,4 @@ public class TkCommonCalendarForm extends TkForm {
 	public void setOnCurrentPeriod(boolean onCurrentPeriod) {
 		this.onCurrentPeriod = onCurrentPeriod;
 	}
-	
-    public List<String> getWarnings() {
-        return warnings;
-    }
-
-    public void setWarnings(List<String> warnings) {
-        this.warnings = warnings;
-    }
 }

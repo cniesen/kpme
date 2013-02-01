@@ -15,13 +15,6 @@
  */
 package org.kuali.hr.time.clocklog.service;
 
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.assignment.Assignment;
@@ -33,8 +26,13 @@ import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.KRADConstants;
+
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ClockLogServiceImpl implements ClockLogService {
 
@@ -57,21 +55,21 @@ public class ClockLogServiceImpl implements ClockLogService {
         // process rules
         Timestamp roundedClockTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockTimeStamp, new java.sql.Date(pe.getBeginPeriodDateTime().getTime()));
 
-        ClockLog clockLog = buildClockLog(roundedClockTimestamp, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
+        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(roundedClockTimestamp, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
         TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, asOfDate);
 
         // If the clock action is clock out or lunch out, create a time block besides the clock log
         if (StringUtils.equals(clockAction, TkConstants.CLOCK_OUT) || StringUtils.equals(clockAction, TkConstants.LUNCH_OUT)) {
-            processTimeBlock(clockLog, assignment, pe, td, clockAction, principalId, userPrincipalId);
+            processTimeBlock(clockLog, assignment, pe, td, clockAction, principalId);
         } else {
             //Save current clock log to get id for timeblock building
-            KRADServiceLocator.getBusinessObjectService().save(clockLog);
+            TkServiceLocator.getClockLogService().saveClockLog(clockLog);
         }
 
         return clockLog;
     }
 
-    private void processTimeBlock(ClockLog clockLog, Assignment assignment, CalendarEntries pe, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+    private void processTimeBlock(ClockLog clockLog, Assignment assignment, CalendarEntries pe, TimesheetDocument td, String clockAction, String principalId) {
         ClockLog lastLog = null;
         Timestamp lastClockTimestamp = null;
         String beginClockLogId = null;
@@ -87,7 +85,7 @@ public class ClockLogServiceImpl implements ClockLogService {
             beginClockLogId = lastLog.getTkClockLogId();
         }
         //Save current clock log to get id for timeblock building
-        KRADServiceLocator.getBusinessObjectService().save(clockLog);
+        TkServiceLocator.getClockLogService().saveClockLog(clockLog);
         endClockLogId = clockLog.getTkClockLogId();
 
         long beginTime = lastClockTimestamp.getTime();
@@ -102,7 +100,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         }
 
         // Add TimeBlocks after we store our reference object!
-        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginTimestamp, endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false, userPrincipalId);
+        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginTimestamp, endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false);
         for (TimeBlock tb : aList) {
             tb.setClockLogBeginId(beginClockLogId);
             tb.setClockLogEndId(endClockLogId);
@@ -116,7 +114,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks, pe, td, principalId);
 
         //call persist method that only saves added/deleted/changed timeblocks
-        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, userPrincipalId);
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks);
     }
 
     @Override
@@ -136,7 +134,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         clockLog.setJobNumber(assignment.getJobNumber());
         clockLog.setWorkArea(assignment.getWorkArea());
         clockLog.setTask(assignment.getTask());
-        clockLog.setClockTimestampTimezone(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback().getID());
+        clockLog.setClockTimestampTimezone(TkServiceLocator.getTimezoneService().getUserTimezone());
         clockLog.setClockTimestamp(clockTimestamp);
         clockLog.setClockAction(clockAction);
         clockLog.setIpAddress(ip);
@@ -159,8 +157,8 @@ public class ClockLogServiceImpl implements ClockLogService {
         return clockLogDao.getLastClockLog(principalId, clockAction);
     }
 
-    public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntries calendarEntry) {
-        return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
+    public List<ClockLog> getOpenClockLogs(  CalendarEntries payCalendarEntry) {
+        return clockLogDao.getOpenClockLogs(payCalendarEntry);
     }
 
     @Override

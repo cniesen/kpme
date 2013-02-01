@@ -33,37 +33,9 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
 		PrincipalHRAttributes pc =  this.principalHRAttributesDao.getPrincipalCalendar(principalId, asOfDate);
 		if(pc != null) {
 			pc.setCalendar(TkServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar()));
-			pc.setLeaveCalObj(TkServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar()));
 		}
 		return pc;
 	}
-	
-    public List<PrincipalHRAttributes> getActiveEmployeesForPayCalendar(String payCalendarName, Date asOfDate) {
-    	return principalHRAttributesDao.getActiveEmployeesForPayCalendar(payCalendarName, asOfDate);
-    }
-    
-    public List<PrincipalHRAttributes> getActiveEmployeesForLeaveCalendar(String leaveCalendarName, Date asOfDate) {
-    	return principalHRAttributesDao.getActiveEmployeesForLeaveCalendar(leaveCalendarName, asOfDate);
-    }
-	
-    public List<String> getActiveEmployeesIdForLeaveCalendarAndIdList(String leaveCalendarName, List<String> pidList, Date asOfDate) {
-    	return principalHRAttributesDao.getActiveEmployeesIdForLeaveCalendarAndIdList(leaveCalendarName, pidList, asOfDate);
-    }
-    
-    public List<String> getActiveEmployeesIdForTimeCalendarAndIdList(String timeCalendarName, List<String> pidList, Date asOfDate) {
-    	return principalHRAttributesDao.getActiveEmployeesIdForTimeCalendarAndIdList(timeCalendarName, pidList, asOfDate);
-    }
-    
-	/**
-     * KPME-1250 Kagata
-     * Get a list of active employees based on leave plan and as of a particular date
-     */
-    @Override
-    public List<PrincipalHRAttributes> getActiveEmployeesForLeavePlan(String leavePlan, Date asOfDate) {
-        List<PrincipalHRAttributes> principals = principalHRAttributesDao.getActiveEmployeesForLeavePlan(leavePlan, asOfDate);
-
-        return principals;
-    }
     
 //    @Override
 //	public PrincipalHRAttributes getPrincipalHRAttributes(String principalId) {
@@ -105,9 +77,5 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
     public List<PrincipalHRAttributes> getPrincipalHrAtributes(String principalId, 
     		java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory) {
     	return this.principalHRAttributesDao.getPrincipalHrAtributes(principalId, fromEffdt, toEffdt, active, showHistory);
-    }
-    @Override
-    public List<String> getUniqueTimePayGroups() {
-    	return this.principalHRAttributesDao.getUniqueTimePayGroups();
     }
 }

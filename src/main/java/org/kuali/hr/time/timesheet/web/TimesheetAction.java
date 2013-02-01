@@ -16,10 +16,6 @@
 package org.kuali.hr.time.timesheet.web;
 
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,12 +26,9 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.time.base.web.TkAction;
-import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.detail.web.ActionFormUtils;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -59,7 +52,7 @@ public class TimesheetAction extends TkAction {
         TimesheetDocument doc = TKContext.getCurrentTimesheetDocument();
 
         if (!roles.isDocumentReadable(doc)) {
-            throw new AuthorizationException(GlobalVariables.getUserSession().getPrincipalId(), "TimesheetAction: docid: " + (doc == null ? "" : doc.getDocumentId()), "");
+            throw new AuthorizationException(GlobalVariables.getUserSession().getPrincipalId(), "TimesheetAction: docid: " + doc.getDocumentId(), "");
         }
     }
 
@@ -78,8 +71,6 @@ public class TimesheetAction extends TkAction {
         // Here - viewPrincipal will be the principal of the user we intend to
         // view, be it target user, backdoor or otherwise.
         String viewPrincipal = TKUser.getCurrentTargetPerson().getPrincipalId();
-        Date currentDate = TKUtils.getTimelessDate(null);
-		CalendarEntries payCalendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
 
         // By handling the prev/next in the execute method, we are saving one
         // fetch/construction of a TimesheetDocument. If it were broken out into
@@ -90,10 +81,12 @@ public class TimesheetAction extends TkAction {
             td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
         } else {
             // Default to whatever is active for "today".
-            if (payCalendarEntry == null) {
+            Date currentDate = TKUtils.getTimelessDate(null);
+            CalendarEntries payCalendarEntries = TkServiceLocator.getCalendarService().getCurrentCalendarDates(viewPrincipal,  currentDate);
+            if (payCalendarEntries == null) {
                 throw new RuntimeException("No pay calendar entry for " + viewPrincipal);
             }
-            td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, payCalendarEntry);
+            td = TkServiceLocator.getTimesheetService().openTimesheetDocument(viewPrincipal, payCalendarEntries);
         }
 
         // Set the TKContext for the current timesheet document id.
@@ -102,44 +95,6 @@ public class TimesheetAction extends TkAction {
         } else {
             LOG.error("Null timesheet document in TimesheetAction.");
         }
-        
-        List<String> warnings = new ArrayList<String>();
-        
-        // add warning messages based on max carry over balances for each accrual category for non-exempt leave users
-        if (TkServiceLocator.getLeaveApprovalService().isActiveAssignmentFoundOnJobFlsaStatus(viewPrincipal, TkConstants.FLSA_STATUS_NON_EXEMPT, true)) {
-        	PrincipalHRAttributes principalCalendar = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(viewPrincipal, payCalendarEntry.getEndPeriodDate());
-        	Map<String,ArrayList<String>> eligibilities = TkServiceLocator.getBalanceTransferService().getEligibleTransfers(td.getCalendarEntry(),td.getPrincipalId());
-        	boolean maxBalance = false;
-        	for(Entry<String,ArrayList<String>> entry : eligibilities.entrySet()) {
-        		if(!entry.getValue().isEmpty()) {
-        			maxBalance = true;
-        			break;
-        		}
-        	}
-        	if(maxBalance) {
-            	warnings.add("You have exceeded the balance limit for one or more accrual categories within your leave plan.");
-            	warnings.add("Depending upon the rules of your institution, you may lose any leave over this limit.");
-        	}
-        	if (principalCalendar != null) {
-	        	Calendar calendar = TkServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(viewPrincipal, taForm.getEndPeriodDateTime(), true);
-					
-				if (calendar != null) {
-					List<CalendarEntries> leaveCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesEndingBetweenBeginAndEndDate(calendar.getHrCalendarId(), taForm.getBeginPeriodDateTime(), taForm.getEndPeriodDateTime());
-					
-					List<AccrualCategory> accrualCategories = TkServiceLocator.getAccrualCategoryService().getActiveLeaveAccrualCategoriesForLeavePlan(principalCalendar.getLeavePlan(), new java.sql.Date(taForm.getEndPeriodDateTime().getTime()));
-					for (AccrualCategory accrualCategory : accrualCategories) {
-						if (TkServiceLocator.getAccrualCategoryMaxCarryOverService().exceedsAccrualCategoryMaxCarryOver(accrualCategory.getAccrualCategory(), viewPrincipal, leaveCalendarEntries, taForm.getEndPeriodDateTime())) {
-							String message = "Your pending leave balance is greater than the annual max carry over for accrual category '" + accrualCategory.getAccrualCategory() + "' and upon approval, the excess balance will be lost.";
-							if (!warnings.contains(message)) {
-								warnings.add(message);
-							}
-						}
-					}
-				}
-			}
-        }
-		
-		taForm.setWarnings(warnings);
 
         // Do this at the end, so we load the document first,
         // then check security permissions via the superclass execution chain.
@@ -195,7 +150,7 @@ public class TimesheetAction extends TkAction {
         taForm.setPrevDocumentId(prevTdh != null ? prevTdh.getDocumentId() : null);
         taForm.setNextDocumentId(nextTdh != null ? nextTdh.getDocumentId() : null);
       
-        taForm.setPayCalendarDates(td.getCalendarEntry());
+        taForm.setPayCalendarDates(td.getPayCalendarEntry());
         taForm.setOnCurrentPeriod(ActionFormUtils.getOnCurrentPeriodFlag(taForm.getPayCalendarDates()));
     }
 

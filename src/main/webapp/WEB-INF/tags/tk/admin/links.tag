@@ -25,13 +25,7 @@
             <a href="DepartmentAdmin.do">Department Admin</a>
         </li>
         <li>
-            <a href="LeaveCalendar.do">Leave Calendar</a>
-        </li>
-        <li>
             <a href="TimeApproval.do?methodToCall=loadApprovalTab">Time Approval</a>
-        </li>
-        <li>
-            <a href="LeaveApproval.do?methodToCall=loadApprovalTab">Leave Approval</a>
         </li>
         <li>
             <a href="TimeDetail.do">Time Detail</a>

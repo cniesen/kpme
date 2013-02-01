@@ -76,23 +76,6 @@ $(function () {
     var timeBlockCollection = new TimeBlockCollection(timeBlockJson);
 
     /**
-     * Leave block
-     */
-        // Create a leave block model
-    LeaveBlock = Backbone.Model;
-
-
-    // Create a leave block collection that holds multiple leave blocks. This is essentially a list of hashmaps.
-    LeaveBlockCollection = Backbone.Collection.extend({
-        model : LeaveBlock
-    });
-
-    // Convert the leave block json string to a json object
-    var leaveBlockJson = jQuery.parseJSON($("#leaveBlockString").val());
-    // Cass in the json object to create a Backbone leave block collection
-    var leaveBlockCollection = new LeaveBlockCollection(leaveBlockJson);
-    
-    /**
      * Earn Code
      */
         // Create an earn code model
@@ -138,10 +121,8 @@ $(function () {
         events : {
             "click div[id*=show]" : "showTimeBlock",
             "click div[id^=doNotShow]" : "doNothing",
-            "click div[id^=leaveShow]" : "showLeaveBlock",	
             "click img[id^=timeblockDelete]" : "deleteTimeBlock",
             "click img[id^=lunchDelete]" : "deleteLunchDeduction",
-            "click img[id^=leaveBlockDelete]" : "deleteLeaveBlock",
             // .create is the div that fills up the white sapce and .day-number is the div with the day number on it.
             // <div class="create"></div> is in calendar.tag.
             // We want to trigger the show event on any white space areas.
@@ -208,9 +189,8 @@ $(function () {
             $("#" + id.split("Hour")[0]).val(dateTime.toString(CONSTANTS.TIME_FORMAT.TIME_FOR_SYSTEM));
         },
 
-        // use leave or time block to populate the entry dialog
         showTimeEntryDialog : function (startDate, endDate, timeBlock) {
-            // check user permissions before opening the dialog.
+            // check user permmissions before opening the dialog.
             var isValid = this.checkPermissions();
 
             var self = this;
@@ -244,19 +224,7 @@ $(function () {
                             }
                         }
                         //May need a third condition to check if this method was triggered by shortcut.
-                        
-                        var startSpanDate = Date.parse($("#startDate").val()).clearTime();
-                        var endSpanDate = Date.parse($("#endDate").val()).clearTime();
-                        var spanningWeeks = false;
-                        for (var currentSpanDate = startSpanDate; currentSpanDate.isBefore(endSpanDate) || currentSpanDate.equals(endSpanDate); currentSpanDate.addDays(1)) {
-                            if (currentSpanDate.is().saturday() || currentSpanDate.is().sunday()) {
-                               spanningWeeks = true;
-                            } else {
-                                spanningWeeks = false;
-                                break;
-                            }
-                        }
-                        $("#spanningWeeks").prop("checked", spanningWeeks);
+
                     },
                     close : function () {
                         // reset values on the form
@@ -389,36 +357,6 @@ $(function () {
                     .done(_(timeBlock).fillInForm())
                     .done(this.applyRules(timeBlock));
         },
-        
-        showLeaveBlock : function (e) {
-            var key = _(e).parseEventKey();
-            // Retrieve the selected leaveBlock
-            var leaveBlock = leaveBlockCollection.get(key.id);
-            this.showTimeEntryDialog(leaveBlock.get("leaveDate"), leaveBlock.get("leaveDate"),leaveBlock);
-            _.replaceDialogButtonText("Add", "Update");
-
-            // Deferred is a jQuery method which makes sure things happen in the order you want.
-            // For more informaiton : http://api.jquery.com/category/deferred-object/
-            // Here we want to fire the ajax call first to grab the earn codes.
-            // After that is done, we fill out the form and make the entry field show / hide based on the earn code type.
-            var dfd = $.Deferred();
-
-            // https://uisapp2.iu.edu/jira-prd/browse/TK-1577
-            // A sync user can't change the RGH earncode on a sync timeblock but there is a special case.
-            // When the timeblock is readonly, which means the user can only change the assignment,
-            // the user should be able to _see_ the RGH earn code.
-            var isLeaveBlockReadOnly = leaveBlock.get("canEditTBAssgOnly") ? true : false;
-            // to update a leave block, should show earn codes for leave only
-			// make assignment and earn code readonly, only hours editable
-
-			$("#startDate").val(leaveBlock.get("leaveDate"));
-			$("#endDate").val(leaveBlock.get("leaveDate"));
-			dfd.done()
-				.done(this.fetchEarnCode(leaveBlock.get("assignment"), isLeaveBlockReadOnly))
-				.done($("#selectedEarnCode option[value='" + leaveBlock.get("earnCode") + "']").attr("selected", "selected"))
-				.done(this.showFieldByEarnCodeType())
-				.done(_(leaveBlock).leaveBlockFillInForm());
-        },
         /**
          * Check user permissions.
          * @param e
@@ -495,13 +433,6 @@ $(function () {
             }
         },
 
-        deleteLeaveBlock : function (e) {
-            var key = _(e).parseEventKey();
-            if (confirm('You are about to delete a leave block. Click OK to confirm the delete.')) {
-                window.location = "TimeDetail.do?methodToCall=deleteLeaveBlock&lmLeaveBlockId=" + key.id;
-            }
-        },
-
         tableCellMouseDown : function(e) {
             //alert(this.index);
             if ($('#docEditable').val() == 'false') {
@@ -539,7 +470,6 @@ $(function () {
             var eventAction = _(e).parseEventKey().action;
             if (eventAction == "timeblockDelete"
                  || eventAction == "lunchDelete"
-                 || eventAction == "leaveBlockDelete"
                  || eventAction == "doNotShow") {
                 return null;
             }
@@ -636,57 +566,33 @@ $(function () {
         },
 
         showFieldByEarnCodeType : function () {
-  			if($("#selectedEarnCode option:selected").val() == '') {
-  				return;
-  			}
             var earnCodeType = _.getEarnCodeType(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-            var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection", ".leaveAmountSection"];
-            var leavePlan = this.getEarnCodeLeavePlan(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
+            var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection"];
 
-            if(typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined') {  // for leave block earn codes
-            	var earnCodeUnit = this.getEarnCodeUnit(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
- 				if(typeof earnCodeUnit == 'undefined' || earnCodeUnit == '' || earnCodeUnit == null || earnCodeUnit == 'undefined') {
- 					var checkFlag = earnCodeType;
- 				} else {
- 					var checkFlag = earnCodeUnit;
- 				}
-                $(_.without(fieldSections, ".leaveAmountSection").join(",")).hide();
-                $(fieldSections[4]).show();
-
-                if (checkFlag == CONSTANTS.EARNCODE_UNIT.DAY) {
-            		$('#unitOfTime').text('* Leave Days');
-            	} else if (checkFlag == CONSTANTS.EARNCODE_UNIT.HOUR) {
-            		$('#unitOfTime').text('* Leave Hours');
-            	}
-                var defaultTime = this.getEarnCodeDefaultTime(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-                $('#leaveAmount').val(defaultTime);
-
+            // There might be a better way doing this, but we can revisit this later.
+            // Currently, the fields variable contains a list of the entry field classes.
+            // The Underscore.js _.without function returns an array except the ones you speficied.
+            if (earnCodeType == CONSTANTS.EARNCODE_TYPE.HOUR) {
+                $(_.without(fieldSections, ".hourSection").join(",")).hide();
+                $(fieldSections[2]).show();
+                // TODO: figure out why we had to do something crazy like below...
+                $('#startTime, #endTime').val("23:59");
+                // KPME-1793 do not blank hours
+                $('#startTimeHourMinute, #endTimeHourMinute, #amount').val("");
+            } else if (earnCodeType == CONSTANTS.EARNCODE_TYPE.AMOUNT) {
+                $(_.without(fieldSections, ".amountSection").join(",")).hide();
+                $(fieldSections[3]).show();
+                $('#startTime, #endTime').val("23:59");
+                // KPME-1793 do not blank amount
+                $('#startTimeHourMinute, #endTimeHourMinute, #hours').val("");
+            } else {
+            	// earnCodeType == CONSTANTS.EARNCODE_TYPE.TIME
+                $(_.without(fieldSections, ".clockInSection", ".clockOutSection").join(",")).hide();
+                $(fieldSections[0] + "," + fieldSections[1]).show();
+                // KPME-1793 do not blank startTime, endTime, startTimeHourMinute, endTimeHourMinute
+                $('#hours, #amount').val("");
             }
-            else {
-                // There might be a better way doing this, but we can revisit this later.
-                // Currently, the fields variable contains a list of the entry field classes.
-                // The Underscore.js _.without function returns an array except the ones you speficied.
-                if (earnCodeType == CONSTANTS.EARNCODE_TYPE.HOUR) {
-                    $(_.without(fieldSections, ".hourSection").join(",")).hide();
-                    $(fieldSections[2]).show();
-                    // TODO: figure out why we had to do something crazy like below...
-                    $('#startTime, #endTime').val("23:59");
-                    // KPME-1793 do not blank hours
-                    $('#startTimeHourMinute, #endTimeHourMinute, #amount').val("");
-                } else if (earnCodeType == CONSTANTS.EARNCODE_TYPE.AMOUNT) {
-                    $(_.without(fieldSections, ".amountSection").join(",")).hide();
-                    $(fieldSections[3]).show();
-                    $('#startTime, #endTime').val("23:59");
-                    // KPME-1793 do not blank amount
-                    $('#startTimeHourMinute, #endTimeHourMinute, #hours').val("");
-                } else {
-                	// earnCodeType == CONSTANTS.EARNCODE_TYPE.TIME
-                    $(_.without(fieldSections, ".clockInSection", ".clockOutSection").join(",")).hide();
-                    $(fieldSections[0] + "," + fieldSections[1]).show();
-                    // KPME-1793 do not blank startTime, endTime, startTimeHourMinute, endTimeHourMinute
-                    $('#hours, #amount').val("");
-                }
-            }
+
         },
 
         changeAssignment : function () {
@@ -730,10 +636,6 @@ $(function () {
                 params['spanningWeeks'] = $('#spanningWeeks').is(':checked') ? 'y' : 'n'; // KPME-1446
                 params['tkTimeBlockId'] = $('#tkTimeBlockId').val();
 
-                // leave block parameters
-                params['lmLeaveBlockId'] = $('#lmLeaveBlockId').val();
-                params['leaveAmount'] = $('#leaveAmount').val();
-                
                 // validate timeblocks
                 $.ajax({
                     async : false,
@@ -789,67 +691,11 @@ $(function () {
                 var hours = $('#hours');
                 isValid = isValid && (this.checkEmptyField(hours, "Hour") && this.checkMinLength(hours, "Hour", 1) && this.checkRegexp(hours, '/0/', 'Hours cannot be zero'));
             }
-            else if (_.contains(ids, "amount")) {
+            else {
                 var amount = $('#amount');
                 isValid = isValid && (this.checkEmptyField(amount, "Amount") && this.checkMinLength(amount, "Amount", 1) && this.checkRegexp(amount, '/0/', 'Amount cannot be zero'));
             }
-           // get earn code leave plan, if it's not null, then the change is for a leave block  
-           var leavePlan = this.getEarnCodeLeavePlan(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-           if (typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined') {
-                var leaveAmount = $('#leaveAmount');
-                isValid = isValid && (this.checkEmptyField(leaveAmount, "Leave Amount") && this.checkMinLength(leaveAmount, "Leave Amount", 1) && this.checkRegexp(leaveAmount, '/0/', 'Leave Amount cannot be zero'));
-                // check fraction allowed by the Earn Code
-	            if(isValid) {
-	            	var fraction = this.getEarnCodeFractionalAllowedTime(EarnCodes.toJSON(), $('#selectedEarnCode option:selected').val());
-	        		if(typeof fraction != 'undefined' && fraction != '') {
-	        			var fractionAr = fraction.split(".");
-	        			var leaveAmountAr = leaveAmount.val().split(".");
-	        			if(leaveAmountAr.length > 1) {
-	        				fieldLength = leaveAmountAr[1].length;
-	        			} else {
-	        				fieldLength = 0;
-	        			}
-	        			if(fractionAr.length > 1) {
-	        				fracLength = fractionAr[1].length;
-	        			} else {
-	        				fracLength = 0 ;
-	        			}
-	        			if(fieldLength > fracLength) {
-	        				isValid = false;
-	        				this.displayErrorMessages("Leave Amount field should be in the format of "+fraction);
-	        			}
-	        		}		           
-	            }
-           }
-            
             return isValid;
-        },
-        
-        getEarnCodeLeavePlan : function (earnCodeJson, earnCode) {
-            var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).leavePlan;
-        },
-        
-        getEarnCodeFractionalAllowedTime : function (earnCodeJson, earnCode) {
-       	 var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).fractionalTimeAllowed;
-        },
-        
-        getEarnCodeDefaultTime : function (earnCodeJson, earnCode) {
-       	 var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).defaultAmountofTime;
-        },
-        getEarnCodeUnit : function (earnCodeJson, earnCode) {
-            var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).unitOfTime;
         },
 
         checkLength : function (o, n, min, max) {
@@ -1043,13 +889,6 @@ $(function () {
             }
 
         },
-        leaveBlockFillInForm : function (leaveBlock) {
-            $("#selectedAssignment option[value='" + leaveBlock.get("assignment") + "']").attr("selected", "selected");
-            $("#selectedEarnCode option[value='" + leaveBlock.get("earnCode") + "']").attr("selected", "selected");
-            $('#lmLeaveBlockId').val(leaveBlock.get("lmLeaveBlockId"));
-            $('#leaveAmount').val(leaveBlock.get("leaveAmount"));
-        },
-        
         /**
          * This method takes an earn code json, find the matched earn code, and returns the earn code type.
          * @param earnCodeJson

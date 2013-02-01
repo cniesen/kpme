@@ -17,7 +17,6 @@ package org.kuali.hr.time.scheduler;
 
 
 import java.util.Calendar;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.scheduling.quartz.QuartzJobBean;

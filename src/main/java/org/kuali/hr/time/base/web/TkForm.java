@@ -68,26 +68,8 @@ public class TkForm extends KualiForm {
     public String getDocumentStatus() {
         return TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus();
     }
-
-    public String getLeaveCalendarDocumentStatus() {
-        return TKContext.getCurrentLeaveCalendarDocument().getDocumentHeader().getDocumentStatus();
-    }
-    
-    public boolean getLeaveEnabled() {
-    	boolean canViewLeaveTab= false;
-        canViewLeaveTab = this.getViewLeaveTabsWithNEStatus() || TkServiceLocator.getPermissionsService().canViewLeaveTabsWithEStatus();
-        return canViewLeaveTab; 
-    }
     
     public boolean getTimeEnabled() {
     	return TkServiceLocator.getPermissionsService().canViewTimeTabs();
-    }
-    
-    public String getLeaveDocumentIdFromContext(){
-		return TKContext.getCurrentLeaveCalendarDocumentId();
-	}
- 
-    public boolean getViewLeaveTabsWithNEStatus() {
-    	return TkServiceLocator.getPermissionsService().canViewLeaveTabsWithNEStatus();
     }
 }

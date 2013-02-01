@@ -166,7 +166,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         if (StringUtils.isNotEmpty(principalId)) {
             root.addEqualTo("principalId", principalId);
         }
-        
+
         if (asOfDate != null) {
         	Criteria effdt = new Criteria();
 	        effdt.addEqualToField("roleName", Criteria.PARENT_QUERY_PREFIX + "roleName");
@@ -214,6 +214,7 @@ public class TkRoleDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements T
         if (workArea != null) {
             root.addEqualTo("workArea", workArea);
         }
+
         if (StringUtils.isNotEmpty(department)) {
             Criteria departmentCriteria = new Criteria();
             departmentCriteria.addEqualTo("department", department);

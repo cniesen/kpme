@@ -52,17 +52,17 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 
 	@Override
 	public void processWeeklyOvertimeRule(TimesheetDocument timesheetDocument, TkTimeBlockAggregate aggregate) {
-		Date asOfDate = TKUtils.getTimelessDate(timesheetDocument.getDocumentHeader().getEndDate());
+		Date asOfDate = TKUtils.getTimelessDate(timesheetDocument.getDocumentHeader().getPayEndDate());
 		String principalId = timesheetDocument.getDocumentHeader().getPrincipalId();
-		java.util.Date beginDate = timesheetDocument.getDocumentHeader().getBeginDate();
-		java.util.Date endDate = timesheetDocument.getDocumentHeader().getEndDate();
+		java.util.Date beginDate = timesheetDocument.getDocumentHeader().getPayBeginDate();
+		java.util.Date endDate = timesheetDocument.getDocumentHeader().getPayEndDate();
 		List<WeeklyOvertimeRule> weeklyOvertimeRules = getWeeklyOvertimeRules(asOfDate);
 
 		List<List<FlsaWeek>> flsaWeeks = getFlsaWeeks(principalId, beginDate, endDate, aggregate);
 
 		for (WeeklyOvertimeRule weeklyOvertimeRule : weeklyOvertimeRules) {
-			Set<String> maxHoursEarnCodes = TkServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getMaxHoursEarnGroup(), asOfDate);
-			Set<String> convertFromEarnCodes = TkServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getConvertFromEarnGroup(), asOfDate);
+			Set<String> maxHoursEarnCodes = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(weeklyOvertimeRule.getMaxHoursEarnGroup(), asOfDate);
+			Set<String> convertFromEarnCodes = TkServiceLocator.getEarnGroupService().getEarnCodeListForEarnGroup(weeklyOvertimeRule.getConvertFromEarnGroup(), asOfDate);
 
 			for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
 				BigDecimal existingMaxHours = getMaxHours(flsaWeekParts, maxHoursEarnCodes);
@@ -105,7 +105,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 				if (timesheetDocumentHeader != null) { 
 					List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(timesheetDocumentHeader.getDocumentId());
 					if (CollectionUtils.isNotEmpty(timeBlocks)) {
-						CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getEndDate(), TkConstants.PAY_CALENDAR_TYPE);
+						CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getPayEndDate(), null);
 						TkTimeBlockAggregate previousAggregate = new TkTimeBlockAggregate(timeBlocks, calendarEntry, calendarEntry.getCalendarObj(), true);
 						List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone);
 						if (CollectionUtils.isNotEmpty(previousWeek)) {
@@ -122,7 +122,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 				if (timesheetDocumentHeader != null) { 
 					List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(timesheetDocumentHeader.getDocumentId());
 					if (CollectionUtils.isNotEmpty(timeBlocks)) {
-						CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getEndDate(), TkConstants.PAY_CALENDAR_TYPE);
+						CalendarEntries calendarEntry = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getPayEndDate(), null);
 						TkTimeBlockAggregate nextAggregate = new TkTimeBlockAggregate(timeBlocks, calendarEntry, calendarEntry.getCalendarObj(), true);
 						List<FlsaWeek> nextWeek = nextAggregate.getFlsaWeeks(zone);
 						if (CollectionUtils.isNotEmpty(nextWeek)) {

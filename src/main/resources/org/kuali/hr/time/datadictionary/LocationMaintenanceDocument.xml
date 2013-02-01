@@ -42,7 +42,6 @@
 		</list>
 	</property>
     <property name="documentTypeName" value="LocationMaintenanceDocumentType"/>
-    <property name="promptBeforeValidationClass" value="org.kuali.hr.location.validation.LocationEffectiveDatePrompt"/>
   </bean>
 
   <!-- Maintenance Section Definitions -->

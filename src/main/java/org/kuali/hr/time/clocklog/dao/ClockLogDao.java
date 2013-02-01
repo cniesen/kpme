@@ -47,15 +47,11 @@ public interface ClockLogDao {
 	public ClockLog getLastClockLog(String principalId, String clockAction);
 	
 	/**
-	 * Returns the last clock log for this user's assignment in a certain period
-	 * @param principalId
-	 * @param jobNumber
-	 * @param workArea
-	 * @param task
-	 * @param calendarEntry
+	 * Return a list of all open clock logs
+	 * @param payCalendarEntry
 	 * @return
 	 */
-	public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntries payCalendarEntry);
+	public List<ClockLog> getOpenClockLogs(CalendarEntries payCalendarEntry);
 	
 	/**
 	 * Fetch clock log by id

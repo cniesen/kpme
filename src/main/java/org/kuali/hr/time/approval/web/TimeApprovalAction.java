@@ -35,7 +35,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
-import org.hsqldb.lib.StringUtil;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.base.web.ApprovalAction;
 import org.kuali.hr.time.base.web.ApprovalForm;
@@ -127,8 +126,8 @@ public class TimeApprovalAction extends ApprovalAction{
         		taaf.getWorkAreaDescr().put(wa.getWorkArea(),wa.getDescription()+"("+wa.getWorkArea()+")");
         	}
         }
-
-        List<String> principalIds = this.getPrincipalIdsToPopulateTable(taaf); 
+	
+    	List<String> principalIds = TkServiceLocator.getTimeApproveService().getPrincipalIdsByDeptWorkAreaRolename(taaf.getRoleName(), taaf.getSelectedDept(), taaf.getSelectedWorkArea(), new java.sql.Date(taaf.getPayBeginDate().getTime()), new java.sql.Date(taaf.getPayEndDate().getTime()), taaf.getSelectedPayCalendarGroup());
     	if (principalIds.isEmpty()) {
     		taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
     		taaf.setResultSize(0);
@@ -154,7 +153,7 @@ public class TimeApprovalAction extends ApprovalAction{
 	    CalendarEntries payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(taaf.getHrPyCalendarEntriesId());
         taaf.setPayCalendarLabels(TkServiceLocator.getTimeSummaryService().getHeaderForSummary(payCalendarEntries, new ArrayList<Boolean>()));
         
-        List<String> principalIds = this.getPrincipalIdsToPopulateTable(taaf); 
+        List<String> principalIds = TkServiceLocator.getTimeApproveService().getPrincipalIdsByDeptWorkAreaRolename(taaf.getRoleName(), taaf.getSelectedDept(), taaf.getSelectedWorkArea(), new java.sql.Date(taaf.getPayBeginDate().getTime()), new java.sql.Date(taaf.getPayEndDate().getTime()), taaf.getSelectedPayCalendarGroup());
 		if (principalIds.isEmpty()) {
 			taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
 			taaf.setResultSize(0);
@@ -185,7 +184,7 @@ public class TimeApprovalAction extends ApprovalAction{
         	resetState(form, request);
         }
         // Set calendar groups
-        List<String> calGroups = TkServiceLocator.getPrincipalHRAttributeService().getUniqueTimePayGroups();
+        List<String> calGroups = TkServiceLocator.getTimeApproveService().getUniquePayGroups();
         taaf.setPayCalendarGroups(calGroups);
 
         if (StringUtils.isBlank(taaf.getSelectedPayCalendarGroup())) {
@@ -216,8 +215,8 @@ public class TimeApprovalAction extends ApprovalAction{
 		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page);
 		TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
 		taaf.setPayCalendarLabels(TkServiceLocator.getTimeSummaryService().getHeaderForSummary(payCalendarEntries, new ArrayList<Boolean>()));
-
-		List<String> principalIds = this.getPrincipalIdsToPopulateTable(taaf);
+		
+		List<String> principalIds = TkServiceLocator.getTimeApproveService().getPrincipalIdsByDeptWorkAreaRolename(taaf.getRoleName(), taaf.getSelectedDept(), taaf.getSelectedWorkArea(), new java.sql.Date(taaf.getPayBeginDate().getTime()), new java.sql.Date(taaf.getPayEndDate().getTime()), taaf.getSelectedPayCalendarGroup());
 		if (principalIds.isEmpty()) {
 			taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
 			taaf.setResultSize(0);
@@ -344,21 +343,4 @@ public class TimeApprovalAction extends ApprovalAction{
 		    taaf.setPayPeriodsMap(ActionFormUtils.getPayPeriodsMap(pcListForYear));
 		}
 	}
-    
-    private List<String> getPrincipalIdsToPopulateTable(TimeApprovalActionForm taf) {
-        List<String> workAreaList = new ArrayList<String>();
-        if(StringUtil.isEmpty(taf.getSelectedWorkArea())) {
-        	for(Long aKey : taf.getWorkAreaDescr().keySet()) {
-        		workAreaList.add(aKey.toString());
-        	}
-        } else {
-        	workAreaList.add(taf.getSelectedWorkArea());
-        }
-        java.sql.Date endDate = new java.sql.Date(taf.getPayEndDate().getTime());
-        java.sql.Date beginDate = new java.sql.Date(taf.getPayBeginDate().getTime());
-
-        List<String> idList = TkServiceLocator.getTimeApproveService()
-        		.getTimePrincipalIdsWithSearchCriteria(workAreaList, taf.getSelectedPayCalendarGroup(), endDate, beginDate, endDate);      
-        return idList;
-	}	
 }

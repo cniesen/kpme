@@ -33,7 +33,7 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
     private String dept;
     private Long workArea;
     private String principalId;
-    private Long jobNumber;    
+    private Long jobNumber;
     private BigDecimal deductionMins;
     private BigDecimal shiftHours;
     private String userPrincipalId;
@@ -45,53 +45,53 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
     WorkArea workAreaObj;
     Department departmentObj;
     private Job job;
-	private Person principal;
-	
-	public Person getPrincipal() {
-		return principal;
-	}
+    private Person principal;
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
 
-	public Job getJob() {
-		return job;
-	}
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-
-	public void setJob(Job job) {
-		this.job = job;
-	}
+    public Job getJob() {
+        return job;
+    }
 
 
-	public WorkArea getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public void setJob(Job job) {
+        this.job = job;
+    }
 
 
-	public void setWorkAreaObj(WorkArea workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public WorkArea getWorkAreaObj() {
+        return workAreaObj;
+    }
 
 
-	public Department getDepartmentObj() {
-		return departmentObj;
-	}
+    public void setWorkAreaObj(WorkArea workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
 
-	public void setDepartmentObj(Department departmentObj) {
-		this.departmentObj = departmentObj;
-	}
+    public Department getDepartmentObj() {
+        return departmentObj;
+    }
+
+
+    public void setDepartmentObj(Department departmentObj) {
+        this.departmentObj = departmentObj;
+    }
 
     public Long getWorkArea() {
-		return workArea;
-	}
+        return workArea;
+    }
 
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
     public String getPrincipalId() {
         return principalId;
@@ -104,16 +104,16 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
 
 
     public Long getJobNumber() {
-		return jobNumber;
-	}
+        return jobNumber;
+    }
 
 
-	public void setJobNumber(Long jobNumber) {
-		this.jobNumber = jobNumber;
-	}
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
+    }
 
 
-	public String getUserPrincipalId() {
+    public String getUserPrincipalId() {
         return userPrincipalId;
     }
 
@@ -122,82 +122,82 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
         this.userPrincipalId = userPrincipalId;
     }
 
-	public String getTkDeptLunchRuleId() {
-		return tkDeptLunchRuleId;
-	}
+    public String getTkDeptLunchRuleId() {
+        return tkDeptLunchRuleId;
+    }
 
 
-	public void setTkDeptLunchRuleId(String tkDeptLunchRuleId) {
-		this.tkDeptLunchRuleId = tkDeptLunchRuleId;
-	}
+    public void setTkDeptLunchRuleId(String tkDeptLunchRuleId) {
+        this.tkDeptLunchRuleId = tkDeptLunchRuleId;
+    }
 
 
-	public String getDept() {
-		return dept;
-	}
+    public String getDept() {
+        return dept;
+    }
 
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
 
-	public BigDecimal getDeductionMins() {
-		return deductionMins;
-	}
+    public BigDecimal getDeductionMins() {
+        return deductionMins;
+    }
 
 
-	public void setDeductionMins(BigDecimal deductionMins) {
-		this.deductionMins = deductionMins;
-	}
+    public void setDeductionMins(BigDecimal deductionMins) {
+        this.deductionMins = deductionMins;
+    }
 
 
-	public BigDecimal getShiftHours() {
-		return shiftHours;
-	}
+    public BigDecimal getShiftHours() {
+        return shiftHours;
+    }
 
 
-	public void setShiftHours(BigDecimal shiftHours) {
-		this.shiftHours = shiftHours;
-	}
+    public void setShiftHours(BigDecimal shiftHours) {
+        this.shiftHours = shiftHours;
+    }
 
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
 
-	public String getHrDeptId() {
-		return hrDeptId;
-	}
+    public String getHrDeptId() {
+        return hrDeptId;
+    }
 
-	public void setHrDeptId(String hrDeptId) {
-		this.hrDeptId = hrDeptId;
-	}
+    public void setHrDeptId(String hrDeptId) {
+        this.hrDeptId = hrDeptId;
+    }
 
-	public String getHrJobId() {
-		return hrJobId;
-	}
+    public String getHrJobId() {
+        return hrJobId;
+    }
 
-	public void setHrJobId(String hrJobId) {
-		this.hrJobId = hrJobId;
-	}
+    public void setHrJobId(String hrJobId) {
+        this.hrJobId = hrJobId;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return getDept() + "_" + getWorkArea() != null ? getWorkArea().toString() : "" + "_" + 
-				getPrincipalId() + "_" + getJobNumber() != null ? getJobNumber().toString() : "";
-	}
+    @Override
+    public String getUniqueKey() {
+        return getDept() + "_" + getWorkArea() != null ? getWorkArea().toString() : "" + "_" +
+                getPrincipalId() + "_" + getJobNumber() != null ? getJobNumber().toString() : "";
+    }
 
-	@Override
-	public String getId() {
-		return getTkDeptLunchRuleId();
-	}
+    @Override
+    public String getId() {
+        return getTkDeptLunchRuleId();
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkDeptLunchRuleId(id);
-	}
+    @Override
+    public void setId(String id) {
+        setTkDeptLunchRuleId(id);
+    }
 }

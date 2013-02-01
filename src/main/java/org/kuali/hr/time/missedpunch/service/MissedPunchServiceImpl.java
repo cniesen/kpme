@@ -21,11 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.batch.BatchJobEntry;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.missedpunch.dao.MissedPunchDao;
@@ -35,18 +35,12 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-import org.kuali.rice.krad.util.KRADConstants;
 
 public class MissedPunchServiceImpl implements MissedPunchService {
-	
-	private static final Logger LOG = Logger.getLogger(MissedPunchServiceImpl.class);
 
     MissedPunchDao missedPunchDao;
 
@@ -212,7 +206,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         // Add TimeBlocks after we store our reference object!
         List<TimeBlock> blocks = TkServiceLocator.getTimeBlockService().buildTimeBlocks(
                 assignment, earnCode, tdoc, beginTimestamp,
-                endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false, TKContext.getPrincipalId());
+                endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false);
 
 
         // Add the clock log IDs to the time blocks that were just created.
@@ -228,11 +222,11 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(
                 TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks,
-                tdoc.getCalendarEntry(),
+                tdoc.getPayCalendarEntry(),
                 tdoc, tdoc.getPrincipalId()
         );
 
-        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, TKContext.getPrincipalId());
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks);
     }
     public MissedPunchDocument getMissedPunchByClockLogId(String clockLogId){
     	return missedPunchDao.getMissedPunchByClockLogId(clockLogId);
@@ -241,28 +235,14 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
     @Override
     public void approveMissedPunch(MissedPunchDocument document) {
-    	String batchUserPrincipalId = getBatchUserPrincipalId();
-        
-        if (batchUserPrincipalId != null) {
-	        String rhid = document.getDocumentNumber();
-	        WorkflowDocument wd = WorkflowDocumentFactory.loadDocument(batchUserPrincipalId, rhid);
-	        wd.superUserBlanketApprove("Batch job superuser approving missed punch document.");
-        } else {
-        	String principalName = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.BATCH_USER_PRINCIPAL_NAME);
-        	LOG.error("Could not approve missed punch document due to missing batch user " + principalName);
-        }
+            String rhid = document.getDocumentNumber();
+            WorkflowDocument wd = WorkflowDocumentFactory.loadDocument(TkConstants.BATCH_JOB_USER_PRINCIPAL_ID, rhid);
+            wd.superUserBlanketApprove("Batch job superuser approving missed punch document.");
     }
-    
-    private String getBatchUserPrincipalId() {
-    	String principalId = null;
-    	
-    	String principalName = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.BATCH_USER_PRINCIPAL_NAME);
-        Person person = KimApiServiceLocator.getPersonService().getPersonByPrincipalName(principalName);
-        if (person != null) {
-        	principalId = person.getPrincipalId();
-        }
-        
-        return principalId;
+
+    @Override
+    public List<MissedPunchDocument> getMissedPunchDocsByBatchJobEntry(BatchJobEntry batchJobEntry) {
+        return missedPunchDao.getMissedPunchDocsByBatchJobEntry(batchJobEntry);
     }
     
     @Override
