@@ -20,7 +20,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.kuali.kpme</groupId>
     <artifactId>kpme-web</artifactId>
-    <version>1.2.2-SNAPSHOT</version>
+    <version>1.2.2</version>
     
     <packaging>war</packaging>
     <name>Kuali People Management for the Enterprise</name>
@@ -1181,9 +1181,9 @@
     </repositories>
 
     <scm>
-		<connection>scm:svn:https://svn.kuali.org/repos/kpme/branches/version-1-2</connection>
-		<developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/branches/version-1-2</developerConnection>
-        <url>https://svn.kuali.org/repos/kpme/branches/version-1-2</url>
+		<connection>scm:svn:https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.2</connection>
+		<developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.2</developerConnection>
+        <url>https://svn.kuali.org/repos/kpme/tags/kpme-web-1.2.2</url>
 	</scm>
 
 </project>
