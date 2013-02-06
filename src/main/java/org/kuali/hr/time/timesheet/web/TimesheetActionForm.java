@@ -16,14 +16,11 @@
 package org.kuali.hr.time.timesheet.web;
 
 import org.apache.struts.action.ActionMapping;
-import org.kuali.hr.lm.balancetransfer.BalanceTransfer;
 import org.kuali.hr.time.base.web.TkCommonCalendarForm;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import javax.servlet.http.HttpServletRequest;
-
-import java.util.List;
 import java.util.Map;
 
 public class TimesheetActionForm extends TkCommonCalendarForm {
@@ -42,7 +39,6 @@ public class TimesheetActionForm extends TkCommonCalendarForm {
 	private CalendarEntries payCalendarDates;
 	private String selectedAssignment;
 	private String selectedEarnCode;
-	private String transferAccrualCategory;
 
 	private String calNav;
 	private String documentId;
@@ -52,7 +48,6 @@ public class TimesheetActionForm extends TkCommonCalendarForm {
 
     private String prevDocumentId;
     private String nextDocumentId;
-    private List<BalanceTransfer> forfeitures;
 
 	@Override
 	public void reset(ActionMapping mapping, HttpServletRequest request) {
@@ -147,20 +142,4 @@ public class TimesheetActionForm extends TkCommonCalendarForm {
     public void setNextDocumentId(String nextDocumentId) {
         this.nextDocumentId = nextDocumentId;
     }
-
-	public String getTransferAccrualCategory() {
-		return transferAccrualCategory;
-	}
-
-	public void setTransferAccrualCategory(String transferAccrualCategory) {
-		this.transferAccrualCategory = transferAccrualCategory;
-	}
-
-	public List<BalanceTransfer> getForfeitures() {
-		return forfeitures;
-	}
-
-	public void setForfeitures(List<BalanceTransfer> forfeitures) {
-		this.forfeitures = forfeitures;
-	}
 }

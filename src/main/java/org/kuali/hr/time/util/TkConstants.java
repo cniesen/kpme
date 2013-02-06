@@ -30,13 +30,28 @@ import java.util.TimeZone;
 import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.leaveplan.LeavePlan;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 
 public class TkConstants {
+
+    public static final class RECORD_METHOD {
+        public static final String TIME = "T";
+        public static final String HOUR = "H";
+        public static final String AMOUNT = "A";
+        public static final String DAY = "D";
+    }
+
+    public static final Map<String, String> RECORD_METHOD_MAP = new HashMap<String, String>(2);
+    static {
+        RECORD_METHOD_MAP.put(RECORD_METHOD.TIME, "Time");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.HOUR, "Hours");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.AMOUNT, "Amount");
+        RECORD_METHOD_MAP.put(RECORD_METHOD.DAY, "Days");
+    }
+
     public static final int DEFAULT_CACHE_TIME = 900;
     public static final String TK_TARGET_USER_RETURN = "tkTargetReturn";
     public static final String TK_TARGET_USER_PERSON = "tkTargetPerson";
@@ -82,8 +97,6 @@ public class TkConstants {
     public static DateTimeFormatter DT_BASIC_DATE_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy");
     public static DateTimeFormatter DT_ABBREV_DATE_FORMAT = DateTimeFormat.forPattern("MM/dd");
     public static DateTimeFormatter DT_FULL_DATE_TIME_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy hh:mm aa");
-
-    public static DateTimeFormatter DT_JUST_DAY_FORMAT = DateTimeFormat.forPattern("dd");
 
     public static final int BIG_DECIMAL_SCALE = 2;
     public static final RoundingMode BIG_DECIMAL_SCALE_ROUNDING = RoundingMode.HALF_EVEN;
@@ -274,15 +287,22 @@ public class TkConstants {
         DOC_ROUTE_STATUS.put(KewApiConstants.ROUTE_HEADER_SAVED_CD, KewApiConstants.ROUTE_HEADER_SAVED_LABEL);
     }
 
+    public static final class BATCH_JOB_ENTRY_STATUS {
+        public static final String SCHEDULED = "S";
+        public static final String RUNNING = "R";
+        public static final String FINISHED = "F";
+        public static final String EXCEPTION = "E";
+    }
+
     public static final class BATCH_JOB_NAMES {
         public static final String INITIATE = "Initiate";
-        public static final String END_PAY_PERIOD = "End Pay Period";
-        public static final String END_REPORTING_PERIOD = "End Reporting Period";
-        public static final String EMPLOYEE_APPROVAL = "Employee Approval";
-        public static final String MISSED_PUNCH_APPROVAL = "Missed Punch Approval";
+        public static final String APPROVE = "Approve";
+        public static final String PAY_PERIOD_END = "Pay Period End";
         public static final String SUPERVISOR_APPROVAL = "Supervisor Approval";
-        public static final String CARRY_OVER_RUN ="Carry Over";
+        public static final String BATCH_APPROVE_MISSED_PUNCH = "Batch Approve Missed Punch";
     }
+
+    public static final String BATCH_JOB_USER_PRINCIPAL_ID = "admin";
 
     public static final String ASSIGNMENT_KEY_DELIMITER = "_";
     public static final String HOLIDAY_EARN_CODE = "HOL";
@@ -344,7 +364,18 @@ public class TkConstants {
 
     public static final String TASK_DEFAULT_DESP = "Default";
 
-    public static final Map<String, String> SERVICE_UNIT_OF_TIME = new LinkedHashMap<String, String>(3);
+    public static final Map<String, String> ACCRUAL_EARN_INTERVAL = new LinkedHashMap<String, String>(6);
+
+        static {
+        	ACCRUAL_EARN_INTERVAL.put("D", "Daily");
+        	ACCRUAL_EARN_INTERVAL.put("W", "Weekly");
+        	ACCRUAL_EARN_INTERVAL.put("S", "Semi-Monthly");
+        	ACCRUAL_EARN_INTERVAL.put("M", "Monthly");
+        	ACCRUAL_EARN_INTERVAL.put("Y", "Yearly");
+        	ACCRUAL_EARN_INTERVAL.put("N", "No Accrual");
+        }
+
+        public static final Map<String, String> SERVICE_UNIT_OF_TIME = new LinkedHashMap<String, String>(3);
 
         static {
         	SERVICE_UNIT_OF_TIME.put("Y", "Years");
@@ -371,7 +402,6 @@ public class TkConstants {
         static {
         	MAX_BALANCE_ACTION_FREQUENCY.put("LA", "Leave Approve");
         	MAX_BALANCE_ACTION_FREQUENCY.put("YE", "Year End");
-        	MAX_BALANCE_ACTION_FREQUENCY.put("OD", "On Demand");
         	//MAX_BALANCE_ACTION_FREQUENCY.put("NA", "Not Applicable");
         }
 
@@ -382,6 +412,14 @@ public class TkConstants {
         	ACTION_AT_MAX_BALANCE.put("P", "Payout");
         	ACTION_AT_MAX_BALANCE.put("L", "Lose");
         	//ACTION_AT_MAX_BALANCE.put("NA", "Not Applicable");
+        }
+
+        public static final Map<String, String> UNUSED_TIME = new LinkedHashMap<String, String>(3);
+
+        static {
+        	UNUSED_TIME.put("NUTA", "No Unused Time Allowed");
+        	UNUSED_TIME.put("T", "Transfer");
+        	UNUSED_TIME.put("B", "Bank");
         }
 
         public static final Map<String, String> EMPLOYEE_OVERRIDE_TYPE = new LinkedHashMap<String, String>(5);
@@ -400,11 +438,6 @@ public class TkConstants {
 
     static {
         Set<String> keys = new HashSet<String>();
-        keys.add("leavePlan");
-        keys.add("effectiveDate");
-        CLASS_INQUIRY_KEY_MAP.put(LeavePlan.class.getName(), keys);
-        
-        keys = new HashSet<String>();
         keys.add("accrualCategory");
         keys.add("effectiveDate");
         CLASS_INQUIRY_KEY_MAP.put(AccrualCategory.class.getName(), keys);
@@ -417,12 +450,4 @@ public class TkConstants {
 
     public static final String FLSA_STATUS_NON_EXEMPT ="NE";
     public static final String FLSA_STATUS_EXEMPT ="E";
-    
-    public static final String PAY_CALENDAR_TYPE = "payCalendar";
-    
-    // Calendar Types
-    public static final String CALENDAR_TYPE_PAY = "Pay";
-    public static final String CALENDAR_TYPE_LEAVE = "Leave";
-    
-    public static final String BATCH_USER_PRINCIPAL_NAME = "kpme.batch.user.principalName";
 }

@@ -17,16 +17,15 @@ package org.kuali.hr.time.workflow;
 
 import java.util.Date;
 
-import org.kuali.hr.core.document.CalendarDocumentHeaderContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-public class TimesheetDocumentHeader extends PersistableBusinessObjectBase implements CalendarDocumentHeaderContract {
+public class TimesheetDocumentHeader extends PersistableBusinessObjectBase {
 
 	private static final long serialVersionUID = 1L;
 	private String documentId;
 	private String principalId;
-	private Date beginDate;
-	private Date endDate;
+	private Date payBeginDate;
+	private Date payEndDate;
 	private String documentStatus;
 
 	public TimesheetDocumentHeader() {
@@ -36,12 +35,11 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 	public TimesheetDocumentHeader(String documentId, String principalId, Date payBeginDate, Date payEndDate, String documentStatus) {
 		this.documentId = documentId;
 		this.principalId = principalId;
-		this.beginDate = payBeginDate;
-		this.endDate = payEndDate;
+		this.payBeginDate = payBeginDate;
+		this.payEndDate = payEndDate;
 		this.documentStatus = documentStatus;
 	}
 
-    @Override
 	public String getDocumentId() {
 		return documentId;
 	}
@@ -50,7 +48,6 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.documentId = documentId;
 	}
 
-    @Override
 	public String getPrincipalId() {
 		return principalId;
 	}
@@ -59,16 +56,14 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.principalId = principalId;
 	}
 
-    @Override
-	public Date getEndDate() {
-		return endDate;
+	public Date getPayEndDate() {
+		return payEndDate;
 	}
 
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
+	public void setPayEndDate(Date payEndDate) {
+		this.payEndDate = payEndDate;
 	}
 
-    @Override
 	public String getDocumentStatus() {
 		return documentStatus;
 	}
@@ -77,13 +72,12 @@ public class TimesheetDocumentHeader extends PersistableBusinessObjectBase imple
 		this.documentStatus = documentStatus;
 	}
 
-    @Override
-	public Date getBeginDate() {
-		return beginDate;
+    public Date getPayBeginDate() {
+		return payBeginDate;
 	}
 
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
+	public void setPayBeginDate(Date payBeginDate) {
+		this.payBeginDate = payBeginDate;
 	}
 
 }

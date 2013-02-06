@@ -21,8 +21,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
-import org.kuali.hr.lm.earncodesec.service.EarnCodeSecurityService;
+import org.kuali.hr.earncodesec.EarnCodeSecurity;
+import org.kuali.hr.earncodesec.service.EarnCodeSecurityService;
 import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 

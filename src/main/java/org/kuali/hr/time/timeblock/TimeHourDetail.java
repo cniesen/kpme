@@ -97,7 +97,7 @@ public class TimeHourDetail extends PersistableBusinessObjectBase{
 	public String getTkTimeHourDetailId() {
 		return tkTimeHourDetailId;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) { 
@@ -115,7 +115,7 @@ public class TimeHourDetail extends PersistableBusinessObjectBase{
 			.append(amount, timeHourDetail.amount)
 			.append(hours, timeHourDetail.hours)
 			.isEquals();
-	}
+    }
 
 	@Override
 	public int hashCode() {
@@ -124,6 +124,5 @@ public class TimeHourDetail extends PersistableBusinessObjectBase{
 			.append(amount)
 			.append(hours)
 			.toHashCode();
-	}
-
+    }
 }

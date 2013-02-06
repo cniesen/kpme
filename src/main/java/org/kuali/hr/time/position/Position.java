@@ -15,15 +15,18 @@
  */
 package org.kuali.hr.time.position;
 
+import java.sql.Timestamp;
+
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.workarea.WorkArea;
 
 public class Position extends HrBusinessObject {
-
-	private static final long serialVersionUID = 7608620912959269845L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Position";
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Position";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private String hrPositionId;
 	private String positionNumber;
@@ -54,6 +57,22 @@ public class Position extends HrBusinessObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
 	}
 
 	@Override

@@ -19,7 +19,7 @@
 <c:set var="Form" value="${TimeDetailActionForm}" scope="request"/>
 
 
-<tk:tkHeader tabId="timeDetail" nocache="true">
+<tk:tkHeader tabId="timeDetail">
     <script src="js/underscore-1.3.1.min.js"></script>
     <%--<script src="js/underscore.string-2.0.0.js"></script>--%>
     <script src="js/backbone-0.9.1.min.js"></script>
@@ -31,12 +31,14 @@
         {
             var d = new Date();
             d = d.getTime();
-            var reloadVal = $('#reloadValue');
-            if (reloadVal.val().length == 0) {
-                reloadVal.val(d);
-                $('body').show();
-            } else {
-                reloadVal.val('');
+            if (jQuery('#reloadValue').val().length == 0)
+            {
+                jQuery('#reloadValue').val(d);
+                jQuery('body').show();
+            }
+            else
+            {
+                jQuery('#reloadValue').val('');
                 location.reload();
             }
         });
@@ -73,11 +75,9 @@
         </c:forEach>
          -->
 
-        <%-- this is used by the javascript to fetch the time block json --%>
+            <%-- this is used by the javascript to fetch the time block json --%>
         <html:textarea property="timeBlockString" styleId="timeBlockString" value="${Form.timeBlockString}"/>
-        
-        <%-- this is used by the javascript to fetch the leave block json --%>
-		<html:textarea property="leaveBlockString" styleId="leaveBlockString" value="${Form.leaveBlockString}"/>
+
             <%-- render the calendar --%>
         <tk:calendar cal="${Form.tkCalendar}" docId="${Form.documentId}" calType="payCalendar"/>
 
@@ -106,7 +106,6 @@
                 <html:hidden property="documentId" value="${Form.documentId}" styleId="documentId"/>
                 <html:hidden property="tkTimeBlockId" value="" styleId="tkTimeBlockId"/>
                 <html:hidden property="lunchDeleted" value="" styleId="lunchDeleted"/>
-                <html:hidden property="lmLeaveBlockId" value="" styleId="lmLeaveBlockId"/>
 
                 <div class="ui-widget timesheet-panel" id="timesheet-panel">
                     <table>
@@ -172,12 +171,6 @@
                                 $ <input id="amount" name="amount"/>
                             </td>
                         </tr>
-                        <tr class="leaveAmountSection" style="display: none;">
-                            <td><label for="leaveAmountField" id="unitOfTime">* Leave Amount</label> : </label></td>
-                            <td>
-                                <input id="leaveAmount" name="leaveAmount" />
-                            </td>
-                        </tr>
                         <tr>
                             <td></td>
                             <td>
@@ -185,14 +178,7 @@
                                 <label for="acrossDays">Apply time to each day</label>
                             </td>
                         </tr>
-                        <!--  KPME-1446  -->
-                        <tr>
-                            <td></td>
-                            <td>
-                                <input type="checkbox" name="spanningWeeks" id="spanningWeeks" value="n" title="Check if you want to span weeks over weekend"/>
-                                <label for="spanningWeeks">Include weekends</label>
-                            </td>
-                        </tr>
+
                     </table>
                 </div>
             </html:form>
@@ -213,32 +199,5 @@
     <script type="text/template" id="overtime-template">
         <option value="<@= earnCode @>"><@= earnCode + " : " + desc @></option>
     </script>
-    
-    <div id="lm-transfer-dialog" title="Balance Transfer" style="display:none;">
-
-	</div>
-	
-	<div id="confirm-forfeiture-dialog" class="dialog-form" title="Confirm Forfeiture">
-	   <html:form action="/TimesheetSubmit.do" styleId="forfeiture-form">
-			<html:hidden property="loseOnSubmit" value="${not empty Form.forfeitures}" styleId="loseOnSubmit"/>
-			 
-	        <div class="ui-widget timesheet-panel" id="timesheet-panel">
-	            <table>
-					<tr>
-						<th></th>
-						<th>Forfeited Amount</th>
-					</tr>
-					<tbody>
-					<c:forEach var="forfeiture" items="${Form.forfeitures}">
-						<tr>
-							<td>${forfeiture.fromAccrualCategory}: </td>
-							<td align="right">${forfeiture.forfeitedAmount}</td>
-						</tr>
-					</c:forEach>
-					</tbody>
-	            </table>
-	        </div>
-	    </html:form>
-	</div>
 
 </tk:tkHeader>

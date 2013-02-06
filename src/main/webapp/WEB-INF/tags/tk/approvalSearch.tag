@@ -1,10 +1,7 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
-
-<%@ attribute name="calType" required="true" type="java.lang.String" %>
 <%-- for time approval, set searchId to searchValue, for leave Approval, set searchId to leaveSearchValue 
 the id is used in approval.js--%>
 <%@ attribute name="searchId" required="true" type="java.lang.String" %>
-
 
 <table class="navigation">   
         <tr>
@@ -48,35 +45,24 @@ the id is used in approval.js--%>
                 </div>
             </td>
             <td>
-            	<tk:payCalendarSelect calType="${calType}" />
+            	<tk:payCalendarSelect />
             </td>
             <td></td>
         </tr>
         <tr>
         	<td></td>
-            <td align="center">
         	<c:if test="${!Form.onCurrentPeriod}" >
+	        	<td align="center">
 	        		<a href="${KualiForm.backLocation}?methodToCall=gotoCurrentPayPeriod"
 	                  	 target="_self" id="cppLink">Go to Current Period</a>
+	        	</td>
         	</c:if>
-            </td>
-            <td align="center">
-            	<c:choose>
-            		<c:when test="${calType == 'payCalendar'}">
-            			<fieldset style="width:75%;">
-                    		<legend>Weekly Status</legend>
-                    		<div>Pay Period Week Total: <span style="font-weight: bold;">bold</span></div>
-                    		<div>FLSA Week Total: <span style="font-style: italic;">italics</span></div>
-						</fieldset>
-					</c:when>
-					<c:when test="${calType == 'leaveCalendar'}">
-                    	<fieldset style="width:75%;">
-                        	<legend>Leave Request Status</legend>
-                        	<div>Approved/Usage: <span class="approvals-approved">bold</span></div>
-                        	<div>Planned/Defered: <span class="approvals-requested">italics</span></div>
-                    	</fieldset>
-                	</c:when>
-                </c:choose>
+        	<td align="center">
+    	       <fieldset style="width:75%;">
+                    <legend>Weekly Status</legend>
+                    <div>Pay Period Week Total: <span style="font-weight: bold;">bold</span></div>
+                    <div>FLSA Week Total: <span style="font-style: italic;">italics</span></div>
+                </fieldset>
             </td>
         </tr>
 </table>

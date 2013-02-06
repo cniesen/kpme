@@ -19,21 +19,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
-import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class PayTypeDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements PayTypeDao {
-    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
-            .add("payType")
-            .build();
 
 	public void saveOrUpdate(PayType payType) {
 		this.getPersistenceBrokerTemplate().store(payType);
@@ -49,11 +44,22 @@ public class PayTypeDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements 
 
 	public PayType getPayType(String payType, Date effectiveDate) {
 		Criteria currentRecordCriteria = new Criteria();
+		Criteria effdt = new Criteria();
+		Criteria timestamp = new Criteria();
+		
+		effdt.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
+		effdt.addLessOrEqualThan("effectiveDate", effectiveDate);
+		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PayType.class, effdt);
+		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
 
-        java.sql.Date effDate = effectiveDate == null ? null : new java.sql.Date(effectiveDate.getTime());
+		timestamp.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
+		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
+		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PayType.class, timestamp);
+		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
+
 		currentRecordCriteria.addEqualTo("payType", payType);
-        currentRecordCriteria.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayType.class, effDate, EQUAL_TO_FIELDS, false));
-        currentRecordCriteria.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, EQUAL_TO_FIELDS, false));
+		currentRecordCriteria.addEqualTo("effectiveDate", effdtSubQuery);
+		currentRecordCriteria.addEqualTo("timestamp", timestampSubQuery);
 		
 //		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 //		activeFilter.addEqualTo("active", true);
@@ -123,8 +129,19 @@ public class PayTypeDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements 
         }
         
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PayType.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, EQUAL_TO_FIELDS, false));
+            Criteria effdt = new Criteria();
+        	effdt.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
+        	effdt.addAndCriteria(effectiveDateFilter);
+        	ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PayType.class, effdt);
+            effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
+            root.addEqualTo("effectiveDate", effdtSubQuery);
+            
+            Criteria timestamp = new Criteria();
+            timestamp.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
+            timestamp.addAndCriteria(effectiveDateFilter);
+            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PayType.class, timestamp);
+            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+            root.addEqualTo("timestamp", timestampSubQuery);
         }
 
         Query query = QueryFactory.newQuery(PayType.class, root);

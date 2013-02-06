@@ -61,11 +61,16 @@ public class TimesheetDocumentHeaderServiceImpl implements TimesheetDocumentHead
         TimesheetDocument currentTimesheet = TKContext.getCurrentTimesheetDocument();
         TimesheetDocumentHeader tsdh;
         if (StringUtils.equals(prevOrNext, TkConstants.PREV_TIMESHEET)) {
-            tsdh = documentHeaderDao.getPreviousDocumentHeader(principalId, currentTimesheet.getDocumentHeader().getBeginDate());
+            tsdh = documentHeaderDao.getPreviousDocumentHeader(principalId, currentTimesheet.getDocumentHeader().getPayBeginDate());
         } else {
-            tsdh = documentHeaderDao.getNextDocumentHeader(principalId, currentTimesheet.getDocumentHeader().getEndDate());
+            tsdh = documentHeaderDao.getNextDocumentHeader(principalId, currentTimesheet.getDocumentHeader().getPayEndDate());
         }
         return tsdh;
+    }
+
+    @Override
+    public List<TimesheetDocumentHeader> getDocumentHeaders(Date payBeginDate) {
+        return documentHeaderDao.getDocumentHeaders(payBeginDate);
     }
     
     @Override
@@ -84,10 +89,10 @@ public class TimesheetDocumentHeaderServiceImpl implements TimesheetDocumentHead
 		return documentHeaderDao.getDocumentHeadersForPrincipalId(principalId);
 	}
 	
-	public List<TimesheetDocumentHeader> getDocumentHeadersForYear(String principalId, String year) {
-		return documentHeaderDao.getDocumentHeadersForYear(principalId, year);
-	}
-	
+	 public List<TimesheetDocumentHeader> getDocumentHeadersForYear(String principalId, String year) {
+		 return documentHeaderDao.getDocumentHeadersForYear(principalId, year);
+	 }
+
 	public TimesheetDocumentHeader getDocumentHeaderForDate(String principalId, Date asOfDate) {
 		return documentHeaderDao.getDocumentHeaderForDate(principalId, asOfDate);
 	}

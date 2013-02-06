@@ -41,8 +41,8 @@
 <div class="approvals">
 
 	<tk:approvalFilter />
-
-	<tk:approvalSearch calType="payCalendar" searchId="searchTerm" />
+	
+	<tk:approvalSearch searchId="searchTerm" />
 
     <tk:timeApproval />
     
@@ -83,4 +83,24 @@
         <@ }); @>
     </tr>
     <@ } @>
+</script>
+
+<%-- Leave Calendar detail template --%>
+<script type="text/template" id="leaveDetail-template">
+    <tr class="leaveDetailRow_<@= docId @>">
+		<th colspan="2"/>
+		<@ _.each(section.daysDetail, function() { @>
+               <th/>
+        <@ }); @>
+        <th>Period Usage</th>
+		<th>Available</th>
+    </tr>
+    <tr class="leaveDetailRow_<@= docId @>">
+        <td colspan="2" class="<@= section.cssClass @>"><b><@= section.accrualCategory @></b></td>
+            <@ _.each(section.daysDetail, function(tot) { @>
+                <td><@= tot == 0 ? "" : tot @></td>
+        	<@ }); @>
+		<td><@= section.periodUsage @></td>
+		<td><@= section.availableBalance @></td>
+    </tr>
 </script>

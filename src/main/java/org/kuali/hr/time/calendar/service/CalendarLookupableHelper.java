@@ -54,11 +54,10 @@ public class CalendarLookupableHelper extends KualiLookupableHelperServiceImpl {
 	@Override
 	public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
 		String calendarName = fieldValues.get("calendarName");
-		String calendarTypes = fieldValues.get("calendarTypes");
         String flsaBeginDay = fieldValues.get("flsaBeginDay");
         String flsaBeginTime = fieldValues.get("flsaBeginTime");
 
-        return TkServiceLocator.getCalendarService().getCalendars(calendarName, calendarTypes, flsaBeginDay, flsaBeginTime);
+        return TkServiceLocator.getCalendarService().getCalendars(calendarName, flsaBeginDay, flsaBeginTime);
 //        String flsaTime = null;
 //		if(fieldValues.containsKey("flsaBeginTime")){
 //			flsaTime = fieldValues.get("flsaBeginTime");

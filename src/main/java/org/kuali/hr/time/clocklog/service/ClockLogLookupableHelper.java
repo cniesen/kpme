@@ -101,8 +101,8 @@ public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 				objectList = new ArrayList<BusinessObject>();
 			} else {
 				String timesheetUserId = timesheetDocumentHeader.getPrincipalId();
-				Date beginDate =  timesheetDocumentHeader.getBeginDate();
-				Date endDate =  timesheetDocumentHeader.getEndDate();
+				Date beginDate =  timesheetDocumentHeader.getPayBeginDate();
+				Date endDate =  timesheetDocumentHeader.getPayEndDate();
 				objectList = super.getSearchResultsUnbounded(fieldValues);
 				Iterator itr = objectList.iterator();
 				while (itr.hasNext()) {

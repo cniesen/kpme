@@ -31,7 +31,6 @@ import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -76,7 +75,8 @@ public interface TimeApproveService {
      * @param documentNumber
      * @return list of note objects
      */
-	public List<Note> getNotesForDocument(String documentNumber);
+    @SuppressWarnings("rawtypes")
+	public List getNotesForDocument(String documentNumber);
 
     public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
 
@@ -104,6 +104,24 @@ public interface TimeApproveService {
     public Map<String,CalendarEntries> getPayCalendarEntriesForDept(String dept, Date currentDate);
 
     /**
+     * Get a list of unique pay groups
+     * @return
+     */
+    List<String> getUniquePayGroups();
+
+    /**
+     * Method to get a list of principal ids based on the department work areas.
+     *
+     * @param roleName
+     * @param department
+     * @param workArea
+     * @param payEndDate
+     * @param calGroup
+     * @return A list of the PrincipalIds
+     */
+    List<String> getPrincipalIdsByDeptWorkAreaRolename(String roleName, String department, String workArea, java.sql.Date payBeginDate, java.sql.Date payEndDate, String calGroup);
+    
+    /**
      * Method to create a map that contains the principal's id and corresponding timesheet document header.
      *
      * @param payBeginDate
@@ -129,16 +147,4 @@ public interface TimeApproveService {
     Multimap<String, Long> getDeptWorkAreasByDepts(Set<String> userDepts);
     
     public DocumentRouteHeaderValue getRouteHeader(String documentId);
-    
-    /**
-     * Get a list of unique principal ids with given criteria
-     * used to populate tables in Time approval page 
-     * @param workAreaList
-     * @param calendarGroup
-     * @param effdt
-     * @param beginDate
-     * @param endDate
-     * @return
-     */
-    public List<String> getTimePrincipalIdsWithSearchCriteria(List<String> workAreaList, String calendarGroup, java.sql.Date effdt, java.sql.Date beginDate, java.sql.Date endDate);
 }

@@ -92,7 +92,7 @@
       <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
     </property>
     <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
-    <property name="name" value="beginDate" />
+    <property name="name" value="payBeginDate" />
     <property name="label" value="Pay Begin Date" />
   </bean> 
   
@@ -107,7 +107,7 @@
       <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
     </property>
     <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
-    <property name="name" value="endDate" />
+    <property name="name" value="payEndDate" />
     <property name="label" value="Pay End Date" />
   </bean>
   
@@ -131,8 +131,8 @@
         <bean parent="FieldDefinition" p:attributeName="documentId" p:forceInquiry="true" />
         <bean parent="FieldDefinition" p:attributeName="principalId" />
         <bean parent="FieldDefinition" p:attributeName="documentStatus" />
-        <bean parent="FieldDefinition" p:attributeName="beginDate" />
-        <bean parent="FieldDefinition" p:attributeName="endDate" />
+        <bean parent="FieldDefinition" p:attributeName="payBeginDate" />
+        <bean parent="FieldDefinition" p:attributeName="payEndDate" />
       </list>
     </property>
     <property name="title" value="TimesheetDocumentHeader Lookup" />

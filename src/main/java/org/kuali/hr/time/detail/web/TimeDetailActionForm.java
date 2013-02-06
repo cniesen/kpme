@@ -16,7 +16,6 @@
 package org.kuali.hr.time.detail.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.lm.balancetransfer.BalanceTransfer;
 import org.kuali.hr.time.calendar.TkCalendar;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -44,15 +43,23 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 	private TimeSummary timeSummary;
 	private Map<String, String> assignStyleClassMap = new HashMap<String, String>();
     private String timeBlockString;
-    private String leaveBlockString;
     private TkCalendar calendar;
     private String docEditable;
     private String workingOnItsOwn;	// true if the user is working on its own timesheet
     private List<String> overtimeEarnCodes = new ArrayList<String>();
     private String tkTimeHourDetailId;
     private String isLunchDeleted;
-    private List<BalanceTransfer> forfeitures;
     private boolean canAddTimeblock;
+    private String spanningWeeks; // KPME-1446
+
+    public String getSpanningWeeks() {
+        return spanningWeeks;
+    }
+
+    public void setSpanningWeeks(String spanningWeeks) {
+        this.spanningWeeks = spanningWeeks;
+    }
+
 
     public TkCalendar getTkCalendar() {
         return calendar;
@@ -187,21 +194,5 @@ public class TimeDetailActionForm extends TimeDetailActionFormBase {
 
 	public void setWorkingOnItsOwn(String workingOnItsOwn) {
 		this.workingOnItsOwn = workingOnItsOwn;
-	}
-
-	public String getLeaveBlockString() {
-		return leaveBlockString;
-	}
-
-	public void setLeaveBlockString(String leaveBlockString) {
-		this.leaveBlockString = leaveBlockString;
-	}
-
-	public List<BalanceTransfer> getForfeitures() {
-		return forfeitures;
-	}
-
-	public void setForfeitures(List<BalanceTransfer> forfeitures) {
-		this.forfeitures = forfeitures;
 	}
 }

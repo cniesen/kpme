@@ -16,7 +16,6 @@
 package org.kuali.hr.time.timesummary;
 
 import org.json.simple.JSONValue;
-import org.kuali.hr.lm.leaveSummary.LeaveSummaryRow;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ import java.util.Map;
 public class TimeSummary {
 	private List<String> summaryHeader = new ArrayList<String>();
 	private List<EarnGroupSection> sections = new ArrayList<EarnGroupSection>();
-	private List<LeaveSummaryRow> maxedLeaveRows = new ArrayList<LeaveSummaryRow>();
+	
 	private List<BigDecimal> workedHours = new ArrayList<BigDecimal>();
 
 	public List<String> getSummaryHeader() {
@@ -89,11 +88,5 @@ public class TimeSummary {
 
         return JSONValue.toJSONString(earnCodeSections);
     }
-	public List<LeaveSummaryRow> getMaxedLeaveRows() {
-		return maxedLeaveRows;
-	}
-	public void setMaxedLeaveRows(List<LeaveSummaryRow> maxedLeaveRows) {
-		this.maxedLeaveRows = maxedLeaveRows;
-	}
 
 }

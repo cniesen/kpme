@@ -30,7 +30,7 @@ public class TkWarningServiceImpl implements TkWarningService {
     	
         warnings.addAll(TkServiceLocator.getTimeOffAccrualService().validateAccrualHoursLimit(td));
         
-        warnings.addAll(TkServiceLocator.getEarnCodeGroupService().warningTextFromEarnCodeGroupsOfDocument(td));
+        warnings.addAll(TkServiceLocator.getEarnGroupService().warningTextFromEarnGroupsOfDocument(td));
         
         if (td != null && CollectionUtils.isNotEmpty(td.getTimeBlocks())) {
         	warnings.addAll(TkServiceLocator.getClockLogService().getUnapprovedIPWarning(td.getTimeBlocks()));

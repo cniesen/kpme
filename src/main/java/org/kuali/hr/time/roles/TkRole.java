@@ -16,6 +16,7 @@
 package org.kuali.hr.time.roles;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
@@ -30,11 +31,11 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TkRole extends HrBusinessObject {
-
-	private static final long serialVersionUID = -2123815189941339343L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TkRole";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TkRole";
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private String hrRolesId;
 	private String principalId;
 	private String roleName;
@@ -95,64 +96,68 @@ public class TkRole extends HrBusinessObject {
     public String getHrRolesId() {
 		return hrRolesId;
 	}
-    
 	public void setHrRolesId(String hrRolesId) {
 		this.hrRolesId = hrRolesId;
 	}
-	
 	public String getPrincipalId() {
 		return principalId;
 	}
-	
 	public void setPrincipalId(String principalId) {
 		this.principalId = principalId;
         setPerson(KimApiServiceLocator.getPersonService().getPerson(this.principalId));
 	}
-	
 	public String getRoleName() {
 		return roleName;
 	}
-	
 	public void setRoleName(String roleName) {
 		this.roleName = roleName;
 	}
-	
 	public String getUserPrincipalId() {
 		return userPrincipalId;
 	}
-	
 	public void setUserPrincipalId(String userPrincipalId) {
 		this.userPrincipalId = userPrincipalId;
 	}
-	
 	public Long getWorkArea() {
 		return workArea;
 	}
-	
 	public void setWorkArea(Long workArea) {
 		this.workArea = workArea;
 	}
-	
 	public String getDepartment() {
 		return department;
 	}
-	
 	public void setDepartment(String department) {
 		this.department = department;
 	}
-
+	
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+	public boolean isActive() {
+		return active;
+	}
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 	public Person getPerson() {
 		return person;
 	}
-	
 	public void setPerson(Person person) {
 		this.person = person;
 	}
-	
 	public Long getHrDeptId() {
 		return hrDeptId;
 	}
-	
 	public void setHrDeptId(Long hrDeptId) {
 		this.hrDeptId = hrDeptId;
 	}
@@ -224,35 +229,4 @@ public class TkRole extends HrBusinessObject {
 	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        TkRole tkRole = (TkRole) o;
-
-        if (chart != null ? !chart.equals(tkRole.chart) : tkRole.chart != null) return false;
-        if (chartObj != null ? !chartObj.equals(tkRole.chartObj) : tkRole.chartObj != null) return false;
-        if (department != null ? !department.equals(tkRole.department) : tkRole.department != null) return false;
-        if (departmentObj != null ? !departmentObj.equals(tkRole.departmentObj) : tkRole.departmentObj != null)
-            return false;
-        if (expirationDate != null ? !expirationDate.equals(tkRole.expirationDate) : tkRole.expirationDate != null)
-            return false;
-        if (hrDeptId != null ? !hrDeptId.equals(tkRole.hrDeptId) : tkRole.hrDeptId != null) return false;
-        if (!hrRolesId.equals(tkRole.hrRolesId)) return false;
-        if (locationObj != null ? !locationObj.equals(tkRole.locationObj) : tkRole.locationObj != null) return false;
-        if (person != null ? !person.equals(tkRole.person) : tkRole.person != null) return false;
-        if (positionNumber != null ? !positionNumber.equals(tkRole.positionNumber) : tkRole.positionNumber != null)
-            return false;
-        if (positionObj != null ? !positionObj.equals(tkRole.positionObj) : tkRole.positionObj != null) return false;
-        if (principalId != null ? !principalId.equals(tkRole.principalId) : tkRole.principalId != null) return false;
-        if (roleName != null ? !roleName.equals(tkRole.roleName) : tkRole.roleName != null) return false;
-        if (userPrincipalId != null ? !userPrincipalId.equals(tkRole.userPrincipalId) : tkRole.userPrincipalId != null)
-            return false;
-        if (workArea != null ? !workArea.equals(tkRole.workArea) : tkRole.workArea != null) return false;
-        if (workAreaObj != null ? !workAreaObj.equals(tkRole.workAreaObj) : tkRole.workAreaObj != null) return false;
-
-        return true;
-    }
 }

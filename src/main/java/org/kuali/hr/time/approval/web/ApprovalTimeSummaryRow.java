@@ -29,7 +29,6 @@ import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kew.api.KewApiConstants;
-import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
@@ -37,8 +36,8 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow> {
-	private String name;
-	private List<TimeBlock> lstTimeBlocks = new ArrayList<TimeBlock>();
+    private String name;
+    private List<TimeBlock> lstTimeBlocks = new ArrayList<TimeBlock>();
     /** A Map (Assignment key) of Mapped totals (pay label mapping) */
     private Map<String, Map<String, BigDecimal>> approverHoursByAssignment;
     /** A Map (Assignment key) of Mapped totals (pay label mapping) */
@@ -46,31 +45,31 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     /** A String (AssignmentDescriptionKey) to Description mapping for all assignments on this summary row */
     private Map<String,String> assignmentDescriptions; // could refactor out to action level call
 
-	private String approvalStatus;
-	private String approvalStatusMessage;
-	private String documentId;
-	private Map<String,BigDecimal> hoursToPayLabelMap = new HashMap<String,BigDecimal>();
+    private String approvalStatus;
+    private String approvalStatusMessage;
+    private String documentId;
+    private Map<String,BigDecimal> hoursToPayLabelMap = new HashMap<String,BigDecimal>();
     private Map<String,BigDecimal> hoursToFlsaPayLabelMap = new HashMap<String,BigDecimal>();
-	private String clockStatusMessage;
+    private String clockStatusMessage;
     private String payCalendarGroup;
-    private List<Note> notes = new ArrayList<Note>();
+    private List notes = new ArrayList();
     private List<String> warnings = new ArrayList<String>();
     private Set<String> workAreas;
     private String principalId;
-    private Boolean clockedInOverThreshold = Boolean.FALSE;    
+    private Boolean clockedInOverThreshold = Boolean.FALSE;
     private String selected = "off";
     private TimeSummary timeSummary;
     private BigDecimal periodTotal = BigDecimal.ZERO;
-    
+
     public String getApprovalStatusMessage() {
-		return approvalStatusMessage;
-	}
+        return approvalStatusMessage;
+    }
 
-	public void setApprovalStatusMessage(String approvalStatusMessage) {
-		this.approvalStatusMessage = approvalStatusMessage;
-	}
+    public void setApprovalStatusMessage(String approvalStatusMessage) {
+        this.approvalStatusMessage = approvalStatusMessage;
+    }
 
-	public Map<String, String> getAssignmentDescriptions() {
+    public Map<String, String> getAssignmentDescriptions() {
         return assignmentDescriptions;
     }
 
@@ -95,47 +94,47 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     }
 
     public String getName() {
-		return name;
-	}
+        return name;
+    }
     public void setName(String name) {
-		this.name = name;
-	}
+        this.name = name;
+    }
     public List<TimeBlock> getLstTimeBlocks() {
-		return lstTimeBlocks;
-	}
-	public void setLstTimeBlocks(List<TimeBlock> lstTimeBlocks) {
-		this.lstTimeBlocks = lstTimeBlocks;
-	}
-	public String getApprovalStatus() {
-		return approvalStatus;
-	}
-	public void setApprovalStatus(String approvalStatus) {
-		this.approvalStatus = approvalStatus;
-	}
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
-	}
-	public String getDocumentId() {
-		return documentId;
-	}
-	public void setHoursToPayLabelMap(Map<String,BigDecimal> hoursToPayLabelMap) {
-		this.hoursToPayLabelMap = hoursToPayLabelMap;
-	}
-	public Map<String,BigDecimal> getHoursToPayLabelMap() {
-		return hoursToPayLabelMap;
-	}
+        return lstTimeBlocks;
+    }
+    public void setLstTimeBlocks(List<TimeBlock> lstTimeBlocks) {
+        this.lstTimeBlocks = lstTimeBlocks;
+    }
+    public String getApprovalStatus() {
+        return approvalStatus;
+    }
+    public void setApprovalStatus(String approvalStatus) {
+        this.approvalStatus = approvalStatus;
+    }
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+    public String getDocumentId() {
+        return documentId;
+    }
+    public void setHoursToPayLabelMap(Map<String,BigDecimal> hoursToPayLabelMap) {
+        this.hoursToPayLabelMap = hoursToPayLabelMap;
+    }
+    public Map<String,BigDecimal> getHoursToPayLabelMap() {
+        return hoursToPayLabelMap;
+    }
     public void setHoursToFlsaPayLabelMap(Map<String,BigDecimal> hoursToFlsaPayLabelMap) {
         this.hoursToFlsaPayLabelMap = hoursToFlsaPayLabelMap;
     }
     public Map<String,BigDecimal> getHoursToFlsaPayLabelMap() {
         return hoursToFlsaPayLabelMap;
     }
-	public void setClockStatusMessage(String clockStatusMessage) {
-		this.clockStatusMessage = clockStatusMessage;
-	}
-	public String getClockStatusMessage() {
-		return clockStatusMessage;
-	}
+    public void setClockStatusMessage(String clockStatusMessage) {
+        this.clockStatusMessage = clockStatusMessage;
+    }
+    public String getClockStatusMessage() {
+        return clockStatusMessage;
+    }
 
     public String getPayCalendarGroup() {
         return payCalendarGroup;
@@ -158,7 +157,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
      * @return true if a valid TK_APPROVER / TK_PROCESSOR can approve, false otherwise.
      */
     public boolean isApprovable() {
-    	boolean isEnroute =  StringUtils.equals(getApprovalStatus(), "ENROUTE") ;
+        boolean isEnroute =  StringUtils.equals(getApprovalStatus(), "ENROUTE") ;
 
         if(isEnroute){
         	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(this.getDocumentId());
@@ -190,11 +189,11 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
         return link.toString();
     }
 
-    public List<Note> getNotes() {
+    public List getNotes() {
         return notes;
     }
 
-    public void setNotes(List<Note> notes) {
+    public void setNotes(List notes) {
         this.notes = notes;
     }
 
@@ -221,19 +220,19 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     public void setPrincipalId(String principalId) {
         this.principalId = principalId;
     }
-	public Boolean getClockedInOverThreshold() {
-		return clockedInOverThreshold;
-	}
-	public void setClockedInOverThreshold(Boolean clockedInOverThreshold) {
-		this.clockedInOverThreshold = clockedInOverThreshold;
-	}
-	public String getSelected() {
-		return selected;
-	}
+    public Boolean getClockedInOverThreshold() {
+        return clockedInOverThreshold;
+    }
+    public void setClockedInOverThreshold(Boolean clockedInOverThreshold) {
+        this.clockedInOverThreshold = clockedInOverThreshold;
+    }
+    public String getSelected() {
+        return selected;
+    }
 
-	public void setSelected(String selected) {
-		this.selected = selected;
-	}
+    public void setSelected(String selected) {
+        this.selected = selected;
+    }
 
     public TimeSummary getTimeSummary() {
         return timeSummary;
@@ -250,7 +249,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     public void setPeriodTotal(BigDecimal periodTotal) {
         this.periodTotal = periodTotal;
     }
-    
+
     public int compareTo(ApprovalTimeSummaryRow row) {
         return name.compareToIgnoreCase(row.getName());
     }

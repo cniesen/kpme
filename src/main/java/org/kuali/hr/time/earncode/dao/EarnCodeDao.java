@@ -15,11 +15,10 @@
  */
 package org.kuali.hr.time.earncode.dao;
 
-import org.kuali.hr.lm.leavecode.LeaveCode;
-import org.kuali.hr.time.earncode.EarnCode;
-
 import java.sql.Date;
 import java.util.List;
+
+import org.kuali.hr.time.earncode.EarnCode;
 
 public interface EarnCodeDao {
 
@@ -34,8 +33,6 @@ public interface EarnCodeDao {
 	public int getEarnCodeCount(String earnCode);
 	
 	public int getNewerEarnCodeCount(String earnCode, Date effdt);
-	
-	public List<EarnCode> getEarnCodes(String leavePlan, Date asOfDate);
 
-    List<EarnCode> getEarnCodes(String earnCode, String ovtEarnCode, String descr, String leavePlan, String accrualCategory, Date fromEffdt, Date toEffdt, String active, String showHist);
+    List<EarnCode> getEarnCodes(String earnCode, String ovtEarnCode, String descr, Date fromEffdt, Date toEffdt, String active, String showHist);
 }

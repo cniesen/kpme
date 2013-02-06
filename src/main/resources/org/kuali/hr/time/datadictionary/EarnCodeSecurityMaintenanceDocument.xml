@@ -27,9 +27,9 @@
 	<bean id="EarnCodeSecurityMaintenanceDocument" parent="EarnCodeSecurityMaintenanceDocument-parentBean" />
 
 	<bean id="EarnCodeSecurityMaintenanceDocument-parentBean" abstract="true"
-		parent="MaintenanceDocumentEntry" p:businessObjectClass="org.kuali.hr.lm.earncodesec.EarnCodeSecurity"
-		p:businessRulesClass="org.kuali.hr.lm.earncodesec.validation.EarnCodeSecurityRule"
-		p:maintainableClass="org.kuali.hr.lm.earncodesec.service.EarnCodeSecurityMaintainableImpl"
+		parent="MaintenanceDocumentEntry" p:businessObjectClass="org.kuali.hr.earncodesec.EarnCodeSecurity"
+		p:businessRulesClass="org.kuali.hr.earncodesec.validation.EarnCodeSecurityRule"
+		p:maintainableClass="org.kuali.hr.earncodesec.service.EarnCodeSecurityMaintainableImpl"
 		p:documentAuthorizerClass="org.kuali.hr.time.authorization.DepartmentAdminAuthorizer">
 		<property name="maintainableSections">
 			<list>
@@ -42,7 +42,6 @@
 			</list>
 		</property>
 		<property name="documentTypeName" value="EarnCodeSecurityDocumentType" />
-        <property name="promptBeforeValidationClass" value="org.kuali.hr.lm.earncodesec.validation.EarnCodeSecurityEffectiveDatePrompt"/>
 	</bean>
 
 	<!-- Maintenance Section Definitions -->

@@ -15,24 +15,27 @@
  */
 package org.kuali.hr.paygrade;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.salgroup.SalGroup;
 
 public class PayGrade extends HrBusinessObject {
-
-	private static final long serialVersionUID = -5736949952127760566L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayGrade";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayGrade";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String hrPayGradeId;
 	private String payGrade;
 	private String description;
 	private String userPrincipalId;
-	private String salGroup;
-	private SalGroup salGroupObj;
+    private String salGroup;
+    private SalGroup salGroupObj;
 
-	public String getHrPayGradeId() {
+    public String getHrPayGradeId() {
 		return hrPayGradeId;
 	}
 
@@ -54,6 +57,30 @@ public class PayGrade extends HrBusinessObject {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	public void setUserPrincipalId(String userPrincipalId) {
@@ -78,14 +105,14 @@ public class PayGrade extends HrBusinessObject {
 	public void setId(String id) {
 		setHrPayGradeId(id);
 	}
-	
-	public String getSalGroup() {
-		return salGroup;
-	}
 
-	public void setSalGroup(String salGroup) {
-		this.salGroup = salGroup;
-	}
+    public String getSalGroup() {
+        return salGroup;
+    }
+
+    public void setSalGroup(String salGroup) {
+        this.salGroup = salGroup;
+    }
 
 	public SalGroup getSalGroupObj() {
 		return salGroupObj;

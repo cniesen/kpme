@@ -62,30 +62,30 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
     public void addNewLineToCollection(String collectionName) {
-		if (collectionName.equals("roles")) {
-        	TkRole aRole = (TkRole)newCollectionLines.get(collectionName );
+        if (collectionName.equals("roles")) {
+            TkRole aRole = (TkRole)newCollectionLines.get(collectionName );
             if ( aRole != null ) {
-            	if(!StringUtils.isEmpty(aRole.getPrincipalId()) && !StringUtils.isEmpty(aRole.getPositionNumber())) {
-            		GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
+                if(!StringUtils.isEmpty(aRole.getPrincipalId()) && !StringUtils.isEmpty(aRole.getPositionNumber())) {
+                    GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
             				"error.role.principalId.positonNumber", aRole.getPrincipalId());
-            		return;
-            	}
-            	if(aRole.getPrincipalId() != null && !aRole.getPrincipalId().isEmpty()) {
-            		Person aPerson = KimApiServiceLocator.getPersonService().getPerson(aRole.getPrincipalId());
-            		if(aPerson == null) {
-            			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
-                				"error.role.person.notexist", aRole.getPrincipalId());
-                		return;
-            		}
-            	}
-            	if(aRole.getPositionNumber() != null && !aRole.getPositionNumber().isEmpty()) {
-            		Position aPositon = TkServiceLocator.getPositionService().getPosition(aRole.getPositionNumber(), aRole.getEffectiveDate());
-            		if(aPositon == null) {
-            			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles", 
-                				"error.role.position.notexist", aRole.getPositionNumber());
-                		return;
-            		}
-            	}
+                    return;
+                }
+                if(aRole.getPrincipalId() != null && !aRole.getPrincipalId().isEmpty()) {
+                    Person aPerson = KimApiServiceLocator.getPersonService().getPerson(aRole.getPrincipalId());
+                    if(aPerson == null) {
+                        GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
+                                "error.role.person.notexist", aRole.getPrincipalId());
+                        return;
+                    }
+                }
+                if(aRole.getPositionNumber() != null && !aRole.getPositionNumber().isEmpty()) {
+                    Position aPositon = TkServiceLocator.getPositionService().getPositionByPositionNumber(aRole.getPositionNumber());
+                    if(aPositon == null) {
+                        GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"roles",
+                                "error.role.position.notexist", aRole.getPositionNumber());
+                        return;
+                    }
+                }
             }
         }
         super.addNewLineToCollection(collectionName);
@@ -210,5 +210,4 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         }
         super.processAfterNew(document, parameters);
     }
-    
 }

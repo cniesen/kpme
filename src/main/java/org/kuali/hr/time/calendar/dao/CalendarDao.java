@@ -34,6 +34,6 @@ public interface CalendarDao {
 	
 	public CalendarEntries getPreviousCalendarEntry(String tkCalendarId, Date beginDateCurrentCalendar);
 
-    public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime);
+    public List<Calendar> getCalendars(String calendarName, String flsaBeginDay, String flsaBeginTime);
 
 }

@@ -15,14 +15,12 @@
  */
 package org.kuali.hr.time.base.web;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.kuali.hr.job.Job;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.roles.TkRole;
 import org.kuali.rice.kim.api.identity.Person;
@@ -38,11 +36,7 @@ public class PersonInfoActionForm extends TkForm {
     private String serviceDate;
     private String totalFTE;
     
-    private List<AccrualCategory> accrualCategories = new ArrayList<AccrualCategory>();
-    private Map<String, BigDecimal> accrualCategoryRates = new HashMap<String, BigDecimal>();
-    private Map<String, String> accrualEarnIntervals = new HashMap<String, String>();
-    private Map<String, String> unitOfTime = new HashMap<String, String>();
-    
+       
     //KPME-1441
     private List<Job> jobs = new ArrayList<Job>();
     private Map<Long,List<Assignment>> jobNumberToListAssignments = new HashMap<Long,List<Assignment>>();
@@ -76,7 +70,6 @@ public class PersonInfoActionForm extends TkForm {
 	public void setServiceDate(String serviceDate) {
 		this.serviceDate = serviceDate;
 	}
-	
 
 	public Map<Long, List<Assignment>> getJobNumberToListAssignments() {
 		return jobNumberToListAssignments;
@@ -117,38 +110,6 @@ public class PersonInfoActionForm extends TkForm {
 
 	public void setWorkAreaToApproverPerson(Map<Long,List<Person>> workAreaToApproverPerson) {
 		this.workAreaToApproverPerson = workAreaToApproverPerson;
-	}
-
-	public List<AccrualCategory> getAccrualCategories() {
-		return accrualCategories;
-	}
-
-	public void setAccrualCategories(List<AccrualCategory> accrualCategories) {
-		this.accrualCategories = accrualCategories;
-	}
-	
-	public Map<String, BigDecimal> getAccrualCategoryRates() {
-		return accrualCategoryRates;
-	}
-	
-	public void setAccrualCategoryRates(Map<String, BigDecimal> accrualCategoryRates) {
-		this.accrualCategoryRates = accrualCategoryRates;
-	}
-	
-	public Map<String, String> getAccrualEarnIntervals() {
-		return accrualEarnIntervals;
-	}
-
-	public void setAccrualEarnIntervals(Map<String, String> accrualEarnIntervals) {
-		this.accrualEarnIntervals = accrualEarnIntervals;
-	}
-
-	public Map<String, String> getUnitOfTime() {
-		return unitOfTime;
-	}
-
-	public void setUnitOfTime(Map<String, String> unitOfTime) {
-		this.unitOfTime = unitOfTime;
 	}
 
 	public List<Job> getJobs() {

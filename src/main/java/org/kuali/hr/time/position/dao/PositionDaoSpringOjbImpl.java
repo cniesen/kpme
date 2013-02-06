@@ -19,21 +19,16 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
-import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements PositionDao {
-    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
-            .add("positionNumber")
-            .build();
 
     @Override
     public Position getPosition(String hrPositionId) {
@@ -46,18 +41,11 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 
 
     @Override
-    public Position getPosition(String positionNumber, Date effectiveDate) {
-        Criteria root = new Criteria();
+    public Position getPositionByPositionNumber(String hrPositionNbr) {
+        Criteria crit = new Criteria();
+        crit.addEqualTo("position_nbr", hrPositionNbr);
 
-        root.addEqualTo("positionNumber", positionNumber);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Position.class, effectiveDate, EQUAL_TO_FIELDS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, EQUAL_TO_FIELDS, false));
-
-        Criteria activeFilter = new Criteria(); // Inner Join For Activity
-        activeFilter.addEqualTo("active", true);
-        root.addAndCriteria(activeFilter);
-
-        Query query = QueryFactory.newQuery(Position.class, root);
+        Query query = QueryFactory.newQuery(Position.class, crit);
         return (Position) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
@@ -105,8 +93,19 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Position.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, EQUAL_TO_FIELDS, false));
+            Criteria effdt = new Criteria();
+            effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
+            effdt.addAndCriteria(effectiveDateFilter);
+            ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Position.class, effdt);
+            effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
+            root.addEqualTo("effectiveDate", effdtSubQuery);
+            
+            Criteria timestamp = new Criteria();
+            timestamp.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
+            timestamp.addAndCriteria(effectiveDateFilter);
+            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Position.class, timestamp);
+            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+            root.addEqualTo("timestamp", timestampSubQuery);
         }
         
         Query query = QueryFactory.newQuery(Position.class, root);

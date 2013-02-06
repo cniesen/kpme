@@ -26,7 +26,7 @@ import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public class Calendar extends PersistableBusinessObjectBase {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Calendar";
-    /**
+	/**
      *
      */
 	private static final long serialVersionUID = 1L;
@@ -37,7 +37,7 @@ public class Calendar extends PersistableBusinessObjectBase {
 
 	private String flsaBeginDay;
 	private Time flsaBeginTime;
-	private String calendarTypes;
+	private String calendarTypes = "Pay";
 	private int flsaBeginDayConstant = -1;
 
 	private List<CalendarEntries> calendarEntries = new ArrayList<CalendarEntries>();

@@ -35,14 +35,14 @@ public class ClockLocationRuleLookupTest extends KPMETestCase {
     	Assert.assertTrue("Could not find text 'Clock Location Rule Lookup' in page.", StringUtils.contains(page.asText(), "Clock Location Rule Lookup"));
     	HtmlForm form = page.getFormByName("KualiForm");
     	Assert.assertNotNull("Search form was missing from page.", form);
-    	
+
     	HtmlInput  input  = HtmlUnitUtil.getInputContainingText(form, "methodToCall.search");
     	Assert.assertNotNull("Could not locate search submit button", input);
     	page = (HtmlPage) input.click();
     	Assert.assertNotNull("Page not returned from click.", page);
     	HtmlUnitUtil.createTempFile(page);
     	Assert.assertTrue("Expected one result.", StringUtils.contains(page.asText(), "One item retrieved"));
-    	
+
     	page = HtmlUnitUtil.gotoPageAndLogin(baseUrl);
     	form = page.getFormByName("KualiForm");
     	Assert.assertNotNull("Search form was missing from page.", form);

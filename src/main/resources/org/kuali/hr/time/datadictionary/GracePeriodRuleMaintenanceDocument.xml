@@ -38,7 +38,6 @@
       </list>
     </property>
     <property name="documentTypeName" value="GracePeriodRuleDocumentType"/>
-    <property name="promptBeforeValidationClass" value="org.kuali.hr.time.graceperiod.rule.validation.GracePeriodRuleEffectiveDatePrompt"/>
   </bean>
 
   <!-- Maintenance Section Definitions -->

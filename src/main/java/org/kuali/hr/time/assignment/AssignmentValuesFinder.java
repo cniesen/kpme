@@ -50,19 +50,19 @@ public class AssignmentValuesFinder extends KeyValuesBase {
         // We need the current timesheet document id. depending on where this
         // was set up, we may need to look in two different places. Primarily
         // we look directly at the context's function.
-        
+
         String tdocId = TKContext.getCurrentTimesheetDocumentId();
         if (tdocId == null) {
             tdocId = TKContext.getHttpServletRequest().getParameter(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME);
         }
         if(tdocId == null){
-        	KualiForm kualiForm = (KualiForm)TKContext.getHttpServletRequest().getAttribute("KualiForm");
-        	if(kualiForm instanceof KualiMaintenanceForm){
-        		tdocId = ((KualiMaintenanceForm)kualiForm).getDocId();
-        	}
+            KualiForm kualiForm = (KualiForm)TKContext.getHttpServletRequest().getAttribute("KualiForm");
+            if(kualiForm instanceof KualiMaintenanceForm){
+                tdocId = ((KualiMaintenanceForm)kualiForm).getDocId();
+            }
         }
-        
-        
+
+
         if (tdocId != null) {
             TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(tdocId);
             Map<String,String> adMap = TkServiceLocator.getAssignmentService().getAssignmentDescriptions(tdoc, true); // Grab clock only assignments
@@ -70,7 +70,7 @@ public class AssignmentValuesFinder extends KeyValuesBase {
             for (Map.Entry entry : adMap.entrySet()) {
                 labels.add(new ConcreteKeyValue((String)entry.getKey(), (String)entry.getValue()));
             }
-        } 
+        }
 
         return labels;
     }

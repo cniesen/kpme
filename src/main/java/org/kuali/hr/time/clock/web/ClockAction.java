@@ -97,11 +97,9 @@ public class ClockAction extends TimesheetAction {
 
             // Check for presence of department lunch rule.
             Map<String, Boolean> assignmentDeptLunchRuleMap = new HashMap<String, Boolean>();
-            if (caf.getTimesheetDocument() != null) {
-                for (Assignment a : caf.getTimesheetDocument().getAssignments()) {
-                    String key = AssignmentDescriptionKey.getAssignmentKeyString(a);
-                    assignmentDeptLunchRuleMap.put(key, a.getDeptLunchRule() != null);
-                }
+            for (Assignment a : caf.getTimesheetDocument().getAssignments()) {
+                String key = AssignmentDescriptionKey.getAssignmentKeyString(a);
+                assignmentDeptLunchRuleMap.put(key, a.getDeptLunchRule() != null);
             }
             caf.setAssignmentLunchMap(assignmentDeptLunchRuleMap);
         }
@@ -110,11 +108,6 @@ public class ClockAction extends TimesheetAction {
             caf.setPrincipalId(principalId);
         }
 
-        //if there is no timesheet
-        if(caf.getTimesheetDocument() == null) {
-            caf.setErrorMessage("You do not currently have a timesheet. Clock action is not allowed.");
-            return mapping.findForward("basic");
-        }
         //if the timesheet document is enroute aor final, don't allow clock action
         if(caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.ENROUTE)
                 || caf.getTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
@@ -276,7 +269,7 @@ public class ClockAction extends TimesheetAction {
             referenceTimeBlocks.add(tb.copy());
         }
         //call persist method that only saves added/deleted/changed timeblocks
-        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, TKContext.getPrincipalId());
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks);
 
         ActionForward forward = mapping.findForward("et");
 
@@ -307,7 +300,7 @@ public class ClockAction extends TimesheetAction {
 			
 			TimesheetDocument tsDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocId);
 			
-			tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false, TKContext.getPrincipalId());
+			tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false);
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);

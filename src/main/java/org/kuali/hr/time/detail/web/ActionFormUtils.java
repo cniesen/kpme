@@ -16,7 +16,6 @@
 package org.kuali.hr.time.detail.web;
 
 import java.sql.Date;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -34,15 +33,10 @@ import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONValue;
-import org.kuali.hr.lm.accrual.AccrualCategory;
-import org.kuali.hr.lm.leaveblock.LeaveBlock;
-import org.kuali.hr.lm.leavecalendar.validation.LeaveCalendarValidationUtil;
-import org.kuali.hr.lm.leaveplan.LeavePlan;
+import org.kuali.hr.time.accrual.AccrualCategory;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -61,7 +55,7 @@ public class ActionFormUtils {
     }
 
     public static void addWarningTextFromEarnGroup(TimeDetailActionFormBase tdaf) throws Exception {
-        List<String> warningMessages = TkServiceLocator.getEarnCodeGroupService().warningTextFromEarnCodeGroupsOfDocument(tdaf.getTimesheetDocument());
+        List<String> warningMessages = TkServiceLocator.getEarnGroupService().warningTextFromEarnGroupsOfDocument(tdaf.getTimesheetDocument());
         addUniqueWarningsToForm(tdaf, warningMessages);
     }
 
@@ -100,30 +94,6 @@ public class ActionFormUtils {
 //        return JSONValue.toJSONString(jsonMappedList);
 //    }
 
-    public static Map<String, String> buildAssignmentStyleClassMap(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks) {
-    	Map<String, String> aMap = new HashMap<String, String>();
-        List<String> assignmentKeys = new ArrayList<String>();
-
-        for (TimeBlock tb : timeBlocks) {
-            if (!assignmentKeys.contains(tb.getAssignmentKey())) {
-                assignmentKeys.add(tb.getAssignmentKey());
-            }
-        }
-        for(LeaveBlock lb : leaveBlocks) {
-        	if (!assignmentKeys.contains(lb.getAssignmentKey())) {
-                assignmentKeys.add(lb.getAssignmentKey());
-            }
-        }
-        Collections.sort(assignmentKeys);
-
-        for (int i = 0; i < assignmentKeys.size(); i++) {
-            // pick a color from a five color palette
-            aMap.put(assignmentKeys.get(i), "assignment" + Integer.toString(i % 5));
-        }
-
-        return aMap;
-    }
-    
     public static Map<String, String> buildAssignmentStyleClassMap(List<TimeBlock> timeBlocks) {
         Map<String, String> aMap = new HashMap<String, String>();
         List<String> assignmentKeys = new ArrayList<String>();
@@ -256,37 +226,7 @@ public class ActionFormUtils {
 //        }
         return JSONValue.toJSONString(timeBlockList);
     }
-    
-    
-    /**
-     * This method will build the leave blocks JSON data structure needed for calendar
-     * manipulation and processing on the client side.
-     *
-     * @param leaveBlocks
-     * @return
-     */
-    public static String getLeaveBlocksJson(List<LeaveBlock> leaveBlocks) {
-    	if (CollectionUtils.isEmpty(leaveBlocks)) {
-            return "";
-        }
-        List<Map<String, Object>> leaveBlockList = new LinkedList<Map<String, Object>>();
-        for (LeaveBlock leaveBlock : leaveBlocks) {
-        	Map<String, Object> leaveBlockMap = new LinkedHashMap<String, Object>();
-        	leaveBlockMap.put("title", leaveBlock.getAssignmentTitle());
-        	leaveBlockMap.put("assignment", leaveBlock.getAssignmentKey());
-        	leaveBlockMap.put("earnCode", leaveBlock.getEarnCode());
-        	leaveBlockMap.put("lmLeaveBlockId", leaveBlock.getLmLeaveBlockId());
-        	leaveBlockMap.put("leaveAmount", leaveBlock.getLeaveAmount().toString());
-        	DateTime leaveDate = new DateTime(leaveBlock.getLeaveDate());
-        	leaveBlockMap.put("leaveDate", leaveDate.toString(TkConstants.DT_BASIC_DATE_FORMAT));
-        	leaveBlockMap.put("id", leaveBlock.getLmLeaveBlockId());
-        	
-        	
-        	leaveBlockList.add(leaveBlockMap);
-        }
-    	return JSONValue.toJSONString(leaveBlockList);
-    }
-    
+
     public static Map<String, String> getPayPeriodsMap(List<CalendarEntries> payPeriods) {
     	// use linked map to keep the order of the pay periods
     	Map<String, String> pMap = Collections.synchronizedMap(new LinkedHashMap<String, String>());
@@ -295,7 +235,7 @@ public class ActionFormUtils {
         }
     	payPeriods.removeAll(Collections.singletonList(null));
     	Collections.sort(payPeriods);  // sort the pay period list by getBeginPeriodDate
-    	Collections.reverse(payPeriods);  // newest on top
+    	Collections.reverse(payPeriods); 	// newest on top
     	SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
         for (CalendarEntries pce : payPeriods) {
         	if(pce != null && pce.getHrCalendarEntriesId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null) {
@@ -319,7 +259,7 @@ public class ActionFormUtils {
     	}
     	return false;
     }
-     
+    
     public static String getUnitOfTimeForEarnCode(EarnCode earnCode) {
     	AccrualCategory acObj = null;
     	if(earnCode.getAccrualCategory() != null) {
@@ -327,35 +267,6 @@ public class ActionFormUtils {
     	}
     	String unitTime = (acObj!= null ? acObj.getUnitOfTime() : earnCode.getRecordMethod()) ;
     	return unitTime;
-    }
-    
-    public static int getPlanningMonthsForEmployee(String principalid) {
-		int plannningMonths = 0;
-		PrincipalHRAttributes principalHRAttributes = TkServiceLocator
-				.getPrincipalHRAttributeService().getPrincipalCalendar(
-						principalid, TKUtils.getCurrentDate());
-		if (principalHRAttributes != null
-				&& principalHRAttributes.getLeavePlan() != null) {
-			LeavePlan lp = TkServiceLocator.getLeavePlanService()
-					.getLeavePlan(principalHRAttributes.getLeavePlan(),
-							TKUtils.getCurrentDate());
-			if (lp != null && lp.getPlanningMonths() != null) {
-				plannningMonths = Integer.parseInt(lp.getPlanningMonths());
-			}
-		}
-		return plannningMonths;
-    }
-    
-    public static List<CalendarEntries> getAllCalendarEntriesForYear(List<CalendarEntries> entries, String year) {
-    	List<CalendarEntries> results = new ArrayList<CalendarEntries>();
-    	DateFormat df = new SimpleDateFormat("yyyy");
-    	 
-    	for(CalendarEntries ce : entries) {
-    		if(df.format(ce.getBeginPeriodDate()).equals(year)) {
-    			results.add(ce);
-    		}
-    	}
-    	return results;
     }
     
 }

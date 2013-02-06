@@ -22,40 +22,43 @@ import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public abstract class HrBusinessObject extends PersistableBusinessObjectBase{
 
-	private static final long serialVersionUID = -5743717258128864335L;
-	
-	private Date effectiveDate;
-	private boolean active;
-	private Timestamp timestamp;
-	
-	public abstract String getId();
-	
-	public abstract void setId(String id);
-	
-	protected abstract String getUniqueKey();
-	
-	public Date getEffectiveDate() {
-		return effectiveDate;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public void setEffectiveDate(Date effectiveDate) {
-		this.effectiveDate = effectiveDate;
-	}
 
-	public boolean isActive() {
-		return active;
-	}
+    protected abstract String getUniqueKey();
+    protected Date effectiveDate;
+    protected boolean active;
+    protected Timestamp timestamp;
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
+    public abstract String getId();
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
+    public abstract void setId(String id);
 
-	public Timestamp getTimestamp() {
-		return timestamp;
-	}
+    public Date getEffectiveDate() {
+        return effectiveDate;
+    }
+
+    public void setEffectiveDate(Date effectiveDate) {
+        this.effectiveDate = effectiveDate;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
 
 }

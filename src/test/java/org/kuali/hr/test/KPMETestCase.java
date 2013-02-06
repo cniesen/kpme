@@ -60,7 +60,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 public abstract class KPMETestCase extends RiceInternalSuiteDataTestCase {
 
 	private static final String FILE_PREFIX = System.getProperty("user.dir") + "/src/main/config/workflow/";
-
+	
 	private static final String RELATIVE_WEBAPP_ROOT = "/src/main/webapp";
 	
 	private TransactionalLifecycle transactionalLifecycle;

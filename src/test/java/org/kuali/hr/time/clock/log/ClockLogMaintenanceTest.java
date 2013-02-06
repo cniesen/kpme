@@ -27,8 +27,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class ClockLogMaintenanceTest extends KPMETestCase{
 	private static Long TEST_CODE_INVALID_TASK_ID =9999L;
 	private static Long TEST_CODE_INVALID_WORK_AREA_ID =9999L;
-	private static Long clockLogId = 1L;	
-	
+	private static Long clockLogId = 1L;
+
 	@Test
 	public void testClockLogMaint() throws Exception {
 		HtmlPage clockLogLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.CLOCK_LOG_MAINT_URL);
@@ -37,7 +37,7 @@ public class ClockLogMaintenanceTest extends KPMETestCase{
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(clockLogLookUp, "edit",clockLogId.toString());		
 		Assert.assertTrue("Maintenance Page contains test ClockLog",maintPage.asText().contains("TEST"));		
 	}
-	
+
 	@Test
 	public void testClockLogMaintForErrorMessages() throws Exception {
 		HtmlPage clockLogLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.CLOCK_LOG_MAINT_URL);
@@ -45,7 +45,7 @@ public class ClockLogMaintenanceTest extends KPMETestCase{
 		Assert.assertTrue("Page contains test ClockLog", clockLogLookUp.asText().contains("TEST"));		
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(clockLogLookUp, "edit",clockLogId.toString());		
 		Assert.assertTrue("Maintenance Page contains test ClockLog",maintPage.asText().contains("TEST"));
-		
+
 		HtmlInput inputForDescription = HtmlUnitUtil.getInputContainingText(
 				maintPage, "* Document Description");
 		inputForDescription.setValueAttribute("Test_Description");
@@ -60,16 +60,16 @@ public class ClockLogMaintenanceTest extends KPMETestCase{
 						"The specified Workarea '"
 								+ TEST_CODE_INVALID_WORK_AREA_ID
 								+ "' does not exist."));
-		
+
 		HtmlUnitUtil.createTempFile(resultantPageAfterEdit);
-		
+
 		Assert.assertTrue("Maintenance Page contains test Task ",
 				resultantPageAfterEdit.asText().contains(
 						"The specified Task '"
 								+ TEST_CODE_INVALID_TASK_ID
 								+ "' does not exist."));
-		
-		
+
+
 	}
-	
+
 }

@@ -74,12 +74,7 @@ public class TkTimeBlockAggregate {
 		this.payCalendarEntry = payCalendarEntry;
 		this.payCalendar = payCalendar;
 
-        List<Interval> dayIntervals = null;
-        if (useUserTimeZone) {
-            dayIntervals = TKUtils.getDaySpanForCalendarEntry(payCalendarEntry);
-        } else {
-            dayIntervals = TKUtils.getDaySpanForCalendarEntry(payCalendarEntry, TKUtils.getSystemDateTimeZone());
-        }
+		List<Interval> dayIntervals = TKUtils.getDaySpanForCalendarEntry(payCalendarEntry);
 		for(Interval dayInt : dayIntervals){
 			List<TimeBlock> dayTimeBlocks = new ArrayList<TimeBlock>();
 			for(TimeBlock timeBlock : timeBlocks){

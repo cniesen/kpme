@@ -38,15 +38,20 @@
         <ref bean="TimeBlock-workArea" />
         <ref bean="TimeBlock-task" />
         <ref bean="TimeBlock-earnCode" />
-        <ref bean="TimeBlock-beginTimestamp" />
-        <ref bean="TimeBlock-endTimestamp" />
-        <ref bean="TimeBlock-beginDate" />
+        <ref bean="TimeBlock-beginTimestamp"/>
+        <ref bean="TimeBlock-endTimestamp"/>
         <ref bean="TimeBlock-clockLogCreated" />
         <ref bean="TimeBlock-hours" />
         <ref bean="TimeBlock-amount" />
-        <ref bean="TimeBlock-timestamp" />
+        <ref bean="TimeBlock-timestamp"/>
         <ref bean="TimeBlock-userPrincipalId"/>
         <ref bean="TimeBlock-principalId"/>
+        <ref bean="TimeBlock-beginTimestampTimezone"/>
+        <ref bean="TimeBlock-endTimestampTimezone"/>
+        <ref bean="TimeBlock-clockLogBeginId"/>
+        <ref bean="TimeBlock-clockLogEndId"/>
+        <ref bean="TimeBlock-overtimePref"/>
+        <ref bean="TimeBlock-lunchDeleted"/>
         <ref bean="TimeBlock-timesheetDocumentHeader.documentStatus" />
        </list>
     </property>
@@ -132,7 +137,7 @@
     <property name="name" value="workArea"/>
     <property name="label" value="Work Area"/>
   </bean>
-  
+
   <bean id="TimeBlock-task" parent="TimeBlock-task-parentBean"/>
   <bean id="TimeBlock-task-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Task"/>
@@ -171,7 +176,7 @@
     <property name="description" value="Earn Code" />
   </bean>  
   
-   <bean id="TimeBlock-beginTimestamp" parent="TimeBlock-beginTimestamp-parentBean" />
+   <bean id="TimeBlock-beginTimestamp" parent="TimeBlock-beginTimestamp-parentBean"/>
    <bean id="TimeBlock-beginTimestamp-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Begin Time" />
@@ -185,7 +190,7 @@
 		<property name="label" value=" Begin Time" />
 	</bean>      
 	
-   <bean id="TimeBlock-endTimestamp" parent="TimeBlock-endTimestamp-parentBean" />
+   <bean id="TimeBlock-endTimestamp" parent="TimeBlock-endTimestamp-parentBean"/>
    <bean id="TimeBlock-endTimestamp-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="End Time" />
@@ -199,7 +204,7 @@
 		<property name="label" value="End Time" />
 	</bean> 	  
 
-	<bean id="TimeBlock-timestamp" parent="TimeBlock-timestamp-parentBean" />
+	<bean id="TimeBlock-timestamp" parent="TimeBlock-timestamp-parentBean"/>
 	<bean id="TimeBlock-timestamp-parentBean" abstract="true"
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Timestamp" />
@@ -212,21 +217,6 @@
 		<property name="name" value="timestamp" />
 		<property name="label" value="Time Stamp" />
 	</bean>  
-	
-	<bean id="TimeBlock-beginDate" parent="TimeBlock-beginDate-parentBean" />
-	<bean id="TimeBlock-beginDate-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="shortLabel" value="Date" />
-		<property name="maxLength" value="10" />
-		<property name="validationPattern">
-			<bean parent="DateValidationPattern" />
-		</property>
-		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
-		</property>
-		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
-		<property name="name" value="beginDate" />
-		<property name="label" value="Date" />
-	</bean> 
 	
 	<bean id="TimeBlock-clockLogCreated" parent="TimeBlock-clockLogCreated-parentBean" />
 	<bean id="TimeBlock-clockLogCreated-parentBean" abstract="true"
@@ -299,6 +289,90 @@
     <property name="label" value="Amount" />
     <property name="description" value="amount" />
   </bean> 
+  
+    <bean id="TimeBlock-beginTimestampTimezone" parent="TimeBlock-beginTimestampTimezone-parentBean"/>
+    <bean id="TimeBlock-beginTimestampTimezone-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="maxLength" value="50"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="50"/>
+        </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="true"/>
+            </bean>
+        </property>
+        <property name="name" value="beginTimestampTimezone"/>
+        <property name="label" value="Begin Timestamp Timezone"/>
+    </bean>
+
+    <bean id="TimeBlock-endTimestampTimezone" parent="TimeBlock-endTimestampTimezone-parentBean"/>
+    <bean id="TimeBlock-endTimestampTimezone-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="maxLength" value="50"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="50"/>
+        </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="true"/>
+            </bean>
+        </property>
+        <property name="name" value="endTimestampTimezone"/>
+        <property name="label" value="End Timestamp Timezone"/>
+    </bean>
+
+    <bean id="TimeBlock-clockLogBeginId" parent="TimeBlock-clockLogBeginId-parentBean"/>
+    <bean id="TimeBlock-clockLogBeginId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="forceUppercase" value="true"/>
+
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="20"/>
+        </property>
+
+        <property name="name" value="clockLogBeginId"/>
+        <property name="label" value="Clock Log Begin Id"/>
+        <property name="description" value="Clock Log Begin Id"/>
+    </bean>
+
+    <bean id="TimeBlock-clockLogEndId" parent="TimeBlock-clockLogEndId-parentBean"/>
+    <bean id="TimeBlock-clockLogEndId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="forceUppercase" value="true"/>
+
+        <property name="maxLength" value="60"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="20"/>
+        </property>
+
+        <property name="name" value="clockLogEndId"/>
+        <property name="label" value="Clock Log End Id"/>
+        <property name="description" value="Clock Log End Id"/>
+    </bean>
+
+    <bean id="TimeBlock-lunchDeleted" parent="TimeBlock-lunchDeleted-parentBean"/>
+    <bean id="TimeBlock-lunchDeleted-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Lunch Deleted"/>
+        <property name="control">
+            <bean parent="CheckboxControlDefinition"/>
+        </property>
+        <property name="name" value="lunchDeleted"/>
+        <property name="label" value="Lunch Deleted"/>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+    </bean>
+
+    <bean id="TimeBlock-overtimePref" parent="TimeBlock-overtimePref-parentBean"/>
+    <bean id="TimeBlock-overtimePref-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="forceUppercase" value="true"/>
+
+        <property name="maxLength" value="5"/>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="5"/>
+        </property>
+
+        <property name="name" value="overtimePref"/>
+        <property name="label" value="overtimePref"/>
+        <property name="description" value="overtimePref"/>
+    </bean>
   
    <bean id="TimeBlock-timesheetDocumentHeader.documentStatus" parent="TimeBlock-timesheetDocumentHeader.documentStatus-parentBean" />
 	<bean id="TimeBlock-timesheetDocumentHeader.documentStatus-parentBean" abstract="true" parent="TimesheetDocumentHeader-documentStatus">
@@ -381,7 +455,6 @@
       	<bean parent="FieldDefinition" p:attributeName="principalId" />
       	<bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
       	<bean parent="FieldDefinition" p:attributeName="timesheetDocumentHeader.documentStatus" />
-      	<bean parent="FieldDefinition" p:attributeName="beginDate"/>
       </list>
     </property>
     <property name="resultFields" >

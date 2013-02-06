@@ -18,16 +18,28 @@ package org.kuali.hr.time.salgroup;
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+
 public class SalGroup extends HrBusinessObject {
-
-	private static final long serialVersionUID = 8169672203236887348L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "SalGroup";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "SalGroup";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String hrSalGroupId;
 	private String hrSalGroup;
 	private String descr;
 	private boolean history;
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
+	}
 
 	public boolean isHistory() {
 		return history;
@@ -35,6 +47,22 @@ public class SalGroup extends HrBusinessObject {
 
 	public void setHistory(boolean history) {
 		this.history = history;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public void setTimestamp(Timestamp timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public Timestamp getTimestamp() {
+		return timestamp;
 	}
 
 	public String getHrSalGroupId() {

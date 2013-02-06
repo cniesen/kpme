@@ -21,7 +21,7 @@ import org.kuali.hr.test.KPMETestCase;
 public class ShiftDifferentialRuleServiceTest extends KPMETestCase {
 
 	public static final String USER_PRINCIPAL_ID = "admin";
-	
+
 	@Override
 	public void tearDown() throws Exception {
 		super.tearDown();
@@ -31,5 +31,5 @@ public class ShiftDifferentialRuleServiceTest extends KPMETestCase {
 	public void setUp() throws Exception {
 		super.setUp();
 	}
-	
+
 }

@@ -55,8 +55,8 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
     public TimesheetDocumentHeader getTimesheetDocumentHeader(String principalId, Date payBeginDate, Date payEndDate) {
         Criteria crit = new Criteria();
         crit.addEqualTo("principalId", principalId);
-        crit.addEqualTo("endDate", payEndDate);
-        crit.addEqualTo("beginDate", payBeginDate);
+        crit.addEqualTo("payEndDate", payEndDate);
+        crit.addEqualTo("payBeginDate", payBeginDate);
 
         return (TimesheetDocumentHeader) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(TimesheetDocumentHeader.class, crit));
     }
@@ -69,7 +69,7 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
         Criteria crit = new Criteria();
         crit.addEqualTo("principalId", principalId);
         // the pay begin date is the end date of the previous pay period
-        crit.addEqualTo("endDate", payBeginDate);
+        crit.addEqualTo("payEndDate", payBeginDate);
         QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
         query.addOrderByDescending("documentId");
         query.setStartAtIndex(0);
@@ -83,12 +83,27 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
         Criteria crit = new Criteria();
         crit.addEqualTo("principalId", principalId);
         // the pay end date is the begin date of the next pay period
-        crit.addEqualTo("beginDate", payEndDate);
+        crit.addEqualTo("payBeginDate", payEndDate);
         QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
         query.setStartAtIndex(0);
         query.setEndAtIndex(1);
 
         return (TimesheetDocumentHeader) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+    }
+
+    @Override
+    public List<TimesheetDocumentHeader> getDocumentHeaders(Date payBeginDate) {
+        Criteria crit = new Criteria();
+        List<TimesheetDocumentHeader> lstDocumentHeaders = new ArrayList<TimesheetDocumentHeader>();
+
+        crit.addEqualTo("payBeginDate", payBeginDate);
+        QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        if (c != null) {
+            lstDocumentHeaders.addAll(c);
+        }
+        
+        return lstDocumentHeaders;
     }
     
     @Override
@@ -96,8 +111,8 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
         Criteria crit = new Criteria();
         List<TimesheetDocumentHeader> lstDocumentHeaders = new ArrayList<TimesheetDocumentHeader>();
         
-        crit.addEqualTo("endDate", payEndDate);
-        crit.addEqualTo("beginDate", payBeginDate);
+        crit.addEqualTo("payEndDate", payEndDate);
+        crit.addEqualTo("payBeginDate", payBeginDate);
         QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
         if (c != null) {
@@ -131,8 +146,8 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
 	    	 String nextYear = Integer.toString((Integer.parseInt(year) + 1));
 	    	 java.util.Date nYear = df.parse(nextYear);
 	    	 
-			crit.addGreaterOrEqualThan("beginDate", cYear);
-		    crit.addLessThan("beginDate", nYear );
+			crit.addGreaterOrEqualThan("payBeginDate", cYear);
+		    crit.addLessThan("payBeginDate", nYear );
 		    QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
 		    Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
 		    if (c != null) {
@@ -148,8 +163,8 @@ public class TimesheetDocumentHeaderDaoSpringOjbImpl extends PlatformAwareDaoBas
    public TimesheetDocumentHeader getDocumentHeaderForDate(String principalId, Date asOfDate) {
 	   Criteria crit = new Criteria();
        crit.addEqualTo("principalId", principalId);
-       crit.addLessOrEqualThan("beginDate", asOfDate);
-       crit.addGreaterOrEqualThan("endDate", asOfDate);
+       crit.addLessOrEqualThan("payBeginDate", asOfDate);
+       crit.addGreaterOrEqualThan("payEndDate", asOfDate);
        
        QueryByCriteria query = new QueryByCriteria(TimesheetDocumentHeader.class, crit);
 

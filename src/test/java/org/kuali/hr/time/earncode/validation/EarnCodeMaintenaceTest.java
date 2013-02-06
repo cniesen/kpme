@@ -15,10 +15,10 @@
  */
 package org.kuali.hr.time.earncode.validation;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.util.List;
-
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -30,16 +30,15 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.List;
 
 public class EarnCodeMaintenaceTest extends KPMETestCase {
 	private static final java.sql.Date TEST_DATE = new Date((new DateTime(2009, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone())).getMillis());
 	private static final String EARN_CODE = "RGN";
 	private static String hrEarnCodeId;
-	
+
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
@@ -48,18 +47,10 @@ public class EarnCodeMaintenaceTest extends KPMETestCase {
 		earnCode.setEarnCode(EARN_CODE);
 		earnCode.setEffectiveDate(TEST_DATE);
 		earnCode.setRecordMethod("T");
-		earnCode.setFractionalTimeAllowed("99");
-		earnCode.setRoundingOption("T");
-		earnCode.setAffectPay("Y");
-		earnCode.setWorkmansComp("Y");
-		earnCode.setEligibleForAccrual("Y");
-		earnCode.setAllowScheduledLeave("Y");
-		earnCode.setFmla("Y");
-		earnCode.setAllowNegativeAccrualBalance("Y");
 		earnCode.setDescription("RGN Test");
 		earnCode.setOvtEarnCode(false);
 		earnCode.setInflateMinHours(BigDecimal.ZERO);
-		earnCode.setInflateFactor(BigDecimal.ZERO);		
+		earnCode.setInflateFactor(BigDecimal.ZERO);
 
 		KRADServiceLocator.getBusinessObjectService().save(earnCode);	
 		hrEarnCodeId = earnCode.getHrEarnCodeId();
@@ -71,11 +62,11 @@ public class EarnCodeMaintenaceTest extends KPMETestCase {
 		KRADServiceLocator.getBusinessObjectService().delete(earnCodeObj);				
 		super.tearDown();
 	}
-	
-	 
+
+
 	@Test
 	public void testEditExistingEarnCode() throws Exception {
-		HtmlPage earnCodeLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.EARN_CODE_MAINT_URL);		
+		HtmlPage earnCodeLookUp = HtmlUnitUtil.gotoPageAndLogin(TkTestConstants.Urls.EARN_CODE_MAINT_URL);
 		List<HtmlElement> lstElements = earnCodeLookUp.getElementsByIdAndOrName("history");
 		for(HtmlElement e : lstElements) {
 			HtmlRadioButtonInput radioButton = (HtmlRadioButtonInput) e;
@@ -92,11 +83,8 @@ public class EarnCodeMaintenaceTest extends KPMETestCase {
 		text.setValueAttribute("test");
 		HtmlElement element = maintPage.getElementByName("methodToCall.route");
         HtmlPage finalPage = element.click();
-
-        Assert.assertTrue("Maintenance Page doesn't return warning about later effective date", finalPage.asText().contains("A record for this object exists with a later effective date"));
-        HtmlElement yesButton = finalPage.getElementByName("methodToCall.processAnswer.button0");
-        finalPage = yesButton.click();
-        Assert.assertTrue("Maintenance Page contains error messages", finalPage.asText().contains("There is a newer version of this Earn Code."));
+        
+        Assert.assertTrue("Maintenance Page contains error messages", finalPage.asText().contains("There is a newer version of this Earn Code."));	
 	}
-	
+
 }

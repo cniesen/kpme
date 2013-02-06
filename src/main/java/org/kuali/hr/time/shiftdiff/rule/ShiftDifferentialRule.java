@@ -16,6 +16,7 @@
 package org.kuali.hr.time.shiftdiff.rule;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Time;
 
 import org.kuali.hr.core.KPMEConstants;
@@ -23,16 +24,16 @@ import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.earncode.EarnCode;
-import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.rule.TkRule;
 import org.kuali.hr.time.salgroup.SalGroup;
 
 public class ShiftDifferentialRule extends TkRule {
-
-	private static final long serialVersionUID = -3990672795815968915L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "ShiftDifferentialRule";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "ShiftDifferentialRule";
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private String tkShiftDiffRuleId;
 	private String location;
 	private String hrSalGroup;
@@ -61,7 +62,7 @@ public class ShiftDifferentialRule extends TkRule {
 	
 	private EarnCode earnCodeObj;
 	private SalGroup salGroupObj;
-    private EarnCodeGroup fromEarnGroupObj;
+    private EarnGroup fromEarnGroupObj;
     private Calendar payCalendar;
     private Location locationObj;
     private PayGrade payGradeObj;
@@ -88,6 +89,14 @@ public class ShiftDifferentialRule extends TkRule {
 
 	public void setPayGrade(String payGrade) {
 		this.payGrade = payGrade;
+	}
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
 
 	public String getEarnCode() {
@@ -127,6 +136,14 @@ public class ShiftDifferentialRule extends TkRule {
 
 	public void setUserPrincipalId(String userPrincipalId) {
 		this.userPrincipalId = userPrincipalId;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public String getHrSalGroup() {
@@ -241,11 +258,11 @@ public class ShiftDifferentialRule extends TkRule {
 		this.salGroupObj = salGroupObj;
 	}
 
-    public EarnCodeGroup getFromEarnGroupObj() {
+    public EarnGroup getFromEarnGroupObj() {
         return fromEarnGroupObj;
     }
 
-    public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
+    public void setFromEarnGroupObj(EarnGroup fromEarnGroupObj) {
         this.fromEarnGroupObj = fromEarnGroupObj;
     }
 

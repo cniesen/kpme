@@ -21,10 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.department.Department;
@@ -77,12 +74,12 @@ public class TkUserRoles implements UserRoles {
 
     @Override
     public boolean isLocationAdmin() {
-        return CollectionUtils.isNotEmpty(getOrgAdminCharts());
+        return getOrgAdminCharts().size() > 0;
     }
 
     @Override
     public boolean isDepartmentAdmin() {
-        return CollectionUtils.isNotEmpty(getOrgAdminDepartments());
+        return getOrgAdminDepartments().size() > 0;
     }
 
     public String getPrincipalId() {
@@ -143,7 +140,7 @@ public class TkUserRoles implements UserRoles {
     }
 
     public boolean isDeptViewOnly() {
-        return MapUtils.isNotEmpty(deptViewOnlyRoles);
+        return deptViewOnlyRoles.size() > 0;
     }
 
     @Override
@@ -152,11 +149,11 @@ public class TkUserRoles implements UserRoles {
     }
     
 	public boolean isReviewer() {
-		return CollectionUtils.isNotEmpty(TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getReviewerWorkAreas());
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getReviewerWorkAreas().size() > 0;
 	}
 
 	public boolean isApprover() {
-		return CollectionUtils.isNotEmpty(TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas());
+		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().size() > 0;
 	}
 
     /**
@@ -212,26 +209,26 @@ public class TkUserRoles implements UserRoles {
 
     @Override
     public boolean isActiveEmployee() {
-        return CollectionUtils.isNotEmpty(this.activeAssignmentIds);
+        return this.activeAssignmentIds.size() > 0;
     }
 
     @Override
     public boolean isTimesheetApprover() {
-        return MapUtils.isNotEmpty(this.approverRoles) || MapUtils.isNotEmpty(this.approverDelegateRoles);
+        return this.isSystemAdmin() || this.approverRoles.size() > 0 || this.approverDelegateRoles.size() > 0 || this.orgAdminRolesDept.size() > 0;
     }
 
     public boolean isTimesheetReviewer() {
-        return CollectionUtils.isNotEmpty(this.getReviewerWorkAreas());
+        return this.getReviewerWorkAreas().size() > 0;
     }
 
     @Override
     public boolean isAnyApproverActive() {
-        return MapUtils.isNotEmpty(this.approverRoles) || MapUtils.isNotEmpty(this.approverDelegateRoles);
+        return this.approverRoles.size() > 0 || this.approverDelegateRoles.size() > 0;
     }
 
-    //Todo: rename method.  this is also used for leave calendar
+
     @Override
-    public boolean isApproverForTimesheet(CalendarDocumentContract doc) {
+    public boolean isApproverForTimesheet(TimesheetDocument doc) {
         boolean approver = false;
 
         if (this.isSystemAdmin()) {
@@ -248,7 +245,6 @@ public class TkUserRoles implements UserRoles {
         return approver;
     }
 
-    //Todo: rename method.  this is also used for leave calendar
     @Override
     public boolean isApproverForTimesheet(String docId) {
         boolean approver = false;
@@ -261,7 +257,7 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean isDocumentWritable(CalendarDocumentContract document) {
+    public boolean isDocumentWritable(TimesheetDocument document) {
         boolean writable = false;
 
         // Quick escape.
@@ -271,7 +267,7 @@ public class TkUserRoles implements UserRoles {
         // Sysadmin
         writable = this.isSystemAdmin();
         // Owner (and not enroute/final)
-        writable |= (StringUtils.equals(this.principalId, document.getDocumentHeader().getPrincipalId())
+        writable |= (StringUtils.equals(this.principalId, document.getPrincipalId())
                 && (StringUtils.equals(TkConstants.ROUTE_STATUS.INITIATED, document.getDocumentHeader().getDocumentStatus()) ||
                 StringUtils.equals(TkConstants.ROUTE_STATUS.SAVED, document.getDocumentHeader().getDocumentStatus()) ||
                 (StringUtils.equals(TkConstants.ROUTE_STATUS.ENROUTE, document.getDocumentHeader().getDocumentStatus()))));
@@ -312,7 +308,7 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean isDocumentReadable(CalendarDocumentContract document) {
+    public boolean isDocumentReadable(TimesheetDocument document) {
         boolean readable = false;
 
         // Quick escape.
@@ -322,7 +318,7 @@ public class TkUserRoles implements UserRoles {
         // Sysadmin
         readable = this.isSystemAdmin();
         // Owner
-        readable |= StringUtils.equals(this.principalId, document.getDocumentHeader().getPrincipalId());
+        readable |= StringUtils.equals(this.principalId, document.getPrincipalId());
         // Global VO
         readable |= this.isGlobalViewOnly();
 
@@ -346,7 +342,7 @@ public class TkUserRoles implements UserRoles {
         return readable;
     }
 
-    private boolean isLocationAdmin(CalendarDocumentContract doc) {
+    private boolean isLocationAdmin(TimesheetDocument doc) {
         for (Assignment assign : doc.getAssignments()) {
             String location = assign.getJob().getLocation();
             return this.orgAdminRolesChart.containsKey(location);
@@ -354,7 +350,7 @@ public class TkUserRoles implements UserRoles {
         return false;
     }
 
-    private boolean isDepartmentAdmin(CalendarDocumentContract doc) {
+    private boolean isDepartmentAdmin(TimesheetDocument doc) {
         for (Assignment assign : doc.getAssignments()) {
             String dept = assign.getDept();
             return this.orgAdminRolesDept.containsKey(dept);
@@ -363,8 +359,8 @@ public class TkUserRoles implements UserRoles {
     }
 
     @Override
-    public boolean canSubmitTimesheet(CalendarDocumentContract doc) {
-        if (StringUtils.equals(TKContext.getPrincipalId(), doc.getDocumentHeader().getPrincipalId())) {
+    public boolean canSubmitTimesheet(TimesheetDocument doc) {
+        if (StringUtils.equals(TKContext.getPrincipalId(), doc.getPrincipalId())) {
             return true;
         }
 
@@ -389,9 +385,8 @@ public class TkUserRoles implements UserRoles {
     public boolean isApproverForPerson(String principalId) {
         List<Assignment> lstAssignment = TkServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getCurrentDate());
 
-        Set<Long> workAreas = getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
         for (Assignment assignment : lstAssignment) {
-            if (workAreas.contains(assignment.getWorkArea())) {
+            if (getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas().contains(assignment.getWorkArea())) {
                 return true;
             }
         }
@@ -427,7 +422,7 @@ public class TkUserRoles implements UserRoles {
     public boolean isLocationAdminForPerson(String principalId) {
         List<TkRole> roles = TkServiceLocator.getTkRoleService().getRoles(principalId, TKUtils.getCurrentDate());
 
-        if (CollectionUtils.isNotEmpty(roles)) {
+        if (roles.size() > 0) {
             for (TkRole role : roles) {
                 if (this.getOrgAdminCharts().contains(role.getChart())) {
                     return true;

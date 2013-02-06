@@ -16,22 +16,23 @@
 package org.kuali.hr.time.accrual;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 
 import org.kuali.hr.core.KPMEConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.impl.identity.PersonImpl;
 
 public class TimeOffAccrual extends HrBusinessObject {
-
-	private static final long serialVersionUID = -3882880617812198775L;
-
-	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeOffAccrual";
-
+    public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "TimeOffAccrual";
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String lmAccrualId;
 	private String principalId;
 	private String accrualCategory;
+	private Date effectiveDate;
 	private BigDecimal yearlyCarryover = new BigDecimal(0);
 	private BigDecimal hoursAccrued = new BigDecimal(0);
 	private BigDecimal hoursTaken = new BigDecimal(0);
@@ -57,6 +58,14 @@ public class TimeOffAccrual extends HrBusinessObject {
 
 	public void setAccrualCategory(String accrualCategory) {
 		this.accrualCategory = accrualCategory;
+	}
+
+	public Date getEffectiveDate() {
+		return effectiveDate;
+	}
+
+	public void setEffectiveDate(Date effectiveDate) {
+		this.effectiveDate = effectiveDate;
 	}
 
 	public BigDecimal getHoursAccrued() {
