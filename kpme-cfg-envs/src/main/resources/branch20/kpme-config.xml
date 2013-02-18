@@ -15,7 +15,7 @@
     <param name="server.datasource.password">@kr.dataSource.password@</param>
 
     <!-- Embedded Mode Server URL -->
-    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>
+    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>    
     <param name="kim.mode">EMBEDDED</param>
     <param name="kcb.mode">EMBEDDED</param>
     <param name="kew.mode">EMBEDDED</param>
@@ -40,7 +40,9 @@
     <param name="keystore.password">r1c3pw</param>
     <param name="encryption.key">7IC64w6kAAAA</param>
     
-    <param name="tk.batch.master.ip">127.0.0.1</param>
-    <param name="cluster.ips">127.0.0.1</param>
+    <param name="kpme.notifications.enabled">true</param>
+    
+    <param name="kpme.batch.accrual.cronExpression">0 0 0 1 * ?</param>
+    <param name="kpme.batch.leaveCalendarDelinquency.cronExpression">0 0 0 1 * ?</param>
 
 </config>
