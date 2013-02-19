@@ -43,11 +43,43 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
-        <base.environment>dba</base.environment>
         <build.environment>dev</build.environment>
     </properties>
     
     <build>
+        <plugins>
+            <plugin>
+	            <groupId>org.apache.maven.plugins</groupId>
+	            <artifactId>maven-scm-plugin</artifactId>
+	            <dependencies>
+	                <dependency>
+	                    <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
+	                    <artifactId>maven-scm-provider-svnjava</artifactId>
+	                    <version>1.15</version>
+	                </dependency>
+	            </dependencies>
+	            <configuration>
+	                <providerImplementations>
+	                    <svn>javasvn</svn>
+	                </providerImplementations>
+	                
+	                <scmVersionType>${scmVersionType}</scmVersionType>
+	                <scmVersion>${scmVersion}</scmVersion>
+	            </configuration>
+	            <executions>
+	                <execution>
+	                    <id>project-checkout</id>
+	                    <phase>generate-sources</phase>
+	                    <goals>
+	                        <goal>checkout</goal>
+	                    </goals>
+	                    <configuration>
+	                        <checkoutDirectory>${project.build.directory}/build</checkoutDirectory>
+	                    </configuration>
+	                </execution>
+	            </executions>
+	        </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -165,182 +197,182 @@
                         <artifactId>maven-impex-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>export-krbase</id>
-                                <phase>generate-sources</phase>
+                                <id>export-rice</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>exportdata</goal>
                                     <goal>exportschema</goal>
                                     <goal>datadtd</goal>
                                 </goals>
                                 <configuration>
-                                    <artifactId>${krbase.dataSource.database}</artifactId>
+                                    <artifactId>${kr.dataSource.database}</artifactId>
                                     <dateFormat>yyyyMMddHHmmss</dateFormat>
-                                    <driver>${krbase.dataSource.driver}</driver>
-                                    <url>${krbase.dataSource.jdbcUrl}</url>
-                                    <username>${krbase.dataSource.username}</username>
-                                    <password>${krbase.dataSource.password}</password>
+                                    <driver>${kr.dataSource.driver}</driver>
+                                    <url>${kr.dataSource.jdbcUrl}</url>
+                                    <username>${kr.dataSource.username}</username>
+                                    <password>${kr.dataSource.password}</password>
                                     <outputDir>${project.build.directory}/impex/</outputDir>
-                                    <dataXMLDir>${project.build.directory}/impex/${krbase.dataSource.database}</dataXMLDir>
-                                    <schemaXMLFile>${project.build.directory}/impex/${krbase.dataSource.database}.xml</schemaXMLFile>
+                                    <dataXMLDir>${project.build.directory}/impex/${kr.dataSource.database}</dataXMLDir>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kr.dataSource.database}.xml</schemaXMLFile>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>export-kpmebase</id>
-                                <phase>generate-sources</phase>
+                                <id>export-kpme</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>exportdata</goal>
                                     <goal>exportschema</goal>
                                     <goal>datadtd</goal>
                                 </goals>
                                 <configuration>
-                                    <artifactId>${kpmebase.dataSource.database}</artifactId>
+                                    <artifactId>${kpme.dataSource.database}</artifactId>
                                     <dateFormat>yyyyMMddHHmmss</dateFormat>
-                                    <driver>${kpmebase.dataSource.driver}</driver>
-                                    <url>${kpmebase.dataSource.jdbcUrl}</url>
-                                    <username>${kpmebase.dataSource.username}</username>
-                                    <password>${kpmebase.dataSource.password}</password>
+                                    <driver>${kpme.dataSource.driver}</driver>
+                                    <url>${kpme.dataSource.jdbcUrl}</url>
+                                    <username>${kpme.dataSource.username}</username>
+                                    <password>${kpme.dataSource.password}</password>
                                     <outputDir>${project.build.directory}/impex/</outputDir>
-                                    <dataXMLDir>${project.build.directory}/impex/${kpmebase.dataSource.database}</dataXMLDir>
-                                    <schemaXMLFile>${project.build.directory}/impex/${kpmebase.dataSource.database}.xml</schemaXMLFile>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpme.dataSource.database}</dataXMLDir>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                 </configuration>
                             </execution>
                             <!--
                             <execution>
-                                <id>convert-schema-krbase-oracle</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-schema-rice-oracle</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>schemasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>oracle</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${krbase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kr.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${krbase.dataSource.database}.xml</schemaIncludes>
-                                    <outputDir>${project.build.directory}/schema-sql/${krbase.dataSource.database}</outputDir>
+                                    <schemaIncludes>${kr.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
                             -->
                             <execution>
-                                <id>convert-schema-krbase-mysql</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-schema-rice-mysql</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>schemasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>mysql</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${krbase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kr.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${krbase.dataSource.database}.xml</schemaIncludes>
-                                    <outputDir>${project.build.directory}/schema-sql/${krbase.dataSource.database}</outputDir>
+                                    <schemaIncludes>${kr.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
                             <!--
                             <execution>
-                                <id>convert-schema-kpmebase-oracle</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-schema-kpme-oracle</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>schemasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>oracle</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${kpmebase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
-                                    <outputDir>${project.build.directory}/schema-sql/${kpmebase.dataSource.database}</outputDir>
+                                    <schemaIncludes>${kpme.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
                             -->
                             <execution>
-                                <id>convert-schema-kpmebase-mysql</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-schema-kpme-mysql</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>schemasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>mysql</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${kpmebase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
-                                    <outputDir>${project.build.directory}/schema-sql/${kpmebase.dataSource.database}</outputDir>
+                                    <schemaIncludes>${kpme.dataSource.database}.xml</schemaIncludes>
+                                    <outputDir>${project.build.directory}/schema-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
                             <!--
                             <execution>
-                                <id>convert-data-krbase-oracle</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-data-rice-oracle</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>datasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>oracle</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${krbase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kr.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${krbase.dataSource.database}.xml</schemaIncludes>
-                                    <dataXMLDir>${project.build.directory}/impex/${krbase.dataSource.database}</dataXMLDir>
+                                    <schemaIncludes>${kr.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kr.dataSource.database}</dataXMLDir>
                                     <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml,krsb_svc_def_s.xml,krsb_svc_def_t.xml,krsb_svc_dscrptr_s.xml,krsb_svc_dscrptr_t.xml</dataXMLExcludes>
-                                    <dataDTD>${project.build.directory}/impex/${krbase.dataSource.database}.dtd</dataDTD>
-                                    <outputDir>${project.build.directory}/data-sql/${krbase.dataSource.database}</outputDir>
+                                    <dataDTD>${project.build.directory}/impex/${kr.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
                             -->
                             <execution>
-                                <id>convert-data-krbase-mysql</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-data-rice-mysql</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>datasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>mysql</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${krbase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kr.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${krbase.dataSource.database}.xml</schemaIncludes>
-                                    <dataXMLDir>${project.build.directory}/impex/${krbase.dataSource.database}</dataXMLDir>
+                                    <schemaIncludes>${kr.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kr.dataSource.database}</dataXMLDir>
                                     <dataXMLExcludes>krsb_qrtz_blob_triggers.xml,krsb_qrtz_calendars.xml,krsb_qrtz_cron_triggers.xml,krsb_qrtz_fired_triggers.xml,krsb_qrtz_job_details.xml,krsb_qrtz_job_listeners.xml,krsb_qrtz_paused_trigger_grps.xml,krsb_qrtz_scheduler_state.xml,krsb_qrtz_simple_triggers.xml,krsb_qrtz_trigger_listeners.xml,krsb_qrtz_triggers.xml,krsb_svc_def_s.xml,krsb_svc_def_t.xml,krsb_svc_dscrptr_s.xml,krsb_svc_dscrptr_t.xml</dataXMLExcludes>
-                                    <dataDTD>${project.build.directory}/impex/${krbase.dataSource.database}.dtd</dataDTD>
-                                    <outputDir>${project.build.directory}/data-sql/${krbase.dataSource.database}</outputDir>
+                                    <dataDTD>${project.build.directory}/impex/${kr.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
                             <!--
                             <execution>
-                                <id>convert-data-kpmebase-oracle</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-data-kpme-oracle</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>datasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>oracle</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${kpmebase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
-                                    <dataXMLDir>${project.build.directory}/impex/${kpmebase.dataSource.database}</dataXMLDir>
+                                    <schemaIncludes>${kpme.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpme.dataSource.database}</dataXMLDir>
                                     <dataXMLExcludes>qrtz_blob_triggers.xml,qrtz_calendars.xml,qrtz_cron_triggers.xml,qrtz_fired_triggers.xml,qrtz_job_details.xml,qrtz_job_listeners.xml,qrtz_paused_trigger_grps.xml,qrtz_scheduler_state.xml,qrtz_simple_triggers.xml,qrtz_trigger_listeners.xml,qrtz_triggers.xml</dataXMLExcludes>
-                                    <dataDTD>${project.build.directory}/impex/${kpmebase.dataSource.database}.dtd</dataDTD>
-                                    <outputDir>${project.build.directory}/data-sql/${kpmebase.dataSource.database}</outputDir>
+                                    <dataDTD>${project.build.directory}/impex/${kpme.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
                             -->
                             <execution>
-                                <id>convert-data-kpmebase-mysql</id>
-                                <phase>generate-sources</phase>
+                                <id>convert-data-kpme-mysql</id>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>datasql</goal>
                                 </goals>
                                 <configuration>
                                     <targetDatabase>mysql</targetDatabase>
-                                    <schemaXMLFile>${project.build.directory}/impex/${kpmebase.dataSource.database}.xml</schemaXMLFile>
+                                    <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                     <schemaDir>${project.build.directory}/impex</schemaDir>
-                                    <schemaIncludes>${kpmebase.dataSource.database}.xml</schemaIncludes>
-                                    <dataXMLDir>${project.build.directory}/impex/${kpmebase.dataSource.database}</dataXMLDir>
+                                    <schemaIncludes>${kpme.dataSource.database}.xml</schemaIncludes>
+                                    <dataXMLDir>${project.build.directory}/impex/${kpme.dataSource.database}</dataXMLDir>
                                     <dataXMLExcludes>qrtz_blob_triggers.xml,qrtz_calendars.xml,qrtz_cron_triggers.xml,qrtz_fired_triggers.xml,qrtz_job_details.xml,qrtz_job_listeners.xml,qrtz_paused_trigger_grps.xml,qrtz_scheduler_state.xml,qrtz_simple_triggers.xml,qrtz_trigger_listeners.xml,qrtz_triggers.xml</dataXMLExcludes>
-                                    <dataDTD>${project.build.directory}/impex/${kpmebase.dataSource.database}.dtd</dataDTD>
-                                    <outputDir>${project.build.directory}/data-sql/${kpmebase.dataSource.database}</outputDir>
+                                    <dataDTD>${project.build.directory}/impex/${kpme.dataSource.database}.dtd</dataDTD>
+                                    <outputDir>${project.build.directory}/data-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
@@ -352,24 +384,24 @@
                         <executions>
                             <execution>
                                 <id>create-scripts-mysql</id>
-                                <phase>generate-sources</phase>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <fileset id="mysql-server-schema" file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/mysql/${krbase.dataSource.database}.sql" />
-                                        <fileset id="mysql-server-data" dir="${project.build.directory}/data-sql/${krbase.dataSource.database}/mysql" />                                        
-                                        <fileset id="mysql-server-constraints" file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/mysql/${krbase.dataSource.database}-constraints.sql" />
-                                        <fileset id="mysql-client-schema" file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/mysql/${kpmebase.dataSource.database}.sql" />
-                                        <fileset id="mysql-client-data" dir="${project.build.directory}/data-sql/${kpmebase.dataSource.database}/mysql" />
-                                        <fileset id="mysql-client-constraints" file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/mysql/${kpmebase.dataSource.database}-constraints.sql" />
+                                        <fileset id="mysql-server-schema" file="${project.build.directory}/schema-sql/${kr.dataSource.database}/mysql/${kr.dataSource.database}.sql" />
+                                        <fileset id="mysql-server-data" dir="${project.build.directory}/data-sql/${kr.dataSource.database}/mysql" />                                        
+                                        <fileset id="mysql-server-constraints" file="${project.build.directory}/schema-sql/${kr.dataSource.database}/mysql/${kr.dataSource.database}-constraints.sql" />
+                                        <fileset id="mysql-client-schema" file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/mysql/${kpme.dataSource.database}.sql" />
+                                        <fileset id="mysql-client-data" dir="${project.build.directory}/data-sql/${kpme.dataSource.database}/mysql" />
+                                        <fileset id="mysql-client-constraints" file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/mysql/${kpme.dataSource.database}-constraints.sql" />
                                         
                                         <pathconvert property="mysql-server-schema-script" refid="mysql-server-schema" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krbase.dataSource.database}.sql" to="\. server/schema/schema.sql" />
+                                                    <replacestring from="${kr.dataSource.database}.sql" to="\. server/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -383,7 +415,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krbase.dataSource.database}-constraints.sql" to="\. server/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kr.dataSource.database}-constraints.sql" to="\. server/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -391,7 +423,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmebase.dataSource.database}.sql" to="\. client/schema/schema.sql" />
+                                                    <replacestring from="${kpme.dataSource.database}.sql" to="\. client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -405,13 +437,13 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmebase.dataSource.database}-constraints.sql" to="\. client/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kpme.dataSource.database}-constraints.sql" to="\. client/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                                                                 
-                                        <copy tofile="${project.build.directory}/mysql_${base.environment}/mysql/server/schema/schema.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/mysql/${krbase.dataSource.database}.sql" />
+                                        <copy tofile="${project.build.directory}/mysql_${build.environment}/mysql/server/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kr.dataSource.database}/mysql/${kr.dataSource.database}.sql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -420,8 +452,8 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <copy tofile="${project.build.directory}/mysql_${base.environment}/mysql/server/schema/schema-constraints.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/mysql/${krbase.dataSource.database}-constraints.sql" />
+                                        <copy tofile="${project.build.directory}/mysql_${build.environment}/mysql/server/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kr.dataSource.database}/mysql/${kr.dataSource.database}-constraints.sql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -430,8 +462,8 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <copy todir="${project.build.directory}/mysql_${base.environment}/mysql/server/data"> 
-                                            <fileset dir="${project.build.directory}/data-sql/${krbase.dataSource.database}/mysql" />
+                                        <copy todir="${project.build.directory}/mysql_${build.environment}/mysql/server/data"> 
+                                            <fileset dir="${project.build.directory}/data-sql/${kr.dataSource.database}/mysql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -440,9 +472,9 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${base.environment}/mysql/mysql_server.sql" /> 
-                                        <copy tofile="${project.build.directory}/mysql_${base.environment}/mysql/client/schema/schema.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/mysql/${kpmebase.dataSource.database}.sql" />
+                                        <echo message="${mysql-server-schema-script}${line.separator}${mysql-server-data-script}${line.separator}${mysql-server-constraints-script}" file="${project.build.directory}/mysql_${build.environment}/mysql/mysql_server.sql" /> 
+                                        <copy tofile="${project.build.directory}/mysql_${build.environment}/mysql/client/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/mysql/${kpme.dataSource.database}.sql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -451,8 +483,8 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <copy todir="${project.build.directory}/mysql_${base.environment}/mysql/client/data">
-                                            <fileset dir="${project.build.directory}/data-sql/${kpmebase.dataSource.database}/mysql" />
+                                        <copy todir="${project.build.directory}/mysql_${build.environment}/mysql/client/data">
+                                            <fileset dir="${project.build.directory}/data-sql/${kpme.dataSource.database}/mysql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -461,8 +493,8 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <copy tofile="${project.build.directory}/mysql_${base.environment}/mysql/client/schema/schema-constraints.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/mysql/${kpmebase.dataSource.database}-constraints.sql" />
+                                        <copy tofile="${project.build.directory}/mysql_${build.environment}/mysql/client/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/mysql/${kpme.dataSource.database}-constraints.sql" />
                                             <filterchain>
                                                 <tokenfilter>
                                                     <filetokenizer />
@@ -471,33 +503,33 @@
                                                 </tokenfilter>
                                             </filterchain>
                                         </copy>
-                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${base.environment}/mysql/mysql_client.sql" /> 
+                                        <echo message="${mysql-client-schema-script}${line.separator}${mysql-client-data-script}${line.separator}${mysql-client-constraints-script}" file="${project.build.directory}/mysql_${build.environment}/mysql/mysql_client.sql" /> 
                                         
-                                        <zip basedir="${project.build.directory}/mysql_${base.environment}" destfile="${project.build.directory}/mysql_${base.environment}.zip" />
+                                        <zip basedir="${project.build.directory}/mysql_${build.environment}" destfile="${project.build.directory}/mysql_${build.environment}.zip" />
                                     </target>
                                 </configuration>
                             </execution>
                             <!--
                             <execution>
                                 <id>create-scripts-oracle</id>
-                                <phase>generate-sources</phase>
+                                <phase>process-sources</phase>
                                 <goals>
                                     <goal>run</goal>
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <fileset id="oracle-server-schema" file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/oracle/${krbase.dataSource.database}.sql" />
-                                        <fileset id="oracle-server-data" dir="${project.build.directory}/data-sql/${krbase.dataSource.database}/oracle" />                                        
-                                        <fileset id="oracle-server-constraints" file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/oracle/${krbase.dataSource.database}-constraints.sql" />
-                                        <fileset id="oracle-client-schema" file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/oracle/${kpmebase.dataSource.database}.sql" />
-                                        <fileset id="oracle-client-constraints" file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/oracle/${kpmebase.dataSource.database}-constraints.sql" />
-                                        <fileset id="oracle-client-data" dir="${project.build.directory}/data-sql/${kpmebase.dataSource.database}/oracle" />
+                                        <fileset id="oracle-server-schema" file="${project.build.directory}/schema-sql/${kr.dataSource.database}/oracle/${kr.dataSource.database}.sql" />
+                                        <fileset id="oracle-server-data" dir="${project.build.directory}/data-sql/${kr.dataSource.database}/oracle" />                                        
+                                        <fileset id="oracle-server-constraints" file="${project.build.directory}/schema-sql/${kr.dataSource.database}/oracle/${kr.dataSource.database}-constraints.sql" />
+                                        <fileset id="oracle-client-schema" file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/oracle/${kpme.dataSource.database}.sql" />
+                                        <fileset id="oracle-client-constraints" file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/oracle/${kpme.dataSource.database}-constraints.sql" />
+                                        <fileset id="oracle-client-data" dir="${project.build.directory}/data-sql/${kpme.dataSource.database}/oracle" />
                                         
                                         <pathconvert property="oracle-server-schema-script" refid="oracle-server-schema" pathsep="${line.separator}">
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krbase.dataSource.database}.sql" to="@server/schema/schema.sql" />
+                                                    <replacestring from="${kr.dataSource.database}.sql" to="@server/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -511,7 +543,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${krbase.dataSource.database}-constraints.sql" to="@server/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kr.dataSource.database}-constraints.sql" to="@server/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -519,7 +551,7 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmebase.dataSource.database}.sql" to="@client/schema/schema.sql" />
+                                                    <replacestring from="${kpme.dataSource.database}.sql" to="@client/schema/schema.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
@@ -533,33 +565,33 @@
                                             <chainedmapper>
                                                 <flattenmapper />
                                                 <filtermapper>
-                                                    <replacestring from="${kpmebase.dataSource.database}-constraints.sql" to="@client/schema/schema-constraints.sql" />
+                                                    <replacestring from="${kpme.dataSource.database}-constraints.sql" to="@client/schema/schema-constraints.sql" />
                                                 </filtermapper>
                                             </chainedmapper>
                                         </pathconvert>
                                         
-                                        <copy tofile="${project.build.directory}/oracle_${base.environment}/oracle/server/schema/schema.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/oracle/${krbase.dataSource.database}.sql" />
+                                        <copy tofile="${project.build.directory}/oracle_${build.environment}/oracle/server/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kr.dataSource.database}/oracle/${kr.dataSource.database}.sql" />
                                         </copy>
-                                        <copy tofile="${project.build.directory}/oracle_${base.environment}/oracle/server/schema/schema-constraints.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${krbase.dataSource.database}/oracle/${krbase.dataSource.database}-constraints.sql" />
+                                        <copy tofile="${project.build.directory}/oracle_${build.environment}/oracle/server/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kr.dataSource.database}/oracle/${kr.dataSource.database}-constraints.sql" />
                                         </copy>
-                                        <copy todir="${project.build.directory}/oracle_${base.environment}/oracle/server/data"> 
-                                            <fileset dir="${project.build.directory}/data-sql/${krbase.dataSource.database}/oracle" />
+                                        <copy todir="${project.build.directory}/oracle_${build.environment}/oracle/server/data"> 
+                                            <fileset dir="${project.build.directory}/data-sql/${kr.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${base.environment}/oracle/oracle_server.sql" /> 
-                                        <copy tofile="${project.build.directory}/oracle_${base.environment}/oracle/client/schema/schema.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/oracle/${kpmebase.dataSource.database}.sql" />
+                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-server-schema-script}${line.separator}${oracle-server-data-script}${line.separator}${oracle-server-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${build.environment}/oracle/oracle_server.sql" /> 
+                                        <copy tofile="${project.build.directory}/oracle_${build.environment}/oracle/client/schema/schema.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/oracle/${kpme.dataSource.database}.sql" />
                                         </copy>
-                                        <copy tofile="${project.build.directory}/oracle_${base.environment}/oracle/client/schema/schema-constraints.sql">
-                                            <fileset file="${project.build.directory}/schema-sql/${kpmebase.dataSource.database}/oracle/${kpmebase.dataSource.database}-constraints.sql" />
+                                        <copy tofile="${project.build.directory}/oracle_${build.environment}/oracle/client/schema/schema-constraints.sql">
+                                            <fileset file="${project.build.directory}/schema-sql/${kpme.dataSource.database}/oracle/${kpme.dataSource.database}-constraints.sql" />
                                         </copy>
-                                        <copy todir="${project.build.directory}/oracle_${base.environment}/oracle/client/data">
-                                            <fileset dir="${project.build.directory}/data-sql/${kpmebase.dataSource.database}/oracle" />
+                                        <copy todir="${project.build.directory}/oracle_${build.environment}/oracle/client/data">
+                                            <fileset dir="${project.build.directory}/data-sql/${kpme.dataSource.database}/oracle" />
                                         </copy>
-                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${base.environment}/oracle/oracle_client.sql" /> 
+                                        <echo message="set sqlblanklines on${line.separator}set define off${line.separator}${oracle-client-schema-script}${line.separator}${oracle-client-data-script}${line.separator}${oracle-client-constraints-script}${line.separator}quit" file="${project.build.directory}/oracle_${build.environment}/oracle/oracle_client.sql" /> 
                                         
-                                        <zip basedir="${project.build.directory}/oracle_${base.environment}" destfile="${project.build.directory}/oracle_${base.environment}.zip" />
+                                        <zip basedir="${project.build.directory}/oracle_${build.environment}" destfile="${project.build.directory}/oracle_${build.environment}.zip" />
                                     </target>
                                 </configuration>
                             </execution>
@@ -570,7 +602,7 @@
             </build>
         </profile>
         <profile>
-            <id>import</id>
+            <id>rebuild</id>
             <build>
                 <plugins>
                     <plugin>
@@ -578,7 +610,7 @@
                         <artifactId>maven-impex-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>reset-kr</id>
+                                <id>reset-rice</id>
                                 <phase>process-sources</phase>
                                 <goals>
                                     <goal>reset</goal>
@@ -613,98 +645,24 @@
                                     <databasePassword>${kpme.dataSource.password}</databasePassword>
                                 </configuration>
                             </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+	                    <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
                             <execution>
-                                <id>import-schema-kr</id>
-                                <phase>process-sources</phase>
+                                <id>copy-kew</id>
+                                <phase>process-resources</phase>
                                 <goals>
-                                    <goal>import</goal>
+                                    <goal>run</goal>
                                 </goals>
                                 <configuration>
-                                    <artifactId>${kr.dataSource.database}</artifactId>
-                                    <driver>${kr.dataSource.driver}</driver>
-                                    <url>${kr.dataSource.jdbcUrl}</url>
-                                    <username>${kr.dataSource.username}</username>
-                                    <password>${kr.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/schema-sql/${krbase.dataSource.database}</importDir>
-                                    <importDirIncludes>${krbase.dataSource.database}.sql</importDirIncludes>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>import-data-kr</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>import</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactId>${kr.dataSource.database}</artifactId>
-                                    <driver>${kr.dataSource.driver}</driver>
-                                    <url>${kr.dataSource.jdbcUrl}</url>
-                                    <username>${kr.dataSource.username}</username>
-                                    <password>${kr.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/data-sql/${krbase.dataSource.database}</importDir>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>import-constraints-kr</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>import</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactId>${kr.dataSource.database}</artifactId>
-                                    <driver>${kr.dataSource.driver}</driver>
-                                    <url>${kr.dataSource.jdbcUrl}</url>
-                                    <username>${kr.dataSource.username}</username>
-                                    <password>${kr.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/schema-sql/${krbase.dataSource.database}</importDir>
-                                    <importDirIncludes>${krbase.dataSource.database}-constraints.sql</importDirIncludes>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>import-schema-kpme</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>import</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactId>${kpme.dataSource.database}</artifactId>
-                                    <driver>${kpme.dataSource.driver}</driver>
-                                    <url>${kpme.dataSource.jdbcUrl}</url>
-                                    <username>${kpme.dataSource.username}</username>
-                                    <password>${kpme.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/schema-sql/${kpmebase.dataSource.database}</importDir>
-                                    <importDirIncludes>${kpmebase.dataSource.database}.sql</importDirIncludes>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>import-data-kpme</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>import</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactId>${kpme.dataSource.database}</artifactId>
-                                    <driver>${kpme.dataSource.driver}</driver>
-                                    <url>${kpme.dataSource.jdbcUrl}</url>
-                                    <username>${kpme.dataSource.username}</username>
-                                    <password>${kpme.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/data-sql/${kpmebase.dataSource.database}</importDir>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>import-constraints-kpme</id>
-                                <phase>process-sources</phase>
-                                <goals>
-                                    <goal>import</goal>
-                                </goals>
-                                <configuration>
-                                    <artifactId>${kpme.dataSource.database}</artifactId>
-                                    <driver>${kpme.dataSource.driver}</driver>
-                                    <url>${kpme.dataSource.jdbcUrl}</url>
-                                    <username>${kpme.dataSource.username}</username>
-                                    <password>${kpme.dataSource.password}</password>
-                                    <importDir>${project.build.directory}/schema-sql/${kpmebase.dataSource.database}</importDir>
-                                    <importDirIncludes>${kpmebase.dataSource.database}-constraints.sql</importDirIncludes>
+                                    <target>
+                                        <copy toDir="${java.io.tmpdir}/${build.environment}/kew/xmlpending">
+                                            <fileset dir="${project.build.directory}/build/src/main/config/workflow" />
+                                        </copy>
+                                    </target>
                                 </configuration>
                             </execution>
                         </executions>
@@ -716,11 +674,6 @@
             <id>deploy</id>
             <build>
                 <resources>
-                    <resource>
-                        <directory>src/main/resources/${base.environment}</directory>
-                        <targetPath>${project.build.directory}/environment/${base.environment}</targetPath>
-                        <filtering>true</filtering>
-                    </resource>
                     <resource>
                         <directory>src/main/resources/${build.environment}</directory>
                         <targetPath>${project.build.directory}/environment/${build.environment}</targetPath>
@@ -743,6 +696,7 @@
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
                             <execution>
+                                <id>copy-config</id>
                                 <phase>process-resources</phase>
                                 <goals>
                                     <goal>run</goal>
@@ -753,37 +707,6 @@
                                             <fileset dir="${project.build.directory}/environment" />
                                         </copy>
                                     </target>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-scm-plugin</artifactId>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.google.code.maven-scm-provider-svnjava</groupId>
-                                <artifactId>maven-scm-provider-svnjava</artifactId>
-                                <version>1.15</version>
-                            </dependency>
-                        </dependencies>
-                        <configuration>
-                            <providerImplementations>
-                                <svn>javasvn</svn>
-                            </providerImplementations>
-                            
-                            <scmVersionType>${scmVersionType}</scmVersionType>
-                            <scmVersion>${scmVersion}</scmVersion>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <id>project-checkout</id>
-                                <phase>compile</phase>
-                                <goals>
-                                    <goal>checkout</goal>
-                                </goals>
-                                <configuration>
-                                    <checkoutDirectory>${project.build.directory}/build</checkoutDirectory>
                                 </configuration>
                             </execution>
                         </executions>
