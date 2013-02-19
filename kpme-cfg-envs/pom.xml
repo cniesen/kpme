@@ -659,7 +659,7 @@
                                 </goals>
                                 <configuration>
                                     <target>
-                                        <copy toDir="${java.io.tmpdir}/${build.environment}/kew/xmlpending">
+                                        <copy toDir="${user.home}/kuali/main/${build.environment}/rice/kew/xmlpending">
                                             <fileset dir="${project.build.directory}/build/src/main/config/workflow" />
                                         </copy>
                                     </target>

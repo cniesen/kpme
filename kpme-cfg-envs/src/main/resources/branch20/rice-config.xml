@@ -12,7 +12,8 @@
 
     <param name="attachment.dir.location">${user.home}/kuali/main/${environment}/rice/kew_attachments</param>
     <param name="plugin.dir">${user.home}/kuali/main/${environment}/rice/plugins</param>
-
+    <param name="data.xml.root.location">${user.home}/kuali/main/${environment}/rice/kew/xml</param>
+    
     <param name="log4j.settings.path">${user.home}/kuali/main/shared/log4j.properties</param>
     <param name="log4j.settings.reloadInterval">5</param>
 
@@ -23,7 +24,4 @@
 
     <param name="filter.login.class">org.kuali.rice.kew.web.DummyLoginFilter</param>
     <param name="filtermapping.login.1">/*</param>
-    
-    <param name="xml.pipeline.lifecycle.enabled">true</param>
-    <param name="data.xml.root.location">${java.io.tmpdir}/${environment}/kew/xml</param>
 </config>
