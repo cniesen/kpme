@@ -24,5 +24,4 @@
     <param name="filter.login.class">org.kuali.rice.kew.web.DummyLoginFilter</param>
     <param name="filtermapping.login.1">/*</param>
     
-    <param name="xml.pipeline.lifecycle.enabled">true</param>
 </config>

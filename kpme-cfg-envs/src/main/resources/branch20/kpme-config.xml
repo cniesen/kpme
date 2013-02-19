@@ -44,5 +44,6 @@
     
     <param name="kpme.batch.accrual.cronExpression">0 0 0 1 * ?</param>
     <param name="kpme.batch.leaveCalendarDelinquency.cronExpression">0 0 0 1 * ?</param>
-
+    
+    <param name="xml.pipeline.lifecycle.enabled">true</param>
 </config>
