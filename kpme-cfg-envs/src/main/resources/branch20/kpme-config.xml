@@ -3,6 +3,7 @@
     <param name="application.host">ci.kpme.kuali.org</param>
     <param name="appserver.url">${application.http.scheme}://${application.host}</param>
     <param name="app.context.name">${app.code}-${environment}</param>
+    <param name="context.names.rice">kr-${environment}</param>
 
     <!-- KPME Client DB -->
     <param name="datasource.url">@kpme.dataSource.jdbcUrl@</param>
