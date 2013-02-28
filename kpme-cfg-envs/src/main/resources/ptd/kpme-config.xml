@@ -1,10 +1,9 @@
 <config>
-
     <!-- Application-specific Parameters -->
-    <param name="application.http.scheme">http</param>
     <param name="application.host">ci.kpme.kuali.org</param>
-    <param name="http.port">80</param>
+    <param name="appserver.url">${application.http.scheme}://${application.host}</param>
     <param name="app.context.name">${app.code}-${environment}</param>
+    <param name="context.names.rice">kr-${environment}</param>
 
     <!-- KPME Client DB -->
     <param name="datasource.url">@kpme.dataSource.jdbcUrl@</param>
@@ -17,7 +16,7 @@
     <param name="server.datasource.password">@kr.dataSource.password@</param>
 
     <!-- Embedded Mode Server URL -->
-    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>
+    <param name="rice.server.url">${application.http.scheme}://${application.host}/kr-${environment}</param>    
     <param name="kim.mode">EMBEDDED</param>
     <param name="kcb.mode">EMBEDDED</param>
     <param name="kew.mode">EMBEDDED</param>
@@ -42,7 +41,9 @@
     <param name="keystore.password">r1c3pw</param>
     <param name="encryption.key">7IC64w6kAAAA</param>
     
-<!--     <param name="tk.batch.master.ip">127.0.0.1</param> -->
-<!--     <param name="cluster.ips">127.0.0.1</param> -->
+    <param name="kpme.notifications.enabled">true</param>
+    
+    <param name="kpme.batch.accrual.cronExpression">0 0 0 1 * ?</param>
+    <param name="kpme.batch.leaveCalendarDelinquency.cronExpression">0 0 0 1 * ?</param>
 
 </config>
