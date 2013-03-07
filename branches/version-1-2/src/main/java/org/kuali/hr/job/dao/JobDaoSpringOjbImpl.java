@@ -21,12 +21,14 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -35,6 +37,10 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
  * Represents an implementation of {@link JobDao}.
  */
 public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
+    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("principalId")
+            .add("jobNumber")
+            .build();
 
     @SuppressWarnings("unused")
     private static final Logger LOG = Logger.getLogger(JobDaoSpringOjbImpl.class);
@@ -293,27 +299,15 @@ public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobD
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            Criteria effdt = new Criteria();
-            effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-            effdt.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-            effdt.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-            effdt.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
-            effdt.addEqualToField("hrPayType", Criteria.PARENT_QUERY_PREFIX + "hrPayType");
-            effdt.addAndCriteria(effectiveDateFilter);
-            ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Job.class, effdt);
-            effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
-            root.addEqualTo("effectiveDate", effdtSubQuery);
-
-            Criteria timestamp = new Criteria();
-            timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-            timestamp.addEqualToField("jobNumber", Criteria.PARENT_QUERY_PREFIX + "jobNumber");
-            timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-            timestamp.addEqualToField("positionNumber", Criteria.PARENT_QUERY_PREFIX + "positionNumber");
-            timestamp.addEqualToField("hrPayType", Criteria.PARENT_QUERY_PREFIX + "hrPayType");
-            timestamp.addAndCriteria(effectiveDateFilter);
-            ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Job.class, timestamp);
-            timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-            root.addEqualTo("timestamp", timestampSubQuery);
+            ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                    .add("principalId")
+                    .add("jobNumber")
+                    .add("dept")
+                    .add("positionNumber")
+                    .add("hrPayType")
+                    .build();
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Job.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Job.class, EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(Job.class, root);
