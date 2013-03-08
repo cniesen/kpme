@@ -16,11 +16,7 @@
 package org.kuali.hr.time.approval.web;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.hsqldb.lib.StringUtil;
 import org.json.simple.JSONValue;
 import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.base.web.ApprovalForm;
@@ -37,6 +34,8 @@ import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesummary.TimeSummary;
+import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 public class TimeApprovalWSAction extends TkAction {
@@ -56,9 +55,21 @@ public class TimeApprovalWSAction extends TkAction {
         		&& StringUtils.isNotEmpty(taaf.getPayEndDateForSearch()) ) {
 	        Date beginDate = new SimpleDateFormat("MM/dd/yyyy").parse(taaf.getPayBeginDateForSearch());
 	        Date endDate = new SimpleDateFormat("MM/dd/yyyy").parse(taaf.getPayEndDateForSearch());
-	        
-	        List<String> principalIds = TkServiceLocator.getTimeApproveService().getPrincipalIdsByDeptWorkAreaRolename(taaf.getRoleName(), taaf.getSelectedDept(), taaf.getSelectedWorkArea(), new java.sql.Date(beginDate.getTime()), new java.sql.Date(endDate.getTime()), taaf.getSelectedPayCalendarGroup());
-	        List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
+
+	        List<String> workAreaList = new ArrayList<String>();
+            if(StringUtil.isEmpty(taaf.getSelectedWorkArea())) {
+                Set<Long> workAreas = TkServiceLocator.getTkRoleService().getWorkAreasForApprover(TKContext.getPrincipalId(), TKUtils.getCurrentDate());
+                for(Long workArea : workAreas) {    //taaf.getWorkAreaDescr().keySet()
+                    workAreaList.add(workArea.toString());
+                }
+	        } else {
+	        	workAreaList.add(taaf.getSelectedWorkArea());
+	        }
+	        List<String> principalIds = TkServiceLocator.getTimeApproveService()
+				.getTimePrincipalIdsWithSearchCriteria(workAreaList, taaf.getSelectedPayCalendarGroup(),
+					new java.sql.Date(endDate.getTime()), new java.sql.Date(beginDate.getTime()), new java.sql.Date(endDate.getTime()));
+
+            List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
 	        
 	        if (StringUtils.equals(taaf.getSearchField(), ApprovalForm.ORDER_BY_PRINCIPAL)) {
 	            for (String id : principalIds) {

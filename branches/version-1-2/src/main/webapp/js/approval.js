@@ -103,7 +103,7 @@ $(document).ready(function () {
     /*
      * for search on TimeApproval page
      */
-    $('#searchValue').autocomplete({
+    $('#searchTerm').autocomplete({
         source:function (request, response) {
             $('#loading-value').ajaxStart(function () {
                 $(this).show();

@@ -333,5 +333,48 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         return (Assignment) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
+    public List<String> getPrincipalIds(List<String> workAreaList, Date effdt, Date startDate, Date endDate) {
+        List<Assignment> results = this.getAssignments(workAreaList, effdt, startDate, endDate);
+        Set<String> pids = new HashSet<String>();
+        for(Assignment anAssignment : results) {
+            if(anAssignment != null) {
+                pids.add(anAssignment.getPrincipalId());
+            }
+        }
+        List<String> ids = new ArrayList<String>();
+        ids.addAll(pids);
+        return ids;
+    }
 
+    public List<Assignment> getAssignments(List<String> workAreaList, Date effdt, Date startDate, Date endDate) {
+        List<Assignment> results = new ArrayList<Assignment>();
+
+        Criteria activeRoot = new Criteria();
+        Criteria inactiveRoot = new Criteria();
+
+        ReportQueryByCriteria effdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false);
+        ReportQueryByCriteria activeEffdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, effdt, ASSIGNMENT_EQUAL_TO_FIELD, false);
+        ReportQueryByCriteria timestampSubQuery = OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false);
+
+        inactiveRoot.addEqualTo("active", "N");
+        inactiveRoot.addIn("workArea", workAreaList);
+        inactiveRoot.addGreaterOrEqualThan("effectiveDate", startDate);
+        inactiveRoot.addLessOrEqualThan("effectiveDate", endDate);
+        inactiveRoot.addEqualTo("effectiveDate", effdtSubQuery);
+        inactiveRoot.addEqualTo("timestamp", timestampSubQuery);
+
+        activeRoot.addIn("workArea", workAreaList);
+        activeRoot.addEqualTo("active", "Y");
+        activeRoot.addEqualTo("effectiveDate", activeEffdtSubQuery);
+        activeRoot.addEqualTo("timestamp", timestampSubQuery);
+        activeRoot.addOrCriteria(inactiveRoot);
+
+        Query query = QueryFactory.newQuery(Assignment.class, activeRoot);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        if (c != null) {
+            results.addAll(c);
+        }
+
+        return results;
+    }
 }

@@ -127,4 +127,6 @@ public interface AssignmentService {
                                     String dept, String workArea, String active, String showHistory);
 
     public Assignment getMaxTimestampAssignment(String principalId);
+
+    public List<Assignment> getAssignments(List<String> workAreaList, Date effdt, Date startDate, Date endDate);
 }

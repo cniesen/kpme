@@ -272,4 +272,59 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
        return results;
     }
 
+    public List<String> getActiveEmployeesIdForTimeCalendarAndIdList(String timeCalendarName, List<String> pidList, Date asOfDate) {
+        List<PrincipalHRAttributes> principalHRAttributes = new ArrayList<PrincipalHRAttributes>();
+        Criteria root = new Criteria();
+
+        root.addEqualTo("payCalendar", timeCalendarName);
+        root.addIn("principalId", pidList);
+
+        ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                                               .add("payCalendar")
+                                               .add("principalId")
+                                               .build();
+        java.sql.Date effDate = asOfDate == null ? null : new java.sql.Date(asOfDate.getTime());
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, effDate, fields, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, fields, false));
+
+        Criteria activeFilter = new Criteria();
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(PrincipalHRAttributes.class, root);
+        Collection c = getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        if (c != null) {
+            principalHRAttributes.addAll(c);
+        }
+        Set<String> pids = new HashSet<String>();
+        for(PrincipalHRAttributes phra : principalHRAttributes) {
+            if(phra != null) {
+                pids.add(phra.getPrincipalId());
+            }
+        }
+        List<String> ids = new ArrayList<String>();
+        ids.addAll(pids);
+
+        return ids;
+    }
+
+    @SuppressWarnings("rawtypes")
+    @Override
+    public List<String> getUniqueTimePayGroups() {
+        List<String> payCalendars = new ArrayList<String>();
+        Criteria crit = new Criteria();
+        crit.addEqualTo("active", true);
+        ReportQueryByCriteria q = QueryFactory.newReportQuery(PrincipalHRAttributes.class, crit, true);
+        q.setDistinct(true);
+        q.setAttributes(new String[] {"pay_calendar"});
+        Iterator iter = this.getPersistenceBrokerTemplate().getReportQueryIteratorByQuery(q);
+        while (iter.hasNext()) {
+            Object[] values = (Object[]) iter.next();
+            String leaveCalendar = (String)values[0];
+            if (StringUtils.isNotBlank(leaveCalendar)) {
+                payCalendars.add(leaveCalendar);
+            }
+        }
+        return payCalendars;
+    }
 }

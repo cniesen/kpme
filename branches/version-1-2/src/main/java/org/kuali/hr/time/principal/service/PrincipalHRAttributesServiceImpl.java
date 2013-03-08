@@ -78,4 +78,13 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
     		java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory) {
     	return this.principalHRAttributesDao.getPrincipalHrAtributes(principalId, fromEffdt, toEffdt, active, showHistory);
     }
+
+    public List<String> getActiveEmployeesIdForTimeCalendarAndIdList(String timeCalendarName, List<String> pidList, Date asOfDate) {
+        return principalHRAttributesDao.getActiveEmployeesIdForTimeCalendarAndIdList(timeCalendarName, pidList, asOfDate);
+    }
+
+    @Override
+    public List<String> getUniqueTimePayGroups() {
+        return this.principalHRAttributesDao.getUniqueTimePayGroups();
+    }
 }

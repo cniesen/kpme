@@ -68,4 +68,21 @@ public interface PrincipalHRAttributesService {
      * @return
      */
     public List<PrincipalHRAttributes> getPrincipalHrAtributes(String principalId, java.sql.Date fromEffdt, java.sql.Date toEffdt,String active, String showHistory);
+
+    /**
+     * Get a list of unique principal ids that match given criteria, used by Time approval pages
+     * @param timeCalendarName
+     * @param pidList
+     * @param asOfDate
+     * @return
+     */
+    @Cacheable(value= PrincipalHRAttributes.CACHE_NAME, key="'timeCalendarName=' + #p0 + '|' + 'asOfDate=' + #p1")
+    public List<String> getActiveEmployeesIdForTimeCalendarAndIdList(String timeCalendarName, List<String> pidList, Date asOfDate);
+
+    /**
+     * Get List of all active pay calendars
+     * @return
+     */
+    public List<String> getUniqueTimePayGroups();
+
 }
