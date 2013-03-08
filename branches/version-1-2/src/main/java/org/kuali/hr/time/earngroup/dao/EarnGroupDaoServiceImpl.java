@@ -15,40 +15,30 @@
  */
 package org.kuali.hr.time.earngroup.dao;
 
+import java.sql.Date;
+
+import com.google.common.collect.ImmutableList;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.earngroup.EarnGroup;
 import org.kuali.hr.time.earngroup.EarnGroupDefinition;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
-import org.springmodules.orm.ojb.support.PersistenceBrokerDaoSupport;
-
-import java.sql.Date;
 
 public class EarnGroupDaoServiceImpl extends PlatformAwareDaoBaseOjb implements EarnGroupDaoService {
+    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("earnGroup")
+            .build();
 
 	@Override
 	public EarnGroup getEarnGroup(String earnGroup, Date asOfDate) {
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
-
-		effdt.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-//		effdt.addEqualTo("active", true);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EarnGroup.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-//		timestamp.addEqualTo("active", true);
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EarnGroup.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
 
 		root.addEqualTo("earnGroup", earnGroup);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnGroup.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnGroup.class, EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 		//do not include the summary setup earn groups
 
@@ -64,21 +54,7 @@ public class EarnGroupDaoServiceImpl extends PlatformAwareDaoBaseOjb implements 
 	@Override
 	public EarnGroup getEarnGroupSummaryForEarnCode(String earnCode, Date asOfDate) {
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
 		Criteria earnCodeJoin = new Criteria();
-		
-		effdt.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-//		effdt.addEqualTo("active", true);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EarnGroup.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-//		timestamp.addEqualTo("active", true);
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EarnGroup.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
 		
 		earnCodeJoin.addEqualToField("hrEarnGroupId", Criteria.PARENT_QUERY_PREFIX + "hrEarnGroupId");
 		earnCodeJoin.addEqualTo("earnCode", earnCode);
@@ -86,8 +62,8 @@ public class EarnGroupDaoServiceImpl extends PlatformAwareDaoBaseOjb implements 
 		earnCodeSubQuery.setAttributes(new String[]{"hr_earn_group_id"});
 		
 		root.addEqualTo("hrEarnGroupId",earnCodeSubQuery);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnGroup.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnGroup.class, EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 		root.addEqualTo("showSummary", true);
 		
@@ -103,30 +79,16 @@ public class EarnGroupDaoServiceImpl extends PlatformAwareDaoBaseOjb implements 
 	@Override
 	public EarnGroup getEarnGroupForEarnCode(String earnCode, Date asOfDate) {
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
 		Criteria earnCodeJoin = new Criteria();
-		
-		effdt.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-//		effdt.addEqualTo("active", true);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(EarnGroup.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
 
-		timestamp.addEqualToField("earnGroup", Criteria.PARENT_QUERY_PREFIX + "earnGroup");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-//		timestamp.addEqualTo("active", true);
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(EarnGroup.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
-		
 		earnCodeJoin.addEqualToField("hrEarnGroupId", Criteria.PARENT_QUERY_PREFIX + "hrEarnGroupId");
 		earnCodeJoin.addEqualTo("earnCode", earnCode);
 		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnGroupDefinition.class, earnCodeJoin);
 		earnCodeSubQuery.setAttributes(new String[]{"hr_earn_group_id"});
 		
 		root.addEqualTo("hrEarnGroupId",earnCodeSubQuery);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnGroup.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnGroup.class, EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity

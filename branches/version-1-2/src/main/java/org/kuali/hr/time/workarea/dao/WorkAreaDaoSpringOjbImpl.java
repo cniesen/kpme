@@ -20,67 +20,46 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class WorkAreaDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements WorkAreaDao {
+    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+                                                                         .add("workArea")
+                                                                         .build();
 
     @Override
     public WorkArea getWorkArea(Long workArea, Date asOfDate) {
-		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
+        Criteria root = new Criteria();
 
-		effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(WorkArea.class, effdt);
-		effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
+        root.addEqualTo("workArea", workArea);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, EQUAL_TO_FIELDS, false));
 
-		timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(WorkArea.class, timestamp);
-		timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+        Criteria activeFilter = new Criteria(); // Inner Join For Activity
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
 
-		root.addEqualTo("workArea", workArea);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
-
-		Criteria activeFilter = new Criteria(); // Inner Join For Activity
-		activeFilter.addEqualTo("active", true);
-		root.addAndCriteria(activeFilter);
-
-		Query query = QueryFactory.newQuery(WorkArea.class, root);
-		return (WorkArea) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(WorkArea.class, root);
+        return (WorkArea) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 
     @Override
     public List<WorkArea> getWorkArea(String department, Date asOfDate) {
         Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
-
-        effdt.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-        effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(WorkArea.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-
-        timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-        timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(WorkArea.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
 
         root.addEqualTo("dept", department);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -95,55 +74,55 @@ public class WorkAreaDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 
     @Override
     public void saveOrUpdate(WorkArea workArea) {
-    	this.getPersistenceBrokerTemplate().store(workArea);
+        this.getPersistenceBrokerTemplate().store(workArea);
     }
 
-	@Override
-	public WorkArea getWorkArea(String tkWorkAreaId) {
-		Criteria crit = new Criteria();
-		crit.addEqualTo("tkWorkAreaId", tkWorkAreaId);
-		
-		Query query = QueryFactory.newQuery(WorkArea.class, crit);
-		return (WorkArea)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
-	}
-	
-	public Long getNextWorkAreaKey(){
-		 return KRADServiceLocator.getSequenceAccessorService().getNextAvailableSequenceNumber("tk_work_area_key_s");
-	}
+    @Override
+    public WorkArea getWorkArea(String tkWorkAreaId) {
+        Criteria crit = new Criteria();
+        crit.addEqualTo("tkWorkAreaId", tkWorkAreaId);
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public List<WorkArea> getWorkAreas(String dept, String workArea, String description, Date fromEffdt, Date toEffdt, String active, String showHistory) {
-		List<WorkArea> results = new ArrayList<WorkArea>();
-		
-		Criteria root = new Criteria();
+        Query query = QueryFactory.newQuery(WorkArea.class, crit);
+        return (WorkArea)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+    }
 
-		if (StringUtils.isNotBlank(dept)) {
-			root.addLike("dept", dept);
-		}
-		
-		if (StringUtils.isNotBlank(workArea)) {
-			root.addLike("workArea", workArea);
-		}
-		
-		if (StringUtils.isNotBlank(description)) {
-			root.addLike("description", description);
-		}
-		
-		Criteria effectiveDateFilter = new Criteria();
-		if (fromEffdt != null) {
-		    effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
-		}
-		if (toEffdt != null) {
-		    effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
-		}
-		if (fromEffdt == null && toEffdt == null) {
-		    effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
-		}
-		root.addAndCriteria(effectiveDateFilter);
-		
+    public Long getNextWorkAreaKey(){
+        return KRADServiceLocator.getSequenceAccessorService().getNextAvailableSequenceNumber("tk_work_area_key_s");
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public List<WorkArea> getWorkAreas(String dept, String workArea, String description, Date fromEffdt, Date toEffdt, String active, String showHistory) {
+        List<WorkArea> results = new ArrayList<WorkArea>();
+
+        Criteria root = new Criteria();
+
+        if (StringUtils.isNotBlank(dept)) {
+            root.addLike("dept", dept);
+        }
+
+        if (StringUtils.isNotBlank(workArea)) {
+            root.addLike("workArea", workArea);
+        }
+
+        if (StringUtils.isNotBlank(description)) {
+            root.addLike("description", description);
+        }
+
+        Criteria effectiveDateFilter = new Criteria();
+        if (fromEffdt != null) {
+            effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+        }
+        if (toEffdt != null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
+        }
+        if (fromEffdt == null && toEffdt == null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+        root.addAndCriteria(effectiveDateFilter);
+
         if (StringUtils.isNotBlank(active)) {
-        	Criteria activeFilter = new Criteria();
+            Criteria activeFilter = new Criteria();
             if (StringUtils.equals(active, "Y")) {
                 activeFilter.addEqualTo("active", true);
             } else if (StringUtils.equals(active, "N")) {
@@ -151,37 +130,26 @@ public class WorkAreaDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
             }
             root.addAndCriteria(activeFilter);
         }
-		
-		if (StringUtils.equals(showHistory, "N")) {
-			Criteria effdt = new Criteria();
-			effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-			effdt.addAndCriteria(effectiveDateFilter);
-			ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(WorkArea.class, effdt);
-			effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
-			root.addEqualTo("effectiveDate", effdtSubQuery);
-			
-			Criteria timestamp = new Criteria();
-			timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-			timestamp.addAndCriteria(effectiveDateFilter);
-			ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(WorkArea.class, timestamp);
-			timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-			root.addEqualTo("timestamp", timestampSubQuery);
-		}
-		
+
+        if (StringUtils.equals(showHistory, "N")) {
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(WorkArea.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, EQUAL_TO_FIELDS, false));
+        }
+
         Query query = QueryFactory.newQuery(WorkArea.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
-		
-		return results;
-	}
 
-	@Override
-	public int getWorkAreaCount(String dept, Long workArea) {
-		Criteria crit = new Criteria();
-		if(dept != null) {
-			crit.addEqualTo("dept", dept);
-		}
-		crit.addEqualTo("workArea", workArea);
-		Query query = QueryFactory.newQuery(WorkArea.class, crit);
-		return this.getPersistenceBrokerTemplate().getCount(query); 
-	}
+        return results;
+    }
+
+    @Override
+    public int getWorkAreaCount(String dept, Long workArea) {
+        Criteria crit = new Criteria();
+        if(dept != null) {
+            crit.addEqualTo("dept", dept);
+        }
+        crit.addEqualTo("workArea", workArea);
+        Query query = QueryFactory.newQuery(WorkArea.class, crit);
+        return this.getPersistenceBrokerTemplate().getCount(query);
+    }
 }

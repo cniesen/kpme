@@ -15,19 +15,25 @@
  */
 package org.kuali.hr.time.timecollection.rule.dao;
 
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
+
 public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb implements TimeCollectionRuleDaoService {
+    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+                                                                         .add("workArea")
+                                                                         .add("dept")
+                                                                         .add("payType")
+                                                                         .build();
 
     /*
       * Returns valid TimeCollectionRule based on dept,workArea, and asOfDate
@@ -60,44 +66,20 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         }
 
         //Try with everything wildcarded
-        timeCollectionRule = getTimeCollectionRuleWildCarded("%", -1L, asOfDate);
-        if (timeCollectionRule != null) {
-            return timeCollectionRule;
-        }
-
-        //Return default time collection rule
-        timeCollectionRule = new TimeCollectionRule();
-        timeCollectionRule.setActive(true);
-        timeCollectionRule.setClockUserFl(true);
-        timeCollectionRule.setDept(dept);
-        timeCollectionRule.setWorkArea(workArea);
-
-        return timeCollectionRule;
+        return getTimeCollectionRuleWildCarded("%", -1L, asOfDate);
     }
 
     private TimeCollectionRule getTimeCollectionRuleWildCarded(String dept, Long workArea, Date asOfDate) {
         Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
-
-        effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-//		effdt.addEqualTo("active", true);
-        effdt.addEqualTo("dept", dept);
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-
-        timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-//		timestamp.addEqualTo("active", true);
-        timestamp.addEqualTo("dept", dept);
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
+        ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                                               .add("workArea")
+                                               .add("dept")
+                                               .build();
 
         root.addEqualTo("dept", dept);
         root.addEqualTo("workArea", workArea);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(TimeCollectionRule.class, asOfDate, fields, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(TimeCollectionRule.class, fields, false));
 //		root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -172,47 +154,17 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         }
 
         //Try with everything wildcarded
-        timeCollectionRule = getTimeCollectionRuleWildCarded("%", -1L, "%", asOfDate);
-        if (timeCollectionRule != null) {
-            return timeCollectionRule;
-        }
-
-        //Return default time collection rule
-        timeCollectionRule = new TimeCollectionRule();
-        timeCollectionRule.setActive(true);
-        timeCollectionRule.setClockUserFl(true);
-        timeCollectionRule.setDept(dept);
-        timeCollectionRule.setWorkArea(workArea);
-
-        return timeCollectionRule;
+        return getTimeCollectionRuleWildCarded("%", -1L, "%", asOfDate);
     }
 
     private TimeCollectionRule getTimeCollectionRuleWildCarded(String dept, Long workArea, String payType, Date asOfDate) {
         Criteria root = new Criteria();
-        Criteria effdt = new Criteria();
-        Criteria timestamp = new Criteria();
-
-        effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-//		effdt.addEqualTo("active", true);
-        effdt.addEqualTo("dept", dept);
-        effdt.addEqualTo("payType", payType);
-        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, effdt);
-        effdtSubQuery.setAttributes(new String[]{"max(effdt)"});
-
-        timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-//		timestamp.addEqualTo("active", true);
-        timestamp.addEqualTo("dept", dept);
-        timestamp.addEqualTo("payType", payType);
-        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, timestamp);
-        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
 
         root.addEqualTo("dept", dept);
         root.addEqualTo("workArea", workArea);
         root.addEqualTo("payType", payType);
-        root.addEqualTo("effectiveDate", effdtSubQuery);
-        root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(TimeCollectionRule.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(TimeCollectionRule.class, EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -225,7 +177,7 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
 
     }
 
-	@Override
+    @Override
     @SuppressWarnings("unchecked")
     public List<TimeCollectionRule> getTimeCollectionRules(String dept, Long workArea, String payType, String active, String showHistory) {
         List<TimeCollectionRule> results = new ArrayList<TimeCollectionRule>();
@@ -239,13 +191,13 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         if (workArea != null) {
             root.addLike("workArea", workArea);
         }
-        
+
         if (StringUtils.isNotBlank(payType)) {
             root.addLike("payType", payType);
         }
-        
+
         if (StringUtils.isNotBlank(active)) {
-        	Criteria activeFilter = new Criteria();
+            Criteria activeFilter = new Criteria();
             if (StringUtils.equals(active, "Y")) {
                 activeFilter.addEqualTo("active", true);
             } else if (StringUtils.equals(active, "N")) {
@@ -253,26 +205,12 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
             }
             root.addAndCriteria(activeFilter);
         }
-        
+
         if (StringUtils.equals(showHistory, "N")) {
-	        Criteria effdt = new Criteria();
-	        effdt.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-	        effdt.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-	        effdt.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
-	        ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, effdt);
-	        effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
-	        root.addEqualTo("effectiveDate", effdtSubQuery);
-	        
-	        Criteria timestamp = new Criteria();
-	        timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-	        timestamp.addEqualToField("workArea", Criteria.PARENT_QUERY_PREFIX + "workArea");
-	        timestamp.addEqualToField("payType", Criteria.PARENT_QUERY_PREFIX + "payType");
-	        timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-	        ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(TimeCollectionRule.class, timestamp);
-	        timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-	        root.addEqualTo("timestamp", timestampSubQuery);
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(TimeCollectionRule.class, EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(TimeCollectionRule.class, EQUAL_TO_FIELDS, false));
         }
-        
+
         Query query = QueryFactory.newQuery(TimeCollectionRule.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
 

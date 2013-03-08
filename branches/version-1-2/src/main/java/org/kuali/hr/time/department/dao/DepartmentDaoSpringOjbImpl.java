@@ -31,10 +31,8 @@ import org.kuali.hr.time.department.Department;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements DepartmentDao {
-
     private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
             .add("dept")
-            .add("location")
             .build();
 
 	@Override
@@ -45,22 +43,10 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 	@Override
 	public Department getDepartment(String department, Date asOfDate) {
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
-
-		effdt.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Department.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Department.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
 
 		root.addEqualTo("dept", department);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Department.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Department.class, EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -76,22 +62,10 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
     @Override
     public List<Department> getDepartments(String location, Date asOfDate) {
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
-
-		effdt.addEqualToField("location", Criteria.PARENT_QUERY_PREFIX + "location");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(Department.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("dept", Criteria.PARENT_QUERY_PREFIX + "dept");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(Department.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
 
 		root.addEqualTo("location", location);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Department.class, asOfDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Department.class, EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -111,23 +85,23 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 	@SuppressWarnings("unchecked")
     public List<Department> getDepartments(String dept, String location, String departmentDescr, String active, String showHistory) {
         List<Department> results = new ArrayList<Department>();
-
+        
         Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(dept)) {
             root.addLike("dept", dept);
         }
-
+        
         if (StringUtils.isNotBlank(location)) {
             root.addLike("location", location);
         }
-
+        
         if (StringUtils.isNotBlank(departmentDescr)) {
             root.addLike("description", departmentDescr);
         }
-
+        
         if (StringUtils.isNotBlank(active)) {
-            Criteria activeFilter = new Criteria();
+        	Criteria activeFilter = new Criteria();
             if (StringUtils.equals(active, "Y")) {
                 activeFilter.addEqualTo("active", true);
             } else if (StringUtils.equals(active, "N")) {
@@ -145,10 +119,10 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
             root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Department.class, EQUAL_TO_FIELDS, false));
             root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Department.class, EQUAL_TO_FIELDS, false));
         }
-
+        
         Query query = QueryFactory.newQuery(Department.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
-
+        
         return results;
     }
 

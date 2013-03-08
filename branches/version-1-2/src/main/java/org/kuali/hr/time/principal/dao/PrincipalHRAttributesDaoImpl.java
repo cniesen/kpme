@@ -17,15 +17,21 @@ package org.kuali.hr.time.principal.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -34,26 +40,19 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
 
 	@Override
 	public PrincipalHRAttributes getPrincipalCalendar(String principalId,
-			Date asOfDate) {
+			java.util.Date asOfDate) {
 		PrincipalHRAttributes pc = null;
 
 		Criteria root = new Criteria();
-		Criteria effdt = new Criteria();
-		Criteria timestamp = new Criteria();
 
-		effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-		effdt.addLessOrEqualThan("effectiveDate", asOfDate);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
+        ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                .add("principalId")
+                .build();
 
 		root.addEqualTo("principalId", principalId);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
+        java.sql.Date effDate = asOfDate == null ? null : new java.sql.Date(asOfDate.getTime());
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, effDate, fields, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, fields, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -85,7 +84,6 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
 		
 	}
 
-
 //    @Override
 //	public PrincipalHRAttributes getPrincipalHRAttributes(String principalId) {
 //		Criteria crit = new Criteria();
@@ -95,26 +93,22 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
 //	}
     
     @Override
-    public PrincipalHRAttributes getInactivePrincipalHRAttributes(String principalId, Date asOfDate) {
+    public PrincipalHRAttributes getInactivePrincipalHRAttributes(String principalId, java.util.Date asOfDate) {
     	PrincipalHRAttributes pc = null;
 
 		Criteria root = new Criteria();
 		Criteria effdt = new Criteria();
 		Criteria timestamp = new Criteria();
 
-		effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-		effdt.addGreaterOrEqualThan("effectiveDate", asOfDate);
-		ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, effdt);
-		effdtSubQuery.setAttributes(new String[] { "max(effdt)" });
-
-		timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-		timestamp.addEqualToField("effectiveDate", Criteria.PARENT_QUERY_PREFIX + "effectiveDate");
-		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, timestamp);
-		timestampSubQuery.setAttributes(new String[] { "max(timestamp)" });
+        effdt.addGreaterOrEqualThan("effectiveDate", asOfDate);
+        ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                .add("leavePlan")
+                .add("principalId")
+                .build();
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effdt, fields, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, fields, false));
 
 		root.addEqualTo("principalId", principalId);
-		root.addEqualTo("effectiveDate", effdtSubQuery);
-		root.addEqualTo("timestamp", timestampSubQuery);
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", false);
@@ -230,7 +224,7 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
         }
         return inactiveList;
     }
-    
+
 	@Override
     @SuppressWarnings("unchecked")
     public List<PrincipalHRAttributes> getPrincipalHrAtributes(String principalId, java.sql.Date fromEffdt, java.sql.Date toEffdt, String active, String showHistory) {
@@ -265,19 +259,11 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
         }
         
         if (StringUtils.equals(showHistory, "N")) {
-            Criteria effdt = new Criteria();
-        	effdt.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-        	effdt.addAndCriteria(effectiveDateFilter);
-        	ReportQueryByCriteria effdtSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, effdt);
-            effdtSubQuery.setAttributes(new String[]{"max(effectiveDate)"});
-            root.addEqualTo("effectiveDate", effdtSubQuery);
-            
-            Criteria timestamp = new Criteria();
-       		timestamp.addEqualToField("principalId", Criteria.PARENT_QUERY_PREFIX + "principalId");
-       		timestamp.addAndCriteria(effectiveDateFilter);
-       		ReportQueryByCriteria timestampSubQuery = QueryFactory.newReportQuery(PrincipalHRAttributes.class, timestamp);
-       		timestampSubQuery.setAttributes(new String[]{"max(timestamp)"});
-       		root.addEqualTo("timestamp", timestampSubQuery);
+            ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                    .add("principalId")
+                    .build();
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effectiveDateFilter, fields, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, fields, false));
        }
         
        Query query = QueryFactory.newQuery(PrincipalHRAttributes.class, root);
@@ -285,5 +271,5 @@ public class PrincipalHRAttributesDaoImpl extends PlatformAwareDaoBaseOjb implem
        
        return results;
     }
-    
+
 }
