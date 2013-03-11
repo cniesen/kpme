@@ -131,7 +131,7 @@ public class WorkAreaLookupableHelper extends TkAuthorizedLookupableHelperBase {
 		String active = fieldValues.get("active");
 		String showHist = fieldValues.get("history");
 		
-		if (StringUtils.equals(workArea, "%")) {
+		if (StringUtils.contains(workArea, "%")) {
 			workArea = "";
 		}
 		
