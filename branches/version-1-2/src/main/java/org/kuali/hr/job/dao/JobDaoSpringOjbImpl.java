@@ -37,7 +37,7 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
  * Represents an implementation of {@link JobDao}.
  */
 public class JobDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
-    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+    protected static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
             .add("principalId")
             .add("jobNumber")
             .build();
