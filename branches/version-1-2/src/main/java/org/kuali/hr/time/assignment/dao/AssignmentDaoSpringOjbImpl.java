@@ -41,7 +41,7 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
 public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements AssignmentDao {
 
     private static final Logger LOG = Logger.getLogger(AssignmentDaoSpringOjbImpl.class);
-    private static final ImmutableList<String> ASSIGNMENT_EQUAL_TO_FIELD = new ImmutableList.Builder<String>()
+    protected static final ImmutableList<String> ASSIGNMENT_EQUAL_TO_FIELD = new ImmutableList.Builder<String>()
             .add("jobNumber")
             .add("workArea")
             .add("task")
