@@ -237,7 +237,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			CalendarEntries payCalendarEntries) {
 		List<ApprovalTimeSummaryRow> rows = new LinkedList<ApprovalTimeSummaryRow>();
 		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumehtHeader(
-				persons, payBeginDate, payEndDate);
+				persons, payBeginDate, DateUtils.addMilliseconds(payEndDate, 1));
 
 		Calendar payCalendar = TkServiceLocator.getCalendarService()
 				.getCalendar(payCalendarEntries.getHrCalendarId());
@@ -717,7 +717,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		for (TKPerson person : persons) {
 			String principalId = person.getPrincipalId();
 
-			TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, DateUtils.addMilliseconds(payEndDate, 1));
+			TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
 			if(tdh != null) {
 				principalDocumentHeader.put(principalId, tdh);	
 			}

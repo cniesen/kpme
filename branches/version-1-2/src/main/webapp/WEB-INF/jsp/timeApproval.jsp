@@ -42,7 +42,7 @@
 
 	<tk:approvalFilter />
 	
-	<tk:approvalSearch searchId="searchTerm" />
+	<tk:approvalSearch searchId="searchValue" />
 
     <tk:timeApproval />
     
