@@ -73,7 +73,7 @@ public class TimezoneServiceImpl implements TimezoneService {
         }
     }
 
-    public DateTimeZone getUserTimezoneWithFallback(String principalId) {
+    private DateTimeZone getUserTimezoneWithFallback(String principalId) {
         String tzid = getUserTimezone(principalId);
         if (StringUtils.isEmpty(tzid)) {
             return TKUtils.getSystemDateTimeZone();
