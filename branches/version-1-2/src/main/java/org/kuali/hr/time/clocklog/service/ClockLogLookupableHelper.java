@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.clocklog.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -103,21 +104,12 @@ public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 				String timesheetUserId = timesheetDocumentHeader.getPrincipalId();
 				Date beginDate =  timesheetDocumentHeader.getPayBeginDate();
 				Date endDate =  timesheetDocumentHeader.getPayEndDate();
-				objectList = super.getSearchResultsUnbounded(fieldValues);
-				Iterator itr = objectList.iterator();
-				while (itr.hasNext()) {
-					ClockLog cl = (ClockLog) itr.next();
-					cl.setDocumentId(timesheetUserId);
-					if(cl.getPrincipalId().equalsIgnoreCase(timesheetUserId)) {
-						if(new Date(cl.getClockTimestamp().getTime()).compareTo(beginDate) >= 0 && new Date(cl.getClockTimestamp().getTime()).compareTo(endDate) <= 0) {
-							continue;
-						} else {
-							itr.remove();
-						}
-					} else {
-						itr.remove();
-					}
-				}
+                fieldValues.put("principalId", timesheetUserId);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+                fieldValues.put("rangeLowerBoundKeyPrefix_clockTimestamp", new StringBuilder(dateFormat.format(beginDate)).toString());
+                fieldValues.put("clockTimestamp", new StringBuilder(dateFormat.format(beginDate)).toString() + " ... " + new StringBuilder(dateFormat.format(endDate)).toString());
+
+                objectList = super.getSearchResultsUnbounded(fieldValues);
 			}
 		} else {
 			objectList = super.getSearchResults(fieldValues);
@@ -128,8 +120,10 @@ public class ClockLogLookupableHelper extends KualiLookupableHelperServiceImpl {
 			while (itr.hasNext()) {
 				ClockLog cl = (ClockLog) itr.next();
 				
-				// Set Document Id 
-				if(cl.getDocumentId() == null) {
+				// Set Document Id
+                if (documentId != null && StringUtils.isNotEmpty(documentId))
+                    cl.setDocumentId(documentId);
+				else {
 					TimesheetDocumentHeader tsdh = timesheetDocumentHeaderService.getDocumentHeaderForDate(cl.getPrincipalId(), cl.getClockTimestamp());
 					if(tsdh != null) {
 						cl.setDocumentId(tsdh.getDocumentId());
