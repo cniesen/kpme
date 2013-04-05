@@ -73,6 +73,15 @@ public class TimezoneServiceImpl implements TimezoneService {
         }
     }
 
+    public DateTimeZone getUserTimezoneWithFallback(String principalId) {
+        String tzid = getUserTimezone(principalId);
+        if (StringUtils.isEmpty(tzid)) {
+            return TKUtils.getSystemDateTimeZone();
+        } else {
+            return DateTimeZone.forID(tzid);
+        }
+    }
+
 	/**
 	 * Translation needed for UI Display
 	 * @param timeBlocks
@@ -95,7 +104,12 @@ public class TimezoneServiceImpl implements TimezoneService {
 	}
 
     public void translateForTimezone(List<TimeBlock> timeBlocks) {
-        translateForTimezone(timeBlocks, getUserTimezoneWithFallback());
+        if (timeBlocks.isEmpty()) {
+            translateForTimezone(timeBlocks, getUserTimezoneWithFallback());
+        }
+        else {
+            translateForTimezone(timeBlocks, getUserTimezoneWithFallback(timeBlocks.get(0).getPrincipalId()));
+        }
     }
 
 	@Override
