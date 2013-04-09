@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2004-2013 The Kuali Foundation
  *
@@ -33,6 +34,7 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.util.ObjectUtils;
 
 public class Assignment extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Assignment";
@@ -89,7 +91,6 @@ public class Assignment extends HrBusinessObject {
 
 	public void setPrincipalId(String principalId) {
 		this.principalId = principalId;
-		this.setPrincipal(KimApiServiceLocator.getPersonService().getPerson(this.principalId));
 	}
 
 	public String getName() {
@@ -243,6 +244,9 @@ public class Assignment extends HrBusinessObject {
 	}
 
 	public Person getPrincipal() {
+		if (ObjectUtils.isNull(principal)) {
+			this.setPrincipal(KimApiServiceLocator.getPersonService().getPerson(this.principalId));
+		}
 		return principal;
 	}
 
