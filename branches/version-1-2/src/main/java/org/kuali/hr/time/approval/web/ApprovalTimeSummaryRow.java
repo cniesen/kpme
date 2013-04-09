@@ -33,6 +33,7 @@ import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow> {
@@ -183,8 +184,8 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
 
         link.append("methodToCall=changeTargetPerson");
         link.append("&documentId=").append(this.getDocumentId());
-        Person person = KimApiServiceLocator.getPersonService().getPerson(this.getPrincipalId());
-        link.append("&principalName=").append(person.getPrincipalName());
+        Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(this.getPrincipalId());
+        link.append("&principalName=").append(principal.getPrincipalName());
 
         return link.toString();
     }
