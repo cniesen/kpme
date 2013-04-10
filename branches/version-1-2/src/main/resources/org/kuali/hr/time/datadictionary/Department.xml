@@ -42,7 +42,7 @@
                 <ref bean="Department-location" />
                 <ref bean="Department-effectiveDate" />
                 <ref bean="Department-timestamp" />
-                <ref bean="Location-history"/>
+                <ref bean="Department-history"/>
                 <ref bean="Department-active" />
             </list>
         </property>
