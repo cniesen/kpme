@@ -171,7 +171,7 @@
     
     <class-descriptor class="org.kuali.hr.time.department.Department" table="HR_DEPT_T">
         <field-descriptor name="hrDeptId"       column="HR_DEPT_ID"  jdbc-type="VARCHAR"    length="60" nullable="false" primarykey="true"  autoincrement="true" sequence-name="HR_DEPT_S" />
-        <field-descriptor name="dept"           column="DEPT"        jdbc-type="VARCHAR"    length="21" nullable="false" primarykey="false" />
+        <field-descriptor name="dept"           column="DEPT"        jdbc-type="VARCHAR"    length="21" nullable="false" primarykey="true" />
         <field-descriptor name="description"    column="DESCRIPTION" jdbc-type="VARCHAR"    length="30" nullable="false" primarykey="false" />
         <field-descriptor name="org"            column="ORG"         jdbc-type="VARCHAR"    length="10" nullable="false" primarykey="false" />
         <field-descriptor name="chart"          column="CHART"       jdbc-type="VARCHAR"    length="10" nullable="false" primarykey="false" />
@@ -658,7 +658,7 @@
 
     <class-descriptor class="org.kuali.hr.time.position.Position" table="HR_POSITION_T">
         <field-descriptor name="hrPositionId"   column="HR_POSITION_ID" jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_POSITION_ID_S" />
-        <field-descriptor name="positionNumber" column="POSITION_NBR"   jdbc-type="VARCHAR"     length="20" autoincrement="true" sequence-name="HR_POSITION_S" />
+        <field-descriptor name="positionNumber" column="POSITION_NBR"   jdbc-type="VARCHAR"     length="20" primarykey="true" autoincrement="true" sequence-name="HR_POSITION_S" />
         <field-descriptor name="description"    column="DESCRIPTION"    jdbc-type="VARCHAR"     length="30" nullable="false" primarykey="false" />
         <field-descriptor name="objectId"       column="OBJ_ID"         jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"        jdbc-type="BIGINT"      locking="true" />
@@ -670,7 +670,7 @@
 
     <class-descriptor class="org.kuali.hr.time.accrual.AccrualCategory" table="lm_accrual_categories_t">
         <field-descriptor name="lmAccrualCategoryId" column="LM_ACCRUAL_CATEGORY_ID" jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="lm_accrual_categories_s"/>
-        <field-descriptor name="accrualCategory" column="ACCRUAL_CATEGORY" jdbc-type="VARCHAR" length="3" nullable="false" />
+        <field-descriptor name="accrualCategory" column="ACCRUAL_CATEGORY" jdbc-type="VARCHAR" length="3" nullable="false" primarykey="true" />
         <field-descriptor name="descr" column="DESCR" jdbc-type="VARCHAR" length="30" nullable="false" />
         <field-descriptor name="effectiveDate" column="EFFDT" jdbc-type="DATE" nullable="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion"/>
         <field-descriptor name="timestamp" column="timestamp" jdbc-type="TIMESTAMP" nullable="false" conversion="org.kuali.hr.time.util.TkTimestampConverter"/>
