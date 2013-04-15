@@ -195,7 +195,7 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                     //TODO eventually move this logic to one concise place for editable portions of the timeblock
                     List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKContext.getPrincipalId(),tb.getBeginDate());
                     if(assignments.size() == 1){
-                        if(!tcr.isClockUserFl() ){
+                        if(tcr == null || !tcr.isClockUserFl() ){
                             return true;
                         }  else{
                             return false;
@@ -287,10 +287,12 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
                     //and the user is a clock user and this is the users timesheet do not allow to be deleted
-                    if(tcr.isClockUserFl() && StringUtils.equals(userId,TKContext.getTargetPrincipalId())) {
-                        return false;
-                    }  else {
-                        return true;
+                    if (tcr == null || tcr.isClockUserFl()) {
+                        if (StringUtils.equals(userId,TKContext.getTargetPrincipalId())) {
+                            return false;
+                        }  else {
+                            return true;
+                        }
                     }
 
                 }
