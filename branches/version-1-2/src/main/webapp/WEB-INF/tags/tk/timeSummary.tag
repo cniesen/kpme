@@ -41,15 +41,25 @@
 							<td class="${assignRow.cssClass}">${assignRow.descr}</td>
 							<c:choose>
 							<c:when test="${!earnCodeSection.isAmountEarnCode}">
-								<c:forEach items="${assignRow.total}" var="entry">
-									<c:choose>
+                                <c:set var="entryPosition" value="0" />
+                                <c:forEach items="${assignRow.total}" var="entry">
+
+                                    <c:choose>
 									<c:when test="${entry ne '0.00' and entry != 0}">
-										<td class="${assignRow.cssClass}">${entry}</td>
+                                        <c:choose>
+                                            <c:when test="${entryPosition == 7 || entryPosition == 15 || entryPosition == 16}">
+                                                <td class="${assignRow.cssClass}">${entry}</td>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td>${entry}</td>
+                                            </c:otherwise>
+                                        </c:choose>
 									</c:when>
 									<c:otherwise>
 										<td/>
 									</c:otherwise>
-									</c:choose>								
+									</c:choose>
+                                    <c:set var="entryPosition" value="${entryPosition + 1}" />
 								</c:forEach>
 							</c:when>
 							<c:otherwise>
