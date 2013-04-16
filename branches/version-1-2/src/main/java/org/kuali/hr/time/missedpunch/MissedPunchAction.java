@@ -68,12 +68,16 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
             lastClock = TkServiceLocator.getClockLogService().getLastClockLog(TKUser.getCurrentTargetPerson().getPrincipalId());
             if (lastClock != null) {
                 MissedPunchDocument lastDoc = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(lastClock.getTkClockLogId());
+
+                //Do not default the assignment.
+
+                /*
                 if (lastDoc != null) {    // last action was a missed punch
                     mpDoc.setAssignment(lastDoc.getAssignment());
                 } else {    // last action was not a missed punch
                     AssignmentDescriptionKey adk = new AssignmentDescriptionKey(lastClock.getJobNumber().toString(), lastClock.getWorkArea().toString(), lastClock.getTask().toString());
                     mpDoc.setAssignment(adk.toAssignmentKeyString());
-                }
+                } */
             }
         }
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")

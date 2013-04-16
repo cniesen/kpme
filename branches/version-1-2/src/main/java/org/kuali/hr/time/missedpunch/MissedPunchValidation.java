@@ -49,6 +49,7 @@ public class MissedPunchValidation extends TransactionalDocumentRuleBase {
         if (DocumentStatus.INITIATED.equals(DocumentStatus.fromCode(documentStatus.getCode()))
         		|| DocumentStatus.SAVED.equals(DocumentStatus.fromCode(documentStatus.getCode()))) {
 	        valid &= validateTimeSheet(missedPunchDocument);
+            valid &= validateAssignment(missedPunchDocument);
 
 	        if (valid) {
 	        	ClockLog lastClock = TkServiceLocator.getClockLogService().getLastClockLog(missedPunchDocument.getPrincipalId());
@@ -147,7 +148,7 @@ public class MissedPunchValidation extends TransactionalDocumentRuleBase {
         //Missed Action Date and Missed Action Time are required fields. KPME-1853
         if(mp.getActionTime() == null || mp.getActionDate() == null)
         	return false;
-        
+
         DateTime clockLogDateTime = new DateTime(lastClock.getClockTimestamp().getTime());
         DateTime boundaryMax = clockLogDateTime.plusDays(1);
         DateTime nowTime = new DateTime(TKUtils.getCurrentDate());
@@ -169,10 +170,29 @@ public class MissedPunchValidation extends TransactionalDocumentRuleBase {
         	GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.future.time");
         	return false;
         }
-        
-        if ( ((!StringUtils.equals(lastClock.getClockAction(), TkConstants.CLOCK_OUT) && actionDateTime.isAfter(boundaryMax)) 
+
+        if ( ((!StringUtils.equals(lastClock.getClockAction(), TkConstants.CLOCK_OUT) && actionDateTime.isAfter(boundaryMax))
         		|| actionDateTime.isBefore(clockLogDateTime)) ) {
         	GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.invalid.datetime");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    /**
+     * Checks whether the chosen assignment is null.
+     *
+     * @param mp The MissedPunch we are validating.
+     *
+     * @return true if valid, false otherwise.
+     * @throws ParseException
+     */
+    boolean validateAssignment(MissedPunchDocument mp) {
+        boolean valid = true;
+
+        if (mp.getAssignment() == null) {
+            GlobalVariables.getMessageMap().putError("document.assignment", "clock.mp.assignment.required");
             valid = false;
         }
 
