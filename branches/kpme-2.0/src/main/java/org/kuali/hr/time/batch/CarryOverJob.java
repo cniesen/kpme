@@ -15,7 +15,6 @@
  */
 package org.kuali.hr.time.batch;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -243,7 +242,6 @@ public class CarryOverJob implements Job{
                     leaveBlock.setEarnCode(accrualCategory.getEarnCode());
                 }
 
-                leaveBlock.setDateAndTime(new Timestamp(System.currentTimeMillis()));
                 leaveBlock.setAccrualGenerated(true);
                 leaveBlock.setBlockId(0L);
 

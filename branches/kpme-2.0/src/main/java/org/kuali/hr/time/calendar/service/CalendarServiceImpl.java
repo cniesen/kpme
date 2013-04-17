@@ -28,7 +28,6 @@ import org.kuali.hr.time.calendar.dao.CalendarDao;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 
