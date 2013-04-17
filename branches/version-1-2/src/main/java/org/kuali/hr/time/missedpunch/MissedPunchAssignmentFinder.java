@@ -78,7 +78,9 @@ public class MissedPunchAssignmentFinder extends KeyValuesBase {
             Map<String,String> adMap = TkServiceLocator.getAssignmentService().getAssignmentDescriptions(tdoc, true); // Grab clock only assignments
 
             //Add blank
-            labels.add(new ConcreteKeyValue("", "-- select an assignment --"));
+            if (adMap.entrySet() != null && adMap.entrySet().size() > 1) {
+                labels.add(new ConcreteKeyValue("", "-- select an assignment --"));
+            }
             for (Map.Entry entry : adMap.entrySet()) {
                 labels.add(new ConcreteKeyValue((String)entry.getKey(), (String)entry.getValue()));
             }
