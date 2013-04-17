@@ -283,31 +283,37 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
 					return false;
 			}
 
-                //if on a regular earncode
-                if (StringUtils.equals(payType.getRegEarnCode(),
-                        tb.getEarnCode())) {
-                    //and the user is a clock user and this is the users timesheet do not allow to be deleted
-                    if (tcr == null || tcr.isClockUserFl()) {
-                        if (StringUtils.equals(userId,TKContext.getTargetPrincipalId())) {
-                            return false;
-                        }  else {
-                            return true;
-                        }
-                    }
-
-                }
-
-                List<EarnCodeSecurity> deptEarnCodes = TkServiceLocator
-                        .getEarnCodeSecurityService().getEarnCodeSecurities(
-                                job.getDept(), job.getHrSalGroup(),
-                                job.getLocation(), tb.getEndDate());
-                for (EarnCodeSecurity dec : deptEarnCodes) {
-                    if (dec.isEmployee()
-                            && StringUtils.equals(dec.getEarnCode(),
-                            tb.getEarnCode())) {
+            //if on a regular earncode
+            if (StringUtils.equals(payType.getRegEarnCode(),
+                    tb.getEarnCode())) {
+                //and the user is a clock user and this is the users timesheet do not allow to be deleted
+                if (tcr == null || tcr.isClockUserFl()) {
+                    if (StringUtils.equals(userId,TKContext.getTargetPrincipalId())) {
+                        return false;
+                    }  else {
                         return true;
                     }
                 }
+
+            }
+
+            //KPME-2264 -
+            // EE's should be able to remove timeblocks added via the time detail calendar only after checking prior conditions,
+            if (userId.equals(TKContext.getTargetPrincipalId())) {
+                return true;
+            }
+
+            List<EarnCodeSecurity> deptEarnCodes = TkServiceLocator
+                    .getEarnCodeSecurityService().getEarnCodeSecurities(
+                            job.getDept(), job.getHrSalGroup(),
+                            job.getLocation(), tb.getEndDate());
+            for (EarnCodeSecurity dec : deptEarnCodes) {
+                if (dec.isEmployee()
+                        && StringUtils.equals(dec.getEarnCode(),
+                        tb.getEarnCode())) {
+                    return true;
+                }
+            }
 
         }
 
