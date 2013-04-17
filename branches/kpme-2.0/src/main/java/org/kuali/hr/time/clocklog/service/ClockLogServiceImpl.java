@@ -49,16 +49,16 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, String principalId) {
-        return processClockLog(clockTimeStamp, assignment, pe, ip, asOfDate, td, clockAction, principalId, TKContext.getPrincipalId());
+    public ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, String principalId) {
+        return processClockLog(clockDateTime, assignment, pe, ip, asOfDate, td, clockAction, principalId, TKContext.getPrincipalId());
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+    public ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
         // process rules
-        Timestamp roundedClockTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockTimeStamp, pe.getBeginPeriodFullDateTime().toLocalDate());
+        DateTime roundedClockDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockDateTime, pe.getBeginPeriodFullDateTime().toLocalDate());
 
-        ClockLog clockLog = buildClockLog(roundedClockTimestamp, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
+        ClockLog clockLog = buildClockLog(roundedClockDateTime, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
         TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, asOfDate);
 
         // If the clock action is clock out or lunch out, create a time block besides the clock log
@@ -120,12 +120,12 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     @Override
-    public ClockLog buildClockLog(Timestamp clockTimestamp, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip) {
-        return buildClockLog(clockTimestamp, originalTimestamp, assignment, timesheetDocument, clockAction, ip, TKContext.getPrincipalId());
+    public ClockLog buildClockLog(DateTime clockDateTime, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip) {
+        return buildClockLog(clockDateTime, originalTimestamp, assignment, timesheetDocument, clockAction, ip, TKContext.getPrincipalId());
     }
 
     @Override
-    public ClockLog buildClockLog(Timestamp clockTimestamp, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId) {
+    public ClockLog buildClockLog(DateTime clockDateTime, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId) {
         String principalId = timesheetDocument.getPrincipalId();
 
         ClockLog clockLog = new ClockLog();
@@ -137,7 +137,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         clockLog.setWorkArea(assignment.getWorkArea());
         clockLog.setTask(assignment.getTask());
         clockLog.setClockTimestampTimezone(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback().getID());
-        clockLog.setClockTimestamp(clockTimestamp);
+        clockLog.setClockDateTime(clockDateTime);
         clockLog.setClockAction(clockAction);
         clockLog.setIpAddress(ip);
         clockLog.setUserPrincipalId(userPrincipalId);

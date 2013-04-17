@@ -238,7 +238,7 @@ public class ClockAction extends TimesheetAction {
         }
         
                
-        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new Timestamp(System.currentTimeMillis()), assignment, caf.getPayCalendarDates(), ip,
+        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new DateTime(), assignment, caf.getPayCalendarDates(), ip,
                 LocalDate.now(), caf.getTimesheetDocument(), caf.getCurrentClockAction(), TKContext.getTargetPrincipalId());
 
         caf.setClockLog(clockLog);

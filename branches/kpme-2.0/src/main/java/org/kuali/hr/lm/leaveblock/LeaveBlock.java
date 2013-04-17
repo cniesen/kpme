@@ -589,6 +589,14 @@ public class LeaveBlock extends PersistableBusinessObjectBase {
 	public void setBeginTimestamp(Date beginTimestamp) {
 		this.beginTimestamp = beginTimestamp;
 	}
+	
+	public DateTime getBeginDateTime() {
+		return beginTimestamp != null ? new DateTime(beginTimestamp) : null;
+	}
+	
+	public void setBeginDateTime(DateTime beginDateTime) {
+		beginTimestamp = beginDateTime != null ? beginDateTime.toDate() : null;
+	}
 
 	public Date getEndTimestamp() {
 		return endTimestamp;
@@ -597,6 +605,13 @@ public class LeaveBlock extends PersistableBusinessObjectBase {
 	public void setEndTimestamp(Date endTimestamp) {
 		this.endTimestamp = endTimestamp;
 	}
+	
+	public DateTime getEndDateTime() {
+		return endTimestamp != null ? new DateTime(endTimestamp) : null;
+	}
+	
+	public void setEndDateTime(DateTime endDateTime) {
+		endTimestamp = endDateTime != null ? endDateTime.toDate() : null;
+	}
+	
 }
-
-

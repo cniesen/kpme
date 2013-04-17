@@ -120,12 +120,11 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(tdoc, missedPunch.getAssignment());
         // Need to build a clock log entry.
         //Timestamp clockTimestamp, String selectedAssign, TimesheetDocument timesheetDocument, String clockAction, String ip) {
-        Timestamp ts = new Timestamp(missedPunch.getActionDate().getTime());
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
         Long zoneOffset = TkServiceLocator.getTimezoneService().getTimezoneOffsetFromServerTime(DateTimeZone.forID(lastClockLog.getClockTimestampTimezone()));
-        Timestamp clockLogTime = new Timestamp(ts.getTime() - zoneOffset); // convert the action time to the system zone time
+        DateTime clockLogDateTime = new DateTime(missedPunch.getActionDate().getTime() - zoneOffset); // convert the action time to the system zone time
 
-        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogTime, clockLogTime,
+        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogDateTime, new Timestamp(clockLogDateTime.getMillis()),
                 assign,
                 tdoc,
                 missedPunch.getClockAction(),
@@ -156,12 +155,11 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(missedPunch.getTimesheetDocumentId());
         Assignment assign = TkServiceLocator.getAssignmentService().getAssignment(tdoc, missedPunch.getAssignment());
         // Need to build a clock log entry.
-        Timestamp ts = new Timestamp(missedPunch.getActionDate().getTime());
         ClockLog lastLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
         Long zoneOffset = TkServiceLocator.getTimezoneService().getTimezoneOffsetFromServerTime(DateTimeZone.forID(lastLog.getClockTimestampTimezone()));
-        Timestamp clockLogTime = new Timestamp(ts.getTime() - zoneOffset); // convert the action time to the system zone time
+        DateTime clockLogDateTime = new DateTime(missedPunch.getActionDate().getTime() - zoneOffset); // convert the action time to the system zone time
 
-        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogTime, clockLogTime,
+        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogDateTime, new Timestamp(clockLogDateTime.getMillis()),
                 assign,
                 tdoc,
                 missedPunch.getClockAction(),
