@@ -53,7 +53,7 @@ public class PmValidationUtilsTest extends KPMETestCase {
 		boolean results = PmValidationUtils.validatePositionReportType(prt, institution, campus, aDate.toLocalDate()); // non-existing
 		Assert.assertFalse(results);
 		
-		prt = "testPrt";	
+		prt = "testPRT";	
 		results = PmValidationUtils.validatePositionReportType(prt, institution, campus, aDate.toLocalDate());	// existing, but wrong date
 		Assert.assertFalse(results);
 		
@@ -70,7 +70,7 @@ public class PmValidationUtilsTest extends KPMETestCase {
 		boolean results = PmValidationUtils.validateInstitutionWithPRT(prt, institution, aDate.toLocalDate()); // non-existing
 		Assert.assertFalse(results);
 		
-		prt = "testPrt";	
+		prt = "testPRT";	
 		results = PmValidationUtils.validateInstitutionWithPRT(prt, institution, aDate.toLocalDate());	// existing, but wrong date
 		Assert.assertFalse(results);
 		
@@ -87,7 +87,7 @@ public class PmValidationUtilsTest extends KPMETestCase {
 		boolean results = PmValidationUtils.validateCampusWithPRT(prt, campus, aDate.toLocalDate());  // non-existing
 		Assert.assertFalse(results);
 		
-		prt = "testPrt";	
+		prt = "testPRT";	
 		results = PmValidationUtils.validateCampusWithPRT(prt, campus, aDate.toLocalDate());	// existing, but wrong date
 		Assert.assertFalse(results);
 		
@@ -179,14 +179,5 @@ public class PmValidationUtilsTest extends KPMETestCase {
 		results = PmValidationUtils.validatePstnRptGrp(prg, institution, campus, aDate.toLocalDate()); 
 		Assert.assertTrue(results);
 	}
-	
-	public void testValidatePositionQualificationValue() {
-		boolean results = PmValidationUtils.validatePositionQualificationValue("non-exist");
-		Assert.assertFalse(results);
-		
-		results = PmValidationUtils.validatePositionQualificationValue("existing");
-		Assert.assertTrue(results);
-	}
-	
 
 }
