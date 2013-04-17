@@ -15,8 +15,8 @@
  */
 package org.kuali.hr.time.calendar;
 
-import java.sql.Date;
 import java.sql.Time;
+import java.util.Date;
 
 import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.service.base.TkServiceLocator;
