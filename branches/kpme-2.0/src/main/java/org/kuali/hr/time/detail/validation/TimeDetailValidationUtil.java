@@ -16,7 +16,6 @@
 package org.kuali.hr.time.detail.validation;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,8 +81,8 @@ public class TimeDetailValidationUtil {
             endTime = TKUtils.convertDateStringToTimestampWithoutZone(endDateS, endTimeS).getTime();
         } else {
         // These methods use the UserTimeZone.
-            startTime = TKUtils.convertDateStringToTimestamp(startDateS, startTimeS).getTime();
-            endTime = TKUtils.convertDateStringToTimestamp(endDateS, endTimeS).getTime();
+            startTime = TKUtils.convertDateStringToDateTime(startDateS, startTimeS).getMillis();
+            endTime = TKUtils.convertDateStringToDateTime(endDateS, endTimeS).getMillis();
         }
 
         errors.addAll(validateInterval(payCalEntry, startTime, endTime));
@@ -210,13 +209,13 @@ public class TimeDetailValidationUtil {
         if(lastClockLog != null &&
         		(lastClockLog.getClockAction().equals(TkConstants.CLOCK_IN) 
         				|| lastClockLog.getClockAction().equals(TkConstants.LUNCH_IN))) {
-        	 Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
+        	 DateTime lastClockDateTime = lastClockLog.getClockDateTime();
              String lastClockZone = lastClockLog.getClockTimestampTimezone();
              if (StringUtils.isEmpty(lastClockZone)) {
                  lastClockZone = TKUtils.getSystemTimeZone();
              }
              DateTimeZone zone = DateTimeZone.forID(lastClockZone);
-             DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
+             DateTime clockWithZone = lastClockDateTime.withZone(zone);
              DateTime currentTime = new DateTime(System.currentTimeMillis(), zone);
              Interval currentClockInInterval = new Interval(clockWithZone.getMillis(), currentTime.getMillis());
        
@@ -228,7 +227,7 @@ public class TimeDetailValidationUtil {
        
         if (acrossDays) {
             DateTime start = new DateTime(startTime);
-            DateTime end = new DateTime(TKUtils.convertDateStringToTimestamp(startDateS, endTimeS).getTime());
+            DateTime end = TKUtils.convertDateStringToDateTime(startDateS, endTimeS);
             if (endTemp.getDayOfYear() - startTemp.getDayOfYear() < 1) {
                 end = new DateTime(endTime);
             }

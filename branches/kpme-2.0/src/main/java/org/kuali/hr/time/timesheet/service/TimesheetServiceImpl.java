@@ -16,7 +16,6 @@
 package org.kuali.hr.time.timesheet.service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -166,8 +165,8 @@ public class TimesheetServiceImpl implements TimesheetService {
         	if (sstoAssign != null) {
         		for(SystemScheduledTimeOff ssto : sstoList) {
                   BigDecimal sstoCalcHours = TkServiceLocator.getSysSchTimeOffService().calculateSysSchTimeOffHours(sstoAssign.getJob(), ssto.getAmountofTime());
-                  TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().createTimeBlock(timesheetDocument, new Timestamp(ssto.getScheduledTimeOffDate().getTime()),
-                          new Timestamp(ssto.getScheduledTimeOffDate().getTime()), sstoAssign, TkConstants.HOLIDAY_EARN_CODE, sstoCalcHours, BigDecimal.ZERO, false, false, TKContext.getPrincipalId());
+                  TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().createTimeBlock(timesheetDocument, ssto.getScheduledTimeOffLocalDate().toDateTimeAtStartOfDay(),
+                          ssto.getScheduledTimeOffLocalDate().toDateTimeAtStartOfDay(), sstoAssign, TkConstants.HOLIDAY_EARN_CODE, sstoCalcHours, BigDecimal.ZERO, false, false, TKContext.getPrincipalId());
                   timesheetDocument.getTimeBlocks().add(timeBlock);
               }
 	            //If system scheduled time off are loaded will need to save them to the database

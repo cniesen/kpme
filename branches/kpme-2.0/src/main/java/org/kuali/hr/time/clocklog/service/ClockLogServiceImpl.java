@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.CalendarEntry;
@@ -73,7 +74,7 @@ public class ClockLogServiceImpl implements ClockLogService {
 
     private void processTimeBlock(ClockLog clockLog, Assignment assignment, CalendarEntry pe, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
         ClockLog lastLog = null;
-        Timestamp lastClockTimestamp = null;
+        DateTime lastClockDateTime = null;
         String beginClockLogId = null;
         String endClockLogId = null;
 
@@ -83,16 +84,15 @@ public class ClockLogServiceImpl implements ClockLogService {
             lastLog = TkServiceLocator.getClockLogService().getLastClockLog(principalId);
         }
         if (lastLog != null) {
-            lastClockTimestamp = lastLog.getClockTimestamp();
+        	lastClockDateTime = lastLog.getClockDateTime();
             beginClockLogId = lastLog.getTkClockLogId();
         }
         //Save current clock log to get id for timeblock building
         KRADServiceLocator.getBusinessObjectService().save(clockLog);
         endClockLogId = clockLog.getTkClockLogId();
 
-        long beginTime = lastClockTimestamp.getTime();
-        Timestamp beginTimestamp = new Timestamp(beginTime);
-        Timestamp endTimestamp = clockLog.getClockTimestamp();
+        DateTime beginDateTime = lastClockDateTime;
+        DateTime endDateTime = clockLog.getClockDateTime();
 
         // New Time Blocks, pointer reference
         List<TimeBlock> newTimeBlocks = td.getTimeBlocks();
@@ -102,7 +102,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         }
 
         // Add TimeBlocks after we store our reference object!
-        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginTimestamp, endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false, userPrincipalId);
+        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(assignment, assignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginDateTime, endDateTime, BigDecimal.ZERO, BigDecimal.ZERO, true, false, userPrincipalId);
         for (TimeBlock tb : aList) {
             tb.setClockLogBeginId(beginClockLogId);
             tb.setClockLogEndId(endClockLogId);

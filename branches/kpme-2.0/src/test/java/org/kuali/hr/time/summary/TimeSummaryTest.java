@@ -40,7 +40,7 @@ public class TimeSummaryTest extends KPMETestCase {
 		
 		TimeHourDetail timeHourDetail = new TimeHourDetail();
 		
-		Map<Timestamp, BigDecimal> timeToHrs = TkTestUtils.getDateToHoursMap(timeBlock, timeHourDetail);
+		Map<DateTime, BigDecimal> timeToHrs = TkTestUtils.getDateToHoursMap(timeBlock, timeHourDetail);
 		Assert.assertTrue(timeToHrs!=null);
 	}
 	

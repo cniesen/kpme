@@ -135,7 +135,7 @@ public class ClockAction extends TimesheetAction {
 
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(principalId);
         if (lastClockLog != null) {
-            Timestamp lastClockTimestamp = lastClockLog.getClockTimestamp();
+            DateTime lastClockDateTime = lastClockLog.getClockDateTime();
             String lastClockZone = lastClockLog.getClockTimestampTimezone();
             if (StringUtils.isEmpty(lastClockZone)) {
                 lastClockZone = TKUtils.getSystemTimeZone();
@@ -144,9 +144,9 @@ public class ClockAction extends TimesheetAction {
             // Exception would indicate bad data stored in the system. We can wrap this, but
             // for now, the thrown exception is probably more valuable.
             DateTimeZone zone = DateTimeZone.forID(lastClockZone);
-            DateTime clockWithZone = new DateTime(lastClockTimestamp, zone);
+            DateTime clockWithZone = lastClockDateTime.withZone(zone);
             caf.setLastClockTimeWithZone(clockWithZone.toDate());
-            caf.setLastClockTimestamp(lastClockTimestamp);
+            caf.setLastClockTimestamp(lastClockDateTime.toDate());
             caf.setLastClockAction(lastClockLog.getClockAction());
         }
 
@@ -295,14 +295,14 @@ public class ClockAction extends TimesheetAction {
 		List<TimeBlock> newTbList = new ArrayList<TimeBlock>();
 		for(int i = 0; i < hrs.length; i++) {
 			BigDecimal hours = new BigDecimal(hrs[i]);
-			Timestamp beginTS = TKUtils.convertDateStringToTimestamp(beginDates[i], beginTimes[i]);
-			Timestamp endTS = TKUtils.convertDateStringToTimestamp(endDates[i], endTimes[i]);
+			DateTime beginDateTime = TKUtils.convertDateStringToDateTime(beginDates[i], beginTimes[i]);
+			DateTime endDateTime = TKUtils.convertDateStringToDateTime(endDates[i], endTimes[i]);
 			String assignString = assignments[i];
 			Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(assignString);
 			
 			TimesheetDocument tsDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocId);
 			
-			TimeBlock tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginTS, endTS, assignment, earnCode, hours,BigDecimal.ZERO, false, false, TKContext.getPrincipalId());
+			TimeBlock tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginDateTime, endDateTime, assignment, earnCode, hours,BigDecimal.ZERO, false, false, TKContext.getPrincipalId());
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);

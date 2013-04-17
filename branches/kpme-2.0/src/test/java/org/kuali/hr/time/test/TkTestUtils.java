@@ -413,24 +413,22 @@ public class TkTestUtils {
 		for (int i=0; i<days; i++) {
 			DateTime ci = start.plusDays(i);
 			DateTime co = ci.plusHours(hours.intValue());
-			Timestamp tsin = new Timestamp(ci.getMillis());
-			Timestamp tsout = new Timestamp(co.getMillis());
 
-			blocks.addAll(service.buildTimeBlocks(assignment, earnCode, timesheetDocument, tsin, tsout, hours, amount, false, false, TKContext.getPrincipalId()));
+			blocks.addAll(service.buildTimeBlocks(assignment, earnCode, timesheetDocument, ci, co, hours, amount, false, false, TKContext.getPrincipalId()));
 		}
 
 		return blocks;
 	}
 
-	public static Map<Timestamp, BigDecimal> getDateToHoursMap(TimeBlock timeBlock, TimeHourDetail timeHourDetail) {
-		Map<Timestamp, BigDecimal> dateToHoursMap = new HashMap<Timestamp, BigDecimal>();
+	public static Map<DateTime, BigDecimal> getDateToHoursMap(TimeBlock timeBlock, TimeHourDetail timeHourDetail) {
+		Map<DateTime, BigDecimal> dateToHoursMap = new HashMap<DateTime, BigDecimal>();
 		DateTime beginTime = new DateTime(timeBlock.getBeginTimestamp());
 		DateTime endTime = new DateTime(timeBlock.getEndTimestamp());
 
 		Days d = Days.daysBetween(beginTime, endTime);
 		int numberOfDays = d.getDays();
 		if (numberOfDays < 1) {
-			dateToHoursMap.put(timeBlock.getBeginTimestamp(), timeHourDetail.getHours());
+			dateToHoursMap.put(timeBlock.getBeginDateTime(), timeHourDetail.getHours());
 			return dateToHoursMap;
 		}
 		DateTime currentTime = beginTime;
@@ -443,13 +441,13 @@ public class TkTestUtils {
 			Duration dur = new Duration(currentTime, nextDayAtMidnight);
 			long duration = dur.getStandardSeconds();
 			BigDecimal hrs = new BigDecimal(duration / 3600, TkConstants.MATH_CONTEXT);
-			dateToHoursMap.put(new Timestamp(currentTime.getMillis()), hrs);
+			dateToHoursMap.put(currentTime, hrs);
 			currentTime = nextDayAtMidnight;
 		}
 		Duration dur = new Duration(currentTime, endTime);
 		long duration = dur.getStandardSeconds();
 		BigDecimal hrs = new BigDecimal(duration / 3600, TkConstants.MATH_CONTEXT);
-		dateToHoursMap.put(new Timestamp(currentTime.getMillis()), hrs);
+		dateToHoursMap.put(currentTime, hrs);
 
 		return dateToHoursMap;
 	}

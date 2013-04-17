@@ -104,7 +104,7 @@ public class TkMobileServiceImpl implements TkMobileService {
 			}
 			//TODO convert for timezone
 			
-			lastClockDescription += TKUtils.formatTimestamp(lastClockLog.getClockTimestamp());
+			lastClockDescription += TKUtils.formatDateTimeLong(lastClockLog.getClockDateTime());
 			return lastClockDescription;
 		}
 		return "";
