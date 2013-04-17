@@ -15,10 +15,18 @@
  */
 package org.kuali.hr.time.timesummary.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -49,10 +57,6 @@ import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workarea.WorkArea;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.*;
 
 public class TimeSummaryServiceImpl implements TimeSummaryService {
 	private static final String OTHER_EARN_GROUP = "Other";
@@ -327,8 +331,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
                         //conveniently, we only really need the hours amount
                         TimeBlock timeBlock = new TimeBlock();
                         timeBlock.setHours(lb.getLeaveAmount().negate());
-                        timeBlock.setBeginTimestamp(new Timestamp(lb.getLeaveDate().getTime()));
-                        timeBlock.setEndTimestamp(new Timestamp(new DateTime(lb.getLeaveDate()).plusMinutes(timeBlock.getHours().intValue()).getMillis()));
+                        timeBlock.setBeginDateTime(lb.getLeaveLocalDate().toDateTimeAtStartOfDay());
+                        timeBlock.setEndDateTime(lb.getLeaveLocalDate().toDateTimeAtStartOfDay().plusMinutes(timeBlock.getHours().intValue()));
                         timeBlock.setAssignmentKey(lb.getAssignmentKey());
                         timeBlock.setEarnCode(lb.getEarnCode());
                         timeBlock.setPrincipalId(lb.getPrincipalId());

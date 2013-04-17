@@ -301,7 +301,7 @@ public class TKUtils {
         return dateTime;
     }
     
-    public static Timestamp convertDateStringToTimestampWithoutZone(String dateStr, String timeStr) {
+    public static DateTime convertDateStringToDateTimeWithoutZone(String dateStr, String timeStr) {
         // the date/time format is defined in tk.calendar.js. For now, the format is 11/17/2010 8:0
         String[] date = dateStr.split("/");
         String[] time = timeStr.split(":");
@@ -318,7 +318,7 @@ public class TKUtils {
                 Integer.parseInt(time[1]),
                 0, 0);
 
-        return new Timestamp(dateTime.getMillis());
+        return dateTime;
     }
     
    public static String getIPAddressFromRequest(HttpServletRequest request) {

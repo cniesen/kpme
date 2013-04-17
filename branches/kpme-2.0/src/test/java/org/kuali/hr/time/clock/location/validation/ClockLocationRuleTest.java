@@ -15,7 +15,6 @@
  */
 package org.kuali.hr.time.clock.location.validation;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import org.kuali.hr.time.clock.location.ClockLocationRule;
 import org.kuali.hr.time.clock.location.ClockLocationRuleIpAddress;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -57,16 +57,14 @@ public class ClockLocationRuleTest extends KPMETestCase {
     }
 
     public ClockLocationRule createClr(String ipAddress, Long workArea, String principalId, Long jobNumber ) {
-    	Timestamp ts_now = new Timestamp(System.currentTimeMillis());
-    	LocalDate date_now = LocalDate.now();
     	ClockLocationRule clr = new ClockLocationRule();
     	clr.setDept("TEST");
     	clr.setWorkArea(1234L);
     	clr.setPrincipalId("12345");
     	clr.setJobNumber(0L);
     	clr.setActive(true);
-    	clr.setTimestamp(ts_now);
-    	clr.setEffectiveLocalDate(date_now);
+    	clr.setTimestamp(TKUtils.getCurrentTimestamp());
+    	clr.setEffectiveLocalDate(LocalDate.now());
     	ClockLocationRuleIpAddress anIp = new ClockLocationRuleIpAddress();
     	anIp.setIpAddress(ipAddress);
     	List<ClockLocationRuleIpAddress> aList = new ArrayList<ClockLocationRuleIpAddress>();
@@ -92,13 +90,11 @@ public class ClockLocationRuleTest extends KPMETestCase {
     @Test
     public void testSave() throws Exception {
     	ClockLocationRule clr = new ClockLocationRule();
-    	Timestamp ts_now = new Timestamp(System.currentTimeMillis());
-    	LocalDate date_now = LocalDate.now();
     	clr.setPrincipalId("12345");
     	clr.setJobNumber(0L);
     	clr.setActive(true);
-    	clr.setTimestamp(ts_now);
-    	clr.setEffectiveLocalDate(date_now);
+    	clr.setTimestamp(TKUtils.getCurrentTimestamp());
+    	clr.setEffectiveLocalDate(LocalDate.now());
     	ClockLocationRuleIpAddress anIp = new ClockLocationRuleIpAddress();
     	anIp.setIpAddress(IP_ADDRESS_ONE);
     	List<ClockLocationRuleIpAddress> aList = new ArrayList<ClockLocationRuleIpAddress>();

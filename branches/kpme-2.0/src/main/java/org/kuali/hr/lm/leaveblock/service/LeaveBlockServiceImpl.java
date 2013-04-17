@@ -16,8 +16,11 @@
 package org.kuali.hr.lm.leaveblock.service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -114,14 +117,11 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     @Override
     public void deleteLeaveBlock(String leaveBlockId, String principalId) {
         LeaveBlock leaveBlock = getLeaveBlock(leaveBlockId);
-        
-//        leaveBlock.setPrincipalIdModified(TKContext.getTargetPrincipalId());
-//        leaveBlock.setTimestamp(TKUtils.getCurrentTimestamp());
-        
+
         // Make entry into LeaveBlockHistory table
         LeaveBlockHistory leaveBlockHistory = new LeaveBlockHistory(leaveBlock);
         leaveBlockHistory.setPrincipalIdDeleted(principalId);
-        leaveBlockHistory.setTimestampDeleted(new Timestamp(System.currentTimeMillis()));
+        leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(LMConstants.ACTION.DELETE);
 
         // deleting leaveblock
@@ -141,7 +141,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     	
     	// create new 
         leaveBlock.setLmLeaveBlockId(null);
-    	leaveBlock.setTimestamp(new Timestamp(System.currentTimeMillis()));
+    	leaveBlock.setTimestamp(TKUtils.getCurrentTimestamp());
     	leaveBlock.setPrincipalIdModified(principalId);
     	KRADServiceLocator.getBusinessObjectService().save(leaveBlock);
 
@@ -340,7 +340,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         // Make entry into LeaveBlockHistory table
         LeaveBlockHistory leaveBlockHistory = new LeaveBlockHistory(leaveBlock);
         leaveBlockHistory.setPrincipalIdDeleted(principalId);
-        leaveBlockHistory.setTimestampDeleted(new Timestamp(System.currentTimeMillis()));
+        leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(LMConstants.ACTION.MODIFIED);
 
         KRADServiceLocator.getBusinessObjectService().save(leaveBlock);

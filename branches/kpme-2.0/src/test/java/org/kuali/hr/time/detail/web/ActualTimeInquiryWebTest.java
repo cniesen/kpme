@@ -16,7 +16,6 @@
 package org.kuali.hr.time.detail.web;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +30,7 @@ import org.kuali.hr.time.test.TkTestConstants;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
@@ -76,10 +76,8 @@ public class ActualTimeInquiryWebTest extends KPMETestCase {
 		timeBlock.setWorkArea(1234L);
 		timeBlock.setTask(1L);
 		timeBlock.setEarnCode("RGN");
-		Timestamp beginTimestamp = new Timestamp(System.currentTimeMillis());
-		timeBlock.setBeginTimestamp(beginTimestamp);
-		Timestamp endTimestamp = new Timestamp(System.currentTimeMillis());
-		timeBlock.setEndTimestamp(endTimestamp);
+		timeBlock.setBeginTimestamp(TKUtils.getCurrentTimestamp());
+		timeBlock.setEndTimestamp(TKUtils.getCurrentTimestamp());
 		TimeHourDetail timeHourDetail = new TimeHourDetail();
 		timeHourDetail.setEarnCode("RGN");
 		timeHourDetail.setHours(new BigDecimal(2.0));

@@ -16,7 +16,6 @@
 package org.kuali.hr.time.timeblock.service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -232,7 +231,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         tb.setHours(hours);
         tb.setClockLogCreated(clockLogCreated);
         tb.setUserPrincipalId(userPrincipalId);
-        tb.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        tb.setTimestamp(TKUtils.getCurrentTimestamp());
         tb.setLunchDeleted(lunchDeleted);
 
         tb.setTimeHourDetails(this.createTimeHourDetails(tb.getEarnCode(), tb.getHours(), tb.getAmount(), tb.getTkTimeBlockId()));

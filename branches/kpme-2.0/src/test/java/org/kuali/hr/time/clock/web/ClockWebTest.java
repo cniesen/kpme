@@ -16,8 +16,11 @@
 package org.kuali.hr.time.clock.web;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -33,6 +36,7 @@ import org.kuali.hr.time.test.TkTestConstants;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -82,10 +86,8 @@ public class ClockWebTest extends KPMETestCase {
         timeBlock.setWorkArea(1234L);
         timeBlock.setTask(1L);
         timeBlock.setEarnCode("RGN");
-        Timestamp beginTimestamp = new Timestamp(System.currentTimeMillis());
-        timeBlock.setBeginTimestamp(beginTimestamp);
-        Timestamp endTimestamp = new Timestamp(System.currentTimeMillis());
-        timeBlock.setEndTimestamp(endTimestamp);
+        timeBlock.setBeginTimestamp(TKUtils.getCurrentTimestamp());
+        timeBlock.setEndTimestamp(TKUtils.getCurrentTimestamp());
         TimeHourDetail timeHourDetail = new TimeHourDetail();
         timeHourDetail.setEarnCode("RGN");
         timeHourDetail.setHours(new BigDecimal(2.0));
@@ -199,7 +201,7 @@ public class ClockWebTest extends KPMETestCase {
         //gpr.setTkGracePeriodRuleId("1");
         gpr.setEffectiveLocalDate(new LocalDate(2010, 1, 1));
         gpr.setHourFactor(new BigDecimal(3));
-        gpr.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        gpr.setTimestamp(TKUtils.getCurrentTimestamp());
         
         gpr.setActive(true);
         KRADServiceLocator.getBusinessObjectService().save(gpr);

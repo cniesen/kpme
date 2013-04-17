@@ -16,7 +16,6 @@
 package org.kuali.hr.time.clock.web;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -349,18 +348,16 @@ public class ClockAction extends TimesheetAction {
 
 		    // check if the begin / end time are valid
 		    // should not include time zone in consideration when conparing time intervals
-		    Timestamp beginTS = TKUtils.convertDateStringToTimestampWithoutZone(beginDates[i], beginTimes[i]);
-			Timestamp endTS = TKUtils.convertDateStringToTimestampWithoutZone(endDates[i], endTimes[i]);
-		    if ((beginTS.compareTo(endTS) > 0 || endTS.compareTo(beginTS) < 0)) {
+		    DateTime beginDateTime = TKUtils.convertDateStringToDateTimeWithoutZone(beginDates[i], beginTimes[i]);
+			DateTime endDateTime = TKUtils.convertDateStringToDateTimeWithoutZone(endDates[i], endTimes[i]);
+		    if ((beginDateTime.compareTo(endDateTime) > 0 || endDateTime.compareTo(beginDateTime) < 0)) {
 		        errorMsgList.add("The time or date for entry " + index + " is not valid.");
 		        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
 		        return mapping.findForward("ws");
 		    }
 
 		    // check if new time blocks overlap with existing time blocks
-		    DateTime start = new DateTime(beginTS);
-		    DateTime end = new DateTime(endTS);
-		    Interval addedTimeblockInterval = new Interval(start, end);
+		    Interval addedTimeblockInterval = new Interval(beginDateTime, endDateTime);
 		    newIntervals.add(addedTimeblockInterval);
 		    for (TimeBlock timeBlock : caf.getTimesheetDocument().getTimeBlocks()) {
 		    	if(timeBlock.getTkTimeBlockId().equals(tbId)) {	// ignore the original time block

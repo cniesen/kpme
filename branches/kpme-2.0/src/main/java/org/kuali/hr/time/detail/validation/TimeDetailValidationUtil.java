@@ -77,8 +77,8 @@ public class TimeDetailValidationUtil {
         //if startTime and end time are equal, lets ignore timezone
         if (startTimeS.equals(endTimeS)
                 && startDateS.equals(endDateS)) {
-            startTime = TKUtils.convertDateStringToTimestampWithoutZone(startDateS, startTimeS).getTime();
-            endTime = TKUtils.convertDateStringToTimestampWithoutZone(endDateS, endTimeS).getTime();
+            startTime = TKUtils.convertDateStringToDateTimeWithoutZone(startDateS, startTimeS).getMillis();
+            endTime = TKUtils.convertDateStringToDateTimeWithoutZone(endDateS, endTimeS).getMillis();
         } else {
         // These methods use the UserTimeZone.
             startTime = TKUtils.convertDateStringToDateTime(startDateS, startTimeS).getMillis();

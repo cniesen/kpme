@@ -437,11 +437,11 @@ public class LeaveCalendarAction extends TkAction {
 		LOG.debug("Start time is "+lcf.getStartTime());
 		LOG.debug("Emnd time is "+lcf.getEndTime());
 		if(lcf.getStartTime() != null && lcf.getEndTime() != null) {
-			beginDate = new DateTime(TKUtils.convertDateStringToTimestampWithoutZone(lcf.getStartDate(), lcf.getStartTime()).getTime());
-			endDate   = new DateTime(TKUtils.convertDateStringToTimestampWithoutZone(lcf.getEndDate(), lcf.getEndTime()).getTime());
+			beginDate = TKUtils.convertDateStringToDateTimeWithoutZone(lcf.getStartDate(), lcf.getStartTime());
+			endDate   = TKUtils.convertDateStringToDateTimeWithoutZone(lcf.getEndDate(), lcf.getEndTime());
 		}  else {
-			beginDate = new DateTime(TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate()));
-			endDate = new DateTime(TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate()));
+			beginDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate());
+			endDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate());
 		}
         LOG.debug("Begin Date is>> "+beginDate);
         LOG.debug("End Date is>> "+endDate);
@@ -597,11 +597,11 @@ public class LeaveCalendarAction extends TkAction {
             EarnCode earnCode =  TkServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, updatedLeaveBlock.getLeaveLocalDate()); // selectedEarnCode = hrEarnCodeId
             if(earnCode != null && earnCode.getRecordMethod().equalsIgnoreCase(TkConstants.EARN_CODE_TIME)) {
             	if(lcf.getStartTime() != null && lcf.getEndTime() != null) {
-        			beginDate = new DateTime(TKUtils.convertDateStringToTimestampWithoutZone(lcf.getStartDate(), lcf.getStartTime()).getTime());
-        			endDate   = new DateTime(TKUtils.convertDateStringToTimestampWithoutZone(lcf.getEndDate(), lcf.getEndTime()).getTime());
+        			beginDate = TKUtils.convertDateStringToDateTimeWithoutZone(lcf.getStartDate(), lcf.getStartTime());
+        			endDate   = TKUtils.convertDateStringToDateTimeWithoutZone(lcf.getEndDate(), lcf.getEndTime());
         		}  else {
-        			beginDate = new DateTime(TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate()));
-        			endDate = new DateTime(TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate()));
+        			beginDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate());
+        			endDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate());
         		}
             	updatedLeaveBlock.setBeginTimestamp(new Timestamp(beginDate.getMillis()));
             	updatedLeaveBlock.setEndTimestamp(new Timestamp(endDate.getMillis()));

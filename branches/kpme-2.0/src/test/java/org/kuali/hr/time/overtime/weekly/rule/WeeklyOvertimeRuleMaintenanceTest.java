@@ -16,7 +16,6 @@
 package org.kuali.hr.time.overtime.weekly.rule;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
 
 import org.joda.time.LocalDate;
 import org.junit.Assert;
@@ -24,6 +23,7 @@ import org.junit.Test;
 import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TkTestConstants;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
@@ -35,7 +35,6 @@ public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
 	private static final BigDecimal TEST_NO=new BigDecimal(10);
 	private static String weeklyOvertimeRuleId;	
 	private static final LocalDate TEST_DATE = LocalDate.now();
-	private static final java.sql.Timestamp TEST_TIME_STAMP=new java.sql.Timestamp(Calendar.getInstance().getTimeInMillis());
 	
 	@Test
 	public void testWeeklyOvertimeRuleMaint() throws Exception {
@@ -69,7 +68,7 @@ public class WeeklyOvertimeRuleMaintenanceTest extends KPMETestCase {
 		weeklyOvertimeRule.setMaxHours(TEST_NO);
 		weeklyOvertimeRule.setMaxHoursEarnGroup(TEST_CODE);
 		weeklyOvertimeRule.setStep(TEST_NO);
-		weeklyOvertimeRule.setTimestamp(TEST_TIME_STAMP);
+		weeklyOvertimeRule.setTimestamp(TKUtils.getCurrentTimestamp());
 		weeklyOvertimeRule.setUserPrincipalId(TEST_CODE);	
 		KRADServiceLocator.getBusinessObjectService().save(weeklyOvertimeRule);		
 		weeklyOvertimeRuleId=weeklyOvertimeRule.getTkWeeklyOvertimeRuleId();		
