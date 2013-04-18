@@ -260,19 +260,19 @@ public class LeaveCalendarValidationUtil {
     	if(earnCodeObj != null && earnCodeObj.getAllowNegativeAccrualBalance().equals("N")) {
     		AccrualCategory accrualCategory = TkServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCodeObj.getAccrualCategory(), endDate);
     		if(accrualCategory != null) {
-    			LocalDate nextIntervalDate = TkServiceLocator.getAccrualService().getNextAccrualIntervalDate(accrualCategory.getAccrualEarnInterval(), endDate);
+    			DateTime nextIntervalDate = TkServiceLocator.getAccrualService().getNextAccrualIntervalDate(accrualCategory.getAccrualEarnInterval(), endDate.toDateTimeAtStartOfDay());
 				// get the usage checking cut off Date, normally it's the day before the next interval date
-    			LocalDate usageEndDate = nextIntervalDate;
-				if (nextIntervalDate.compareTo(endDate) > 0) {
+    			DateTime usageEndDate = nextIntervalDate;
+				if (nextIntervalDate.compareTo(endDate.toDateTimeAtCurrentTime()) > 0) {
 					usageEndDate = nextIntervalDate.minusDays(1);
 				}
 				// use the end of the year as the interval date for usage checking of no-accrual hours,
 				// normally no-accrual hours are from banked/transferred system scheduled time offs
 				if(accrualCategory.getAccrualEarnInterval().equals(LMConstants.ACCRUAL_EARN_INTERVAL_CODE.NO_ACCRUAL)) {
-					usageEndDate = endDate.withMonthOfYear(DateTimeConstants.DECEMBER).withDayOfMonth(31);
+					usageEndDate = endDate.toDateTimeAtStartOfDay().withMonthOfYear(DateTimeConstants.DECEMBER).withDayOfMonth(31);
 				}
 				BigDecimal availableBalance = TkServiceLocator.getLeaveSummaryService()
-							.getLeaveBalanceForAccrCatUpToDate(TKContext.getTargetPrincipalId(), startDate, endDate, accrualCategory.getAccrualCategory(), usageEndDate);
+							.getLeaveBalanceForAccrCatUpToDate(TKContext.getTargetPrincipalId(), startDate, endDate, accrualCategory.getAccrualCategory(), usageEndDate.toLocalDate());
 
 				if(oldAmount!=null) {
 					if(!earnCodeChanged ||

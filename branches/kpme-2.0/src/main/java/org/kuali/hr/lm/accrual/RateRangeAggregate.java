@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTime;
 import org.kuali.hr.time.calendar.CalendarEntry;
 
 public class RateRangeAggregate {
@@ -66,9 +67,9 @@ public class RateRangeAggregate {
 	}
 	
 	// return the rateRange on the given day
-	public RateRange getRateOnDate(Date date) {
+	public RateRange getRateOnDate(DateTime date) {
 		for (RateRange rateRange : rateRanges) {
-			if (rateRange.getRange().contains(date.getTime())) {
+			if (rateRange.getRange().contains(date)) {
 				return rateRange;
 			}
 		}
