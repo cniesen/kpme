@@ -39,7 +39,6 @@ import org.kuali.hr.core.role.KPMERole;
 import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.base.web.ApprovalForm;
 import org.kuali.hr.time.base.web.TkAction;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
@@ -85,9 +84,7 @@ public class LeaveApprovalWSAction extends TkAction {
 		        List<String> principalIds = TkServiceLocator.getLeaveApprovalService()
         			.getLeavePrincipalIdsWithSearchCriteria(workAreaList, laaf.getSelectedPayCalendarGroup(),
         					endDate, beginDate, endDate); 
-		        
-		        List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
-		        
+
 		        if (StringUtils.equals(laaf.getSearchField(), ApprovalForm.ORDER_BY_PRINCIPAL)) {
 		            for (String id : principalIds) {
 		                if(StringUtils.contains(id, laaf.getSearchTerm())) {
@@ -99,7 +96,7 @@ public class LeaveApprovalWSAction extends TkAction {
 		            }
 		        } else if (StringUtils.equals(laaf.getSearchField(), ApprovalForm.ORDER_BY_DOCID)) {
 		            Map<String, LeaveCalendarDocumentHeader> principalDocumentHeaders =
-		                    TkServiceLocator.getLeaveApprovalService().getPrincipalDocumehtHeader(persons, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
+		                    TkServiceLocator.getLeaveApprovalService().getPrincipalDocumentHeader(principalIds, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 	
 		            for (Map.Entry<String,LeaveCalendarDocumentHeader> entry : principalDocumentHeaders.entrySet()) {
 		                if (StringUtils.contains(entry.getValue().getDocumentId(), laaf.getSearchTerm())) {

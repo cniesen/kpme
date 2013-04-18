@@ -29,10 +29,10 @@ import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.hr.lm.leaveblock.LeaveBlock;
+import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.approval.web.ApprovalLeaveSummaryRow;
 import org.kuali.hr.time.calendar.CalendarEntry;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 
 public class LeaveApprovalServiceTest extends KPMETestCase {
@@ -43,16 +43,24 @@ public class LeaveApprovalServiceTest extends KPMETestCase {
 	public void testGetLeaveApprovalSummaryRows() {
 		CalendarEntry ce = TkServiceLocator.getCalendarEntryService().getCalendarEntry("55");
 		List<Date> leaveSummaryDates = TkServiceLocator.getLeaveSummaryService().getLeaveSummaryDates(ce);
-		List<String> ids = new ArrayList<String>();
-		ids.add("admin");
-		List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(ids);
-		
-		List<ApprovalLeaveSummaryRow> rows = TkServiceLocator.getLeaveApprovalService().getLeaveApprovalSummaryRows(persons, ce, leaveSummaryDates);
+		List<String> testPrincipalIds = new ArrayList<String>();
+		testPrincipalIds.add("admin");
+		List<ApprovalLeaveSummaryRow> rows = TkServiceLocator.getLeaveApprovalService().getLeaveApprovalSummaryRows(testPrincipalIds, ce, leaveSummaryDates);
 		Assert.assertTrue("Rows should not be empty. ", CollectionUtils.isNotEmpty(rows));
 		
 		ApprovalLeaveSummaryRow aRow = rows.get(0);
 		Map<Date, Map<String, BigDecimal>> aMap = aRow.getEarnCodeLeaveHours();
 		Assert.assertTrue("Leave Approval Summary Rows should have 14 items, not " + aMap.size(), aMap.size() == 14);
+	}
+	
+	@Test
+	public void testGetPrincipalDocumentHeader() {
+		CalendarEntry ce = TkServiceLocator.getCalendarEntryService().getCalendarEntry("55");
+		List<String> testPrincipalIds = new ArrayList<String>();
+		testPrincipalIds.add("admin");
+		Map<String, LeaveCalendarDocumentHeader> lvCalHdr = TkServiceLocator.getLeaveApprovalService().getPrincipalDocumentHeader(testPrincipalIds, ce.getBeginPeriodFullDateTime(), ce.getEndPeriodFullDateTime());
+		Assert.assertTrue("Header should not be empty. ", CollectionUtils.isNotEmpty(lvCalHdr.values()));
+
 	}
 	
 	@Test
@@ -122,5 +130,6 @@ public class LeaveApprovalServiceTest extends KPMETestCase {
 		Assert.assertTrue("There should be 1 principal ids for workArea '2222', not " + idList.size(), idList.size() == 1);
 		Assert.assertTrue("Principal id for workArea '2222' should be principalB, not " + idList.get(0), idList.get(0).equals("1022"));
 	}
+
 
 }
