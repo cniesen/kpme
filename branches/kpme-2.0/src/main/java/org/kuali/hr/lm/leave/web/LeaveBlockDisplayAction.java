@@ -17,7 +17,6 @@ package org.kuali.hr.lm.leave.web;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -57,19 +56,16 @@ public class LeaveBlockDisplayAction extends TkAction {
 		PrincipalHRAttributes principalHRAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(TKContext.getTargetPrincipalId(), LocalDate.now());
 		String leavePlan = (principalHRAttributes != null) ? principalHRAttributes.getLeavePlan() : null;
 
-		Calendar currentCalendar = Calendar.getInstance();
 		if (lbdf.getNavString() == null) {
-			lbdf.setYear(currentCalendar.get(Calendar.YEAR));
+			lbdf.setYear(LocalDate.now().getYear());
 		} else if(lbdf.getNavString().equals("NEXT")) {
 			lbdf.setYear(lbdf.getYear() + 1);
 		} else if(lbdf.getNavString().equals("PREV")) {
 			lbdf.setYear(lbdf.getYear() - 1);
 		}
-		currentCalendar.set(lbdf.getYear(), 0, 1);
-		LocalDate serviceDate = (principalHRAttributes != null) ? principalHRAttributes.getServiceLocalDate() : LocalDate.fromCalendarFields(currentCalendar);
-		LocalDate beginDate = LocalDate.fromCalendarFields(currentCalendar);
-		currentCalendar.set(lbdf.getYear(), 11, 31);
-		LocalDate endDate = LocalDate.fromCalendarFields(currentCalendar);
+		LocalDate beginDate = new LocalDate(lbdf.getYear(), 1, 1);
+		LocalDate serviceDate = (principalHRAttributes != null) ? principalHRAttributes.getServiceLocalDate() : beginDate;
+		LocalDate endDate = new LocalDate(lbdf.getYear(), 12, 31);
 
 		lbdf.setAccrualCategories(getAccrualCategories(leavePlan));
 		lbdf.setLeaveEntries(getLeaveEntries(TKContext.getTargetPrincipalId(), serviceDate, beginDate, endDate, lbdf.getAccrualCategories()));
