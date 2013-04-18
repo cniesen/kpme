@@ -116,7 +116,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getBeginPeriodFullDateTime() {
-    	return new DateTime(beginPeriodDateTime);
+    	return beginPeriodDateTime != null ? new DateTime(beginPeriodDateTime) : null;
+    }
+    
+    public void setBeginPeriodFullDateTime(DateTime beginPeriodFullDateTime) {
+    	beginPeriodDateTime = beginPeriodFullDateTime != null ? beginPeriodFullDateTime.toDate() : null;
     }
     
     public LocalDateTime getBeginPeriodLocalDateTime() {
@@ -166,7 +170,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getEndPeriodFullDateTime() {
-    	return new DateTime(endPeriodDateTime);
+    	return endPeriodDateTime != null ? new DateTime(endPeriodDateTime) : null;
+    }
+    
+    public void setEndPeriodFullDateTime(DateTime endPeriodFullDateTime) {
+    	endPeriodDateTime = endPeriodFullDateTime != null ? endPeriodFullDateTime.toDate() : null;
     }
     
     public LocalDateTime getEndPeriodLocalDateTime() {
@@ -216,7 +224,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getBatchInitiateFullDateTime() {
-    	return new DateTime(batchInitiateDateTime);
+    	return batchInitiateDateTime != null ? new DateTime(batchInitiateDateTime) : null;
+    }
+    
+    public void setBatchInitiateFullDateTime(DateTime batchInitiateFullDateTime) {
+    	batchInitiateDateTime = batchInitiateFullDateTime != null ? batchInitiateFullDateTime.toDate() : null;
     }
 
     public Date getBatchEndPayPeriodDateTime() {
@@ -262,7 +274,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getBatchEndPayPeriodFullDateTime() {
-    	return new DateTime(batchEndPayPeriodDateTime);
+    	return batchEndPayPeriodDateTime != null ? new DateTime(batchEndPayPeriodDateTime) : null;
+    }
+    
+    public void setBatchEndPayPeriodFullDateTime(DateTime batchEndPayPeriodFullDateTime) {
+    	batchEndPayPeriodDateTime = batchEndPayPeriodFullDateTime != null ? batchEndPayPeriodFullDateTime.toDate() : null;
     }
 
     public Date getBatchEmployeeApprovalDateTime() {
@@ -308,7 +324,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getBatchEmployeeApprovalFullDateTime() {
-    	return new DateTime(batchEmployeeApprovalDateTime);
+    	return batchEmployeeApprovalDateTime != null ? new DateTime(batchEmployeeApprovalDateTime) : null;
+    }
+    
+    public void setBatchEmployeeApprovalFullDateTime(DateTime batchEmployeeApprovalFullDateTime) {
+    	batchEmployeeApprovalDateTime = batchEmployeeApprovalFullDateTime != null ? batchEmployeeApprovalFullDateTime.toDate() : null;
     }
 
     public Date getBatchSupervisorApprovalDateTime() {
@@ -354,7 +374,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
     
     public DateTime getBatchSupervisorApprovalFullDateTime() {
-    	return new DateTime(batchSupervisorApprovalDateTime);
+    	return batchSupervisorApprovalDateTime != null ? new DateTime(batchSupervisorApprovalDateTime) : null;
+    }
+    
+    public void setBatchSupervisorApprovalFullDateTime(DateTime batchSupervisorApprovalFullDateTime) {
+    	batchSupervisorApprovalDateTime = batchSupervisorApprovalFullDateTime != null ? batchSupervisorApprovalFullDateTime.toDate() : null;
     }
 
 	public Calendar getCalendarObj() {
