@@ -55,11 +55,6 @@ public class LeaveCalendarWebTest extends KPMETestCase {
 		super.tearDown();
 	}
 	
-	public void setWebClient(WebClient webClient) {
-		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-		webClient.waitForBackgroundJavaScript(10000);
-	}
-
 	@Test
 	public void testLeaveCalendarPage() throws Exception {
 		// get the page and Login
