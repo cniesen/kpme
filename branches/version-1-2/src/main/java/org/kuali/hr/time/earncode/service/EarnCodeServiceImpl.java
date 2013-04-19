@@ -54,12 +54,6 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         // We are grabbing a TkUser from the current thread local context here.
         // really, this should probably be passed in..
 
-        TKUser user = TKContext.getUser();
-        if (user == null) {
-            // TODO: Determine how to fail if there is no TkUser
-            throw new RuntimeException("No User on context.");
-        }
-
         if (a == null)
             throw new RuntimeException("Can not get earn codes for null assignment");
         Job job = a.getJob();

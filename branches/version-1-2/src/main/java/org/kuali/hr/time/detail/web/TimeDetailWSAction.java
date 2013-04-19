@@ -39,6 +39,7 @@ import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.web.TimesheetAction;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm;
@@ -121,7 +122,7 @@ public class TimeDetailWSAction extends TimesheetAction {
         Boolean shouldAddEarnCode;
 
         shouldAddEarnCode = earnCode.getEarnCode().equals(TkConstants.HOLIDAY_EARN_CODE)
-                && !(TKContext.getUser().isSystemAdmin() || TKContext.getUser().isTimesheetApprover());
+                && !(TKUser.isSystemAdmin() || TKUser.isTimesheetApprover());
 
         shouldAddEarnCode |= !(assignment.getTimeCollectionRule().isClockUserFl() &&
                 StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode.getEarnCode()) &&

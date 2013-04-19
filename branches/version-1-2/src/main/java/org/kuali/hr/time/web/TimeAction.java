@@ -45,13 +45,13 @@ public class TimeAction extends TkAction {
             // to check the document for validity, since the user may not
             // necessarily be a system administrator.
         } else {
-            if (!TKContext.getUser().isSystemAdmin()
-        			&& !TKContext.getUser().isLocationAdmin()
-        			&& !TKContext.getUser().isDepartmentAdmin()
-        			&& !TKContext.getUser().isGlobalViewOnly()
-        			&& !TKContext.getUser().isDeptViewOnly()
-        			&& (tkForm.getDocumentId() != null && !TKContext.getUser().isApproverForTimesheet(tkForm.getDocumentId()))
-        			&& (tkForm.getDocumentId() != null && !TKContext.getUser().isDocumentReadable(tkForm.getDocumentId())))  {
+            if (!TKUser.isSystemAdmin()
+        			&& !TKUser.isLocationAdmin()
+        			&& !TKUser.isDepartmentAdmin()
+        			&& !TKUser.isGlobalViewOnly()
+        			&& !TKUser.isDeptViewOnly()
+        			&& (tkForm.getDocumentId() != null && !TKUser.isApproverForTimesheet(tkForm.getDocumentId()))
+        			&& (tkForm.getDocumentId() != null && !TKUser.isDocumentReadable(tkForm.getDocumentId())))  {
                 throw new AuthorizationException("", "TimeAction", "");
             }
         }
@@ -62,23 +62,23 @@ public class TimeAction extends TkAction {
 	public ActionForward execute(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response)
 			throws Exception {
-    	TKUser user = TKContext.getUser();
-		if (user != null) {
-			if (TKContext.getUser().isSystemAdmin()) {
+    	boolean synch = TKUser.isSynchronous();
+		if (TKUser.getCurrentTargetPerson() != null) {
+			if (TKUser.isSystemAdmin()) {
 				return new ActionRedirect("/portal.do");
-			} else if (TKContext.getUser().isDepartmentAdmin()
-					&& !user.isSynchronous()) {
+			} else if (TKUser.isDepartmentAdmin()
+					&& !synch) {
 				return new ActionRedirect("/portal.do");
-			} else if (TKContext.getUser().isApprover()
-					&& !user.isSynchronous()) {
+			} else if (TKUser.isApprover()
+					&& !synch) {
 				return new ActionRedirect("/TimeApproval.do");
-			} else if (TKContext.getUser().isReviewer()
-					&& !user.isSynchronous()) {
+			} else if (TKUser.isReviewer()
+					&& !synch) {
 				return new ActionRedirect("/TimeApproval.do");
-			} else if (user.isActiveEmployee()
-					&& !user.isSynchronous()) {
+			} else if (TKUser.isActiveEmployee()
+					&& !synch) {
 				return new ActionRedirect("/TimeDetail.do");
-			} else if (user.isSynchronous()) {
+			} else if (synch) {
 				return new ActionRedirect("/Clock.do");
 			} else {
 				return new ActionRedirect("/PersonInfo.do");

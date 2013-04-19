@@ -28,7 +28,7 @@ import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
 import org.kuali.kfs.coa.businessobject.Account;
-import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.service.KNSServiceLocator;
@@ -52,10 +52,9 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 			MaintenanceDocument maintenanceDocument, String methodToCall) {
 		if (fieldValues.containsKey("principalId")
 				&& StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
-			Person p = KimApiServiceLocator.getPersonService().getPerson(
-					fieldValues.get("principalId"));
-			if (p != null) {
-				fieldValues.put("name", p.getName());
+            EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(fieldValues.get("principalId"));
+            if (name != null) {
+                fieldValues.put("name", name.getDefaultName().getCompositeName());
 			} else {
 				fieldValues.put("name", "");
 			}

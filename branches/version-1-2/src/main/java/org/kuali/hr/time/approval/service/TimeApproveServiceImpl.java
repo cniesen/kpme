@@ -144,7 +144,6 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public Map<String, CalendarEntries> getPayCalendarEntriesForApprover(
 			String principalId, Date currentDate, String dept) {
-		TKUser tkUser = TKContext.getUser();
 
 		Map<String, CalendarEntries> pceMap = new HashMap<String, CalendarEntries>();
 		Set<String> principals = new HashSet<String>();
@@ -200,7 +199,6 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Date payEndDate) {
 		SortedSet<String> pcg = new TreeSet<String>();
 
-		TKUser tkUser = TKContext.getUser();
 		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
 		List<Assignment> assignments = new ArrayList<Assignment>();
 
@@ -639,7 +637,6 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 	public boolean doesApproverHavePrincipalsForCalendarGroup(Date asOfDate,
 			String calGroup) {
-		TKUser tkUser = TKContext.getUser();
 		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
 		for (Long workArea : approverWorkAreas) {
 			List<Assignment> assignments = TkServiceLocator
@@ -810,7 +807,6 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	
 	@Override
 	public List<CalendarEntries> getAllPayCalendarEntriesForApprover(String principalId, Date currentDate) {
-		TKUser tkUser = TKContext.getUser();
 		Set<String> principals = new HashSet<String>();
 		DateTime minDt = new DateTime(currentDate,
 				TKUtils.getSystemDateTimeZone());

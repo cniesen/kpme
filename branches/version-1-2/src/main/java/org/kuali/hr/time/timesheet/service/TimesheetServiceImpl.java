@@ -42,7 +42,8 @@ import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kew.service.KEWServiceLocator;
-import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TimesheetServiceImpl implements TimesheetService {
@@ -86,8 +87,8 @@ public class TimesheetServiceImpl implements TimesheetService {
                 } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE)) {
                     wd.route("Batch job routing for Approval");
                 } else if (StringUtils.equals(action, TkConstants.DOCUMENT_ACTIONS.APPROVE)) {
-                    if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin() &&
-                            !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
+                    if (TKUser.getCurrentTargetRoles().isSystemAdmin() &&
+                            !TKUser.getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
                         wd.superUserBlanketApprove("Superuser approving timesheet.");
                     } else {
                         wd.approve("Approving timesheet.");
@@ -95,8 +96,8 @@ public class TimesheetServiceImpl implements TimesheetService {
                 } else if (StringUtils.equals(action, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
                     wd.superUserBlanketApprove("Batch job superuser approving timesheet.");
                 } else if (StringUtils.equals(action, TkConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
-                    if (TKContext.getUser().getCurrentTargetRoles().isSystemAdmin()
-                            && !TKContext.getUser().getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
+                    if (TKUser.getCurrentTargetRoles().isSystemAdmin()
+                            && !TKUser.getCurrentTargetRoles().isApproverForTimesheet(timesheetDocument)) {
                         wd.superUserDisapprove("Superuser disapproving timesheet.");
                     } else {
                         wd.disapprove("Disapproving timesheet.");
@@ -127,9 +128,9 @@ public class TimesheetServiceImpl implements TimesheetService {
             if (activeAssignments.size() == 0) {
                 throw new RuntimeException("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
             }
-            
-            Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
-            String principalName = person != null ? person.getName() : StringUtils.EMPTY;
+
+            EntityNamePrincipalName person = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+            String principalName = person != null && person.getDefaultName() != null ? person.getDefaultName().getCompositeName() : StringUtils.EMPTY;
             String endDateString = TKUtils.formatDate(new java.sql.Date(end.getTime()));
             String timesheetDocumentTitle = TimesheetDocument.TIMESHEET_DOCUMENT_TYPE + " - " + principalName + " (" + principalId + ") - " + endDateString;
             
@@ -230,7 +231,7 @@ public class TimesheetServiceImpl implements TimesheetService {
     }
 
     public boolean isSynchronousUser() {
-        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKUser.getCurrentTargetPerson().getPrincipalId(), TKUtils.getCurrentDate());
+        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(TKUser.getCurrentTargetPersonId(), TKUtils.getCurrentDate());
         boolean isSynchronousUser = true;
         for (Assignment assignment : assignments) {
             isSynchronousUser &= assignment.isSynchronous();

@@ -23,6 +23,7 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 
@@ -38,7 +39,7 @@ public class TkRuleControllerServiceImpl implements TkRuleControllerService {
 
             // anyone who records time through the time entry form (async users) should not be affected by the lunch rule
             // Noted that the date field in the buildTkUser method is not currently used.
-            if (TKContext.getUser().getCurrentTargetRoles().isSynchronous()) {
+            if (TKUser.getCurrentTargetRoles().isSynchronous()) {
 			    TkServiceLocator.getDepartmentLunchRuleService().applyDepartmentLunchRule(timeBlockAggregate.getFlattenedTimeBlockList());
             }
 			TkServiceLocator.getShiftDifferentialRuleService().processShiftDifferentialRules(timesheetDocument, timeBlockAggregate);

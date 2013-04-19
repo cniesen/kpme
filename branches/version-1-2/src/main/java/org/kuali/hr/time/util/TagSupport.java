@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TagSupport {
@@ -50,9 +50,10 @@ public class TagSupport {
     }
 
     public String getPrincipalFullName(){
-        Person person = KimApiServiceLocator.getPersonService().getPerson(principalId);
-        if(person != null){
-            return person.getName();
+        EntityNamePrincipalName person = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+        if(person != null
+                   && person.getDefaultName() != null){
+            return person.getDefaultName().getCompositeName();
         }
         return "";
     }

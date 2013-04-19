@@ -43,8 +43,8 @@ public class PrincipalHRAttributes extends HrBusinessObject {
 //	private String recordTime;
 //	private String recordLeave;
 	
-	private Calendar calendar;
-	private Person person;
+	private transient Calendar calendar;
+	private transient Person person;
 
     public HolidayCalendar getHolidayCalendar() {
         return holidayCalendar;
