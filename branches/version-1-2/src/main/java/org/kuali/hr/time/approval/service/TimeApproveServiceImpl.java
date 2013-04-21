@@ -55,19 +55,18 @@ import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
-import org.kuali.hr.time.util.TKContext;
-import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.kuali.rice.kim.api.identity.principal.Principal;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -231,11 +230,11 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(
 			Date payBeginDate, Date payEndDate, String calGroup,
-			List<TKPerson> persons, List<String> payCalendarLabels,
+			List<String> principalIds, List<String> payCalendarLabels,
 			CalendarEntries payCalendarEntries) {
 		List<ApprovalTimeSummaryRow> rows = new LinkedList<ApprovalTimeSummaryRow>();
-		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumehtHeader(
-				persons, payBeginDate, DateUtils.addMilliseconds(payEndDate, 1));
+		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumentHeader(
+                principalIds, payBeginDate, DateUtils.addMilliseconds(payEndDate, 1));
 
 		Calendar payCalendar = TkServiceLocator.getCalendarService()
 				.getCalendar(payCalendarEntries.getHrCalendarId());
@@ -244,13 +243,13 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		List<Interval> dayIntervals = TKUtils
 				.getDaySpanForCalendarEntry(payCalendarEntries);
 
-		for (TKPerson person : persons) {
+		for (String principalId : principalIds) {
 			TimesheetDocumentHeader tdh = new TimesheetDocumentHeader();
 			String documentId = "";
-			if (principalDocumentHeader.containsKey(person.getPrincipalId())) {
-				tdh = principalDocumentHeader.get(person.getPrincipalId());
-				documentId = principalDocumentHeader.get(
-						person.getPrincipalId()).getDocumentId();
+			if (principalDocumentHeader.containsKey(principalId)) {
+				tdh = principalDocumentHeader.get(principalId);
+                documentId = principalDocumentHeader.get(
+						principalId).getDocumentId();
 			}
 			List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>();
 			List notes = new ArrayList();
@@ -258,7 +257,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 			ApprovalTimeSummaryRow approvalSummaryRow = new ApprovalTimeSummaryRow();
 
-			if (principalDocumentHeader.containsKey(person.getPrincipalId())) {
+			if (principalDocumentHeader.containsKey(principalId)) {
 				approvalSummaryRow
 						.setApprovalStatus(TkConstants.DOC_ROUTE_STATUS.get(tdh
 								.getDocumentStatus()));
@@ -273,17 +272,18 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			}
 
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
-					person.getPrincipalId(), payEndDate, payCalendarLabels,
+					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 			
 			Map<String, BigDecimal> hoursToFlsaPayLabelMap = getHoursToFlsaWeekMap(
-					person.getPrincipalId(), payEndDate, payCalendarLabels,
+					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 
-			approvalSummaryRow.setName(person.getPrincipalName());
-			approvalSummaryRow.setPrincipalId(person.getPrincipalId());
+            Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
+			approvalSummaryRow.setName(principal.getPrincipalName());
+			approvalSummaryRow.setPrincipalId(principalId);
 			approvalSummaryRow.setPayCalendarGroup(calGroup);
 			approvalSummaryRow.setDocumentId(documentId);
 			approvalSummaryRow.setHoursToPayLabelMap(hoursToPayLabelMap);
@@ -297,8 +297,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			// Compare last clock log versus now and if > threshold
 			// highlight entry
 			ClockLog lastClockLog = TkServiceLocator.getClockLogService()
-					.getLastClockLog(person.getPrincipalId());
-			if (isSynchronousUser(person.getPrincipalId())) {
+					.getLastClockLog(principalId);
+			if (isSynchronousUser(principalId)) {
                 approvalSummaryRow
                         .setClockStatusMessage(createLabelForLastClockLog(lastClockLog));
             }
@@ -719,11 +719,9 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	}
 
 	@Override
-	public Map<String, TimesheetDocumentHeader> getPrincipalDocumehtHeader(
-			List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
+	public Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, Date payBeginDate, Date payEndDate) {
 		Map<String, TimesheetDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, TimesheetDocumentHeader>();
-		for (TKPerson person : persons) {
-			String principalId = person.getPrincipalId();
+		for (String principalId : principalIds) {
 
 			TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
 			if(tdh != null) {

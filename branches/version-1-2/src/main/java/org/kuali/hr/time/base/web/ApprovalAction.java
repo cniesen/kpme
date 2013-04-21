@@ -61,7 +61,7 @@ public class ApprovalAction extends TkAction{
 		return mapping.findForward("basic");
 	}
 	
-	protected List<TKPerson> getSubListPrincipalIds(HttpServletRequest request, List<TKPerson> assignmentPrincipalIds) {
+	protected List<String> getSubListPrincipalIds(HttpServletRequest request, List<String> assignmentPrincipalIds) {
 	    String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
 	    // The paging index begins from 1, but the sublist index begins from 0.
 	    // So the logic below sets the sublist begin index to 0 if the page number is null or equals 1
