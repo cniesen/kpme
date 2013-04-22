@@ -63,6 +63,7 @@ import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.kuali.rice.kim.api.identity.principal.Principal;
@@ -281,9 +282,14 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 					timeBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 
-            Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
-			approvalSummaryRow.setName(principal.getPrincipalName());
-			approvalSummaryRow.setPrincipalId(principalId);
+            EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+            if (name != null) {
+                approvalSummaryRow.setName(name.getDefaultName() != null ? name.getDefaultName().getCompositeName() : org.apache.commons.lang3.StringUtils.EMPTY);
+            }
+            else {
+                approvalSummaryRow.setName(principalId);
+            }
+            approvalSummaryRow.setPrincipalId(principalId);
 			approvalSummaryRow.setPayCalendarGroup(calGroup);
 			approvalSummaryRow.setDocumentId(documentId);
 			approvalSummaryRow.setHoursToPayLabelMap(hoursToPayLabelMap);
