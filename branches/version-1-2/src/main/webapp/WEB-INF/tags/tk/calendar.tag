@@ -38,7 +38,7 @@
                             <td align="center">
                                 <c:if test="${!Form.onCurrentPeriod}" >
                                 <span class="header-title-right">
-	       		                    <a href="${KualiForm.backLocation}?methodToCall=gotoCurrentPayPeriod"
+	       		                    <a href="TimeDetail.do?methodToCall=gotoCurrentPayPeriod"
                                         target="_self" id="cppLink">Go to Current Period</a>
                                 </c:if>
                             </td>
@@ -47,7 +47,7 @@
                             <td align="right">
                             <c:if test="${calType eq 'payCalendar'}">
                                 <span class="header-title-right">
-                                    <a href="${KualiForm.backLocation}?methodToCall=actualTimeInquiry&documentId=${Form.documentId}"
+                                    <a href="TimeDetail.do?methodToCall=actualTimeInquiry&documentId=${Form.documentId}"
                                         target="_blank" id="atiLink">Actual Time Inquiry</a>
                                 </span>
                             </c:if>
