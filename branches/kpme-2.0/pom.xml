@@ -690,6 +690,7 @@
                 <kr.dataSource.database>krtt</kr.dataSource.database>
                 <kr.dataSource.username>krtt</kr.dataSource.username>
                 <kr.dataSource.password>krtt</kr.dataSource.password>
+                <kr.dataSource.validationQuery>select 1</kr.dataSource.validationQuery>
                 <kr.dataSource.dropFirst>false</kr.dataSource.dropFirst>
                 <kr.dataSource.clearCheckSums>false</kr.dataSource.clearCheckSums>
                 <kr.dataSource.contexts>rice-server-bootstrap,kpme-server-bootstrap,kpme-server-staging</kr.dataSource.contexts>
@@ -699,6 +700,7 @@
                 <kpme.dataSource.database>tk</kpme.dataSource.database>
                 <kpme.dataSource.username>tk</kpme.dataSource.username>
                 <kpme.dataSource.password>tk_tk_tk</kpme.dataSource.password>
+                <kpme.dataSource.validationQuery>select 1</kpme.dataSource.validationQuery>
                 <kpme.dataSource.dropFirst>false</kpme.dataSource.dropFirst>
                 <kpme.dataSource.clearCheckSums>false</kpme.dataSource.clearCheckSums>
                 <kpme.dataSource.contexts>rice-client-bootstrap,kpme-client-bootstrap,kpme-client-staging</kpme.dataSource.contexts>
@@ -754,6 +756,7 @@
                 <kr.dataSource.database>tk-test</kr.dataSource.database>
                 <kr.dataSource.username>tk</kr.dataSource.username>
                 <kr.dataSource.password>tk_tk_tk</kr.dataSource.password>
+                <kr.dataSource.validationQuery>select 1</kr.dataSource.validationQuery>
                 <kr.dataSource.dropFirst>true</kr.dataSource.dropFirst>
                 <kr.dataSource.clearCheckSums>false</kr.dataSource.clearCheckSums>
                 <kr.dataSource.contexts>rice-server-bootstrap,kpme-server-bootstrap,kpme-server-test</kr.dataSource.contexts>
@@ -763,6 +766,7 @@
                 <kpme.dataSource.database>tk-test</kpme.dataSource.database>
                 <kpme.dataSource.username>tk</kpme.dataSource.username>
                 <kpme.dataSource.password>tk_tk_tk</kpme.dataSource.password>
+                <kpme.dataSource.validationQuery>select 1</kpme.dataSource.validationQuery>
                 <kpme.dataSource.dropFirst>false</kpme.dataSource.dropFirst>
                 <kpme.dataSource.clearCheckSums>false</kpme.dataSource.clearCheckSums>
                 <kpme.dataSource.contexts>kpme-client-bootstrap,kpme-client-test</kpme.dataSource.contexts>
@@ -818,6 +822,7 @@
                 <kr.dataSource.database>krtt</kr.dataSource.database>
                 <kr.dataSource.username>krtt</kr.dataSource.username>
                 <kr.dataSource.password>krtt</kr.dataSource.password>
+                <kr.dataSource.validationQuery>select 1</kr.dataSource.validationQuery>
                 <kr.dataSource.dropFirst>false</kr.dataSource.dropFirst>
                 <kr.dataSource.clearCheckSums>false</kr.dataSource.clearCheckSums>
                 <kr.dataSource.contexts>rice-server-bootstrap,kpme-server-bootstrap</kr.dataSource.contexts>
@@ -827,6 +832,7 @@
                 <kpme.dataSource.database>tk</kpme.dataSource.database>
                 <kpme.dataSource.username>tk</kpme.dataSource.username>
                 <kpme.dataSource.password>tk_tk_tk</kpme.dataSource.password>
+                <kpme.dataSource.validationQuery>select 1</kpme.dataSource.validationQuery>
                 <kpme.dataSource.dropFirst>false</kpme.dataSource.dropFirst>
                 <kpme.dataSource.clearCheckSums>false</kpme.dataSource.clearCheckSums>
                 <kpme.dataSource.contexts>rice-client-bootstrap,kpme-client-bootstrap</kpme.dataSource.contexts>
