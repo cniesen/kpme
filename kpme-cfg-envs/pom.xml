@@ -55,6 +55,7 @@
         <org.kuali.cas.auth.jdbc.url>${kr.dataSource.jdbcUrl}</org.kuali.cas.auth.jdbc.url>
         <org.kuali.cas.auth.jdbc.username>${kr.dataSource.username}</org.kuali.cas.auth.jdbc.username>
         <org.kuali.cas.auth.jdbc.password>${kr.dataSource.password}</org.kuali.cas.auth.jdbc.password>
+        <org.kuali.cas.auth.jdbc.validationQuery>${kr.dataSource.validationQuery}</org.kuali.cas.auth.jdbc.validationQuery>
     </properties>
     
     <dependencies>
