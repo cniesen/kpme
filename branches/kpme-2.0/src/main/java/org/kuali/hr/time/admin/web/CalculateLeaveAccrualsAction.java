@@ -15,6 +15,9 @@
  */
 package org.kuali.hr.time.admin.web;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -23,14 +26,9 @@ import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
 import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.util.TKUtils;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class CalculateLeaveAccrualsAction extends TkAction {
 	
@@ -39,15 +37,11 @@ public class CalculateLeaveAccrualsAction extends TkAction {
     public ActionForward runAccruals(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	CalculateLeaveAccrualsForm calculateLeaveAccrualsForm = (CalculateLeaveAccrualsForm) form;
     	
-    	DateFormat formater = new SimpleDateFormat("MM/dd/yyyy");
     	Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(calculateLeaveAccrualsForm.getPrincipalName());
 		if (principal != null) {
     		if (StringUtils.isNotBlank(calculateLeaveAccrualsForm.getStartDate()) && StringUtils.isNotBlank(calculateLeaveAccrualsForm.getEndDate())) {
-    			Date parsedStartDate = formater.parse(calculateLeaveAccrualsForm.getStartDate());
-    			DateTime startDate = new DateTime(parsedStartDate);
-
-    			Date parsedEndDate = formater.parse(calculateLeaveAccrualsForm.getEndDate());
-    			DateTime endDate = new DateTime(parsedEndDate);
+    			DateTime startDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getStartDate());
+    			DateTime endDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getEndDate());
     	
     			LOG.debug("AccrualServiceImpl.runAccrual() called with Principal: " + principal.getPrincipalName() + " Start: " + startDate.toString() + " End: " + endDate.toString());
     			TkServiceLocator.getLeaveAccrualService().runAccrual(principal.getPrincipalId(), startDate, endDate, true);

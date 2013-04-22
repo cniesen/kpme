@@ -19,7 +19,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -320,9 +319,9 @@ public class ActionFormUtils {
     		}
     		
     		if(principalHRAttributes != null && pce != null && pce.getHrCalendarEntryId()!= null && pce.getBeginPeriodDate() != null && pce.getEndPeriodDate() != null ) {
-    			Date startCalDate = principalHRAttributes.getServiceDate();
+    			LocalDate startCalDate = principalHRAttributes.getServiceLocalDate();
     			if(startCalDate != null) {
-    				if(!(pce.getBeginPeriodDate().compareTo(startCalDate) < 0)) {
+    				if(!(pce.getBeginPeriodFullDateTime().compareTo(startCalDate.toDateTimeAtStartOfDay()) < 0)) {
     	        		//pMap.put(pce.getHrCalendarEntriesId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format(pce.getEndPeriodDate()));
     	                //getting one millisecond of the endperioddate to match the actual pay period. i.e. pay period end at the 11:59:59:59...PM of that day
     	                pMap.put(pce.getHrCalendarEntryId(), sdf.format(pce.getBeginPeriodDate()) + " - " + sdf.format((DateUtils.addMilliseconds(pce.getEndPeriodDate(),-1))));

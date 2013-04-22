@@ -17,7 +17,6 @@ package org.kuali.hr.time.calendar;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,9 +30,6 @@ import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 public class LeaveCalendar extends CalendarParent {
 
@@ -135,16 +131,6 @@ public class LeaveCalendar extends CalendarParent {
         List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
         leaveBlocks.add(lb);
         return leaveBlocks;
-    }
-    
-    private Multimap<Date, LeaveBlock> leaveBlockAggregator(String documentId) {
-        List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(documentId);
-        Multimap<Date, LeaveBlock> leaveBlockAggregrate = HashMultimap.create();
-        for (LeaveBlock leaveBlock : leaveBlocks) {
-            leaveBlockAggregrate.put(leaveBlock.getLeaveDate(), leaveBlock);
-        }
-
-        return leaveBlockAggregrate;
     }
 
    	public Map<String, String> getEarnCodeList() {

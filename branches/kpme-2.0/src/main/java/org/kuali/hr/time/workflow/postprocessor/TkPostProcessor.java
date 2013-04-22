@@ -17,7 +17,6 @@ package org.kuali.hr.time.workflow.postprocessor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -124,14 +123,14 @@ public class TkPostProcessor extends DefaultPostProcessor {
 		String documentId = timesheetDocumentHeader.getDocumentId();
 		String principalId = timesheetDocumentHeader.getPrincipalId();
 		DateTime endDate = timesheetDocumentHeader.getEndDateTime();
-		Date beginDate = timesheetDocumentHeader.getBeginDate();
+		DateTime beginDate = timesheetDocumentHeader.getBeginDateTime();
 		if (DocumentStatus.ENROUTE.equals(newDocumentStatus)) {
 			//create pending carry over leave blocks.
 			
-			Calendar calendar = TkServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, new LocalDate(endDate), true);
+			Calendar calendar = TkServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, endDate.toLocalDate(), true);
 			
 			if (calendar != null) {
-				List<CalendarEntry> calendarEntries = TkServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(calendar.getHrCalendarId(), new DateTime(beginDate), new DateTime(endDate));
+				List<CalendarEntry> calendarEntries = TkServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(calendar.getHrCalendarId(), beginDate, endDate);
 				
 				TkServiceLocator.getAccrualCategoryMaxCarryOverService().calculateMaxCarryOver(documentId, principalId, calendarEntries, endDate.toLocalDate());
 			}
