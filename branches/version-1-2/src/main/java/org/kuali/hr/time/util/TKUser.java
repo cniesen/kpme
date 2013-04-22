@@ -63,7 +63,7 @@ public class TKUser {
 	}
 	
 	public static boolean isTargetInUse() {
-		return (Person) GlobalVariables.getUserSession().retrieveObject(TkConstants.TK_TARGET_USER_PERSON) != null;
+		return (String) GlobalVariables.getUserSession().retrieveObject(TkConstants.TK_TARGET_USER_PERSON) != null;
 	}
 
 	public static void clearTargetUser() {
