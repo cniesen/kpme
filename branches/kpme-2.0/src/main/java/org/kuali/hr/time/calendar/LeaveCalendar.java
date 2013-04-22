@@ -54,7 +54,7 @@ public class LeaveCalendar extends CalendarParent {
         List<LeaveBlock> blocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, calendarEntry.getBeginPeriodFullDateTime().toLocalDate(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
         Map<String, List<LeaveBlock>> leaveBlockMap = new HashMap<String, List<LeaveBlock>>();
         for (LeaveBlock lb : blocks) {
-            String key = new LocalDate(lb.getLeaveDate()).toString();
+            String key = lb.getLeaveLocalDate().toString();
             if (leaveBlockMap.containsKey(key)) {
                 leaveBlockMap.get(key).add(lb);
             } else {

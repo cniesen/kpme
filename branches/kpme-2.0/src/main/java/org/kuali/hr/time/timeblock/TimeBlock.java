@@ -567,7 +567,7 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
     public String getActualBeginTimeString() {
         if (this.getClockLogBeginId() != null) {
             if (isOvernightTimeClockLog(clockLogEndId)) {
-                return new DateTime(beginTimestamp).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                return getBeginDateTime().toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
             } else {
                 ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(this.getClockLogBeginId());
                 if (cl != null) {
@@ -582,7 +582,7 @@ public class TimeBlock extends PersistableBusinessObjectBase implements Comparab
     public String getActualEndTimeString() {
         if (this.getClockLogEndId() != null) {
             if (isOvernightTimeClockLog(clockLogEndId)) {
-                return new DateTime(endTimestamp).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                return getEndDateTime().toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
             } else {
                 ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(this.getClockLogEndId());
                 if (cl != null) {

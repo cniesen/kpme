@@ -144,9 +144,9 @@ public class MissedPunchValidation extends TransactionalDocumentRuleBase {
         if(mp.getActionTime() == null || mp.getActionDate() == null)
         	return false;
         
-        DateTime clockLogDateTime = new DateTime(lastClock.getClockTimestamp().getTime());
+        DateTime clockLogDateTime = lastClock.getClockDateTime();
         DateTime boundaryMax = clockLogDateTime.plusDays(1);
-        DateTime nowTime = new DateTime(LocalDate.now().toDate());
+        DateTime nowTime = LocalDate.now().toDateTimeAtStartOfDay();
         long offset = TkServiceLocator.getTimezoneService().getTimezoneOffsetFromServerTime(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
         long dateTimeLocal = new LocalTime(mp.getActionTime()).getMillisOfDay() + mp.getActionDate().getTime() - offset;
 

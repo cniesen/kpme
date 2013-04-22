@@ -196,13 +196,13 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
                     // That's why there is a two step server call to get the id. This might be changed in the future.
 
                     CalendarEntry calendarEntry = TkServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(ce.getHrCalendarId(), new LocalDate().toDateTimeAtStartOfDay());
-                    DateTime leaveBlockDate = new DateTime(leaveBlockInt.getStartMillis());
+                    DateTime leaveBlockDate = leaveBlockInt.getStart();
                     
                     String requestStatus = LMConstants.REQUEST_STATUS.USAGE;
                     if (TkServiceLocator.getLeaveApprovalService().isActiveAssignmentFoundOnJobFlsaStatus(principalId, TkConstants.FLSA_STATUS_NON_EXEMPT, true)) {
                     	TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(principalId, leaveBlockDate);
                     	if (tdh != null) {
-     	            	   if (DateUtils.isSameDay(leaveBlockDate.toDate(), tdh.getEndDate()) || leaveBlockDate.isAfter(new DateTime(tdh.getEndDate()))) {
+     	            	   if (DateUtils.isSameDay(leaveBlockDate.toDate(), tdh.getEndDate()) || leaveBlockDate.isAfter(tdh.getEndDateTime())) {
      	            		  requestStatus = LMConstants.REQUEST_STATUS.PLANNED;
      	            	   }
      	               } else {
@@ -225,7 +225,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	                            hours = TKUtils.getHoursBetween(leaveBlockInt.getStartMillis(), endDate.getMillis());
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlock leaveBlock = buildLeaveBlock(new LocalDate(leaveBlockInt.getStartMillis()), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, leaveBlockInt.getStart(), endDate);
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, leaveBlockInt.getStart(), endDate);
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -242,7 +242,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	                        	hours = TKUtils.getHoursBetween(currentDate.getMillis(), endDate.getMillis());
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlock leaveBlock = buildLeaveBlock(new LocalDate(leaveBlockInt.getStartMillis()), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, endDate);
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, endDate);
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -255,7 +255,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	                        	hours = TKUtils.getHoursBetween(currentDate.getMillis(), firstDay.getEndMillis());
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlock leaveBlock = buildLeaveBlock(new LocalDate(leaveBlockInt.getStartMillis()), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, firstDay.getEnd());
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, firstDay.getEnd());
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -265,7 +265,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	                    }
                     } else {
                         hours = negateHoursIfNecessary(leaveBlockType, hours);
-		                LeaveBlock leaveBlock = buildLeaveBlock(new LocalDate(leaveBlockInt.getStartMillis()), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), 
+		                LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), 
 		                		selectedAssignment, requestStatus, leaveBlockType, null, null);
 	                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 	                        currentLeaveBlocks.add(leaveBlock);

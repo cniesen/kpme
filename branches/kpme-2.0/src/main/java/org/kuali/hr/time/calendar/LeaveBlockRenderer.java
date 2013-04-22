@@ -124,10 +124,10 @@ public class LeaveBlockRenderer {
         StringBuilder b = new StringBuilder();
 
         if(leaveBlock.getBeginTimestamp() != null && leaveBlock.getEndTimestamp() != null) {
-        	String earnCodeType = TkServiceLocator.getEarnCodeService().getEarnCodeType(leaveBlock.getEarnCode(), new DateTime(leaveBlock.getBeginTimestamp()).toLocalDate());
+        	String earnCodeType = TkServiceLocator.getEarnCodeService().getEarnCodeType(leaveBlock.getEarnCode(), leaveBlock.getBeginDateTime().toLocalDate());
         	if(StringUtils.equals(earnCodeType, TkConstants.EARN_CODE_TIME)) {
-	        	DateTime start = new DateTime(leaveBlock.getBeginTimestamp().getTime());
-	        	DateTime end = new DateTime(leaveBlock.getEndTimestamp().getTime());
+	        	DateTime start = leaveBlock.getBeginDateTime();
+	        	DateTime end = leaveBlock.getEndDateTime();
 	            b.append(start.toString(TkConstants.DT_BASIC_TIME_FORMAT));
 	            b.append(" - ");
 	            b.append(end.toString(TkConstants.DT_BASIC_TIME_FORMAT));

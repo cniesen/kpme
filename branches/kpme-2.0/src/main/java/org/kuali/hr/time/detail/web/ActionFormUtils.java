@@ -274,7 +274,7 @@ public class ActionFormUtils {
         	leaveBlockMap.put("earnCode", leaveBlock.getEarnCode());
         	leaveBlockMap.put("lmLeaveBlockId", leaveBlock.getLmLeaveBlockId());
         	leaveBlockMap.put("leaveAmount", leaveBlock.getLeaveAmount().toString());
-        	DateTime leaveDate = new DateTime(leaveBlock.getLeaveDate());
+        	DateTime leaveDate = leaveBlock.getLeaveLocalDate().toDateTimeAtStartOfDay();
         	leaveBlockMap.put("leaveDate", leaveDate.toString(TkConstants.DT_BASIC_DATE_FORMAT));
         	leaveBlockMap.put("id", leaveBlock.getLmLeaveBlockId());
         	leaveBlockMap.put("canTransfer", TkServiceLocator.getLMPermissionService().canTransferSSTOUsage(leaveBlock));
@@ -282,8 +282,8 @@ public class ActionFormUtils {
         	leaveBlockMap.put("endDate", leaveDate.toString(TkConstants.DT_BASIC_DATE_FORMAT));
         	
         	if(leaveBlock.getBeginTimestamp() != null && leaveBlock.getEndTimestamp() != null) {
-	            DateTime start = new DateTime(leaveBlock.getBeginTimestamp().getTime());
-	        	DateTime end = new DateTime(leaveBlock.getEndTimestamp().getTime());
+	            DateTime start = leaveBlock.getBeginDateTime();
+	        	DateTime end = leaveBlock.getEndDateTime();
 	        	leaveBlockMap.put("startTimeHourMinute", start.toString(TkConstants.DT_BASIC_TIME_FORMAT));
 	        	leaveBlockMap.put("endTimeHourMinute", end.toString(TkConstants.DT_BASIC_TIME_FORMAT));
 	        	leaveBlockMap.put("startTime", start.toString(TkConstants.DT_MILITARY_TIME_FORMAT));

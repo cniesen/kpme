@@ -80,8 +80,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 	public Map<String, CalendarEntry> getPayCalendarEntriesForDept(
 			String dept, LocalDate currentDate) {
-		DateTime minDt = new DateTime(currentDate,
-				TKUtils.getSystemDateTimeZone());
+		DateTime minDt = currentDate.toDateTimeAtStartOfDay(TKUtils.getSystemDateTimeZone());
 		minDt = minDt.minusDays(DAYS_WINDOW_DELTA);
 		LocalDate windowDate = minDt.toLocalDate();
 
@@ -133,7 +132,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			CalendarEntry pce = TkServiceLocator
 					.getCalendarEntryService()
 					.getCurrentCalendarEntryByCalendarId(
-                            pc.getHrCalendarId(), new DateTime(currentDate));
+                            pc.getHrCalendarId(), currentDate.toDateTimeAtStartOfDay());
 			pceMap.put(pc.getCalendarName(), pce);
 		}
 
@@ -146,8 +145,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
 		Map<String, CalendarEntry> pceMap = new HashMap<String, CalendarEntry>();
 		Set<String> principals = new HashSet<String>();
-		DateTime minDt = new DateTime(currentDate,
-				TKUtils.getSystemDateTimeZone());
+		DateTime minDt = currentDate.toDateTimeAtStartOfDay(TKUtils.getSystemDateTimeZone());
 		minDt = minDt.minusDays(DAYS_WINDOW_DELTA);
 		LocalDate windowDate = minDt.toLocalDate();
 		
@@ -190,7 +188,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			CalendarEntry pce = TkServiceLocator
 					.getCalendarEntryService()
 					.getCurrentCalendarEntryByCalendarId(
-                            pc.getHrCalendarId(), new DateTime(currentDate));
+                            pc.getHrCalendarId(), currentDate.toDateTimeAtStartOfDay());
 			pceMap.put(pc.getCalendarName(), pce);
 		}
 
@@ -322,9 +320,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 							TkConstants.CLOCK_IN) || StringUtils
 							.equals(lastClockLog.getClockAction(),
 									TkConstants.LUNCH_IN))) {
-				DateTime startTime = new DateTime(lastClockLog
-						.getClockTimestamp().getTime());
-				DateTime endTime = new DateTime(System.currentTimeMillis());
+				DateTime startTime = lastClockLog.getClockDateTime();
+				DateTime endTime = new DateTime();
 
 				Hours hour = Hours.hoursBetween(startTime, endTime);
 				if (hour != null) {

@@ -198,7 +198,7 @@ public class LeaveCalendarAction extends TkAction {
             if(principalCal != null) {
 
                 DateTime currentYearBeginDate = TkServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCal.getLeavePlan(), LocalDate.now());
-                DateTime calEntryEndDate = new DateTime(calendarEntry.getEndPeriodDate());
+                DateTime calEntryEndDate = calendarEntry.getEndPeriodFullDateTime();
 	            if (calEntryEndDate.getMillis() > currentYearBeginDate.getMillis()) {
 	            	//current or future year
 	                LeaveSummary ls = TkServiceLocator.getLeaveSummaryService().getLeaveSummary(viewPrincipal, calendarEntry);
@@ -257,9 +257,9 @@ public class LeaveCalendarAction extends TkAction {
 			        			aDate = TkServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), lb.getLeaveLocalDate());
 			        		}
 			        		else {
-				        		Calendar cal = TkServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(viewPrincipal, new LocalDate(lb.getLeaveDate()), true);
-				        		CalendarEntry leaveEntry = TkServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), new DateTime(lb.getLeaveDate()));
-				        		aDate = new DateTime(leaveEntry.getEndPeriodDate());
+				        		Calendar cal = TkServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(viewPrincipal, lb.getLeaveLocalDate(), true);
+				        		CalendarEntry leaveEntry = TkServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), lb.getLeaveLocalDate().toDateTimeAtStartOfDay());
+				        		aDate = leaveEntry.getEndPeriodFullDateTime();
 			        		}
 			        		aDate = aDate.minusDays(1);
 			        		if(calendarInterval.contains(aDate.getMillis()) && aDate.toDate().compareTo(calendarEntry.getEndPeriodDate()) <= 0) {
@@ -445,11 +445,6 @@ public class LeaveCalendarAction extends TkAction {
 		}
         LOG.debug("Begin Date is>> "+beginDate);
         LOG.debug("End Date is>> "+endDate);
-		
-		/** Old Code
- 		DateTime beginDate = new DateTime(TKUtils.convertDateStringToTimestampNoTimezone(lcf.getStartDate()));
-		DateTime endDate = new DateTime(TKUtils.convertDateStringToTimestampNoTimezone(lcf.getEndDate()));
-		*/
 		
 		String selectedEarnCode = lcf.getSelectedEarnCode();
 		BigDecimal hours = lcf.getLeaveAmount();
