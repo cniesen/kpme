@@ -17,7 +17,6 @@ package org.kuali.hr.lm.leaveplan.service;
 
 import java.util.List;
 
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.hr.lm.leaveplan.LeavePlan;
@@ -132,11 +131,11 @@ public class LeavePlanServiceImpl implements LeavePlanService {
         int priorYearCutOffMonth = Integer.parseInt(lp.getCalendarYearStartMonth());
         int priorYearCutOffDay = Integer.parseInt(lp.getCalendarYearStartDayOfMonth());
 
-        DateMidnight cutOffDate = new DateMidnight(asOfDate).withMonthOfYear(priorYearCutOffMonth).withDayOfMonth(priorYearCutOffDay);
-        if (asOfDate.isAfter(cutOffDate.toLocalDate())) {
+        LocalDate cutOffDate = asOfDate.withMonthOfYear(priorYearCutOffMonth).withDayOfMonth(priorYearCutOffDay);
+        if (asOfDate.isAfter(cutOffDate)) {
             cutOffDate = cutOffDate.plusYears(1);
         }
-        return cutOffDate.toDateTime();
+        return cutOffDate.toDateTimeAtStartOfDay();
     }
 
 
