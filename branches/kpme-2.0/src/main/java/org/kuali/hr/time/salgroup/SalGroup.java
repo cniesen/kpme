@@ -36,7 +36,6 @@ public class SalGroup extends HrBusinessObject {
 	private String institution;
 	private String campus;
 	private BigDecimal percentTime;
-	private Integer workMonths;
 	private String benefitsEligible;
 	private String leaveEligible;
 	private String leavePlan;
@@ -112,14 +111,6 @@ public class SalGroup extends HrBusinessObject {
 
 	public void setPercentTime(BigDecimal percentTime) {
 		this.percentTime = percentTime;
-	}
-
-	public Integer getWorkMonths() {
-		return workMonths;
-	}
-
-	public void setWorkMonths(Integer workMonths) {
-		this.workMonths = workMonths;
 	}
 
 	public String getBenefitsEligible() {
