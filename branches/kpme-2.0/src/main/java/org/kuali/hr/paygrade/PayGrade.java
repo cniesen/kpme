@@ -21,11 +21,17 @@ import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.rice.location.impl.campus.CampusBo;
 
+import com.google.common.collect.ImmutableList;
+
 import java.math.BigDecimal;
 
 public class PayGrade extends HrBusinessObject {
 
 	private static final long serialVersionUID = -5736949952127760566L;
+	//KPME-2273/1965 Primary Business Keys List.
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("payGrade")            
+            .build();
 
 	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayGrade";
 

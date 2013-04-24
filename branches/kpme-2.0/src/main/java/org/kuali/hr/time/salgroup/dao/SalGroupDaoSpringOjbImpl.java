@@ -31,11 +31,7 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
 import com.google.common.collect.ImmutableList;
 
 public class SalGroupDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements SalGroupDao {
-    private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
-            .add("hrSalGroup")
-            .build();
-
-	@Override
+    @Override
 	public void saveOrUpdate(SalGroup salGroup) {
 		this.getPersistenceBrokerTemplate().store(salGroup);		
 	}
@@ -45,8 +41,8 @@ public class SalGroupDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 		Criteria root = new Criteria();
 
 		root.addEqualTo("hrSalGroup", salGroup);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(SalGroup.class, asOfDate, EQUAL_TO_FIELDS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalGroup.class, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(SalGroup.class, asOfDate, SalGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalGroup.class, SalGroup.EQUAL_TO_FIELDS, false));
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
@@ -101,8 +97,8 @@ public class SalGroupDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
         root.addAndCriteria(effectiveDateFilter);
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(SalGroup.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalGroup.class, EQUAL_TO_FIELDS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(SalGroup.class, effectiveDateFilter, SalGroup.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalGroup.class, SalGroup.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(SalGroup.class, root);

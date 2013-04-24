@@ -24,11 +24,15 @@ import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.earncode.EarnCode;
 
+import com.google.common.collect.ImmutableList;
+
 public class AccrualCategory extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "AccrualCategory";
-	/**
-	 * 
-	 */
+    
+    //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("accrualCategory")
+            .build();	
 	private static final long serialVersionUID = 1L;
 	private String lmAccrualCategoryId;
 	private String leavePlan;

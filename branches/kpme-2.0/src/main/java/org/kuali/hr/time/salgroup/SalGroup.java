@@ -21,12 +21,19 @@ import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.location.impl.campus.CampusBo;
 
+import com.google.common.collect.ImmutableList;
+
 public class SalGroup extends HrBusinessObject {
 
 	private static final long serialVersionUID = 8169672203236887348L;
 
 	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "SalGroup";
+	//KPME-2273/1965 Primary Business Keys List.	
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("hrSalGroup")
+            .build();
 
+	
 	private String hrSalGroupId;
 	private String hrSalGroup;
 	private String descr;

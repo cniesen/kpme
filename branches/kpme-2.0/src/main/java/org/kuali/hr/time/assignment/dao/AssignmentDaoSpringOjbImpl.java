@@ -40,14 +40,7 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
 public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements AssignmentDao {
 
     private static final Logger LOG = Logger.getLogger(AssignmentDaoSpringOjbImpl.class);
-    private static final ImmutableList<String> ASSIGNMENT_EQUAL_TO_FIELD = new ImmutableList.Builder<String>()
-            .add("jobNumber")
-            .add("workArea")
-            .add("task")
-            .add("principalId")
-            .build();
-
-    @Override
+     @Override
     public void saveOrUpdate(Assignment assignment) {
         this.getPersistenceBrokerTemplate().store(assignment);
     }
@@ -78,8 +71,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         root.addEqualTo("jobNumber", jobNumber);
         root.addEqualTo("workArea", workArea);
         root.addEqualTo("task", task);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, ASSIGNMENT_EQUAL_TO_FIELD, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, Assignment.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false));
         //root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -100,8 +93,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         root.addEqualTo("jobNumber", job);
         root.addEqualTo("workArea", workArea);
         root.addEqualTo("task", task);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, ASSIGNMENT_EQUAL_TO_FIELD, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, Assignment.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false));
         root.addEqualTo("principalId", TKContext.getTargetPrincipalId());
         //root.addEqualTo("active", true);
 
@@ -122,8 +115,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         Criteria root = new Criteria();
 
         root.addEqualTo("principalId", principalId);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, ASSIGNMENT_EQUAL_TO_FIELD, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, Assignment.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false));
         //root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -167,8 +160,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         Criteria root = new Criteria();
 
         root.addEqualTo("workArea", workArea);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, ASSIGNMENT_EQUAL_TO_FIELD, true));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, true));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, Assignment.EQUAL_TO_FIELDS, true));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, true));
         root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -230,8 +223,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 
         root.addEqualTo("principalId", principalId);
         root.addEqualTo("jobNumber", jobNumber);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, ASSIGNMENT_EQUAL_TO_FIELD, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, asOfDate, Assignment.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false));
         root.addEqualTo("active", true);
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -306,8 +299,8 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Assignment.class, effectiveDateFilter, ASSIGNMENT_EQUAL_TO_FIELD, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Assignment.class, effectiveDateFilter, Assignment.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(Assignment.class, root);
@@ -351,9 +344,9 @@ public class AssignmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 		Criteria activeRoot = new Criteria();
      	Criteria inactiveRoot = new Criteria();
 
-        ReportQueryByCriteria effdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false);
-        ReportQueryByCriteria activeEffdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, effdt, ASSIGNMENT_EQUAL_TO_FIELD, false);
-        ReportQueryByCriteria timestampSubQuery = OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, ASSIGNMENT_EQUAL_TO_FIELD, false);
+        ReportQueryByCriteria effdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Assignment.class, Assignment.EQUAL_TO_FIELDS, false);
+        ReportQueryByCriteria activeEffdtSubQuery = OjbSubQueryUtil.getEffectiveDateSubQuery(Assignment.class, effdt, Assignment.EQUAL_TO_FIELDS, false);
+        ReportQueryByCriteria timestampSubQuery = OjbSubQueryUtil.getTimestampSubQuery(Assignment.class, Assignment.EQUAL_TO_FIELDS, false);
 
         inactiveRoot.addEqualTo("active", "N");
         inactiveRoot.addIn("workArea", workAreaList);

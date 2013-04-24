@@ -9,12 +9,15 @@ import org.kuali.hr.pm.institution.Institution;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.rice.location.impl.campus.CampusBo;
+import com.google.common.collect.ImmutableList;
 
 public class PayStep extends HrBusinessObject implements Comparable {
 
-	/**
-	 * 
-	 */
+	//KPME-2273/1965 Primary Business Keys List.	
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("payStep")
+		    .build();
+
 	private static final long serialVersionUID = 1L;
 	
 	private String pmPayStepId;

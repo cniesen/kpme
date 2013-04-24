@@ -18,9 +18,16 @@ package org.kuali.hr.time.position;
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
+import com.google.common.collect.ImmutableList;
+
 public class Position extends HrBusinessObject {
 
 	private static final long serialVersionUID = -3258249005786874634L;
+	//KPME-2273/1965 Primary Business Keys List.	
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("positionNumber")
+            .add("workArea")
+            .build();
 
 	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Position";
 	
