@@ -29,7 +29,7 @@
 
   <bean id="LocationMaintenanceDocument-parentBean" abstract="true" parent="MaintenanceDocumentEntry"
   		p:businessObjectClass="org.kuali.hr.location.Location"
-  		p:maintainableClass="org.kuali.hr.location.service.LocationMaintainableServiceImpl"
+  		p:maintainableClass="org.kuali.hr.location.service.LocationMaintainableImpl"
   		p:documentAuthorizerClass="org.kuali.hr.time.authorization.LocationAdminAuthorizer">
     <property name="maintainableSections">
       <list>
