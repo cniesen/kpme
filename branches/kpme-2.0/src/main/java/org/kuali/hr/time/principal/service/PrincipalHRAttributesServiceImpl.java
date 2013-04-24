@@ -15,12 +15,22 @@
  */
 package org.kuali.hr.time.principal.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.LocalDate;
+import org.kuali.hr.core.KPMENamespace;
+import org.kuali.hr.core.permission.KPMEPermissionTemplate;
+import org.kuali.hr.core.role.KPMERoleMemberAttribute;
+import org.kuali.hr.job.Job;
+import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.principal.dao.PrincipalHRAttributesDao;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-
-import java.util.List;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesService {
 	private PrincipalHRAttributesDao principalHRAttributesDao;
@@ -102,9 +112,33 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
     	return this.principalHRAttributesDao.getInactivePrincipalHRAttributesForRange(principalId, startDate, endDate);
     }
     @Override
-    public List<PrincipalHRAttributes> getPrincipalHrAtributes(String principalId,
+    public List<PrincipalHRAttributes> getPrincipalHrAtributes(String userPrincipalId, String principalId,
                                                                String leavePlan, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-    	return this.principalHRAttributesDao.getPrincipalHrAtributes(principalId, leavePlan, fromEffdt, toEffdt, active, showHistory);
+    	List<PrincipalHRAttributes> results = new ArrayList<PrincipalHRAttributes>();
+    	
+    	List<PrincipalHRAttributes> principalHRAttributeObjs = principalHRAttributesDao.getPrincipalHrAtributes(principalId, leavePlan, fromEffdt, toEffdt, active, showHistory);
+    
+    	for (PrincipalHRAttributes principalHRAttributeObj : principalHRAttributeObjs) {
+        	Job jobObj = TkServiceLocator.getJobService().getPrimaryJob(principalId, principalHRAttributeObj.getEffectiveLocalDate());
+    		
+    		String department = jobObj != null ? jobObj.getDept() : null;
+        	Department departmentObj = jobObj != null ? TkServiceLocator.getDepartmentService().getDepartment(department, jobObj.getEffectiveLocalDate()) : null;
+        	String location = departmentObj != null ? departmentObj.getLocation() : null;
+        	
+        	Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
+        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+        		results.add(principalHRAttributeObj);
+        	}
+    	}
+    	
+    	return results;
     }
     @Override
     public List<String> getUniqueTimePayGroups() {

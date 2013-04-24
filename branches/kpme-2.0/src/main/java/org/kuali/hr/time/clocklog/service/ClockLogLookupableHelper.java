@@ -16,8 +16,7 @@
 package org.kuali.hr.time.clocklog.service;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -25,26 +24,34 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.hr.core.KPMENamespace;
 import org.kuali.hr.core.lookup.KPMELookupableHelper;
-import org.kuali.hr.core.role.KPMERole;
+import org.kuali.hr.core.permission.KPMEPermissionTemplate;
+import org.kuali.hr.core.role.KPMERoleMemberAttribute;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
-import org.kuali.hr.time.workflow.service.TimesheetDocumentHeaderService;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
 public class ClockLogLookupableHelper extends KPMELookupableHelper {
 
+	private static final long serialVersionUID = -469827905426221716L;
+	
+	private static final String DOCUMENT_ID = "documentId";
+
 	@Override
+	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 		
@@ -69,82 +76,85 @@ public class ClockLogLookupableHelper extends KPMELookupableHelper {
 	}
 
 	@Override
-	public List<? extends BusinessObject> getSearchResults(
-			Map<String, String> fieldValues) {
-		List<? extends BusinessObject> objectList = new ArrayList<BusinessObject>();
-				
+	public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+		List<ClockLog> results = new ArrayList<ClockLog>();
 		
-		TimesheetDocumentHeaderService timesheetDocumentHeaderService = TkServiceLocator.getTimesheetDocumentHeaderService();
+		String documentId = StringUtils.EMPTY;
 		
-		// search if documentid is given for search critria.
-		String documentId =fieldValues.get("documentId");
-		if(documentId != null && StringUtils.isNotEmpty(documentId)) {
-			fieldValues.remove("documentId");
+		if (fieldValues.containsKey(DOCUMENT_ID)) {
+			 documentId = fieldValues.get(DOCUMENT_ID);
+			 fieldValues.remove(DOCUMENT_ID);
+		}
+		
+		List<? extends BusinessObject> searchResults = super.getSearchResults(fieldValues);
 
-			TimesheetDocumentHeader timesheetDocumentHeader = timesheetDocumentHeaderService.getDocumentHeader(documentId);
-			if(timesheetDocumentHeader == null) {
-				objectList = new ArrayList<BusinessObject>();
-			} else {
-				String timesheetUserId = timesheetDocumentHeader.getPrincipalId();
-				Date beginDate =  timesheetDocumentHeader.getBeginDate();
-				Date endDate =  timesheetDocumentHeader.getEndDate();
-				objectList = super.getSearchResultsUnbounded(fieldValues);
-				Iterator itr = objectList.iterator();
-				while (itr.hasNext()) {
-					ClockLog cl = (ClockLog) itr.next();
-					cl.setDocumentId(timesheetUserId);
-					if(cl.getPrincipalId().equalsIgnoreCase(timesheetUserId)) {
-						if(new Date(cl.getClockTimestamp().getTime()).compareTo(beginDate) >= 0 && new Date(cl.getClockTimestamp().getTime()).compareTo(endDate) <= 0) {
-							continue;
-						} else {
-							itr.remove();
+		for (BusinessObject searchResult : searchResults) {
+			ClockLog clockLog = (ClockLog) searchResult;
+			results.add(clockLog);
+		}
+		
+		results = filterByDocumentId(results, documentId);
+		results = filterByPrincipalId(results, GlobalVariables.getUserSession().getPrincipalId());
+	
+		return results;
+	}
+	
+	private List<ClockLog> filterByDocumentId(List<ClockLog> clockLogs, String documentId) {
+		List<ClockLog> results = new ArrayList<ClockLog>();
+		
+		if (StringUtils.isNotEmpty(documentId)) {
+			TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
+			if (timesheetDocumentHeader != null) {
+				String principalId = timesheetDocumentHeader.getPrincipalId();
+				DateTime beginDate =  timesheetDocumentHeader.getBeginDateTime();
+				DateTime endDate =  timesheetDocumentHeader.getEndDateTime();
+				
+				for (ClockLog clockLog : clockLogs) {
+					clockLog.setDocumentId(principalId);
+					if (clockLog.getPrincipalId().equalsIgnoreCase(principalId)) {
+						if (clockLog.getClockDateTime().compareTo(beginDate) >= 0 && clockLog.getClockDateTime().compareTo(endDate) <= 0) {
+							results.add(clockLog);
 						}
-					} else {
-						itr.remove();
 					}
 				}
 			}
 		} else {
-			objectList = super.getSearchResults(fieldValues);
+			results.addAll(clockLogs);
 		}
 		
-		if (!objectList.isEmpty()) {
-			Iterator itr = objectList.iterator();
-			while (itr.hasNext()) {
-				ClockLog cl = (ClockLog) itr.next();
-				
-				// Set Document Id 
-				if(cl.getDocumentId() == null) {
-					TimesheetDocumentHeader tsdh = timesheetDocumentHeaderService.getDocumentHeaderForDate(cl.getPrincipalId(), cl.getClockDateTime());
-					if(tsdh != null) {
-						cl.setDocumentId(tsdh.getDocumentId());
-					}
-				}
-				
-				Job job = TkServiceLocator.getJobService().getJob(cl.getPrincipalId(), cl.getJobNumber(), LocalDate.now(), false);
-				String department = job != null ? job.getDept() : null;
-				
-				Department departmentObj = TkServiceLocator.getDepartmentService().getDepartment(department, LocalDate.now());
-				String location = departmentObj != null ? departmentObj.getLocation() : null;
-				
-				boolean valid = false;
-				if (TkServiceLocator.getHRGroupService().isMemberOfSystemAdministratorGroup(TKContext.getPrincipalId(), new DateTime())
-						|| TkServiceLocator.getHRRoleService().principalHasRoleInWorkArea(TKContext.getPrincipalId(), KPMERole.APPROVER.getRoleName(), cl.getWorkArea(), new DateTime())
-						|| TkServiceLocator.getTKRoleService().principalHasRoleInDepartment(TKContext.getPrincipalId(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, new DateTime())
-						|| TkServiceLocator.getLMRoleService().principalHasRoleInDepartment(TKContext.getPrincipalId(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, new DateTime())
-						|| TkServiceLocator.getTKRoleService().principalHasRoleInLocation(TKContext.getPrincipalId(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), location, new DateTime())
-						|| TkServiceLocator.getLMRoleService().principalHasRoleInLocation(TKContext.getPrincipalId(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), location, new DateTime())) {
-						valid = true;
-				}
-				
-				if (!valid) {
-					itr.remove();
-					continue;
-				}
-			}
-		}
-		return objectList;
+		return results;
 	}
 	
-	
+	private List<ClockLog> filterByPrincipalId(List<ClockLog> clockLogs, String principalId) {
+		List<ClockLog> results = new ArrayList<ClockLog>();
+		
+		for (ClockLog clockLog : clockLogs) {
+			if (clockLog.getDocumentId() == null) {
+				TimesheetDocumentHeader tsdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(clockLog.getPrincipalId(), clockLog.getClockDateTime());
+				if (tsdh != null) {
+					clockLog.setDocumentId(tsdh.getDocumentId());
+				}
+			}
+			
+			Job jobObj = TkServiceLocator.getJobService().getJob(clockLog.getPrincipalId(), clockLog.getJobNumber(), LocalDate.now(), false);
+			String department = jobObj != null ? jobObj.getDept() : null;
+			
+			Department departmentObj = jobObj != null ? TkServiceLocator.getDepartmentService().getDepartment(department, jobObj.getEffectiveLocalDate()) : null;
+			String location = departmentObj != null ? departmentObj.getLocation() : null;
+			
+			Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, GlobalVariables.getUserSession().getPrincipalId());
+        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(principalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+					results.add(clockLog);
+			}
+		}
+		
+		return results;
+	}
 }

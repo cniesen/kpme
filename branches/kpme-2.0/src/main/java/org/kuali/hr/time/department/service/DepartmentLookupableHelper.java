@@ -25,6 +25,7 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
@@ -60,6 +61,6 @@ public class DepartmentLookupableHelper extends KPMELookupableHelper {
         String descr = fieldValues.get("description");
         String active = fieldValues.get("active");
 
-        return TkServiceLocator.getDepartmentService().getDepartments(dept, location, descr, active);
+        return TkServiceLocator.getDepartmentService().getDepartments(GlobalVariables.getUserSession().getPrincipalId(), dept, location, descr, active);
     }
 }

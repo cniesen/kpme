@@ -16,10 +16,16 @@
 package org.kuali.hr.lm.timeoff.service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
+import org.kuali.hr.core.KPMENamespace;
+import org.kuali.hr.core.permission.KPMEPermissionTemplate;
+import org.kuali.hr.core.role.KPMERoleMemberAttribute;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.lm.timeoff.SystemScheduledTimeOff;
 import org.kuali.hr.lm.timeoff.dao.SystemScheduledTimeOffDao;
@@ -27,6 +33,8 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class SystemScheduledTimeOffServiceImpl implements SystemScheduledTimeOffService {
 
@@ -76,10 +84,27 @@ public class SystemScheduledTimeOffServiceImpl implements SystemScheduledTimeOff
     }
 
     @Override
-    public List<SystemScheduledTimeOff> getSystemScheduledTimeOffs(LocalDate fromEffdt, LocalDate toEffdt, String earnCode, LocalDate fromAccruedDate, LocalDate toAccruedDate, 
+    public List<SystemScheduledTimeOff> getSystemScheduledTimeOffs(String userPrincipalId, LocalDate fromEffdt, LocalDate toEffdt, String earnCode, LocalDate fromAccruedDate, LocalDate toAccruedDate, 
     		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String active, String showHist) {
-        return systemScheduledTimeOffDao.getSystemScheduledTimeOffs(fromEffdt, toEffdt, earnCode, fromAccruedDate, toAccruedDate, fromSchTimeOffDate, 
+    	List<SystemScheduledTimeOff> results = new ArrayList<SystemScheduledTimeOff>();
+        
+    	List<SystemScheduledTimeOff> systemScheduledTimeOffObjs = systemScheduledTimeOffDao.getSystemScheduledTimeOffs(fromEffdt, toEffdt, earnCode, fromAccruedDate, toAccruedDate, fromSchTimeOffDate, 
         															toSchTimeOffDate, active, showHist);
+    
+    	for (SystemScheduledTimeOff systemScheduledTimeOffObj : systemScheduledTimeOffObjs) {
+        	Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), systemScheduledTimeOffObj.getLocation());
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+        		results.add(systemScheduledTimeOffObj);
+        	}
+    	}
+    	
+    	return results;
     }
     
     @Override

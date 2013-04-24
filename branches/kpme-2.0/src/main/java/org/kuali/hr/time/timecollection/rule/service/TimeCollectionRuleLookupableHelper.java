@@ -20,30 +20,20 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.time.authorization.AuthorizationValidationUtils;
-import org.kuali.hr.time.authorization.DepartmentalRule;
-import org.kuali.hr.time.authorization.TkAuthorizedLookupableHelperBase;
+import org.kuali.hr.core.lookup.KPMELookupableHelper;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class TimeCollectionRuleLookupableHelper extends TkAuthorizedLookupableHelperBase {
+public class TimeCollectionRuleLookupableHelper extends KPMELookupableHelper {
 
 	private static final long serialVersionUID = -1690980961895784168L;
-
-	@Override
-    /**
-     * Implemented method to reduce the set of Business Objects that are shown
-     * to the user based on their current roles.
-     */
-    public boolean shouldShowBusinessObject(BusinessObject bo) {
-        return (bo instanceof DepartmentalRule) && AuthorizationValidationUtils.hasAccessToRead((DepartmentalRule)bo);
-    }
     
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -72,8 +62,7 @@ public class TimeCollectionRuleLookupableHelper extends TkAuthorizedLookupableHe
         String payType = fieldValues.get("payType");
         String active = fieldValues.get("active");
 
-        List<TimeCollectionRule> timeCollectionRules = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRules(dept, workArea, payType, active);
-		return timeCollectionRules;
+        return TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRules(GlobalVariables.getUserSession().getPrincipalId(), dept, workArea, payType, active);
 	}
 
 	@Override

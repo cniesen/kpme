@@ -15,17 +15,25 @@
  */
 package org.kuali.hr.time.department.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.LocalDate;
+import org.kuali.hr.core.KPMENamespace;
+import org.kuali.hr.core.permission.KPMEPermissionTemplate;
 import org.kuali.hr.core.role.KPMERole;
+import org.kuali.hr.core.role.KPMERoleMemberAttribute;
 import org.kuali.hr.core.role.department.DepartmentPrincipalRoleMemberBo;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.department.dao.DepartmentDao;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.role.RoleMember;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
 
 public class DepartmentServiceImpl implements DepartmentService {
@@ -52,14 +60,30 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 	
     @Override
-    public List<Department> getDepartments(String department, String location, String descr, String active) {
+    public List<Department> getDepartments(String userPrincipalId, String department, String location, String descr, String active) {
+    	List<Department> results = new ArrayList<Department>();
+    	
     	List<Department> departmentObjs = departmentDao.getDepartments(department, location, descr, active);
         
-        for (Department departmentObj : departmentObjs) {
-        	populateDepartmentRoleMembers(departmentObj, departmentObj.getEffectiveLocalDate());
+    	for (Department departmentObj : departmentObjs) {
+        	Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
+        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), departmentObj.getDept());
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), departmentObj.getLocation());
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+        		results.add(departmentObj);
+        	}
+    	}
+    	
+        for (Department result : results) {
+        	populateDepartmentRoleMembers(result, result.getEffectiveLocalDate());
         }
         
-        return departmentObjs;
+        return results;
     }
     
 	@Override

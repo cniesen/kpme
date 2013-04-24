@@ -15,17 +15,25 @@
  */
 package org.kuali.hr.job.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.kuali.hr.core.KPMENamespace;
+import org.kuali.hr.core.permission.KPMEPermissionTemplate;
+import org.kuali.hr.core.role.KPMERoleMemberAttribute;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.job.dao.JobDao;
+import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 /**
  * Represents an implementation of {@link JobService}.
@@ -109,26 +117,46 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public List<Job> getJobs(String principalId, String firstName, String lastName, String jobNumber,
+    public List<Job> getJobs(String userPrincipalId, String principalId, String firstName, String lastName, String jobNumber,
                              String dept, String positionNbr, String payType,
                              LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-
+    	List<Job> results = new ArrayList<Job>();
+    	
+    	List<Job> jobObjs = new ArrayList<Job>();
+    	
         if (StringUtils.isNotEmpty(firstName) || StringUtils.isNotEmpty(lastName)) {
             Map<String, String> fields = new HashMap<String, String>();
             fields.put("firstName", firstName);
             fields.put("lastName", lastName);
             List<Person> people = KimApiServiceLocator.getPersonService().findPeople(fields);
 
-            List<Job> jobs = new ArrayList<Job>();
             for (Person p : people) {
                 List<Job> jobsForPerson = jobDao.getJobs(p.getPrincipalId(), jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory);
-                jobs.addAll(jobsForPerson);
+                jobObjs.addAll(jobsForPerson);
             }
-
-            return jobs;
+        } else {
+        	jobObjs.addAll(jobDao.getJobs(principalId, jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory));
         }
-
-        return jobDao.getJobs(principalId, jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory);
+        
+    	for (Job jobObj : jobObjs) {
+        	String department = jobObj.getDept();
+        	Department departmentObj = TkServiceLocator.getDepartmentService().getDepartment(department, jobObj.getEffectiveLocalDate());
+        	String location = departmentObj != null ? departmentObj.getLocation() : null;
+        	
+        	Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
+        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+        		results.add(jobObj);
+        	}
+    	}
+    	
+    	return results;
     }
     
     public int getJobCount(String principalId, Long jobNumber, String dept) {

@@ -20,27 +20,22 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.time.authorization.AuthorizationValidationUtils;
-import org.kuali.hr.time.authorization.DepartmentalRule;
-import org.kuali.hr.time.authorization.TkAuthorizedLookupableHelperBase;
+import org.kuali.hr.core.lookup.KPMELookupableHelper;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class WorkAreaLookupableHelper extends TkAuthorizedLookupableHelperBase {
+public class WorkAreaLookupableHelper extends KPMELookupableHelper {
 
 	private static final long serialVersionUID = -817820785437555183L;
 
-    public boolean shouldShowBusinessObject(BusinessObject bo) {
-        return (bo instanceof DepartmentalRule) && AuthorizationValidationUtils.hasAccessToRead((DepartmentalRule)bo);
-    }
-    
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
@@ -84,7 +79,7 @@ public class WorkAreaLookupableHelper extends TkAuthorizedLookupableHelperBase {
 			workArea = "";
 		}
 		
-		return TkServiceLocator.getWorkAreaService().getWorkAreas(dept, workArea, description, TKUtils.formatDateString(fromEffdt), 
+		return TkServiceLocator.getWorkAreaService().getWorkAreas(GlobalVariables.getUserSession().getPrincipalId(), dept, workArea, description, TKUtils.formatDateString(fromEffdt), 
 				TKUtils.formatDateString(toEffdt), active, showHist);
 	}
 
