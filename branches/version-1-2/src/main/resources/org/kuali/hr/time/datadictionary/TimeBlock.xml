@@ -370,8 +370,8 @@
         </property>
 
         <property name="name" value="overtimePref"/>
-        <property name="label" value="overtimePref"/>
-        <property name="description" value="overtimePref"/>
+        <property name="label" value="Overtime Preference"/>
+        <property name="description" value="Overtime Preference"/>
     </bean>
   
    <bean id="TimeBlock-timesheetDocumentHeader.documentStatus" parent="TimeBlock-timesheetDocumentHeader.documentStatus-parentBean" />
@@ -404,6 +404,8 @@
         	  <bean parent="FieldDefinition" p:attributeName="clockLogCreated" />
         	  <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
         	  <bean parent="FieldDefinition" p:attributeName="principalId" />
+              <bean parent="FieldDefinition" p:attributeName="overtimePref" />
+              <bean parent="FieldDefinition" p:attributeName="lunchDeleted" />
         	  <bean parent="FieldDefinition" p:attributeName="timestamp" />
             </list>
           </property>
@@ -468,6 +470,8 @@
         <bean parent="FieldDefinition" p:attributeName="task"/>
         <bean parent="FieldDefinition" p:attributeName="hours"/>
         <bean parent="FieldDefinition" p:attributeName="amount"/>
+        <bean parent="FieldDefinition" p:attributeName="overtimePref" />
+        <bean parent="FieldDefinition" p:attributeName="lunchDeleted" />
       	<bean parent="FieldDefinition" p:attributeName="beginTimestamp"/>
         <bean parent="FieldDefinition" p:attributeName="endTimestamp" />
       </list>
