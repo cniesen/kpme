@@ -266,6 +266,7 @@
                 <value>positionReportSubCatLookupable</value>                
                 <value>payStepLookupable</value>
                 <value>positionTypeLookupable</value>
+                <value>pstnContractTypeLookupable</value>
                 <value>positionDepartmentAffiliationLookupable</value>
                 <value>positionDepartmentLookupable</value>
             </set>
@@ -393,6 +394,7 @@
  	
  	<bean id="positionDepartmentDao" class="org.kuali.hr.pm.positiondepartment.dao.PositionDepartmentDaoObjImpl" parent="platformAwareDao" />	
  	
+ 	<bean id="pstnContractTypeDao" class="org.kuali.hr.pm.pstncontracttype.dao.PstnContractTypeDaoObjImpl" parent="platformAwareDao" />
     <!-- Time Services for Business Logic -->
     <bean id="missedPunchService" class="org.kuali.hr.time.missedpunch.service.MissedPunchServiceImpl">
         <property name="missedPunchDao" ref="missedPunchDao"/>
@@ -694,6 +696,10 @@
     	<property name="pstnQlfctnVlDao" ref="pstnQlfctnVlDao"/>
     </bean>
     
+    <bean id="pstnContractTypeService" class="org.kuali.hr.pm.pstncontracttype.service.PstnContractTypeServiceImpl">
+        <property name="pstnContractTypeDao" ref="pstnContractTypeDao"/>
+    </bean>
+  
     <bean id="positionDepartmentAffiliationService" class="org.kuali.hr.pm.positiondepartmentaffiliation.service.PositionDepartmentAffiliationServiceImpl">
         <property name="positionDepartmentAffiliationDao" ref="positionDepartmentAffiliationDao"/>
     </bean>
@@ -701,7 +707,7 @@
     <bean id="positionDepartmentService" class="org.kuali.hr.pm.positiondepartment.service.PositionDepartmentServiceImpl">
         <property name="positionDepartmentDao" ref="positionDepartmentDao"/>
     </bean>
-    
+  
     <bean id="accrualCategoryMaxCarryOverService" class="org.kuali.hr.lm.accrual.service.AccrualCategoryMaxCarryOverServiceImpl">
         <property name="accrualCategoryService" ref="accrualCategoryService" />
 	    <property name="accrualCategoryRuleService" ref="accrualCategoryRuleService" />
@@ -1040,6 +1046,12 @@
     <bean id="positionTypeLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.hr.pm.positiontype.service.PositionTypeLookupableHelper"/>
+        </property>
+    </bean>
+    
+    <bean id="pstnContractTypeLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
+        <property name="lookupableHelperService">
+            <bean class="org.kuali.hr.pm.pstncontracttype.service.PstnContractTypeLookupableHelper"/>
         </property>
     </bean>
     

@@ -10,6 +10,7 @@ import org.kuali.hr.pm.positionreportgroup.service.PositionReportGroupService;
 import org.kuali.hr.pm.positionreportsubcat.service.PositionReportSubCatService;
 import org.kuali.hr.pm.positionreporttype.service.PositionReportTypeService;
 import org.kuali.hr.pm.positiontype.service.PositionTypeService;
+import org.kuali.hr.pm.pstncontracttype.service.PstnContractTypeService;
 import org.kuali.hr.pm.pstnqlfctnvl.service.PositionQualificationValueService;
 import org.kuali.hr.pm.pstnqlfrtype.service.PstnQlfrTypeService;
 import org.kuali.hr.pm.pstnrptgrpsubcat.service.PstnRptGrpSubCatService;
@@ -28,6 +29,7 @@ public class PmServiceLocator implements ApplicationContextAware {
     public static final String PM_POSITION_REPORT_SUB_CAT_SERVICE = "positionReportSubCatService";
     public static final String PM_PSTN_RPT_GRP_SUB_CAT_SERVICE = "pstnRptGrpSubCatService";
     public static final String PM_POSITION_TYPE_SERVICE = "positionTypeService";
+    public static final String PM_PSTN_CONTRACT_TYPE_SERVICE = "pstnContractTypeService";
     public static final String PM_POSITION_FLAG_SERVICE = "positionFlagService";
     public static final String PM_POSITION_QUALIFIER_TYPE_SERVICE = "pstnQlfrTypeService";
     public static final String PM_POSITION_QUALIFICATION_VALUE_SERVICE = "pstnQlfctnVlService";
@@ -78,6 +80,10 @@ public class PmServiceLocator implements ApplicationContextAware {
 		return (PositionQualificationValueService) CONTEXT.getBean(PM_POSITION_QUALIFICATION_VALUE_SERVICE);
 	}
 	
+	public static PstnContractTypeService getPstnContractTypeService() {
+		return (PstnContractTypeService) CONTEXT.getBean(PM_PSTN_CONTRACT_TYPE_SERVICE);
+	}
+
 	public static PositionDepartmentAffiliationService getPositionDepartmentAffiliationService() {
 		return (PositionDepartmentAffiliationService) CONTEXT.getBean(PM_POSITION_DEPT_AFFL_SERVICE);
 	}
@@ -85,7 +91,7 @@ public class PmServiceLocator implements ApplicationContextAware {
 	public static PositionDepartmentService getPositionDepartmentService() {
 		return (PositionDepartmentService) CONTEXT.getBean(PM_POSITION_DEPT_SERVICE);
 	}
-	
+
 	@Override
 	public void setApplicationContext(ApplicationContext arg0)
 			throws BeansException {
