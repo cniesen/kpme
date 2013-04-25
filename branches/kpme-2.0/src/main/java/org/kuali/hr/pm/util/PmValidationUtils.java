@@ -8,6 +8,7 @@ import org.joda.time.LocalDate;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.pm.PMConstants;
 import org.kuali.hr.pm.institution.Institution;
+import org.kuali.hr.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation;
 import org.kuali.hr.pm.positionreportcat.PositionReportCategory;
 import org.kuali.hr.pm.positionreportgroup.PositionReportGroup;
 import org.kuali.hr.pm.positionreportsubcat.PositionReportSubCategory;
@@ -170,6 +171,14 @@ public class PmValidationUtils {
 		}
 		return false;
 	}
+	
+	public static boolean validateAffiliation(String positionDeptAffl,  LocalDate asOfDate) {
+		if (asOfDate != null) {
+			List<PositionDepartmentAffiliation> pdaList = PmServiceLocator.getPositionDepartmentAffiliationService().getPositionDepartmentAffiliationList(positionDeptAffl, asOfDate);
+			return CollectionUtils.isNotEmpty(pdaList);
+		}
+		return false;
+	}
 
 	public static boolean validatePayGrade(String payGrade) {
 		// TODO Auto-generated method stub
@@ -180,6 +189,5 @@ public class PmValidationUtils {
 		return (StringUtils.equals(aString, TkConstants.WILDCARD_CHARACTER) ||
 					StringUtils.equals(aString,PMConstants.WILDCARD_CHARACTER));
 	}
-	
 	
 }

@@ -266,6 +266,8 @@
                 <value>positionReportSubCatLookupable</value>                
                 <value>payStepLookupable</value>
                 <value>positionTypeLookupable</value>
+                <value>positionDepartmentAffiliationLookupable</value>
+                <value>positionDepartmentLookupable</value>
             </set>
         </property>
     </bean>
@@ -385,7 +387,11 @@
  	
  	<bean id="pstnQlfrTypeDao" class="org.kuali.hr.pm.pstnqlfrtype.dao.PstnQlfrTypeDaoObjImpl" parent="platformAwareDao" /> 
  	
- 	<bean id="pstnQlfctnVlDao" class="org.kuali.hr.pm.pstnqlfctnvl.dao.PositionQualificationValueDaoObjImpl" parent="platformAwareDao" />	
+ 	<bean id="pstnQlfctnVlDao" class="org.kuali.hr.pm.pstnqlfctnvl.dao.PositionQualificationValueDaoObjImpl" parent="platformAwareDao" />
+ 	
+ 	<bean id="positionDepartmentAffiliationDao" class="org.kuali.hr.pm.positiondepartmentaffiliation.dao.PositionDepartmentAffiliationDaoObjImpl" parent="platformAwareDao" />
+ 	
+ 	<bean id="positionDepartmentDao" class="org.kuali.hr.pm.positiondepartment.dao.PositionDepartmentDaoObjImpl" parent="platformAwareDao" />	
  	
     <!-- Time Services for Business Logic -->
     <bean id="missedPunchService" class="org.kuali.hr.time.missedpunch.service.MissedPunchServiceImpl">
@@ -686,6 +692,14 @@
     
     <bean id="pstnQlfctnVlService" class="org.kuali.hr.pm.pstnqlfctnvl.service.PositionQualificationValueServiceImpl">
     	<property name="pstnQlfctnVlDao" ref="pstnQlfctnVlDao"/>
+    </bean>
+    
+    <bean id="positionDepartmentAffiliationService" class="org.kuali.hr.pm.positiondepartmentaffiliation.service.PositionDepartmentAffiliationServiceImpl">
+        <property name="positionDepartmentAffiliationDao" ref="positionDepartmentAffiliationDao"/>
+    </bean>
+    
+    <bean id="positionDepartmentService" class="org.kuali.hr.pm.positiondepartment.service.PositionDepartmentServiceImpl">
+        <property name="positionDepartmentDao" ref="positionDepartmentDao"/>
     </bean>
     
     <bean id="accrualCategoryMaxCarryOverService" class="org.kuali.hr.lm.accrual.service.AccrualCategoryMaxCarryOverServiceImpl">
@@ -1027,6 +1041,18 @@
         <property name="lookupableHelperService">
             <bean class="org.kuali.hr.pm.positiontype.service.PositionTypeLookupableHelper"/>
         </property>
+    </bean>
+    
+    <bean id="positionDepartmentAffiliationLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+    		<bean class="org.kuali.hr.pm.positiondepartmentaffiliation.service.PositionDepartmentAffiliationLookupableHelper"/>
+    	</property>    
+    </bean>
+    
+    <bean id="positionDepartmentLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+    		<bean class="org.kuali.hr.pm.positiondepartment.service.PositionDepartmentLookupableHelper"/>
+    	</property>    
     </bean>
     
     <bean id="rice.ksb.serviceBus" class="org.kuali.rice.krad.config.GlobalResourceLoaderServiceFactoryBean">

@@ -2,6 +2,8 @@ package org.kuali.hr.pm.service.base;
 
 import org.kuali.hr.pm.institution.service.InstitutionService;
 import org.kuali.hr.pm.paystep.service.PayStepService;
+import org.kuali.hr.pm.positiondepartment.service.PositionDepartmentService;
+import org.kuali.hr.pm.positiondepartmentaffiliation.service.PositionDepartmentAffiliationService;
 import org.kuali.hr.pm.positionflag.service.PositionFlagService;
 import org.kuali.hr.pm.positionreportcat.service.PositionReportCatService;
 import org.kuali.hr.pm.positionreportgroup.service.PositionReportGroupService;
@@ -29,6 +31,8 @@ public class PmServiceLocator implements ApplicationContextAware {
     public static final String PM_POSITION_FLAG_SERVICE = "positionFlagService";
     public static final String PM_POSITION_QUALIFIER_TYPE_SERVICE = "pstnQlfrTypeService";
     public static final String PM_POSITION_QUALIFICATION_VALUE_SERVICE = "pstnQlfctnVlService";
+    public static final String PM_POSITION_DEPT_AFFL_SERVICE = "positionDepartmentAffiliationService";
+    public static final String PM_POSITION_DEPT_SERVICE = "positionDepartmentService";
     
     public static InstitutionService getInstitutionService() {
     	return (InstitutionService) CONTEXT.getBean(PM_INSTITUTION_SERVICE);
@@ -72,6 +76,14 @@ public class PmServiceLocator implements ApplicationContextAware {
 	
 	public static PositionQualificationValueService getPositionQualificationValueService() {
 		return (PositionQualificationValueService) CONTEXT.getBean(PM_POSITION_QUALIFICATION_VALUE_SERVICE);
+	}
+	
+	public static PositionDepartmentAffiliationService getPositionDepartmentAffiliationService() {
+		return (PositionDepartmentAffiliationService) CONTEXT.getBean(PM_POSITION_DEPT_AFFL_SERVICE);
+	}
+	
+	public static PositionDepartmentService getPositionDepartmentService() {
+		return (PositionDepartmentService) CONTEXT.getBean(PM_POSITION_DEPT_SERVICE);
 	}
 	
 	@Override

@@ -1,0 +1,61 @@
+package org.kuali.hr.pm.positiondepartmentaffiliation.dao;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.ojb.broker.query.Criteria;
+import org.apache.ojb.broker.query.Query;
+import org.apache.ojb.broker.query.QueryFactory;
+import org.joda.time.LocalDate;
+import org.kuali.hr.core.util.OjbSubQueryUtil;
+import org.kuali.hr.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation;
+import org.kuali.hr.pm.positionreportgroup.PositionReportGroup;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+
+import com.google.common.collect.ImmutableList;
+
+public class PositionDepartmentAffiliationDaoObjImpl extends PlatformAwareDaoBaseOjb implements PositionDepartmentAffiliationDao {
+
+	private static final ImmutableList<String> PDA_EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("positionDeptAfflType")
+		    .build();
+	
+	@Override
+	public PositionDepartmentAffiliation getPositionDepartmentAffiliationById(String pmPositionDeptAfflId) {
+		Criteria crit = new Criteria();
+        crit.addEqualTo("pmPositionDeptAfflId", pmPositionDeptAfflId);
+        Query query = QueryFactory.newQuery(PositionDepartmentAffiliation.class, crit);
+        return (PositionDepartmentAffiliation) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+	}
+
+	@Override
+	public List<PositionDepartmentAffiliation> getPositionDepartmentAffiliationList(String positionDeptAfflType, LocalDate asOfDate) {
+	
+		List<PositionDepartmentAffiliation> pdaList = new ArrayList<PositionDepartmentAffiliation>();
+		Criteria root = new Criteria();
+
+		
+		if(StringUtils.isNotEmpty(positionDeptAfflType)) {
+			root.addEqualTo("positionDeptAfflType", positionDeptAfflType); 
+		}
+        
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionDepartmentAffiliation.class, asOfDate, PDA_EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionDepartmentAffiliation.class, PDA_EQUAL_TO_FIELDS, false));
+        
+        Criteria activeFilter = new Criteria();
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(PositionDepartmentAffiliation.class, root);
+        
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+		if(!c.isEmpty())
+			pdaList.addAll(c);
+		
+		return pdaList;
+	}
+
+}
