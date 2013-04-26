@@ -8,7 +8,7 @@
 			<parent>RiceDocument</parent>
 			<docHandler>${kuali.docHandler.url.prefix}/kr-krad/maintenance.do?methodToCall=docHandler&amp;dataObjectClassName=org.kuali.hr.pm.classification.Classification
 			</docHandler>
-			<label>ClassificationMaintenanceDocumentType</label>
+			<label>Classification Maintenance</label>
 		</documentType>   
      </documentTypes>
 </data>

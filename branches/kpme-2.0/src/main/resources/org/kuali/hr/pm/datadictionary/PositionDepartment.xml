@@ -50,7 +50,7 @@
 				</bean>
 			</list>
 		</property>
-	    <property name="objectLabel" value="PositionDepartment"/>
+	    <property name="objectLabel" value="Position Department"/>
   	</bean>
 
 	 <!-- Attribute Definitions -->  
