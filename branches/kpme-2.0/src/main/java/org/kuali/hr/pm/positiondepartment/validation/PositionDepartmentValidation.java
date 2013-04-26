@@ -29,7 +29,7 @@ public class PositionDepartmentValidation extends MaintenanceDocumentRuleBase  {
 	private boolean validateInstitution(PositionDepartment positionDepartment) {
 		if (StringUtils.isNotEmpty(positionDepartment.getInstitution())
 				&& !PmValidationUtils.validateInstitution(positionDepartment.getInstitution(), positionDepartment.getEffectiveLocalDate())) {
-			this.putFieldError("institution", "error.existence", "Instituion '"
+			this.putFieldError("institution", "error.existence", "Institution '"
 					+ positionDepartment.getInstitution() + "'");
 			return false;
 		} else {

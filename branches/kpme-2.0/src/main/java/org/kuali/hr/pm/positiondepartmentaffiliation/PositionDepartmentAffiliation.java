@@ -2,7 +2,14 @@ package org.kuali.hr.pm.positiondepartmentaffiliation;
 
 import org.kuali.hr.time.HrBusinessObject;
 
+import com.google.common.collect.ImmutableList;
+
 public class PositionDepartmentAffiliation extends HrBusinessObject {
+	
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("positionDeptAfflType")
+		    .build();
+	
 	private static final long serialVersionUID = 1L;
 	
 	private String pmPositionDeptAfflId;

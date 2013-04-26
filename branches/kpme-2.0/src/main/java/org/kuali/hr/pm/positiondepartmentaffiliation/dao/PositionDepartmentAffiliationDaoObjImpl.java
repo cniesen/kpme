@@ -19,10 +19,6 @@ import com.google.common.collect.ImmutableList;
 
 public class PositionDepartmentAffiliationDaoObjImpl extends PlatformAwareDaoBaseOjb implements PositionDepartmentAffiliationDao {
 
-	private static final ImmutableList<String> PDA_EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
-		    .add("positionDeptAfflType")
-		    .build();
-	
 	@Override
 	public PositionDepartmentAffiliation getPositionDepartmentAffiliationById(String pmPositionDeptAfflId) {
 		Criteria crit = new Criteria();
@@ -42,8 +38,8 @@ public class PositionDepartmentAffiliationDaoObjImpl extends PlatformAwareDaoBas
 			root.addEqualTo("positionDeptAfflType", positionDeptAfflType); 
 		}
         
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionDepartmentAffiliation.class, asOfDate, PDA_EQUAL_TO_FIELDS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionDepartmentAffiliation.class, PDA_EQUAL_TO_FIELDS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionDepartmentAffiliation.class, asOfDate, PositionDepartmentAffiliation.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionDepartmentAffiliation.class, PositionDepartmentAffiliation.EQUAL_TO_FIELDS, false));
         
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);

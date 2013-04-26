@@ -6,7 +6,14 @@ import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.department.Department;
 import org.kuali.rice.location.impl.campus.CampusBo;
 
+import com.google.common.collect.ImmutableList;
+
 public class PositionDepartment extends HrBusinessObject {
+	
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("department")
+		    .build();
+	
 	private static final long serialVersionUID = 1L;
 	
 	private String pmPositionDeptId;
