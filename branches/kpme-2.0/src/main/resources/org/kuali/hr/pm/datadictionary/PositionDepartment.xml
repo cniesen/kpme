@@ -38,16 +38,6 @@
 						</list>
 					</property>
 				</bean>	
-				
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="positionDeptAfflObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="positionDeptAffl"
-								p:targetName="positionDeptAfflType" />
-						</list>
-					</property>
-				</bean>
 			</list>
 		</property>
 	    <property name="objectLabel" value="Position Department"/>
@@ -165,7 +155,12 @@
         			 p:fieldConversions="dept:department"/>
    		 	 </property>
         </bean>
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionDeptAffl" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionDeptAffl" >
+        	<property name="quickfinder">
+       			<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation" 
+        			 p:fieldConversions="positionDeptAfflType:positionDeptAffl"/>
+   		 	 </property>
+        </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
       </list>
     </property>
@@ -190,7 +185,7 @@
  <!-- Position Type Inquiry View -->
   <bean id="PositionDepartment-InquiryView" parent="Uif-InquiryView">
     <property name="headerText" value="Position Department Inquiry"/>
-    <property name="dataObjectClassName" value="org.kuali.hr.pm.positiondepartment.PositioDepartment"/>
+    <property name="dataObjectClassName" value="org.kuali.hr.pm.positiondepartment.PositionDepartment"/>
     <property name="singlePageView" value="true"/>
     <property name="items">
       <list>
@@ -236,7 +231,12 @@
 		        			 p:fieldConversions="dept:department"/>
 		   		 	 </property>
 		        </bean>
-				<bean parent="Uif-InputField" p:propertyName="positionDeptAffl" />		        
+				<bean parent="Uif-InputField" p:propertyName="positionDeptAffl" >
+					<property name="quickfinder">
+       					<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation" 
+        			 	p:fieldConversions="positionDeptAfflType:positionDeptAffl"/>
+   		 	 		</property>
+				</bean>		        
 		        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true"/>
             </list>
           </property>
