@@ -72,7 +72,7 @@ public class TimeOffAccrualDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb impl
 	}
 
 	@Override
-	public TimeOffAccrual getTimeOffAccrual(Long laTimeOffAccrualId) {
+	public TimeOffAccrual getTimeOffAccrual(String laTimeOffAccrualId) {
 		Criteria crit = new Criteria();
 		crit.addEqualTo("lmAccrualId", laTimeOffAccrualId);
 		

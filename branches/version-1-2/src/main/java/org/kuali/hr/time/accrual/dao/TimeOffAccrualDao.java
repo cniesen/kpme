@@ -32,7 +32,7 @@ public interface TimeOffAccrualDao {
 	 * @param laTimeOffAccrualId
 	 * @return
 	 */
-	public TimeOffAccrual getTimeOffAccrual(Long laTimeOffAccrualId);
+	public TimeOffAccrual getTimeOffAccrual(String laTimeOffAccrualId);
 	
 	/**
 	 * Get active accrual categories

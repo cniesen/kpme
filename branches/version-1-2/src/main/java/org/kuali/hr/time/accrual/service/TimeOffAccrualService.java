@@ -58,7 +58,7 @@ public interface TimeOffAccrualService {
 	 * @return
 	 */
     @Cacheable(value= TimeOffAccrual.CACHE_NAME, key="'laTimeOffAccrualId=' + #p0")
-	public TimeOffAccrual getTimeOffAccrual(Long laTimeOffAccrualId);
+	public TimeOffAccrual getTimeOffAccrual(String laTimeOffAccrualId);
 
     @Cacheable(value= TimeOffAccrual.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<TimeOffAccrual> getTimeOffAccruals(String principalId, Date asOfDate);

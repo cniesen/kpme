@@ -203,7 +203,7 @@ public class TimeOffAccrualServiceImpl implements TimeOffAccrualService {
     }
 
 	@Override
-	public TimeOffAccrual getTimeOffAccrual(Long laTimeOffAccrualId) {
+	public TimeOffAccrual getTimeOffAccrual(String laTimeOffAccrualId) {
 		return timeOffAccrualDao.getTimeOffAccrual(laTimeOffAccrualId);
 	}
 	
