@@ -244,7 +244,8 @@
 <!--    				</bean> -->
 		         	
 			         	 <bean parent="Uif-InputField" p:propertyName="selectValues"
-			         	 		p:constraintText="Comma delimited list of qualification values.">
+			         	 		p:constraintText="Comma delimited list of qualification values." >
+<!-- 			         	 		 p:disabled="@{#typeValue eq 'S'}"> -->
 				       		<property name="caseConstraint">
 						        <bean parent="CaseConstraint">
 						        	<property name="propertyName" value="typeValue" />

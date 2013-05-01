@@ -37,16 +37,10 @@
 	<bean id="PositionClassQualification-qualificationType-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
-<!-- 		<property name="control"> -->
-<!-- 			<bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder" p:includeKeyInLabel="true"/> -->
-<!-- 		</property> -->
 		<property name="controlField">
 			<bean parent="Uif-DropdownControl"/>
 		</property>
-		<property name="optionsFinderClass" value="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder"/>
-<!-- 		<property name="optionsFinder"> -->
-<!-- 			<bean class="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder" p:blankOption="true"/> -->
-<!-- 		</property> -->
+<!-- 		<property name="optionsFinderClass" value="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder"/> -->
 		<property name="name" value="qualificationType" />
 		<property name="label" value="Qualification Type" />
 		<property name="description" value="Qualification Type" />
@@ -56,9 +50,13 @@
 	<bean id="PositionClassQualification-qualifier-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
+<!-- 		<property name="controlField"> -->
+<!-- 			<bean parent="Uif-TextControl" p:size="10" /> -->
+<!-- 		</property> -->
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+			<bean parent="Uif-DropdownControl"/>
 		</property>
+		<property name="optionsFinderClass" value="org.kuali.hr.pm.util.PositionClassQualifierKeyValueFinder"/>		
 		<property name="name" value="qualifier" />
 		<property name="label" value="Qualifier" />
 		<property name="description" value="Qualifier" />
@@ -90,7 +88,7 @@
 	
 	<bean id="PositionClassQualification-displayOrder" parent="PositionClassQualification-displayOrder-parentBean" />
 	<bean id="PositionClassQualification-displayOrder-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="required" value="true" />
+		<property name="required" value="false" />
 		<property name="maxLength" value="2"/>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="2" />

@@ -321,7 +321,12 @@
 	   		 </property>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="campus" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="salaryGroup" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="salaryGroup">
+       		<property name="quickfinder">
+	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
+	        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
+	   		 </property>
+        </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="percentTime" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="benefitsEligible" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leaveEligible" />
@@ -331,8 +336,18 @@
         			 p:fieldConversions="leavePlan:leavePlan"/>
    		 	</property>
         </bean>
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionReportGroup" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionType" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionReportGroup">
+        	<property name="quickfinder">
+	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
+	        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
+	   		 </property>
+        </bean>
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionType">
+       		<property name="quickfinder">
+	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiontyp.PositionType" 
+	        		 p:fieldConversions="positionType:positionType"/>
+	   		 </property>
+        </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="poolEligible" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="tenureEligible" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="externalReference" />
@@ -408,6 +423,9 @@
   <bean id="Classification-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Classification Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.hr.pm.classification.Classification"/>
+<!--     <property name="viewHelperServiceClass" -->
+<!--               value="org.kuali.hr.pm.uif.service.impl.ClassifiationMaintViewHelperServiceImpl"/> -->
+<!--     <property name="formClass" value="org.kuali.hr.pm.web.form.ClassificationForm" /> -->
     <property name="items">
       <list merge="true">
         <bean parent="Uif-MaintenanceGridSection">
@@ -441,8 +459,18 @@
 	        <property name="items">
 		        <list>
 			        <bean parent="Uif-InputField" p:propertyName="classificationTitle" />
-			        <bean parent="Uif-InputField" p:propertyName="positionReportGroup" />
-			       	<bean parent="Uif-InputField" p:propertyName="positionType" />
+			        <bean parent="Uif-InputField" p:propertyName="positionReportGroup">
+				        <property name="quickfinder">
+				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
+				        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
+				   		</property>
+			        </bean>
+			       	<bean parent="Uif-InputField" p:propertyName="positionType">
+						 <property name="quickfinder">
+				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiontype.PositionType" 
+				        		 p:fieldConversions="positionType:positionType"/>
+				   		 </property>
+			        </bean>
 			        <bean parent="Uif-InputField" p:propertyName="poolEligible" />
 			        <bean parent="Uif-InputField" p:propertyName="tenureEligible" />
 			        <bean parent="Uif-InputField" p:propertyName="externalReference" />
@@ -454,7 +482,12 @@
 	        <property name="headerText" value="Salary Group"/>
 	        <property name="items">
 		        <list>
-			       <bean parent="Uif-InputField" p:propertyName="salaryGroup" />
+			       <bean parent="Uif-InputField" p:propertyName="salaryGroup">
+				       <property name="quickfinder">
+				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
+				        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
+				   		</property>
+			       </bean>
 			       <bean parent="Uif-InputField" p:propertyName="percentTime" p:exclusiveMin="0" p:inclusiveMax="100"
 			        	 p:constraintText="Must be a number between 0 and 100.">
 			        	<property name="validCharactersConstraint">
@@ -484,13 +517,100 @@
 					         </bean>
 				        </property>
 				        <property name="quickfinder">
-			       			<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
+			       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
 			        			 p:fieldConversions="leavePlan:leavePlan"/>
 			   		 	</property>
 			       </bean>
 		         </list>
 	         </property>
         </bean>
+ 
+        <bean parent="Uif-TabGroup">
+		  <property name="items">
+		    <list>
+		      <bean parent="Uif-HorizontalBoxSection" p:headerText="Required Qualification">
+		      	<property name="items">
+		      		<list>
+		      	 	 <bean parent="Uif-TableCollectionGroup">
+						  <property name="collectionObjectClass" value="org.kuali.hr.pm.classification.ClassificationQualification" />
+						  <property name="propertyName" value="qualificationList" />
+						  <property name="layoutManager.generateAutoSequence" value="true" />
+						  <property name="layoutManager.richTable.render" value="false" />
+						  <property name="layoutManager.numberOfColumns" value="4" />
+						  <property name="items">
+						    <list>
+					           <bean parent="Uif-InputField" p:propertyName="qualificationType" >
+					           		<property name="control">
+										<bean parent="Uif-DropdownControl"/>
+									</property>
+									<property name="optionsFinder">
+										<bean class="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder" />
+									</property>
+					           </bean>
+<!-- 					           <bean parent="Uif-InputField" p:propertyName="typeValue" p:refreshWhenChangedPropertyNames="#lp.qualificationType"> -->
+<!-- 					           		<property name="control"> -->
+<!-- 										<bean parent="Uif-TextControl"/> -->
+<!-- 									</property> -->
+<!-- 					           </bean> -->
+					           <bean parent="Uif-InputField" p:propertyName="qualifier"
+					            		p:refreshWhenChangedPropertyNames="#lp.qualificationType">
+<!-- 					            	<property name="control"> -->
+<!-- 										<bean parent="Uif-TextControl" p:size="40" /> -->
+<!-- 									</property> -->
+					           		<property name="control">
+										<bean parent="Uif-DropdownControl"/>
+									</property>
+									<property name="optionsFinder">
+										<bean class="org.kuali.hr.pm.util.PositionClassQualifierKeyValueFinder" />
+									</property>
+					           </bean>
+					           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:refreshWhenChangedPropertyNames="#lp.qualificationType">
+<!-- 						           <property name="control"> -->
+<!-- 										<bean parent="Uif-TextControl" p:size="40" /> -->
+<!-- 									</property> -->
+					           		<property name="control">
+										<bean parent="Uif-DropdownControl"/>
+									</property>
+									<property name="optionsFinder">
+										<bean class="org.kuali.hr.pm.util.QualifierValueKeyValueFinder" />
+									</property>
+					           </bean>
+						    </list>
+						  </property>
+					</bean>
+					</list>
+		      	 </property>
+		      </bean>
+		      <bean parent="Uif-HorizontalBoxSection" p:headerText="Duties"/>
+		        </list>
+		      </property>
+		</bean>
+        
+        
+        
+<!--         <bean parent="Uif-Disclosure-TableCollectionSection" p:layoutManager.numberOfColumns="4"> -->
+<!-- 		  <property name="headerText" value="Required Qualification" /> -->
+<!-- 		  <property name="collectionObjectClass" value="org.kuali.hr.pm.classification.ClassificationQualification" /> -->
+<!-- 		  <property name="propertyName" value="qualificationList" /> -->
+<!-- 		  <property name="layoutManager.generateAutoSequence" value="true" /> -->
+<!-- 		  <property name="layoutManager.richTable.render" value="false" /> -->
+<!-- 		  <property name="items"> -->
+<!-- 		    <list> -->
+<!-- 		       <bean parent="Uif-InputField" p:propertyName="displayOrder"/> -->
+<!-- 	           <bean parent="Uif-InputField" p:propertyName="qualificationType"> -->
+<!-- 	           		<property name="control"> -->
+<!-- 						<bean parent="Uif-DropdownControl"/> -->
+<!-- 					</property> -->
+<!-- 					<property name="optionsFinder"> -->
+<!-- 						<bean class="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder" /> -->
+<!-- 					</property> -->
+<!-- 	           </bean> -->
+<!-- 	           <bean parent="Uif-InputField" p:propertyName="qualifier"/> -->
+<!-- 	           <bean parent="Uif-InputField" p:propertyName="qualificationValue"/>  -->
+<!-- 		    </list> -->
+<!-- 		  </property> -->
+<!-- 		</bean> -->
+        
         
       </list>
     </property>

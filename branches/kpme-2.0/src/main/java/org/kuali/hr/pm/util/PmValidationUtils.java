@@ -13,6 +13,7 @@ import org.kuali.hr.pm.positionreportcat.PositionReportCategory;
 import org.kuali.hr.pm.positionreportgroup.PositionReportGroup;
 import org.kuali.hr.pm.positionreportsubcat.PositionReportSubCategory;
 import org.kuali.hr.pm.positionreporttype.PositionReportType;
+import org.kuali.hr.pm.positiontype.PositionType;
 import org.kuali.hr.pm.pstnqlfctnvl.PositionQualificationValue;
 import org.kuali.hr.pm.service.base.PmServiceLocator;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -180,6 +181,15 @@ public class PmValidationUtils {
 		return false;
 	}
 
+	public static boolean validatePositionType(String pType, String institution, String campus, LocalDate asOfDate) {
+		if(asOfDate != null) {
+			List<PositionType> ptList = PmServiceLocator.getPositionTypeService().getPositionTypeList(pType, institution, campus, asOfDate);
+			return CollectionUtils.isNotEmpty(ptList);
+		}
+		return false;
+	}
+	
+	
 	public static boolean validatePayGrade(String payGrade) {
 		// TODO Auto-generated method stub
 		return false;
