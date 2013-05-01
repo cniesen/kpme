@@ -316,14 +316,14 @@
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="classificationTitle" />       
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="institution">
 	         <property name="quickfinder">
-	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
+	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
 	        		 p:fieldConversions="institutionCode:institution"/>
 	   		 </property>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="campus" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="salaryGroup">
        		<property name="quickfinder">
-	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
+	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
 	        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
 	   		 </property>
         </bean>
@@ -332,19 +332,19 @@
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leaveEligible" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leavePlan">
         	<property name="quickfinder">
-       			<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
+       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
         			 p:fieldConversions="leavePlan:leavePlan"/>
    		 	</property>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionReportGroup">
         	<property name="quickfinder">
-	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
+	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
 	        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
 	   		 </property>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionType">
        		<property name="quickfinder">
-	       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiontyp.PositionType" 
+	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positiontyp.PositionType" 
 	        		 p:fieldConversions="positionType:positionType"/>
 	   		 </property>
         </bean>
@@ -445,7 +445,7 @@
 		        <list>
 			        <bean parent="Uif-InputField" p:propertyName="institution" >
 				        <property name="quickfinder">
-				   			<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
+				   			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
 				        			 p:fieldConversions="institutionCode:institution"/>
 						</property>
 			        </bean>
@@ -461,13 +461,13 @@
 			        <bean parent="Uif-InputField" p:propertyName="classificationTitle" />
 			        <bean parent="Uif-InputField" p:propertyName="positionReportGroup">
 				        <property name="quickfinder">
-				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
+				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
 				        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
 				   		</property>
 			        </bean>
 			       	<bean parent="Uif-InputField" p:propertyName="positionType">
 						 <property name="quickfinder">
-				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.positiontype.PositionType" 
+				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positiontype.PositionType" 
 				        		 p:fieldConversions="positionType:positionType"/>
 				   		 </property>
 			        </bean>
@@ -484,7 +484,7 @@
 		        <list>
 			       <bean parent="Uif-InputField" p:propertyName="salaryGroup">
 				       <property name="quickfinder">
-				       		<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
+				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
 				        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
 				   		</property>
 			       </bean>

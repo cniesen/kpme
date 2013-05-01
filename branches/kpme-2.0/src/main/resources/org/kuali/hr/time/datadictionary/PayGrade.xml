@@ -320,7 +320,7 @@
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="payGrade"/>
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="salGroup">
                     <property name="quickfinder">
-                        <bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup"
+                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup"
                               p:fieldConversions="hrSalGroup:salGroup"/>
                     </property>
                 </bean>
@@ -392,14 +392,14 @@
                             <bean parent="Uif-InputField" p:propertyName="payGrade"/>
                             <bean parent="Uif-InputField" p:propertyName="salGroup">
                                 <property name="quickfinder">
-                                    <bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup"
+                                    <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup"
                                           p:fieldConversions="hrSalGroup:salGroup"/>
                                 </property>
                             </bean>
                             <bean parent="Uif-InputField" p:propertyName="description"/>
                             <bean parent="Uif-InputField" p:propertyName="institution" >
                                 <property name="quickfinder">
-                                    <bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution"
+                                    <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution"
                                           p:fieldConversions="institutionCode:institution"/>
                                 </property>
                             </bean>
