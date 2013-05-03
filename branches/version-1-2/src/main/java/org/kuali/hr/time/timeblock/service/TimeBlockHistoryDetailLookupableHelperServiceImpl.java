@@ -136,7 +136,7 @@ public class TimeBlockHistoryDetailLookupableHelperServiceImpl extends KualiLook
     	List<TkRole> tkRoles = TkServiceLocator.getTkRoleService().getRoles(TKContext.getPrincipalId(), TKUtils.getCurrentDate());
 		while(itr.hasNext()){
 			TimeBlockHistoryDetail tbhd = (TimeBlockHistoryDetail)itr.next();
-			Job job = TkServiceLocator.getJobService().getJob(tbhd.getTimeBlockHistory().getPrincipalId(), tbhd.getTimeBlockHistory().getJobNumber(), TKUtils.getCurrentDate(), false);
+			Job job = TkServiceLocator.getJobService().getJob(tbhd.getTimeBlockHistory().getPrincipalId(), tbhd.getTimeBlockHistory().getJobNumber(), tbhd.getTimeBlockHistory().getEndTimestamp(), false);
 			boolean valid = false;
 			for (TkRole tkRole : tkRoles) {
 				if (StringUtils.equals(tkRole.getRoleName(),
