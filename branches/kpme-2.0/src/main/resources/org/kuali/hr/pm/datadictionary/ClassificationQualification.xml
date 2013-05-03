@@ -17,7 +17,7 @@
 	        <ref bean="PositionClassQualification-displayOrder"/>
 	      </list>
 	    </property>
-	    <property name="objectLabel" value="Position Class Qualification"/>
+	    <property name="objectLabel" value="Position Classification Qualification"/>
   	</bean>
 
 <!-- Attribute Definitions -->  
@@ -105,7 +105,7 @@
 <!--  Position Class Qualification Maintenance View -->
   <bean id="PositionClassQualification-MaintenanceView" parent="PositionClassQualification-MaintenanceView-parentBean"/>
   <bean id="PositionClassQualification-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
-    <property name="headerText" value="Position Qualification Value Maintenance"/>
+    <property name="headerText" value="Position Classification Qualification Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.hr.pm.classification.ClassificationQualification"/>
     <property name="items">
       <list merge="true">
