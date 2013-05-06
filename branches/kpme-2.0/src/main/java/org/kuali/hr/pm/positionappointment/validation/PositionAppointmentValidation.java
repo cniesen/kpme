@@ -1,9 +1,8 @@
 package org.kuali.hr.pm.positionappointment.validation;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.hr.pm.util.PmValidationUtils;
 import org.kuali.hr.pm.positionappointment.PositionAppointment;
-import org.kuali.hr.time.util.ValidationUtils;
+import org.kuali.hr.pm.util.PmValidationUtils;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
@@ -12,7 +11,7 @@ public class PositionAppointmentValidation extends MaintenanceDocumentRuleBase {
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
-		LOG.debug("entering custom validation for Salary Group");
+		LOG.debug("entering custom validation for position appointment");
 		PositionAppointment pa = (PositionAppointment) this.getNewDataObject();
 		
 		if (pa != null) {

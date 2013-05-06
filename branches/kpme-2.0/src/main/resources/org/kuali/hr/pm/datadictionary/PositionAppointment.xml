@@ -109,7 +109,7 @@
 			<bean parent="AnyCharacterValidationPattern"/>
 		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+			<bean parent="Uif-TextControl" p:size="15" />
 		</property>
 		<property name="name" value="institution" />
 		<property name="label" value="Institution" />
@@ -123,7 +123,7 @@
 			<bean parent="AnyCharacterValidationPattern"/>
 		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+			<bean parent="Uif-TextControl" p:size="15" />
 		</property>
 		<property name="name" value="campus" />
 		<property name="label" value="Campus" />
