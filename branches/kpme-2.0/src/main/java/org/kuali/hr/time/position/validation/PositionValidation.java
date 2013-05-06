@@ -16,25 +16,22 @@
 package org.kuali.hr.time.position.validation;
 
 import org.kuali.hr.time.position.Position;
-import org.kuali.rice.kns.document.MaintenanceDocument;
-import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
+import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
 public class PositionValidation extends MaintenanceDocumentRuleBase {
 
 	@Override
-	protected boolean processCustomRouteDocumentBusinessRules(
-			MaintenanceDocument document) {
+	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		
+		Position position = (Position)this.getNewDataObject();
 
-		if (pbo instanceof Position) {
-			Position position = (Position) pbo;
-			if (position != null) {
-				valid = true;
-			}
+		if (position != null) {
+			valid = true;
 		}
+		
 		return valid;
 	}
 }
