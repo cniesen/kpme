@@ -415,4 +415,10 @@ public class TkConstants {
     public static final String CALENDAR_TYPE_LEAVE = "Leave";
     
     public static final String BATCH_USER_PRINCIPAL_NAME = "kpme.batch.user.principalName";
+    
+    // Pay Frequency Type
+    public static final String PAY_FREQUENCY_WEEK = "W";
+    public static final String PAY_FREQUENCY_BI_WEEK = "BW";
+    public static final String PAY_FREQUENCY_SEMI_MONTH = "SM";
+    public static final String PAY_FREQUENCY_MONTH = "M";
 }
