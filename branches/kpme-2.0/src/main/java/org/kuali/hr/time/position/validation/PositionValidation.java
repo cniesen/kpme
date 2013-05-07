@@ -15,44 +15,12 @@
  */
 package org.kuali.hr.time.position.validation;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
 import org.kuali.hr.time.position.Position;
-import org.kuali.hr.time.util.ValidationUtils;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
 public class PositionValidation extends MaintenanceDocumentRuleBase {
 
-	private boolean validateInstitution(String institution, LocalDate asOfDate) {
-		boolean valid = true;
-		
-		if (!StringUtils.isBlank(institution)) {
-			valid = ValidationUtils.validateInstitution(institution, asOfDate);
-
-			if (!valid) {
-				this.putFieldError("institution", "paytype.institution.invalid", institution);
-			} 			
-		}
-		
-		return valid;
-	}
-	
-	private boolean validateCampus(String campus) {
-		boolean valid = true;
-		
-		if (!StringUtils.isBlank(campus)) {
-			valid = ValidationUtils.validateCampus(campus);
-
-			if (!valid) {
-				this.putFieldError("campus", "paytype.campus.invalid", campus);
-			} 			
-		}
-
-		return valid;
-	}
-	
-	
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
@@ -61,12 +29,9 @@ public class PositionValidation extends MaintenanceDocumentRuleBase {
 		Position position = (Position)this.getNewDataObject();
 
 		if (position != null) {
-			valid &= validateInstitution(position.getInstitution(), position.getEffectiveLocalDate());
-			valid &= validateCampus(position.getCampus());
+			valid = true;
 		}
 		
 		return valid;
 	}
-	
-	
 }
