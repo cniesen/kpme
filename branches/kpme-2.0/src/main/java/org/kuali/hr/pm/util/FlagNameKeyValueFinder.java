@@ -29,8 +29,8 @@ public class FlagNameKeyValueFinder extends UifKeyValuesFinderBase {
 		if(docForm.getActionEvent().equals("addLine")) {
 			for(Object anObj : docForm.getAddedCollectionItems()) {
 				ClassificationFlag aFlag = (ClassificationFlag) anObj;
-				if(aFlag != null && StringUtils.isNotEmpty(aFlag.getName())) {
-					options.add(new ConcreteKeyValue(aFlag.getName(), aFlag.getName()));
+				if(aFlag != null && StringUtils.isNotEmpty(aFlag.getNames())) {
+					options.add(new ConcreteKeyValue(aFlag.getNames(), aFlag.getNames()));
 					return options;
 				}
 			}

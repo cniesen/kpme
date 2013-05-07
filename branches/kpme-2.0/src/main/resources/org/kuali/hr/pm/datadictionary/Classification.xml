@@ -545,11 +545,11 @@
 						  <property name="collectionObjectClass" value="org.kuali.hr.pm.classification.ClassificationFlag" />
 						  <property name="propertyName" value="flagList" />
 						  <property name="layoutManager.richTable.render" value="false" />
-						  <property name="layoutManager.generateAutoSequence" value="false" />
+						  <property name="layoutManager.generateAutoSequence" value="true" />
+						  <property name="layoutManager.numberOfColumns" value="4" />
 						  <property name="items">
 						    <list>
 					           <bean parent="Uif-InputField" p:propertyName="category" >
-					          		<property name="required" value="yes" />
 					           		<property name="control">
 										<bean parent="Uif-DropdownControl"/>
 									</property>
@@ -557,9 +557,8 @@
 										<bean class="org.kuali.hr.pm.util.FlagCategoryKeyValueFinder" p:addBlankOption="false"/>
 									</property>
 					           </bean>
-					           <bean parent="Uif-InputField" p:propertyName="name"
+					           <bean parent="Uif-InputField" p:propertyName="names"
 					            		p:refreshWhenChangedPropertyNames="#lp.category">
-					            	<property name="required" value="yes" />
 					            	<property name="control">
 					            		<bean parent="Uif-HorizontalCheckboxesControl" />
 					            	</property>
@@ -598,9 +597,6 @@
 					           </bean>
 					           <bean parent="Uif-InputField" p:propertyName="qualifier"
 					            		p:refreshWhenChangedPropertyNames="#lp.qualificationType">
-<!-- 					            	<property name="control"> -->
-<!-- 										<bean parent="Uif-TextControl" p:size="40" /> -->
-<!-- 									</property> -->
 					           		<property name="control">
 										<bean parent="Uif-DropdownControl"/>
 									</property>
@@ -609,9 +605,6 @@
 									</property>
 					           </bean>
 					           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:refreshWhenChangedPropertyNames="#lp.qualificationType">
-<!-- 						           <property name="control"> -->
-<!-- 										<bean parent="Uif-TextControl" p:size="40" /> -->
-<!-- 									</property> -->
 					           		<property name="control">
 										<bean parent="Uif-DropdownControl"/>
 									</property>
@@ -625,54 +618,32 @@
 					</list>
 		      	 </property>
 		      </bean>
-		     
-			  <bean parent="Uif-HorizontalBoxSection" p:headerText="Duties">
-			  	<property name="disclosure.render" value="false"/>
+			  <bean parent="Uif-HorizontalBoxSection" p:headerText="Duties" >
 			  	<property name="items">
 		      		<list>
-		      	 	 <bean parent="Uif-TableCollectionSection">
+		      	 	 <bean parent="Uif-TableCollectionSection" p:align="left">
 						  <property name="collectionObjectClass" value="org.kuali.hr.pm.classification.ClassificationDuty" />
 						  <property name="propertyName" value="dutyList" />
 						  <property name="layoutManager.generateAutoSequence" value="true" />
 						  <property name="layoutManager.richTable.render" value="false" />
 						  <property name="layoutManager.numberOfColumns" value="4" />
-						  <property name="layoutManager.columnCalculations">
-						      <list>
-						        <bean parent="Uif-ColumnCalculationInfo-Sum" p:propertyName="percentage"
-						        	p:showPageTotal="false" p:recalculateTotalClientside="true"/>
-						      </list>
-					      </property>
+<!-- 						  <property name="layoutManager.columnCalculations"> -->
+<!-- 						      <list> -->
+<!-- 						        <bean parent="Uif-ColumnCalculationInfo-Sum" p:propertyName="percentage" -->
+<!-- 						        	p:showGroupTotal="true" p:showPageTotal="false" p:recalculateTotalClientside="true"/> -->
+<!-- 						      </list> -->
+<!-- 					      </property> -->
 						  <property name="items">
-						  	<list>
-						  	 <bean parent="Uif-InputField" p:propertyName="name" />
-					         <bean parent="Uif-InputField" p:propertyName="description"/>
-					         <bean parent="Uif-InputField" p:propertyName="percentage" p:exclusiveMin="0" p:inclusiveMax="100"
-					        	 p:constraintText="Must be a number between 0 and 100.">
-					        	<property name="validCharactersConstraint">
-						        	<bean parent="FixedPointPatternConstraint" p:allowNegative="false" p:precision="5" p:scale="2" />
-								</property>
-							</bean>
-					         
-<!-- 					         <bean parent="Uif-InputField" p:propertyName="percentage"> -->
-<!-- 					         	<property name="control"> -->
-<!-- 									<bean parent="Uif-SpinnerControl" p:size="20" p:align="center"> -->
-<!-- 										<property name="spinner"> -->
-<!-- 											<bean parent="Uif-Spinner" > -->
-<!-- 												<property name="templateOptions"> -->
-<!-- 													<map merge="true"> -->
-<!-- 														<entry key="start" value="0.01"/> -->
-<!-- 														<entry key="step" value="0.01"/> -->
-<!-- 														<entry key="max" value="100"/> -->
-<!-- 														<entry key="numberFormat" value="n"/> -->
-<!-- 													</map> -->
-<!-- 												</property> -->
-<!-- 											</bean> -->
-<!-- 										</property> -->
-<!-- 									</bean> -->
-<!-- 								</property> -->
-<!-- 					         </bean> -->
-					         
-						  	</list>
+							  <list>
+							  	 <bean parent="Uif-InputField" p:propertyName="name" />
+						         <bean parent="Uif-InputField" p:propertyName="description"/>
+						         <bean parent="Uif-InputField" p:propertyName="percentage" p:exclusiveMin="0" p:inclusiveMax="100" 
+						         		 p:constraintText="Must be a number between 0 and 100.">
+						         	<property name="validCharactersConstraint">
+							        	<bean parent="FixedPointPatternConstraint" p:allowNegative="false" p:precision="5" p:scale="2" />
+									</property>
+								 </bean>						         
+							  </list>
 						  </property>
 					</bean>
 				  </list>
