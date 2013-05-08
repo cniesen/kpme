@@ -31,6 +31,8 @@ public class GracePeriodRule extends HrBusinessObject {
 	private String tkGracePeriodRuleId;
 	private BigDecimal hourFactor;
 	private String userPrincipalId;
+    private String history;
+
 	
 	protected LinkedHashMap<String,Object> toStringMapper() {
 		LinkedHashMap<String, Object> toStringMap = new LinkedHashMap<String,Object>();
@@ -100,5 +102,11 @@ public class GracePeriodRule extends HrBusinessObject {
 		setTkGracePeriodRuleId(id);
 	}
 
+    public String getHistory() {
+        return history;
+    }
 
+    public void setHistory(String history) {
+        this.history = history;
+    }
 }
