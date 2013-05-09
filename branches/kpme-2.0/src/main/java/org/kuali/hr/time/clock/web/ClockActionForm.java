@@ -24,9 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
@@ -131,9 +129,8 @@ public class ClockActionForm extends TimesheetActionForm {
 		this.currentServerTime = currentServerTime;
 	}
 	
-	public String getUserSystemOffsetServerTime(){
-		DateTime dt = new DateTime(LocalDate.now().toDate().getTime()+getUserTimezoneOffset());
-		return String.valueOf(dt.getMillis());
+	public String getUserSystemOffsetServerTime() {
+		return String.valueOf(System.currentTimeMillis() + getUserTimezoneOffset());
 	}
 	
 	public Long getUserTimezoneOffset(){
