@@ -39,11 +39,13 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDate.Property;
 import org.joda.time.Period;
+import org.kuali.hr.job.Job;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.CalendarEntry;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.timeblock.TimeBlock;
+import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 
 public class TKUtils {
@@ -122,35 +124,32 @@ public class TKUtils {
     public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
         String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
-        String assignmentDescValue = getAssignmentString(assignment);
+        String assignmentDescValue = getAssignmentString(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask(), assignment.getEffectiveLocalDate());
         assignmentDescriptions.put(assignmentDescKey, assignmentDescValue);
 
         return assignmentDescriptions;
     }
 
-    public static String getAssignmentString(Assignment assignment) {
-
-
-        if (assignment.getWorkAreaObj() == null
-                || assignment.getJob() == null
-                || assignment.getJobNumber() == null) {
-            return "";     // getAssignment() of AssignmentService can return an empty assignment
+    public static String getAssignmentString(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate) {
+    	StringBuilder builder = new StringBuilder();
+    	
+    	if (jobNumber != null && workArea != null && task != null) {
+        	Job jobObj = TkServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+        	WorkArea workAreaObj = TkServiceLocator.getWorkAreaService().getWorkArea(workArea, asOfDate);
+        	Task taskObj = TkServiceLocator.getTaskService().getTask(task, asOfDate);
+        	
+        	String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;
+        	BigDecimal compensationRate = jobObj != null ? jobObj.getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE) : BigDecimal.ZERO;
+        	String department = jobObj != null ? jobObj.getDept() : StringUtils.EMPTY;
+        	String taskDescription = taskObj != null && !TkConstants.TASK_DEFAULT_DESP.equals(taskObj.getDescription()) ? taskObj.getDescription() : StringUtils.EMPTY;
+        	
+        	builder.append(workAreaDescription).append(" : $").append(compensationRate).append(" Rcd ").append(jobNumber).append(" ").append(department);
+        	if (StringUtils.isNotBlank(taskDescription)) {
+        		builder.append(" ").append(taskDescription);
+        	}
         }
         
-       String stringTemp = assignment.getWorkAreaObj().getDescription() + " : $" 
-       				+ assignment.getJob().getCompRate().setScale(TkConstants.BIG_DECIMAL_SCALE) 
-       				+ " Rcd " + assignment.getJobNumber() + " " + assignment.getJob().getDept();
-       if(assignment.getTask()!= null) {
-	       	Task aTask = TkServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveLocalDate());
-	       	if(aTask != null) {
-	       		// do not display task description if the task is the default one
-	        	// default task is created in getTask() of TaskService
-	        	if(!aTask.getDescription().equals(TkConstants.TASK_DEFAULT_DESP)) {
-	        		stringTemp += " " +  aTask.getDescription();
-	        	}
-	       	} 
-       }
-       return stringTemp;
+        return builder.toString();
     }
 
     /**

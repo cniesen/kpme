@@ -396,9 +396,5 @@ public class ClockAction extends TimesheetAction {
 	    caf.setOutputString(JSONValue.toJSONString(errorMsgList));
 		return mapping.findForward("ws");
  	}
-
-    public ActionForward closeMissedPunchDoc(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response){
-        return mapping.findForward("closeMissedPunchDoc");
-    }
     
 }

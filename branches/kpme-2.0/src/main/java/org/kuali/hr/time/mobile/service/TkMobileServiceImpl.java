@@ -67,7 +67,7 @@ public class TkMobileServiceImpl implements TkMobileService {
         // This is primary for getting the assignment, since we get the assignment by using the target principal id on the context
         TKContext.setTargetPrincipalId(principalId);
 
-		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(assignmentKey), LocalDate.now());
+		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(AssignmentDescriptionKey.get(assignmentKey), LocalDate.now());
         CalendarEntry calendarEntry = TkServiceLocator.getCalendarService().getCurrentCalendarDates(principalId, new LocalDate().toDateTimeAtStartOfDay());
         TimesheetDocument td;
 		try {

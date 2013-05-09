@@ -135,7 +135,7 @@ public class LeaveCalendarWSAction extends TkAction {
 
         if (StringUtils.isNotBlank(lcf.getSelectedAssignment())) {
             List<Assignment> assignments = lcf.getLeaveCalendarDocument().getAssignments();
-            AssignmentDescriptionKey key = new AssignmentDescriptionKey(lcf.getSelectedAssignment());
+            AssignmentDescriptionKey key = AssignmentDescriptionKey.get(lcf.getSelectedAssignment());
             for (Assignment assignment : assignments) {
             	if (assignment.getJobNumber().compareTo(key.getJobNumber()) == 0 &&
                         assignment.getWorkArea().compareTo(key.getWorkArea()) == 0 &&

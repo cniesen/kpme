@@ -11,10 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.kuali.hr.core.role.KPMERole;
-import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.missedpunch.MissedPunch;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.service.base.TkServiceLocator;
-import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kew.api.identity.Id;
 import org.kuali.rice.kew.api.identity.PrincipalId;
 import org.kuali.rice.kew.api.rule.RoleName;
@@ -23,6 +23,7 @@ import org.kuali.rice.kew.routeheader.DocumentContent;
 import org.kuali.rice.kew.rule.GenericRoleAttribute;
 import org.kuali.rice.kew.rule.QualifiedRoleName;
 import org.kuali.rice.kim.api.role.RoleMember;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 @SuppressWarnings("unchecked")
 public class MissedPunchRoleAttribute extends GenericRoleAttribute {
@@ -45,19 +46,14 @@ public class MissedPunchRoleAttribute extends GenericRoleAttribute {
     protected List<String> getRoleNameQualifiers(String roleName, DocumentContent documentContent) {
 		Set<String> roleNameQualifiers = new HashSet<String>();
 		
-		Long routeHeaderId = new Long(documentContent.getRouteContext().getDocument().getDocumentId());
-        MissedPunchDocument missedPunchDocument = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(routeHeaderId.toString());
-
-        String timesheetDocumentId = missedPunchDocument.getTimesheetDocumentId();
-        String assignmentString = missedPunchDocument.getAssignment();
-
-        if (timesheetDocumentId != null && assignmentString != null) {
-            TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
-            if (tdoc != null) {
-                Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(tdoc, assignmentString);
-                roleNameQualifiers.add(String.valueOf(assignment.getWorkArea()));
-            }
-        }
+		try {
+			String documentId = documentContent.getRouteContext().getDocument().getDocumentId();
+			MissedPunchDocument missedPunchDocument = (MissedPunchDocument) KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(documentId);
+			MissedPunch missedPunch = missedPunchDocument.getMissedPunch();
+	        roleNameQualifiers.add(String.valueOf(missedPunch.getWorkArea()));
+		} catch (WorkflowException we) {
+			we.printStackTrace();
+		}
 		
 		return new ArrayList<String>(roleNameQualifiers);
     }

@@ -96,7 +96,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		HtmlForm form = page.getFormByName("TimeDetailActionForm");
 		Assert.assertNotNull(form);
 
-		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, new AssignmentDescriptionKey("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
 		EarnCode earnCode = TkServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());
@@ -156,7 +156,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	public void testEditTimeBlock() throws Exception {
 		HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), USER_PRINCIPAL_ID, tdocId, true);
 
-		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, new AssignmentDescriptionKey("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
 		EarnCode earnCode = TkServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());
@@ -186,7 +186,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 
 		HtmlUnitUtil.createTempFile(page);
 
-		Assignment newAssignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, new AssignmentDescriptionKey("1_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment newAssignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("1_1234_1"), TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime1 = new DateTime(2011, 2, 15, 14, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 		DateTime endTime1 = new DateTime(2011, 2, 15, 17, 0, 0, 0, TKUtils.getSystemDateTimeZone());
@@ -213,7 +213,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	public void testDeleteTimeBlock() throws Exception {
 		HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), USER_PRINCIPAL_ID,tdocId, true);
 
-		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, new AssignmentDescriptionKey("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
 		EarnCode earnCode = TkServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());

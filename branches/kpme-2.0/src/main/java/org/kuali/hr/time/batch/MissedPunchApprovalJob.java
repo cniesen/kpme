@@ -22,6 +22,8 @@ import org.kuali.hr.time.calendar.CalendarEntry;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -41,9 +43,12 @@ public class MissedPunchApprovalJob implements Job {
    	
 		List<TimesheetDocumentHeader> timesheetDocumentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
 		for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
-			List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocsByTimesheetDocumentId(timesheetDocumentHeader.getDocumentId());
+			List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(timesheetDocumentHeader.getDocumentId());
 			for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
-				TkServiceLocator.getMissedPunchService().approveMissedPunch(missedPunchDocument);
+				DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber());
+				if (DocumentStatus.ENROUTE.equals(documentStatus)) {
+					TkServiceLocator.getMissedPunchService().approveMissedPunchDocument(missedPunchDocument);
+				}
 			}
 		}
 	}

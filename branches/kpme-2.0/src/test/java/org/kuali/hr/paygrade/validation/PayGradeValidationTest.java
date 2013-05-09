@@ -19,6 +19,7 @@ import com.gargoylesoftware.htmlunit.html.*;
 import junit.framework.Assert;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kuali.hr.test.KPMETestCase;
 import org.kuali.hr.time.test.HtmlUnitUtil;
@@ -27,6 +28,7 @@ import org.kuali.hr.time.test.TkTestConstants;
 import java.util.List;
 
 public class PayGradeValidationTest extends KPMETestCase{
+	@Ignore
 	@Test
 	public void testValidateSalGroup() throws Exception {
         String baseUrl = TkTestConstants.Urls.PAY_GRADE_MAINT_NEW_URL;

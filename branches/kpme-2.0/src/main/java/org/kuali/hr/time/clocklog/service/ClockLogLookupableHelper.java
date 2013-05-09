@@ -31,7 +31,7 @@ import org.kuali.hr.core.role.KPMERoleMemberAttribute;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.department.Department;
-import org.kuali.hr.time.missedpunch.MissedPunchDocument;
+import org.kuali.hr.time.missedpunch.MissedPunch;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kim.api.KimConstants;
@@ -57,10 +57,10 @@ public class ClockLogLookupableHelper extends KPMELookupableHelper {
 		
 		ClockLog clockLog = (ClockLog)businessObject;
 		String tkClockLogId = clockLog.getTkClockLogId();
-		
-		MissedPunchDocument mpDoc = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(clockLog.getTkClockLogId());
-		if (mpDoc != null) {
-			clockLog.setMissedPunchDocumentId(mpDoc.getDocumentNumber());
+
+		MissedPunch missedPunch = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(clockLog.getTkClockLogId());
+		if (missedPunch != null) {
+			clockLog.setClockedByMissedPunch(true);
 		}
 		
 		Properties params = new Properties();

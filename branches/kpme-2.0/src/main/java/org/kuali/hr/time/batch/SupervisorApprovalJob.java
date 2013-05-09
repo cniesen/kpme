@@ -15,6 +15,9 @@
  */
 package org.kuali.hr.time.batch;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -29,13 +32,19 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.actionitem.ActionItemActionListExtension;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.quartz.*;
-
-import java.util.Collection;
-import java.util.List;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 
 public class SupervisorApprovalJob implements Job {
 	
@@ -56,7 +65,7 @@ public class SupervisorApprovalJob implements Job {
 			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {
 				TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
 				if (timesheetDocumentHeader != null) {
-					if (missedPunchDocumentsNotFinal(documentId) || documentNotEnroute(documentId)) {
+					if (missedPunchDocumentsEnroute(documentId) || documentNotEnroute(documentId)) {
 						rescheduleJob(context);
 					} else {
 						TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
@@ -86,21 +95,19 @@ public class SupervisorApprovalJob implements Job {
         return principal == null ? null : principal.getPrincipalId();
     }
 	
-	private boolean missedPunchDocumentsNotFinal(String documentId) {
-		boolean missedPunchDocumentsNotFinal = false;
+	private boolean missedPunchDocumentsEnroute(String documentId) {
+		boolean missedPunchDocumentsEnroute = false;
 		
-		List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocsByTimesheetDocumentId(documentId);
+		List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(documentId);
 		for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
-			Collection<ActionItemActionListExtension> actionItems = KEWServiceLocator.getActionListService().getActionListForSingleDocument(missedPunchDocument.getDocumentNumber());
-			for (ActionItemActionListExtension actionItem : actionItems) {
-				if (!actionItem.getRouteHeader().isFinal()) {
-					missedPunchDocumentsNotFinal = true;
-					break;
-				}
+			DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber());
+			if (DocumentStatus.ENROUTE.equals(documentStatus)) {
+				missedPunchDocumentsEnroute = true;
+				break;
 			}
 		}
 		
-		return missedPunchDocumentsNotFinal;
+		return missedPunchDocumentsEnroute;
 	}
 	
 	private boolean documentNotEnroute(String documentId) {
