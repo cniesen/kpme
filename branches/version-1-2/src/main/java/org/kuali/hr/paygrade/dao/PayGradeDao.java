@@ -21,13 +21,14 @@ import java.sql.Date;
 import java.util.List;
 
 public interface PayGradeDao {
-	/**
-	 * Get paygrade as of a particular date
-	 * @param payGrade
-	 * @param asOfDate
-	 * @return
-	 */
-	public PayGrade getPayGrade(String payGrade,Date asOfDate);
+    /**
+     * Get paygrade as of a particular date
+     * @param payGrade
+     * @param salGroup
+     * @param asOfDate
+     * @return
+     */
+    public PayGrade getPayGrade(String payGrade, String salGroup, Date asOfDate);
 	/**
 	 * Get paygrade by unique id
 	 * @param hrPayGradeId

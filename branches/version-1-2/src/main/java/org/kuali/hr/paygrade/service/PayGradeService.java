@@ -22,14 +22,15 @@ import java.sql.Date;
 import java.util.List;
 
 public interface PayGradeService {
-	/**
-	 * Pulls back a particular paygrade as of a particular date
-	 * @param payGrade
-	 * @param asOfDate
-	 * @return
-	 */
-    @Cacheable(value= PayGrade.CACHE_NAME, key="'payGrade=' + #p0 + '|' + 'asOfDate=' + #p1")
-	public PayGrade getPayGrade(String payGrade, Date asOfDate);
+    /**
+     * Pulls back a particular paygrade as of a particular date
+     * @param payGrade
+     * @param salGroup
+     * @param asOfDate
+     * @return
+     */
+    @Cacheable(value= PayGrade.CACHE_NAME, key="'payGrade=' + #p0 + '|' + 'salGroup=' + #p1 + '|' + 'asOfDate=' + #p2")
+    public PayGrade getPayGrade(String payGrade, String salGroup, Date asOfDate);
 	/**
 	 * Get pay grade by a unique id
 	 * @param hrPayGradeId

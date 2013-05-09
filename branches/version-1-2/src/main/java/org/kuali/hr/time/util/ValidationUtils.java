@@ -170,19 +170,19 @@ public class ValidationUtils {
 	}
 
 
-	public static boolean validatePayGrade(String payGrade, Date asOfDate) {
-		boolean valid = false;
+    public static boolean validatePayGrade(String payGrade, String salGroup, Date asOfDate) {
+        boolean valid = false;
 
-		if (asOfDate != null) {
-			PayGrade pg = TkServiceLocator.getPayGradeService().getPayGrade(payGrade, asOfDate);
-			valid = (pg != null);
-		} else {
-			int count = TkServiceLocator.getPayGradeService().getPayGradeCount(payGrade);
-			valid = (count > 0);
-		}
+        if (asOfDate != null) {
+            PayGrade pg = TkServiceLocator.getPayGradeService().getPayGrade(payGrade, salGroup, asOfDate);
+            valid = (pg != null);
+        } else {
+            int count = TkServiceLocator.getPayGradeService().getPayGradeCount(payGrade);
+            valid = (count > 0);
+        }
 
-		return valid;
-	}
+        return valid;
+    }
 
     /**
      *

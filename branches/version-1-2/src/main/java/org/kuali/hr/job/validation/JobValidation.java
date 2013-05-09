@@ -102,9 +102,9 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	boolean validatePayGrade(Job job) {
+    boolean validatePayGrade(Job job) {
 		if (job.getPayGrade() != null
-				&& !ValidationUtils.validatePayGrade(job.getPayGrade(), job
+				&& !ValidationUtils.validatePayGrade(job.getPayGrade(), job.getHrSalGroup(), job
 						.getEffectiveDate())) {
 			this.putFieldError("payGrade", "error.existence", "pay grade '"
 					+ job.getPayGrade() + "'");

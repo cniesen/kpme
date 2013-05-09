@@ -46,11 +46,18 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
 
 
     @Override
-    public Position getPositionByPositionNumber(String hrPositionNbr) {
-        Criteria crit = new Criteria();
-        crit.addEqualTo("position_nbr", hrPositionNbr);
+    public Position getPosition(String positionNumber, Date effectiveDate) {
+        Criteria root = new Criteria();
 
-        Query query = QueryFactory.newQuery(Position.class, crit);
+        root.addEqualTo("positionNumber", positionNumber);
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Position.class, effectiveDate, EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, EQUAL_TO_FIELDS, false));
+
+        Criteria activeFilter = new Criteria(); // Inner Join For Activity
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(Position.class, root);
         return (Position) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
     }
 

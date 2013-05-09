@@ -24,10 +24,10 @@ import java.util.List;
 public class PayGradeServiceImpl implements PayGradeService{
 
 	private PayGradeDao payGradeDao;
-	@Override
-	public PayGrade getPayGrade(String payGrade, Date asOfDate) {
-		return payGradeDao.getPayGrade(payGrade, asOfDate);
-	}
+    @Override
+    public PayGrade getPayGrade(String payGrade, String salGroup, Date asOfDate) {
+        return payGradeDao.getPayGrade(payGrade, salGroup, asOfDate);
+    }
  
 	public void setPayGradeDao(PayGradeDao payGradeDao) {
 		this.payGradeDao = payGradeDao;

@@ -34,25 +34,26 @@ public class PayGradeDaoSpringObjImpl  extends PlatformAwareDaoBaseOjb implement
             .add("payGrade")
             .build();
 
-	@Override
-	public PayGrade getPayGrade(String payGrade, Date asOfDate) {
-		Criteria root = new Criteria();
+    @Override
+    public PayGrade getPayGrade(String payGrade, String salGroup, Date asOfDate) {
+        Criteria root = new Criteria();
 
-		root.addEqualTo("payGrade", payGrade);
+        root.addEqualTo("payGrade", payGrade);
+        root.addEqualTo("salGroup", salGroup);
         root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayGrade.class, new java.sql.Date(asOfDate.getTime()), EQUAL_TO_FIELDS, false));
         root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, EQUAL_TO_FIELDS, false));
 
-		Criteria activeFilter = new Criteria(); // Inner Join For Activity
-		activeFilter.addEqualTo("active", true);
-		root.addAndCriteria(activeFilter);
+        Criteria activeFilter = new Criteria(); // Inner Join For Activity
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
 
-		
-		Query query = QueryFactory.newQuery(PayGrade.class, root);
-		
-		PayGrade pg = (PayGrade)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
-		
-		return pg;
-	}
+
+        Query query = QueryFactory.newQuery(PayGrade.class, root);
+
+        PayGrade pg = (PayGrade)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+
+        return pg;
+    }
 
 	@Override
 	public PayGrade getPayGrade(String hrPayGradeId) {
