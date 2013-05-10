@@ -779,7 +779,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public List<CalendarEntry> getAllPayCalendarEntriesForApprover(String principalId, LocalDate currentDate) {
 		Set<String> principals = new HashSet<String>();
-		
+
     	Set<Long> workAreas = new HashSet<Long>();
     	workAreas.addAll(TkServiceLocator.getHRRoleService().getWorkAreasForPrincipalInRole(principalId, KPMERole.APPROVER.getRoleName(), new DateTime(), true));
         workAreas.addAll(TkServiceLocator.getHRRoleService().getWorkAreasForPrincipalInRole(principalId, KPMERole.APPROVER_DELEGATE.getRoleName(), new DateTime(), true));

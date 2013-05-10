@@ -41,6 +41,7 @@ import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesummary.TimeSummary;
+import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.util.GlobalVariables;
 
@@ -65,7 +66,7 @@ public class TimeApprovalWSAction extends TkAction {
             endDate = endDate.plusDays(1);
             List<String> workAreaList = new ArrayList<String>();
 	        if(StringUtil.isEmpty(taaf.getSelectedWorkArea())) {
-	        	String principalId = GlobalVariables.getUserSession().getPrincipalId();
+	        	String principalId = TKContext.getTargetPrincipalId();
 	        	
 	        	Set<Long> workAreas = new HashSet<Long>();
 	        	workAreas.addAll(TkServiceLocator.getHRRoleService().getWorkAreasForPrincipalInRole(principalId, KPMERole.APPROVER.getRoleName(), new DateTime(), true));

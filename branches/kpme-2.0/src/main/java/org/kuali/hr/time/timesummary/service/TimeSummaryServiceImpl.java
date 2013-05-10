@@ -17,6 +17,7 @@ package org.kuali.hr.time.timesummary.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
@@ -393,7 +394,9 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
     @Override
     public List<String> getHeaderForSummary(CalendarEntry cal, List<Boolean> dayArrangements) {
         List<String> header = new ArrayList<String>();
-
+        if (cal == null) {
+            return Collections.emptyList();
+        }
         // Maps directly to joda time day of week constants.
         int flsaBeginDay = this.getPayCalendarForEntry(cal).getFlsaBeginDayConstant();
         boolean virtualDays = false;
