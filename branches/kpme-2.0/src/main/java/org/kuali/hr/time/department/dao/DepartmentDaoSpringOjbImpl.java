@@ -80,25 +80,25 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
 
 	@Override
 	@SuppressWarnings("unchecked")
-    public List<Department> getDepartments(String dept, String location, String departmentDescr, String active) {
+    public List<Department> getDepartments(String dept, String location, String departmentDescr, String active, String showHistory) {
         List<Department> results = new ArrayList<Department>();
-        
+
         Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(dept)) {
             root.addLike("dept", dept);
         }
-        
+
         if (StringUtils.isNotBlank(location)) {
             root.addLike("location", location);
         }
-        
+
         if (StringUtils.isNotBlank(departmentDescr)) {
             root.addLike("description", departmentDescr);
         }
-        
+
         if (StringUtils.isNotBlank(active)) {
-        	Criteria activeFilter = new Criteria();
+            Criteria activeFilter = new Criteria();
             if (StringUtils.equals(active, "Y")) {
                 activeFilter.addEqualTo("active", true);
             } else if (StringUtils.equals(active, "N")) {
@@ -106,10 +106,20 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
             }
             root.addAndCriteria(activeFilter);
         }
-        
+
+        if (StringUtils.equals(showHistory, "N")) {
+            ImmutableList<String> fields = new ImmutableList.Builder<String>()
+                    .add("dept")
+                    .add("location")
+                    .add("description")
+                    .build();
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Department.class, Department.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Department.class, Department.EQUAL_TO_FIELDS, false));
+        }
+
         Query query = QueryFactory.newQuery(Department.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
-        
+
         return results;
     }
 

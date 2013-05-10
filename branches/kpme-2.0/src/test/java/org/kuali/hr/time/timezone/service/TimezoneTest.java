@@ -18,9 +18,12 @@ package org.kuali.hr.time.timezone.service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.hr.test.KPMETestCase;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TkTestConstants;
 import org.kuali.hr.time.test.TkTestUtils;
@@ -44,6 +47,11 @@ public class TimezoneTest extends KPMETestCase {
     	// clock out 
     	page = TkTestUtils.clickButton(page, "clockAction");
     	HtmlUnitUtil.createTempFile(page);
-    	Assert.assertTrue("Time zone information is incorrect", page.asText().contains("Eastern"));
+    	
+    	DateTimeZone dateTimeZone = DateTimeZone.forID(TkServiceLocator.getTimezoneService().getUserTimezone());
+    	DateTime dateTime = new DateTime().withZone(dateTimeZone);
+    	String timeZone = dateTime.toString("zzzz");
+    	Assert.assertTrue("Time zone information is incorrect", page.asText().contains(timeZone));
 	}
+	
 }

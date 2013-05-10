@@ -313,8 +313,9 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			// highlight entry
 			ClockLog lastClockLog = TkServiceLocator.getClockLogService()
 					.getLastClockLog(principalId);
-			approvalSummaryRow
-					.setClockStatusMessage(createLabelForLastClockLog(lastClockLog));
+			if (isSynchronousUser(principalId)) {
+                approvalSummaryRow.setClockStatusMessage(createLabelForLastClockLog(lastClockLog));
+            }
 			if (lastClockLog != null
 					&& (StringUtils.equals(lastClockLog.getClockAction(),
 							TkConstants.CLOCK_IN) || StringUtils
@@ -336,6 +337,17 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		}
 		return rows;
 	}
+
+    private boolean isSynchronousUser(String principalId) {
+        List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignments(principalId, LocalDate.now());
+        boolean isSynchronousUser = false;
+        if (CollectionUtils.isNotEmpty(assignments)) {
+            for (Assignment assignment : assignments) {
+                isSynchronousUser |= assignment.isSynchronous();
+            }
+        }
+        return isSynchronousUser;
+    }
 
 	public List<TimesheetDocumentHeader> getDocumentHeadersByPrincipalIds(
 			DateTime payBeginDate, DateTime payEndDate, List<String> principalIds) {

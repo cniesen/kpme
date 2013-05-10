@@ -13,21 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.hr.time.department;
+package org.kuali.hr.time.department.web;
 
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.kuali.hr.time.base.web.TkInquirableImpl;
+import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
 
-@SuppressWarnings("deprecation")
-public class DepartmentInquirableImpl extends KualiInquirableImpl {
+public class DepartmentInquirableImpl extends TkInquirableImpl {
 
-	private static final long serialVersionUID = 3618060549761453283L;
+	private static final long serialVersionUID = -5591811849239695011L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -46,5 +46,4 @@ public class DepartmentInquirableImpl extends KualiInquirableImpl {
 
 		return departmentObj;
 	}
-	
 }

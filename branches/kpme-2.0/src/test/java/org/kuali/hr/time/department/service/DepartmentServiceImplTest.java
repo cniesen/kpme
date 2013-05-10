@@ -12,10 +12,10 @@ public class DepartmentServiceImplTest extends KPMETestCase {
 	
 	@Test
 	public void testSearchDepartments() throws Exception {
-		List<Department> allResults = TkServiceLocator.getDepartmentService().getDepartments("admin", null, null, null, "Y");
+		List<Department> allResults = TkServiceLocator.getDepartmentService().getDepartments("admin", null, null, null, "Y", "N");
 		Assert.assertEquals("Search returned the wrong number of results.", 11, allResults.size());
 		
-		List<Department> restrictedResults = TkServiceLocator.getDepartmentService().getDepartments("testuser6", null, null, null, "Y");
+		List<Department> restrictedResults = TkServiceLocator.getDepartmentService().getDepartments("testuser6", null, null, null, "Y", "N");
 		Assert.assertEquals("Search returned the wrong number of results.", 1, restrictedResults.size());
 	}
 
