@@ -38,9 +38,8 @@
 		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
 		<property name="controlField">
-			<bean parent="Uif-DropdownControl"/>
+			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
-<!-- 		<property name="optionsFinderClass" value="org.kuali.hr.pm.util.PstnQlfrTypeKeyValueFinder"/> -->
 		<property name="name" value="qualificationType" />
 		<property name="label" value="Qualification Type" />
 		<property name="description" value="Qualification Type" />
@@ -50,13 +49,9 @@
 	<bean id="PositionClassQualification-qualifier-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
-<!-- 		<property name="controlField"> -->
-<!-- 			<bean parent="Uif-TextControl" p:size="10" /> -->
-<!-- 		</property> -->
 		<property name="controlField">
-			<bean parent="Uif-DropdownControl"/>
+			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
-		<property name="optionsFinderClass" value="org.kuali.hr.pm.util.PositionClassQualifierKeyValueFinder"/>		
 		<property name="name" value="qualifier" />
 		<property name="label" value="Qualifier" />
 		<property name="description" value="Qualifier" />
