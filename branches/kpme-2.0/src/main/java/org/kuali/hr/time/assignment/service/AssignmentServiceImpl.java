@@ -36,11 +36,14 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.assignment.dao.AssignmentDao;
 import org.kuali.hr.time.calendar.CalendarEntry;
+import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.dept.lunch.DeptLunchRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -293,11 +296,21 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     private void populateAssignment(Assignment assignment, LocalDate asOfDate) {
-        assignment.setJob(TkServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
-        assignment.setTimeCollectionRule(TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(),asOfDate));
-        assignment.setWorkAreaObj(TkServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
-        assignment.setDeptLunchRule(TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(assignment.getJob().getDept(),
-                assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
+    	String principalId = assignment.getPrincipalId();
+    	Long jobNumber = assignment.getJobNumber();
+    	Long workArea = assignment.getWorkArea();
+    	
+    	WorkArea workAreaObj = TkServiceLocator.getWorkAreaService().getWorkArea(workArea, asOfDate);
+    	Job job = TkServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+    	String department = job != null ? job.getDept() : null;
+    	String hrPayType = job != null ? job.getHrPayType() : null;
+    	DeptLunchRule departmentLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(department, workArea, principalId, jobNumber, asOfDate);
+    	TimeCollectionRule timeCollectionRule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(department, workArea, hrPayType, asOfDate);
+    	
+        assignment.setWorkAreaObj(workAreaObj);
+        assignment.setJob(job);
+        assignment.setDeptLunchRule(departmentLunchRule);
+        assignment.setTimeCollectionRule(timeCollectionRule);
     }
 
     public Assignment getAssignment(String principalId, AssignmentDescriptionKey key, LocalDate asOfDate) {
