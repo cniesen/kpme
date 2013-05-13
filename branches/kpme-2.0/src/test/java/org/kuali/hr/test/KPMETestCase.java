@@ -19,15 +19,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.*;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TkTestConstants;
-import org.kuali.hr.time.util.*;
+import org.kuali.hr.time.util.ClearDatabaseLifecycle;
+import org.kuali.hr.time.util.DatabaseCleanupDataLifecycle;
+import org.kuali.hr.time.util.LoadDatabaseDataLifeCycle;
+import org.kuali.hr.time.util.TKContext;
 import org.kuali.rice.core.api.config.property.Config;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.lifecycle.BaseLifecycle;
@@ -43,7 +43,21 @@ import org.kuali.rice.test.lifecycles.JettyServerLifecycle;
 import org.kuali.rice.test.lifecycles.JettyServerLifecycle.ConfigMode;
 import org.kuali.rice.test.lifecycles.KPMEXmlDataLoaderLifecycle;
 import org.springframework.cache.CacheManager;
-import org.springframework.mock.web.MockHttpServletRequest;
+
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlHiddenInput;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlSelect;
+import com.gargoylesoftware.htmlunit.html.HtmlTextArea;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
 /**
  *  Default test base for a full KPME unit test.
@@ -85,7 +99,6 @@ public abstract class KPMETestCase extends RiceInternalSuiteDataTestCase {
 	
 	    //lets try to create a user session
 	    GlobalVariables.setUserSession(new UserSession("admin"));
-	    TKContext.setHttpServletRequest(new MockHttpServletRequest());
         setWebClient(new WebClient(BrowserVersion.FIREFOX_10));
         getWebClient().setJavaScriptEnabled(true);
         getWebClient().setTimeout(0);

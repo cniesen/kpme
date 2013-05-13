@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -221,15 +219,7 @@ public class TKContext {
 
     public static void setCurrentLeaveCalendarDocumentId(String leaveCalendarDocumentId) {
         TKContext.getStorageMap().put(LDOC_KEY, leaveCalendarDocumentId);
-    }	
-
-	public static HttpServletRequest getHttpServletRequest() {
-		return (HttpServletRequest) getStorageMap().get("REQUEST");
-	}
-
-	public static void setHttpServletRequest(HttpServletRequest request) {
-		getStorageMap().put("REQUEST", request);
-	}
+    }
 
 	public static Map<String, Object> getStorageMap() {
 		return STORAGE_MAP.get();

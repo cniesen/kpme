@@ -38,7 +38,6 @@ public class TkMobileFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
         HttpServletRequest hsRequest = (HttpServletRequest) request;
         TKContext.clear();
-        TKContext.setHttpServletRequest(hsRequest);
 		chain.doFilter(hsRequest, response);
 
 	}

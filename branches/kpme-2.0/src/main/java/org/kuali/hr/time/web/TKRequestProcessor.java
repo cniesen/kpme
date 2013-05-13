@@ -42,7 +42,6 @@ public class TKRequestProcessor extends KualiRequestProcessor {
 		Date startTime = new Date();
 		
 		TKContext.clear();
-		TKContext.setHttpServletRequest(request);
 		super.process(request, response);
 
 		String header = " Browser: " + request.getHeader("User-Agent");
