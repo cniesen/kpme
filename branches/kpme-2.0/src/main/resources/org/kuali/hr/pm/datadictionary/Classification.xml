@@ -474,6 +474,26 @@
 				<property name="optionsFinder">
 					<bean class="org.kuali.hr.pm.util.QualifierValueKeyValueFinder" />
 				</property>
+				<property name="propertyReplacers">
+				    <list>
+<!-- 				   		 if the typevalue of selected type is not select,  use text control instead -->
+				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="control" p:condition="#line.typeValue ne 'S'"> 
+				           <property name="replacement">
+				            <bean parent="Uif-TextControl" />
+				           </property>
+				        </bean>
+				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="validCharactersConstraint" p:condition="#line.typeValue eq 'T'"> 
+				           <property name="replacement">
+				            <bean parent="AnyCharacterPatternConstraint" />
+				           </property>
+				        </bean>
+				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="validCharactersConstraint" p:condition="#line.typeValue eq 'N'"> 
+				           <property name="replacement">
+				            <bean parent="NumericPatternConstraint" />
+				           </property>
+				        </bean>
+			        </list>
+		        </property>
            </bean>
 	    </list>
 	  </property>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.kuali.hr.pm.PMConstants;
 import org.kuali.hr.pm.classification.ClassificationQualification;
 import org.kuali.hr.pm.pstnqlfrtype.PstnQlfrType;
 import org.kuali.hr.pm.service.base.PmServiceLocator;
@@ -27,12 +28,14 @@ public class QualifierValueKeyValueFinder extends UifKeyValuesFinderBase {
 			String aTypeId = aQualification.getQualificationType();
 			PstnQlfrType aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(aTypeId);
 			if(aTypeObj != null) {
-//				if(aTypeObj.getTypeValue().equals(PMConstants.PSTN_QLFR_TYPE_VALUE.NUMBER)){
+				if(aTypeObj.getTypeValue().equals(PMConstants.PSTN_QLFR_TYPE_VALUE.SELECT)){
 					String[] aCol = aTypeObj.getSelectValues().split(",");
 					for(String aString : aCol){
 						options.add(new ConcreteKeyValue(aString, aString));
 					}
-//				}
+				} else{
+					return new ArrayList<KeyValue>();
+				}
 			}
 		}
         return options;
