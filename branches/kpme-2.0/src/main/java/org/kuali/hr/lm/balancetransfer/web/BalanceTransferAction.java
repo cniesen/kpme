@@ -444,7 +444,7 @@ public class BalanceTransferAction extends TkAction {
 		bt.setAmountTransferred(amountTransferred.abs());
 		bt.setToAccrualCategory(ec.getAccrualCategory());
 		bt.setSstoId(lb.getScheduleTimeOffId());
-		bt.setEffectiveDate(lb.getLeaveDate());
+		bt.setEffectiveLocalDate(lb.getLeaveLocalDate());
 		bt.setPrincipalId(lb.getPrincipalId());
 		
 		btf.setBalanceTransfer(bt);
