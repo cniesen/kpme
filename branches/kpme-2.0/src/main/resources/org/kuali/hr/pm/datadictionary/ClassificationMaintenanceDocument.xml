@@ -8,7 +8,7 @@
     <property name="dataObjectClass" value="org.kuali.hr.pm.classification.Classification"/>  
     <property name="documentTypeName" value="ClassificationMaintenanceDocumentType" />
     <property name="businessRulesClass" value="org.kuali.hr.pm.classification.validation.ClassificationValidation"/>
-<!--     <property name="maintainableClass" value="org.kuali.hr.pm.classification.service.ClassificationMaintainableImpl"/> -->
+    <property name="maintainableClass" value="org.kuali.hr.pm.classification.service.ClassificationMaintainableImpl"/>
   </bean>
   
 </beans>

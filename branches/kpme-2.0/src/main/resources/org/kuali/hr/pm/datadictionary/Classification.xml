@@ -331,6 +331,7 @@
 	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
 	        		 p:fieldConversions="institutionCode:institution"/>
 	   		 </property>
+	   		 <property name="quickfinder.autoSearch" value="true"/>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="campus" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="salaryGroup">
@@ -338,6 +339,7 @@
 	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
 	        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
 	   		 </property>
+	   		 <property name="quickfinder.autoSearch" value="true"/>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="percentTime" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="benefitsEligible" />
@@ -347,18 +349,21 @@
        			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
         			 p:fieldConversions="leavePlan:leavePlan"/>
    		 	</property>
+   		 	<property name="quickfinder.autoSearch" value="true"/>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionReportGroup">
         	<property name="quickfinder">
 	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
 	        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
-	   		 </property>
+	   		</property>
+	   		<property name="quickfinder.autoSearch" value="true"/> 
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionType">
        		<property name="quickfinder">
 	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positiontyp.PositionType" 
 	        		 p:fieldConversions="positionType:positionType"/>
-	   		 </property>
+	   		</property>
+	   		<property name="quickfinder.autoSearch" value="true"/>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="poolEligible" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="tenureEligible" />
@@ -622,6 +627,7 @@
 				   			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.institution.Institution" 
 				        			 p:fieldConversions="institutionCode:institution"/>
 						</property>
+						<property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			        <bean parent="Uif-InputField" p:propertyName="campus" />
 		         </list>
@@ -638,12 +644,14 @@
 				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positionreportgroup.PositionReportGroup" 
 				        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
 				   		</property>
+				   		<property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			       	<bean parent="Uif-InputField" p:propertyName="positionType">
 						 <property name="quickfinder">
 				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.pm.positiontype.PositionType" 
 				        		 p:fieldConversions="positionType:positionType"/>
 				   		 </property>
+				   		 <property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			        <bean parent="Uif-InputField" p:propertyName="poolEligible" />
 			        <bean parent="Uif-InputField" p:propertyName="tenureEligible" />
@@ -660,7 +668,8 @@
 				       <property name="quickfinder">
 				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.time.salgroup.SalGroup" 
 				        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
-				   		</property>
+				   	   </property>
+				   	   <property name="quickfinder.autoSearch" value="true"/>
 			       </bean>
 			       <bean parent="Uif-InputField" p:propertyName="percentTime" p:exclusiveMin="0" p:inclusiveMax="100"
 			        	 p:constraintText="Must be a number between 0 and 100.">
@@ -694,6 +703,7 @@
 			       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.hr.lm.leaveplan.LeavePlan" 
 			        			 p:fieldConversions="leavePlan:leavePlan"/>
 			   		 	</property>
+			   		 	<property name="quickfinder.autoSearch" value="true"/>
 			       </bean>
 		         </list>
 	         </property>
