@@ -23,7 +23,7 @@
     <param name="encryption.key" override="false">7IC64w6kAAAA</param>
 
     <!-- CAS Configuration -->
-    <param name="cas.url">http://ci.kpme.kuali.org/cas-release</param>
+    <param name="cas.url">http://ci.kpme.kuali.org/cas-${environment}</param>
     
     <param name="filter.logout.class">org.jasig.cas.client.session.SingleSignOutFilter</param>
     <param name="filtermapping.logout.1">/*</param>
