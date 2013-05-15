@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<section xml:id="listing" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://docbook.org/ns/docbook"  version="5.0">    
+    <title>Issues</title>
+    <table frame="none">
+        <tgroup cols="2">
+            <colspec colname="c1" colnum="1" colwidth="1.0*"/>
+            <colspec colname="c2" colnum="2" colwidth="5.0*"/>
+            <thead>
+                <row>
+                    <entry>JIRA</entry>
+                    <entry>Issue Summary</entry>
+                </row>
+            </thead>
+            <tbody>
+	            <row>
+	                <entry><link xlink:href="https://jira.kuali.org/browse/KPME-2315">KPME-2315</link></entry>
+	                <entry>Added rounding mode to Job FTE</entry>
+	            </row>
+	            <row>
+	                <entry><link xlink:href="https://jira.kuali.org/browse/KPME-2327">KPME-2327</link></entry>
+	                <entry>Modified summary coloring</entry>
+	            </row>
+	            <row>
+	                <entry><link xlink:href="https://jira.kuali.org/browse/KPME-2357">KPME-2357</link></entry>
+	                <entry>Balance Transfer leave blocks disappear on leave calendar</entry>
+	            </row>
+	            <row>
+	                <entry><link xlink:href="https://jira.kuali.org/browse/KPME-2358">KPME-2358</link></entry>
+	                <entry>Payout maint doc submitted from Maintenance tab not working</entry>
+	            </row>
+	        </tbody>
+	    </tgroup>
+	</table>
+</section>
