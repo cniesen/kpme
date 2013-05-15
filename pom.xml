@@ -1203,9 +1203,9 @@
     </repositories>
 
     <scm>
-        <connection>scm:svn:https://svn.kuali.org/repos/kpme/trunk</connection>
-        <developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/trunk</developerConnection>
-        <url>https://svn.kuali.org/repos/kpme/trunk</url>
+        <connection>scm:svn:https://svn.kuali.org/repos/kpme/branches/kpme-1.5</connection>
+        <developerConnection>scm:svn:https://svn.kuali.org/repos/kpme/branches/kpme-1.5</developerConnection>
+        <url>https://svn.kuali.org/repos/kpme/branches/kpme-1.5</url>
     </scm>
 
 </project>
