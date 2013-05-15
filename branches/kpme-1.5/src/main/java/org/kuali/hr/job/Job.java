@@ -16,6 +16,7 @@
 package org.kuali.hr.job;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.location.Location;
@@ -28,7 +29,6 @@ import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
-import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class Job extends HrBusinessObject {
@@ -79,7 +79,7 @@ public class Job extends HrBusinessObject {
 
 	public BigDecimal getFte() {
 		if ( this.standardHours != null ) {
-			return this.standardHours.divide(new BigDecimal(40)).setScale(2);
+			return this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
 		} else {
 			return fte;
 		}
@@ -87,7 +87,7 @@ public class Job extends HrBusinessObject {
 
 	public void setFte() {
 		if ( this.standardHours != null ) {
-			this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2);
+			this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
 		} else {
 			this.fte = new BigDecimal(0).setScale(2);
 		}
