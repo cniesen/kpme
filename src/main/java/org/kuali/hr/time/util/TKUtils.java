@@ -21,7 +21,13 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -38,7 +44,6 @@ import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.task.Task;
 import org.kuali.rice.core.api.config.property.ConfigContext;
-import org.springframework.util.NumberUtils;
 
 public class TKUtils {
 
@@ -82,10 +87,7 @@ public class TKUtils {
 
     static
     {
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        final Calendar c = new GregorianCalendar(tz);
-        c.setTime(new Date(Long.MAX_VALUE));
-        END_OF_TIME = new java.sql.Date(c.getTime().getTime());
+        END_OF_TIME = Date.valueOf("9999-12-31");
     }
 
     /**
