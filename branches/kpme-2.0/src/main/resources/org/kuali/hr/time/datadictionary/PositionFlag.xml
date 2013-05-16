@@ -4,23 +4,23 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
-	<bean id="ClassFlag" parent="ClassFlag-parentBean"/>
- 	<bean id="ClassFlag-parentBean" abstract="true" parent="BusinessObjectEntry">
-	    <property name="dataObjectClass" value="org.kuali.hr.pm.classification.ClassificationFlag"/>
+	<bean id="PositionFlag" parent="PositionFlag-parentBean"/>
+ 	<bean id="PositionFlag-parentBean" abstract="true" parent="BusinessObjectEntry">
+	    <property name="dataObjectClass" value="org.kuali.hr.time.position.PstnFlag"/>
 	    <property name="attributes">
 	      <list>
-	        <ref bean="ClassFlag-pmFlagId"/>
-	        <ref bean="ClassFlag-category"/>
-	        <ref bean="ClassFlag-names"/>
-	        <ref bean="ClassFlag-pmPositionClassId"/>
+	        <ref bean="PositionFlag-pmFlagId"/>
+	        <ref bean="PositionFlag-category"/>
+	        <ref bean="PositionFlag-names"/>
+	        <ref bean="PositionFlag-hrPositionId"/>
 	      </list>
 	    </property>
-	    <property name="objectLabel" value="Position Classification Duty"/>
+	    <property name="objectLabel" value="Position Duty"/>
   	</bean>
 
 <!-- Attribute Definitions -->  
-	 <bean id="ClassFlag-pmFlagId" parent="ClassFlag-pmFlagId-parentBean"/>
-	 <bean id="ClassFlag-pmFlagId-parentBean" abstract="true" parent="AttributeDefinition">
+	 <bean id="PositionFlag-pmFlagId" parent="PositionFlag-pmFlagId-parentBean"/>
+	 <bean id="PositionFlag-pmFlagId-parentBean" abstract="true" parent="AttributeDefinition">
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -28,11 +28,11 @@
 	      <bean parent="Uif-TextControl" p:size="60"/>
 	    </property>
 	    <property name="name" value="pmFlagId"/>
-	    <property name="label" value="Position Class Flag Id"/>
+	    <property name="label" value="Position Flag Id"/>
 	 </bean> 
 	 
-	<bean id="ClassFlag-category" parent="ClassFlag-category-parentBean" />
-	<bean id="ClassFlag-category-parentBean" abstract="true" parent="AttributeDefinition">
+	<bean id="PositionFlag-category" parent="PositionFlag-category-parentBean" />
+	<bean id="PositionFlag-category-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
 		<property name="controlField">
@@ -43,8 +43,8 @@
 		<property name="description" value="Category" />
 	</bean>	
 	 
-	<bean id="ClassFlag-names" parent="ClassFlag-names-parentBean" />
-	<bean id="ClassFlag-names-parentBean" abstract="true" parent="AttributeDefinition">
+	<bean id="PositionFlag-names" parent="PositionFlag-names-parentBean" />
+	<bean id="PositionFlag-names-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="maxLength" value="100"/>
 		<property name="controlField">
@@ -55,17 +55,16 @@
 		<property name="description" value="Names" />
 	</bean>	
 	
- 	<bean id="ClassFlag-pmPositionClassId" parent="ClassFlag-pmPositionClassId-parentBean"/>
-	<bean id="ClassFlag-pmPositionClassId-parentBean" abstract="true" parent="AttributeDefinition">
+ 	<bean id="PositionFlag-hrPositionId" parent="PositionFlag-hrPositionId-parentBean"/>
+	<bean id="PositionFlag-hrPositionId-parentBean" abstract="true" parent="AttributeDefinition">
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
 	    <property name="controlField">
 	      <bean parent="Uif-TextControl" p:size="60"/>
 	    </property>
-	    <property name="name" value="pmPositionClassId"/>
-	    <property name="label" value="Position Class Id"/>
+	    <property name="name" value="hrPositionId"/>
+	    <property name="label" value="Position Id"/>
 	</bean> 
 	
-
 </beans>

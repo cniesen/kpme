@@ -654,6 +654,53 @@
         <field-descriptor name="active"         column="ACTIVE"         jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="effectiveDate"  column="EFFDT"          jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"      jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.hr.time.util.TkTimestampConverter" />
+    
+<!-- 		<collection-descriptor name="qualificationList" element-class-ref="org.kuali.hr.time.position.PositionQualification" -->
+<!--         		collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false"> -->
+<!--             <inverse-foreignkey field-ref="hrPositionId" /> -->
+<!--         </collection-descriptor> -->
+<!--         <collection-descriptor name="dutyList" element-class-ref="org.kuali.hr.time.position.PositionDuty" -->
+<!--         		collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false"> -->
+<!--             <inverse-foreignkey field-ref="hrPositionId" /> -->
+<!--         </collection-descriptor>     -->
+<!--     	<collection-descriptor name="flagList" element-class-ref="org.kuali.hr.time.position.PstnFlag" -->
+<!--         		collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false"> -->
+<!--             <inverse-foreignkey field-ref="hrPositionId" /> -->
+<!--         </collection-descriptor> -->
     </class-descriptor>
+    
+    <!-- Position Qualification -->
+    <class-descriptor class="org.kuali.hr.time.position.PositionQualification" table="PM_PSTN_QLFCTN_T">
+        <field-descriptor name="pmQualificationId"   				column="PM_QLFCTN_ID"    		jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="PM_PSTN_QLFCTN_S" />
+        <field-descriptor name="qualificationType"    				column="QLFCTN_TP"      		 jdbc-type="VARCHAR"     length="20" 		nullable="false" />
+        <field-descriptor name="qualifier"    						column="QUALIFIER"             	 jdbc-type="VARCHAR"     length="10" 		nullable="false" />
+        <field-descriptor name="qualificationValue"    				column="QLFCTN_VL"             	 jdbc-type="VARCHAR"     length="50" 		nullable="false" />
+        <field-descriptor name="hrPositionId"   					column="HR_PSTN_ID"    			jdbc-type="VARCHAR"     length="60"  		nullable="false" />
+        <field-descriptor name="timestamp"     						column="TIMESTAMP"          	jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.hr.time.util.TkTimestampConverter" />
+        <field-descriptor name="objectId"      						column="OBJ_ID"             	jdbc-type="VARCHAR"     index="true" />
+        <field-descriptor name="versionNumber" 						column="VER_NBR"            	jdbc-type="BIGINT"      locking="true" />
+    </class-descriptor>
+    
+   <!-- Position Duty -->
+    <class-descriptor class="org.kuali.hr.time.position.PositionDuty" table="PM_PSTN_DUTY_T">
+        <field-descriptor name="pmDutyId"   				column="PM_DUTY_ID"    		jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="PM_PSTN_DUTY_S" />
+        <field-descriptor name="name"    					column="NAME"      			jdbc-type="VARCHAR"     length="20" 		nullable="false" />
+        <field-descriptor name="description"    			column="DESCR"             	jdbc-type="VARCHAR"     length="300" 		nullable="false" />
+        <field-descriptor name="percentage"      			column="PRCTG"         		jdbc-type="DECIMAL"     length="10" 		nullable="true" />
+        <field-descriptor name="hrPositionId"   			column="HR_PSTN_ID"    		jdbc-type="VARCHAR"     length="60"  		nullable="false" />
+		<field-descriptor name="objectId"      				column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
+        <field-descriptor name="versionNumber" 				column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
+    </class-descriptor>
+    
+    <!-- Position  Flag -->
+    <class-descriptor class="org.kuali.hr.time.position.PstnFlag" table="PM_PSTN_FLAG_T">
+        <field-descriptor name="pmFlagId"   				column="PM_FLAG_ID"    		jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="PM_PSTN_FLAG_S" />
+        <field-descriptor name="category"    				column="CATEGORY"           jdbc-type="VARCHAR"     length="20" 		nullable="false" />
+        <field-descriptor name="names"    					column="NAMES"      		jdbc-type="VARCHAR"     length="100" 		nullable="false" />
+        <field-descriptor name="hrPositionId"   			column="HR_PSTN_ID"    		jdbc-type="VARCHAR"     length="60"  		nullable="false" />
+		<field-descriptor name="objectId"      				column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
+        <field-descriptor name="versionNumber" 				column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
+    </class-descriptor>
+    
 
 </descriptor-repository>

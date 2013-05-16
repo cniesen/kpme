@@ -466,7 +466,7 @@
 					<bean class="org.kuali.hr.pm.util.PositionClassQualifierKeyValueFinder" />
 				</property>
            </bean>
-           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:readOnly="@{!#isAddLine}"
+           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:readOnly="@{!#isAddLine}" p:required="@{#isAddLine}"
            			p:refreshWhenChangedPropertyNames="#lp.qualificationType">
            		<property name="control">
 					<bean parent="Uif-DropdownControl"/>
@@ -498,7 +498,7 @@
 	    </list>
 	  </property>
 	</bean>
-	
+
 	<!-- Required Qualification List, used by inquiry view -->
 	<bean id="Classification-qualificationList" abstract="true" parent="Uif-Disclosure-TableCollectionSection"
         p:layoutManager.numberOfColumns="4">
@@ -512,7 +512,7 @@
       <list>
         <bean parent="Uif-InputField" p:propertyName="qualificationType"/>
         <bean parent="Uif-InputField" p:propertyName="qualifier" />
-        <bean parent="Uif-InputField" p:propertyName="qualificationValue"/>
+        <bean parent="Uif-InputField" p:propertyName="qualificationValue" />
       </list>
     </property>
   </bean>

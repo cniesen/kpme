@@ -15,6 +15,9 @@
  */
 package org.kuali.hr.time.position;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.time.HrBusinessObject;
 
@@ -35,6 +38,9 @@ public class Position extends HrBusinessObject {
 	private String description;
 	private String history;
 	
+	private List<PositionQualification> qualificationList = new LinkedList<PositionQualification>(); 
+	private List<PositionDuty> dutyList = new LinkedList<PositionDuty>(); 
+	private List<PstnFlag> flagList = new LinkedList<PstnFlag>(); 
 	@Override
 	public String getId() {
 		return getHrPositionId();
@@ -80,6 +86,30 @@ public class Position extends HrBusinessObject {
 
 	public void setHistory(String history) {
 		this.history = history;
+	}
+
+	public List<PositionDuty> getDutyList() {
+		return dutyList;
+	}
+
+	public void setDutyList(List<PositionDuty> dutyList) {
+		this.dutyList = dutyList;
+	}
+
+	public List<PositionQualification> getQualificationList() {
+		return qualificationList;
+	}
+
+	public void setQualificationList(List<PositionQualification> qualificationList) {
+		this.qualificationList = qualificationList;
+	}
+
+	public List<PstnFlag> getFlagList() {
+		return flagList;
+	}
+
+	public void setFlagList(List<PstnFlag> flagList) {
+		this.flagList = flagList;
 	}
 	
 }

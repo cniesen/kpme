@@ -52,15 +52,49 @@
     <property name="headerText" value="Position Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.hr.time.position.Position"/>
     <property name="items">
-      <list>
+      <list merge="true">
         <bean parent="Uif-MaintenanceGridSection">
         	<property name="items">
             	<list>
-			        <bean parent="Uif-InputField" p:propertyName="positionNumber" p:readOnly="true" p:required="false"/>
-			        <!--<bean parent="MaintainableFieldDefinition" p:name="positionNumber" p:unconditionallyReadOnly="true" p:defaultValueFinderClass="org.kuali.kfs.sys.businessobject.defaultvalue.NextUniquePositionNumberFinder"/>-->
-			        <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
-			        <bean parent="Uif-InputField" p:propertyName="description" p:required="true"/>
-			        <bean parent="Uif-InputField" p:propertyName="active" p:required="true"/>
+<!-- 		            <bean parent="Uif-MaintenanceGridSection"> -->
+<!-- 			         <property name="headerText" value="Position Maintenance"/> -->
+<!-- 			          <property name="items"> -->
+<!-- 			            <list> -->
+					        <bean parent="Uif-InputField" p:propertyName="positionNumber" p:readOnly="true" p:required="false"/>
+					        <!--<bean parent="MaintainableFieldDefinition" p:name="positionNumber" p:unconditionallyReadOnly="true" p:defaultValueFinderClass="org.kuali.kfs.sys.businessobject.defaultvalue.NextUniquePositionNumberFinder"/>-->
+					        <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
+					        <bean parent="Uif-InputField" p:propertyName="description" p:required="true"/>
+					        <bean parent="Uif-InputField" p:propertyName="active" p:required="true"/>
+<!-- 			        	</list> -->
+<!-- 			        	</property> -->
+<!-- 			         </bean> -->
+<!-- 			         <bean parent="Uif-TabGroup"> -->
+<!-- 						  <property name="items"> -->
+<!-- 						    <list> -->
+<!-- 						      <bean parent="Uif-HorizontalBoxSection" p:headerText="Required Qualification"> -->
+<!-- 						      	<property name="items"> -->
+<!-- 						      		<list> -->
+<!-- 						      			<bean parent="Position-qualifications"/> -->
+<!-- 									</list> -->
+<!-- 						      	 </property> -->
+<!-- 						      </bean> -->
+<!-- 							  <bean parent="Uif-HorizontalBoxSection" p:headerText="Duties" > -->
+<!-- 							  	<property name="items"> -->
+<!-- 						      		<list> -->
+<!-- 						      			<bean parent="Position-duties"/> -->
+<!-- 								  </list> -->
+<!-- 							    </property>			   -->
+<!-- 						      </bean> -->
+<!-- 						      <bean parent="Uif-HorizontalBoxSection" p:headerText="Flags"> -->
+<!-- 						      	<property name="items"> -->
+<!-- 						      		<list> -->
+<!-- 						      		<bean parent="Position-flags"/> -->
+<!-- 						      		</list> -->
+<!-- 					      		</property> -->
+<!-- 					      	  </bean> -->
+<!-- 						   </list> -->
+<!-- 						  </property> -->
+<!-- 					</bean> -->
 			    </list>
 			</property>
 	    </bean>

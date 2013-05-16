@@ -1,21 +1,19 @@
-package org.kuali.hr.pm.classification;
+package org.kuali.hr.time.position;
 
 import org.apache.commons.lang3.StringUtils;
 import org.kuali.hr.pm.pstnqlfrtype.PstnQlfrType;
 import org.kuali.hr.pm.service.base.PmServiceLocator;
-import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-public class ClassificationQualification extends PersistableBusinessObjectBase {
+public class PositionQualification extends PersistableBusinessObjectBase {
 	private static final long serialVersionUID = 1L;
 	
-	private String pmClassificationQualificationId;
+	private String pmQualificationId;
 	private String qualificationType;
 	private String typeValue;		// for GUI only
 	private String qualifier;
 	private String qualificationValue;
-	private String pmPositionClassId;
-	private String displayOrder;
+	private String hrPositionId;
 		
 	public String getQualificationType() {
 		return qualificationType;
@@ -41,31 +39,6 @@ public class ClassificationQualification extends PersistableBusinessObjectBase {
 		this.qualificationValue = qualificationValue;
 	}
 
-	public String getPmPositionClassId() {
-		return pmPositionClassId;
-	}
-
-	public void setPmPositionClassId(String pmPositionClassId) {
-		this.pmPositionClassId = pmPositionClassId;
-	}
-
-	public String getDisplayOrder() {
-		return displayOrder;
-	}
-
-	public void setDisplayOrder(String displayOrder) {
-		this.displayOrder = displayOrder;
-	}
-
-	public String getPmClassificationQualificationId() {
-		return pmClassificationQualificationId;
-	}
-
-	public void setPmClassificationQualificationId(
-			String pmClassificationQualificationId) {
-		this.pmClassificationQualificationId = pmClassificationQualificationId;
-	}
-
 	public String getTypeValue() {
 		if(StringUtils.isNotEmpty(this.getQualificationType())) {
 			PstnQlfrType aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(this.getQualificationType());
@@ -78,6 +51,22 @@ public class ClassificationQualification extends PersistableBusinessObjectBase {
 
 	public void setTypeValue(String typeValue) {
 		this.typeValue = typeValue;
+	}
+
+	public String getPmQualificationId() {
+		return pmQualificationId;
+	}
+
+	public void setPmQualificationId(String pmQualificationId) {
+		this.pmQualificationId = pmQualificationId;
+	}
+
+	public String getHrPositionId() {
+		return hrPositionId;
+	}
+
+	public void setHrPositionId(String hrPositionId) {
+		this.hrPositionId = hrPositionId;
 	}
 
 }
