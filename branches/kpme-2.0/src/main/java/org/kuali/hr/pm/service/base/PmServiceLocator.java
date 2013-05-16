@@ -15,10 +15,12 @@ import org.kuali.hr.pm.pstncontracttype.service.PstnContractTypeService;
 import org.kuali.hr.pm.pstnqlfctnvl.service.PositionQualificationValueService;
 import org.kuali.hr.pm.pstnqlfrtype.service.PstnQlfrTypeService;
 import org.kuali.hr.pm.pstnrptgrpsubcat.service.PstnRptGrpSubCatService;
+import org.kuali.hr.pm.positionResponsibilityOption.service.PositionResponsibilityOptionService;
 import org.kuali.hr.pm.positionappointment.service.PositionAppointmentService;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.kuali.hr.pm.positionResponsibilityOption.service.PositionResponsibilityOptionService;
 
 public class PmServiceLocator implements ApplicationContextAware {
 	public static String SPRING_BEANS = "classpath:SpringBeans.xml";
@@ -39,6 +41,7 @@ public class PmServiceLocator implements ApplicationContextAware {
     public static final String PM_POSITION_DEPT_AFFL_SERVICE = "positionDepartmentAffiliationService";
     public static final String PM_POSITION_DEPT_SERVICE = "positionDepartmentService";
     public static final String PM_CLASSIFICATION_SERVICE = "classificationService";
+    public static final String PM_POSITION_RESPONSIBILITY_OPTION_SERVICE = "positionResponsibilityOptionService";
     
     public static InstitutionService getInstitutionService() {
     	return (InstitutionService) CONTEXT.getBean(PM_INSTITUTION_SERVICE);
@@ -102,6 +105,10 @@ public class PmServiceLocator implements ApplicationContextAware {
 	
 	public static ClassificationService getClassificationService() {
 		return (ClassificationService) CONTEXT.getBean(PM_CLASSIFICATION_SERVICE);
+	}
+	
+	public static PositionResponsibilityOptionService getPositionResponsibilityOptionService() {
+		return (PositionResponsibilityOptionService) CONTEXT.getBean(PM_POSITION_RESPONSIBILITY_OPTION_SERVICE);
 	}
 
 	@Override
