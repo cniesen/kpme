@@ -20,11 +20,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
-import org.kuali.hr.time.util.TKContext;
-import org.kuali.hr.time.util.TKUser;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kns.document.authorization.DocumentAuthorizer;
 import org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizer;
@@ -185,10 +183,13 @@ public abstract class TkMaintenanceDocumentAuthorizerBase implements Maintenance
                 user)) {
             documentActions.remove(KRADConstants.KUALI_ACTION_PERFORM_ROUTE_REPORT);
         }
-        // looking at the document status
-        String documentStatus = document.getDocumentHeader().getWorkflowDocument().getStatus().name();
 
-        if (StringUtils.equals(documentStatus, "FINAL")) {
+        DocumentStatus documentStatus = document.getDocumentHeader().getWorkflowDocument().getStatus();
+
+        if (DocumentStatus.INITIATED.equals(documentStatus) || DocumentStatus.SAVED.equals(documentStatus)) {
+            documentActions.remove(KRADConstants.KUALI_ACTION_CAN_APPROVE);
+            documentActions.remove(KRADConstants.KUALI_ACTION_CAN_DISAPPROVE);
+        } else if (DocumentStatus.FINAL.equals(documentStatus)) {
             documentActions.remove(KRADConstants.KUALI_ACTION_CAN_APPROVE);
             documentActions.remove(KRADConstants.KUALI_ACTION_CAN_DISAPPROVE);
         }
