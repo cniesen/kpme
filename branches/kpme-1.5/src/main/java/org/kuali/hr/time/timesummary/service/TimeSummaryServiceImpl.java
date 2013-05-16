@@ -15,6 +15,17 @@
  */
 package org.kuali.hr.time.timesummary.service;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -25,9 +36,7 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.lm.LMConstants;
-import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.lm.accrual.AccrualCategoryRule;
-import org.kuali.hr.lm.accrual.service.AccrualServiceImpl;
 import org.kuali.hr.lm.leaveSummary.LeaveSummary;
 import org.kuali.hr.lm.leaveSummary.LeaveSummaryRow;
 import org.kuali.hr.lm.leaveblock.LeaveBlock;
@@ -40,11 +49,11 @@ import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
-import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.timesummary.AssignmentColumn;
 import org.kuali.hr.time.timesummary.AssignmentRow;
 import org.kuali.hr.time.timesummary.EarnCodeSection;
 import org.kuali.hr.time.timesummary.EarnGroupSection;
@@ -53,10 +62,6 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workarea.WorkArea;
-
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.*;
 
 public class TimeSummaryServiceImpl implements TimeSummaryService {
 	private static final String OTHER_EARN_GROUP = "Other";
@@ -226,11 +231,11 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 									}
 									assignRow.setDescr(assignment.getAssignmentDescription());
 								}
-								for(int i = 0;i<(numEntries-1);i++){
-									assignRow.getTotal().add(BigDecimal.ZERO);
-									assignRow.getAmount().add(BigDecimal.ZERO);
-								}
 								assignRow.setEarnCodeSection(earnCodeSection);
+								for (int i = 0; i < numEntries - 1; i++) {
+									assignRow.getAssignmentColumns().add(new AssignmentColumn());
+								}
+
 								earnCodeSection.addAssignmentRow(assignRow);
 							}
 							assignRow.addToTotal(dayCount, thd.getHours());
