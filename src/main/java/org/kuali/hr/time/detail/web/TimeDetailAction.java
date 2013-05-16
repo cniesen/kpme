@@ -32,6 +32,7 @@ import java.util.Map.Entry;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.struts.action.ActionForm;
@@ -63,6 +64,7 @@ import org.kuali.hr.time.timeblock.TimeBlockHistory;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesheet.web.TimesheetAction;
 import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
+import org.kuali.hr.time.timesummary.AssignmentColumn;
 import org.kuali.hr.time.timesummary.AssignmentRow;
 import org.kuali.hr.time.timesummary.EarnCodeSection;
 import org.kuali.hr.time.timesummary.EarnGroupSection;
@@ -289,11 +291,11 @@ public class TimeDetailAction extends TimesheetAction {
         for (EarnGroupSection earnGroupSection : ts.getSections()) {
             for (EarnCodeSection section : earnGroupSection.getEarnCodeSections()) {
                 for (AssignmentRow assignRow : section.getAssignmentsRows()) {
-                    if (assignRow.getAssignmentKey() != null && aMap.containsKey(assignRow.getAssignmentKey())) {
-                        assignRow.setCssClass(aMap.get(assignRow.getAssignmentKey()));
-                    } else {
-                        assignRow.setCssClass("");
-                    }
+                	String assignmentCssStyle = MapUtils.getString(aMap, assignRow.getAssignmentKey());
+                	assignRow.setCssClass(assignmentCssStyle);
+                	for (AssignmentColumn assignmentColumn : assignRow.getAssignmentColumns()) {
+                		assignmentColumn.setCssClass(assignmentCssStyle);
+                	}
                 }
             }
 
