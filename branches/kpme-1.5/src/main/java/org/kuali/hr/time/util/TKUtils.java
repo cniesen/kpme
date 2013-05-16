@@ -83,12 +83,7 @@ public class TKUtils {
         return DateTimeZone.forID(TKUtils.getSystemTimeZone());
     }
 
-    public static final Date END_OF_TIME;
-
-    static
-    {
-        END_OF_TIME = Date.valueOf("9999-12-31");
-    }
+    public static final Date END_OF_TIME = Date.valueOf("9999-12-31");
 
     /**
      * Returns a enforced timeless version of the provided date, if the date is
