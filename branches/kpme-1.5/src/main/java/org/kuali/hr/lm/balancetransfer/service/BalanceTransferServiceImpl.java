@@ -240,6 +240,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					aLeaveBlock.setAccrualGenerated(true);
 					aLeaveBlock.setTransactionDocId(balanceTransfer.getDocumentHeaderId());
 					aLeaveBlock.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.BALANCE_TRANSFER);
+					aLeaveBlock.setDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
 					aLeaveBlock.setRequestStatus(LMConstants.REQUEST_STATUS.REQUESTED);
 					aLeaveBlock.setBlockId(0L);
 
@@ -271,6 +272,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					aLeaveBlock.setTransactionDocId(balanceTransfer.getDocumentHeaderId());
 					aLeaveBlock.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.BALANCE_TRANSFER);
 					aLeaveBlock.setRequestStatus(LMConstants.REQUEST_STATUS.REQUESTED);
+					aLeaveBlock.setDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
 					aLeaveBlock.setBlockId(0L);
 
 					//Want to store the newly created leave block id on this maintainable object.
@@ -304,6 +306,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					aLeaveBlock.setTransactionDocId(balanceTransfer.getDocumentHeaderId());
 					aLeaveBlock.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.BALANCE_TRANSFER);
 					aLeaveBlock.setRequestStatus(LMConstants.REQUEST_STATUS.REQUESTED);
+					aLeaveBlock.setDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
 					aLeaveBlock.setBlockId(0L);
 
 					//Want to store the newly created leave block id on this maintainable object
@@ -362,6 +365,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 		btObj.setToAccrualCategory(balanceTransfer.getToAccrualCategory());
 		btObj.setTransferAmount(balanceTransfer.getTransferAmount());
 		btObj.setAmountTransferred(balanceTransfer.getAmountTransferred());
+		btObj.setLeaveCalendarDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
 		btObj.setSstoId(balanceTransfer.getSstoId());
 		btObj.setDocumentHeaderId(document.getDocumentHeader().getWorkflowDocument().getDocumentId());
 /*        TkServiceLocator.getBalanceTransferService().saveOrUpdate(btObj);
