@@ -35,7 +35,7 @@
 	 
 	<bean id="PositionQualification-qualificationType" parent="PositionQualification-qualificationType-parentBean" />
 	<bean id="PositionQualification-qualificationType-parentBean" abstract="true" parent="AttributeDefinition">
-<!-- 		<property name="required" value="true" /> -->
+		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="10" />
@@ -47,7 +47,7 @@
 	
 	<bean id="PositionQualification-typeValue" parent="PositionQualification-typeValue-parentBean" />
 	<bean id="PositionQualification-typeValue-parentBean" abstract="true" parent="AttributeDefinition">
-<!-- 		<property name="required" value="true" /> -->
+		<property name="required" value="true" />
 		<property name="maxLength" value="50"/>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="50" />
@@ -59,7 +59,7 @@
 
 	<bean id="PositionQualification-qualifier" parent="PositionQualification-qualifier-parentBean" />
 	<bean id="PositionQualification-qualifier-parentBean" abstract="true" parent="AttributeDefinition">
-<!-- 		<property name="required" value="true" /> -->
+		<property name="required" value="true" />
 		<property name="maxLength" value="20"/>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="10" />
@@ -71,7 +71,7 @@
 	
 	<bean id="PositionQualification-qualificationValue" parent="PositionQualification-qualificationValue-parentBean" />
 	<bean id="PositionQualification-qualificationValue-parentBean" abstract="true" parent="AttributeDefinition">
-<!-- 		<property name="required" value="true" /> -->
+		<property name="required" value="true" />
 		<property name="maxLength" value="50"/>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="50" />

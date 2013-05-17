@@ -466,7 +466,7 @@
 					<bean class="org.kuali.hr.pm.util.PositionClassQualifierKeyValueFinder" />
 				</property>
            </bean>
-           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:readOnly="@{!#isAddLine}" p:required="@{#isAddLine}"
+           <bean parent="Uif-InputField" p:propertyName="qualificationValue" p:readOnly="@{!#isAddLine}"
            			p:refreshWhenChangedPropertyNames="#lp.qualificationType">
            		<property name="control">
 					<bean parent="Uif-DropdownControl"/>
@@ -477,14 +477,14 @@
 				<property name="propertyReplacers">
 				    <list>
 <!-- 				   		 if the typevalue of selected type is not select,  use text control instead -->
-				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="control" p:condition="#line.typeValue ne 'S'"> 
+ 						<bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="control" p:condition="#line.typeValue eq 'T' or #line.typeValue eq 'N'">
 				           <property name="replacement">
 				            <bean parent="Uif-TextControl" />
 				           </property>
 				        </bean>
 				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="validCharactersConstraint" p:condition="#line.typeValue eq 'T'"> 
 				           <property name="replacement">
-				            <bean parent="AnyCharacterPatternConstraint" />
+				            <bean parent="AnyCharacterPatternConstraint" p:allowWhitespace="true" />
 				           </property>
 				        </bean>
 				        <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="validCharactersConstraint" p:condition="#line.typeValue eq 'N'"> 
