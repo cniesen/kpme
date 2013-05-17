@@ -46,6 +46,7 @@ public class LMConstants {
 	
 	// KPME-1347 Kagata
 	public static final Map<String, String> ACCRUAL_EARN_INTERVAL_MAP = new HashMap<String, String>(7);
+	public static final String MAX_CARRY_OVER_ADJUSTMENT = "Max carry over adjustment";
     static {
     	ACCRUAL_EARN_INTERVAL_MAP.put(ACCRUAL_EARN_INTERVAL_CODE.DAILY, "Daily");
     	ACCRUAL_EARN_INTERVAL_MAP.put(ACCRUAL_EARN_INTERVAL_CODE.WEEKLY, "Weekly");
@@ -131,6 +132,7 @@ public class LMConstants {
 		 public static final String DONATION_MAINT = "DM";
 		 public static final String LEAVE_ADJUSTMENT_MAINT = "LAM";
 		 public static final String CARRY_OVER = "CO";
+		 public static final String CARRY_OVER_ADJUSTMENT = "COA";
 	 }
 
 	 public static final Map<String, String> LEAVE_BLOCK_TYPE_MAP = new HashMap<String, String>(8);
@@ -143,6 +145,7 @@ public class LMConstants {
 	    	LEAVE_BLOCK_TYPE_MAP.put(LEAVE_BLOCK_TYPE.DONATION_MAINT, "Donation");
 	    	LEAVE_BLOCK_TYPE_MAP.put(LEAVE_BLOCK_TYPE.LEAVE_ADJUSTMENT_MAINT, "Leave Adjustment");
 	    	LEAVE_BLOCK_TYPE_MAP.put(LEAVE_BLOCK_TYPE.CARRY_OVER, "Carry Over");
+	    	LEAVE_BLOCK_TYPE_MAP.put(LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT, "Carry Over Adjustment");
 	 }
 	    
     public static final class ACTION_AT_MAX_BAL {
