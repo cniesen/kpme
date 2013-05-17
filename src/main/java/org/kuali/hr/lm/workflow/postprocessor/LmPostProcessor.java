@@ -77,7 +77,7 @@ public class LmPostProcessor extends DefaultPostProcessor {
 			//approve the carry over leave block.
 			List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, leaveCalendarDocumentHeader.getBeginDate(), endDate);
 			for(LeaveBlock lb : leaveBlocks) {
-				if(StringUtils.equals(lb.getDescription(),"Max carry over adjustment")) {
+				if(StringUtils.equals(lb.getLeaveBlockType(),LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
 					lb.setRequestStatus(LMConstants.REQUEST_STATUS.APPROVED);
 					TkServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, TKContext.getPrincipalId());
 				}
