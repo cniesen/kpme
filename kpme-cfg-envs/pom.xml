@@ -727,7 +727,8 @@
                                 <configuration>
                                     <target>
                                         <copy toDir="${user.home}/kuali/main/${build.environment}/rice/kew/xmlpending">
-                                            <fileset dir="${project.build.directory}/build/src/main/config/workflow" />
+                                            <fileset dir="${project.build.directory}/build/src/main/config/workflow" erroronmissingdir="false" />
+                                            <fileset dir="${project.build.directory}/build/db/src/main/config/workflow" erroronmissingdir="false" />
                                         </copy>
                                     </target>
                                 </configuration>
