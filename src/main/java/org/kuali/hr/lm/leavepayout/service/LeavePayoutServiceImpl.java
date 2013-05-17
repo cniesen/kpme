@@ -356,6 +356,7 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 		
 		lpObj.setAccrualCategoryRule(leavePayout.getAccrualCategoryRule());
 		lpObj.setEffectiveDate(leavePayout.getEffectiveDate());
+		lpObj.setLeaveCalendarDocumentId(leavePayout.getLeaveCalendarDocumentId());
 		lpObj.setForfeitedAmount(leavePayout.getForfeitedAmount());
 		lpObj.setFromAccrualCategory(leavePayout.getFromAccrualCategory());
 		lpObj.setPrincipalId(leavePayout.getPrincipalId());
