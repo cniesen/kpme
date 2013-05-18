@@ -36,6 +36,7 @@ public class TimeBlockHistory extends TimeBlock {
 	private transient Person principal;
 	private transient Person userPrincipal;
 	private List<TimeBlockHistoryDetail> timeBlockHistoryDetails = new ArrayList<TimeBlockHistoryDetail>();
+    private TimeBlock timeBlock;
 
 	public TimeBlockHistory() {
 	}
@@ -111,4 +112,16 @@ public class TimeBlockHistory extends TimeBlock {
 	public void setTimeBlockHistoryDetails(List<TimeBlockHistoryDetail> timeBlockHistoryDetails) {
 		this.timeBlockHistoryDetails = timeBlockHistoryDetails;
 	}
+
+    public TimeBlock getTimeBlock(){
+        return this.timeBlock;
+    }
+
+    public void setTimeBlock(TimeBlock timeBlock) {
+        this.timeBlock = timeBlock;
+    }
+
+    public TimeBlockHistory copy() {
+        return new TimeBlockHistory(this);
+    }
 }

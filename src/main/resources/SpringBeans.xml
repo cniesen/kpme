@@ -427,7 +427,7 @@
 
     <bean id="timeBlockHistoryLookupable" class="org.kuali.hr.lookup.KPMELookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.hr.time.timeblock.service.TimeBlockHistoryDetailLookupableHelperServiceImpl"/>
+            <bean class="org.kuali.hr.time.timeblock.service.TimeBlockHistoryLookupableHelperServiceImpl"/>
         </property>
     </bean>
 
