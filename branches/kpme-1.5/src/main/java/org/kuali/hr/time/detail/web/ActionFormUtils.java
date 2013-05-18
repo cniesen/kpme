@@ -203,8 +203,9 @@ public class ActionFormUtils {
 
             timeBlockMap.put("documentId", timeBlock.getDocumentId());
             timeBlockMap.put("title", workAreaDesc);
+            EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getBeginDate());
             timeBlockMap.put("earnCode", timeBlock.getEarnCode());
-            timeBlockMap.put("earnCodeDesc", TkServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), TKUtils.getCurrentDate()).getDescription());
+            timeBlockMap.put("earnCodeDesc", ec != null ? ec.getDescription() : StringUtils.EMPTY);
             //TODO: need to cache this or pre-load it when the app boots up
             // EarnCode earnCode = TkServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), new java.sql.Date(timeBlock.getBeginTimestamp().getTime()));
             timeBlockMap.put("earnCodeType", timeBlock.getEarnCodeType());
