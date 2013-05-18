@@ -15,11 +15,7 @@
  */
 package org.kuali.hr.time.timeblock.service;
 
-import java.util.*;
-
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.kuali.hr.job.Job;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.roles.TkRole;
@@ -29,11 +25,13 @@ import org.kuali.hr.time.timeblock.TimeBlockHistoryDetail;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-import org.kuali.rice.kim.api.KimConstants;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class TimeBlockHistoryLookupableHelperServiceImpl extends KualiLookupableHelperServiceImpl {
 
