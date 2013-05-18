@@ -326,7 +326,7 @@
   	<bean id="PrincipalHRAttributes-inquiryDefinition" parent="PrincipalHRAttributes-inquiryDefinition-parentBean" />
 
 	<bean id="PrincipalHRAttributes-inquiryDefinition-parentBean" abstract="true"
-		parent="InquiryDefinition">
+		parent="InquiryDefinition" p:inquirableClass="org.kuali.hr.time.principal.web.PrincipalHRAttributesInquirableImpl">
 		<property name="inquirySections">
 			<list>
 				<bean parent="InquirySectionDefinition">

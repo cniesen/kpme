@@ -23,6 +23,7 @@ import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.position.Position;
+import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.salgroup.SalGroup;
 import org.kuali.hr.time.task.Task;
 import org.kuali.hr.time.workarea.WorkArea;
@@ -87,6 +88,13 @@ public class KpmeModuleService extends ModuleServiceBase {
             List<List<String>> retList = new ArrayList<List<String>>();
             List<String> keyList = new ArrayList<String>();
             keyList.add("accrualCategory");
+            keyList.add("effectiveDate");
+            retList.add(keyList);
+            return retList;
+        } else if (PrincipalHRAttributes.class.isAssignableFrom(businessObjectInterfaceClass)) {
+            List<List<String>> retList = new ArrayList<List<String>>();
+            List<String> keyList = new ArrayList<String>();
+            keyList.add("principalId");
             keyList.add("effectiveDate");
             retList.add(keyList);
             return retList;
