@@ -15,84 +15,125 @@
  */
 package org.kuali.hr.time.timeblock.service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.hr.job.Job;
+import org.kuali.hr.time.department.Department;
+import org.kuali.hr.time.roles.TkRole;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlockHistory;
+import org.kuali.hr.time.timeblock.TimeBlockHistoryDetail;
+import org.kuali.hr.time.util.TKContext;
+import org.kuali.hr.time.util.TKUtils;
+import org.kuali.hr.time.util.TkConstants;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kns.lookup.KualiLookupableHelperServiceImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 
-public class TimeBlockHistoryLookupableHelperServiceImpl extends TimeBlockLookupableHelperServiceImpl {
+public class TimeBlockHistoryLookupableHelperServiceImpl extends KualiLookupableHelperServiceImpl {
 
     /**
      *
      */
     private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("unchecked")
-	@Override
-    public List<? extends BusinessObject> getSearchResults(java.util.Map<String, String> fieldValues) {
+    private static final String DOCUMENT_STATUS = "timesheetDocumentHeader.documentStatus";
+    private static final String BEGIN_DATE = "beginDate";
+    private static final String BEGIN_TIMESTAMP = "beginTimestamp";
 
-        String docStatus = "", beginDateString = "";
+    @Override
+    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+        List<TimeBlockHistory> results = new ArrayList<TimeBlockHistory>();
 
-        if (fieldValues.containsKey(DOC_STATUS_ID)) {
-            docStatus = fieldValues.get(DOC_STATUS_ID);
-            fieldValues.remove(DOC_STATUS_ID);
-        }
-        if (fieldValues.containsKey(BEGIN_DATE_ID)) {
-            beginDateString = fieldValues.get(BEGIN_DATE_ID);
-            fieldValues.remove(BEGIN_DATE_ID);
-        }
-        List<TimeBlockHistory> objectList = (List<TimeBlockHistory>) super.getSearchResults(fieldValues);
-
-        if (!objectList.isEmpty()) {
-            Iterator<TimeBlockHistory> itr = objectList.iterator();
-            while (itr.hasNext()) {
-                TimeBlockHistory tb = itr.next();
-
-                if (StringUtils.isNotEmpty(docStatus)) {
-                    if (tb.getTimesheetDocumentHeader() == null) {
-                        itr.remove();
-                        continue;
-                    } else {
-                        if (tb.getTimesheetDocumentHeader().getDocumentStatus() != null) {
-                            if (!tb.getTimesheetDocumentHeader().getDocumentStatus().equals(docStatus)) {
-                                itr.remove();
-                                continue;
-                            }
-                        } else {
-                            itr.remove();
-                            continue;
-                        }
-                    }
-                }
-                if(StringUtils.isNotEmpty(beginDateString)) {
-					if(tb.getBeginDate() != null) {
-						if(!this.checkDate(tb, tb.getBeginDate(), beginDateString)) {
-							itr.remove();
-							continue;
-						} 
-					} else {
-						itr.remove();
-						continue;
-					}
-				}
-            }
+        if (fieldValues.containsKey(BEGIN_DATE)) {
+            //beginDate = fieldValues.get(BEGIN_DATE);
+            fieldValues.put(BEGIN_TIMESTAMP, fieldValues.get(BEGIN_DATE));
+            fieldValues.remove(BEGIN_DATE);
         }
 
-        sortByTimeBlockId(objectList);
+        List<? extends BusinessObject> searchResults = super.getSearchResults(fieldValues);
 
-        return objectList;
+        for (BusinessObject searchResult : searchResults) {
+            TimeBlockHistory timeBlockHistory = (TimeBlockHistory) searchResult;
+            results.add(timeBlockHistory);
+        }
+
+        results = filterWithSecurity(results);
+        results = addDetails(results);
+
+        //Collections.sort(results, new Comparator<TimeBlockHistory>() {
+        //    @Override
+        //    public int compare(TimeBlockHistory timeBlockHistory1, TimeBlockHistory timeBlockHistory2) {
+        //        return timeBlockHistory1.getTkTimeBlockHistoryId().compareTo(timeBlockHistory2.getTkTimeBlockHistoryId());
+        //    }
+        //});
+
+        return results;
     }
 
-    private void sortByTimeBlockId(List<TimeBlockHistory> objectList) {
-        Collections.sort(objectList, new Comparator<TimeBlockHistory>() { // Sort the Time Blocks
-            @Override
-            public int compare(TimeBlockHistory timeBlockHistory, TimeBlockHistory timeBlockHistory1) {
-                return timeBlockHistory.getTkTimeBlockId().compareTo(timeBlockHistory1.getTkTimeBlockId());
+    private List<TimeBlockHistory> filterWithSecurity(List<TimeBlockHistory> objectList) {
+        List<TimeBlockHistory> results = new ArrayList<TimeBlockHistory>();
+        results.addAll(objectList);
+        Iterator<? extends BusinessObject> itr = results.iterator();
+        List<TkRole> tkRoles = TkServiceLocator.getTkRoleService().getRoles(TKContext.getPrincipalId(), TKUtils.getCurrentDate());
+        while(itr.hasNext()){
+            TimeBlockHistory tbhd = (TimeBlockHistory)itr.next();
+            Job job = TkServiceLocator.getJobService().getJob(tbhd.getPrincipalId(), tbhd.getJobNumber(), tbhd.getEndTimestamp(), false);
+            boolean valid = false;
+            for (TkRole tkRole : tkRoles) {
+                if (StringUtils.equals(tkRole.getRoleName(),
+                        TkConstants.ROLE_TK_SYS_ADMIN)
+                        || (StringUtils.equals(tkRole.getRoleName(), TkConstants.ROLE_TK_GLOBAL_VO))
+                        || (StringUtils.equals(tkRole.getRoleName(),
+                        TkConstants.ROLE_TK_APPROVER) && tbhd.getWorkArea().equals(tkRole.getWorkArea()))
+                        || (StringUtils.equals(tkRole.getRoleName(),
+                        TkConstants.ROLE_TK_DEPT_ADMIN) && (job != null && (job.getDept().equals(tkRole.getDepartment()))))) {
+                    valid = true;
+                    break;
+                }
+                if(StringUtils.equals(tkRole.getRoleName(), TkConstants.ROLE_TK_LOCATION_ADMIN) && job != null && tkRole.getLocationObj()!=null){
+                    List<Department> departments = TkServiceLocator.getDepartmentService().getDepartmentByLocation(tkRole.getLocationObj().getLocation());
+                    for(Department department : departments){
+                        if(StringUtils.equals(job.getDept(), department.getDept())){
+                            valid = true;
+                            break;
+                        }
+                    }
+                    if(valid){
+                        break;
+                    }
+                }
             }
-        });
+            if (!valid) {
+                itr.remove();
+                continue;
+            }
+        }
+        return results;
+    }
+
+    private List<TimeBlockHistory> addDetails(List<TimeBlockHistory> timeBlockHistories) {
+        List<TimeBlockHistory> results = new ArrayList<TimeBlockHistory>(timeBlockHistories);
+
+        for (TimeBlockHistory timeBlockHistory : timeBlockHistories) {
+            List<TimeBlockHistoryDetail> timeBlockHistoryDetails = timeBlockHistory.getTimeBlockHistoryDetails();
+
+            for (TimeBlockHistoryDetail timeBlockHistoryDetail : timeBlockHistoryDetails) {
+                if (!timeBlockHistoryDetail.getEarnCode().equalsIgnoreCase(timeBlockHistory.getEarnCode())) {
+                    TimeBlockHistory newTimeBlockHistory = timeBlockHistory.copy();
+                    newTimeBlockHistory.setEarnCode(timeBlockHistoryDetail.getEarnCode());
+                    newTimeBlockHistory.setHours(timeBlockHistoryDetail.getHours());
+                    newTimeBlockHistory.setAmount(timeBlockHistoryDetail.getAmount());
+                    results.add(newTimeBlockHistory);
+                }
+            }
+        }
+
+        return results;
     }
 }
