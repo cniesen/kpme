@@ -19,8 +19,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.missedpunch.dao.MissedPunchDao;
@@ -39,6 +41,7 @@ import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.math.BigDecimal;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -123,14 +126,15 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
         Long zoneOffset = TkServiceLocator.getTimezoneService().getTimezoneOffsetFromServerTime(DateTimeZone.forID(lastClockLog.getClockTimestampTimezone()));
         Timestamp clockLogTime = new Timestamp(ts.getTime() - zoneOffset); // convert the action time to the system zone time
-
-        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogTime, clockLogTime,
-                assign,
-                tdoc,
-                missedPunch.getClockAction(),
-                TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()));
+        CalendarEntries calendarEntry = tdoc.getCalendarEntry();
+        String principalId = tdoc.getPrincipalId();
+        
+        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(clockLogTime, assign, calendarEntry, 
+        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), principalId);
 
         TkServiceLocator.getClockLogService().saveClockLog(clockLog);
+        missedPunch.setActionDate(new java.sql.Date(clockLog.getClockTimestamp().getTime()));
+        missedPunch.setActionTime(new java.sql.Time(clockLog.getClockTimestamp().getTime()));
         missedPunch.setTkClockLogId(clockLog.getTkClockLogId());
 
         if (StringUtils.equals(clockLog.getClockAction(), TkConstants.CLOCK_OUT) ||
@@ -159,14 +163,17 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         ClockLog lastLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
         Long zoneOffset = TkServiceLocator.getTimezoneService().getTimezoneOffsetFromServerTime(DateTimeZone.forID(lastLog.getClockTimestampTimezone()));
         Timestamp clockLogTime = new Timestamp(ts.getTime() - zoneOffset); // convert the action time to the system zone time
-
-        ClockLog clockLog = TkServiceLocator.getClockLogService().buildClockLog(clockLogTime, clockLogTime,
-                assign,
-                tdoc,
-                missedPunch.getClockAction(),
-                TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()));
+        CalendarEntries calendarEntry = tdoc.getCalendarEntry();
+        String principalId = tdoc.getPrincipalId();
+        
+        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(clockLogTime, assign, calendarEntry, 
+        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), principalId);
+        
         TkServiceLocator.getClockLogService().saveClockLog(clockLog);
+        missedPunch.setActionDate(new java.sql.Date(clockLog.getClockTimestamp().getTime()));
+        missedPunch.setActionTime(new java.sql.Time(clockLog.getClockTimestamp().getTime()));
         missedPunch.setTkClockLogId(clockLog.getTkClockLogId());
+
 //        MissedPunchDocument doc = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(missedPunch.getDocumentNumber());
 //        doc.setTkClockLogId(clockLog.getTkClockLogId());
 //        KNSServiceLocator.getBusinessObjectService().save(doc);
