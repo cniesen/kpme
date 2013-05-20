@@ -32,7 +32,7 @@ public class PrincipalHRAttributesInquirableImpl extends TkInquirableImpl {
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
 		PrincipalHRAttributes principalAttributes = null;
-		if(StringUtils.isNotBlank((String)fieldValues.get("hrDeptId"))) {
+		if(StringUtils.isNotBlank((String)fieldValues.get("hrPrincipalAttributeId"))) {
             principalAttributes = TkServiceLocator.getPrincipalHRAttributeService().getPrincipalHRAttributes((String) fieldValues.get("hrPrincipalAttributeId"));
 
 		} else if(StringUtils.isNotBlank((String)fieldValues.get("principalId"))
