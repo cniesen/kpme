@@ -79,6 +79,8 @@ public interface ClockLogService {
 
     ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment, CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId);
     
+	public void deleteClockLogsForDocumentId(String documentId);
+	
     /**
      * Get warning messages for clock actions taken from unapproved IP address on given timesheet document
      * @param timeBlocks
