@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.missedpunch;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -40,19 +41,24 @@ public class MissedPunchAuthorizer extends TransactionalDocumentAuthorizerBase {
 			Set<String> documentActions) {
 		Set<String> author =  super.getDocumentActions(document, user, documentActions);
 		MissedPunchDocument mpDoc = (MissedPunchDocument)document;
-        DocumentStatus documentStatus = document.getDocumentHeader().getWorkflowDocument().getStatus();
+        if (mpDoc == null || mpDoc.getDocumentHeader() == null) {
+            return author;
+        }
+        if (document.getDocumentHeader().hasWorkflowDocument()) {
+            DocumentStatus documentStatus = document.getDocumentHeader().getWorkflowDocument().getStatus();
 
-		if(DocumentStatus.ENROUTE.equals(documentStatus) ){
-			if(KewApiServiceLocator.getWorkflowDocumentActionsService().isFinalApprover(mpDoc.getDocumentNumber(), TKContext.getPrincipalId())){
-				author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
-				author.add(KRADConstants.KUALI_ACTION_CAN_APPROVE);
-			}
-		} else if(DocumentStatus.INITIATED.equals(documentStatus)
-                    || DocumentStatus.SAVED.equals(documentStatus)){
-			author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
-			author.add(KRADConstants.KUALI_ACTION_CAN_ROUTE);
-		} else {
-            author.remove(KRADConstants.KUALI_ACTION_CAN_APPROVE);
+            if(DocumentStatus.ENROUTE.equals(documentStatus) ){
+                if(KewApiServiceLocator.getWorkflowDocumentActionsService().isFinalApprover(mpDoc.getDocumentNumber(), TKContext.getPrincipalId())){
+                    author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
+                    author.add(KRADConstants.KUALI_ACTION_CAN_APPROVE);
+                }
+            } else if(DocumentStatus.INITIATED.equals(documentStatus)
+                        || DocumentStatus.SAVED.equals(documentStatus)){
+                author.add(KRADConstants.KUALI_ACTION_CAN_EDIT);
+                author.add(KRADConstants.KUALI_ACTION_CAN_ROUTE);
+            } else {
+                author.remove(KRADConstants.KUALI_ACTION_CAN_APPROVE);
+            }
         }
 		author.remove(KRADConstants.KUALI_ACTION_CAN_ADD_ADHOC_REQUESTS);
 		author.remove(KRADConstants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS);

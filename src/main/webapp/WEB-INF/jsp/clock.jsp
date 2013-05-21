@@ -108,7 +108,7 @@ var tdocid = ${Form.timesheetDocument.documentId} ;
 </tk:tkHeader>
 
 <div id="missed-punch-dialog" title="Missed Punch" style="display:none;">
-
+    <iframe id="missed-punch-frame" width="1024" height="650" src=""></iframe>
 </div>
 
 <tk:note/>

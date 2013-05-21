@@ -29,7 +29,7 @@ public interface ClockLogService {
 	 * Save clock log 
 	 * @param clockLog
 	 */
-    public void saveClockLog(ClockLog clockLog);
+    public ClockLog saveClockLog(ClockLog clockLog);
     /**
      * Fetch last clock log for principal id
      * @param principalId
