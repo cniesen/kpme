@@ -168,6 +168,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	
     	//Test for exact match
     	ClockLog clockLog = new ClockLog();
+    	clockLog.setDocumentId("1111");
     	clockLog.setJob(new Job());
     	clockLog.setIpAddress(IP_ADDRESS_ONE);
     	clockLog.setWorkArea(1234L);
@@ -185,6 +186,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     	clr = this.createClr(IP_ADDRESS_ONE, 1234L, "1234", 0L);
     	
     	clockLog = new ClockLog();
+    	clockLog.setDocumentId("1111");
     	clockLog.setJob(new Job());
     	clockLog.setIpAddress("127.127.127.127");
     	clockLog.setWorkArea(1234L);
@@ -203,6 +205,7 @@ public class ClockLocationRuleTest extends KPMETestCase {
     public void testClockLocationIPAddress() {
     	//Test for exact match
     	ClockLog clockLog = new ClockLog();
+    	clockLog.setDocumentId("1111");
     	clockLog.setJob(new Job());
     	clockLog.setIpAddress(IP_ADDRESS_ONE);
     	clockLog.setWorkArea(1234L);

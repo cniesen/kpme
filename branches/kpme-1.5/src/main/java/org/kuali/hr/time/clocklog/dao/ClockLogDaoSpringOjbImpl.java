@@ -24,6 +24,7 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
+import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements ClockLogDao {
@@ -130,6 +131,13 @@ public class ClockLogDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
     	criteria.addEqualTo("timestamp", timestampSubQuery);
     	
     	return (ClockLog) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(ClockLog.class, criteria));
+    }
+    
+    @Override
+    public void deleteClockLogsForDocumentId(String documentId) {
+        Criteria crit = new Criteria();
+        crit.addEqualTo("documentId", documentId);
+        this.getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(ClockLog.class, crit));
     }
 
 }
