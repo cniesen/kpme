@@ -326,8 +326,7 @@ $(document).ready(function() {
     // tdocid is a variable that is set from the form value in 'clock.jsp'
     $('#missed-punch-iframe-button').click(function() {
 
-        $('#missed-punch-dialog').empty();
-        $('#missed-punch-dialog').append('<iframe width="1024" height="650" src="missedPunch.do?methodToCall=docHandler&command=initiate&docTypeName=MissedPunchDocumentType&tdocid=' + tdocid + '"></iframe>');
+        //$('#missed-punch-dialog').empty();
 
         $('#missed-punch-dialog').dialog({
             autoOpen: true,
@@ -338,7 +337,11 @@ $(document).ready(function() {
                 //"test" : function() {
                 //}
             },
+            open: function(event, ui) {
+                $('#missed-punch-frame').attr("src", 'missedPunch.do?methodToCall=docHandler&command=initiate&docTypeName=MissedPunchDocumentType&tdocid=' + tdocid);
+            },
             beforeClose: function(event, ui) {
+                $('#missed-punch-frame').attr("src", "");
                 var URL = unescape(window.parent.location.pathname);
                 window.parent.location.href = URL;
                 window.close();

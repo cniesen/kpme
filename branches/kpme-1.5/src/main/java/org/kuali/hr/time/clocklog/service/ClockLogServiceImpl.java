@@ -42,8 +42,8 @@ public class ClockLogServiceImpl implements ClockLogService {
     public ClockLogServiceImpl() {
     }
 
-    public void saveClockLog(ClockLog clockLog) {
-        clockLogDao.saveOrUpdate(clockLog);
+    public ClockLog saveClockLog(ClockLog clockLog) {
+        return KRADServiceLocator.getBusinessObjectService().save(clockLog);
     }
 
     @Override

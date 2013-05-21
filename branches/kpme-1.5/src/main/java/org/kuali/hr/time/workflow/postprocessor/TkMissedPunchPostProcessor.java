@@ -15,20 +15,33 @@
  */
 package org.kuali.hr.time.workflow.postprocessor;
 
+import org.kuali.hr.time.missedpunch.MissedPunchDocument;
+import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.framework.postprocessor.DocumentRouteStatusChange;
 import org.kuali.rice.kew.framework.postprocessor.ProcessDocReport;
 import org.kuali.rice.kew.postprocessor.DefaultPostProcessor;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 public class TkMissedPunchPostProcessor extends DefaultPostProcessor {
 
 	@Override
 	public ProcessDocReport doRouteStatusChange(DocumentRouteStatusChange statusChangeEvent) throws Exception {
-		ProcessDocReport pdr = super.doRouteStatusChange(statusChangeEvent);
+        ProcessDocReport pdr = null;
+        String documentId = statusChangeEvent.getDocumentId();
+        MissedPunchDocument document = TkServiceLocator.getMissedPunchService().getMissedPunchByRouteHeader(documentId);
+        if (document != null) {
+            pdr = super.doRouteStatusChange(statusChangeEvent);
+            // Only update the status if it's different.
+            if (!statusChangeEvent.getOldRouteStatus().equals(statusChangeEvent.getNewRouteStatus())
+                    && statusChangeEvent.getNewRouteStatus().equals(DocumentStatus.ENROUTE.getCode())) {
+                TkServiceLocator.getMissedPunchService().addClockLogForMissedPunch(document);
+                KRADServiceLocatorWeb.getDocumentService().saveDocument(document);
+            }
+        }
 
-		/*Long documentId = statusChangeEvent.getRouteHeaderId();
-
-        DocumentHeader header = KNSServiceLocator.getDocumentHeaderService().getDocumentHeaderById(documentId.toString());*/
-		return pdr;
-	}
+        return pdr;
+    }
 
 }

@@ -35,6 +35,8 @@ import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
+import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kns.web.struts.action.KualiTransactionalDocumentActionBase;
 
 public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
@@ -43,10 +45,17 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
     public ActionForward docHandler(ActionMapping mapping, ActionForm form,
                                     HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        ActionForward act = super.docHandler(mapping, form, request, response);
+        //HACK!!!
         MissedPunchForm mpForm = (MissedPunchForm) form;
+        String command = mpForm.getCommand();
+        if (StringUtils.equals(KewApiConstants.INITIATE_COMMAND, command)) {
+            ((MissedPunchForm) form).setDocId(null);
+        }
+        //END HACK!!!!
+
+        ActionForward act = super.docHandler(mapping, form, request, response);
         MissedPunchDocument mpDoc = (MissedPunchDocument) mpForm.getDocument();
-        mpForm.setDocId(mpDoc.getTimesheetDocumentId());
+        //mpForm.setDocId(mpDoc.getTimesheetDocumentId());
 
         if (StringUtils.equals(request.getParameter("command"), "initiate")) {
             String tdocId = request.getParameter("tdocid");
@@ -55,6 +64,7 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
             mpDoc.setPrincipalId(timesheetDocument.getPrincipalId());
             mpDoc.setTimesheetDocumentId(tdocId);
             // set default document description
+
             if (StringUtils.isEmpty(mpDoc.getDocumentHeader().getDocumentDescription())) {
                 mpDoc.getDocumentHeader().setDocumentDescription("Missed Punch: " + timesheetDocument.getPrincipalId());
             }
@@ -124,12 +134,10 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         mpDoc.setDocumentStatus("R");
         request.setAttribute(TkConstants.DOCUMENT_ID_REQUEST_NAME, mpDoc.getDocumentNumber());
         request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
-        ActionForward fwd = super.route(mapping, mpForm, request, response);
-        TkServiceLocator.getMissedPunchService().addClockLogForMissedPunch(mpDoc);
+        //TkServiceLocator.getMissedPunchService().addClockLogForMissedPunch(mpDoc);
         mpForm.setDocId(mpDoc.getDocumentNumber());
         mpForm.setAssignmentReadOnly(true);
-        return fwd;
-
+        return super.route(mapping, mpForm, request, response);
     }
 
     @Override
@@ -143,8 +151,7 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         request.setAttribute(TkConstants.DOCUMENT_ID_REQUEST_NAME, mpDoc.getDocumentNumber());
         request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
         TkServiceLocator.getMissedPunchService().updateClockLogAndTimeBlockIfNecessary(mpDoc);
-        ActionForward fwd = super.approve(mapping, form, request, response);
-        return fwd;
+        return super.approve(mapping, form, request, response);
     }
     
   @Override
@@ -164,10 +171,9 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         mpDoc.setDocumentStatus("S");
         request.setAttribute(TkConstants.DOCUMENT_ID_REQUEST_NAME, mpDoc.getDocumentNumber());
         request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
-        ActionForward fwd = super.save(mapping, mpForm, request, response);
         mpForm.setDocId(mpDoc.getDocumentNumber());
         mpForm.setAssignmentReadOnly(true);
-        return fwd;
+        return super.save(mapping, mpForm, request, response);
 
     }
 }
