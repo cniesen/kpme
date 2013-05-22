@@ -15,8 +15,20 @@
  */
 package org.kuali.hr.time.detail.validation;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.*;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Hours;
+import org.joda.time.Interval;
+import org.joda.time.LocalDateTime;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
@@ -29,12 +41,6 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeDetailValidationUtil {
 
@@ -299,17 +305,20 @@ public class TimeDetailValidationUtil {
     // KPME-1446
     public static List<String> validateSpanningWeeks(boolean spanningWeeks, DateTime startTemp, DateTime endTemp) {
     	List<String> errors = new ArrayList<String>();
-    	boolean valid = true;
-        while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && valid) {
-        	if (!spanningWeeks && 
-        		(startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		valid = false;
-        	}
-        	startTemp = startTemp.plusDays(1);
-        }
-        if (!valid) {
-        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");
-        }
+    	
+    	if (!spanningWeeks) {
+	    	boolean isOnlyWeekendSpan = true;
+	    	while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && isOnlyWeekendSpan) {
+	           	if (startTemp.getDayOfWeek() != DateTimeConstants.SATURDAY && startTemp.getDayOfWeek() != DateTimeConstants.SUNDAY) {
+	           		isOnlyWeekendSpan = false;
+	        	}
+	        	startTemp = startTemp.plusDays(1);
+	        }
+	        if (isOnlyWeekendSpan) {
+	        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");            //errorMessages
+	        }
+    	}
+
     	return errors;
     }
 }

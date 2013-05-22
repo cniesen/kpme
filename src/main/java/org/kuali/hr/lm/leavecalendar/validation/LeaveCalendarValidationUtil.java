@@ -15,9 +15,18 @@
  */
 package org.kuali.hr.lm.leavecalendar.validation;
 
+import java.math.BigDecimal;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.DateTimeZone;
@@ -34,7 +43,6 @@ import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
-import org.kuali.hr.time.base.web.TkCommonCalendarForm;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
@@ -43,15 +51,8 @@ import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.*;
-
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
-import org.kuali.rice.krad.util.ObjectUtils;
 
 public class LeaveCalendarValidationUtil {
     
@@ -378,31 +379,35 @@ public class LeaveCalendarValidationUtil {
 
     // KPME-2010
     public static List<String> validateSpanningWeeks(LeaveCalendarWSForm lcf) {
-    	boolean spanningWeeks = lcf.getSpanningWeeks().equalsIgnoreCase("y");
-        Date startDate = TKUtils.formatDateString(lcf.getStartDate());
-        EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), startDate);
-        DateTime startTemp, endTemp;
-
-        if (ec != null && !ec.getRecordMethod().equals(LMConstants.RECORD_METHOD.TIME)) {
-            startTemp = new DateTime(startDate);
-            endTemp = new DateTime(TKUtils.formatDateString(lcf.getEndDate()));
-        } else {
-    	    startTemp = new DateTime(TKUtils.convertDateStringToTimestamp(lcf.getStartDate()).getTime());
-            endTemp = new DateTime(TKUtils.convertDateStringToTimestamp(lcf.getEndDate()).getTime());
-        }
+    	List<String> errors = new ArrayList<String>();
     	
-        List<String> errors = new ArrayList<String>();
-    	boolean valid = true;
-    	while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && valid) {
-           	if (!spanningWeeks && 
-        		(startTemp.getDayOfWeek() == DateTimeConstants.SATURDAY || startTemp.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		valid = false;
-        	}
-        	startTemp = startTemp.plusDays(1);
-        }
-        if (!valid) {
-        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");            //errorMessages
-        }
+    	boolean spanningWeeks = lcf.getSpanningWeeks().equalsIgnoreCase("y");
+    	
+    	if (!spanningWeeks) {
+	        Date startDate = TKUtils.formatDateString(lcf.getStartDate());
+	        EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), startDate);
+	        DateTime startTemp, endTemp;
+	
+	        if (ec != null && !ec.getRecordMethod().equals(LMConstants.RECORD_METHOD.TIME)) {
+	            startTemp = new DateTime(startDate);
+	            endTemp = new DateTime(TKUtils.formatDateString(lcf.getEndDate()));
+	        } else {
+	    	    startTemp = new DateTime(TKUtils.convertDateStringToTimestamp(lcf.getStartDate()).getTime());
+	            endTemp = new DateTime(TKUtils.convertDateStringToTimestamp(lcf.getEndDate()).getTime());
+	        }
+	    	
+	    	boolean isOnlyWeekendSpan = true;
+	    	while ((startTemp.isBefore(endTemp) || startTemp.isEqual(endTemp)) && isOnlyWeekendSpan) {
+	           	if (startTemp.getDayOfWeek() != DateTimeConstants.SATURDAY && startTemp.getDayOfWeek() != DateTimeConstants.SUNDAY) {
+	           		isOnlyWeekendSpan = false;
+	        	}
+	        	startTemp = startTemp.plusDays(1);
+	        }
+	        if (isOnlyWeekendSpan) {
+	        	errors.add("Weekend day is selected, but include weekends checkbox is not checked");            //errorMessages
+	        }
+    	}
+    	
     	return errors;
     }
     
