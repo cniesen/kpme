@@ -18,6 +18,7 @@ package org.kuali.hr.time.batch.web;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.base.web.TkForm;
 import org.kuali.hr.time.util.TkConstants;
 
@@ -32,6 +33,7 @@ public class BatchJobActionForm extends TkForm {
     private String leavePlan;
     
     static {
+    	BATCH_JOB_NAMES.add(StringUtils.EMPTY);
     	BATCH_JOB_NAMES.add(TkConstants.BATCH_JOB_NAMES.INITIATE);
     	BATCH_JOB_NAMES.add(TkConstants.BATCH_JOB_NAMES.END_PAY_PERIOD);
     	BATCH_JOB_NAMES.add(TkConstants.BATCH_JOB_NAMES.END_REPORTING_PERIOD);
@@ -68,6 +70,4 @@ public class BatchJobActionForm extends TkForm {
 		this.leavePlan = leavePlan;
 	}
     
-    
-
 }
