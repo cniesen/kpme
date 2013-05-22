@@ -18,8 +18,9 @@
     <c:set var="systemAdmin" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isSystemAdmin()%>' />
     <c:set var="globalViewOnly" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isGlobalViewOnly()%>' />
     <c:set var="locationAdmin" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isLocationAdmin()%>' />
+    <c:set var="locationViewOnly" value='<%=org.kuali.hr.time.roles.TkUserRoles.getUserRoles(org.kuali.rice.krad.util.GlobalVariables.getUserSession().getPrincipalId()).isDeptViewOnly()%>' />
 </c:if>
-<c:if test="${not systemAdmin && not globalViewOnly && not locationAdmin}">
+<c:if test="${not systemAdmin && not globalViewOnly && not locationAdmin && not locationViewOnly}">
     <jsp:forward page="portal.do?selectedTab=main"/>
 </c:if>
 <td class="content" valign="top">

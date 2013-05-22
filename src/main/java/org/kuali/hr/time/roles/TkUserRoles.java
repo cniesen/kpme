@@ -402,25 +402,24 @@ public class TkUserRoles implements UserRoles {
 
     @Override
     public boolean isDepartmentAdminForPerson(String principalId) {
-        UserRoles userRoles = getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
-
-        // Department admin
-        // Department view only
-        if (userRoles.isDepartmentAdmin() || userRoles.isDeptViewOnly()) {
-        	List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
-            for (Job job : jobs) {
-                if (getOrgAdminDepartments().contains(job.getDept())) {
-                    return true;
-                }
+    	List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
+        for (Job job : jobs) {
+            if (getOrgAdminDepartments().contains(job.getDept())) {
+                return true;
             }
         }
-
         return false;
     }
 
     @Override
     public boolean isDeptViewOnlyForPerson(String principalId) {
-        return isDepartmentAdminForPerson(principalId);
+    	List<Job> jobs = TkServiceLocator.getJobService().getJobs(principalId,TKUtils.getCurrentDate());
+        for (Job job : jobs) {
+            if (getDepartmentViewOnlyDepartments().contains(job.getDept())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
