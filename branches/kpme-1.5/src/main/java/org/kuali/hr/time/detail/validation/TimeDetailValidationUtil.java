@@ -139,9 +139,9 @@ public class TimeDetailValidationUtil {
         // check if the overnight shift is across days
         //------------------------
         if (acrossDays && hours == null && amount == null) {
-            if (startTemp.getHourOfDay() >= endTemp.getHourOfDay()
+            if (startTemp.getHourOfDay() > endTemp.getHourOfDay()
                     && !(endTemp.getDayOfYear() - startTemp.getDayOfYear() <= 1
-                    && endTemp.getHourOfDay() == 0)) {
+                        && endTemp.getHourOfDay() == 0)) {
                 errors.add("The \"apply to each day\" box should not be checked.");
             }
         }
