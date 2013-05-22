@@ -88,6 +88,7 @@ var CONSTANTS = {
     },
     TIME_FORMAT : {
         DATE_FOR_OUTPUT : 'M/d/yyyy',
+        TIME_FOR_VALIDATION: ['ht', 'h tt', 'h:mmt', 'Hmm', 'H:mm'],
         TIME_FOR_OUTPUT : 'hh:mm tt',
         TIME_FOR_SYSTEM : 'H:mm'
     }
@@ -759,7 +760,7 @@ function addTimeBlockRow(form, tempArr) {
     el.size = 10;
     cellBeginTime.appendChild(el);
     var timeChangeId = '#' + idString;
-    var timeFormatMessage = "Supported formats:<br/>9a, 9 am, 9 a.m.,  9:00a, 9:45a, 3p, 0900, 15:30";
+    var timeFormatMessage = "Supported formats:<br/>9a, 9 am, 9:00a, 3p, 3 pm, 3:00p, 900, 15:00";
 // help button for time format
     el = document.createElement('input');
     el.type = 'button';
