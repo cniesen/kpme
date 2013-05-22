@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +30,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -86,7 +88,12 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
         tkTimeBlockAggregate = combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
 
-		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
+        
+		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate, timeSummary));
+		
+		// Set Flsa week total map
+		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), null);
+		timeSummary.setFlsaWeekTotalMap(flsaWeekTotal);
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, 
         			dayArrangements, timesheetDocument.getAsOfDate(), timesheetDocument.getDocEndDate());
@@ -360,9 +367,13 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * @return A list of BigDecimals containing the number of hours worked.
      * This list will line up with the header.
      */
-    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate) {
+    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate, TimeSummary timeSummary) {
         List<BigDecimal> hours = new ArrayList<BigDecimal>();
+        
+        Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
+        
         BigDecimal periodTotal = TkConstants.BIG_DECIMAL_SCALED_ZERO;
+        int i=0;
         for (FlsaWeek week : aggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback())) {
             BigDecimal weeklyTotal = TkConstants.BIG_DECIMAL_SCALED_ZERO;
             for (FlsaDay day : week.getFlsaDays()) {
@@ -374,10 +385,12 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
                 }
                 hours.add(totalForDay);
             }
+            i++;
+            weekTotalMap.put("Week "+i, weeklyTotal);
             hours.add(weeklyTotal);
         }
         hours.add(periodTotal);
-
+        timeSummary.setWeekTotalMap(weekTotalMap);
         return hours;
     }
 
@@ -486,4 +499,35 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         return cal;
     }
 
+    
+	private Map<String, BigDecimal> getHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea) {
+		
+		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
+		DateTimeZone dateTimeZone = TkServiceLocator.getTimezoneService()
+				.getUserTimezoneWithFallback();
+		List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
+		
+		int weekCount = 1;
+		for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
+			BigDecimal weekTotal = new BigDecimal(0.00);
+			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
+				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
+					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
+						if (workArea != null) {
+							if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
+								weekTotal = weekTotal.add(timeBlock.getHours(), TkConstants.MATH_CONTEXT);
+							} else {
+								weekTotal = weekTotal.add(new BigDecimal("0"), TkConstants.MATH_CONTEXT);
+							}
+						} else {
+							weekTotal = weekTotal.add(timeBlock.getHours(),TkConstants.MATH_CONTEXT);
+						}
+					}
+				}
+			}
+			hoursToFlsaWeekMap.put("Week " + weekCount++, weekTotal);
+		}
+		
+		return hoursToFlsaWeekMap;
+	}
 }

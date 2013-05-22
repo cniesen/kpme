@@ -33,8 +33,12 @@ public class TimeHourDetailRenderer {
 
     public TimeHourDetailRenderer(TimeHourDetail d) {
         this.timeHourDetail = d;
-        List<String> ovtEarnCodes = TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDocument().getAsOfDate());
-        setOvertimeEarnCode(ovtEarnCodes.contains(d.getEarnCode()));
+        if(TKContext.getCurrentTimesheetDocument() != null) {
+	        List<String> ovtEarnCodes = TkServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(TKContext.getCurrentTimesheetDocument().getAsOfDate());
+	        if(ovtEarnCodes != null && !ovtEarnCodes.isEmpty()){
+	        	setOvertimeEarnCode(ovtEarnCodes.contains(d.getEarnCode()));
+	        }
+        }
     }
 
     public TimeHourDetail getTimeHourDetail() {
