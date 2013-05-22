@@ -15,29 +15,36 @@
  */
 package org.kuali.hr.lm.leave.web;
 
+import com.gargoylesoftware.htmlunit.html.HtmlButton;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.Assert;
-
-import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.test.KPMETestCase;
+import org.kuali.hr.time.calendar.CalendarEntries;
+import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.test.HtmlUnitUtil;
 import org.kuali.hr.time.test.TkTestConstants;
 
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlButton;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-
-import java.lang.management.MemoryManagerMXBean;
-import java.util.Calendar;
 
 public class LeaveCalendarWebTest extends KPMETestCase {
+	private String documentId;
 
 	@Before
 	public void setUp() throws Exception {
 		super.setUp();
+
+        CalendarEntries firstCalendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries("202");
+        LeaveCalendarDocument firstLeaveCalendarDocument = TkServiceLocator.getLeaveCalendarService().openLeaveCalendarDocument("admin", firstCalendarEntry);
+        documentId = firstLeaveCalendarDocument.getDocumentId();
+
+        CalendarEntries secondCalendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries("203");
+        TkServiceLocator.getLeaveCalendarService().openLeaveCalendarDocument("admin", secondCalendarEntry);
+
+        CalendarEntries thirdCalendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntries("204");
+        TkServiceLocator.getLeaveCalendarService().openLeaveCalendarDocument("admin", thirdCalendarEntry);
 	}
 
 	@After
@@ -45,18 +52,11 @@ public class LeaveCalendarWebTest extends KPMETestCase {
 		super.tearDown();
 	}
 
-	/*public void setWebClient(WebClient webClient) {
-		webClient.setJavaScriptEnabled(true);
-		webClient.setThrowExceptionOnScriptError(true);
-		webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-		webClient.waitForBackgroundJavaScript(10000);
-	}*/
-
 	@Test
 	public void testLeaveCalendarPage() throws Exception {
 		// get the page and Login
 		HtmlPage leaveCalendarPage = HtmlUnitUtil
-				.gotoPageAndLogin(getWebClient(), TkTestConstants.Urls.LEAVE_CALENDAR_URL+"?documentId=1000", true);
+				.gotoPageAndLogin(getWebClient(), TkTestConstants.Urls.LEAVE_CALENDAR_URL+"?documentId=" + documentId, true);
 		Assert.assertNotNull("Leave Request page not found" ,leaveCalendarPage);
 
 		//this.setWebClient(leaveCalendarPage.getWebClient());
@@ -70,6 +70,10 @@ public class LeaveCalendarWebTest extends KPMETestCase {
         //TODO: click not working.  Not even getting to the 'execute' method in LeaveCalendarAction
         HtmlPage page = nextButton.click();
         Assert.assertNotNull(page);
+
+        synchronized (page) {
+            page.wait(5000);
+        }
 
 		// Check for previous document
 		HtmlButton prevButton = (HtmlButton) page
