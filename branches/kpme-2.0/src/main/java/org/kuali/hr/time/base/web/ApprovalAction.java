@@ -127,9 +127,10 @@ public class ApprovalAction extends TkAction{
 		if (StringUtils.isBlank(page)) {
 	        String principalId = TKContext.getTargetPrincipalId();
 			Set<String> departments = new TreeSet<String>();
-			departments.addAll(TkServiceLocator.getHRRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.REVIEWER.getRoleName(), new DateTime(), true));
-			departments.addAll(TkServiceLocator.getHRRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.APPROVER_DELEGATE.getRoleName(), new DateTime(), true));
-			departments.addAll(TkServiceLocator.getHRRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.APPROVER.getRoleName(), new DateTime(), true));
+			departments.addAll(TkServiceLocator.getTKRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.TIME_DEPARTMENT_VIEW_ONLY.getRoleName(), new DateTime(), true));
+			departments.addAll(TkServiceLocator.getTKRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), new DateTime(), true));
+			departments.addAll(TkServiceLocator.getLMRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.LEAVE_DEPARTMENT_VIEW_ONLY.getRoleName(), new DateTime(), true));
+			departments.addAll(TkServiceLocator.getLMRoleService().getDepartmentsForPrincipalInRole(principalId, KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), new DateTime(), true));
 		    taf.setDepartments(new ArrayList<String>(departments));
 		    
 		    if (taf.getDepartments().size() == 1 || taf.getSelectedDept() != null) {

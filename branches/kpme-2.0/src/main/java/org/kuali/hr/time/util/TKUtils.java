@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -508,5 +509,18 @@ public class TKUtils {
 
 		 return valid;
 	 }
+	 
+	 public static String getRandomColor(Set<String> randomColors) {
+			String[] letters = "0,1,2,3,4,5,6,7,8,9,A,B,C,D,E,F".split(",");
+			String color = "#";
+			for (int i = 0; i < 6; i++) {
+				int index = (int) Math.round(Math.random() * 15);
+				color += letters[index];
+			}
+			if (randomColors.contains(color)) {
+				color = getRandomColor(randomColors);
+			}
+			return color;
+	}
 
 }
