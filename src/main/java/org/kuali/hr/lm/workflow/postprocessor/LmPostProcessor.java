@@ -79,7 +79,7 @@ public class LmPostProcessor extends DefaultPostProcessor {
 			for(LeaveBlock lb : leaveBlocks) {
 				if(StringUtils.equals(lb.getLeaveBlockType(),LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
 					lb.setRequestStatus(LMConstants.REQUEST_STATUS.APPROVED);
-					TkServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, TKContext.getPrincipalId());
+					TkServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, lb.getPrincipalIdModified());
 				}
 			}
 		}

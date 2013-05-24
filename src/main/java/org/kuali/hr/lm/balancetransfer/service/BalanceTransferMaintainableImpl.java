@@ -122,10 +122,12 @@ public class BalanceTransferMaintainableImpl extends
                     TkServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
-            List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDate(balanceTransfer.getPrincipalId(), balanceTransfer.getEffectiveDate());
+            List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
+            //List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDate(balanceTransfer.getPrincipalId(), balanceTransfer.getEffectiveDate());
             for(LeaveBlock lb : leaveBlocks) {
             	if(StringUtils.equals(lb.getAccrualCategory(),balanceTransfer.getFromAccrualCategory())
             			&& StringUtils.equals(lb.getLeaveBlockType(),LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
+            		//KPME-2253
                 	BigDecimal adjustment = new BigDecimal(0);
                 	if(balanceTransfer.getTransferAmount() != null)
                 		adjustment = adjustment.add(balanceTransfer.getTransferAmount().abs());
