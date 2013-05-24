@@ -19,6 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.kuali.hr.core.KPMEConstants;
+import org.kuali.hr.pm.positionresponsibility.PositionResponsibility;
 import org.kuali.hr.time.HrBusinessObject;
 
 import com.google.common.collect.ImmutableList;
@@ -41,9 +42,21 @@ public class Position extends HrBusinessObject {
 	private List<PositionQualification> qualificationList = new LinkedList<PositionQualification>(); 
 	private List<PositionDuty> dutyList = new LinkedList<PositionDuty>(); 
 	private List<PstnFlag> flagList = new LinkedList<PstnFlag>(); 
+	private List<PositionResponsibility> positionResponsibilityList = new LinkedList<PositionResponsibility>(); 
+
+	
 	@Override
 	public String getId() {
 		return getHrPositionId();
+	}
+
+	public List<PositionResponsibility> getPositionResponsibilityList() {
+		return positionResponsibilityList;
+	}
+
+	public void setPositionResponsibilityList(
+			List<PositionResponsibility> positionResponsibilityList) {
+		this.positionResponsibilityList = positionResponsibilityList;
 	}
 
 	@Override
