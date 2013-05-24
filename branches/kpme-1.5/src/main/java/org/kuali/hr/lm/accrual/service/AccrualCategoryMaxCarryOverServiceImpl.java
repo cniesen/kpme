@@ -125,8 +125,10 @@ public class AccrualCategoryMaxCarryOverServiceImpl implements AccrualCategoryMa
 			BigDecimal adjustmentAmount = getAccrualCategoryCarryOverAdjustment(accrualCategory.getAccrualCategory(), principalId, calendarEntry, asOfDate);
 			
 			if (adjustmentAmount.compareTo(BigDecimal.ZERO) > 0) {
-				DateTime leaveBlockDate = new DateTime(calendarEntry.getEndPeriodDate()).minusSeconds(1);
-			
+				//Balance transfer and Leave payout expect the carryover leave block to live on the final calendar period of the leave plan (calendarEntry.endPeriodDate.minusSeconds(1)).
+				//See BalanceTransferMaintainable::doRouteStatusChanged->newDocumentStatus = APPROVED.
+				final DateTime leaveBlockDate = new DateTime(calendarEntry.getEndPeriodDate()).minusSeconds(1);
+
 				addAdjustmentLeaveBlock(documentId, principalId, leaveBlockDate, accrualCategory, adjustmentAmount.negate());
 			}
 		}

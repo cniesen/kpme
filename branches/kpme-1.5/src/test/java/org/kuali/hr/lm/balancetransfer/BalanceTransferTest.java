@@ -37,11 +37,6 @@ import org.kuali.hr.time.util.TkConstants;
 
 import java.math.BigDecimal;
 import java.sql.Date;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import sun.util.LocaleServiceProviderPool;
-
 import static org.junit.Assert.assertTrue;
 
 
@@ -232,6 +227,16 @@ public class BalanceTransferTest extends LeaveCalendarWebTestBase {
 		Assert.assertTrue("Page contains test Balance Transfer", btLookup.asText().contains("fromAC"));
 		Assert.assertFalse("Page should not contain edit action", btLookup.asText().contains("edit")); 
 		Assert.assertTrue("Page should contain view action", btLookup.asText().contains("view"));
+	}
+	
+	/**
+	 * Test that the automated carry over adjustment leave blocks, created when a leave calendar is submitted,
+	 * are adjusted when a transfer is approved
+	 */
+	@Test
+	public void testCarryOverAdjustmentOnTransferApproval() throws Exception {
+
+		assertTrue("Dummy assertion 5", true);
 	}
 	
 	

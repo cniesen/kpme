@@ -103,11 +103,13 @@ public class LeavePayoutMaintainableImpl extends
                     TkServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
-            
-            List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(documentId);
+
+            List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(payout.getLeaveCalendarDocumentId());
+            //List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDate(payout.getPrincipalId(), payout.getEffectiveDate());
             for(LeaveBlock lb : leaveBlocks) {
             	if(StringUtils.equals(lb.getAccrualCategory(),payout.getFromAccrualCategory())
             			&& StringUtils.equals(lb.getLeaveBlockType(), LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
+            		//KPME-2253
                 	BigDecimal adjustment = new BigDecimal(0);
                 	if(payout.getPayoutAmount() != null)
                 		adjustment = adjustment.add(payout.getPayoutAmount().abs());
