@@ -335,7 +335,7 @@ public class TkConstants {
         public static final String KPME_SYSTEM_TIMEZONE = "kpme.system.timezone";
     }
 
-    public static final Integer PAGE_SIZE = 20;
+    public static final Integer PAGE_SIZE = 10;
     public static final String APPROVAL_TABLE_ID = "row";
 
     public static final String IP_SEPERATOR = ".";

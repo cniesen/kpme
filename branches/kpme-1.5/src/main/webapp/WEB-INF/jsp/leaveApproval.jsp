@@ -42,7 +42,7 @@
     <table class="navigation">
        	<tbody>
        	<tr>
-       		<td>
+       		<td align="left">
 				<%-- pay calendar group, department and work area filters --%>
 				<tk:approvalFilter />
 			</td>

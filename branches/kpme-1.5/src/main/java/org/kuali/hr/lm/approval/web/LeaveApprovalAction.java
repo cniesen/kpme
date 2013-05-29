@@ -180,11 +180,13 @@ public class LeaveApprovalAction extends ApprovalAction{
 			laaf.setResultSize(0);
 		} else {
 			List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
-			List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, persons)); 
-		    
-			final String sortField = request.getParameter("sortField");		    
-		    if (StringUtils.equals(sortField, "Name")) {
-			    final boolean sortNameAscending = Boolean.parseBoolean(request.getParameter("sortNameAscending"));
+            //List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, persons));
+            List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, persons);
+
+			String sortField = getSortField(request);
+		    if (sortField == null ||
+                    StringUtils.equals(sortField, "name")) {
+			    final boolean sortNameAscending = isAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -195,8 +197,8 @@ public class LeaveApprovalAction extends ApprovalAction{
 						}
 					}
 		    	});
-		    } else if (StringUtils.equals(sortField, "DocumentID")) {
-			    final boolean sortDocumentIdAscending = Boolean.parseBoolean(request.getParameter("sortDocumentIDAscending"));
+		    } else if (StringUtils.equals(sortField, "documentID")) {
+			    final boolean sortDocumentIdAscending = isAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -207,8 +209,8 @@ public class LeaveApprovalAction extends ApprovalAction{
 						}
 					}
 		    	});
-		    } else if (StringUtils.equals(sortField, "Status")) {
-			    final boolean sortStatusIdAscending = Boolean.parseBoolean(request.getParameter("sortStatusAscending"));
+		    } else if (StringUtils.equals(sortField, "status")) {
+			    final boolean sortStatusIdAscending = isAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -220,8 +222,11 @@ public class LeaveApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    }
-		    
-			laaf.setLeaveApprovalRows(approvalRows);
+            String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+            Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+            Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+
+			laaf.setLeaveApprovalRows(approvalRows.subList(beginIndex, endIndex));
 		    laaf.setResultSize(persons.size());
 		}
 	}
