@@ -62,11 +62,15 @@ public class CalendarServiceImpl implements CalendarService {
         } else if (StringUtils.equalsIgnoreCase(calendarType, LMConstants.LEAVE_CALENDAR_TYPE)) {
         	calendar = getCalendarByGroup(principalCalendar.getLeaveCalendar());
         }
-        
+
+        if (calendar == null) {
+            return null;
+        }
         CalendarEntries calendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByIdAndPeriodEndDate(calendar.getHrCalendarId(), payEndDate);
         
-        if(ObjectUtils.isNotNull(calendarEntry))
+        if(ObjectUtils.isNotNull(calendarEntry)) {
         	calendarEntry.setCalendarObj(calendar);
+        }
         
         return calendarEntry;
     }
