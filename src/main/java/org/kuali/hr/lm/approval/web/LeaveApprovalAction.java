@@ -184,7 +184,7 @@ public class LeaveApprovalAction extends ApprovalAction{
             List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, persons);
 
 			String sortField = getSortField(request);
-		    if (sortField == null ||
+		    if (StringUtils.isEmpty(sortField) ||
                     StringUtils.equals(sortField, "name")) {
 			    final boolean sortNameAscending = isAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
