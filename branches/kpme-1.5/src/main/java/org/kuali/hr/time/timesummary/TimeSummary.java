@@ -69,6 +69,10 @@ public class TimeSummary implements Serializable {
 
                     ar.put("descr", assignmentRow.getDescr());
                     ar.put("assignmentKey", assignmentRow.getAssignmentKey());
+                    ar.put("cssClass", assignmentRow.getCssClass());
+                    ar.put("earnCode", earnCodeSection.getEarnCode());
+                    ecs.put("earnGroup", earnGroupSection.getEarnGroup());
+                    ecs.put("totals", earnGroupSection.getTotals());
                     
                     List<Map<String, Object>> assignmentColumns = new ArrayList<Map<String, Object>>();
                     for (AssignmentColumn assignmentColumn : assignmentRow.getAssignmentColumns()) {
@@ -76,17 +80,16 @@ public class TimeSummary implements Serializable {
                     	
                     	ac.put("cssClass", assignmentColumn.getCssClass());
                     	ac.put("amount", assignmentColumn.getAmount());
-                    	ar.put("total", assignmentColumn.getTotal());
+                    	ac.put("total", assignmentColumn.getTotal());
+                    	ac.put("isWeeklyTotal", assignmentColumn.isWeeklyTotal());
                     	
                     	assignmentColumns.add(ac);
                     }
+                    ar.put("assignmentColumns", assignmentColumns);
 
                     assignmentRows.add(ar);
                 }
-
                 ecs.put("assignmentRows", assignmentRows);
-                ecs.put("earnGroup", earnGroupSection.getEarnGroup());
-                ecs.put("totals", earnGroupSection.getTotals());
 
                 earnCodeSections.add(ecs);
             }

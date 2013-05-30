@@ -62,25 +62,31 @@
         <td colspan="2"><@= section.earnCode @>: <@= section.desc @></td>
     </tr>
     <@ _.each(section.assignmentRows, function(assignmentRow) { @>
-        <tr class="hourDetailRow_<@= docId @>">
+        <tr class="hourDetailRow_<@= docId @>" style="border-bottom-style: double; font-weight: bold;">
             <td colspan="2" class="<@= assignmentRow.cssClass @>"><b><@= assignmentRow.descr @></b></td>
-            <@ if (!assignmentRow.isAmountEarnCode) { @>
-                <@ _.each(assignmentRow.total, function(tot) { @>
-                    <td><@= tot == 0 ? "" : tot.toFixed(2) @></td>
+            <@ if (section.isAmountEarnCode) { @>
+                <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
+                    <@ if (assignmentColumn.isWeeklyTotal) { @>
+                        <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
+                    <@ } else { @>
+                        <td><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
+                    <@ } @>
                 <@ }); @>
             <@ } else { @>
-                <@ _.each(assignmentRow.amount, function(amount) { @>
-                    <td><@= amount == 0 ? "" : amount.toFixed(2) @></td>
+                <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
+                    <@ if (assignmentColumn.isWeeklyTotal) { @>
+                        <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
+                    <@ } else { @>
+                        <td><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
+                    <@ } @>
                 <@ }); @>
             <@ } @>
         </tr>
     <@ }); @>
-    <@ if (isLast) { @>
     <tr class="hourDetailRow_<@= docId @>">
         <td colspan="2"><@= section.earnGroup @></td>
         <@ _.each(section.totals, function(total) { @>
             <td><@= total == 0 ? "" : total.toFixed(2) @></td>
         <@ }); @>
     </tr>
-    <@ } @>
 </script>
