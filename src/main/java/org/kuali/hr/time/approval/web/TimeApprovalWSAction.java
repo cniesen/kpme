@@ -16,11 +16,18 @@
 package org.kuali.hr.time.approval.web;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
@@ -29,11 +36,19 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.hsqldb.lib.StringUtil;
 import org.json.simple.JSONValue;
-import org.kuali.hr.time.base.web.TkAction;
+import org.kuali.hr.lm.leaveblock.LeaveBlock;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.base.web.ApprovalForm;
+import org.kuali.hr.time.base.web.TkAction;
+import org.kuali.hr.time.detail.web.ActionFormUtils;
 import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
+import org.kuali.hr.time.timesummary.AssignmentColumn;
+import org.kuali.hr.time.timesummary.AssignmentRow;
+import org.kuali.hr.time.timesummary.EarnCodeSection;
+import org.kuali.hr.time.timesummary.EarnGroupSection;
 import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
@@ -106,7 +121,27 @@ public class TimeApprovalWSAction extends TkAction {
         TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
         TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(taaf.getDocumentId());
 		TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(td);
-		
+        List<Assignment> assignments = td.getAssignments();
+        List<String> assignmentKeys = new ArrayList<String>();
+        for(Assignment assignment : assignments) {
+        	assignmentKeys.add(assignment.getAssignmentKey());
+        }
+		List<TimeBlock> timeBlocks = td.getTimeBlocks();
+        List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(td.getPrincipalId(), td.getAsOfDate(), td.getDocEndDate(), assignmentKeys);
+        Map<String, String> aMap = ActionFormUtils.buildAssignmentStyleClassMap(timeBlocks, leaveBlocks);
+        // set css classes for each assignment row
+        for (EarnGroupSection earnGroupSection : ts.getSections()) {
+            for (EarnCodeSection section : earnGroupSection.getEarnCodeSections()) {
+                for (AssignmentRow assignRow : section.getAssignmentsRows()) {
+                	String assignmentCssStyle = MapUtils.getString(aMap, assignRow.getAssignmentKey());
+                	assignRow.setCssClass(assignmentCssStyle);
+                	for (AssignmentColumn assignmentColumn : assignRow.getAssignmentColumns()) {
+                		assignmentColumn.setCssClass(assignmentCssStyle);
+                	}
+                }
+            }
+        }
+        
         taaf.setOutputString(ts.toJsonString());
         return mapping.findForward("ws");
     }
