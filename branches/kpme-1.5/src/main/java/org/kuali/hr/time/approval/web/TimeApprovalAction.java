@@ -224,7 +224,7 @@ public class TimeApprovalAction extends ApprovalAction{
 		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, persons);
 		    
 		    final String sortField = getSortField(request);
-		    if (sortField == null ||
+		    if (StringUtils.isEmpty(sortField) ||
                     StringUtils.equals(sortField, "name")) {
 			    final boolean sortNameAscending = isAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {

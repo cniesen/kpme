@@ -4,17 +4,13 @@
 
 <div id="leave-approval">
 	<display:table name="${Form.leaveApprovalRows}" requestURI="LeaveApproval.do?methodToCall=loadApprovalTab" excludedParams="*"
-	               pagesize="10" id="row"
+	               pagesize="20" id="row"
 	               class="approvals-table"
                    size="${Form.resultSize}"
                    partialList="true"
-                   defaultsort="1"
+                   defaultsort="0"
                    defaultorder="ascending"
-                   sort="external"
-                   >
-        <%--defaultsort="0"--%>
-    <%--partialList="true"--%>
-        <%--sort="external"--%>
+                   sort="external">
 
         <%--<display:caption style="text-align:right; margin-right:205px;">
             <div>approved/usage: <span class="approvals-approved">bold</span></div><div>planned/defered: <span class="approvals-requested">italics</span></div>
