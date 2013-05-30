@@ -168,7 +168,7 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
         }
 
         if (StringUtils.isNotBlank(workArea)) {
-            root.addLike("workArea", workArea);
+            OjbSubQueryUtil.addNumericCriteria(root, "workArea", workArea);
         }
         
         if (StringUtils.isNotBlank(active)) {
