@@ -473,6 +473,11 @@ public class TimeDetailAction extends TimesheetAction {
 		Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(tdaf.getTimesheetDocument(), tdaf.getSelectedAssignment());
 		TkServiceLocator.getLeaveBlockService().addLeaveBlocks(beginDate, endDate, tdaf.getPayCalendarDates(), selectedEarnCode, leaveAmount, desc, assignment, 
 				spanningWeeks, LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR, TKContext.getTargetPrincipalId());
+		
+		// A bad hack to apply rules to all timeblocks on timesheet
+		List<TimeBlock> newTimeBlocks = tdaf.getTimesheetDocument().getTimeBlocks();
+        TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument(), TKContext.getPrincipalId());
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTimeBlocks, newTimeBlocks, TKContext.getPrincipalId());
 	}
 	
     // add/update time blocks
