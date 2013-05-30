@@ -75,7 +75,7 @@ public class PositionDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements
         }
         
         if (StringUtils.isNotBlank(workArea)) {
-            root.addLike("workArea", workArea);
+            OjbSubQueryUtil.addNumericCriteria(root, "workArea", workArea);
         }
 
         if (StringUtils.isNotBlank(description)) {
