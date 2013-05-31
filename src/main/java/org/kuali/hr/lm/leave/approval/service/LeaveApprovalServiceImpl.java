@@ -222,7 +222,9 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
 	public List<Map<String, Object>> getLeaveApprovalDetailSections(LeaveCalendarDocumentHeader lcdh)  {
 		
 		List<Map<String, Object>> acRows = new ArrayList<Map<String, Object>>();
-		
+		if (lcdh == null) {
+            return acRows;
+        }
 		String principalId = lcdh.getPrincipalId();
         CalendarEntries calendarEntry = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(lcdh.getDocumentId()).getCalendarEntry();
 		//CalendarEntries calendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(lcdh.getBeginDate(), lcdh.getEndDate());

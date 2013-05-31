@@ -86,7 +86,10 @@ public class TkWorkflowLeaveCalendarAttribute extends AbstractRoleAttribute {
 		String routeHeaderId = routeContext.getDocument().getDocumentId();
 		TkRoleService roleService = TkServiceLocator.getTkRoleService();
 		LeaveCalendarDocument leaveCalendarDocument = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(routeHeaderId);
-		WorkArea workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, leaveCalendarDocument.getAsOfDate());
+		WorkArea workArea = null;
+        if (leaveCalendarDocument != null) {
+            workArea = TkServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, leaveCalendarDocument.getAsOfDate());
+        }
 
         // KPME-1071
         List<TkRole> approvers = roleService.getWorkAreaRoles(workAreaNumber, roleName, TKUtils.getCurrentDate());

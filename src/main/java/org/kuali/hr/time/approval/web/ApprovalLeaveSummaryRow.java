@@ -58,7 +58,7 @@ public class ApprovalLeaveSummaryRow implements Comparable<ApprovalLeaveSummaryR
         if(isEnroute){
             LeaveCalendarDocument doc = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(this.documentId);
             //is there a pending bt doc?
-            if (!TkServiceLocator.getLeaveCalendarService().isReadyToApprove(doc)) {
+            if (doc == null || !TkServiceLocator.getLeaveCalendarService().isReadyToApprove(doc)) {
                 return false;
             }
         	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(this.getDocumentId());

@@ -122,7 +122,9 @@ public class LeaveCalendarAction extends TkAction {
 		if (StringUtils.isNotBlank(documentId)) {
 			lcd = TkServiceLocator.getLeaveCalendarService()
 					.getLeaveCalendarDocument(documentId);
-			calendarEntry = lcd.getCalendarEntry();
+            if (lcd != null) {
+			    calendarEntry = lcd.getCalendarEntry();
+            }
 		} else if (StringUtils.isNotBlank(calendarEntryId)) {
 			// do further procedure
 			calendarEntry = TkServiceLocator.getCalendarEntriesService()
@@ -155,10 +157,12 @@ public class LeaveCalendarAction extends TkAction {
 			if(createFlag) {
 				lcd = TkServiceLocator.getLeaveCalendarService().openLeaveCalendarDocument(viewPrincipal, calendarEntry);
 			} else {
-				LeaveCalendarDocumentHeader header = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(viewPrincipal, calendarEntry.getBeginPeriodDateTime(), calendarEntry.getEndPeriodDateTime());
-				if(header != null) {
-					lcd = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(header.getDocumentId());
-				}
+                if (calendarEntry != null) {
+                    LeaveCalendarDocumentHeader header = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(viewPrincipal, calendarEntry.getBeginPeriodDateTime(), calendarEntry.getEndPeriodDateTime());
+                    if(header != null) {
+                        lcd = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(header.getDocumentId());
+                    }
+                }
 			}
 		}
 		List<Assignment> assignments = TkServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(viewPrincipal, calendarEntry);
@@ -920,7 +924,10 @@ public class LeaveCalendarAction extends TkAction {
     	if (StringUtils.equals(command, "displayDocSearchView") || StringUtils.equals(command, "displayActionListView")) {
         	String docId = (String) request.getParameter("docId");
         	LeaveCalendarDocument leaveCalendarDocument = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(docId);
-        	String timesheetPrincipalName = KimApiServiceLocator.getPersonService().getPerson(leaveCalendarDocument.getPrincipalId()).getPrincipalName();
+            String timesheetPrincipalName = null;
+            if (leaveCalendarDocument != null) {
+                timesheetPrincipalName = KimApiServiceLocator.getPersonService().getPerson(leaveCalendarDocument.getPrincipalId()).getPrincipalName();
+            }
         	
         	String principalId = TKUser.getCurrentTargetPersonId();
         	String principalName = KimApiServiceLocator.getPersonService().getPerson(principalId).getPrincipalName();
@@ -934,17 +941,22 @@ public class LeaveCalendarAction extends TkAction {
             		builder.append("&principalName=");
             		builder.append(timesheetPrincipalName);
             		builder.append("&targetUrl=LeaveCalendar.do");
-            		builder.append("?docmentId=" + docId);
+            		builder.append("?documentId=").append(docId);
             		builder.append("&returnUrl=LeaveApproval.do");
             	} else {
             		builder.append("LeaveApproval.do");
+                    builder.append("?documentId=").append(docId);
             	}
         	} else {
         		builder.append("LeaveCalendar.do");
-        		builder.append("?docmentId=" + docId);
+        		builder.append("?documentId=" + docId);
         	}
         	
         	forward = new ActionRedirect(builder.toString());
+            /*ActionRedirect fwd = new ActionRedirect(builder.toString());
+            if (StringUtils.isNotEmpty(docId)) {
+                fwd.addParameter("documentId", docId);
+            }*/
         }
     	
     	return forward;

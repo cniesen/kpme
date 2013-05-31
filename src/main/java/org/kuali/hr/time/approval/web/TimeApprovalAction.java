@@ -36,6 +36,7 @@ import org.apache.struts.action.ActionMapping;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.hsqldb.lib.StringUtil;
+import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.base.web.ApprovalAction;
 import org.kuali.hr.time.base.web.ApprovalForm;
@@ -183,21 +184,35 @@ public class TimeApprovalAction extends ApprovalAction{
         if(StringUtils.isBlank(taaf.getSelectedDept())){
         	resetState(form, request);
         }
+
+        TimesheetDocument td = null;
+        if (taaf.getDocumentId() != null) {
+            td = TkServiceLocator.getTimesheetService().getTimesheetDocument(taaf.getDocumentId());
+        }
+
         // Set calendar groups
         List<String> calGroups = TkServiceLocator.getPrincipalHRAttributeService().getUniqueTimePayGroups();
         taaf.setPayCalendarGroups(calGroups);
 
         if (StringUtils.isBlank(taaf.getSelectedPayCalendarGroup())) {
-            taaf.setSelectedPayCalendarGroup(calGroups.get(0));
+            if (td == null) {
+                taaf.setSelectedPayCalendarGroup(calGroups.get(0));
+            } else {
+                taaf.setSelectedPayCalendarGroup(td.getCalendarEntry().getCalendarName());
+            }
         }
         
         // Set current pay calendar entries if present. Decide if the current date should be today or the end period date
         if (taaf.getHrPyCalendarEntriesId() != null) {
         	payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(taaf.getHrPyCalendarEntriesId());
         } else {
-            currentDate = TKUtils.getTimelessDate(null);
-            currentPayCalendar = TkServiceLocator.getCalendarService().getCalendarByGroup(taaf.getSelectedPayCalendarGroup());
-            payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(currentPayCalendar.getHrCalendarId(), currentDate);
+            if (td == null) {
+                currentDate = TKUtils.getTimelessDate(null);
+                currentPayCalendar = TkServiceLocator.getCalendarService().getCalendarByGroup(taaf.getSelectedPayCalendarGroup());
+                payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(currentPayCalendar.getHrCalendarId(), currentDate);
+            } else {
+                payCalendarEntries = td.getCalendarEntry();
+            }
         }
         taaf.setPayCalendarEntries(payCalendarEntries);
         
@@ -205,13 +220,14 @@ public class TimeApprovalAction extends ApprovalAction{
         if(taaf.getPayCalendarEntries() != null) {
 	        populateCalendarAndPayPeriodLists(request, taaf);
         }
-        setupDocumentOnFormContext(request,taaf,payCalendarEntries, page);
+
+        setupDocumentOnFormContext(request,taaf,payCalendarEntries, page, td);
         return fwd;
 	}
 
 	@Override
-	protected void setupDocumentOnFormContext(HttpServletRequest request,ApprovalForm form, CalendarEntries payCalendarEntries, String page) {
-		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page);
+	protected void setupDocumentOnFormContext(HttpServletRequest request,ApprovalForm form, CalendarEntries payCalendarEntries, String page, CalendarDocumentContract calDoc) {
+		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page, calDoc);
 		TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
 		taaf.setPayCalendarLabels(TkServiceLocator.getTimeSummaryService().getHeaderForSummary(payCalendarEntries, new ArrayList<Boolean>()));
 

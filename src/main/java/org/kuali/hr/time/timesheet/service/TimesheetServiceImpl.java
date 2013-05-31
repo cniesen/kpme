@@ -151,10 +151,14 @@ public class TimesheetServiceImpl implements TimesheetService {
             //this.loadHolidaysOnTimesheet(timesheetDocument, principalId, begin, end);
         } else {
             timesheetDocument = this.getTimesheetDocument(header.getDocumentId());
-            timesheetDocument.setCalendarEntry(calendarDates);
+            if (timesheetDocument != null) {
+                timesheetDocument.setCalendarEntry(calendarDates);
+            }
         }
 
-        timesheetDocument.setTimeSummary(TkServiceLocator.getTimeSummaryService().getTimeSummary(timesheetDocument));
+        if (timesheetDocument != null) {
+            timesheetDocument.setTimeSummary(TkServiceLocator.getTimeSummaryService().getTimeSummary(timesheetDocument));
+        }
         return timesheetDocument;
     }
 
@@ -247,7 +251,8 @@ public class TimesheetServiceImpl implements TimesheetService {
 
             timesheetDocument.setCalendarEntry(pce);
         } else {
-            throw new RuntimeException("Could not find TimesheetDocumentHeader for DocumentID: " + documentId);
+            LOG.error("Could not find TimesheetDocumentHeader for DocumentID: " + documentId);
+            return null;
         }
         return timesheetDocument;
     }
