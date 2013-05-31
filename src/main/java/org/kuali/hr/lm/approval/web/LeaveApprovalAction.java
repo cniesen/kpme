@@ -17,12 +17,7 @@ package org.kuali.hr.lm.approval.web;
 
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +44,8 @@ import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.detail.web.ActionFormUtils;
 import org.kuali.hr.time.person.TKPerson;
+import org.kuali.hr.time.roles.TkUserRoles;
+import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
@@ -265,10 +262,14 @@ public class LeaveApprovalAction extends ApprovalAction{
         } else {
             currentDate = TKUtils.getTimelessDate(null);
         }
-        Set<Long> workAreas = TkServiceLocator.getTkRoleService().getWorkAreasForApprover(TKContext.getPrincipalId(), currentDate);
+        //Set<Long> workAreas = TkServiceLocator.getTkRoleService().getWorkAreasForApprover(TKContext.getPrincipalId(), currentDate);
         // should we use all three roles to find work areas???
-//        List<String> roleNameList = Arrays.asList(TkConstants.ROLE_TK_APPROVER, TkConstants.ROLE_TK_APPROVER_DELEGATE, TkConstants.ROLE_TK_REVIEWER);
-//        Set<Long> workAreas = TkServiceLocator.getTkRoleService().getWorkAreasForRoleNames(TKContext.getPrincipalId(), roleNameList, currentDate);
+        UserRoles userRoles = TkUserRoles.getUserRoles(TKContext.getTargetPrincipalId());
+        Set<Long> workAreas = new HashSet<Long>();
+        workAreas.addAll(userRoles.getApproverWorkAreas());
+        workAreas.addAll(userRoles.getReviewerWorkAreas());
+        //List<String> roleNameList = Arrays.asList(TkConstants.ROLE_TK_APPROVER, TkConstants.ROLE_TK_APPROVER_DELEGATE, TkConstants.ROLE_TK_REVIEWER);
+        //Set<Long> workAreas = TkServiceLocator.getTkRoleService().getWorkArea.getWorkAreasForRoleNames(TKContext.getPrincipalId(), roleNameList, currentDate);
         
         List<String> principalIds = new ArrayList<String>();
         for (Long workArea : workAreas) {
