@@ -152,14 +152,15 @@ public class TimesheetAction extends TkAction {
             		builder.append("&principalName=");
             		builder.append(timesheetPrincipalName);
             		builder.append("&targetUrl=TimeDetail.do");
-            		builder.append("?docmentId=" + docId);
+            		builder.append("?documentId=" + docId);
             		builder.append("&returnUrl=TimeApproval.do");
             	} else {
             		builder.append("TimeApproval.do");
+                    builder.append("?documentId=").append(docId);
             	}
         	} else {
         		builder.append("TimeDetail.do");
-        		builder.append("?docmentId=" + docId);
+        		builder.append("?documentId=" + docId);
         	}
 
         	forward = new ActionRedirect(builder.toString());

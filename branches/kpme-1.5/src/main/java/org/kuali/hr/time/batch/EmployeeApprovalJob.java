@@ -47,7 +47,7 @@ public class EmployeeApprovalJob implements Job {
 			if (timesheetDocumentHeader != null) {
 				TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
 				String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(timesheetDocument.getDocumentId());
-				String principalId = timesheetDocument.getPrincipalId();
+				String principalId = timesheetDocument == null ? null : timesheetDocument.getPrincipalId();
 				
 				if (DocumentStatus.INITIATED.getCode().equals(documentStatus) || DocumentStatus.SAVED.getCode().equals(documentStatus)) {
 					TkServiceLocator.getTimesheetService().routeTimesheet(principalId, timesheetDocument, TkConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);

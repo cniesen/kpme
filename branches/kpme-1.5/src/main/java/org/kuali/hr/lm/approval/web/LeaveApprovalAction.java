@@ -37,6 +37,8 @@ import org.apache.struts.action.ActionMapping;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.hsqldb.lib.StringUtil;
+import org.joda.time.DateTime;
+import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.lm.leavecalendar.LeaveCalendarDocument;
 import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.approval.web.ApprovalLeaveSummaryRow;
@@ -247,6 +249,13 @@ public class LeaveApprovalAction extends ApprovalAction{
         	resetState(form, request);
         }
 
+        LeaveCalendarDocument lcd = null;
+        if (laaf.getDocumentId() != null) {
+            lcd = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(laaf.getDocumentId());
+            laaf.setHrPyCalendarEntriesId(lcd.getCalendarEntry().getHrCalendarEntriesId());
+            payCalendarEntries = lcd.getCalendarEntry();
+        }
+
         // Set current pay calendar entries if present. Decide if the current date should be today or the end period date
         if (laaf.getHrPyCalendarEntriesId() != null) {
             if(payCalendarEntries == null){
@@ -269,6 +278,8 @@ public class LeaveApprovalAction extends ApprovalAction{
             }
         }
 
+
+
         // Set calendar groups
         List<String> calGroups =  new ArrayList<String>();
         if (CollectionUtils.isNotEmpty(principalIds)) {
@@ -278,32 +289,61 @@ public class LeaveApprovalAction extends ApprovalAction{
 
         if (StringUtils.isBlank(laaf.getSelectedPayCalendarGroup())
                 && CollectionUtils.isNotEmpty(calGroups)) {
-            laaf.setSelectedPayCalendarGroup(calGroups.get(0));
+            if (lcd == null) {
+                laaf.setSelectedPayCalendarGroup(calGroups.get(0));
+            } else {
+                laaf.setSelectedPayCalendarGroup(lcd.getCalendarEntry().getCalendarName());
+            }
 
         }
         
         // Set current pay calendar entries if present. Decide if the current date should be today or the end period date
         if (laaf.getHrPyCalendarEntriesId() != null) {
-            payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(laaf.getHrPyCalendarEntriesId());
+            if (payCalendarEntries == null || !StringUtils.equals(payCalendarEntries.getHrCalendarEntriesId(), laaf.getHrPyCalendarEntriesId())) {
+                payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(laaf.getHrPyCalendarEntriesId());
+            }
         } else {
-            currentPayCalendar = TkServiceLocator.getCalendarService().getCalendarByGroup(laaf.getSelectedPayCalendarGroup());
-            if (currentPayCalendar != null) {
-                payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(currentPayCalendar.getHrCalendarId(), currentDate);
+            if (lcd == null) {
+                currentPayCalendar = TkServiceLocator.getCalendarService().getCalendarByGroup(laaf.getSelectedPayCalendarGroup());
+                if (currentPayCalendar != null) {
+                    payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(currentPayCalendar.getHrCalendarId(), currentDate);
+                }
+            } else {
+                payCalendarEntries = lcd.getCalendarEntry();
             }
         }
         laaf.setPayCalendarEntries(payCalendarEntries);
-        
-        
+
         if(laaf.getPayCalendarEntries() != null) {
-	        populateCalendarAndPayPeriodLists(request, laaf);
+            populateCalendarAndPayPeriodLists(request, laaf);
         }
-        setupDocumentOnFormContext(request,laaf,payCalendarEntries, page);
+
+
+        /*    if (lcd != null) {
+                laaf.setSelectedPayCalendarGroup(lcd.getCalendarEntry().getCalendarName());
+                laaf.setSelectedPayPeriod(lcd.getCalendarEntry().getHrCalendarEntriesId());
+                laaf.setSelectedCalendarYear(new DateTime(lcd.getCalendarEntry().getBeginPeriodDate()).year().getAsString());
+            }
+        }*/
+
+
+        setupDocumentOnFormContext(request,laaf,payCalendarEntries, page, lcd);
+        /*if (lcd != null) {
+            for (Assignment a : lcd.getAssignments()) {
+                WorkArea wa = TkServiceLocator.getWorkAreaService().getWorkArea(a.getWorkArea(), a.getEffectiveDate());
+                if (laaf.getDepartments().contains(wa.getDept())) {
+                    laaf.setSelectedDept(wa.getDept());
+                    break;
+                }
+            }
+        }*/
+
         return fwd;
 	}
 
 	@Override
-	protected void setupDocumentOnFormContext(HttpServletRequest request,ApprovalForm form, CalendarEntries payCalendarEntries, String page) {
-		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page);
+	protected void setupDocumentOnFormContext(HttpServletRequest request,ApprovalForm form, CalendarEntries payCalendarEntries, String page, CalendarDocumentContract calDoc) {
+		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page, calDoc);
 		LeaveApprovalActionForm laaf = (LeaveApprovalActionForm)form;
 
         if (payCalendarEntries != null) {
@@ -332,17 +372,17 @@ public class LeaveApprovalAction extends ApprovalAction{
     }
 	
     public void resetState(ActionForm form, HttpServletRequest request) {
-    	  LeaveApprovalActionForm laaf = (LeaveApprovalActionForm) form;
- 	      String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
- 	      
- 	      if (StringUtils.isBlank(page)) {
- 			  laaf.getDepartments().clear();
- 			  laaf.getWorkAreaDescr().clear();
- 			  laaf.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRow>());
- 			  laaf.setSelectedDept(null);
- 			  laaf.setSearchField(null);
- 			  laaf.setSearchTerm(null);
- 	      }
+    	LeaveApprovalActionForm laaf = (LeaveApprovalActionForm) form;
+ 	    String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+ 	    if (StringUtils.isBlank(page)) {
+ 			laaf.getDepartments().clear();
+ 			laaf.getWorkAreaDescr().clear();
+ 			laaf.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRow>());
+ 			laaf.setSelectedDept(null);
+ 			laaf.setSearchField(null);
+ 			laaf.setSearchTerm(null);
+ 	    }
+
 	}
     
     @Override

@@ -64,7 +64,8 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
             CalendarEntries pce = TkServiceLocator.getCalendarService().getCalendarDatesByPayEndDate(lcdh.getPrincipalId(), lcdh.getEndDate(), LMConstants.LEAVE_CALENDAR_TYPE);
             lcd.setCalendarEntry(pce);
         } else {
-            throw new RuntimeException("Could not find LeaveCalendarDocumentHeader for DocumentID: " + documentId);
+            LOG.error("Could not find LeaveCalendarDocumentHeader for DocumentID: " + documentId);
+            return null;
         }
 
         List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(documentId);
@@ -96,7 +97,9 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
         } else {
             doc = getLeaveCalendarDocument(header.getDocumentId());
         }
-        doc.setCalendarEntry(calEntry);
+        if (doc != null) {
+            doc.setCalendarEntry(calEntry);
+        }
         // TODO: need to set the summary
         return doc;
     }

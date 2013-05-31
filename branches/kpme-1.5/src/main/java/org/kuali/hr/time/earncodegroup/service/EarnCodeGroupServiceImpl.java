@@ -75,6 +75,9 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     @Override
     public List<String> warningTextFromEarnCodeGroupsOfDocument(TimesheetDocument timesheetDocument) {
     	 List<String> warningMessages = new ArrayList<String>();
+         if (timesheetDocument == null) {
+             return warningMessages;
+         }
 	     List<TimeBlock> tbList = timesheetDocument.getTimeBlocks();
 	     if (tbList.isEmpty()) {
 	         return warningMessages;

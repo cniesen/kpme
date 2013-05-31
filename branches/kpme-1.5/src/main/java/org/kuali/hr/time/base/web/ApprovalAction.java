@@ -31,6 +31,8 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
+import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.person.TKPerson;
@@ -103,7 +105,7 @@ public class ApprovalAction extends TkAction{
 	}
 	
 	protected void setupDocumentOnFormContext(HttpServletRequest request,
-			ApprovalForm taf, CalendarEntries payCalendarEntries, String page) {
+			ApprovalForm taf, CalendarEntries payCalendarEntries, String page, CalendarDocumentContract calDoc) {
 		if(payCalendarEntries == null) {
 			return;
 		}
@@ -132,10 +134,21 @@ public class ApprovalAction extends TkAction{
 		    }
 		    Collections.sort(depts);
 		    taf.setDepartments(depts);
-		    
+
+            if (calDoc != null) {
+                for (Assignment a : calDoc.getAssignments()) {
+                    WorkArea wa = TkServiceLocator.getWorkAreaService().getWorkArea(a.getWorkArea(), a.getEffectiveDate());
+                    if (taf.getDepartments().contains(wa.getDept())) {
+                        taf.setSelectedDept(wa.getDept());
+                        break;
+                    }
+                }
+            }
+
 		    if (taf.getDepartments().size() == 1 || taf.getSelectedDept() != null) {
-		    	if (StringUtils.isEmpty(taf.getSelectedDept()))
+		    	if (StringUtils.isEmpty(taf.getSelectedDept())) {
 		    		taf.setSelectedDept(taf.getDepartments().get(0));
+                }
 		    	
 		    	List<WorkArea> workAreas = TkServiceLocator.getWorkAreaService().getWorkAreas(taf.getSelectedDept(), new java.sql.Date(taf.getPayBeginDate().getTime()));
                 UserRoles ur = TKUser.getCurrentTargetRoles();
@@ -161,7 +174,7 @@ public class ApprovalAction extends TkAction{
         taf.setSelectedCalendarYear(new SimpleDateFormat("yyyy").format(payCalendarEntries.getBeginPeriodDate()));
         taf.setSelectedPayPeriod(payCalendarEntries.getHrCalendarEntriesId());
         populateCalendarAndPayPeriodLists(request, taf);
-        setupDocumentOnFormContext(request, taf, payCalendarEntries, page);
+        setupDocumentOnFormContext(request, taf, payCalendarEntries, page, null);
         return mapping.findForward("basic");
     }
     
@@ -187,7 +200,7 @@ public class ApprovalAction extends TkAction{
   		  	.getCalendarEntries(request.getParameter("selectedPP").toString());
   		  if(pce != null) {
   			  taf.setPayCalendarEntries(pce);
-  			  setupDocumentOnFormContext(request, taf, pce, page);
+  			  setupDocumentOnFormContext(request, taf, pce, page, null);
   		  }
   	  }
   	  return mapping.findForward("basic");

@@ -88,9 +88,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             throw new RuntimeException("No regular earn code defined for job pay type.");
         } else {
             //  if you are a clock user and this is your timesheet and you are processing the reg earn code, do not add this earn code. Use the clock in/out mechanism.
-            if (isClockUser && isUsersTimesheet) {
-                // do not add reg earn code. use clock.
-            } else {
+            if (!isClockUser || !isUsersTimesheet) {
                 earnCodes.add(regularEarnCode);
             }
         }

@@ -75,7 +75,9 @@ public class LeaveCalendarWSAction extends TkAction {
         if (StringUtils.isNotBlank(documentId)) {
             lcd = TkServiceLocator.getLeaveCalendarService()
                     .getLeaveCalendarDocument(documentId);
-            calendarEntry = lcd.getCalendarEntry();
+            if (lcd != null) {
+                calendarEntry = lcd.getCalendarEntry();
+            }
         } else if (StringUtils.isNotBlank(calendarEntryId)) {
             // do further procedure
             calendarEntry = TkServiceLocator.getCalendarEntriesService()
