@@ -339,7 +339,7 @@ public class TimeApprovalAction extends ApprovalAction{
 		
 		List<CalendarEntries> pcListForYear = new ArrayList<CalendarEntries>();
 		List<CalendarEntries> pceList = TkServiceLocator.getTimeApproveService()
-			.getAllPayCalendarEntriesForApprover(TKContext.getTargetPrincipalId(), TKUtils.getTimelessDate(null));
+			.getAllPayCalendarEntriesForApprover(TKContext.getPrincipalId(), TKUtils.getTimelessDate(null));
 	    for(CalendarEntries pce : pceList) {
 	    	yearSet.add(sdf.format(pce.getBeginPeriodDate()));
 	    	if(sdf.format(pce.getBeginPeriodDate()).equals(taaf.getSelectedCalendarYear())) {

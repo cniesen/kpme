@@ -40,6 +40,7 @@ import org.kuali.hr.time.flsa.FlsaWeek;
 import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.roles.TkUserRoles;
+import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
@@ -832,7 +833,9 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public List<CalendarEntries> getAllPayCalendarEntriesForApprover(String principalId, Date currentDate) {
 		Set<String> principals = new HashSet<String>();
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(TKContext.getTargetPrincipalId()).getApproverWorkAreas();
+        UserRoles userRoles = TkUserRoles.getUserRoles(principalId);
+		Set<Long> approverWorkAreas = userRoles.getApproverWorkAreas();
+        approverWorkAreas.addAll(userRoles.getReviewerWorkAreas());
 
 		// Get all of the principals within our window of time.
 		for (Long waNum : approverWorkAreas) {

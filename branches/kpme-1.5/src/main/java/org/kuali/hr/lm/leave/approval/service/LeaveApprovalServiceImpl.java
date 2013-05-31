@@ -49,6 +49,7 @@ import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.principal.dao.PrincipalHRAttributesDao;
 import org.kuali.hr.time.roles.TkUserRoles;
+import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
@@ -319,8 +320,9 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
 	@Override
 	public List<CalendarEntries> getAllLeavePayCalendarEntriesForApprover(String principalId, Date currentDate) {
 		Set<String> principals = new HashSet<String>();
-		Set<Long> approverWorkAreas = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getApproverWorkAreas();
-
+        UserRoles userRoles = TkUserRoles.getUserRoles(principalId);
+		Set<Long> approverWorkAreas = userRoles.getApproverWorkAreas();
+        approverWorkAreas.addAll(userRoles.getReviewerWorkAreas());
 		// Get all of the principals within our window of time.
 		for (Long waNum : approverWorkAreas) {
 			List<Assignment> assignments = TkServiceLocator
