@@ -47,18 +47,21 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId) {
-        return processClockLog(clockTimeStamp, assignment, pe, ip, asOfDate, td, clockAction, principalId, TKContext.getPrincipalId());
+    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId) {
+        return processClockLog(clockTimeStamp, assignment, pe, ip, asOfDate, td, clockAction, runRules, principalId, TKContext.getPrincipalId());
     }
 
     @Override
-    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+    public ClockLog processClockLog(Timestamp clockTimeStamp, Assignment assignment,CalendarEntries pe, String ip, java.sql.Date asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId, String userPrincipalId) {
         // process rules
         Timestamp roundedClockTimestamp = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockTimeStamp, new java.sql.Date(pe.getBeginPeriodDateTime().getTime()));
 
         ClockLog clockLog = buildClockLog(roundedClockTimestamp, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
-        TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, asOfDate);
-
+        
+        if (runRules) {
+        	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, asOfDate);
+        }
+        
         // If the clock action is clock out or lunch out, create a time block besides the clock log
         if (StringUtils.equals(clockAction, TkConstants.CLOCK_OUT) || StringUtils.equals(clockAction, TkConstants.LUNCH_OUT)) {
             processTimeBlock(clockLog, assignment, pe, td, clockAction, principalId, userPrincipalId);
