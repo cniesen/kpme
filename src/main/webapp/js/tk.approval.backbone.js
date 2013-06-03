@@ -100,7 +100,7 @@ $(function () {
                 this.fetchTimeSummary(docId);
 
                 // Here we loop through the colleciton and insert the content to the template
-                EarnCodeSections.each(function (earnCodeSection, index) {
+                EarnCodeSections.forEach(function (earnCodeSection) {
                     $parent.after(self.template({
                         // This is the time summary rows
                         "section" : earnCodeSection.toJSON(),

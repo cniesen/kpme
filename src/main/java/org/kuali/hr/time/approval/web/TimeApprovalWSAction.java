@@ -27,6 +27,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.common.collect.Lists;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -141,7 +142,10 @@ public class TimeApprovalWSAction extends TkAction {
                 }
             }
         }
-        
+
+        //reverse sections for javascripts $parent.after (always inserting directly after parent element, which reverses order)
+
+        ts.setSections(Lists.reverse(ts.getSections()));
         taaf.setOutputString(ts.toJsonString());
         return mapping.findForward("ws");
     }

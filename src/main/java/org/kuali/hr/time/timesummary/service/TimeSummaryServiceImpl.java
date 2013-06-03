@@ -17,14 +17,7 @@ package org.kuali.hr.time.timesummary.service;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -82,8 +75,10 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
         List<Assignment> timeAssignments = timesheetDocument.getAssignments();
         List<String> tAssignmentKeys = new ArrayList<String>();
+        Set<String> regularEarnCodes = new HashSet<String>();
         for(Assignment assign : timeAssignments) {
             tAssignmentKeys.add(assign.getAssignmentKey());
+            regularEarnCodes.add(assign.getJob().getPayTypeObj().getRegEarnCode());
         }
         List<LeaveBlock> leaveBlocks =  TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(timesheetDocument.getPrincipalId(),
                 timesheetDocument.getCalendarEntry().getBeginPeriodDate(), timesheetDocument.getCalendarEntry().getEndPeriodDate(), tAssignmentKeys);
@@ -94,7 +89,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, 
         			dayArrangements, timesheetDocument.getAsOfDate(), timesheetDocument.getDocEndDate());
-        timeSummary.setSections(earnGroupSections);
+        timeSummary.setSections(sortEarnGroupSections(earnGroupSections, regularEarnCodes));
         
         try {
 			List<LeaveSummaryRow> maxedLeaveRows = getMaxedLeaveRows(timesheetDocument.getCalendarEntry(),timesheetDocument.getPrincipalId());
@@ -106,6 +101,36 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
 		return timeSummary;
 	}
+
+    private List<EarnGroupSection> sortEarnGroupSections(List<EarnGroupSection> sections, Set<String> regularEarnCodes) {
+        List<EarnGroupSection> sortedList = new ArrayList<EarnGroupSection>();
+        //first sort by alpha
+        Collections.sort(sections, new Comparator<EarnGroupSection>() {
+            @Override
+            public int compare(EarnGroupSection egs1, EarnGroupSection egs2) {
+                if (egs1 == null ^ egs2 == null) {
+                    return egs1 == null ? -1 : 1;
+                }
+                if (egs1 == null && egs2 == null) {
+                    return 0;
+                }
+                return egs1.getEarnGroup().compareTo(egs2.getEarnGroup());
+            }
+        });
+
+        List<EarnGroupSection> copy = new ArrayList<EarnGroupSection>(sections);
+        //loop through in reverse
+        for (EarnGroupSection egs : copy) {
+            Set<String> intersection = new HashSet<String>(regularEarnCodes);
+            intersection.retainAll(egs.getEarnCodeToEarnCodeSectionMap().keySet());
+            if (intersection.size() > 0) {
+                sortedList.add(egs);
+                sections.remove(egs);
+            }
+        }
+        sortedList.addAll(sections);
+        return sortedList;
+    }
 	
     private List<LeaveSummaryRow> getMaxedLeaveRows(
 			CalendarEntries calendarEntry, String principalId) throws Exception {
