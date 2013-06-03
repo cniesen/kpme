@@ -15,21 +15,27 @@
  */
 package org.kuali.hr.time.clock.web;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.kuali.hr.time.assignment.Assignment;
+import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.clocklog.ClockLog;
 import org.kuali.hr.time.collection.rule.TimeCollectionRule;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
-import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesheet.web.TimesheetActionForm;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
-
-import java.sql.Timestamp;
-import java.util.*;
 
 public class ClockActionForm extends TimesheetActionForm {
 
@@ -287,63 +293,42 @@ public class ClockActionForm extends TimesheetActionForm {
 	}
 
 	public void findTimeBlocksToDistribute() {
-		 String pId = this.getPrincipalId();
-		 if(pId != null) {
-			 TimesheetDocument td = this.getTimesheetDocument();
-			 if(td != null && !td.getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL)) {
-				 List<TimeBlock> tbList = new ArrayList<TimeBlock>();
-				 if(td != null) {
-					 for(TimeBlock tbTemp : td.getTimeBlocks()) {
-						 if(tbTemp.getClockLogCreated()) {
-							 tbList.add(tbTemp);
-						 }
-					 }
-				 }
-				 List<Assignment> assignmentList = TkServiceLocator.getAssignmentService().getAssignments(pId, null);
-				 List<String> aList = new ArrayList<String>();
-				 Map<String, List<TimeBlock>> tbMap = new HashMap<String, List<TimeBlock>>();
-				 Map<String, String> map2 = new HashMap<String, String>();
-				 LinkedHashMap<String, String> desMap = new LinkedHashMap<String, String>();  // for populating assignment dropdown list when click Edit button
-
-				 for(Assignment assignment : assignmentList) {
-					TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getEffectiveDate());
-					if(rule != null && rule.isHrsDistributionF() && rule.isClockUserFl()) {
-						aList.add(assignment.getAssignmentDescription()+ "=" + assignment.getTkAssignmentId().toString());
-						desMap.put(assignment.getTkAssignmentId().toString(), assignment.getAssignmentDescription());
-
-						for(TimeBlock tb: tbList){
-							if(assignment.getWorkArea().equals(tb.getWorkArea())) {
-								List<TimeBlock> tempList = tbMap.get(assignment.getAssignmentDescription());
-								if(tempList == null) {
-									tempList = new ArrayList<TimeBlock>();
-								}
-								tempList.add(tb);
-								Collections.sort(tempList);
-								tbMap.put(assignment.getAssignmentDescription(), tempList);
-								map2.put(assignment.getAssignmentDescription(),assignment.getTkAssignmentId().toString() );
+		if (getTimesheetDocument() != null && !TkConstants.ROUTE_STATUS.FINAL.equals(getTimesheetDocument().getDocumentHeader().getDocumentStatus())) {
+			LinkedHashMap<String, String> desList = new LinkedHashMap<String, String>();
+			List<String> distributeAssignList = new ArrayList<String>();
+			for (Assignment assignment : getTimesheetDocument().getAssignments()) {
+				TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getEffectiveDate());
+				if (rule != null && rule.isHrsDistributionF() && rule.isClockUserFl()) {
+					desList.put(assignment.getTkAssignmentId().toString(), assignment.getAssignmentDescription());
+					distributeAssignList.add(assignment.getAssignmentDescription()+ "=" + assignment.getTkAssignmentId().toString());
+				}
+			}
+			setDesList(desList);
+			setDistributeAssignList(distributeAssignList);
+			
+			Map<String, List<TimeBlock>> timeBlocksMap = new HashMap<String, List<TimeBlock>>();
+			for (TimeBlock timeBlock : getTimesheetDocument().getTimeBlocks()) {
+				if (timeBlock.getClockLogCreated()) {
+					Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(timeBlock.getAssignmentKey()), getTimesheetDocument().getAsOfDate());
+					if (assignment != null) {
+						TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getEffectiveDate());
+						if (rule != null && rule.isHrsDistributionF() && rule.isClockUserFl()) {
+							List<TimeBlock> timeBlockList = timeBlocksMap.get(assignment.getAssignmentDescription());
+							if (timeBlockList == null) {
+								timeBlockList = new ArrayList<TimeBlock>();
 							}
+							timeBlockList.add(timeBlock);
+							Collections.sort(timeBlockList);
+							timeBlocksMap.put(assignment.getAssignmentDescription(), timeBlockList);
 						}
 					}
-				 }
+				}
+			}
 
-				 this.setTimeBlocksMap(tbMap);
-				 this.setDesList(desMap);
-
-				 List<String> list1= new ArrayList<String>();
-				 for(String aString : tbMap.keySet()) {
-					 list1.add(aString);
-				 }
-
-				 //remove duplicate
-				 HashSet h = new HashSet(aList);
-				 aList.clear();
-				 aList.addAll(h);
-				 Collections.sort(aList);
-				 this.setAssignDescriptionsList(list1);
-				 this.setDistributeAssignList(aList);
-			 }
-		 }
-
+			setTimeBlocksMap(timeBlocksMap);
+			setAssignDescriptionsList(new ArrayList<String>(timeBlocksMap.keySet()));
+			
+		}
 	}
 
 	public String getCurrentAssignmentKey() {
