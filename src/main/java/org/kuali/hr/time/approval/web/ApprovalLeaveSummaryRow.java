@@ -22,6 +22,7 @@ import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
@@ -47,38 +48,30 @@ public class ApprovalLeaveSummaryRow implements Comparable<ApprovalLeaveSummaryR
 	private List<LeaveBlock> leaveBlockList = new ArrayList<LeaveBlock>();
 	private Map<Date, Map<String, BigDecimal>> earnCodeLeaveHours = new LinkedHashMap<Date, Map<String, BigDecimal>>();
 	private Boolean exemptEmployee;
-	
-    /**
-     * Is this record ready to be approved?
-     * @return true if a valid TK_APPROVER / TK_PROCESSOR can approve, false otherwise.
-     */
-    public boolean isApprovable() {
-    	boolean isEnroute =  StringUtils.equals(getApprovalStatus(), "ENROUTE") ;
 
-        if(isEnroute){
-            LeaveCalendarDocument doc = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(this.documentId);
-            //is there a pending bt doc?
-            if (doc == null || !TkServiceLocator.getLeaveCalendarService().isReadyToApprove(doc)) {
-                return false;
+    public boolean isApprovable() {
+    	boolean isApprovable = false;
+
+        if (DocumentStatus.ENROUTE.equals(getApprovalStatus())) {
+            LeaveCalendarDocument leaveCalendarDocument = TkServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(getDocumentId());
+            if (leaveCalendarDocument != null) {
+	        	String leaveCalendarPrincipalId = leaveCalendarDocument.getPrincipalId();
+	        	String approverPrincipalId = TKContext.getPrincipalId();
+	        	
+	        	if (!StringUtils.equals(leaveCalendarPrincipalId, approverPrincipalId) && TkServiceLocator.getLeaveCalendarService().isReadyToApprove(leaveCalendarDocument)) {
+		        	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(getDocumentId());
+		            boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(approverPrincipalId, routeHeader, new SecuritySession(approverPrincipalId));
+		        	if (authorized) {
+		        		List<String> approverPrincipalIds = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, getDocumentId());
+		        		if (approverPrincipalIds.contains(approverPrincipalId)) {
+		        			isApprovable = true;
+		            	}
+		        	}
+	        	}
             }
-        	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(this.getDocumentId());
-//            // check if there are any pending calendars are there
-//        	LeaveCalendarDocumentHeader lcdh = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getMinBeginDatePendingLeaveCalendar(this.principalId);
-//            if (lcdh != null){             //if there were any pending document
-//                //check to see if it's before the current document. if it is, then this document is not approvable.
-//                if (TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(this.documentId).getBeginDate().compareTo(lcdh.getEndDate()) >= 0){
-//                    return false;
-//                }
-//            }
-            boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
-        	if(authorized){
-        		List<String> principalsToApprove = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, this.getDocumentId());
-        		if(!principalsToApprove.isEmpty() && principalsToApprove.contains(TKContext.getPrincipalId())){
-            		return true;
-            	}
-        	}
         }
-        return false;
+        
+        return isApprovable;
     }
 	
 	 
