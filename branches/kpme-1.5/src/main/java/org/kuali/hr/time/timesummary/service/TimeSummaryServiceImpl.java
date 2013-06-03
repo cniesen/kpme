@@ -233,7 +233,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								}
 								assignRow.setEarnCodeSection(earnCodeSection);
 								for (int i = 0; i < numEntries - 1; i++) {
-									assignRow.getAssignmentColumns().add(new AssignmentColumn());
+									assignRow.addAssignmentColumn(new AssignmentColumn());
 								}
 
 								earnCodeSection.addAssignmentRow(assignRow);
