@@ -130,7 +130,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         String principalId = tdoc.getPrincipalId();
         
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(clockLogTime, assign, calendarEntry, 
-        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), principalId);
+        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), false, principalId);
 
         clockLog = TkServiceLocator.getClockLogService().saveClockLog(clockLog);
         missedPunch.setActionDate(new java.sql.Date(clockLog.getClockTimestamp().getTime()));
@@ -167,7 +167,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         String principalId = tdoc.getPrincipalId();
         
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(clockLogTime, assign, calendarEntry, 
-        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), principalId);
+        		TKUtils.getIPAddressFromRequest(TKContext.getHttpServletRequest()), TKUtils.getCurrentDate(), tdoc, missedPunch.getClockAction(), false, principalId);
         
         TkServiceLocator.getClockLogService().saveClockLog(clockLog);
         missedPunch.setActionDate(new java.sql.Date(clockLog.getClockTimestamp().getTime()));

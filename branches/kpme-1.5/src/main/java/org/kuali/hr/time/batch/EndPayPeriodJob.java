@@ -66,9 +66,9 @@ public class EndPayPeriodJob implements Job {
 	            Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(timesheetDocument, assignmentKey);
 	    		
 	            TkServiceLocator.getClockLogService().processClockLog(new Timestamp(endPeriodDateTime.getTime()), assignment, calendarEntry, ipAddress, 
-	            		new java.sql.Date(endPeriodDateTime.getTime()), timesheetDocument, TkConstants.CLOCK_OUT, principalId, batchUserPrincipalId);
+	            		new java.sql.Date(endPeriodDateTime.getTime()), timesheetDocument, TkConstants.CLOCK_OUT, false, principalId, batchUserPrincipalId);
 	            TkServiceLocator.getClockLogService().processClockLog(new Timestamp(beginPeriodDateTime.getTime()), assignment, calendarEntry, ipAddress, 
-	            		new java.sql.Date(beginPeriodDateTime.getTime()), timesheetDocument, TkConstants.CLOCK_IN, principalId, batchUserPrincipalId);
+	            		new java.sql.Date(beginPeriodDateTime.getTime()), timesheetDocument, TkConstants.CLOCK_IN, false, principalId, batchUserPrincipalId);
 	        }
         } else {
         	String principalName = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.BATCH_USER_PRINCIPAL_NAME);
