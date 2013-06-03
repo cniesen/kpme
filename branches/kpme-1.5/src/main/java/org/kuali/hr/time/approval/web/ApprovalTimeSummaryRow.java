@@ -15,6 +15,14 @@
  */
 package org.kuali.hr.time.approval.web;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
@@ -23,16 +31,13 @@ import org.kuali.hr.time.timesummary.TimeSummary;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.*;
 
 public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow>, Serializable {
 	private String name;
@@ -151,31 +156,29 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
         return StringUtils.equals(getApprovalStatus(), TkConstants.ROUTE_STATUS.INITIATED);
     }
 
-    /**
-     * Is this record ready to be approved?
-     * @return true if a valid TK_APPROVER / TK_PROCESSOR can approve, false otherwise.
-     */
     public boolean isApprovable() {
-    	boolean isEnroute =  StringUtils.equals(getApprovalStatus(), "ENROUTE") ;
-
-        if(isEnroute){
-        
-        	TimesheetDocument doc = TkServiceLocator.getTimesheetService().getTimesheetDocument(this.documentId);
-        	//is there a pending bt doc?
-        	if (!TkServiceLocator.getTimesheetService().isReadyToApprove(doc)) {
-        		return false;
-        	}
-        	
-        	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(this.getDocumentId());
-        	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(TKContext.getPrincipalId(), routeHeader, new SecuritySession(TKContext.getPrincipalId()));
-        	if(authorized){
-        		List<String> principalsToApprove = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, this.getDocumentId());
-        		if(!principalsToApprove.isEmpty() && principalsToApprove.contains(TKContext.getPrincipalId())){
-            		return true;
-            	}
+    	boolean isApprovable = false;
+    	
+        if (DocumentStatus.ENROUTE.equals(getApprovalStatus())) {
+        	TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(getDocumentId());
+        	if (timesheetDocument != null) {
+	        	String timesheetPrincipalId = timesheetDocument.getPrincipalId();
+	        	String approverPrincipalId = TKContext.getPrincipalId();
+	        	
+	        	if (!StringUtils.equals(timesheetPrincipalId, approverPrincipalId) && TkServiceLocator.getTimesheetService().isReadyToApprove(timesheetDocument)) {
+	            	DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(getDocumentId());
+	            	boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(approverPrincipalId, routeHeader, new SecuritySession(approverPrincipalId));
+	            	if (authorized) {
+	            		List<String> approverPrincipalIds = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, getDocumentId());
+	            		if (approverPrincipalIds.contains(approverPrincipalId)) {
+	            			isApprovable = true;
+	                	}
+	            	}
+	        	}
         	}
         }
-        return false;
+        
+        return isApprovable;
     }
 
     /**
