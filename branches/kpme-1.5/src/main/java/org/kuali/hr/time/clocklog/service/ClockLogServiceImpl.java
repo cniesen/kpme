@@ -109,7 +109,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         newTimeBlocks.addAll(aList);
 
         //reset time block
-        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
+        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, td.getAsOfDate());
 
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks, pe, td, principalId);

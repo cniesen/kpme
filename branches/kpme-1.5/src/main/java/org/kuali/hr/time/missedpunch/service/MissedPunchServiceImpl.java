@@ -230,7 +230,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         newTimeBlocks.addAll(blocks);
 
         //reset time block
-        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
+        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, tdoc.getAsOfDate());
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(
                 TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks,

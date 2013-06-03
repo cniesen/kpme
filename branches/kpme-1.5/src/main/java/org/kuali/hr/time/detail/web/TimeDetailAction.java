@@ -387,7 +387,7 @@ public class TimeDetailAction extends TimesheetAction {
         tbh.setActionHistory(TkConstants.ACTIONS.DELETE_TIME_BLOCK);
         TkServiceLocator.getTimeBlockHistoryService().saveTimeBlockHistory(tbh);
         //reset time block
-        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
+        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, tdaf.getTimesheetDocument().getAsOfDate());
         TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument(), TKContext.getPrincipalId());
         TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, TKContext.getPrincipalId());
 
@@ -545,7 +545,7 @@ public class TimeDetailAction extends TimesheetAction {
         }
 
         //reset time block
-        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
+        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, tdaf.getTimesheetDocument().getAsOfDate());
 
         // apply overtime pref
         // I changed start and end times comparison below. it used to be overtimeBeginTimestamp and overtimeEndTimestamp but
@@ -601,7 +601,7 @@ public class TimeDetailAction extends TimesheetAction {
 
         List<TimeBlock> newTimeBlocks = tdaf.getTimesheetDocument().getTimeBlocks();
         
-        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks);
+        TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, tdaf.getTimesheetDocument().getAsOfDate());
         
         // KPME-1340
         TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTimeBlocks, tdaf.getPayCalendarDates(), tdaf.getTimesheetDocument(), TKContext.getPrincipalId());
