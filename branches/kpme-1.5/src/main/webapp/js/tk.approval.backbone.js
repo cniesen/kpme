@@ -100,15 +100,16 @@ $(function () {
                 this.fetchTimeSummary(docId);
 
                 // Here we loop through the colleciton and insert the content to the template
-                EarnCodeSections.forEach(function (earnCodeSection) {
+                //EarnCodeSections.forEach(function (earnCodeSection) {
+                for (var i=0;i<EarnCodeSections.models.length;i++) {
                     $parent.after(self.template({
                         // This is the time summary rows
-                        "section" : earnCodeSection.toJSON(),
+                        "section" : EarnCodeSections.models[i].toJSON(),
                         // This is to give each <tr> in the time summary section an identifier,
                         // so when the minus icon is clicked, it will remove the appened html.
                         "docId" : docId
                     }));
-                });
+                }
 
                 // change the icon from - to +
                 $element.removeClass('ui-icon-plus').addClass('ui-icon-minus');
