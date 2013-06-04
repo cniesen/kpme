@@ -393,7 +393,7 @@ $(document).ready(function() {
         var form1 = document.forms[0];
         var originalEndDateTime = new Date(form1.endTimestamp.value);
         var originalBeginDateTime = new Date(form1.beginTimestamp.value);
-        assignValueCol = '';
+        var previousAssignValue = '';
         for (var i = 1; i < rowLength - 1; i++) {
             var assignValue = $("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .assignmentRow").val();
             var beginDate = $("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .bdRow").val();
@@ -402,15 +402,16 @@ $(document).ready(function() {
             var endTime = $("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .etRow").val();
             var hrs = $("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .hrRow").val();
             
-            aFlag = checkAssignments($("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .assignmentRow"), assignValue, assignValueCol);
-            if(!aFlag) {
+            if(!checkAdjacentAssignments($("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .assignmentRow"), assignValue, previousAssignValue)) {
             	return false;
             }
+            previousAssignValue = assignValue;
+            
             assignValueCol += assignValue + valueSeperator;
             beginDateCol += beginDate + valueSeperator;
             endDateCol += endDate + valueSeperator;
             hrsCol += hrs + valueSeperator;
-
+            
             validFlag &= checkLength($("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .bdRow"), "Date/Time", 10, 10);
             validFlag &= checkLength($("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .edRow"), "Date/Time", 10, 10);
             validFlag &= checkLength($("#tblNewTimeBlocks tbody tr:nth-child(" + i + ") td .btRow"), "Date/Time", 8, 8);
@@ -644,10 +645,10 @@ function checkLength(o, n, min, max) {
     return true;
 }
 
-function checkAssignments(o, anAssignment, assignments) {
-    if (assignments.indexOf(anAssignment) >= 0) {
+function checkAdjacentAssignments(o, assignment, previousAssignment) {
+    if (assignment === previousAssignment) {
         o.addClass('ui-state-error');
-        updateValidationMessage("Distributed assignments should all be different.");
+        updateValidationMessage("Adjacent distributed assignments should all be different.");
         return false;
     }
     return true;
