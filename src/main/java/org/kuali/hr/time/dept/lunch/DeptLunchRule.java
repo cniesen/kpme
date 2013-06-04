@@ -46,6 +46,9 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
     private transient Department departmentObj;
     private transient Job job;
 	private transient Person principal;
+
+    //for lookups
+    private boolean history;
 	
 	public Person getPrincipal() {
 		return principal;
@@ -200,4 +203,12 @@ public class DeptLunchRule extends HrBusinessObject implements DepartmentalRule 
 	public void setId(String id) {
 		setTkDeptLunchRuleId(id);
 	}
+
+    public boolean isHistory() {
+        return history;
+    }
+
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 }
