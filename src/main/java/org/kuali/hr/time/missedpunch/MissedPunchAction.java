@@ -70,7 +70,8 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
             }
         }
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-                || StringUtils.equals(request.getParameter("command"), "displayActionListView")) {
+                || StringUtils.equals(request.getParameter("command"), "displayActionListView")
+                || StringUtils.equals(command, "displaySuperUserView")) {
             TKUser.setTargetPerson(mpDoc.getPrincipalId());
             mpForm.setDocId(mpDoc.getDocumentNumber());
         }
