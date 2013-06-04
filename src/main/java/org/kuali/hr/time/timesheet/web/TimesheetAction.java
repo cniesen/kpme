@@ -87,8 +87,9 @@ public class TimesheetAction extends TkAction {
 		String documentId = taForm.getDocumentId();
 
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
-        	documentId = (String) request.getParameter("docId");
+        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView")
+                || StringUtils.equals(request.getParameter("command"), "displaySuperUserView")) {
+        	documentId = request.getParameter("docId");
         }
 
         LOG.debug("DOCID: " + documentId);

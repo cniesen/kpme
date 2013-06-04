@@ -98,7 +98,8 @@ public class LeaveCalendarAction extends TkAction {
 		String documentId = lcf.getDocumentId();
 		
         if (StringUtils.equals(request.getParameter("command"), "displayDocSearchView")
-        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView") ) {
+        		|| StringUtils.equals(request.getParameter("command"), "displayActionListView")
+                || StringUtils.equals(request.getParameter("command"), "displayDocSearchView")) {
         	documentId = (String) request.getParameter("docId");
         }
 
