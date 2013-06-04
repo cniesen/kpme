@@ -76,16 +76,9 @@ public class TimeDetailValidationUtil {
 
         Long startTime;
         Long endTime;
-        //if startTime and end time are equal, lets ignore timezone
-        if (startTimeS.equals(endTimeS)
-                && startDateS.equals(endDateS)) {
-            startTime = TKUtils.convertDateStringToTimestampWithoutZone(startDateS, startTimeS).getTime();
-            endTime = TKUtils.convertDateStringToTimestampWithoutZone(endDateS, endTimeS).getTime();
-        } else {
-        // These methods use the UserTimeZone.
-            startTime = TKUtils.convertDateStringToTimestamp(startDateS, startTimeS).getTime();
-            endTime = TKUtils.convertDateStringToTimestamp(endDateS, endTimeS).getTime();
-        }
+
+        startTime = TKUtils.convertDateStringToTimestampWithoutZone(startDateS, startTimeS).getTime();
+        endTime = TKUtils.convertDateStringToTimestampWithoutZone(endDateS, endTimeS).getTime();
 
         errors.addAll(validateInterval(payCalEntry, startTime, endTime));
         if (errors.size() > 0) return errors;
