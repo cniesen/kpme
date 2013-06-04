@@ -135,7 +135,9 @@ public class TimesheetAction extends TkAction {
         ActionForward forward = mapping.findForward("basic");
     	String command = request.getParameter("command");
     	
-    	if (StringUtils.equals(command, "displayDocSearchView") || StringUtils.equals(command, "displayActionListView")) {
+    	if (StringUtils.equals(command, "displayDocSearchView")
+                || StringUtils.equals(command, "displayActionListView")
+                || StringUtils.equals(command, "displaySuperUserView")) {
         	String docId = (String) request.getParameter("docId");
         	TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
         	String timesheetPrincipalName = KimApiServiceLocator.getPersonService().getPerson(timesheetDocument.getPrincipalId()).getPrincipalName();
@@ -145,7 +147,8 @@ public class TimesheetAction extends TkAction {
         	
         	StringBuilder builder = new StringBuilder();
         	if (!StringUtils.equals(principalName, timesheetPrincipalName)) {
-            	if (StringUtils.equals(command, "displayDocSearchView")) {
+            	if (StringUtils.equals(command, "displayDocSearchView")
+                        || StringUtils.equals(command, "displaySuperUserView")) {
             		builder.append("changeTargetPerson.do?methodToCall=changeTargetPerson");
             		builder.append("&documentId=");
             		builder.append(docId);
