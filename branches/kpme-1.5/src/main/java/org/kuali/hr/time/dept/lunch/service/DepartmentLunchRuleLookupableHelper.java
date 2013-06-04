@@ -106,12 +106,14 @@ public class DepartmentLunchRuleLookupableHelper extends TkAuthorizedLookupableH
         String dept = fieldValues.get("dept");
         String workArea = fieldValues.get("workArea");
         String active = fieldValues.get("active");
+        String history = fieldValues.get("history");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
 
         if (StringUtils.equals(workArea,"%") || StringUtils.equals(workArea,"*")){
             workArea = "";
         }
-        List<DeptLunchRule> departmentLunchRules = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRules(dept,
-                workArea, principalId, jobNumber, active);
-        return departmentLunchRules;
+        return TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRules(dept,
+                workArea, principalId, jobNumber, TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, history);
     }
 }

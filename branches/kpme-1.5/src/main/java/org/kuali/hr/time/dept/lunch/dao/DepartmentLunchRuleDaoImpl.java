@@ -77,7 +77,8 @@ public class DepartmentLunchRuleDaoImpl  extends PlatformAwareDaoBaseOjb impleme
 
 	@Override
     @SuppressWarnings("unchecked")
-    public List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber, String active) {
+    public List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber,
+                                                       Date fromEffdt, Date toEffdt, String active, String showHistory) {
         List<DeptLunchRule> results = new ArrayList<DeptLunchRule>();
         
         Criteria root = new Criteria();
@@ -120,6 +121,25 @@ public class DepartmentLunchRuleDaoImpl  extends PlatformAwareDaoBaseOjb impleme
                 activeFilter.addEqualTo("active", false);
             }
             root.addAndCriteria(activeFilter);
+        }
+
+        Criteria effectiveDateFilter = new Criteria();
+        if (fromEffdt != null) {
+            effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt);
+        }
+        if (toEffdt != null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", toEffdt);
+        }
+        if (fromEffdt == null && toEffdt == null) {
+            effectiveDateFilter.addLessOrEqualThan("effectiveDate", TKUtils.getCurrentDate());
+        }
+
+        if (StringUtils.equals(showHistory, "N")) {
+            root.addAndCriteria(effectiveDateFilter);
+        }
+        if (StringUtils.equals(showHistory, "N")) {
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DeptLunchRule.class, effectiveDateFilter, EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(DeptLunchRule.class, root);
