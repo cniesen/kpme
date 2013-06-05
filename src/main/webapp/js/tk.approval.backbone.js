@@ -33,7 +33,7 @@ $(function () {
      */
 
         // Create a time block model
-    EarnCodeSection = Backbone.Model;
+    EarnGroupSection = Backbone.Model;
 
     /**
      * ====================
@@ -42,11 +42,11 @@ $(function () {
      */
 
         // Create a time block collection that holds multiple time blocks. This is essentially a list of hashmaps.
-    EarnCodeSectionCollection = Backbone.Collection.extend({
-        model : EarnCodeSection,
+    EarnGroupSectionCollection = Backbone.Collection.extend({
+        model : EarnGroupSection,
         url : "TimeApprovalWS.do?methodToCall=getTimeSummary"
     });
-    var EarnCodeSections = new EarnCodeSectionCollection;
+    var EarnGroupSections = new EarnGroupSectionCollection;
 
     /**
      * ====================
@@ -101,10 +101,10 @@ $(function () {
 
                 // Here we loop through the colleciton and insert the content to the template
                 //EarnCodeSections.forEach(function (earnCodeSection) {
-                for (var i=0;i<EarnCodeSections.models.length;i++) {
+                for (var i=0;i<EarnGroupSections.models.length;i++) {
                     $parent.after(self.template({
                         // This is the time summary rows
-                        "section" : EarnCodeSections.models[i].toJSON(),
+                        "section" : EarnGroupSections.models[i].toJSON(),
                         // This is to give each <tr> in the time summary section an identifier,
                         // so when the minus icon is clicked, it will remove the appened html.
                         "docId" : docId
@@ -125,7 +125,7 @@ $(function () {
          * @param documentId
          */
         fetchTimeSummary : function (documentId) {
-            EarnCodeSections.fetch({
+            EarnGroupSections.fetch({
                 async : false,
                 data : {
                     documentId : documentId
