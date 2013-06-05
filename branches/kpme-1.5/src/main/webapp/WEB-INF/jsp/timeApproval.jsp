@@ -58,35 +58,38 @@
 
 <%-- Hour detail template --%>
 <script type="text/template" id="hourDetail-template">
-    <tr class="hourDetailRow_<@= docId @>">
-        <td colspan="2"><@= section.earnCode @>: <@= section.desc @></td>
-    </tr>
-    <@ _.each(section.assignmentRows, function(assignmentRow) { @>
-        <tr class="hourDetailRow_<@= docId @>" style="border-bottom-style: double; font-weight: bold;">
-            <td colspan="2" class="<@= assignmentRow.cssClass @>"><b><@= assignmentRow.descr @></b></td>
-            <@ if (section.isAmountEarnCode) { @>
-                <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
-                    <@ if (assignmentColumn.isWeeklyTotal) { @>
-                        <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
-                    <@ } else { @>
-                        <td><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
-                    <@ } @>
-                <@ }); @>
-            <@ } else { @>
-                <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
-                    <@ if (assignmentColumn.isWeeklyTotal) { @>
-                        <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
-                    <@ } else { @>
-                        <td><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
-                    <@ } @>
-                <@ }); @>
-            <@ } @>
+    <@ _.each(section.earnCodeSections, function(earnCodeSection) { @>
+        <tr class="hourDetailRow_<@= docId @>">
+            <td colspan="2"><@= earnCodeSection.earnCode @>: <@= earnCodeSection.desc @></td>
         </tr>
+
+        <@ _.each(earnCodeSection.assignmentRows, function(assignmentRow) { @>
+            <tr class="hourDetailRow_<@= docId @>" style="border-bottom-style: double; font-weight: bold;">
+                <td colspan="2" class="<@= assignmentRow.cssClass @>"><b><@= assignmentRow.descr @></b></td>
+                <@ if (earnCodeSection.isAmountEarnCode) { @>
+                    <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
+                        <@ if (assignmentColumn.isWeeklyTotal) { @>
+                            <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
+                        <@ } else { @>
+                            <td><@= assignmentColumn.amount == 0 ? "" : assignmentColumn.amount.toFixed(2) @></td>
+                        <@ } @>
+                    <@ }); @>
+                <@ } else { @>
+                    <@ _.each(assignmentRow.assignmentColumns, function(assignmentColumn) { @>
+                        <@ if (assignmentColumn.isWeeklyTotal) { @>
+                            <td class="<@= assignmentColumn.cssClass @>"><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
+                        <@ } else { @>
+                            <td><@= assignmentColumn.total == 0 ? "" : assignmentColumn.total.toFixed(2) @></td>
+                        <@ } @>
+                    <@ }); @>
+                <@ } @>
+            </tr>
+        <@ }); @>
     <@ }); @>
     <tr class="hourDetailRow_<@= docId @>">
         <td colspan="2"><@= section.earnGroup @></td>
         <@ _.each(section.totals, function(total) { @>
-            <td><@= total == 0 ? "" : total.toFixed(2) @></td>
+        <td><@= total == 0 ? "" : total.toFixed(2) @></td>
         <@ }); @>
     </tr>
 </script>
