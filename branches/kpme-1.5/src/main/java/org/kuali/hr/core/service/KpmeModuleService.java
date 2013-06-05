@@ -23,6 +23,7 @@ import org.kuali.hr.lm.leaveplan.LeavePlan;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
 import org.kuali.hr.time.position.Position;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.salgroup.SalGroup;
@@ -46,6 +47,13 @@ public class KpmeModuleService extends ModuleServiceBase {
             List<List<String>> retList = new ArrayList<List<String>>();
             List<String> keyList = new ArrayList<String>();
             keyList.add("earnCode");
+            keyList.add("effectiveDate");
+            retList.add(keyList);
+            return retList;
+        } else if (EarnCodeGroup.class.isAssignableFrom(businessObjectInterfaceClass)) {
+            List<List<String>> retList = new ArrayList<List<String>>();
+            List<String> keyList = new ArrayList<String>();
+            keyList.add("earnCodeGroup");
             keyList.add("effectiveDate");
             retList.add(keyList);
             return retList;
