@@ -176,6 +176,24 @@ public class ClockAction extends TimesheetAction {
             caf.setAssignmentDescriptions(assignmentDesc);
 
         }
+        
+
+        
+        if (StringUtils.equals(GlobalVariables.getUserSession().getPrincipalId(), TKUser.getCurrentTargetPersonId())) {
+        	caf.setClockButtonEnabled(true);
+        } else {
+            boolean isApproverOrReviewerForCurrentAssignment = false;
+            if (StringUtils.isNotBlank(caf.getSelectedAssignment())) {
+            	Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(caf.getSelectedAssignment()), TKUtils.getCurrentDate());
+            	if (assignment != null) {
+                    UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
+                    Long workArea = assignment.getWorkArea();
+                    isApproverOrReviewerForCurrentAssignment = roles.getApproverWorkAreas().contains(workArea) || roles.getReviewerWorkAreas().contains(workArea);
+            	}
+            }
+        	caf.setClockButtonEnabled(isApproverOrReviewerForCurrentAssignment);
+        }
+        
         return forward;
     }
     
