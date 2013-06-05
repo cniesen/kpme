@@ -79,25 +79,61 @@ var tdocid = ${Form.timesheetDocument.documentId} ;
 			</tr>
 			<tr class="footer">
 				<td colspan="2" align="center">
-                    <input id="clock-button" type="submit" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction';"/>
+				    <c:choose>
+                        <c:when test="${Form.clockButtonEnabled}">
+                            <input id="clock-button" type="submit" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction';"/>
+                        </c:when>
+                        <c:otherwise>
+                            <input disabled id="clock-button" type="submit" class="button" value="${clockActionDescription}" name="clockAction" onclick="this.form.methodToCall.value='clockAction';"/>
+                        </c:otherwise>
+                    </c:choose>
                     <c:choose>
-						<c:when test="${Form.currentClockAction eq 'CO'}">
-                           <c:choose>
-                               <c:when test="${Form.showLunchButton}">
-						        <input type="submit" class="button" value="Take Lunch" name="lunchOut" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LO';"/>
-                               </c:when>
+                        <c:when test="${Form.currentClockAction eq 'CO'}">
+                            <c:choose>
+                                <c:when test="${Form.showLunchButton}">
+                                    <c:choose>
+                                        <c:when test="${Form.clockButtonEnabled}">
+                                            <input type="submit" class="button" value="Take Lunch" name="lunchOut" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LO';"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <input disabled type="submit" class="button" value="Take Lunch" name="lunchOut" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LO';"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:when>
                            </c:choose>
-						</c:when>
-						<c:when test="${Form.currentClockAction eq 'LI'}">
-						   <input type="submit" class="button" value="Return From Lunch" name="lunchIn" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LI';"/>
+                        </c:when>
+                        <c:when test="${Form.currentClockAction eq 'LI'}">
+                            <c:choose>
+                                <c:when test="${Form.clockButtonEnabled}">
+                                    <input type="submit" class="button" value="Return From Lunch" name="lunchIn" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LI';"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <input disabled type="submit" class="button" value="Return From Lunch" name="lunchIn" onclick="this.form.methodToCall.value='clockAction'; this.form.currentClockAction.value='LI';"/>
+                                </c:otherwise>
+                            </c:choose>
 						</c:when>
                     </c:choose>
                     <c:if test="${Form.showMissedPunchButton}">
-						<input type="button" class="button" id="missed-punch-iframe-button" value="Missed Punch" name="missedPunch"/>
+                        <c:choose>
+                            <c:when test="${Form.clockButtonEnabled}">
+                                <input type="button" class="button" id="missed-punch-iframe-button" value="Missed Punch" name="missedPunch"/>
+                            </c:when>
+                            <c:otherwise>
+                                <input disabled type="button" class="button" id="missed-punch-iframe-button" value="Missed Punch" name="missedPunch"/>
+                            </c:otherwise>
+                        </c:choose>
 					</c:if>
-					<c:if test="${Form.showDistributeButton}">
-						<input id="distribute-button" type="button" class="button" value="Distribute Time Blocks"
-							name="distributeTime" onclick="javascrpt: window.open(extractUrlBase()+'/Clock.do?methodToCall=distributeTimeBlocks', 'distributePopup')"/>
+                    <c:if test="${Form.showDistributeButton}">
+                        <c:choose>
+                            <c:when test="${Form.clockButtonEnabled}">
+                                <input id="distribute-button" type="button" class="button" value="Distribute Time Blocks"
+                                    name="distributeTime" onclick="javascrpt: window.open(extractUrlBase()+'/Clock.do?methodToCall=distributeTimeBlocks', 'distributePopup')"/>
+                            </c:when>
+                            <c:otherwise>
+                                <input disabled id="distribute-button" type="button" class="button" value="Distribute Time Blocks"
+                                    name="distributeTime" onclick="javascrpt: window.open(extractUrlBase()+'/Clock.do?methodToCall=distributeTimeBlocks', 'distributePopup')"/>
+                            </c:otherwise>
+                        </c:choose>
 					</c:if>
 				</td>
 			</tr>

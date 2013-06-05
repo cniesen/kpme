@@ -55,6 +55,7 @@ public class ClockActionForm extends TimesheetActionForm {
     private String lastClockHours;
     private ClockLog clockLog;
     private TimeBlock timeBlock;
+    private boolean clockButtonEnabled;
     private boolean showLunchButton;
     private boolean showDistributeButton;
     private boolean showMissedPunchButton;
@@ -220,6 +221,14 @@ public class ClockActionForm extends TimesheetActionForm {
 
 	public void setCurrentAssignmentDescription(String currentAssignmentDescription) {
 		this.currentAssignmentDescription = currentAssignmentDescription;
+	}
+	
+	public boolean isClockButtonEnabled() {
+		return clockButtonEnabled;
+	}
+	
+	public void setClockButtonEnabled(boolean clockButtonEnabled) {
+		this.clockButtonEnabled = clockButtonEnabled;
 	}
 
 	/**
