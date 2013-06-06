@@ -594,11 +594,20 @@ public class TimeDetailAction extends TimesheetAction {
             }
         }
 
-        TkServiceLocator.getTimeBlockService().updateTimeBlock(updatedTimeBlock);
+        List<EarnCode> validEarnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, assignment.getEffectiveDate(), true);
+        Set<String> earnCodes = new HashSet<String>();
+        for (EarnCode e : validEarnCodes) {
+            earnCodes.add(e.getEarnCode());
+        }
 
-        TimeBlockHistory tbh = new TimeBlockHistory(updatedTimeBlock);
-        tbh.setActionHistory(TkConstants.ACTIONS.UPDATE_TIME_BLOCK);
-        TkServiceLocator.getTimeBlockHistoryService().saveTimeBlockHistory(tbh);
+        if (updatedTimeBlock != null
+                && earnCodes.contains(updatedTimeBlock.getEarnCode())) {
+            TkServiceLocator.getTimeBlockService().updateTimeBlock(updatedTimeBlock);
+
+            TimeBlockHistory tbh = new TimeBlockHistory(updatedTimeBlock);
+            tbh.setActionHistory(TkConstants.ACTIONS.UPDATE_TIME_BLOCK);
+            TkServiceLocator.getTimeBlockHistoryService().saveTimeBlockHistory(tbh);
+        }
         tdaf.setMethodToCall("addTimeBlock");
         return mapping.findForward("basic");
     }

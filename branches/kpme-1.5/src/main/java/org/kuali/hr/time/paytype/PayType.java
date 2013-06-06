@@ -16,11 +16,20 @@
 package org.kuali.hr.time.paytype;
 
 import org.kuali.hr.core.KPMEConstants;
+import org.kuali.hr.job.Job;
+import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
 import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.earncode.EarnCode;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class PayType extends HrBusinessObject {
     public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "PayType";
+    private static final String[] PRIVATE_CACHES_FOR_FLUSH = {PayType.CACHE_NAME, Job.CACHE_NAME, Assignment.CACHE_NAME};
+    public static final List<String> CACHE_FLUSH = Collections.unmodifiableList(Arrays.asList(PRIVATE_CACHES_FOR_FLUSH));
 	/**
 	 *
 	 */
