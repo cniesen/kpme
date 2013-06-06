@@ -26,6 +26,7 @@ public interface TkPermissionsService {
 
 	public boolean canAddTimeBlock();
 	   public boolean canEditTimeBlockAllFields(TimeBlock tb);
+       //public boolean canEditTimeBlockAssignmentOnly(TimeBlock tb);
 	   public boolean canEditTimeBlock(TimeBlock tb);
 	   public boolean canDeleteTimeBlock(TimeBlock tb);
        public boolean canEditLeaveBlock(LeaveBlock lb);

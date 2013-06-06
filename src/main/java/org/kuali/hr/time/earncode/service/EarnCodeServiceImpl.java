@@ -67,7 +67,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         return earnCodes;
     }
 
-    public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate) {
+    public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate, boolean includeRegularEarnCode) {
         //getEarnCodesForTime and getEarnCodesForLeave have some overlapping logic, but they were separated so that they could follow their own distinct logic, so consolidation of logic is not desirable.
 
         if (a == null) throw new RuntimeException("No assignment parameter.");
@@ -78,7 +78,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         String earnTypeCode = EarnCodeType.TIME.getCode();
 
         TimeCollectionRule tcr = a.getTimeCollectionRule();
-        
+
         boolean isClockUser = tcr == null || tcr.isClockUserFl();
         boolean isUsersTimesheet = StringUtils.equals(TKContext.getPrincipalId(),a.getPrincipalId());
 
@@ -88,7 +88,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             throw new RuntimeException("No regular earn code defined for job pay type.");
         } else {
             //  if you are a clock user and this is your timesheet and you are processing the reg earn code, do not add this earn code. Use the clock in/out mechanism.
-            if (!isClockUser || !isUsersTimesheet) {
+            if (!isClockUser || !isUsersTimesheet || includeRegularEarnCode ) {
                 earnCodes.add(regularEarnCode);
             }
         }
@@ -141,7 +141,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
                             if ( (fmlaEligible || ec.getFmla().equals("N")) ) {
                                 //only want usage accrual balance actions
                                 if (StringUtils.equals(ec.getAccrualBalanceAction(), LMConstants.ACCRUAL_BALANCE_ACTION.USAGE)) {
-                                // go on, we are allowing these three combinations: YY, YN, NN
+                                    // go on, we are allowing these three combinations: YY, YN, NN
 
                                     //  apply the same logic as FMLA to the Worker Compensation flags.
                                     if ( (workersCompEligible || ec.getWorkmansComp().equals("N")) ) {
@@ -165,6 +165,10 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         }
 
         return earnCodes;
+    }
+
+    public List<EarnCode> getEarnCodesForTime(Assignment a, Date asOfDate) {
+        return getEarnCodesForTime(a, asOfDate, false);
     }
 
     public List<EarnCode> getEarnCodesForLeave(Assignment a, Date asOfDate, boolean isLeavePlanningCalendar) {

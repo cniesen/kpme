@@ -17,11 +17,16 @@ package org.kuali.hr.job;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.kuali.hr.core.KPMEConstants;
+import org.kuali.hr.lm.earncodesec.EarnCodeSecurity;
 import org.kuali.hr.location.Location;
 import org.kuali.hr.paygrade.PayGrade;
 import org.kuali.hr.time.HrBusinessObject;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.position.Position;
@@ -36,6 +41,8 @@ public class Job extends HrBusinessObject {
 	private static final long serialVersionUID = 1369595897637935064L;
 
 	public static final String CACHE_NAME = KPMEConstants.APPLICATION_NAMESPACE_CODE + "/" + "Job";
+    private static final String[] PRIVATE_CACHES_FOR_FLUSH = {Job.CACHE_NAME, Assignment.CACHE_NAME};
+    public static final List<String> CACHE_FLUSH = Collections.unmodifiableList(Arrays.asList(PRIVATE_CACHES_FOR_FLUSH));
 	
 	private String location;
 	private String hrPayType;

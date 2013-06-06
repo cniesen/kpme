@@ -40,7 +40,9 @@ import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.detail.validation.TimeDetailValidationUtil;
 import org.kuali.hr.time.earncode.EarnCode;
+import org.kuali.hr.time.paytype.PayType;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesheet.web.TimesheetAction;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
@@ -133,11 +135,20 @@ public class TimeDetailWSAction extends TimesheetAction {
         if (StringUtils.isNotBlank(tdaf.getSelectedAssignment())) {
             List<Assignment> assignments = tdaf.getTimesheetDocument().getAssignments();
             AssignmentDescriptionKey key = new AssignmentDescriptionKey(tdaf.getSelectedAssignment());
+            Map<String, EarnCode> regEarnCodes = getRegularEarnCodes(tdaf.getTimesheetDocument());
             for (Assignment assignment : assignments) {
-                if (assignment.getJobNumber().compareTo(key.getJobNumber()) == 0 &&
-                        assignment.getWorkArea().compareTo(key.getWorkArea()) == 0 &&
-                        assignment.getTask().compareTo(key.getTask()) == 0) {
-                    List<EarnCode> earnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, tdaf.getTimesheetDocument().getAsOfDate());
+                if (assignment.getJobNumber().equals(key.getJobNumber()) &&
+                        assignment.getWorkArea().equals(key.getWorkArea()) &&
+                        assignment.getTask().equals(key.getTask())) {
+                    List<EarnCode> earnCodes = new ArrayList<EarnCode>();
+                    if (tdaf.isTimeBlockReadOnly()) {
+                        if (regEarnCodes.containsKey(assignment.getAssignmentKey())) {
+                            earnCodes.add(regEarnCodes.get(assignment.getAssignmentKey()));
+                        }
+                    } else {
+                        earnCodes.addAll(TkServiceLocator.getEarnCodeService()
+                                .getEarnCodesForTime(assignment, tdaf.getTimesheetDocument().getAsOfDate(), tdaf.isTimeBlockReadOnly()));
+                    }
                     for (EarnCode earnCode : earnCodes) {
                         Map<String, Object> earnCodeMap = new HashMap<String, Object>();
                         earnCodeMap.put("assignment", assignment.getAssignmentKey());
@@ -158,6 +169,52 @@ public class TimeDetailWSAction extends TimesheetAction {
         }
         LOG.info(tdaf.toString());
         tdaf.setOutputString(JSONValue.toJSONString(earnCodeList));
+        return mapping.findForward("ws");
+    }
+
+    private Map<String, EarnCode> getRegularEarnCodes(TimesheetDocument td) {
+        Map<String, EarnCode> regEarnCodes = new HashMap<String, EarnCode>();
+        if (td != null) {
+            for (Assignment a : td.getAssignments()) {
+                if (a.getJob() != null
+                        && a.getJob().getPayTypeObj() != null) {
+                    PayType payType = a.getJob().getPayTypeObj();
+                    EarnCode ec = payType.getRegEarnCodeObj();
+                    if (ec == null
+                            && StringUtils.isNotEmpty(payType.getRegEarnCode()))  {
+                        ec = TkServiceLocator.getEarnCodeService().getEarnCode(payType.getRegEarnCode(), payType.getEffectiveDate());
+                    }
+                    regEarnCodes.put(a.getAssignmentKey(), ec);
+                }
+            }
+        }
+        return regEarnCodes;
+    }
+
+    private List<Map<String, Object>> getAssignmentsForRegEarnCode(TimesheetDocument td, String earnCode) {
+        List<Map<String, Object>> assignments = new ArrayList<Map<String, Object>>();
+        if (td != null) {
+            for (Assignment a : td.getAssignments()) {
+                Map<String, Object> assignment = new HashMap<String, Object>();
+                if (earnCode.equals(a.getJob().getPayTypeObj().getRegEarnCode())) {
+                    assignment.put("assignment", a.getAssignmentKey());
+                    assignments.add(assignment);
+                }
+            }
+        }
+        return assignments;
+    }
+
+    public ActionForward getValidAssignments(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+        TimeDetailWSActionForm tdaf = (TimeDetailWSActionForm) form;
+
+        String earnCode = tdaf.getSelectedEarnCode();
+
+        List<Map<String, Object>> assignments = new ArrayList<Map<String, Object>>();
+        if (tdaf.getTimesheetDocument() != null && StringUtils.isNotEmpty(earnCode)) {
+            assignments = getAssignmentsForRegEarnCode(tdaf.getTimesheetDocument(), earnCode);
+        }
+        tdaf.setOutputString(JSONValue.toJSONString(assignments));
         return mapping.findForward("ws");
     }
 

@@ -96,8 +96,7 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             Job job = TkServiceLocator.getJobService().getJob(
                     TKContext.getTargetPrincipalId(), tb.getJobNumber(),
                     tb.getEndDate());
-            PayType payType = TkServiceLocator.getPayTypeService().getPayType(
-                    job.getHrPayType(), tb.getEndDate());
+            PayType payType = job.getPayTypeObj();
 
             if (TKUser.isTimesheetApprover()
                     && TKUser.getApproverWorkAreas().contains(tb.getWorkArea())
@@ -131,7 +130,7 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                     && !tb.getClockLogCreated()) {
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
-                    return true;
+                    return false;
                 }
 
                 List<EarnCodeSecurity> deptEarnCodes = TkServiceLocator
