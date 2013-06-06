@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.department.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.kuali.hr.time.department.Department;
 import org.kuali.hr.time.department.dao.DepartmentDao;
 import org.kuali.hr.time.roles.TkRole;
@@ -53,7 +54,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void populateDepartmentRoles(Department department) {
-        if (department != null) {
+        if (department != null
+                && CollectionUtils.isEmpty(department.getRoles())
+                && CollectionUtils.isEmpty(department.getInactiveRoles())) {
         	department.getRoles().addAll(TkServiceLocator.getTkRoleService().getDepartmentRoles(department.getDept()));
         	department.getInactiveRoles().addAll(TkServiceLocator.getTkRoleService().getDepartmentInactiveRoles(department.getDept()));
         }
