@@ -41,7 +41,8 @@ public interface DepartmentLunchRuleService {
 	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, Date asOfDate);
 
     /**
-     * Fetch department lunch rule based on criteria passed in
+     * Fetch department lunch rule based on criteria passed in, using literals for wildcards.  Will not go through logic to
+     * determine best match, but will match exactly on what is passed in.
      * @param dept
      * @param workArea
      * @param principalId
