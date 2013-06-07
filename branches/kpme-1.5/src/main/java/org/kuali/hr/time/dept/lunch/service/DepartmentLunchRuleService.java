@@ -39,6 +39,24 @@ public interface DepartmentLunchRuleService {
                     "+ '|' + 'jobNumber=' + #p3" +
                     "+ '|' + 'asOfDate=' + #p4")
 	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, Date asOfDate);
+
+    /**
+     * Fetch department lunch rule based on criteria passed in
+     * @param dept
+     * @param workArea
+     * @param principalId
+     * @param jobNumber
+     * @param asOfDate
+     * @return
+     */
+    @Cacheable(value= DeptLunchRule.CACHE_NAME,
+            key="'{getEarnCodesForLeaveAndTime}'" +
+                    "+ 'dept=' + #p0" +
+                    "+ '|' + 'workArea=' + #p1" +
+                    "+ '|' + 'principalId=' + #p2" +
+                    "+ '|' + 'jobNumber=' + #p3" +
+                    "+ '|' + 'asOfDate=' + #p4")
+    public DeptLunchRule getDepartmentLunchRuleNoWildCards(String dept, Long workArea, String principalId, Long jobNumber, Date asOfDate);
 	/**
 	 * Apply department lunch rule to the list of timeblocks
 	 * @param timeblocks
