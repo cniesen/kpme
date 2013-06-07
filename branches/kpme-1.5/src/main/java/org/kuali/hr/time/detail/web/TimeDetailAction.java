@@ -681,10 +681,10 @@ public class TimeDetailAction extends TimesheetAction {
       LeaveBlock blockToDelete = TkServiceLocator.getLeaveBlockService().getLeaveBlock(leaveBlockId);
       if (blockToDelete != null && TkServiceLocator.getPermissionsService().canDeleteLeaveBlock(blockToDelete)) {
 		    TkServiceLocator.getLeaveBlockService().deleteLeaveBlock(leaveBlockId, TKContext.getPrincipalId());
+      
+		    generateTimesheetChangedNotification(principalId, targetPrincipalId, documentId);
       }
-      
-      generateTimesheetChangedNotification(principalId, targetPrincipalId, documentId);
-      
+
       // if the leave block is NOT eligible for accrual, rerun accrual service for the leave calendar the leave block is on
       EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(blockToDelete.getEarnCode(), blockToDelete.getLeaveDate());
       if(ec != null && ec.getEligibleForAccrual().equals("N")) {
