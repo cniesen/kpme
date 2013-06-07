@@ -33,6 +33,7 @@ import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb
 public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements DepartmentDao {
     private static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
             .add("dept")
+            .add("location")
             .build();
 
 	@Override
@@ -111,11 +112,6 @@ public class DepartmentDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implemen
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            ImmutableList<String> fields = new ImmutableList.Builder<String>()
-                    .add("dept")
-                    .add("location")
-                    .add("description")
-                    .build();
             root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(Department.class, EQUAL_TO_FIELDS, false));
             root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Department.class, EQUAL_TO_FIELDS, false));
         }
