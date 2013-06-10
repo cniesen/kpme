@@ -100,7 +100,7 @@ public class TimeApprovalWSAction extends TkAction {
 	            }
 	        } else if (StringUtils.equals(taaf.getSearchField(), ApprovalForm.ORDER_BY_DOCID)) {
 	            Map<String, TimesheetDocumentHeader> principalDocumentHeaders =
-	                    TkServiceLocator.getTimeApproveService().getPrincipalDocumehtHeader(persons, beginDate, endDate);
+	                    TkServiceLocator.getTimeApproveService().getPrincipalDocumentHeader(persons, beginDate, endDate);
 
 	            for (Map.Entry<String,TimesheetDocumentHeader> entry : principalDocumentHeaders.entrySet()) {
 	                if (StringUtils.contains(entry.getValue().getDocumentId(), taaf.getSearchTerm())) {

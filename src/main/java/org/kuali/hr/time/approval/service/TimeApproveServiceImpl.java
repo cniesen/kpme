@@ -29,6 +29,7 @@ import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.lm.accrual.AccrualCategoryRule;
 import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.lm.leavecalendar.validation.LeaveCalendarValidationUtil;
+import org.kuali.hr.lm.util.LeaveBlockAggregate;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
@@ -222,8 +223,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			List<TKPerson> persons, List<String> payCalendarLabels,
 			CalendarEntries payCalendarEntries) {
 		List<ApprovalTimeSummaryRow> rows = new LinkedList<ApprovalTimeSummaryRow>();
-		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumehtHeader(
-				persons, payBeginDate, payEndDate);
+		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumentHeader(
+                persons, payBeginDate, payEndDate);
 
 		Calendar payCalendar = TkServiceLocator.getCalendarService()
 				.getCalendar(payCalendarEntries.getHrCalendarId());
@@ -241,6 +242,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 						person.getPrincipalId()).getDocumentId();
 			}
 			List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>();
+            List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
 			List<Note> notes = new ArrayList<Note>();
 			List<String> warnings = new ArrayList<String>();
 
@@ -253,10 +255,18 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			}
 
 			if (StringUtils.isNotBlank(documentId)) {
-				timeBlocks = TkServiceLocator.getTimeBlockService()
-						.getTimeBlocks(documentId);
-                notes = getNotesForDocument(documentId);
                 TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
+				timeBlocks = td.getTimeBlocks();
+				//timeBlocks = TkServiceLocator.getTimeBlockService()
+				//		.getTimeBlocks(documentId);
+                List<String> assignKeys = new ArrayList<String>();
+                for(Assignment a : td.getAssignments()) {
+                    assignKeys.add(a.getAssignmentKey());
+                }
+                leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(person.getPrincipalId(),
+                        payBeginDate, payEndDate, assignKeys);
+                notes = getNotesForDocument(documentId);
+
 				warnings = TkServiceLocator.getWarningService().getWarnings(td);
 
 			}
@@ -272,12 +282,12 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
 					person.getPrincipalId(), payEndDate, payCalendarLabels,
-					timeBlocks, null, payCalendarEntries, payCalendar,
+					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 			
 			Map<String, BigDecimal> hoursToFlsaPayLabelMap = getHoursToFlsaWeekMap(
 					person.getPrincipalId(), payEndDate, payCalendarLabels,
-					timeBlocks, null, payCalendarEntries, payCalendar,
+					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 
 			approvalSummaryRow.setName(person.getPrincipalName());
@@ -571,7 +581,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public Map<String, BigDecimal> getHoursToPayDayMap(String principalId,
 			Date payEndDate, List<String> payCalendarLabels,
-			List<TimeBlock> lstTimeBlocks, Long workArea,
+			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar,
 			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
 		Map<String, BigDecimal> hoursToPayLabelMap = new LinkedHashMap<String, BigDecimal>();
@@ -580,6 +590,12 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(
 				lstTimeBlocks, payCalendarEntries, payCalendar, true,
 				dayIntervals);
+
+        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, payCalendarEntries);
+
+        //combine time and leave aggregates.... (sigh)
+        tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+
 		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate
 				.getFlsaWeeks(dateTimeZone);
 		for (FlsaWeek week : flsaWeeks) {
@@ -634,14 +650,18 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, 
 			Date payEndDate, List<String> payCalendarLabels, 
-			List<TimeBlock> lstTimeBlocks, Long workArea, 
+			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar, 
 			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
 
 		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(lstTimeBlocks, payCalendarEntries, payCalendar, true, dayIntervals);
-		List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
+        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, payCalendarEntries);
+
+        //combine time and leave aggregates.... (sigh)
+        tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+        List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
 		
 		int weekCount = 1;
 		for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
@@ -744,8 +764,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	}
     
 	@Override
-	public Map<String, TimesheetDocumentHeader> getPrincipalDocumehtHeader(
-			List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
+	public Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(
+            List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
 		Map<String, TimesheetDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, TimesheetDocumentHeader>();
 		for (TKPerson person : persons) {
 			String principalId = person.getPrincipalId();
