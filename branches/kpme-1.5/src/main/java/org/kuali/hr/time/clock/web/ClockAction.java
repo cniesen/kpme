@@ -397,7 +397,11 @@ public class ClockAction extends TimesheetAction {
 		    	if(timeBlock.getHours().compareTo(BigDecimal.ZERO) == 0) { // ignore time blocks with zero hours
 		    		continue;
 		    	}
-			    Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
+		    	
+		    	DateTimeZone dateTimeZone = TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+		    	DateTime timeBlockBeginTimestamp = new DateTime(timeBlock.getBeginTimestamp().getTime(), dateTimeZone).withZoneRetainFields(TKUtils.getSystemDateTimeZone());
+		    	DateTime timeBlockEndTimestamp = new DateTime(timeBlock.getEndTimestamp().getTime(), dateTimeZone).withZoneRetainFields(TKUtils.getSystemDateTimeZone());
+			    Interval timeBlockInterval = new Interval(timeBlockBeginTimestamp, timeBlockEndTimestamp);
 			    if (timeBlockInterval.overlaps(addedTimeblockInterval)) {
 			        errorMsgList.add("The time block you are trying to add for entry " + index + " overlaps with an existing time block.");
 			        caf.setOutputString(JSONValue.toJSONString(errorMsgList));
