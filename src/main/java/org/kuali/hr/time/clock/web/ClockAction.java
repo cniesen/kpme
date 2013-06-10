@@ -183,8 +183,18 @@ public class ClockAction extends TimesheetAction {
         	caf.setClockButtonEnabled(true);
         } else {
             boolean isApproverOrReviewerForCurrentAssignment = false;
-            if (StringUtils.isNotBlank(caf.getSelectedAssignment())) {
-            	Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(caf.getSelectedAssignment()), TKUtils.getCurrentDate());
+            String selectedAssignment = StringUtils.EMPTY;
+            if (caf.getAssignmentDescriptions() != null) {
+	            if (caf.getAssignmentDescriptions().size() == 1) {
+	            	for (String assignment : caf.getAssignmentDescriptions().keySet()) {
+	            		selectedAssignment = assignment;
+	            	}
+	            } else {
+	            	selectedAssignment = caf.getSelectedAssignment();
+	            }
+            }
+            if (StringUtils.isNotBlank(selectedAssignment)) {
+            	Assignment assignment = TkServiceLocator.getAssignmentService().getAssignment(new AssignmentDescriptionKey(selectedAssignment), TKUtils.getCurrentDate());
             	if (assignment != null) {
                     UserRoles roles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
                     Long workArea = assignment.getWorkArea();
