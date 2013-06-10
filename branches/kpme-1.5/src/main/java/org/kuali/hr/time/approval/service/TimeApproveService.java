@@ -25,6 +25,7 @@ import java.util.SortedSet;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.kuali.hr.core.KPMEConstants;
+import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
@@ -78,9 +79,9 @@ public interface TimeApproveService {
      */
 	public List<Note> getNotesForDocument(String documentNumber);
 
-    public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
+    public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
 
-	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
+	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
     /**
      * Method to provide a mapping of PayCalendarGroupNames to PayCalendarEntries to
      * allow for various starting points in Approval Tab Navigation.
@@ -110,7 +111,7 @@ public interface TimeApproveService {
      * @param payEndDate
      * @return A PrincipalId to TimesheetDocumentHeader mapping.
      */
-    Map<String, TimesheetDocumentHeader> getPrincipalDocumehtHeader(List<TKPerson> person, Date payBeginDate, Date payEndDate);
+    Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(List<TKPerson> person, Date payBeginDate, Date payEndDate);
 
     /**
      * Method to create a map of the depts and their associated work areas based on the given approver work areas.
