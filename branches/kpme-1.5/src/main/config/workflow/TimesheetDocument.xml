@@ -24,6 +24,7 @@
 		<documentType>
             <name>TimesheetDocument</name>
 			<parent>RiceDocument</parent>
+            <applicationId>KPME</applicationId>
 			<superUserWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</superUserWorkgroupName>
 			<blanketApproveWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</blanketApproveWorkgroupName>
 			<defaultExceptionWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</defaultExceptionWorkgroupName>
@@ -89,6 +90,7 @@
             <label>TimesheetWorkareaSearchAttribute</label>
             <description>TimesheetWorkareaSearchAttribute</description>
             <type>SearchableXmlAttribute</type>
+            <applicationId>KPME</applicationId>
             <searchingConfig>
                 <fieldDef name="workarea" title="Work Area">
                     <display>
@@ -106,6 +108,7 @@
             <label>TimesheetDepartmentSearchAttribute</label>
             <description>TimesheetDepartmentSearchAttribute</description>
             <type>SearchableXmlAttribute</type>
+            <applicationId>KPME</applicationId>
             <searchingConfig>
                 <fieldDef name="department" title="Department">
                     <display>
@@ -123,6 +126,7 @@
             <label>TimesheetSalGroupSearchAttribute</label>
             <description>TimesheetSalGroupSearchAttribute</description>
             <type>SearchableXmlAttribute</type>
+            <applicationId>KPME</applicationId>
             <searchingConfig>
                 <fieldDef name="salGroup" title="Salary Group">
                     <display>
@@ -140,6 +144,7 @@
             <label>TimesheetPayCalEndSearchAttribute</label>
             <description>TimesheetPayCalEndSearchAttribute</description>
             <type>SearchableXmlAttribute</type>
+            <applicationId>KPME</applicationId>
             <searchingConfig>
                 <fieldDef name="payCalendarEnd" title="Pay Calendar End Date">
                     <display>
@@ -157,6 +162,7 @@
             <label>TkWorkflowTimesheetAttribute</label>
             <description>TkWorkflowTimesheetAttribute</description>
             <type>RuleAttribute</type>
+            <applicationId>KPME</applicationId>
         </ruleAttribute>
     </ruleAttributes>
     

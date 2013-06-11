@@ -24,6 +24,7 @@
         <documentType>
             <name>LeaveCalendarDocument</name>
             <parent>RiceDocument</parent>
+            <applicationId>KPME</applicationId>
             <superUserWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</superUserWorkgroupName>
             <blanketApproveWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</blanketApproveWorkgroupName>
             <defaultExceptionWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</defaultExceptionWorkgroupName>
@@ -90,6 +91,7 @@
         <label>LeaveCalendarWorkareaSearchAttribute</label>
         <description>LeaveCalendarWorkareaSearchAttribute</description>
         <type>SearchableXmlAttribute</type>
+        <applicationId>KPME</applicationId>
         <searchingConfig>
             <fieldDef name="workarea" title="Work Area">
                 <display>
@@ -107,6 +109,7 @@
         <label>LeaveCalendarDepartmentSearchAttribute</label>
         <description>LeaveCalendarDepartmentSearchAttribute</description>
         <type>SearchableXmlAttribute</type>
+        <applicationId>KPME</applicationId>
         <searchingConfig>
             <fieldDef name="department" title="Department">
                 <display>
@@ -124,6 +127,7 @@
         <label>LeaveCalendarSalGroupSearchAttribute</label>
         <description>LeaveCalendarSalGroupSearchAttribute</description>
         <type>SearchableXmlAttribute</type>
+        <applicationId>KPME</applicationId>
         <searchingConfig>
             <fieldDef name="salGroup" title="Salary Group">
                 <display>
@@ -141,6 +145,7 @@
         <label>LeaveCalendarCalEndSearchAttribute</label>
         <description>LeaveCalendarCalEndSearchAttribute</description>
         <type>SearchableXmlAttribute</type>
+        <applicationId>KPME</applicationId>
         <searchingConfig>
             <fieldDef name="payCalendarEnd" title="Pay Calendar End Date">
                 <display>
@@ -158,6 +163,7 @@
         <label>TkWorkflowLeaveCalendarAttribute</label>
         <description>TkWorkflowLeaveCalendarAttribute</description>
         <type>RuleAttribute</type>
+        <applicationId>KPME</applicationId>
     </ruleAttribute>
     </ruleAttributes>
 

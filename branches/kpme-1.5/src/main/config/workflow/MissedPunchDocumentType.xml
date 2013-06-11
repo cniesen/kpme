@@ -24,6 +24,7 @@
         <documentType>
             <name>MissedPunchDocumentType</name>
             <parent>RiceDocument</parent>
+            <applicationId>KPME</applicationId>
             <superUserWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</superUserWorkgroupName>
             <blanketApproveWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</blanketApproveWorkgroupName>
             <defaultExceptionWorkgroupName>KPME-WKFLW:TK_SYSTEM_ADMIN</defaultExceptionWorkgroupName>
@@ -65,6 +66,7 @@
             <label>TkWorkflowMissedPunchAttribute</label>
             <description>TkWorkflowMissedPunchAttribute</description>
             <type>RuleAttribute</type>
+            <applicationId>KPME</applicationId>
         </ruleAttribute>
     </ruleAttributes>
 
