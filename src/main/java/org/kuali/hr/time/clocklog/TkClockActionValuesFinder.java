@@ -23,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.missedpunch.MissedPunchDocument;
 import org.kuali.hr.time.service.base.TkServiceLocator;
+import org.kuali.hr.time.syslunch.rule.SystemLunchRule;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TKUtils;
@@ -78,8 +79,9 @@ public class TkClockActionValuesFinder extends KeyValuesBase {
             	String dept = TkServiceLocator.getJobService().getJob(targetPerson, lastClock.getJobNumber(), TKUtils.getCurrentDate()).getDept();
 	            Long workArea = lastClock.getWorkArea();
 	            Long jobNumber = lastClock.getJobNumber();
-	
-	            if (!TkServiceLocator.getSystemLunchRuleService().getSystemLunchRule(TKUtils.getCurrentDate()).getShowLunchButton()) {
+
+                SystemLunchRule slr = TkServiceLocator.getSystemLunchRuleService().getSystemLunchRule(TKUtils.getCurrentDate());
+	            if (slr == null || !slr.getShowLunchButton()) {
 	                keyLabels.remove(new ConcreteKeyValue("LO", "Lunch Out"));
 	                keyLabels.remove(new ConcreteKeyValue("LI", "Lunch In"));
 	            } else {
