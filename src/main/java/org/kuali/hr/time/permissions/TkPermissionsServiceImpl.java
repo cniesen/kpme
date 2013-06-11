@@ -127,10 +127,18 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             }
 
             if (userId.equals(TKContext.getTargetPrincipalId())
-                    && !tb.getClockLogCreated()) {
+                    && tb.getClockLogCreated()) {
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
                     return false;
+                }
+            }
+
+            if (userId.equals(TKContext.getTargetPrincipalId())
+                    && !tb.getClockLogCreated()) {
+                if (StringUtils.equals(payType.getRegEarnCode(),
+                        tb.getEarnCode())) {
+                    return true;
                 }
 
                 List<EarnCodeSecurity> deptEarnCodes = TkServiceLocator
