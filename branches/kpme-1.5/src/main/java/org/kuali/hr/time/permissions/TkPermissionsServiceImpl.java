@@ -18,6 +18,7 @@ package org.kuali.hr.time.permissions;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -98,10 +99,10 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                     tb.getEndDate());
             PayType payType = job.getPayTypeObj();
 
-            if (TKUser.isTimesheetApprover()
-                    && TKUser.getApproverWorkAreas().contains(tb.getWorkArea())
-                    || TKUser.isTimesheetReviewer()
-                    && TKUser.getReviewerWorkAreas().contains(tb.getWorkArea())) {
+            if ((TKUser.isTimesheetApprover()
+                    && TKUser.getApproverWorkAreas().contains(tb.getWorkArea()))
+                 || (TKUser.isTimesheetReviewer()
+                    && TKUser.getReviewerWorkAreas().contains(tb.getWorkArea()))) {
 
                 if (StringUtils.equals(payType.getRegEarnCode(), tb.getEarnCode())) {
                     TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),tb.getBeginDate());
@@ -175,13 +176,23 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             PayType payType = TkServiceLocator.getPayTypeService().getPayType(
                     job.getHrPayType(), tb.getEndDate());
             
-            if (TKUser.isTimesheetApprover()
-                    && TKUser.getApproverWorkAreas().contains(tb.getWorkArea())
-                    || TKUser.isTimesheetReviewer()
-                    && TKUser.getReviewerWorkAreas().contains(tb.getWorkArea())) {
+            if ((TKUser.isTimesheetApprover()
+                    && TKUser.getApproverWorkAreas().contains(tb.getWorkArea()))
+                ||  (TKUser.isTimesheetReviewer()
+                    && TKUser.getReviewerWorkAreas().contains(tb.getWorkArea()))) {
 
                 if (StringUtils.equals(payType.getRegEarnCode(),
                         tb.getEarnCode())) {
+                    TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),tb.getWorkArea(),tb.getBeginDate());
+
+                    if (tcr == null || tcr.isClockUserFl()) {
+                        //if there is only 1 assignment here, it isn't editable.
+                        TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(tb.getDocumentId());
+                        Map<String, String> assignments = TkServiceLocator.getAssignmentService().getAssignmentDescriptions(td, false);
+                        if (assignments.size() <= 1) {
+                            return false;
+                        }
+                    }
                     return true;
                 }
 
