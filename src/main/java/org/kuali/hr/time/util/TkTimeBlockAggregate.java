@@ -32,6 +32,7 @@ import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
 import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.lm.util.LeaveBlockAggregate;
+import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.flsa.FlsaDay;
@@ -39,10 +40,12 @@ import org.kuali.hr.time.flsa.FlsaWeek;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timeblock.TimeHourDetail;
+import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 
 public class TkTimeBlockAggregate {
 	private List<List<TimeBlock>> dayTimeBlockList = new ArrayList<List<TimeBlock>>();
+	private List<List<LeaveBlock>> dayLeaveBlockList = new ArrayList<List<LeaveBlock>>();
 	private CalendarEntries payCalendarEntry;
 	private Calendar payCalendar;
 
@@ -76,39 +79,8 @@ public class TkTimeBlockAggregate {
      * @param useUserTimeZone
      */
     public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, CalendarEntries payCalendarEntry, Calendar payCalendar, boolean useUserTimeZone) {
-		this.payCalendarEntry = payCalendarEntry;
-		this.payCalendar = payCalendar;
-
-        List<Interval> dayIntervals = null;
-        if (useUserTimeZone) {
-            dayIntervals = TKUtils.getDaySpanForCalendarEntry(payCalendarEntry);
-        } else {
-            dayIntervals = TKUtils.getDaySpanForCalendarEntry(payCalendarEntry, TKUtils.getSystemDateTimeZone());
-        }
-		for(Interval dayInt : dayIntervals){
-			List<TimeBlock> dayTimeBlocks = new ArrayList<TimeBlock>();
-			for(TimeBlock timeBlock : timeBlocks){
-
-                // Assumption: Timezones can only be switched at pay period end boundaries.
-                // If the above assumption becomes false, the logic below will need to
-                // accommodate virtual chopping of time blocks to have them fit nicely
-                // in the "days" that are displayed to users.
-
-				DateTime beginTime = useUserTimeZone ? timeBlock.getBeginTimeDisplay() : new DateTime(timeBlock.getBeginTimestamp(), TKUtils.getSystemDateTimeZone());
-				DateTime endTime = useUserTimeZone ? timeBlock.getEndTimeDisplay() :  new DateTime(timeBlock.getEndTimestamp(), TKUtils.getSystemDateTimeZone());
-				if(dayInt.contains(beginTime)){
-					if(dayInt.contains(endTime) || endTime.compareTo(dayInt.getEnd()) == 0){
-						// determine if the time block needs to be pushed forward / backward
-						if(beginTime.getHourOfDay() < dayInt.getStart().getHourOfDay()) {
-							timeBlock.setPushBackward(true);
-						}
-
-						dayTimeBlocks.add(timeBlock);
-					}
-				}
-			}
-			dayTimeBlockList.add(dayTimeBlocks);
-		}
+        this(timeBlocks, payCalendarEntry, payCalendar, useUserTimeZone, 
+        		useUserTimeZone ? TKUtils.getDaySpanForCalendarEntry(payCalendarEntry) : TKUtils.getDaySpanForCalendarEntry(payCalendarEntry, TKUtils.getSystemDateTimeZone()));
 	}
 
     public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, CalendarEntries payCalendarEntry, Calendar payCalendar, boolean useUserTimeZone, List<Interval> dayIntervals) {
@@ -142,6 +114,90 @@ public class TkTimeBlockAggregate {
 		
     }
     
+    /**
+     * Defaults to using SYSTEM time zone.
+     *
+     * @param timeBlocks
+     * @param leaveBlocks
+     * @param payCalendarEntry
+     */
+	public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntries payCalendarEntry){
+		this(timeBlocks, leaveBlocks, payCalendarEntry, TkServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId()));
+	}
+
+    /**
+     * Defaults to using SYSTEM time zone.
+     *
+     * @param timeBlocks
+     * @param leaveBlocks
+     * @param payCalendarEntry
+     * @param payCalendar
+     */
+	public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntries payCalendarEntry, Calendar payCalendar) {
+        this(timeBlocks, leaveBlocks, payCalendarEntry, payCalendar, false);
+    }
+
+    /**
+     * Provides the option to refer to the time zone adjusted time for the current
+     * user.
+     * @param timeBlocks
+     * @param payCalendarEntry
+     * @param payCalendar
+     * @param useUserTimeZone
+     */
+    public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntries payCalendarEntry, Calendar payCalendar, boolean useUserTimeZone) {
+        this(timeBlocks, leaveBlocks, payCalendarEntry, payCalendar, useUserTimeZone, 
+        		useUserTimeZone ? TKUtils.getDaySpanForCalendarEntry(payCalendarEntry) : TKUtils.getDaySpanForCalendarEntry(payCalendarEntry, TKUtils.getSystemDateTimeZone()));
+	}
+
+    public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntries payCalendarEntry, Calendar payCalendar, boolean useUserTimeZone, List<Interval> dayIntervals) {
+    	this.payCalendarEntry = payCalendarEntry;
+		this.payCalendar = payCalendar;
+		
+		for(Interval dayInt : dayIntervals){
+			List<TimeBlock> dayTimeBlocks = new ArrayList<TimeBlock>();
+			for(TimeBlock timeBlock : timeBlocks){
+
+                // Assumption: Timezones can only be switched at pay period end boundaries.
+                // If the above assumption becomes false, the logic below will need to
+                // accommodate virtual chopping of time blocks to have them fit nicely
+                // in the "days" that are displayed to users.
+
+				DateTime beginTime = useUserTimeZone ? timeBlock.getBeginTimeDisplay() : new DateTime(timeBlock.getBeginTimestamp(), TKUtils.getSystemDateTimeZone());
+				DateTime endTime = useUserTimeZone ? timeBlock.getEndTimeDisplay() :  new DateTime(timeBlock.getEndTimestamp(), TKUtils.getSystemDateTimeZone());
+				if(dayInt.contains(beginTime)){
+					if(dayInt.contains(endTime) || endTime.compareTo(dayInt.getEnd()) == 0){
+						// determine if the time block needs to be pushed forward / backward
+						if(beginTime.getHourOfDay() < dayInt.getStart().getHourOfDay()) {
+							timeBlock.setPushBackward(true);
+						}
+
+						dayTimeBlocks.add(timeBlock);
+					}
+				}
+			}
+			dayTimeBlockList.add(dayTimeBlocks);
+			
+			List<LeaveBlock> dayLeaveBlocks = new ArrayList<LeaveBlock>();
+			for(LeaveBlock leaveBlock : leaveBlocks){
+
+                // Assumption: Timezones can only be switched at pay period end boundaries.
+                // If the above assumption becomes false, the logic below will need to
+                // accommodate virtual chopping of leave blocks to have them fit nicely
+                // in the "days" that are displayed to users.
+				
+				DateTimeZone dateTimeZone = TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+				DateTime beginTime = new DateTime(leaveBlock.getLeaveDate(), useUserTimeZone ? dateTimeZone : TKUtils.getSystemDateTimeZone());
+				DateTime endTime = new DateTime(leaveBlock.getLeaveDate(), useUserTimeZone ? dateTimeZone : TKUtils.getSystemDateTimeZone());
+				if(dayInt.contains(beginTime)){
+					if(dayInt.contains(endTime) || endTime.compareTo(dayInt.getEnd()) == 0){
+						dayLeaveBlocks.add(leaveBlock);
+					}
+				}
+			}
+			dayLeaveBlockList.add(dayLeaveBlocks);
+		}
+    }
     
 	public List<TimeBlock> getFlattenedTimeBlockList(){
 		List<TimeBlock> lstTimeBlocks = new ArrayList<TimeBlock>();
@@ -158,6 +214,23 @@ public class TkTimeBlockAggregate {
 		});
 
 		return lstTimeBlocks;
+	}
+	
+	public List<LeaveBlock> getFlattenedLeaveBlockList(){
+		List<LeaveBlock> lstLeaveBlocks = new ArrayList<LeaveBlock>();
+		for(List<LeaveBlock> leaveBlocks : dayLeaveBlockList){
+			lstLeaveBlocks.addAll(leaveBlocks);
+		}
+
+		Collections.sort(lstLeaveBlocks, new Comparator<LeaveBlock>() { // Sort the Leave Blocks
+			public int compare(LeaveBlock lb1, LeaveBlock lb2) {
+				if (lb1 != null && lb2 != null)
+					return lb1.getLeaveDate().compareTo(lb2.getLeaveDate());
+				return 0;
+			}
+		});
+
+		return lstLeaveBlocks;
 	}
 
 	/**
@@ -193,6 +266,40 @@ public class TkTimeBlockAggregate {
 
 		return wList;
 	}
+	
+	/**
+	 * Provides a way to access all of the leave blocks for a given week.
+	 *
+	 * Outer list is 0 indexed list representing days in a week.
+	 * Inner List are all of the leave blocks for that day.
+	 *
+	 * Ex.
+	 *
+	 * List<List<LeaveBlock>> week0 = getWeekLeaveBlocks(0);
+	 * List<LeaveBlock> day0 = week0.get(0);
+	 *
+	 * @param week
+	 * @return
+	 */
+	public List<List<LeaveBlock>> getWeekLeaveBlocks(int week){
+		int startIndex = week*7;
+		int endIndex = (week*7)+7;
+		endIndex = endIndex > dayLeaveBlockList.size() ? dayLeaveBlockList.size() : endIndex;
+
+        // Need to sort each day by clock time.
+        List<List<LeaveBlock>> wList = dayLeaveBlockList.subList(startIndex, endIndex);
+        for (List<LeaveBlock> dList : wList) {
+            Collections.sort(dList, new Comparator<LeaveBlock>() { // Sort the Leave Blocks
+                public int compare(LeaveBlock lb1, LeaveBlock lb2) {
+                    if (lb1 != null && lb2 != null)
+                        return lb1.getLeaveDate().compareTo(lb2.getLeaveDate());
+                    return 0;
+                }
+            });
+        }
+
+		return wList;
+	}
 
 	/**
 	 * When consuming these weeks, you must be aware that you could be on a
@@ -219,15 +326,16 @@ public class TkTimeBlockAggregate {
 //		startDate = startDate.toLocalDate().toDateTime(flsaBeginLocalTime,TKUtils.getSystemDateTimeZone());
 
 		List<FlsaWeek> flsaWeeks = new ArrayList<FlsaWeek>();
-		List<TimeBlock> flatSortedBlockList = getFlattenedTimeBlockList();
+		List<TimeBlock> flattenedTimeBlocks = getFlattenedTimeBlockList();
+		List<LeaveBlock> flattenedLeaveBlocks = getFlattenedLeaveBlockList();
 		FlsaWeek currentWeek = new FlsaWeek(flsaDayConstant, flsaBeginLocalTime, LocalTime.fromDateFields(payCalendarEntry.getBeginPeriodDateTime()));
-		FlsaDay flsaDay = new FlsaDay(startLDT, flatSortedBlockList, zone);
+		FlsaDay flsaDay = new FlsaDay(startLDT, flattenedTimeBlocks, flattenedLeaveBlocks, zone);
 		currentWeek.addFlsaDay(flsaDay);
 		flsaWeeks.add(currentWeek);
 
 		for (int i = 1; i < dayTimeBlockList.size(); i++) {
 			LocalDateTime currentDate = startLDT.plusDays(i);
-			flsaDay = new FlsaDay(currentDate, flatSortedBlockList, zone);
+			flsaDay = new FlsaDay(currentDate, flattenedTimeBlocks, flattenedLeaveBlocks, zone);
 
 			if (currentDate.getDayOfWeek() == flsaDayConstant) {
 				currentWeek = new FlsaWeek(flsaDayConstant, flsaBeginLocalTime, flsaBeginLocalTime);
@@ -256,9 +364,16 @@ public class TkTimeBlockAggregate {
 				if (previousCalendarEntry != null) {
 					TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, previousCalendarEntry.getBeginPeriodDateTime(), previousCalendarEntry.getEndPeriodDateTime());
 					if (timesheetDocumentHeader != null) { 
+		                TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentHeader.getDocumentId());
+		                List<String> assignmentKeys = new ArrayList<String>();
+		                for(Assignment assignment : timesheetDocument.getAssignments()) {
+		                	assignmentKeys.add(assignment.getAssignmentKey());
+		                }
+		                
 						List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(timesheetDocumentHeader.getDocumentId());
+						List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId, previousCalendarEntry.getBeginPeriodDateTime(), previousCalendarEntry.getEndPeriodDateTime(), assignmentKeys);
 						if (CollectionUtils.isNotEmpty(timeBlocks)) {
-							TkTimeBlockAggregate previousAggregate = new TkTimeBlockAggregate(timeBlocks, previousCalendarEntry, payCalendar, true);
+							TkTimeBlockAggregate previousAggregate = new TkTimeBlockAggregate(timeBlocks, leaveBlocks, previousCalendarEntry, payCalendar, true);
 							List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone);
 							if (CollectionUtils.isNotEmpty(previousWeek)) {
 								flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
@@ -274,10 +389,17 @@ public class TkTimeBlockAggregate {
 				CalendarEntries nextCalendarEntry = TkServiceLocator.getCalendarEntriesService().getNextCalendarEntriesByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
 				if (nextCalendarEntry != null) {
 					TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, nextCalendarEntry.getBeginPeriodDateTime(), nextCalendarEntry.getEndPeriodDateTime());
-					if (timesheetDocumentHeader != null) { 
+					if (timesheetDocumentHeader != null) {
+		                TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentHeader.getDocumentId());
+		                List<String> assignmentKeys = new ArrayList<String>();
+		                for(Assignment assignment : timesheetDocument.getAssignments()) {
+		                	assignmentKeys.add(assignment.getAssignmentKey());
+		                }
+		                
 						List<TimeBlock> timeBlocks = TkServiceLocator.getTimeBlockService().getTimeBlocks(timesheetDocumentHeader.getDocumentId());
+						List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId, nextCalendarEntry.getBeginPeriodDateTime(), nextCalendarEntry.getEndPeriodDateTime(), assignmentKeys);
 						if (CollectionUtils.isNotEmpty(timeBlocks)) {
-							TkTimeBlockAggregate nextAggregate = new TkTimeBlockAggregate(timeBlocks, nextCalendarEntry, payCalendar, true);
+							TkTimeBlockAggregate nextAggregate = new TkTimeBlockAggregate(timeBlocks, leaveBlocks, nextCalendarEntry, payCalendar, true);
 							List<FlsaWeek> nextWeek = nextAggregate.getFlsaWeeks(zone);
 							if (CollectionUtils.isNotEmpty(nextWeek)) {
 								flsaWeek.add(nextWeek.get(0));
@@ -310,6 +432,10 @@ public class TkTimeBlockAggregate {
 
 	public List<List<TimeBlock>> getDayTimeBlockList() {
 		return dayTimeBlockList;
+	}
+	
+	public List<List<LeaveBlock>> getDayLeaveBlockList() {
+		return dayLeaveBlockList;
 	}
 
 	public CalendarEntries getPayCalendarEntry() {

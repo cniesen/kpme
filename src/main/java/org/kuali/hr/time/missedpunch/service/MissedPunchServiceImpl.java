@@ -15,12 +15,17 @@
  */
 package org.kuali.hr.time.missedpunch.service;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
@@ -39,12 +44,6 @@ import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MissedPunchServiceImpl implements MissedPunchService {
 	
@@ -207,7 +206,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
      * Helper method to build time blocks and fire the rules processing. This
      * should be called only if there was a CLOCK_OUT action.
      */
-    private void buildTimeBlockRunRules(ClockLog beginClockLog, ClockLog endClockLog, TimesheetDocument tdoc, Assignment assignment, String earnCode, Timestamp beginTimestamp, Timestamp endTimestamp) {
+    private void buildTimeBlockRunRules(ClockLog beginClockLog, ClockLog endClockLog, TimesheetDocument tdoc, Assignment currentAssignment, String earnCode, Timestamp beginTimestamp, Timestamp endTimestamp) {
         // New Time Blocks, pointer reference
         List<TimeBlock> newTimeBlocks = tdoc.getTimeBlocks();
         List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>(newTimeBlocks);
@@ -217,7 +216,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         // Add TimeBlocks after we store our reference object!
         List<TimeBlock> blocks = TkServiceLocator.getTimeBlockService().buildTimeBlocks(
-                assignment, earnCode, tdoc, beginTimestamp,
+        		currentAssignment, earnCode, tdoc, beginTimestamp,
                 endTimestamp, BigDecimal.ZERO, BigDecimal.ZERO, true, false, TKContext.getPrincipalId());
 
 
@@ -229,11 +228,18 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         newTimeBlocks.addAll(blocks);
 
+        List<Assignment> assignments = tdoc.getAssignments();
+        List<String> assignmentKeys = new ArrayList<String>();
+        for (Assignment assignment : assignments) {
+        	assignmentKeys.add(assignment.getAssignmentKey());
+        }
+        List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(tdoc.getPrincipalId(), tdoc.getAsOfDate(), tdoc.getDocEndDate(), assignmentKeys);
+
         //reset time block
         TkServiceLocator.getTimesheetService().resetTimeBlock(newTimeBlocks, tdoc.getAsOfDate());
         //apply any rules for this action
         TkServiceLocator.getTkRuleControllerService().applyRules(
-                TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks,
+                TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks, leaveBlocks,
                 tdoc.getCalendarEntry(),
                 tdoc, tdoc.getPrincipalId()
         );
