@@ -359,7 +359,8 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             if (StringUtils.isBlank(blockType)
                     || StringUtils.equals(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_CALENDAR, blockType)
                     || StringUtils.equals(LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR, blockType)) {
-            	if (!TKUser.isDepartmentAdmin()) {
+            	if (!TKUser.isDepartmentAdmin()
+                        || TKUser.getApproverWorkAreas().contains(lb.getWorkArea())) {
             		return true;
             	}
             } else if (LMConstants.LEAVE_BLOCK_TYPE.LEAVE_PAYOUT.equals(blockType)
