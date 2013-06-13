@@ -616,10 +616,12 @@ public class TimeDetailAction extends TimesheetAction {
             }
         }
 
-        List<EarnCode> validEarnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, assignment.getEffectiveDate(), true);
         Set<String> earnCodes = new HashSet<String>();
-        for (EarnCode e : validEarnCodes) {
-            earnCodes.add(e.getEarnCode());
+        if (updatedTimeBlock != null) {
+            List<EarnCode> validEarnCodes = TkServiceLocator.getEarnCodeService().getEarnCodesForTime(assignment, updatedTimeBlock.getBeginDate(), true);
+            for (EarnCode e : validEarnCodes) {
+                earnCodes.add(e.getEarnCode());
+            }
         }
 
         if (updatedTimeBlock != null
