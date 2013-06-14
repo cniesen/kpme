@@ -15,12 +15,6 @@
  */
 package org.kuali.hr.lm.approval.web;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.struts.action.ActionForm;
@@ -29,12 +23,16 @@ import org.apache.struts.action.ActionMapping;
 import org.hsqldb.lib.StringUtil;
 import org.json.simple.JSONValue;
 import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
-import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.base.web.ApprovalForm;
-import org.kuali.hr.time.person.TKPerson;
+import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class LeaveApprovalWSAction extends TkAction {
 
@@ -74,8 +72,6 @@ public class LeaveApprovalWSAction extends TkAction {
         			.getLeavePrincipalIdsWithSearchCriteria(workAreaList, laaf.getSelectedPayCalendarGroup(),
         					new java.sql.Date(endDate.getTime()), new java.sql.Date(beginDate.getTime()), new java.sql.Date(endDate.getTime())); 
 		        
-		        List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
-		        
 		        if (StringUtils.equals(laaf.getSearchField(), ApprovalForm.ORDER_BY_PRINCIPAL)) {
 		            for (String id : principalIds) {
 		                if(StringUtils.contains(id, laaf.getSearchTerm())) {
@@ -87,7 +83,7 @@ public class LeaveApprovalWSAction extends TkAction {
 		            }
 		        } else if (StringUtils.equals(laaf.getSearchField(), ApprovalForm.ORDER_BY_DOCID)) {
 		            Map<String, LeaveCalendarDocumentHeader> principalDocumentHeaders =
-		                    TkServiceLocator.getLeaveApprovalService().getPrincipalDocumehtHeader(persons, beginDate, endDate);
+		                    TkServiceLocator.getLeaveApprovalService().getPrincipalDocumentHeader(principalIds, beginDate, endDate);
 	
 		            for (Map.Entry<String,LeaveCalendarDocumentHeader> entry : principalDocumentHeaders.entrySet()) {
 		                if (StringUtils.contains(entry.getValue().getDocumentId(), laaf.getSearchTerm())) {

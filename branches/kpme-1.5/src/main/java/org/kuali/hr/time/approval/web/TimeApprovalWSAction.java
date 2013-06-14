@@ -42,7 +42,6 @@ import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.base.web.ApprovalForm;
 import org.kuali.hr.time.base.web.TkAction;
 import org.kuali.hr.time.detail.web.ActionFormUtils;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
@@ -87,7 +86,6 @@ public class TimeApprovalWSAction extends TkAction {
 				.getTimePrincipalIdsWithSearchCriteria(workAreaList, taaf.getSelectedPayCalendarGroup(),
 					new java.sql.Date(endDate.getTime()), new java.sql.Date(beginDate.getTime()), new java.sql.Date(endDate.getTime())); 
 	        
-	        List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
 	        
 	        if (StringUtils.equals(taaf.getSearchField(), ApprovalForm.ORDER_BY_PRINCIPAL)) {
 	            for (String id : principalIds) {
@@ -100,8 +98,8 @@ public class TimeApprovalWSAction extends TkAction {
 	            }
 	        } else if (StringUtils.equals(taaf.getSearchField(), ApprovalForm.ORDER_BY_DOCID)) {
 	            Map<String, TimesheetDocumentHeader> principalDocumentHeaders =
-	                    TkServiceLocator.getTimeApproveService().getPrincipalDocumentHeader(persons, beginDate, endDate);
-
+	            		TkServiceLocator.getTimeApproveService().getPrincipalDocumentHeader(principalIds, beginDate, endDate);
+	            
 	            for (Map.Entry<String,TimesheetDocumentHeader> entry : principalDocumentHeaders.entrySet()) {
 	                if (StringUtils.contains(entry.getValue().getDocumentId(), taaf.getSearchTerm())) {
 	                    Map<String, String> labelValue = new HashMap<String, String>();
