@@ -24,11 +24,10 @@ import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.approval.web.ApprovalLeaveSummaryRow;
 import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.rice.kew.api.note.Note;
 
 public interface LeaveApprovalService {
-	public List<ApprovalLeaveSummaryRow> getLeaveApprovalSummaryRows(List<TKPerson> persons, CalendarEntries payCalendarEntries, List<Date> leaveSummaryDates);
+	public List<ApprovalLeaveSummaryRow> getLeaveApprovalSummaryRows(List<String> principalIds, CalendarEntries payCalendarEntries, List<Date> leaveSummaryDates);
 	
 	public Map<Date, Map<String, BigDecimal>> getEarnCodeLeaveHours(List<LeaveBlock> leaveBlocks, List<Date> leaveSummaryDates);
 	
@@ -51,7 +50,7 @@ public interface LeaveApprovalService {
     public List<CalendarEntries> getAllLeavePayCalendarEntriesForApprover(String principalId, Date currentDate);
 
     /*
-     * remove the employees with no jobs that are eligible for leave fromt the given list of principal ids
+     * remove the employees with no jobs that are eligible for leave from the given list of principal ids
      * 
      * @param principalIds
      * 
@@ -61,12 +60,12 @@ public interface LeaveApprovalService {
    /**
     * Method to create a map that contains the principal's id and corresponding leave calendar document header.
     *
-    *@param persons
+    *@param principalIds
     * @param payBeginDate
     * @param payEndDate
     * @return A PrincipalId to LeaveCalendarDocumentHeader mapping.
     */
-   public Map<String, LeaveCalendarDocumentHeader> getPrincipalDocumehtHeader(List<TKPerson> persons, Date payBeginDate, Date payEndDate);
+   public Map<String, LeaveCalendarDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, Date payBeginDate, Date payEndDate);
    
    /**
     * 

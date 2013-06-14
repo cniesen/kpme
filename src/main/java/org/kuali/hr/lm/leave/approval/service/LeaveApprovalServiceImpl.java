@@ -45,7 +45,6 @@ import org.kuali.hr.lm.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.hr.time.approval.web.ApprovalLeaveSummaryRow;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
 import org.kuali.hr.time.principal.dao.PrincipalHRAttributesDao;
 import org.kuali.hr.time.roles.TkUserRoles;
@@ -57,6 +56,8 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.note.Note;
+import org.kuali.rice.kim.api.identity.principal.Principal;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 
@@ -67,20 +68,21 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
     public void setPrincipalHRAttributesDao(PrincipalHRAttributesDao principalHRAttributesDao) {
         this.principalHRAttributesDao = principalHRAttributesDao;
     }
-	
+
 	@Override
-	public List<ApprovalLeaveSummaryRow> getLeaveApprovalSummaryRows(List<TKPerson> persons, CalendarEntries payCalendarEntries, List<Date> leaveSummaryDates) {
+	public List<ApprovalLeaveSummaryRow> getLeaveApprovalSummaryRows(List<String> principalIds, CalendarEntries payCalendarEntries, List<Date> leaveSummaryDates) {
 		Date payBeginDate = payCalendarEntries.getBeginPeriodDate();
 		Date payEndDate = payCalendarEntries.getEndPeriodDate();
 		List<ApprovalLeaveSummaryRow> rowList = new ArrayList<ApprovalLeaveSummaryRow>();		
-		
-		for(TKPerson aPerson : persons) {
-			String principalId = aPerson.getPrincipalId();
+
+		for(String principalId : principalIds) {
+			
 			ApprovalLeaveSummaryRow aRow = new ApprovalLeaveSummaryRow();
             List<Note> notes = new ArrayList<Note>();
 //            List<String> warnings = new ArrayList<String>();
-			aRow.setName(aPerson.getPrincipalName());
-			aRow.setPrincipalId(aPerson.getPrincipalId());
+            Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
+			aRow.setName(principal.getPrincipalName());
+			aRow.setPrincipalId(principalId);
 			
 			String lastApprovedString = "No previous approved leave calendar information";
 			LeaveCalendarDocumentHeader lastApprovedDoc = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getMaxEndDateApprovedLeaveCalendar(principalId);
@@ -121,7 +123,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
             warningMessages.addAll(allMessages.get("actionMessages"));
 
             aRow.setWarnings(warningMessages); //these are only warning messages.
-			
+
 			rowList.add(aRow);
 		}
 		
@@ -184,40 +186,25 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
 		for (Date leaveSummaryDate : leaveSummaryDates) {
 			earnCodeLeaveHours.put(leaveSummaryDate, new LinkedHashMap<String, BigDecimal>());
 		}
-		
-		for (LeaveBlock lb : leaveBlocks) {
+
+        for (LeaveBlock lb : leaveBlocks) {
 			DateTime leaveDate = new DateTime(lb.getLeaveDate()).toLocalDate().toDateTimeAtStartOfDay();
-			
-			if (earnCodeLeaveHours.get(leaveDate.toDate()) != null) {
-				Map<String, BigDecimal> leaveHours = earnCodeLeaveHours.get(leaveDate.toDate());
 
-				BigDecimal amount = lb.getLeaveAmount();
+            if (earnCodeLeaveHours.get(leaveDate.toDate()) != null) {
+                Map<String, BigDecimal> leaveHours = earnCodeLeaveHours.get(leaveDate.toDate());
+
+                BigDecimal amount = lb.getLeaveAmount();
                 String key = lb.getEarnCode() + "|" + lb.getRequestStatus() + "|" + lb.getLeaveBlockType();
-				if (leaveHours.get(key) != null) {
-					amount = leaveHours.get(key).add(lb.getLeaveAmount());
-				}
-				
-				leaveHours.put(key, amount);
-			}
-		}
-		
-		return earnCodeLeaveHours;
-	}
+                if (leaveHours.get(key) != null) {
+                    amount = leaveHours.get(key).add(lb.getLeaveAmount());
+                }
 
-	public Map<String, LeaveCalendarDocumentHeader> getLeaveDocumentHeaderMap(List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
-		Map<String, LeaveCalendarDocumentHeader> leaveDocumentHeaderMap = new LinkedHashMap<String, LeaveCalendarDocumentHeader>();
-		if (CollectionUtils.isNotEmpty(persons)) {
-			for (TKPerson person : persons) {
-				String principalId = person.getPrincipalId();
-				LeaveCalendarDocumentHeader aHeader = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
-				if(aHeader != null) {
-					leaveDocumentHeaderMap.put(principalId, aHeader);
-				}
-				
-			}
-		}
-		return leaveDocumentHeaderMap;
-	}
+                leaveHours.put(key, amount);
+            }
+        }
+
+        return earnCodeLeaveHours;
+    }
 	
 	@Override
 	public List<Map<String, Object>> getLeaveApprovalDetailSections(LeaveCalendarDocumentHeader lcdh)  {
@@ -395,10 +382,9 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService{
 	}	
 
 	@Override
-	public Map<String, LeaveCalendarDocumentHeader> getPrincipalDocumehtHeader(List<TKPerson> persons, Date payBeginDate, Date payEndDate) {
+	public Map<String, LeaveCalendarDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, Date payBeginDate, Date payEndDate) {
 		Map<String, LeaveCalendarDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, LeaveCalendarDocumentHeader>();
-		for (TKPerson person : persons) {
-			String principalId = person.getPrincipalId();
+		for (String principalId : principalIds) {
 			LeaveCalendarDocumentHeader lcdh = TkServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
 			if(lcdh != null) {
 				principalDocumentHeader.put(principalId, lcdh);	

@@ -43,7 +43,6 @@ import org.kuali.hr.time.base.web.ApprovalForm;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.detail.web.ActionFormUtils;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
@@ -68,9 +67,8 @@ public class LeaveApprovalAction extends ApprovalAction{
     	laaf.setSearchField("principalId");
         List<String> principalIds = new ArrayList<String>();
         principalIds.add(laaf.getSearchTerm());
-        List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
         CalendarEntries payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(laaf.getHrPyCalendarEntriesId());
-        if (persons.isEmpty()) {
+        if (principalIds.isEmpty()) {
         	laaf.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRow>());
         	laaf.setResultSize(0);
         } else {
@@ -178,9 +176,9 @@ public class LeaveApprovalAction extends ApprovalAction{
 			laaf.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRow>());
 			laaf.setResultSize(0);
 		} else {
-			List<TKPerson> persons = TkServiceLocator.getPersonService().getPersonCollection(principalIds);
+			
+			List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, principalIds)); 
             //List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, persons));
-            List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, persons);
 
 			String sortField = getSortField(request);
 		    if (StringUtils.isEmpty(sortField) ||
@@ -226,7 +224,7 @@ public class LeaveApprovalAction extends ApprovalAction{
             Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
 
 			laaf.setLeaveApprovalRows(approvalRows.subList(beginIndex, endIndex));
-		    laaf.setResultSize(persons.size());
+		    laaf.setResultSize(principalIds.size());
 		}
 	}
 	
@@ -367,7 +365,7 @@ public class LeaveApprovalAction extends ApprovalAction{
 		return loadApprovalTab(mapping, form, request, response);
 	}
 	   
-    protected List<ApprovalLeaveSummaryRow> getApprovalLeaveRows(LeaveApprovalActionForm laaf, List<TKPerson> assignmentPrincipalIds) {
+    protected List<ApprovalLeaveSummaryRow> getApprovalLeaveRows(LeaveApprovalActionForm laaf, List<String> assignmentPrincipalIds) {
         return TkServiceLocator.getLeaveApprovalService().getLeaveApprovalSummaryRows
         	(assignmentPrincipalIds, laaf.getPayCalendarEntries(), laaf.getLeaveCalendarDates());
     }

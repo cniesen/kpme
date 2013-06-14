@@ -29,7 +29,6 @@ import org.kuali.hr.lm.leaveblock.LeaveBlock;
 import org.kuali.hr.time.approval.web.ApprovalTimeSummaryRow;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
-import org.kuali.hr.time.person.TKPerson;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.note.Note;
@@ -50,7 +49,7 @@ public interface TimeApproveService {
      * @param calGroup Specify a calendar group to filter by.
      * @return A Map<String, List<ApprovalTimeSummaryRow>> container.
      */
-	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(Date payBeginDate, Date payEndDate, String calGroup, List<TKPerson> principalIds, List<String> payCalendarLabels, CalendarEntries payCalendarEntries);
+	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(Date payBeginDate, Date payEndDate, String calGroup, List<String> principalIds, List<String> payCalendarLabels, CalendarEntries payCalendarEntries);
 	
 
 
@@ -111,7 +110,7 @@ public interface TimeApproveService {
      * @param payEndDate
      * @return A PrincipalId to TimesheetDocumentHeader mapping.
      */
-    Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(List<TKPerson> person, Date payBeginDate, Date payEndDate);
+    Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, Date payBeginDate, Date payEndDate);
 
     /**
      * Method to create a map of the depts and their associated work areas based on the given approver work areas.
