@@ -35,9 +35,11 @@ import org.kuali.hr.time.util.TKUser;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
+import org.kuali.rice.core.api.util.RiceConstants;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kns.web.struts.action.KualiTransactionalDocumentActionBase;
+import org.kuali.rice.krad.exception.ValidationException;
 
 public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
 
@@ -138,7 +140,12 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         //TkServiceLocator.getMissedPunchService().addClockLogForMissedPunch(mpDoc);
         mpForm.setDocId(mpDoc.getDocumentNumber());
         mpForm.setAssignmentReadOnly(true);
-        return super.route(mapping, mpForm, request, response);
+        try {
+            return super.route(mapping, mpForm, request, response);
+        } catch (ValidationException e) {
+            mpForm.setAssignmentReadOnly(false);
+            return mapping.findForward(RiceConstants.MAPPING_BASIC);
+        }
     }
 
     @Override
@@ -174,7 +181,12 @@ public class MissedPunchAction extends KualiTransactionalDocumentActionBase {
         request.setAttribute(TkConstants.TIMESHEET_DOCUMENT_ID_REQUEST_NAME, mpDoc.getTimesheetDocumentId());
         mpForm.setDocId(mpDoc.getDocumentNumber());
         mpForm.setAssignmentReadOnly(true);
-        return super.save(mapping, mpForm, request, response);
+        try {
+            return super.save(mapping, mpForm, request, response);
+        } catch (ValidationException e) {
+            mpForm.setAssignmentReadOnly(false);
+            return mapping.findForward(RiceConstants.MAPPING_BASIC);
+        }
 
     }
 }
