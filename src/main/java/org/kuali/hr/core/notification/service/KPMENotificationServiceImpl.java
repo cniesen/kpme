@@ -25,8 +25,13 @@ import org.kuali.rice.core.api.mail.EmailTo;
 import org.kuali.rice.core.api.mail.Mailer;
 import org.kuali.rice.coreservice.framework.parameter.ParameterService;
 import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.PersonService;
+import org.kuali.rice.kim.api.identity.entity.EntityDefault;
+import org.kuali.rice.kim.api.identity.type.EntityTypeContactInfo;
+import org.kuali.rice.kim.api.identity.type.EntityTypeContactInfoDefault;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.KRADConstants;
 
 public class KPMENotificationServiceImpl implements KPMENotificationService {
@@ -44,25 +49,25 @@ public class KPMENotificationServiceImpl implements KPMENotificationService {
 	public void sendNotification(String subject, String message, String... principalIds) {
 		if (sendEmailNotification()) {
 			for (String principalId : principalIds) {
-				Person person = getPersonService().getPerson(principalId);
-				
-				if (person != null && StringUtils.isNotBlank(person.getEmailAddressUnmasked())) {
-					EmailFrom emailFrom = new EmailFrom(getApplicationEmailAddress());
-					EmailTo emailTo = new EmailTo(person.getEmailAddressUnmasked());
-					EmailSubject emailSubject = new EmailSubject(subject);
-					EmailBody emailBody = new EmailBody(message);
-			        
-					try {
-						getMailer().sendEmail(emailFrom, emailTo, emailSubject, emailBody, false);
-					} catch (RuntimeException re) {
-						LOG.error("Email message sending failure:", re);
-					}
+                EntityDefault entityDefault = KimApiServiceLocator.getIdentityService().getEntityDefaultByPrincipalId(principalId);
+                if (entityDefault != null) {
+                    EntityTypeContactInfoDefault contact = entityDefault.getEntityType(KimConstants.EntityTypes.PERSON);
+                    if (contact != null && contact.getDefaultEmailAddress().getEmailAddressUnmasked() != null) {
+                        EmailFrom emailFrom = new EmailFrom(getApplicationEmailAddress());
+                        EmailTo emailTo = new EmailTo(contact.getDefaultEmailAddress().getEmailAddressUnmasked());
+                        EmailSubject emailSubject = new EmailSubject(subject);
+                        EmailBody emailBody = new EmailBody(message);
+
+                        try {
+                            getMailer().sendEmail(emailFrom, emailTo, emailSubject, emailBody, false);
+                        } catch (RuntimeException re) {
+                            LOG.error("Email message sending failure:", re);
+                        }
+                    } else {
+                        LOG.warn("Could not send message to principalId " + principalId + " because the person entity does not have an email address");
+                    }
 				} else {
-					if (person == null) {
-						LOG.warn("Could not send message to principalId " + principalId + " because the person entity does not exist");
-					} else {
-						LOG.warn("Could not send message to principalId " + principalId + " because the person entity does not have an email address");
-					}
+				    LOG.warn("Could not send message to principalId " + principalId + " because the person entity does not exist");
 				}
 			}
 		} else {

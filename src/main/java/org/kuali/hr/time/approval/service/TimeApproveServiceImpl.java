@@ -51,6 +51,7 @@ import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
@@ -234,14 +235,13 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		List<Interval> dayIntervals = TKUtils
 				.getDaySpanForCalendarEntry(payCalendarEntries);
 
+
 		for (String principalId : principalIds) {
 			TimesheetDocumentHeader tdh = new TimesheetDocumentHeader();
 			String documentId = "";
 			if (principalDocumentHeader.containsKey(principalId)) {
 				tdh = principalDocumentHeader.get(principalId);
-				Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
-				documentId = principalDocumentHeader.get(
-						principal.getPrincipalId()).getDocumentId();
+				documentId = principalDocumentHeader.get(principalId).getDocumentId();
 			}
 			List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>();
             List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
@@ -292,7 +292,10 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
 					dateTimeZone, dayIntervals);
 
-			approvalSummaryRow.setName(principalId);
+            EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+			approvalSummaryRow.setName(name != null
+                    && name.getDefaultName() != null
+                    && name.getDefaultName().getCompositeName() != null ? name.getDefaultName().getCompositeName() : principalId);
 			approvalSummaryRow.setPrincipalId(principalId);
 			approvalSummaryRow.setPayCalendarGroup(calGroup);
 			approvalSummaryRow.setDocumentId(documentId);
