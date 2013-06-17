@@ -39,7 +39,7 @@ public class Account extends PersistableBusinessObjectBase implements Inactivata
     private Date accountExpirationDate;
     private boolean active;
     private String organizationCode;
-    //private boolean closed;
+
 
     public String getOrganizationCode() {
 		return organizationCode;
