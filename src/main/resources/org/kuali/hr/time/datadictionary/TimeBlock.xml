@@ -333,6 +333,9 @@
 		<property name="name" value="timesheetDocumentHeader.documentStatus" />
 		<property name="label" value="Document Status"/>
 		<property name="required" value="false"/>
+        <!--<property name="control">
+            <bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.rice.kew.lookup.valuefinder.DocumentRouteStatusValuesFinder" p:includeKeyInLabel="false"/>
+        </property>-->
 	</bean> 
   
 <!-- Business Object Inquiry Definition -->
