@@ -52,7 +52,9 @@ public class KPMENotificationServiceImpl implements KPMENotificationService {
                 EntityDefault entityDefault = KimApiServiceLocator.getIdentityService().getEntityDefaultByPrincipalId(principalId);
                 if (entityDefault != null) {
                     EntityTypeContactInfoDefault contact = entityDefault.getEntityType(KimConstants.EntityTypes.PERSON);
-                    if (contact != null && contact.getDefaultEmailAddress().getEmailAddressUnmasked() != null) {
+                    if (contact != null
+                            && contact.getDefaultEmailAddress() != null
+                            && contact.getDefaultEmailAddress().getEmailAddressUnmasked() != null) {
                         EmailFrom emailFrom = new EmailFrom(getApplicationEmailAddress());
                         EmailTo emailTo = new EmailTo(contact.getDefaultEmailAddress().getEmailAddressUnmasked());
                         EmailSubject emailSubject = new EmailSubject(subject);
