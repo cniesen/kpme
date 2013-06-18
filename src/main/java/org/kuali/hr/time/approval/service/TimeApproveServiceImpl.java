@@ -36,6 +36,7 @@ import org.kuali.hr.time.assignment.AssignmentDescriptionKey;
 import org.kuali.hr.time.calendar.Calendar;
 import org.kuali.hr.time.calendar.CalendarEntries;
 import org.kuali.hr.time.clocklog.ClockLog;
+import org.kuali.hr.time.earncode.EarnCode;
 import org.kuali.hr.time.flsa.FlsaDay;
 import org.kuali.hr.time.flsa.FlsaWeek;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
@@ -256,23 +257,26 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 								.getDocumentStatus()));
 			}
 
+            Set<String> regularEarnCodes = new HashSet<String>();
 			if (StringUtils.isNotBlank(documentId)) {
                 TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
-				timeBlocks = td.getTimeBlocks();
-				//timeBlocks = TkServiceLocator.getTimeBlockService()
-				//		.getTimeBlocks(documentId);
-                List<String> assignKeys = new ArrayList<String>();
-                for(Assignment a : td.getAssignments()) {
-                    assignKeys.add(a.getAssignmentKey());
-                }
-                leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId,
-                        payBeginDate, payEndDate, assignKeys);
-                notes = getNotesForDocument(documentId);
+                if (td != null) {
+                    timeBlocks = td.getTimeBlocks();
+                    //timeBlocks = TkServiceLocator.getTimeBlockService()
+                    //		.getTimeBlocks(documentId);
+                    List<String> assignKeys = new ArrayList<String>();
+                    for(Assignment a : td.getAssignments()) {
+                        assignKeys.add(a.getAssignmentKey());
+                        regularEarnCodes.add(a.getJob().getPayTypeObj().getRegEarnCode());
+                    }
+                    leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId,
+                            payBeginDate, payEndDate, assignKeys);
+                    notes = getNotesForDocument(documentId);
 
-				warnings = TkServiceLocator.getWarningService().getWarnings(td);
+                    warnings = TkServiceLocator.getWarningService().getWarnings(td);
+                }
 
 			}
-			//TODO: Move to Warning Service!!!!!
 			Map<String, Set<String>> transactionalWarnings = LeaveCalendarValidationUtil.validatePendingTransactions(principalId, payCalendarEntries.getBeginPeriodDate(), payCalendarEntries.getEndPeriodDate());
 			
 			warnings.addAll(transactionalWarnings.get("infoMessages"));
@@ -285,12 +289,12 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
 					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
-					dateTimeZone, dayIntervals);
+					dateTimeZone, dayIntervals, regularEarnCodes);
 			
 			Map<String, BigDecimal> hoursToFlsaPayLabelMap = getHoursToFlsaWeekMap(
 					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
-					dateTimeZone, dayIntervals);
+					dateTimeZone, dayIntervals, regularEarnCodes);
 
             EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
 			approvalSummaryRow.setName(name != null
@@ -588,18 +592,15 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Date payEndDate, List<String> payCalendarLabels,
 			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar,
-			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes) {
+        if (regularEarnCodes == null) {
+            regularEarnCodes = new HashSet<String>();
+        }
+
 		Map<String, BigDecimal> hoursToPayLabelMap = new LinkedHashMap<String, BigDecimal>();
 		List<BigDecimal> dayTotals = new ArrayList<BigDecimal>();
 
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(
-				lstTimeBlocks, payCalendarEntries, payCalendar, true,
-				dayIntervals);
-
-        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, payCalendarEntries);
-
-        //combine time and leave aggregates.... (sigh)
-        tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+        TkTimeBlockAggregate tkTimeBlockAggregate = buildAndMergeAggregates(lstTimeBlocks, leaveBlocks, payCalendarEntries, payCalendar, dayIntervals);
 
 		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate
 				.getFlsaWeeks(dateTimeZone);
@@ -607,18 +608,23 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			for (FlsaDay day : week.getFlsaDays()) {
 				BigDecimal total = new BigDecimal(0.00);
 				for (TimeBlock tb : day.getAppliedTimeBlocks()) {
-					if (workArea != null) {
-						if (tb.getWorkArea().compareTo(workArea) == 0) {
-							total = total.add(tb.getHours(),
-									TkConstants.MATH_CONTEXT);
-						} else {
-							total = total.add(new BigDecimal("0"),
-									TkConstants.MATH_CONTEXT);
-						}
-					} else {
-						total = total.add(tb.getHours(),
-								TkConstants.MATH_CONTEXT);
-					}
+                    EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(tb.getEarnCode(), tb.getEndDate());
+                    if (ec != null
+                            && (ec.getOvtEarnCode()
+                                 || regularEarnCodes.contains(ec.getEarnCode()))) {
+                        if (workArea != null) {
+                            if (tb.getWorkArea().compareTo(workArea) == 0) {
+                                total = total.add(tb.getHours(),
+                                        TkConstants.MATH_CONTEXT);
+                            } else {
+                                total = total.add(new BigDecimal("0"),
+                                        TkConstants.MATH_CONTEXT);
+                            }
+                        } else {
+                            total = total.add(tb.getHours(),
+                                    TkConstants.MATH_CONTEXT);
+                        }
+                    }
 				}
 				dayTotals.add(total);
 			}
@@ -648,6 +654,13 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		}
 		return hoursToPayLabelMap;
 	}
+
+    private TkTimeBlockAggregate buildAndMergeAggregates(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks,
+                                                         CalendarEntries calendarEntries, Calendar calendar, List<Interval> dayIntervals) {
+        TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timeBlocks, calendarEntries, calendar, true, dayIntervals);
+        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, calendarEntries);
+        return TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+    }
 	
 	/**
 	 * Aggregate TimeBlocks to hours per day and sum for flsa week (including previous/next weeks)
@@ -657,15 +670,14 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Date payEndDate, List<String> payCalendarLabels, 
 			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar, 
-			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes) {
+        if (regularEarnCodes == null) {
+            regularEarnCodes = new HashSet<String>();
+        }
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
 
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(lstTimeBlocks, payCalendarEntries, payCalendar, true, dayIntervals);
-        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, payCalendarEntries);
-
-        //combine time and leave aggregates.... (sigh)
-        tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+        TkTimeBlockAggregate tkTimeBlockAggregate = buildAndMergeAggregates(lstTimeBlocks, leaveBlocks, payCalendarEntries, payCalendar, dayIntervals);
         List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
 		
 		int weekCount = 1;
@@ -674,15 +686,21 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
 				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
 					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-						if (workArea != null) {
-							if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
-								weekTotal = weekTotal.add(timeBlock.getHours(), TkConstants.MATH_CONTEXT);
-							} else {
-								weekTotal = weekTotal.add(new BigDecimal("0"), TkConstants.MATH_CONTEXT);
-							}
-						} else {
-							weekTotal = weekTotal.add(timeBlock.getHours(),TkConstants.MATH_CONTEXT);
-						}
+                        EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDate());
+                        if (ec != null
+                                && (ec.getOvtEarnCode()
+                                || regularEarnCodes.contains(ec.getEarnCode()))) {
+
+                            if (workArea != null) {
+                                if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
+                                    weekTotal = weekTotal.add(timeBlock.getHours(), TkConstants.MATH_CONTEXT);
+                                } else {
+                                    weekTotal = weekTotal.add(new BigDecimal("0"), TkConstants.MATH_CONTEXT);
+                                }
+                            } else {
+                                weekTotal = weekTotal.add(timeBlock.getHours(),TkConstants.MATH_CONTEXT);
+                            }
+                        }
 					}
 				}
 			}

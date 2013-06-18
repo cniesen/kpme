@@ -266,6 +266,23 @@
     padding: 3px;
 }
 
+#timesheet-summary .earnCodeCell {
+    text-align: left;
+    font-weight: bold;
+    padding-top: 15px;
+    border-bottom: solid;
+    border-bottom-color: black;
+    border-bottom-width: 1px;
+}
+
+#timesheet-summary .earnGroupTotalRow {
+    background-color: #EEEEEE;
+    border-bottom-style: solid;
+    border-bottom-color: black;
+    border-bottom-width: 1px;
+
+}
+
 #timesheet-routing {
     margin: 10px 40% 10px 40%;
     text-align: center;
@@ -584,6 +601,19 @@ label.error {
 .approvals-table #approvals-warning:hover, .approvals-table #approvals-note:hover, .approvals-table #approvals-status:hover {
     background-color: #dadada;
     cursor: pointer;
+}
+
+.approvals-table .earnCodeCell {
+    text-align: left;
+    font-weight: bold;
+    padding-top: 10px;
+    background-color: #CDCDCD;
+}
+
+.approvals-table .earnGroupTotalRow {
+    background-color: #EEEEEE;
+    border-bottom-style: outset;
+    border-bottom-width: 1px;
 }
 
 .approvals-note-details table, .approvals-warning-details table, .approvals-status-details table {

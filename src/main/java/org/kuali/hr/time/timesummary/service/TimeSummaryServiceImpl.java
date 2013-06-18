@@ -85,7 +85,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
         tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
 
-		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate));
+		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate, regularEarnCodes));
 
         List<EarnGroupSection> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getSummaryHeader().size()+1, 
         			dayArrangements, timesheetDocument.getAsOfDate(), timesheetDocument.getDocEndDate());
@@ -364,7 +364,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * @return A list of BigDecimals containing the number of hours worked.
      * This list will line up with the header.
      */
-    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate) {
+    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate, Set<String> regularEarnCodes) {
         List<BigDecimal> hours = new ArrayList<BigDecimal>();
         BigDecimal periodTotal = TkConstants.BIG_DECIMAL_SCALED_ZERO;
         for (FlsaWeek week : aggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback())) {
@@ -372,9 +372,14 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
             for (FlsaDay day : week.getFlsaDays()) {
                 BigDecimal totalForDay = TkConstants.BIG_DECIMAL_SCALED_ZERO;
                 for (TimeBlock block : day.getAppliedTimeBlocks()) {
-                    totalForDay = totalForDay.add(block.getHours(), TkConstants.MATH_CONTEXT);
-                    weeklyTotal = weeklyTotal.add(block.getHours(), TkConstants.MATH_CONTEXT);
-                    periodTotal = periodTotal.add(block.getHours(), TkConstants.MATH_CONTEXT);
+                    EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(block.getEarnCode(), block.getEndDate());
+                    if (ec != null
+                           && (ec.getOvtEarnCode()
+                               || regularEarnCodes.contains(ec.getEarnCode()))) {
+                        totalForDay = totalForDay.add(block.getHours(), TkConstants.MATH_CONTEXT);
+                        weeklyTotal = weeklyTotal.add(block.getHours(), TkConstants.MATH_CONTEXT);
+                        periodTotal = periodTotal.add(block.getHours(), TkConstants.MATH_CONTEXT);
+                    }
                 }
                 hours.add(totalForDay);
             }

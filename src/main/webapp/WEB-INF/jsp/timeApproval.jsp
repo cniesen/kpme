@@ -60,7 +60,7 @@
 <script type="text/template" id="hourDetail-template">
     <@ _.each(section.earnCodeSections, function(earnCodeSection) { @>
         <tr class="hourDetailRow_<@= docId @>">
-            <td colspan="2"><@= earnCodeSection.earnCode @>: <@= earnCodeSection.desc @></td>
+            <td colspan="2" class="earnCodeCell"><@= earnCodeSection.earnCode @>: <@= earnCodeSection.desc @></td>
         </tr>
 
         <@ _.each(earnCodeSection.assignmentRows, function(assignmentRow) { @>
@@ -87,9 +87,9 @@
         <@ }); @>
     <@ }); @>
     <tr class="hourDetailRow_<@= docId @>">
-        <td colspan="2"><@= section.earnGroup @></td>
+        <td colspan="2" class="earnGroupTotalRow"><@= section.earnGroup @> Totals</td>
         <@ _.each(section.totals, function(total) { @>
-        <td><@= total == 0 ? "" : total.toFixed(2) @></td>
+        <td class="earnGroupTotalRow"><@= total == 0 ? "" : total.toFixed(2) @></td>
         <@ }); @>
     </tr>
 </script>
