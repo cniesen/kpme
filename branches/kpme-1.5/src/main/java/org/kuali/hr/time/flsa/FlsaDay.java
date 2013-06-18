@@ -69,9 +69,12 @@ public class FlsaDay {
 	 * @param timeBlocks a sorted list of time blocks.
 	 */
 	public void setTimeBlocks(List<TimeBlock> timeBlocks) {
-		for (TimeBlock block : timeBlocks)
-			if (!applyBlock(block, this.appliedTimeBlocks))
-				break;
+		for (TimeBlock block : timeBlocks) {
+            applyBlock(block, this.appliedTimeBlocks);
+			//if (!applyBlock(block, this.appliedTimeBlocks)) {
+			//	break;
+            //}
+        }
 	}
 	
 	/**
@@ -81,12 +84,15 @@ public class FlsaDay {
 	 * to determine how many hours overlap.  It will then examine the leave hour
 	 * details
 	 *
-	 * @param timeBlocks a sorted list of time blocks.
+	 * @param leaveBlocks a sorted list of leave blocks.
 	 */
 	public void setLeaveBlocks(List<LeaveBlock> leaveBlocks) {
-		for (LeaveBlock block : leaveBlocks)
-			if (!applyBlock(block, this.appliedLeaveBlocks))
+		for (LeaveBlock block : leaveBlocks) {
+            applyBlock(block, this.appliedLeaveBlocks);
+			/*if (!applyBlock(block, this.appliedLeaveBlocks)) {
 				break;
+            }*/
+        }
 	}
 
 	/**
@@ -151,8 +157,9 @@ public class FlsaDay {
 		DateTime beginDateTime = new DateTime(block.getBeginTimestamp(), this.timeZone);
 		DateTime endDateTime = new DateTime(block.getEndTimestamp(), this.timeZone);
 
-		if (beginDateTime.isAfter(flsaDateInterval.getEnd()))
+		if (beginDateTime.isAfter(flsaDateInterval.getEnd())) {
 			return false;
+        }
 
 		Interval timeBlockInterval = null;
 		//Requested to have zero hour time blocks be able to be added to the GUI
