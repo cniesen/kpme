@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.timesummary;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.simple.JSONValue;
 import org.kuali.hr.lm.leaveSummary.LeaveSummaryRow;
 
@@ -50,12 +51,24 @@ public class TimeSummary implements Serializable {
     public String toJsonString() {
         List<Map<String, Object>> earnGroupSections = new ArrayList<Map<String, Object>>();
 
+        //Lets add a fake EarnGroupSection for worked hours!!!
+        Map<String, Object> workedHours = new HashMap<String, Object>();
+        workedHours.put("totals", getWorkedHours());
+        workedHours.put("earnGroup", "Worked Hours");
+        workedHours.put("earnCodeSections", new HashMap<String, Object>());
+
+        //Map<String, Object> workedHoursECS = new HashMap<String, Object>();
+        //workedHoursECS.put("earnCode", "");
+        ///workedHoursECS.put("desc", "Worked Hours");
+        //workedHoursECS.put("totals", getWorkedHours());
+        //workedHoursECS.put("isAmountEarnCode", earnCodeSection.getIsAmountEarnCode());
 
         for (EarnGroupSection earnGroupSection : this.sections) {
             List<Map<String, Object>> earnCodeSections = new ArrayList<Map<String, Object>>();
             Map<String, Object> egs = new TreeMap<String, Object>();
             egs.put("earnGroup", earnGroupSection.getEarnGroup());
             egs.put("totals", earnGroupSection.getTotals());
+
             for (EarnCodeSection earnCodeSection : earnGroupSection.getEarnCodeSections()) {
                 Map<String, Object> ecs = new TreeMap<String, Object>();
 
@@ -97,6 +110,7 @@ public class TimeSummary implements Serializable {
             egs.put("earnCodeSections", earnCodeSections);
             earnGroupSections.add(egs);
         }
+        earnGroupSections.add(workedHours);
 
         return JSONValue.toJSONString(earnGroupSections);
     }

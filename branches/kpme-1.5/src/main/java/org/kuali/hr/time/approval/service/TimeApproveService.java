@@ -78,9 +78,9 @@ public interface TimeApproveService {
      */
 	public List<Note> getNotesForDocument(String documentNumber);
 
-    public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes);
+    public Map<String, BigDecimal> getHoursToPayDayMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
 
-	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes);
+	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, Date payEndDate, List<String> payCalendarLabels, List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, CalendarEntries payCalendarEntries, Calendar payCalendar, DateTimeZone dateTimeZone, List<Interval> dayIntervals);
     /**
      * Method to provide a mapping of PayCalendarGroupNames to PayCalendarEntries to
      * allow for various starting points in Approval Tab Navigation.
