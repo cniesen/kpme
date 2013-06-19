@@ -44,6 +44,7 @@ import org.kuali.hr.time.roles.TkUserRoles;
 import org.kuali.hr.time.roles.UserRoles;
 import org.kuali.hr.time.service.base.TkServiceLocator;
 import org.kuali.hr.time.timeblock.TimeBlock;
+import org.kuali.hr.time.timeblock.TimeHourDetail;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.*;
 import org.kuali.hr.time.workarea.WorkArea;
@@ -289,12 +290,12 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
 					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
-					dateTimeZone, dayIntervals, regularEarnCodes);
+					dateTimeZone, dayIntervals);
 			
 			Map<String, BigDecimal> hoursToFlsaPayLabelMap = getHoursToFlsaWeekMap(
 					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, leaveBlocks, null, payCalendarEntries, payCalendar,
-					dateTimeZone, dayIntervals, regularEarnCodes);
+					dateTimeZone, dayIntervals);
 
             EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
 			approvalSummaryRow.setName(name != null
@@ -592,10 +593,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Date payEndDate, List<String> payCalendarLabels,
 			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar,
-			DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes) {
-        if (regularEarnCodes == null) {
-            regularEarnCodes = new HashSet<String>();
-        }
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
 
 		Map<String, BigDecimal> hoursToPayLabelMap = new LinkedHashMap<String, BigDecimal>();
 		List<BigDecimal> dayTotals = new ArrayList<BigDecimal>();
@@ -608,20 +606,17 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			for (FlsaDay day : week.getFlsaDays()) {
 				BigDecimal total = new BigDecimal(0.00);
 				for (TimeBlock tb : day.getAppliedTimeBlocks()) {
-                    EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(tb.getEarnCode(), tb.getEndDate());
-                    if (ec != null
-                            && (ec.getOvtEarnCode()
-                                 || regularEarnCodes.contains(ec.getEarnCode()))) {
+                    for (TimeHourDetail thd : tb.getTimeHourDetails()) {
                         if (workArea != null) {
                             if (tb.getWorkArea().compareTo(workArea) == 0) {
-                                total = total.add(tb.getHours(),
+                                total = total.add(thd.getHours(),
                                         TkConstants.MATH_CONTEXT);
                             } else {
                                 total = total.add(new BigDecimal("0"),
                                         TkConstants.MATH_CONTEXT);
                             }
                         } else {
-                            total = total.add(tb.getHours(),
+                            total = total.add(thd.getHours(),
                                     TkConstants.MATH_CONTEXT);
                         }
                     }
@@ -670,10 +665,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Date payEndDate, List<String> payCalendarLabels, 
 			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
 			CalendarEntries payCalendarEntries, Calendar payCalendar, 
-			DateTimeZone dateTimeZone, List<Interval> dayIntervals, Set<String> regularEarnCodes) {
-        if (regularEarnCodes == null) {
-            regularEarnCodes = new HashSet<String>();
-        }
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
 
@@ -686,19 +678,15 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
 				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
 					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-                        EarnCode ec = TkServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDate());
-                        if (ec != null
-                                && (ec.getOvtEarnCode()
-                                || regularEarnCodes.contains(ec.getEarnCode()))) {
-
+                        for (TimeHourDetail thd : timeBlock.getTimeHourDetails()) {
                             if (workArea != null) {
                                 if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
-                                    weekTotal = weekTotal.add(timeBlock.getHours(), TkConstants.MATH_CONTEXT);
+                                    weekTotal = weekTotal.add(thd.getHours(), TkConstants.MATH_CONTEXT);
                                 } else {
                                     weekTotal = weekTotal.add(new BigDecimal("0"), TkConstants.MATH_CONTEXT);
                                 }
                             } else {
-                                weekTotal = weekTotal.add(timeBlock.getHours(),TkConstants.MATH_CONTEXT);
+                                weekTotal = weekTotal.add(thd.getHours(),TkConstants.MATH_CONTEXT);
                             }
                         }
 					}
