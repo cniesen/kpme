@@ -277,10 +277,11 @@
 
 #timesheet-summary .earnGroupTotalRow {
     background-color: #EEEEEE;
-    border-bottom-style: solid;
-    border-bottom-color: black;
-    border-bottom-width: 1px;
-
+    border-bottom-style: ridge;
+    border-top-style: ridge;
+    border-color: #ABABAB;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
 }
 
 #timesheet-routing {
@@ -612,8 +613,11 @@ label.error {
 
 .approvals-table .earnGroupTotalRow {
     background-color: #EEEEEE;
-    border-bottom-style: outset;
-    border-bottom-width: 1px;
+    border-bottom-style: ridge;
+    border-top-style: ridge;
+    border-color: #ABABAB;
+    border-bottom-width: 2px;
+    border-top-width: 2px;
 }
 
 .approvals-note-details table, .approvals-warning-details table, .approvals-status-details table {
