@@ -16,6 +16,7 @@
 package org.kuali.hr.time.earncodegroup.service;
 
 import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
+import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 
 import java.sql.Date;
@@ -58,6 +59,13 @@ public interface EarnCodeGroupService {
 	 * @return
 	 */
 	public List<String> warningTextFromEarnCodeGroupsOfDocument(TimesheetDocument timesheetDocument);
+
+    /**
+     * Returns list of warning text from earn group that is used by time blocks of the timesheetDocument
+     * @param timeBlockList
+     * @return
+     */
+    public List<String> warningTextFromEarnCodeGroupsOfDocument(List<TimeBlock> timeBlockList);
     /**
      * get the count of earn groups by given earnGroup
      * @param earnGroup

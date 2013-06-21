@@ -71,7 +71,29 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     public EarnCodeGroup getEarnCodeGroup(String hrEarnCodeGroupId) {
         return earnCodeGroupDao.getEarnCodeGroup(hrEarnCodeGroupId);
     }
-    
+
+    @Override
+    public List<String> warningTextFromEarnCodeGroupsOfDocument(List<TimeBlock> tbList) {
+        List<String> warningMessages = new ArrayList<String>();
+//        if (timesheetDocument == null) {
+//            return warningMessages;
+//        }
+//        List<TimeBlock> tbList = timesheetDocument.getTimeBlocks();
+        if (tbList.isEmpty()) {
+            return warningMessages;
+        }
+
+        Set<String> aSet = new HashSet<String>();
+        for(TimeBlock tb : tbList) {
+            EarnCodeGroup eg = this.getEarnCodeGroupForEarnCode(tb.getEarnCode(), tb.getBeginDate());
+            if(eg != null && !StringUtils.isEmpty(eg.getWarningText())) {
+                aSet.add(eg.getWarningText());
+            }
+        }
+        warningMessages.addAll(aSet);
+        return warningMessages;
+    }
+
     @Override
     public List<String> warningTextFromEarnCodeGroupsOfDocument(TimesheetDocument timesheetDocument) {
     	 List<String> warningMessages = new ArrayList<String>();
