@@ -32,7 +32,7 @@
                 <c:forEach items="${timeSummary.sections}" var="section">
                     <c:forEach items="${section.earnCodeSections}" var="earnCodeSection">
                         <tr>
-                            <td colspan="${fn:length(timeSummary.workedHours) + 1}" class="earnCodeCell">${earnCodeSection.earnCode}: ${earnCodeSection.description}:</td>
+                            <td colspan="${fn:length(timeSummary.workedHours) + 1}" class="earnCodeCell">${earnCodeSection.earnCode}: ${earnCodeSection.description}</td>
 						</tr>
                         <c:forEach items="${earnCodeSection.assignmentsRows}" var="assignmentRow">
                             <c:set var="periodTotal" value="${assignmentRow.assignmentColumns[fn:length(assignmentRow.assignmentColumns) - 1].total}"/>
