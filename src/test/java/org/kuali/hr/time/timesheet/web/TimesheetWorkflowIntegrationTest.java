@@ -39,6 +39,7 @@ import org.kuali.hr.time.util.*;
 import org.kuali.hr.time.web.TkLoginFilter;
 
 import org.kuali.hr.util.filter.TestAutoLoginFilter;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 
 public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
 
@@ -150,7 +151,7 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
         pageAsText = page.asText();
         // Verify Route Status via UI
         Assert.assertTrue("Wrong Document Loaded.", pageAsText.contains(tdocId));
-        Assert.assertTrue("Document not routed.", pageAsText.contains("Enroute"));
+        Assert.assertTrue("Document not routed.", pageAsText.contains(DocumentStatus.ENROUTE.getLabel()));
         routeButton = (HtmlButtonInput)page.getElementById("ts-route-button");
         Assert.assertNull("Route button should not be present.", routeButton);
         HtmlButtonInput approveButton = (HtmlButtonInput)page.getElementById("ts-approve-button");
@@ -161,7 +162,7 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
         page = TimesheetWebTestBase.loginAndGetTimeDetailsHtmlPage(getWebClient(), "eric", tdocId, true);
         //HtmlUnitUtil.createTempFile(page, "2ndLogin");
         pageAsText = page.asText();
-        Assert.assertTrue("Document not routed.", pageAsText.contains("Enroute"));
+        Assert.assertTrue("Document not routed.", pageAsText.contains(DocumentStatus.ENROUTE.getLabel()));
         approveButton = (HtmlButtonInput)page.getElementById("ts-approve-button");
         Assert.assertNotNull("No approval button present.", approveButton);
 
@@ -177,7 +178,7 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
         Assert.assertTrue("Wrong Document Loaded.", pageAsText.contains(tdocId));
         Assert.assertTrue("Login info not present.", pageAsText.contains("Employee Id:"));
         Assert.assertTrue("Login info not present.", pageAsText.contains("eric, eric"));
-        Assert.assertTrue("Document not routed.", pageAsText.contains("Final"));
+        Assert.assertTrue("Document not routed.", pageAsText.contains(DocumentStatus.FINAL.getLabel()));
         approveButton = (HtmlButtonInput)page.getElementById("ts-approve-button");
         Assert.assertNull("Approval button should not be present.", approveButton);
     }
