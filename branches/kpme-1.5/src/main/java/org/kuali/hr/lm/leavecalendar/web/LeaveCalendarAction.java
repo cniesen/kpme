@@ -744,7 +744,10 @@ public class LeaveCalendarAction extends TkAction {
 	        if (TKUser.isSystemAdmin() && !StringUtils.equals(lcd.getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())) {
 	            leaveForm.setDocEditable(true);
 	        } else {
-	            boolean docFinal = lcd.getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
+	        	String documentStatus = lcd.getDocumentHeader().getDocumentStatus();
+	            boolean docFinal = DocumentStatus.FINAL.getCode().equals(documentStatus)
+	                    || DocumentStatus.CANCELED.getCode().equals(documentStatus)
+	                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus);	        	
 	            if (!docFinal) {
 	                if(StringUtils.equals(lcd.getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
 	                        || TKUser.isSystemAdmin()

@@ -74,6 +74,7 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.util.TkTimeBlockAggregate;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
@@ -259,7 +260,10 @@ public class TimeDetailAction extends TimesheetAction {
         if (TKUser.isSystemAdmin()) {
             tdaf.setDocEditable("true");
         } else {
-            boolean docFinal = TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus().equals(TkConstants.ROUTE_STATUS.FINAL);
+        	String documentStatus = TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus();
+            boolean docFinal = DocumentStatus.FINAL.getCode().equals(documentStatus)
+                    || DocumentStatus.CANCELED.getCode().equals(documentStatus)
+                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus);
             if (!docFinal) {
             	if(StringUtils.equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
 	            		|| TKUser.isSystemAdmin()

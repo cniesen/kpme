@@ -49,6 +49,8 @@ import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiConstants;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.doctype.SecuritySession;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 import org.kuali.rice.kew.service.KEWServiceLocator;
@@ -65,9 +67,10 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
         if (TKUser.isSystemAdmin()) {
             addTimeBlock = true;
         } else {
-            boolean docFinal = TKContext.getCurrentTimesheetDocument()
-                    .getDocumentHeader().getDocumentStatus()
-                    .equals(TkConstants.ROUTE_STATUS.FINAL);
+        	String documentStatus = TKContext.getCurrentTimesheetDocument().getDocumentHeader().getDocumentStatus();
+            boolean docFinal = DocumentStatus.FINAL.getCode().equals(documentStatus)
+                    || DocumentStatus.CANCELED.getCode().equals(documentStatus)
+                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus);
             if (!docFinal) {
                 if (StringUtils
                         .equals(TKContext.getCurrentTimesheetDocument().getPrincipalId(),
@@ -93,7 +96,13 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             if (TKUser.isSystemAdmin()) {
                 return true;
             }
-
+            
+        	String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
+            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
+                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
+            	return false;
+            }
+            
             Job job = TkServiceLocator.getJobService().getJob(
                     TKContext.getTargetPrincipalId(), tb.getJobNumber(),
                     tb.getEndDate());
@@ -170,6 +179,13 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             if (TKUser.isSystemAdmin() && !tb.getPrincipalId().equals(userId)) {
             	return true;
             }
+            
+            String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
+            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
+                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
+            	return false;
+            }
+            
             Job job = TkServiceLocator.getJobService().getJob(
                     TKContext.getTargetPrincipalId(), tb.getJobNumber(),
                     tb.getEndDate());
@@ -258,6 +274,13 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             if (TKUser.isSystemAdmin()&& !tb.getPrincipalId().equals(userId)) {
             	return true;
             }
+            
+            String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
+            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
+                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
+            	return false;
+            }
+            
             Job job = TkServiceLocator.getJobService().getJob(
                     TKContext.getTargetPrincipalId(), tb.getJobNumber(),
                     tb.getEndDate());
@@ -345,6 +368,20 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
         String userId = GlobalVariables.getUserSession().getPrincipalId();
         
         if (userId != null) {
+        	String documentId = lb.getDocumentId();
+        	if (StringUtils.isBlank(documentId)) {
+        		TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(userId, lb.getLeaveDate());
+        		if (timesheetDocumentHeader != null) {
+        			documentId = timesheetDocumentHeader.getDocumentId();
+        		}
+        	}
+        	if (StringUtils.isNotBlank(documentId)) {
+	        	DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(documentId);
+	            if (DocumentStatus.CANCELED.equals(documentStatus) || DocumentStatus.DISAPPROVED.equals(documentStatus)) {
+	            	return false;
+	            }
+        	}
+            
             String blockType = lb.getLeaveBlockType();
             String requestStatus = lb.getRequestStatus();
             if (StringUtils.equals(LMConstants.REQUEST_STATUS.DISAPPROVED, requestStatus)) {
@@ -390,6 +427,24 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
 
     @Override
     public boolean canDeleteLeaveBlock(LeaveBlock lb) {
+    	String userId = GlobalVariables.getUserSession().getPrincipalId();
+        
+        if (userId != null) {
+	    	String documentId = lb.getDocumentId();
+	    	if (StringUtils.isBlank(documentId)) {
+	    		TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(userId, lb.getLeaveDate());
+	    		if (timesheetDocumentHeader != null) {
+	    			documentId = timesheetDocumentHeader.getDocumentId();
+	    		}
+	    	}
+	    	if (StringUtils.isNotBlank(documentId)) {
+	        	DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(documentId);
+	            if (DocumentStatus.CANCELED.equals(documentStatus) || DocumentStatus.DISAPPROVED.equals(documentStatus)) {
+	            	return false;
+	            }
+	    	}
+        }
+        
     	if(StringUtils.equals(LMConstants.REQUEST_STATUS.DISAPPROVED, lb.getRequestStatus()))  {
             return false;
         }
