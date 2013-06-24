@@ -78,6 +78,10 @@
             <inverse-foreignkey field-ref="tkTimeBlockId" />
         </collection-descriptor>
 
+        <reference-descriptor name="timesheetDocumentHeader" class-ref="org.kuali.hr.time.workflow.TimesheetDocumentHeader" auto-retrieve="false" auto-update="false" proxy="true" >
+            <foreignkey field-ref="documentId" />
+        </reference-descriptor>
+
         <collection-descriptor name="timeBlockHistories" element-class-ref="org.kuali.hr.time.timeblock.TimeBlockHistory" auto-retrieve="false" proxy="true" auto-update="false">
             <inverse-foreignkey field-ref="tkTimeBlockId" />
         </collection-descriptor>
