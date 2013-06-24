@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.earncodegroup.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.time.earncodegroup.EarnCodeGroup;
 import org.kuali.hr.time.earncodegroup.EarnCodeGroupDefinition;
@@ -75,7 +76,7 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     @Override
     public List<String> warningTextFromEarnCodeGroupsOfTimeblocks(List<TimeBlock> tbList) {
         List<String> warningMessages = new ArrayList<String>();
-        if (tbList.isEmpty()) {
+        if (CollectionUtils.isEmpty(tbList)) {
             return warningMessages;
         }
 
