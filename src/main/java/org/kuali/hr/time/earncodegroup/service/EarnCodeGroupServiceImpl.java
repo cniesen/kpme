@@ -73,12 +73,8 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     }
 
     @Override
-    public List<String> warningTextFromEarnCodeGroupsOfDocument(List<TimeBlock> tbList) {
+    public List<String> warningTextFromEarnCodeGroupsOfTimeblocks(List<TimeBlock> tbList) {
         List<String> warningMessages = new ArrayList<String>();
-//        if (timesheetDocument == null) {
-//            return warningMessages;
-//        }
-//        List<TimeBlock> tbList = timesheetDocument.getTimeBlocks();
         if (tbList.isEmpty()) {
             return warningMessages;
         }
@@ -100,19 +96,7 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
          if (timesheetDocument == null) {
              return warningMessages;
          }
-	     List<TimeBlock> tbList = timesheetDocument.getTimeBlocks();
-	     if (tbList.isEmpty()) {
-	         return warningMessages;
-	     }
-	     
-	     Set<String> aSet = new HashSet<String>();
-	     for(TimeBlock tb : tbList) {
-	    	EarnCodeGroup eg = this.getEarnCodeGroupForEarnCode(tb.getEarnCode(), tb.getBeginDate());
-	    	if(eg != null && !StringUtils.isEmpty(eg.getWarningText())) {
-	    		aSet.add(eg.getWarningText());
-	    	}
-	     }
-	    warningMessages.addAll(aSet);
+	    warningMessages.addAll(warningTextFromEarnCodeGroupsOfTimeblocks(timesheetDocument.getTimeBlocks()));
 		return warningMessages;
     }
     @Override

@@ -65,7 +65,7 @@ public interface EarnCodeGroupService {
      * @param timeBlockList
      * @return
      */
-    public List<String> warningTextFromEarnCodeGroupsOfDocument(List<TimeBlock> timeBlockList);
+    public List<String> warningTextFromEarnCodeGroupsOfTimeblocks(List<TimeBlock> timeBlockList);
     /**
      * get the count of earn groups by given earnGroup
      * @param earnGroup
