@@ -321,15 +321,6 @@ public class TkConstants {
         return HOLIDAY_EARN_CODE;
     }
 
-    public static final Map<String, String> DOCUMENT_STATUS = new HashMap<String, String>();
-
-    static {
-        DOCUMENT_STATUS.put("I", "Initiated");
-        DOCUMENT_STATUS.put("S", "Saved");
-        DOCUMENT_STATUS.put("R", "Enroute");
-        DOCUMENT_STATUS.put("F", "Final");
-    }
-
     public static class ConfigSettings {
         public static final String SESSION_TIMEOUT = "session.timeout";
         public static final String KPME_SYSTEM_TIMEZONE = "kpme.system.timezone";

@@ -35,7 +35,7 @@ public class TagSupport {
     }
 
     public Map<String, String> getDocumentStatus() {
-        return TkConstants.DOCUMENT_STATUS;
+        return TkConstants.DOC_ROUTE_STATUS;
     }
 
     private List<String> ipAddresses = new LinkedList<String>();
