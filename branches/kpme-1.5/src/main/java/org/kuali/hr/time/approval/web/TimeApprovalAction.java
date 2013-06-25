@@ -21,6 +21,8 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
 import org.hsqldb.lib.StringUtil;
 import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.time.assignment.Assignment;
@@ -89,7 +91,9 @@ public class TimeApprovalAction extends ApprovalAction{
 	
     public ActionForward approve(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
+        //let's save the page we are on!
         List<ApprovalTimeSummaryRow> lstApprovalRows = taaf.getApprovalRows();
+
         for (ApprovalTimeSummaryRow ar : lstApprovalRows) {
             if (ar.isApprovable() && StringUtils.equals(ar.getSelected(), "on")) {
                 String documentNumber = ar.getDocumentId();
@@ -271,7 +275,12 @@ public class TimeApprovalAction extends ApprovalAction{
             //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
             Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
             Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
-		    taaf.setApprovalRows(approvalRows.subList(beginIndex, endIndex));
+            if (beginIndex > endIndex
+                    || beginIndex >= approvalRows.size()) {
+                beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+                endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+            }
+            taaf.setApprovalRows(approvalRows.subList(beginIndex, endIndex));
 		    taaf.setResultSize(principalIds.size());
 		}
 		

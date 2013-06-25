@@ -69,9 +69,13 @@ public class ApprovalAction extends TkAction{
 	    // So the logic below sets the sublist begin index to 0 if the page number is null or equals 1
 	    Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
 	    Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > assignmentPrincipalIds.size() ? assignmentPrincipalIds.size() : beginIndex + TkConstants.PAGE_SIZE;
-	
+
 	    return assignmentPrincipalIds.subList(beginIndex, endIndex);
 	}
+
+
+
+
 
 	protected Boolean isAscending(HttpServletRequest request, ApprovalForm form) {
 
@@ -96,13 +100,14 @@ public class ApprovalAction extends TkAction{
 	}
 
     protected String getPage(HttpServletRequest request, ApprovalForm form) {
-        String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-        if (StringUtils.isEmpty(page)) {
-            page = form.getPage();
+        String page = new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE);
+        String pageVal = request.getParameter(page);
+        if (StringUtils.isNotEmpty(pageVal)) {
+            form.setPageId(page + "=" + pageVal);
         } else {
-            form.setPage(page);
+            form.setPageId(StringUtils.EMPTY);
         }
-        return page;
+        return pageVal;
     }
 	
 	protected void checkTKAuthorization(ActionForm form, String methodToCall)

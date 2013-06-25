@@ -33,6 +33,8 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
+import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.ParamEncoder;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.kuali.hr.lm.LMConstants;
@@ -209,7 +211,15 @@ public class TimesheetSubmitAction extends TkAction {
             }
         }
         TKUser.clearTargetUser();
-        return new ActionRedirect(mapping.findForward("approverRedirect"));
+        String page = new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE);
+        String pageVal = request.getParameter(page);
+
+
+        ActionRedirect ar = new ActionRedirect(mapping.findForward("approverRedirect"));
+        if (StringUtils.isNotEmpty(pageVal)) {
+            ar.addParameter(page, pageVal);
+        }
+        return ar;
 
 
     }

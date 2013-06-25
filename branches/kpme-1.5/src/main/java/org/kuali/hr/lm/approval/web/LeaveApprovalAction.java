@@ -223,7 +223,11 @@ public class LeaveApprovalAction extends ApprovalAction{
             String page = getPage(request, laaf);
             Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
             Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
-
+            if (beginIndex > endIndex
+                    || beginIndex >= approvalRows.size()) {
+                beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+                endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+            }
 			laaf.setLeaveApprovalRows(approvalRows.subList(beginIndex, endIndex));
 		    laaf.setResultSize(principalIds.size());
 		}
