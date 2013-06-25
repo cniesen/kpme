@@ -15,26 +15,12 @@
  */
 package org.kuali.hr.time.approval.web;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
-import org.displaytag.tags.TableTagParameters;
-import org.displaytag.util.ParamEncoder;
 import org.hsqldb.lib.StringUtil;
 import org.kuali.hr.core.document.calendar.CalendarDocumentContract;
 import org.kuali.hr.time.assignment.Assignment;
@@ -51,6 +37,12 @@ import org.kuali.hr.time.util.TKUtils;
 import org.kuali.hr.time.util.TkConstants;
 import org.kuali.hr.time.workarea.WorkArea;
 import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class TimeApprovalAction extends ApprovalAction{
 	
@@ -234,7 +226,7 @@ public class TimeApprovalAction extends ApprovalAction{
 			taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
 			taaf.setResultSize(0);
 		} else {
-		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, getSubListPrincipalIds(request, principalIds));
+		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, principalIds);
 		    
 		    final String sortField = getSortField(request, taaf);
 		    if (StringUtils.isEmpty(sortField) ||
@@ -276,7 +268,10 @@ public class TimeApprovalAction extends ApprovalAction{
 		    	});
 		    }
 		    
-		    taaf.setApprovalRows(approvalRows);
+            //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+            Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+            Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+		    taaf.setApprovalRows(approvalRows.subList(beginIndex, endIndex));
 		    taaf.setResultSize(principalIds.size());
 		}
 		
