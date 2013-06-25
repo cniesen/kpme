@@ -180,10 +180,10 @@ public class LeaveApprovalAction extends ApprovalAction{
 			List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, principalIds)); 
             //List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, persons));
 
-			String sortField = getSortField(request);
+			String sortField = getSortField(request, laaf);
 		    if (StringUtils.isEmpty(sortField) ||
                     StringUtils.equals(sortField, "name")) {
-			    final boolean sortNameAscending = isAscending(request);
+			    final boolean sortNameAscending = isAscending(request, laaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -195,7 +195,7 @@ public class LeaveApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    } else if (StringUtils.equals(sortField, "documentID")) {
-			    final boolean sortDocumentIdAscending = isAscending(request);
+			    final boolean sortDocumentIdAscending = isAscending(request, laaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -207,7 +207,7 @@ public class LeaveApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    } else if (StringUtils.equals(sortField, "status")) {
-			    final boolean sortStatusIdAscending = isAscending(request);
+			    final boolean sortStatusIdAscending = isAscending(request, laaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalLeaveSummaryRow>() {
 					@Override
 					public int compare(ApprovalLeaveSummaryRow row1, ApprovalLeaveSummaryRow row2) {
@@ -219,7 +219,8 @@ public class LeaveApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    }
-            String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+            //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+            String page = getPage(request, laaf);
             Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
             Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
 
@@ -236,8 +237,8 @@ public class LeaveApprovalAction extends ApprovalAction{
         Date currentDate = null;
         CalendarEntries payCalendarEntries = null;
         Calendar currentPayCalendar = null;
-        String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-
+        //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+        String page = getPage(request, laaf);
 
         //reset state
         if(StringUtils.isBlank(laaf.getSelectedDept())){
@@ -372,8 +373,9 @@ public class LeaveApprovalAction extends ApprovalAction{
 	
     public void resetState(ActionForm form, HttpServletRequest request) {
     	LeaveApprovalActionForm laaf = (LeaveApprovalActionForm) form;
- 	    String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
- 	    if (StringUtils.isBlank(page)) {
+ 	    //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+        String page = getPage(request, laaf);
+        if (StringUtils.isBlank(page)) {
  			laaf.getDepartments().clear();
  			laaf.getWorkAreaDescr().clear();
  			laaf.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRow>());

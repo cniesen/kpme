@@ -175,8 +175,9 @@ public class TimeApprovalAction extends ApprovalAction{
         Date currentDate = null;
         CalendarEntries payCalendarEntries = null;
         Calendar currentPayCalendar = null;
-        String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-        
+        //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+        String page = getPage(request, taaf);
+
         //reset state
         if(StringUtils.isBlank(taaf.getSelectedDept())){
         	resetState(form, request);
@@ -235,10 +236,10 @@ public class TimeApprovalAction extends ApprovalAction{
 		} else {
 		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, getSubListPrincipalIds(request, principalIds));
 		    
-		    final String sortField = getSortField(request);
+		    final String sortField = getSortField(request, taaf);
 		    if (StringUtils.isEmpty(sortField) ||
                     StringUtils.equals(sortField, "name")) {
-			    final boolean sortNameAscending = isAscending(request);
+			    final boolean sortNameAscending = isAscending(request, taaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
 					@Override
 					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
@@ -250,7 +251,7 @@ public class TimeApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    } else if (StringUtils.equals(sortField, "documentID")) {
-			    final boolean sortDocumentIdAscending = isAscending(request);;
+			    final boolean sortDocumentIdAscending = isAscending(request, taaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
 					@Override
 					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
@@ -262,7 +263,7 @@ public class TimeApprovalAction extends ApprovalAction{
 					}
 		    	});
 		    } else if (StringUtils.equals(sortField, "status")) {
-			    final boolean sortStatusIdAscending = isAscending(request);;
+			    final boolean sortStatusIdAscending = isAscending(request, taaf);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
 					@Override
 					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
@@ -305,8 +306,8 @@ public class TimeApprovalAction extends ApprovalAction{
 	
     public void resetState(ActionForm form, HttpServletRequest request) {
     	  TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
- 	      String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
- 	      
+ 	      //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+ 	      String page = getPage(request, taaf);
  	      if (StringUtils.isBlank(page)) {
  			  taaf.getDepartments().clear();
  			  taaf.getWorkAreaDescr().clear();
