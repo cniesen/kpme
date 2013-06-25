@@ -49,6 +49,7 @@ public class ApprovalForm extends TkCommonCalendarForm {
     private String payEndDateForSearch;
     private String roleName;
 
+
 	
     private CalendarEntries payCalendarEntries;
     private Long workArea = null;
@@ -69,8 +70,11 @@ public class ApprovalForm extends TkCommonCalendarForm {
 
     private int rowsToShow = 50;
     private int rowsInTotal;
-    private String sortField;
+
     private boolean ascending = true;
+    private String sortField;
+    private String page;
+
     private boolean ajaxCall = false;
 
     private Boolean testSelected = Boolean.FALSE;
@@ -207,6 +211,14 @@ public class ApprovalForm extends TkCommonCalendarForm {
 
     public void setSortField(String sortField) {
         this.sortField = sortField;
+    }
+
+    public String getPage() {
+        return page;
+    }
+
+    public void setPage(String page) {
+        this.page = page;
     }
 
     public boolean isAjaxCall() {

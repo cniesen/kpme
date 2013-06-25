@@ -73,15 +73,37 @@ public class ApprovalAction extends TkAction{
 	    return assignmentPrincipalIds.subList(beginIndex, endIndex);
 	}
 
-	protected Boolean isAscending(HttpServletRequest request) {
+	protected Boolean isAscending(HttpServletRequest request, ApprovalForm form) {
+
 	    // returned value 1 = ascending; 2 = descending
 	    String ascending = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_ORDER)));
-	    return StringUtils.isEmpty(ascending) || StringUtils.equals(ascending, "1") ? true : false;
+	    if (StringUtils.isEmpty(ascending)) {
+            ascending = form.isAscending() ? "1" : "2";
+        } else {
+            form.setAscending(StringUtils.equals(ascending, "1"));
+        }
+        return StringUtils.isEmpty(ascending) || StringUtils.equals(ascending, "1") ? true : false;
 	}
 
-	protected String getSortField(HttpServletRequest request) {
-	    return request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_SORT)));
+	protected String getSortField(HttpServletRequest request, ApprovalForm form) {
+	    String sortField = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_SORT)));
+        if (StringUtils.isEmpty(sortField)) {
+            sortField = form.getSortField();
+        } else {
+            form.setSortField(sortField);
+        }
+        return sortField;
 	}
+
+    protected String getPage(HttpServletRequest request, ApprovalForm form) {
+        String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+        if (StringUtils.isEmpty(page)) {
+            page = form.getPage();
+        } else {
+            form.setPage(page);
+        }
+        return page;
+    }
 	
 	protected void checkTKAuthorization(ActionForm form, String methodToCall)
 			throws AuthorizationException {
@@ -164,8 +186,9 @@ public class ApprovalAction extends TkAction{
 	
     public ActionForward gotoCurrentPayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
-    	String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));         
+
     	ApprovalForm taf = (ApprovalForm) form;
+        String page = getPage(request, taf);
     	Date currentDate = TKUtils.getTimelessDate(null);
         Calendar currentPayCalendar = TkServiceLocator.getCalendarService().getCalendarByGroup(taf.getSelectedPayCalendarGroup());
         CalendarEntries payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCurrentCalendarEntriesByCalendarId(currentPayCalendar.getHrCalendarId(), currentDate);
@@ -191,8 +214,8 @@ public class ApprovalAction extends TkAction{
 
     // Triggered by changes of pay period drop down list, reloads the whole page based on the selected pay period
     public ActionForward changePayPeriod(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
-      String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
       ApprovalForm taf = (ApprovalForm) form;
+      String page = getPage(request, taf);
   	  if(!StringUtils.isEmpty(request.getParameter("selectedPP"))) {
   		  taf.setSelectedPayPeriod(request.getParameter("selectedPP").toString());
   		  CalendarEntries pce = TkServiceLocator.getCalendarEntriesService()
