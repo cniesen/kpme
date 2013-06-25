@@ -177,8 +177,8 @@ public class LeaveApprovalAction extends ApprovalAction{
 			laaf.setResultSize(0);
 		} else {
 			
-			List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, principalIds)); 
             //List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, getSubListPrincipalIds(request, persons));
+            List<ApprovalLeaveSummaryRow> approvalRows = getApprovalLeaveRows(laaf, principalIds);
 
 			String sortField = getSortField(request, laaf);
 		    if (StringUtils.isEmpty(sortField) ||
