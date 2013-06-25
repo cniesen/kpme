@@ -73,7 +73,7 @@ public class ApprovalForm extends TkCommonCalendarForm {
 
     private boolean ascending = true;
     private String sortField;
-    private String page;
+    private String pageId;
 
     private boolean ajaxCall = false;
 
@@ -213,12 +213,12 @@ public class ApprovalForm extends TkCommonCalendarForm {
         this.sortField = sortField;
     }
 
-    public String getPage() {
-        return page;
+    public String getPageId() {
+        return pageId;
     }
 
-    public void setPage(String page) {
-        this.page = page;
+    public void setPageId(String pageId) {
+        this.pageId = pageId;
     }
 
     public boolean isAjaxCall() {
