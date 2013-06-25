@@ -97,10 +97,11 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
                 return true;
             }
             
-        	String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
-            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
-                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
-            	return false;
+            if (StringUtils.isNotBlank(tb.getDocumentId())) {
+	        	DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(tb.getDocumentId());
+	            if (DocumentStatus.CANCELED.equals(documentStatus) || DocumentStatus.DISAPPROVED.equals(documentStatus)) {
+	            	return false;
+	            }
             }
             
             Job job = TkServiceLocator.getJobService().getJob(
@@ -180,10 +181,11 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             	return true;
             }
             
-            String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
-            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
-                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
-            	return false;
+            if (StringUtils.isNotBlank(tb.getDocumentId())) {
+	        	DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(tb.getDocumentId());
+	            if (DocumentStatus.CANCELED.equals(documentStatus) || DocumentStatus.DISAPPROVED.equals(documentStatus)) {
+	            	return false;
+	            }
             }
             
             Job job = TkServiceLocator.getJobService().getJob(
@@ -275,10 +277,11 @@ public class TkPermissionsServiceImpl implements TkPermissionsService {
             	return true;
             }
             
-            String documentStatus = tb.getTimesheetDocumentHeader().getDocumentStatus();
-            if (DocumentStatus.CANCELED.getCode().equals(documentStatus)
-                    || DocumentStatus.DISAPPROVED.getCode().equals(documentStatus)) {
-            	return false;
+            if (StringUtils.isNotBlank(tb.getDocumentId())) {
+	        	DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(tb.getDocumentId());
+	            if (DocumentStatus.CANCELED.equals(documentStatus) || DocumentStatus.DISAPPROVED.equals(documentStatus)) {
+	            	return false;
+	            }
             }
             
             Job job = TkServiceLocator.getJobService().getJob(
