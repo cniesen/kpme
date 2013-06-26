@@ -130,8 +130,8 @@ public class TimeApprovalAction extends ApprovalAction{
     		taaf.setResultSize(0);
     	}
     	else {
-	        taaf.setApprovalRows(getApprovalRows(request, taaf, getSubListPrincipalIds(request, principalIds)));
-	        taaf.setResultSize(principalIds.size());
+            List<ApprovalTimeSummaryRow> approvalTimeSummaryRows = getApprovalRows(request, taaf, principalIds);
+            setFormSubsetOfApprovalRows(taaf, getPage(request, taaf), approvalTimeSummaryRows);
     	}
     	
     	this.populateCalendarAndPayPeriodLists(request, taaf);
@@ -154,9 +154,9 @@ public class TimeApprovalAction extends ApprovalAction{
 			taaf.setResultSize(0);
 		}
 		else {
-		        taaf.setApprovalRows(getApprovalRows(request, taaf, getSubListPrincipalIds(request, principalIds)));
-		        taaf.setResultSize(principalIds.size());
-	    	}
+            List<ApprovalTimeSummaryRow> approvalTimeSummaryRows = getApprovalRows(request, taaf, principalIds);
+            setFormSubsetOfApprovalRows(taaf, getPage(request, taaf), approvalTimeSummaryRows);
+	    }
 		return mapping.findForward("basic");
 	}
 	
@@ -229,21 +229,26 @@ public class TimeApprovalAction extends ApprovalAction{
 			taaf.setResultSize(0);
 		} else {
 		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(request, taaf, principalIds);
-
-            //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-            Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
-            Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
-            if (beginIndex > endIndex
-                    || beginIndex >= approvalRows.size()) {
-                beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
-                endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
-            }
-            taaf.setApprovalRows(approvalRows.subList(beginIndex, endIndex));
-		    taaf.setResultSize(principalIds.size());
+            setFormSubsetOfApprovalRows(taaf, page, approvalRows);
 		}
-		
+
+
 		taaf.setOnCurrentPeriod(ActionFormUtils.getOnCurrentPeriodFlag(taaf.getPayCalendarEntries()));
 	}
+
+    private void setFormSubsetOfApprovalRows(TimeApprovalActionForm taaf, String page, List<ApprovalTimeSummaryRow> approvalRows) {
+        Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+        Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+        if (beginIndex > endIndex
+                || beginIndex >= approvalRows.size()) {
+            beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
+            endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
+        }
+        taaf.setApprovalRows(approvalRows.subList(beginIndex, endIndex));
+        taaf.setResultSize(approvalRows.size());
+    }
+
+
 	
 	public ActionForward selectNewPayCalendar(ActionMapping mapping, ActionForm form,
 			HttpServletRequest request, HttpServletResponse response)
