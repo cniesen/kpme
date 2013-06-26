@@ -67,7 +67,7 @@ public class TimeApprovalAction extends ApprovalAction{
         	taaf.setResultSize(0);
         } else {
         	taaf.setResultSize(principalIds.size());	
-	        taaf.setApprovalRows(getApprovalRows(taaf, principalIds));
+	        taaf.setApprovalRows(getApprovalRows(request, taaf, principalIds));
 	        
         	CalendarEntries payCalendarEntries = TkServiceLocator.getCalendarEntriesService().getCalendarEntries(taaf.getHrPyCalendarEntriesId());
    	        taaf.setPayCalendarEntries(payCalendarEntries);
@@ -130,8 +130,7 @@ public class TimeApprovalAction extends ApprovalAction{
     		taaf.setResultSize(0);
     	}
     	else {
-    		Collections.sort(principalIds);
-	        taaf.setApprovalRows(getApprovalRows(taaf, getSubListPrincipalIds(request, principalIds)));
+	        taaf.setApprovalRows(getApprovalRows(request, taaf, getSubListPrincipalIds(request, principalIds)));
 	        taaf.setResultSize(principalIds.size());
     	}
     	
@@ -155,8 +154,7 @@ public class TimeApprovalAction extends ApprovalAction{
 			taaf.setResultSize(0);
 		}
 		else {
-	    		Collections.sort(principalIds);
-		        taaf.setApprovalRows(getApprovalRows(taaf, getSubListPrincipalIds(request, principalIds)));
+		        taaf.setApprovalRows(getApprovalRows(request, taaf, getSubListPrincipalIds(request, principalIds)));
 		        taaf.setResultSize(principalIds.size());
 	    	}
 		return mapping.findForward("basic");
@@ -220,7 +218,7 @@ public class TimeApprovalAction extends ApprovalAction{
 	}
 
 	@Override
-	protected void setupDocumentOnFormContext(HttpServletRequest request,ApprovalForm form, CalendarEntries payCalendarEntries, String page, CalendarDocumentContract calDoc) {
+	protected void setupDocumentOnFormContext(HttpServletRequest request, ApprovalForm form, CalendarEntries payCalendarEntries, String page, CalendarDocumentContract calDoc) {
 		super.setupDocumentOnFormContext(request, form, payCalendarEntries, page, calDoc);
 		TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
 		taaf.setPayCalendarLabels(TkServiceLocator.getTimeSummaryService().getHeaderForSummary(payCalendarEntries, new ArrayList<Boolean>()));
@@ -230,48 +228,8 @@ public class TimeApprovalAction extends ApprovalAction{
 			taaf.setApprovalRows(new ArrayList<ApprovalTimeSummaryRow>());
 			taaf.setResultSize(0);
 		} else {
-		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(taaf, principalIds);
-		    
-		    final String sortField = getSortField(request, taaf);
-		    if (StringUtils.isEmpty(sortField) ||
-                    StringUtils.equals(sortField, "name")) {
-			    final boolean sortNameAscending = isAscending(request, taaf);
-		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
-					@Override
-					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
-						if (sortNameAscending) {
-							return ObjectUtils.compare(StringUtils.lowerCase(row1.getName()), StringUtils.lowerCase(row2.getName()));
-						} else {
-							return ObjectUtils.compare(StringUtils.lowerCase(row2.getName()), StringUtils.lowerCase(row1.getName()));
-						}
-					}
-		    	});
-		    } else if (StringUtils.equals(sortField, "documentID")) {
-			    final boolean sortDocumentIdAscending = isAscending(request, taaf);
-		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
-					@Override
-					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
-						if (sortDocumentIdAscending) {
-							return ObjectUtils.compare(NumberUtils.toInt(row1.getDocumentId()), NumberUtils.toInt(row2.getDocumentId()));
-						} else {
-							return ObjectUtils.compare(NumberUtils.toInt(row2.getDocumentId()), NumberUtils.toInt(row1.getDocumentId()));
-						}
-					}
-		    	});
-		    } else if (StringUtils.equals(sortField, "status")) {
-			    final boolean sortStatusIdAscending = isAscending(request, taaf);
-		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
-					@Override
-					public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
-						if (sortStatusIdAscending) {
-							return ObjectUtils.compare(StringUtils.lowerCase(row1.getApprovalStatus()), StringUtils.lowerCase(row2.getApprovalStatus()));
-						} else {
-							return ObjectUtils.compare(StringUtils.lowerCase(row2.getApprovalStatus()), StringUtils.lowerCase(row1.getApprovalStatus()));
-						}
-					}
-		    	});
-		    }
-		    
+		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(request, taaf, principalIds);
+
             //String page = request.getParameter((new ParamEncoder(TkConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
             Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*TkConstants.PAGE_SIZE;
             Integer endIndex = beginIndex + TkConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + TkConstants.PAGE_SIZE;
@@ -304,8 +262,48 @@ public class TimeApprovalAction extends ApprovalAction{
      * @param taaf
      * @return
      */
-    protected List<ApprovalTimeSummaryRow> getApprovalRows(TimeApprovalActionForm taaf, List<String> assignmentPrincipalIds) {
-        return TkServiceLocator.getTimeApproveService().getApprovalSummaryRows(taaf.getPayBeginDate(), taaf.getPayEndDate(), taaf.getSelectedPayCalendarGroup(), assignmentPrincipalIds, taaf.getPayCalendarLabels(), taaf.getPayCalendarEntries());
+    protected List<ApprovalTimeSummaryRow> getApprovalRows(HttpServletRequest request, TimeApprovalActionForm taaf, List<String> assignmentPrincipalIds  ) {
+        List<ApprovalTimeSummaryRow> approvalRows = TkServiceLocator.getTimeApproveService().getApprovalSummaryRows(taaf.getPayBeginDate(), taaf.getPayEndDate(), taaf.getSelectedPayCalendarGroup(), assignmentPrincipalIds, taaf.getPayCalendarLabels(), taaf.getPayCalendarEntries());
+        final String sortField = getSortField(request, taaf);
+        if (StringUtils.isEmpty(sortField) ||
+                StringUtils.equals(sortField, "name")) {
+            final boolean sortNameAscending = isAscending(request, taaf);
+            Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
+                @Override
+                public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
+                    if (sortNameAscending) {
+                        return ObjectUtils.compare(StringUtils.lowerCase(row1.getName()), StringUtils.lowerCase(row2.getName()));
+                    } else {
+                        return ObjectUtils.compare(StringUtils.lowerCase(row2.getName()), StringUtils.lowerCase(row1.getName()));
+                    }
+                }
+            });
+        } else if (StringUtils.equals(sortField, "documentID")) {
+            final boolean sortDocumentIdAscending = isAscending(request, taaf);
+            Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
+                @Override
+                public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
+                    if (sortDocumentIdAscending) {
+                        return ObjectUtils.compare(NumberUtils.toInt(row1.getDocumentId()), NumberUtils.toInt(row2.getDocumentId()));
+                    } else {
+                        return ObjectUtils.compare(NumberUtils.toInt(row2.getDocumentId()), NumberUtils.toInt(row1.getDocumentId()));
+                    }
+                }
+            });
+        } else if (StringUtils.equals(sortField, "status")) {
+            final boolean sortStatusIdAscending = isAscending(request, taaf);
+            Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
+                @Override
+                public int compare(ApprovalTimeSummaryRow row1, ApprovalTimeSummaryRow row2) {
+                    if (sortStatusIdAscending) {
+                        return ObjectUtils.compare(StringUtils.lowerCase(row1.getApprovalStatus()), StringUtils.lowerCase(row2.getApprovalStatus()));
+                    } else {
+                        return ObjectUtils.compare(StringUtils.lowerCase(row2.getApprovalStatus()), StringUtils.lowerCase(row1.getApprovalStatus()));
+                    }
+                }
+            });
+        }
+        return approvalRows;
     }
 	
     public void resetState(ActionForm form, HttpServletRequest request) {
