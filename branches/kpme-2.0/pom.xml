@@ -1001,8 +1001,8 @@
         </repository>
     </repositories>
     <scm>
-        <connection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/trunk</connection>
-        <developerConnection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/trunk</developerConnection>
-        <url>https://svn.kuali.org/repos/kpme/trunk</url>
+        <connection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/branches/kpme-2.0</connection>
+        <developerConnection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/branches/kpme-2.0</developerConnection>
+        <url>https://svn.kuali.org/repos/kpme/branches/kpme-2.0</url>
     </scm>
 </project>
