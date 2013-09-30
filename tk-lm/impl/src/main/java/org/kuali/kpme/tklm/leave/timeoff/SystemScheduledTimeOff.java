@@ -54,7 +54,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 	private Date scheduledTimeOffDate;
 	private String location;
 	private String descr;
-	private BigDecimal amountofTime = new BigDecimal(0.0);
+	private BigDecimal amountofTime;
 	private String unusedTime;
 	private BigDecimal transferConversionFactor;
 	private String transfertoEarnCode;
