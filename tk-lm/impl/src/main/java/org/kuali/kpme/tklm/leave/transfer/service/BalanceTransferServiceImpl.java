@@ -294,7 +294,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					aLeaveBlock.setLeaveDate(balanceTransfer.getEffectiveDate());
 					aLeaveBlock.setEarnCode(balanceTransfer.getDebitedAccrualCategory().getEarnCode());
 					aLeaveBlock.setAccrualCategory(balanceTransfer.getFromAccrualCategory());
-					aLeaveBlock.setDescription("Forfeited balance transfer amount");
+					aLeaveBlock.setDescription(LMConstants.TRANSFER_FORFEIT_LB_DESCRIPTION);
 					aLeaveBlock.setLeaveAmount(forfeitedAmount.negate());
 					aLeaveBlock.setAccrualGenerated(true);
 					aLeaveBlock.setTransactionDocId(balanceTransfer.getDocumentHeaderId());

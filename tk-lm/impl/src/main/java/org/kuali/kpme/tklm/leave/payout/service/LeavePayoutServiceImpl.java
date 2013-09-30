@@ -285,7 +285,7 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 					aLeaveBlock.setLeaveDate(leavePayout.getEffectiveDate());
 					aLeaveBlock.setEarnCode(leavePayout.getFromAccrualCategoryObj().getEarnCode());
 					aLeaveBlock.setAccrualCategory(leavePayout.getFromAccrualCategory());
-					aLeaveBlock.setDescription("Forfeited payout amount");
+					aLeaveBlock.setDescription(LMConstants.PAYOUT_FORFEIT_LB_DESCRIPTION);
 					aLeaveBlock.setLeaveAmount(forfeitedAmount.negate());
 					aLeaveBlock.setAccrualGenerated(true);
 					aLeaveBlock.setTransactionDocId(leavePayout.getDocumentHeaderId());
@@ -338,7 +338,7 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 		lpObj.setPayoutAmount(leavePayout.getPayoutAmount());
 		lpObj.setDocumentHeaderId(document.getDocumentHeader().getWorkflowDocument().getDocumentId());
 		
-		document.getNewMaintainableObject().setDataObject(lpObj);
+		//document.getNewMaintainableObject().setDataObject(lpObj);
 		KRADServiceLocatorWeb.getDocumentService().saveDocument(document);
 		document.getDocumentHeader().getWorkflowDocument().saveDocument("");
 
@@ -348,7 +348,6 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 	@Override
 	public List<LeavePayout> getLeavePayouts(String viewPrincipal,
 			LocalDate beginPeriodDate, LocalDate endPeriodDate) {
-		// TODO Auto-generated method stub
 		return leavePayoutDao.getLeavePayouts(viewPrincipal, beginPeriodDate, endPeriodDate);
 	}
 
