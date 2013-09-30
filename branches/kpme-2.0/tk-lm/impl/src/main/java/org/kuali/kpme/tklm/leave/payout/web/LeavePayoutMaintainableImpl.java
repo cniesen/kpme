@@ -39,27 +39,9 @@ public class LeavePayoutMaintainableImpl extends
         HrBusinessObjectMaintainableImpl {
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public void saveBusinessObject() {
-		LeavePayout bt = (LeavePayout) this.getBusinessObject();
-		
-		LeavePayout existingBt = LmServiceLocator.getLeavePayoutService().getLeavePayoutById(bt.getId());
-		
-		if(ObjectUtils.isNotNull(existingBt)) {
-			if(existingBt.getPayoutAmount().compareTo(bt.getPayoutAmount()) != 0) {
-				//TODO: Create leave block reference within bt, and update leave amount.
-			}
-			if(existingBt.getForfeitedAmount().compareTo(bt.getForfeitedAmount()) != 0) {
-				//TODO: Create reference within bt for forfeited leave block, update leave amount.
-			}
-			//Will approvers / department admins be changing accrual category? effective date?
-		}
-    }
     
     @Override
     public HrBusinessObject getObjectById(String id) {
-        // TODO Auto-generated method stub
         return LmServiceLocator.getLeavePayoutService().getLeavePayoutById(id);
     }
 
