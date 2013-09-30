@@ -54,7 +54,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 	private Date scheduledTimeOffDate;
 	private String location;
 	private String descr;
-	private BigDecimal amountofTime;
+	private BigDecimal amountofTime = new BigDecimal(0.0);
 	private String unusedTime;
 	private BigDecimal transferConversionFactor;
 	private String transfertoEarnCode;
@@ -156,7 +156,17 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 	}
 
 	public BigDecimal getAmountofTime() {
-		return amountofTime != null ? amountofTime.setScale(HrConstants.BIG_DECIMAL_SCALE) : null;
+        int scale = 2;
+        if (this.earnCodeObj == null &&
+                (!StringUtils.isEmpty(this.earnCode) && getEffectiveDate() != null)) {
+            earnCodeObj =  HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
+        }
+        if (earnCodeObj != null) {
+            BigDecimal fracAllowed = new BigDecimal(earnCodeObj.getFractionalTimeAllowed());
+            scale = fracAllowed.scale();
+        }
+
+		return amountofTime != null ? amountofTime.setScale(scale) : null;
 	}
 
 	public void setAmountofTime(BigDecimal amountofTime) {
