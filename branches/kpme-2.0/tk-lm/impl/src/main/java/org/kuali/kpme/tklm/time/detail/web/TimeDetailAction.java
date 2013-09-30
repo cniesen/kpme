@@ -258,6 +258,7 @@ public class TimeDetailAction extends TimesheetAction {
 						        	BalanceTransfer loseTransfer = LmServiceLocator.getBalanceTransferService().initializeTransfer(principalId, lb.getAccrualCategoryRuleId(), accruedBalance, lb.getLeaveLocalDate());
 						        	boolean valid = BalanceTransferValidationUtils.validateTransfer(loseTransfer);
 						        	if (valid) {
+						        		//validation occurs again before the "transfer" action occurs that submits the forfeiture.
 						        		losses.add(loseTransfer);
 						        	}
 				        		}
