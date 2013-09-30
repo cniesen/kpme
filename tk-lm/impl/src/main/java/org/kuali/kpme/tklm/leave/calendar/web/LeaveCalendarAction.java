@@ -594,6 +594,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 				        	BalanceTransfer loseTransfer = LmServiceLocator.getBalanceTransferService().initializeTransfer(principalId, lb.getAccrualCategoryRuleId(), accruedBalance, lb.getLeaveLocalDate());
 				        	boolean valid = BalanceTransferValidationUtils.validateTransfer(loseTransfer);
 				        	if (valid) {
+				        		//validates again before the "transfer" action is triggered on the forfeiture.
 				        		losses.add(loseTransfer);
 				        	}
 		        		}
