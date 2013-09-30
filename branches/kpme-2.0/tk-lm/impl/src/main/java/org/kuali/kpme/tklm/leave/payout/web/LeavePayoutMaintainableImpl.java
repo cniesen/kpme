@@ -39,7 +39,7 @@ public class LeavePayoutMaintainableImpl extends
         HrBusinessObjectMaintainableImpl {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Override
     public HrBusinessObject getObjectById(String id) {
         return LmServiceLocator.getLeavePayoutService().getLeavePayoutById(id);
@@ -51,7 +51,7 @@ public class LeavePayoutMaintainableImpl extends
         String documentId = documentHeader.getDocumentNumber();
         LeavePayout payout = (LeavePayout)this.getDataObject();
         DocumentService documentService = KRADServiceLocatorWeb.getDocumentService();
-
+        payout.setDocumentHeaderId(documentId);
         DocumentStatus newDocumentStatus = documentHeader.getWorkflowDocument().getStatus();
         String routedByPrincipalId = documentHeader.getWorkflowDocument().getRoutedByPrincipalId();
         if (DocumentStatus.ENROUTE.equals(newDocumentStatus)

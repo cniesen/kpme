@@ -58,13 +58,13 @@ public class BalanceTransferMaintainableImpl extends
         String documentId = documentHeader.getDocumentNumber();
         BalanceTransfer balanceTransfer = (BalanceTransfer)this.getDataObject();
         DocumentService documentService = KRADServiceLocatorWeb.getDocumentService();
-
+        balanceTransfer.setDocumentHeaderId(documentId);
         DocumentStatus newDocumentStatus = documentHeader.getWorkflowDocument().getStatus();
         String routedByPrincipalId = documentHeader.getWorkflowDocument().getRoutedByPrincipalId();
         /**
          * TODO:
          * if (!document.getDocumentStatus().equals(statusChangeEvent.getNewRouteStatus())) {
-         * 	LmServiceLocator.getBalanceTransferService().saveOrUpdate(balanceTransfer)... locking issue resolved??
+         * 	LmServiceLocator.getBalanceTransferService().saveOrUpdate(balanceTransfer)...??
          * }
          * 
          */
@@ -101,7 +101,6 @@ public class BalanceTransferMaintainableImpl extends
         	 * TODO: Remove disapproval action
         	 */
         	// this is a balance transfer on a system scheduled time off leave block
-
             if(StringUtils.isNotEmpty(balanceTransfer.getSstoId())) {
         		// put two accrual service generated leave blocks back, one accrued, one usage
         		List<LeaveBlock> lbList = buildSstoLeaveBlockList(balanceTransfer);    			
