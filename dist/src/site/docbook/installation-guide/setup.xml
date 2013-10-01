@@ -64,7 +64,7 @@
                 <para>100 Mbit/s network card (gigabit preferred)</para>
             </listitem>
             <listitem>
-                <para>200 MB of hard disk space (for Tomcat server and web application)</para>
+                <para>500 MB of hard disk space (for Tomcat server and web application)</para>
                 <note><para>Additional space needed if storing attachments.</para></note>
             </listitem>
         </itemizedlist>
