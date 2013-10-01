@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentAuthorizerBase;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.krad.document.Document;
 
 @SuppressWarnings("deprecation")
 public class BalanceTransferAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
@@ -30,6 +32,11 @@ public class BalanceTransferAuthorizer extends KPMEMaintenanceDocumentAuthorizer
 
 		attributes.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
 		attributes.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
+	}
+
+	@Override
+	public boolean canEdit(Document document, Person user) {
+		return false;
 	}
 	
 }

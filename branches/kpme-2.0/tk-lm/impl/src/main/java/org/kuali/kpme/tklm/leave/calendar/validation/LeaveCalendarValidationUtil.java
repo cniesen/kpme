@@ -285,11 +285,11 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
             if(StringUtils.equals(status.getCode(), HrConstants.ROUTE_STATUS.FINAL)) {
             	//show only one of these two messages.
             	if(transferForfeit
-                		&& !infoMessages.contains("One or more leave payout(s) that forfeited accrued leave occurred on this calendar")) 
-                	infoMessages.add("One or more leave payout(s) that forfeited accrued leave occurred on this calendar");
+                		&& !infoMessages.contains("One or more balance transfer(s) that forfeited accrued leave occurred on this calendar")) 
+                	infoMessages.add("One or more balance transfer(s) that forfeited accrued leave occurred on this calendar");
             	else if(!transferForfeit
-            			&& !infoMessages.contains("A payout action occurred on this calendar")) {
-            		infoMessages.add("A payout action occurred on this calendar");
+            			&& !infoMessages.contains("A balance transfer action occurred on this calendar")) {
+            		infoMessages.add("A balance transfer action occurred on this calendar");
             	}
             }
             else if(StringUtils.equals(status.getCode(), HrConstants.ROUTE_STATUS.ENROUTE)
@@ -319,7 +319,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
                 	infoMessages.add("One or more leave payout(s) that forfeited accrued leave occurred on this calendar");
             	else if(!payoutForfeit
             			&& !infoMessages.contains("A payout action occurred on this calendar")) {
-            		infoMessages.add("A payout action occurred on this calendar");
+            		infoMessages.add("A leave payout action occurred on this calendar");
             	}
             }
             else if(StringUtils.equals(status.getCode(), HrConstants.ROUTE_STATUS.ENROUTE)
