@@ -71,8 +71,16 @@ public class EndPayPeriodJob implements Job {
 	    		
 	            TkServiceLocator.getClockLogService().processClockLog(endPeriodDateTime, assignment, calendarEntry, ipAddress, 
 	            		endPeriodDateTime.toLocalDate(), timesheetDocument, TkConstants.CLOCK_OUT, false, principalId, batchUserPrincipalId);
+	            
+	            TimesheetDocumentHeader nextTdh = TkServiceLocator.getTimesheetDocumentHeaderService()
+	            		.getDocumentHeader(principalId, nextCalendarEntry.getBeginPeriodFullDateTime(), nextCalendarEntry.getEndPeriodFullDateTime());
+	            TimesheetDocument nextTimeDoc = null;
+	            if(nextTdh != null) {
+	            	nextTimeDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(nextTdh.getDocumentId());
+	            }
+	            
 	            ClockLog clockInLog = TkServiceLocator.getClockLogService().processClockLog(beginNextPeriodDateTime, assignment, calendarEntry, ipAddress, 
-	            		beginNextPeriodDateTime.toLocalDate(), timesheetDocument, TkConstants.CLOCK_IN, false, principalId, batchUserPrincipalId);
+	            		beginNextPeriodDateTime.toLocalDate(), nextTimeDoc, TkConstants.CLOCK_IN, false, principalId, batchUserPrincipalId);
 	            // add 5 seconds to clock in log's timestamp so it will be found as the latest clock action
 	            Timestamp ts= clockInLog.getTimestamp();
 	            java.util.Calendar cal = java.util.Calendar.getInstance();
