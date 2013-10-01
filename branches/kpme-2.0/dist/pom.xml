@@ -26,11 +26,32 @@
     <name>KPME Distribution</name>
     <artifactId>kpme-dist</artifactId>
     <packaging>pom</packaging>
+
+    <properties>
+        <docbook.date.format>MM-dd-yyyy</docbook.date.format>
+    </properties>
     <profiles>
         <profile>
             <id>kuali-release</id>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>buildnumber-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-timestamp</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>create-timestamp</goal>
+                                </goals>
+                                <configuration>
+                                    <timestampFormat>${docbook.date.format}</timestampFormat>
+                                    <timestampPropertyName>docbook.build.timestamp</timestampPropertyName>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-resources-plugin</artifactId>
