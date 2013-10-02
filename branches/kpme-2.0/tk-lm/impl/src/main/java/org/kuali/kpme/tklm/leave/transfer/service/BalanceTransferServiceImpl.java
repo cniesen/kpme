@@ -16,6 +16,7 @@
 package org.kuali.kpme.tklm.leave.transfer.service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -214,7 +215,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 			bt.setFromAccrualCategory(fromAccrualCategory.getAccrualCategory());
 			bt.setPrincipalId(principalId);
 			if(ObjectUtils.isNotNull(transferConversionFactor))
-				bt.setAmountTransferred(bt.getTransferAmount().multiply(transferConversionFactor).setScale(2));
+				bt.setAmountTransferred(bt.getTransferAmount().multiply(transferConversionFactor).setScale(2, RoundingMode.HALF_UP));
 			else
 				bt.setAmountTransferred(bt.getTransferAmount());
 		}
