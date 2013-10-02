@@ -67,6 +67,69 @@
                 any outdated information.</para>
         </section>
         <section>
+            <title>Impacting Changes</title>
+            <section>
+                <title>HR Roles to KIM migration</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>In order to better align KPME with other Kuali project, and in order
+                           to improve usability and ease of future enhancements, KPME has move to using KIM
+                           roles, permissions, and groups. </para>
+                    </listitem>
+                    <listitem>
+                        <para>If upgrading from a previous version of KPME, a groovy script is provided to
+                            generate sql that will help to migrate existing data from the HR_ROLE_T table to
+                            the KIM tables. </para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+            <section>
+                <title>Conversion to Joda Time</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>Service calls using java.util.Date and java.sql.Date have been
+                           altered and unified to use the JodaTime library.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Because of this change, previous maintenance documents that are in the
+                          process of being routed will not be loadable.  Ideally, these should be routed
+                          to completion before upgrading to KPME 2.0.0</para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+            <section>
+                <title>Renaming of CalendarEntries object to CalendarEntry</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>This class was renamed to be singular instead of plural.</para>
+                    </listitem>
+                    <listitem>
+                        <para>Because of this change, previous documents referencing 'CalendarEntries'
+                           will no longer be loadable. </para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+            <section>
+                <title>Modularity Work</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>Alot of work was done to modularize the KPME project</para>
+                    </listitem>
+                    <listitem>
+                        <para>Split into core, database, time and leave, and position management modules </para>
+                    </listitem>
+                    <listitem>
+                        <para>Depending on the method of an existing KPME installation,
+                           this may have repercussions on dependencies and spring bean configurations. </para>
+                    </listitem>
+                    <listitem>
+                        <para>Nearly every class has been relocated package-wise.  So any existing custom overrides will
+                           need to be modified. </para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+        </section>
+        <section>
             <title>Contact</title>
             <para>If you encounter any difficulty, please don't hesitate to contact the KPME team on
                 our public collaboration mailing list at <email>kpme.tech.collab@kuali.org</email>.
