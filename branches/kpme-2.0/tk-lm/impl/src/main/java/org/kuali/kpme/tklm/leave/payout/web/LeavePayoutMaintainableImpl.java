@@ -23,6 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.LMConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
@@ -59,8 +60,8 @@ public class LeavePayoutMaintainableImpl extends
             //when payout document is routed, initiate the leave payout - creating the leave blocks
             try {
                 MaintenanceDocument md = (MaintenanceDocument)KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(documentId);
-
                 payout = LmServiceLocator.getLeavePayoutService().payout(payout);
+                md.getDocumentHeader().setDocumentDescription(TKUtils.getDocumentDescription(payout.getPrincipalId(), payout.getEffectiveLocalDate()));
                 md.getNewMaintainableObject().setDataObject(payout);
                 documentService.saveDocument(md);
             }

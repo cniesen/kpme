@@ -27,6 +27,7 @@ import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.LMConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -75,6 +76,7 @@ public class BalanceTransferMaintainableImpl extends
         		try {
 	                MaintenanceDocument md = (MaintenanceDocument)KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(documentId);
 	                balanceTransfer = LmServiceLocator.getBalanceTransferService().transferSsto(balanceTransfer);
+	                md.getDocumentHeader().setDocumentDescription(TKUtils.getDocumentDescription(balanceTransfer.getPrincipalId(), balanceTransfer.getEffectiveLocalDate()));
 	                md.getNewMaintainableObject().setDataObject(balanceTransfer);
 	                documentService.saveDocument(md);
 	            }
@@ -86,7 +88,7 @@ public class BalanceTransferMaintainableImpl extends
                 //when transfer document is routed, initiate the balance transfer - creating the leave blocks
 	            try {
 	                MaintenanceDocument md = (MaintenanceDocument)KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(documentId);
-	
+	                md.getDocumentHeader().setDocumentDescription(TKUtils.getDocumentDescription(balanceTransfer.getPrincipalId(), balanceTransfer.getEffectiveLocalDate()));
 	                balanceTransfer = LmServiceLocator.getBalanceTransferService().transfer(balanceTransfer);
 	                md.getNewMaintainableObject().setDataObject(balanceTransfer);
 	                documentService.saveDocument(md);
