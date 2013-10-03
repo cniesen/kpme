@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.assignment.Assignment;
@@ -34,6 +35,7 @@ import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.batch.EndPayPeriodJob;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -42,7 +44,9 @@ import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class ClockLogServiceImpl implements ClockLogService {
-
+	
+	private static final Logger LOG = Logger.getLogger(ClockLogServiceImpl.class);
+	
     private ClockLogDao clockLogDao;
 
     public ClockLogServiceImpl() {
@@ -59,11 +63,13 @@ public class ClockLogServiceImpl implements ClockLogService {
 
     @Override
     public ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId, String userPrincipalId) {
+ LOG.info("in ClockLogServiceImpl.processClockLog, clockAction is " + clockAction);
+ 
         // process rules
         DateTime roundedClockDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockDateTime, pe.getBeginPeriodFullDateTime().toLocalDate());
 
         ClockLog clockLog = buildClockLog(roundedClockDateTime, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
-        
+LOG.info("Clock log is created but not saved yet, so clockLogId is " + clockLog.getTkClockLogId());        
         if (runRules) {
         	TkServiceLocator.getClockLocationRuleService().processClockLocationRule(clockLog, asOfDate);
         }
@@ -75,11 +81,12 @@ public class ClockLogServiceImpl implements ClockLogService {
             //Save current clock log to get id for timeblock building
             KRADServiceLocator.getBusinessObjectService().save(clockLog);
         }
-
+LOG.info("Clock log is saved, clockLogId is " + clockLog.getTkClockLogId());     
         return clockLog;
     }
 
     private void processTimeBlock(ClockLog clockLog, Assignment currentAssignment, CalendarEntry pe, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+LOG.info("in ClockLogServiceImpl.processTimeBlock");    	
         ClockLog lastLog = null;
         DateTime lastClockDateTime = null;
         String beginClockLogId = null;
@@ -133,6 +140,8 @@ public class ClockLogServiceImpl implements ClockLogService {
 	
 	        //call persist method that only saves added/deleted/changed timeblocks
 	        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, userPrincipalId);
+	        
+LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the size of the time blocks is " + newTimeBlocks.size()); 
     	}
     }
 
