@@ -87,7 +87,7 @@ public class LeaveAdjustmentValidation extends MaintenanceDocumentRuleBase{
 
     boolean validateDepartmentAdmin(String principalId) {
 
-        boolean valid = true;
+        boolean valid = false;
         String LoggedInPrincipalID = GlobalVariables.getUserSession().getPrincipalId();
         LocalDate loggedInDay =  LocalDate.now();
         DateTime asOfDate =  DateTime.now();
@@ -98,15 +98,19 @@ public class LeaveAdjustmentValidation extends MaintenanceDocumentRuleBase{
             if(!targetUserJob.isEmpty()) {
             //the target user should have at least one job and not have more than one leave eligible dept
                   String targetUserDept = targetUserJob.get(0).getDept();
-
                   //check to see if the logged in user is the dept admin for the leave adjustment target user's dept
-                  if( !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate)
-                          || !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate))
+                  if(HrContext.isSystemAdmin() 
+                		|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate)
+                        || HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate)
+                        || HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate)
+                        || HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(LoggedInPrincipalID, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), targetUserDept, asOfDate))
                   {
-                      GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "principal.is.not.dept.admin");
-                      valid = false;
+                      valid = true;
                   }
             }//List
+        }
+        if(!valid) {
+        	GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "principal.is.not.dept.admin");
         }
         return valid;
     }
