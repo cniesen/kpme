@@ -311,17 +311,11 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 			throws WorkflowException {
 		
 		//leavePayout.setStatus(HrConstants.ROUTE_STATUS.ENROUTE);
-        EntityNamePrincipalName principalName = null;
-        if (leavePayout.getPrincipalId() != null) {
-            principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(leavePayout.getPrincipalId());
-        }
 
 	/*MaintenanceDocument document = KRADServiceLocatorWeb.getMaintenanceDocumentService().setupNewMaintenanceDocument(LeavePayout.class.getName(),
 				"LeavePayoutDocumentType",KRADConstants.MAINTENANCE_NEW_ACTION);*/
-       MaintenanceDocument document =  (MaintenanceDocument) KRADServiceLocatorWeb.getDocumentService().getNewDocument("LeavePayoutDocumentType");
-		String personName = (principalName != null  && principalName.getDefaultName() != null) ? principalName.getDefaultName().getCompositeName() : StringUtils.EMPTY;
-        String date = TKUtils.formatDate(leavePayout.getEffectiveLocalDate());
-        document.getDocumentHeader().setDocumentDescription(personName + " (" + leavePayout.getPrincipalId() + ")  - " + date);
+        MaintenanceDocument document =  (MaintenanceDocument) KRADServiceLocatorWeb.getDocumentService().getNewDocument("LeavePayoutDocumentType");
+        document.getDocumentHeader().setDocumentDescription(TKUtils.getDocumentDescription(leavePayout.getPrincipalId(), leavePayout.getEffectiveLocalDate()));
 		Map<String,String[]> params = new HashMap<String,String[]>();
 		
 		KRADServiceLocatorWeb.getMaintenanceDocumentService().setupMaintenanceObject(document, KRADConstants.MAINTENANCE_NEW_ACTION, params);

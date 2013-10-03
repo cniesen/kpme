@@ -329,19 +329,13 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 			throws WorkflowException {
 
 		//balanceTransfer.setStatus(HrConstants.ROUTE_STATUS.ENROUTE);
-        EntityNamePrincipalName principalName = null;
-        if (balanceTransfer.getPrincipalId() != null) {
-            principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(balanceTransfer.getPrincipalId());
-        }
 
 		/*MaintenanceDocument document = KRADServiceLocatorWeb.getMaintenanceDocumentService().setupNewMaintenanceDocument(BalanceTransfer.class.getName(),
 				"BalanceTransferDocumentType",KRADConstants.MAINTENANCE_NEW_ACTION);*/
 		
 		MaintenanceDocument document =  (MaintenanceDocument) KRADServiceLocatorWeb.getDocumentService().getNewDocument("BalanceTransferDocumentType");
 
-        String personName = (principalName != null  && principalName.getDefaultName() != null) ? principalName.getDefaultName().getCompositeName() : StringUtils.EMPTY;
-        String date = TKUtils.formatDate(balanceTransfer.getEffectiveLocalDate());
-        document.getDocumentHeader().setDocumentDescription(personName + " (" + balanceTransfer.getPrincipalId() + ")  - " + date);
+        document.getDocumentHeader().setDocumentDescription(TKUtils.getDocumentDescription(balanceTransfer.getPrincipalId(), balanceTransfer.getEffectiveLocalDate()));
 		Map<String,String[]> params = new HashMap<String,String[]>();
 		
 		KRADServiceLocatorWeb.getMaintenanceDocumentService().setupMaintenanceObject(document, KRADConstants.MAINTENANCE_NEW_ACTION, params);
