@@ -622,7 +622,7 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
             <note>
                 <para>
                     You will need to already have a working instance of a Rice ${rice.version} up and running since you will need to run sql statements against
-                    that Rice database.
+                    that Rice database.  Before running any scripts against the rice database, please update your existing rice installation to Rice ${rice.version}.
                 </para>
             </note>
             <section>
@@ -723,7 +723,6 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
                                     <listitem><emphasis role="bold">2.0.0/oracle/rice-2.2.1-oracle-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/oracle/rice-2.2.2-oracle-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/oracle/rice-2.2.4-oracle-client-upgrade.sql</emphasis></listitem>
-                                    <listitem><emphasis role="bold">2.0.0/oracle/rice-2.3.1-oracle-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/oracle/kpme-2.0.0-oracle-client-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
@@ -736,7 +735,8 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
 	                            </orderedlist>
 	                        </listitem>
 	                        <listitem>
-	                            <para>MySQL Client</para>
+	                            <para>MySQL Client (note: for the rice scripts listed below, only run the scripts necessary based
+                                    on your current version of the rice database.)</para>
 	                            <orderedlist>
 		                            <listitem><emphasis role="bold">1.2.0/mysql/rice-1.0.3-mysql-client-install.sql</emphasis></listitem>
 		                            <listitem><emphasis role="bold">1.2.0/mysql/rice-2.0.0-mysql-client-install.sql</emphasis></listitem>
@@ -748,10 +748,8 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
                                     <listitem><emphasis role="bold">1.5.0/mysql/kpme-1.5.0-mysql-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">1.5.1/mysql/kpme-1.5.1-mysql-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">1.5.2/mysql/kpme-1.5.2-mysql-client-upgrade.sql</emphasis></listitem>
-                                    <listitem><emphasis role="bold">2.0.0/mysql/rice-2.2.1-mysql-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/mysql/rice-2.2.2-mysql-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/mysql/rice-2.2.4-mysql-client-upgrade.sql</emphasis></listitem>
-                                    <listitem><emphasis role="bold">2.0.0/mysql/rice-2.3.1-mysql-client-upgrade.sql</emphasis></listitem>
                                     <listitem><emphasis role="bold">2.0.0/mysql/kpme-2.0.0-mysql-client-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
