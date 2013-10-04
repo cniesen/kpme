@@ -3,149 +3,334 @@
 	xmlns="http://docbook.org/ns/docbook" version="5.0">
 	<title>Basic Setup</title>
     <section>
-        <title>KPME Navigation</title>
+        <title>Introduction</title>
         <para>
-            The first point of entry for any system administrator who is setting up the system is on the KPME portal page.  It is similar to the Rice portal
-            page but it has KPME-specific links included.  If this is your first time running the application, you may have it running on localhost using the 
-            application path "kpme-dev".  If this is true, proceed to 
-            <link xlink:href="http://localhost:8080/kpme-dev/portal.do">http://localhost:8080/kpme-dev/portal.do</link>.  More complicated setups will use
-            different paths but will always end with "portal.do".  Once at the page, go to the Maintenance tab and view the links.
-            <mediaobject>
-                <imageobject>
-                    <imagedata fileref="../images/kpmeportal.jpg" format="JPG" scale="40"/>
-                </imageobject>
-                <textobject>
-                    <phrase>KPME Portal</phrase>
-                </textobject>
-            </mediaobject>
+            With the application server running, proceed to the KPME Maintenance Portal:
         </para>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="../images/portal-length.png" format="PNG" scale="50"/>
+            </imageobject>
+         <caption>
+         	<para>
+         		The KPME Maintenance Portal
+         	</para>
+         </caption>
+        </mediaobject>
         <para>
-            On the left hand side of the page, there are several sections including the maintenance documents required for administering the system.  At the
-            top, there is a HR/Payroll section which this section of the guide will address.  Other sections include Timekeeping, Leave Management, and 
-            Administrative.
+            This chapter will cover the administration of CORE KPME business objects, located in the HR/Payroll link grouping found on the left hand side of the page.
         </para>
+	     <mediaobject>
+	         <imageobject>
+	             <imagedata fileref="../images/core-links.png" format="PNG" scale="100"/>
+	         </imageobject>
+	      <caption>
+	      	<para>
+	      		HR/Payroll Group
+	      	</para>
+	      </caption>
+	     </mediaobject>
+	    <para>
+	    	We will also need to create an object linked in the Administrative grouping located at the bottom left of the maintenance portal.
+	    </para>
+	        <mediaobject>
+	            <imageobject>
+	                <imagedata fileref="../images/administrative-links.png" format="PNG" scale="100"/>
+	            </imageobject>
+	         <caption>
+	         	<para>
+	         		HR/Payroll Group
+	         	</para>
+	         </caption>
+	        </mediaobject>
+	    <para>
+	    	In-depth Leave Management and Timekeeping administration are covered in <link xlink:href="https://wiki.kuali.org/display/KPMEDOC/KPME+System+Administration+Guide">subsequent guides</link>,
+	   		however, will require understanding of concepts and objects presented in this chapter. This chapter also makes a few assumptions on readers knowledge and existence of basic rice objects and components.
+	   		For instance, <link xlink:href="http://site.kuali.org/rice/2.3.2/reference/html/KIM_Guide.html#d13526e167">Person Maintenance</link>, documented
+	   		within the <link xlink:href="http://site.kuali.org/rice/2.3.2/reference/html/KIM_Guide.htm">Kauli Identity Management</link> guide.
+	    </para>
     </section>
-	<section>
-		<title>Set up Calendars for leave and pay with leave entries</title>
-		<section>
-			<title>Calendar</title>
-			<para>
-				The system supports multiple pay cycles that are definable by start date/time and end date/time.  This allows for institutions to define 
-				multiple pay and leave calendars such as monthly, semi-monthly, biweekly, or weekly. For example, an institution may define a pay period 
-				beginning at Noon on a Thursday which runs 2 weeks to Noon the following Thursday.
-			</para>
-			<para>
-				The Timekeeping and Leave Managements modules must allow for institutions to define calendars for which employees will report their time and 
-				leave. These calendars may or  may not correspond to payroll calendars.  For example, institutions may choose to define leave reporting 
-				calendars to be from the 15th of the month to the 15th of the following month while the payroll calendar may be from the 1st of the month to the 
-				1st of the next month for the same employee.
-			</para>
-			<para>
-				The system can define calendars for Pay and Leave. These Calendars will be furthered defined by the Calendar Entries maintenance document with 
-				the reporting periods and also associated with employees on the Principal HR Attributes Maintenance Document.
-			</para>
-			<table frame="none">
-				<title>Calendar fields : </title>
-				<tgroup cols="2">
-					<colspec colname="c1" colnum="1" colwidth="2.00*" />
-					<colspec colname="c2" colnum="2" colwidth="4.00*" />
-					<thead>
-						<row>
-							<entry>Field</entry>
-							<entry>Description</entry>
-						</row>
-					</thead>
-					<tbody>
-						<row>
-							<entry>Calendar Name</entry>
-							<entry>Text field used to defined the calendar entry for Pay or Leave reporting periods.</entry>
-						</row>
-						<row>
-							<entry>Calendar Descriptions</entry>
-							<entry>Text field used to describe the calendar.</entry>
-						</row>
-						<row>
-							<entry>Calendar Types</entry>
-							<entry>Indicate calendar is to be used for Pay or Leave reporting periods.</entry>
-						</row>
-						<row>
-							<entry>FLSA Begin Day</entry>
-							<entry>This value determines the FLSA period for overtime calculations.</entry>
-						</row>
-						<row>
-							<entry>FLSA Begin Time</entry>
-							<entry>Time of day when FLSA period begins.</entry>
-						</row>
-					</tbody>
-				</tgroup>
-			</table>
-		</section>
-		<section>
-			<title>Calendar Entries</title>
-			<para>
-                The system can define calendars for Pay or Leave. The Calendar Entry maintenance page defines the pay period (timesheet) and/or leave 
-                reporting period.
-			</para>
-			<para>
-                Entries must be created for a time period before a timesheet and/or leave calendar can be created.
-            </para>
-			<table frame="none">
-				<title>Calendar Entries fields : </title>
-				<tgroup cols="2">
-					<colspec colname="c1" colnum="1" colwidth="2.00*" />
-					<colspec colname="c2" colnum="2" colwidth="4.00*" />
-					<thead>
-						<row>
-							<entry>Field</entry>
-							<entry>Description</entry>
-						</row>
-					</thead>
-					<tbody>
-						<row>
-							<entry>Calendar Name</entry>
-							<entry>Calendar to be associated with Calendar Entries.</entry>
-						</row>
-						<row>
-							<entry>Begin Period Date/Time</entry>
-							<entry>Date period starts. This drives what calendar days show on the timesheet and/or leave calendar. </entry>
-						</row>
-						<row>
-							<entry>End Period Date/Time</entry>
-							<entry>Date period ends. This drives what calendars days show on the timesheet and/or leave calendar.</entry>
-						</row>
-						<row>
-							<entry>Batch Initiate Date/Time</entry>
-							<entry>Date batch should run to create timesheets and/or leave calendars for the reporting period.</entry>
-						</row>
-						<row>
-							<entry>Batch End Pay Period Date/Time</entry>
-							<entry>
-                                For Pay Calendar, date batch job should run to end all timeblocks for this pay period. This inserts clock outs at the end of 
-                                the pay period, and clock ins at the beginning of the subsequent pay period.
-							</entry>
-						</row>
-						<row>
-							<entry>Batch Employee Approval Date/Time</entry>
-							<entry>Date batch job should run to route timesheets and/or leave calendars from the employee to the approver.</entry>
-						</row>
-						<row>
-							<entry>Batch Supervisor Approval Date/Time</entry>
-							<entry>Date batch job should run to route timesheets and/or leave calendars from the approver to final status.</entry>
-						</row>
-					</tbody>
-				</tgroup>
-			</table>
-			<note>
-                <para>
-                    To learn more about how to configure the batch Date/Time fields, please see the Batch Jobs documentation.
-                </para>
-			</note>
-		</section>
-	</section>
+    <section>
+    	<title>Institution</title>
+		<para>TODO: Provide field mapping for Institution, define basic object</para>
+        <table frame="none">
+            <title>Institution Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
+    <section>
+    	<title>Location</title>
+    	<para>TODO: Provide field mapping for Location, define basic object</para>
+        <table frame="none">
+            <title>Location Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    	<section>
+    		<title>Location Role Member</title>
+    		<para>TODO: Describe purpose for Location Role Members, define basic object</para>
+	        <table frame="none">
+	            <title>Location Role Member Fields</title>
+	            <tgroup cols="2">
+	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+	                <thead>
+	                    <row>
+	                        <entry>Field</entry>
+	                        <entry>Description</entry>
+	                    </row>
+	                </thead>
+	                <tbody>
+	                    <row>
+	                        <entry></entry>
+	                        <entry></entry>
+	                    </row>
+	                </tbody>
+	            </tgroup>
+	        </table>
+    	</section>
+    </section>
+    <section>
+    	<title>Department</title>
+    	<para>TODO: Provide field mapping for Department, define basic object</para>
+        <table frame="none">
+            <title>Department Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    	<section>
+    		<title>Department Role Member</title>
+    		<para>TODO: Describe purpose for Department Role Members, define basic object</para>
+	        <table frame="none">
+	            <title>Department Role Member Fields</title>
+	            <tgroup cols="2">
+	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+	                <thead>
+	                    <row>
+	                        <entry>Field</entry>
+	                        <entry>Description</entry>
+	                    </row>
+	                </thead>
+	                <tbody>
+	                    <row>
+	                        <entry></entry>
+	                        <entry></entry>
+	                    </row>
+	                </tbody>
+	            </tgroup>
+	        </table>
+    	</section>
+    </section>
+    <section>
+    	<title>Work Area</title>
+    	<para>TODO: Provide field mapping for Work Area, define basic object</para>
+        <table frame="none">
+            <title>Work Area Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    	<section>
+    		<title>Work Area Task</title>
+    		<para>TODO: define basic object, describe relationship</para>
+	        <table frame="none">
+	            <title>Work Area Task Fields</title>
+	            <tgroup cols="2">
+	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+	                <thead>
+	                    <row>
+	                        <entry>Field</entry>
+	                        <entry>Description</entry>
+	                    </row>
+	                </thead>
+	                <tbody>
+	                    <row>
+	                        <entry></entry>
+	                        <entry></entry>
+	                    </row>
+	                </tbody>
+	            </tgroup>
+	        </table>
+    	</section>
+    	<section>
+    		<title>Work Area Principal Role Member</title>
+    		<para>TODO: Describe purpose for Work Area Principal Role Members, define basic object</para>
+	        <table frame="none">
+	            <title>Work Area Principal Role Member Fields</title>
+	            <tgroup cols="2">
+	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+	                <thead>
+	                    <row>
+	                        <entry>Field</entry>
+	                        <entry>Description</entry>
+	                    </row>
+	                </thead>
+	                <tbody>
+	                    <row>
+	                        <entry></entry>
+	                        <entry></entry>
+	                    </row>
+	                </tbody>
+	            </tgroup>
+	        </table>
+    	</section>
+    	<section>
+    		<title>Work Area Position Role Member</title>
+    		<para>TODO: Describe purpose for Work Area Position Role Members, define basic object</para>
+	        <table frame="none">
+	            <title>Work Area Position Role Member Fields</title>
+	            <tgroup cols="2">
+	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+	                <thead>
+	                    <row>
+	                        <entry>Field</entry>
+	                        <entry>Description</entry>
+	                    </row>
+	                </thead>
+	                <tbody>
+	                    <row>
+	                        <entry></entry>
+	                        <entry></entry>
+	                    </row>
+	                </tbody>
+	            </tgroup>
+	        </table>
+    	</section>
+    </section>
+    <section>
+    	<title>Salary Group</title>
+    	<para>TODO: Provide field mapping for Salary Group, define basic object</para>
+        <table frame="none">
+            <title>Salary Group Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
+    <section>
+    	<title>Pay Grade</title>
+    	<para>TODO: Provide field mapping for Pay Grade, define basic object</para>
+        <table frame="none">
+            <title>Pay Grade Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
+    <section>
+    	<title>Pay Step</title>
+    	<para>TODO: Provide field mapping for Pay Step, define basic object</para>
+        <table frame="none">
+            <title>Pay Step Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>
 	<section>
 		<title>Earn Codes with Earn Code Security</title>
 		<section>
 			<title>Earn Code</title>
+			<para>TODO: Update to reflect the change in field organization, add any new/changed fields.</para>
 			<para>
                 The Earn Code maintenance page is used to define codes to categorize employee’s hours/earnings and time off.  For each earn code, you can define 
                 how the employees records - in/out time, hours, days or flat dollar amount.  These codes may or may not be attached to an accrual category for
@@ -156,7 +341,7 @@
 				and scheduling leave.
 			</para>
 			<table frame="none">
-				<title>Earn Code fields : </title>
+				<title>Earn Code Fields</title>
 				<tgroup cols="2">
 					<colspec colname="c1" colnum="1" colwidth="2.00*" />
 					<colspec colname="c2" colnum="2" colwidth="4.00*" />
@@ -304,9 +489,11 @@
 					will not be displayed by default.
 				</para>
 			</note>
+			<para>TODO: Define basic earn code(s) for use with other business objects</para>
 		</section>
 		<section>
 			<title>Earn Code Security</title>
+			<para>TODO: Update mapping to reflect new or changed fields.</para>
 			<para>
                 The Earn Code Security maintenance page is used to define which roles (employee, approver) see specific earn codes on the timesheet and/or Leave 
                 Calendar. This is definable at the department, salary group or location value. These fields are accept wild cards (%).
@@ -315,7 +502,7 @@
                 Formerly called Department Earn Code in Timekeeping.
 			</para>
 			<table frame="none">
-				<title>Earn Code Security fields : </title>
+				<title>Earn Code Security Fields</title>
 				<tgroup cols="2">
 					<colspec colname="c1" colnum="1" colwidth="2.00*" />
 					<colspec colname="c2" colnum="2" colwidth="4.00*" />
@@ -368,10 +555,12 @@
 					</tbody>
 				</tgroup>
 			</table>
+			<para>TOOD: Define basic Earn Code Security for use with other objects</para>
 		</section>
 	</section>
 	<section>
-		<title>Earn Code Groups</title>
+		<title>Earn Code Group</title>
+		<para>TODO: Update mapping to reflect any new or changed fields.</para>
 		<para>
             The Earn Code Group maintenance page is used to define groupings of earn codes.  In timekeeping, these groups are also used to define the summary
 			sections on the timesheet and in the overtime rule setup page.
@@ -381,7 +570,7 @@
 			or leave calendar.
 		</para>
 		<table frame="none">
-			<title>Earn Code Groups fields : </title>
+			<title>Earn Code Group Fields</title>
 			<tgroup cols="2">
 				<colspec colname="c1" colnum="1" colwidth="2.00*" />
 				<colspec colname="c2" colnum="2" colwidth="4.00*" />
@@ -428,5 +617,223 @@
 				</tbody>
 			</tgroup>
 		</table>
+		<para>TODO: define basic earn code group for use with other objects</para>
 	</section>
+	
+	<section>
+		<title>Set up Calendars for leave and pay with leave entries</title>
+		<section>
+			<title>Calendar</title>
+			<para>
+				The system supports multiple pay cycles that are definable by start date/time and end date/time.  This allows for institutions to define 
+				multiple pay and leave calendars such as monthly, semi-monthly, biweekly, or weekly. For example, an institution may define a pay period 
+				beginning at Noon on a Thursday which runs 2 weeks to Noon the following Thursday.
+			</para>
+			<para>
+				The Timekeeping and Leave Managements modules must allow for institutions to define calendars for which employees will report their time and 
+				leave. These calendars may or  may not correspond to payroll calendars.  For example, institutions may choose to define leave reporting 
+				calendars to be from the 15th of the month to the 15th of the following month while the payroll calendar may be from the 1st of the month to the 
+				1st of the next month for the same employee.
+			</para>
+			<para>
+				The system can define calendars for Pay and Leave. These Calendars will be furthered defined by the Calendar Entries maintenance document with 
+				the reporting periods and also associated with employees on the Principal HR Attributes Maintenance Document.
+			</para>
+			<table frame="none">
+				<title>Calendar Fields</title>
+				<tgroup cols="2">
+					<colspec colname="c1" colnum="1" colwidth="2.00*" />
+					<colspec colname="c2" colnum="2" colwidth="4.00*" />
+					<thead>
+						<row>
+							<entry>Field</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>Calendar Name</entry>
+							<entry>Text field used to defined the calendar entry for Pay or Leave reporting periods.</entry>
+						</row>
+						<row>
+							<entry>Calendar Descriptions</entry>
+							<entry>Text field used to describe the calendar.</entry>
+						</row>
+						<row>
+							<entry>Calendar Type</entry>
+							<entry>Indicate calendar is to be used for Pay or Leave reporting periods.</entry>
+						</row>
+						<row>
+							<entry>FLSA Begin Day</entry>
+							<entry>This value determines the FLSA period for overtime calculations.</entry>
+						</row>
+						<row>
+							<entry>FLSA Begin Time</entry>
+							<entry>Time of day when FLSA period begins.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<para>TODO: Define basic calendar(s) for use with other objects</para>
+		</section>
+		<section>
+			<title>Calendar Entries</title>
+			<para>TODO: Add field mappings for Batch Payroll Approval</para>
+			<para>
+                The system can define calendars for Pay or Leave. The Calendar Entry maintenance page defines the pay period (timesheet) and/or leave 
+                reporting period.
+			</para>
+			<para>
+                Entries must be created for a time period before a timesheet and/or leave calendar can be created.
+            </para>
+			<table frame="none">
+				<title>Calendar Entries Fields</title>
+				<tgroup cols="2">
+					<colspec colname="c1" colnum="1" colwidth="2.00*" />
+					<colspec colname="c2" colnum="2" colwidth="4.00*" />
+					<thead>
+						<row>
+							<entry>Field</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>Calendar Name</entry>
+							<entry>Calendar to be associated with Calendar Entries.</entry>
+						</row>
+						<row>
+							<entry>Begin Period Date/Time</entry>
+							<entry>Date period starts. This drives what calendar days show on the timesheet and/or leave calendar. </entry>
+						</row>
+						<row>
+							<entry>End Period Date/Time</entry>
+							<entry>Date period ends. This drives what calendars days show on the timesheet and/or leave calendar.</entry>
+						</row>
+						<row>
+							<entry>Batch Initiate Date/Time</entry>
+							<entry>Date batch should run to create timesheets and/or leave calendars for the reporting period.</entry>
+						</row>
+						<row>
+							<entry>Batch End Pay Period Date/Time</entry>
+							<entry>
+                                For Pay Calendar, date batch job should run to end all timeblocks for this pay period. This inserts clock outs at the end of 
+                                the pay period, and clock ins at the beginning of the subsequent pay period.
+							</entry>
+						</row>
+						<row>
+							<entry>Batch Employee Approval Date/Time</entry>
+							<entry>Date batch job should run to route timesheets and/or leave calendars from the employee to the approver.</entry>
+						</row>
+						<row>
+							<entry>Batch Supervisor Approval Date/Time</entry>
+							<entry>Date batch job should run to route timesheets and/or leave calendars from the approver to final status.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+			<note>
+                <para>
+                    To learn more about how to configure the batch Date/Time fields, please see the Batch Jobs documentation.
+                </para>
+			</note>
+			<para>TODO: Define basic calendar entry for use with leave and time managmenet</para>
+		</section>
+	</section>
+
+    <section>
+    	<title>Pay Type</title>
+    	<para>TODO: Provide field mapping for Pay Type, define basic object</para>
+        <table frame="none">
+            <title>Pay Type Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+    </section>	
+   	<section>
+		<title>Position Base</title>
+		<para>TODO: Provide field mapping for Position Base, define basic object</para>
+        <table frame="none">
+            <title>Position Base Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+	</section>
+
+	<section>
+		<title>Job</title>
+		<para>TODO: Provide field mapping for Job, define basic object</para>
+        <table frame="none">
+            <title>Job Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+	</section>
+
+	<section>
+		<title>Assignment</title>
+		<para>TODO: Provide field mapping for Assignment, define basic object</para>
+        <table frame="none">
+            <title>Assignment Fields</title>
+            <tgroup cols="2">
+                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+                <thead>
+                    <row>
+                        <entry>Field</entry>
+                        <entry>Description</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry></entry>
+                        <entry></entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+	</section>
+
 </chapter>
