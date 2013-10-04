@@ -52,7 +52,7 @@
     </section>
     <section>
     	<title>Institution</title>
-		<para>TODO: Provide field mapping for Institution, define basic object</para>
+		<para>Institution is required by a number of HR/Payroll related objects, such as Salary Group.</para>
         <table frame="none">
             <title>Institution Fields</title>
             <tgroup cols="2">
@@ -66,20 +66,20 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date the institution record takes effect</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Institution Code</entry>
+                        <entry>Alpha-numeric code used to identify the institution. Ex: ISU</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Optional long description of Institution</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Indicator specifying whether the institution will turned active or inactive on the given effective date.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -87,7 +87,8 @@
     </section>
     <section>
     	<title>Location</title>
-    	<para>TODO: Provide field mapping for Location, define basic object</para>
+    	<para>Location, like Institution, is also required by a number of HR/Payroll objects, including Salary Group and other, more fine-grained location-based objects, such as
+    	Department</para>
         <table frame="none">
             <title>Location Fields</title>
             <tgroup cols="2">
@@ -101,31 +102,33 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date this Location will go into effect. This date should be on or before any role members defined for the location.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>Alpha-numeric code used to identify the location. Ex: IA</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Timezone</entry>
+                        <entry>The timezone in which this location resides</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Long description of Location</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Indicator used to activate or deactivate the location.</entry>
                     </row>
                 </tbody>
             </tgroup>
         </table>
     	<section>
     		<title>Location Role Member</title>
-    		<para>TODO: Describe purpose for Location Role Members, define basic object</para>
+    		<para>This Role Member consists of a principal paired with a role. Depending on the role, the principal may be given elevated permissions
+    			not otherwise available to them, such as availability of specific earn codes, or the ability to view calendar documents across all
+    			departments the location encompasses.</para>
 	        <table frame="none">
 	            <title>Location Role Member Fields</title>
 	            <tgroup cols="2">
@@ -139,24 +142,25 @@
 	                </thead>
 	                <tbody>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Effective Date</entry>
+	                        <entry>This date should be on or after the effective date of the Location object to which it is attached.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Principal Id</entry>
+	                        <entry>This field selects the person to receive the role for the location</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Principal Name</entry>
+	                        <entry>Read-only field populated from Principal Id</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Role Name</entry>
+	                        <entry>Specifies which role to give to the principal for the location. Roles are divided between "Time Location" and "Leave Location"
+	                        	and further divided by Administrator and View Only Permissions</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Expiration Date</entry>
+	                        <entry>Optional field to specify a date for which the role is to be removed from the princpal. If left blank, the role will not automatically expire.</entry>
 	                    </row>
 	                </tbody>
 	            </tgroup>
@@ -165,7 +169,8 @@
     </section>
     <section>
     	<title>Department</title>
-    	<para>TODO: Provide field mapping for Department, define basic object</para>
+    	<para>A Location is partitioned into Department(s). Department may be given additional properties not applicable to the broader location, and 
+    		Work Areas are defined within a Department.</para>
         <table frame="none">
             <title>Department Fields</title>
             <tgroup cols="2">
@@ -179,43 +184,45 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date the Department record will go into effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Department</entry>
+                        <entry>An alpha-numeric code used to identify the department</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Long description of Department</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The Location to which this department belongs</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Chart</entry>
+                        <entry>Optional field to specify an Administrative Chart</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Organization</entry>
+                        <entry>Optional field to specify an Organization</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Payroll Approval</entry>
+                        <entry>Flag indicating whether specific documents, i.e. Leave and Timekeeping, created within the department will go through payroll approval.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Indicator for activity</entry>
                     </row>
                 </tbody>
             </tgroup>
         </table>
     	<section>
     		<title>Department Role Member</title>
-    		<para>TODO: Describe purpose for Department Role Members, define basic object</para>
+    		<para>This Role Member consists of a principal paired with a role. Depending on the role, the principal may be given elevated permissions
+    			not otherwise available to them, such as availability of specific earn codes, or the ability to view calendar documents across all
+    			work areas the department contains.</para>
 	        <table frame="none">
 	            <title>Department Role Member Fields</title>
 	            <tgroup cols="2">
@@ -229,25 +236,26 @@
 	                </thead>
 	                <tbody>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Effective Date</entry>
+	                        <entry>This date should be on or after the effective date of the Department object to which it is attached.</entry>
 	                    </row>
-                    <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
+	                    <row>
+	                        <entry>Principal Id</entry>
+	                        <entry>This field selects the person to receive the role for the department</entry>
+	                    </row>
+	                    <row>
+	                        <entry>Principal Name</entry>
+	                        <entry>Read-only field populated from Principal Id</entry>
+	                    </row>
+	                    <row>
+	                        <entry>Role Name</entry>
+	                        <entry>Specifies which role to give to the principal for the department. Roles are divided between "Time" and "Leave" Departments
+	                        	and further divided by Administrator and View Only Permissions</entry>
+	                    </row>
+	                    <row>
+	                        <entry>Expiration Date</entry>
+	                        <entry>Optional field to specify a date for which the role is to be removed from the princpal. If left blank, the role will not automatically expire.</entry>
+	                    </row>
 	                </tbody>
 	            </tgroup>
 	        </table>
@@ -255,7 +263,7 @@
     </section>
     <section>
     	<title>Work Area</title>
-    	<para>TODO: Provide field mapping for Work Area, define basic object</para>
+    	<para></para>
         <table frame="none">
             <title>Work Area Fields</title>
             <tgroup cols="2">
@@ -269,39 +277,39 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date the work area record is to become effective</entry>
+                    </row>
+                    <row>
+                        <entry>Work Area</entry>
+                        <entry>Auto-generated, read-only field used to uniquely identify the work area.</entry>
+                    </row>
+                    <row>
+                        <entry>Description</entry>
+                        <entry>Long Description of the work area</entry>
+                    </row>
+                    <row>
+                        <entry>Overtime Edit Role</entry>
                         <entry></entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
+                        <entry>Default Overtime Earn Code</entry>
                         <entry></entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
+                        <entry>Department</entry>
                         <entry></entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
+                        <entry>Admin Description</entry>
                         <entry></entry>
                     </row>
                     <row>
-                        <entry></entry>
+                        <entry>HR Distribution</entry>
                         <entry></entry>
                     </row>
                     <row>
-                        <entry></entry>
+                        <entry>Active</entry>
                         <entry></entry>
                     </row>
                 </tbody>
@@ -323,23 +331,23 @@
 	                </thead>
 	                <tbody>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
+	                        <entry>Effective Date</entry>
 	                        <entry></entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
+	                        <entry>Task</entry>
 	                        <entry></entry>
 	                    </row>
 	                    <row>
+	                        <entry>Description</entry>
 	                        <entry></entry>
+	                    </row>
+	                    <row>
+	                        <entry>Administrative Description</entry>
+	                        <entry></entry>
+	                    </row>
+	                    <row>
+	                        <entry>Active</entry>
 	                        <entry></entry>
 	                    </row>
 	                </tbody>
@@ -347,79 +355,91 @@
 	        </table>
     	</section>
     	<section>
-    		<title>Work Area Principal Role Member</title>
-    		<para>TODO: Describe purpose for Work Area Principal Role Members, define basic object</para>
-	        <table frame="none">
-	            <title>Work Area Principal Role Member Fields</title>
-	            <tgroup cols="2">
-	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
-	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
-	                <thead>
-	                    <row>
-	                        <entry>Field</entry>
-	                        <entry>Description</entry>
-	                    </row>
-	                </thead>
-	                <tbody>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                </tbody>
-	            </tgroup>
-	        </table>
-    	</section>
-    	<section>
-    		<title>Work Area Position Role Member</title>
-    		<para>TODO: Describe purpose for Work Area Position Role Members, define basic object</para>
-	        <table frame="none">
-	            <title>Work Area Position Role Member Fields</title>
-	            <tgroup cols="2">
-	                <colspec colname="c1" colnum="1" colwidth="2.00*" />
-	                <colspec colname="c2" colnum="2" colwidth="4.00*" />
-	                <thead>
-	                    <row>
-	                        <entry>Field</entry>
-	                        <entry>Description</entry>
-	                    </row>
-	                </thead>
-	                <tbody>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
-	                    </row>
-	                </tbody>
-	            </tgroup>
-	        </table>
+	    	<title>Work Area Role Members</title>
+	    	<para>A Work Area Role Member may be added via Position or Principal. A Role Member added for a Position may contain more than one
+	    		principal if more than one employee is allowed to hold a single position.</para>
+	    	<section>
+	    		<title>Work Area Principal Role Member</title>
+	    		<para>TODO: Describe purpose for Work Area Principal Role Members, define basic object</para>
+		        <table frame="none">
+		            <title>Work Area Principal Role Member Fields</title>
+		            <tgroup cols="2">
+		                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+		                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+		                <thead>
+		                    <row>
+		                        <entry>Field</entry>
+		                        <entry>Description</entry>
+		                    </row>
+		                </thead>
+		                <tbody>
+		                    <row>
+		                        <entry>Effective Date</entry>
+		                        <entry>The date which the Role Member becomes effective</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Principal Id</entry>
+		                        <entry>The principal to which the role will be given.</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Principal Name</entry>
+		                        <entry>Read-only field auto-populated from principal id.</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Role Name</entry>
+		                        <entry>As of KPME v2.0, three roles are available; Approver, Approver Delegate and Reviewer. Time and Leave documents
+		                        	may be routed to, and specific actions can be requested of each of these roles.</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Expiration Date</entry>
+		                        <entry>The date on which this role member will be removed from the Work Area.</entry>
+		                    </row>
+		                </tbody>
+		            </tgroup>
+		        </table>
+	    	</section>
+	    	<section>
+	    		<title>Work Area Position Role Member</title>
+	    		<para>TODO: Describe purpose for Work Area Position Role Members, define basic object</para>
+		        <table frame="none">
+		            <title>Work Area Position Role Member Fields</title>
+		            <tgroup cols="2">
+		                <colspec colname="c1" colnum="1" colwidth="2.00*" />
+		                <colspec colname="c2" colnum="2" colwidth="4.00*" />
+		                <thead>
+		                    <row>
+		                        <entry>Field</entry>
+		                        <entry>Description</entry>
+		                    </row>
+		                </thead>
+		                <tbody>
+		                    <row>
+		                        <entry>Effective Date</entry>
+		                        <entry>The date on which this Position Role Member will become effective</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Position Number</entry>
+		                        <entry>The position to which this role will be given.</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Role Name</entry>
+		                        <entry>As of KPME v2.0, three roles are available; Approver, Approver Delegate and Reviewer. Time and Leave documents
+		                        	may be routed to, and specific actions can be requested of each of these roles.</entry>
+		                    </row>
+		                    <row>
+		                        <entry>Expiration Date</entry>
+		                        <entry>Optional date which will remove the position role member from the Work Area.</entry>
+		                    </row>
+		                </tbody>
+		            </tgroup>
+		        </table>
+	    	</section>
     	</section>
     </section>
     <section>
     	<title>Salary Group</title>
-    	<para>TODO: Provide field mapping for Salary Group, define basic object</para>
+    	<para>Salary Group is a high-level HR/Payroll object that can span multiple institutions and locations. It contains a number of
+    		properties useful for reporting and in the execution of KPME's business logic.</para>
         <table frame="none">
             <title>Salary Group Fields</title>
             <tgroup cols="2">
@@ -433,44 +453,46 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date on which this Salary Group is to go in effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Salary Group</entry>
+                        <entry>Code used to identify the Salary Group</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Optional long description</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Institution</entry>
+                        <entry>The institution to which the Salary Group belongs. Wild cards are acceptable.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The location in which the Salary Group is available. Wild cards are acceptable.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Percent Time</entry>
+                        <entry>Maximum percentage of time worked for the salary group. When defining individual positions and jobs,
+                        the percent time will be less than the Salary Group's Percent Time. Used for leave accrual and payroll calculations,
+                        Full Time Engagement reporting, etc. Steps in increments of whole numbers. Positive amounts only, less than 100.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Benefit Eligible</entry>
+                        <entry>Yes or No field indicating whether entities within this salary group are benefit eligible.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Leave Eligible</entry>
+                        <entry>Yes or No field indicating whether entities within this salary group are eligible for leave.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Leave Plan</entry>
+                        <entry>Unless Leave Eligible = "Y" (Yes), this is a required field. It is not required if the salary group is not leave eligible. </entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Indicator used for activity.</entry>
                     </row>
                 </tbody>
             </tgroup>
