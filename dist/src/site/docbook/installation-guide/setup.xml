@@ -64,8 +64,8 @@
                 <para>100 Mbit/s network card (gigabit preferred)</para>
             </listitem>
             <listitem>
-                <para>500 MB of hard disk space (for Tomcat server and web application)</para>
-                <note><para>Additional space needed if storing attachments.</para></note>
+                <para>500 MB of free hard disk space (for Tomcat server and web application)</para>
+                <note><para>Additional space needed if storing attachments or not clearing out log files.</para></note>
             </listitem>
         </itemizedlist>
     </section>
@@ -387,11 +387,12 @@ SQL></programlisting>
             <para>KPME requires the following software to be setup and configured:</para>
             <itemizedlist>
                 <listitem>
-                    <para>Sun Microsystems Java Development Kit (JDK 1.6.x)</para>
+                    <para>Oracle Java Development Kit (JDK 1.6.x or JDK 1.7.x)</para>
                         <warning>
                             <para>
-                                You must use a JDK and not a Java runtime environment (JRE); the JDK you use must be version 1.6.x. Additionally, KPME has not 
-                                been tested on JDKs other than Sun. So alternative implementations like OpenJDK should be used at your own risk.
+                                You must use a JDK and not a Java runtime environment (JRE); the JDK you use must be either version 1.6.x or 1.7.x.
+                                Additionally, KPME has not been tested on JDKs other than Oracle. So alternative implementations
+                                like OpenJDK should be used at your own risk.
                             </para>
                         </warning>
                 </listitem>
@@ -487,11 +488,11 @@ export PATH M2_HOME MAVEN_OPTS JAVA_HOME CATALINA_HOME MYSQL_HOME</programlistin
             <section>
                 <title>Installation</title>
                 <para>
-                    You should download and install the latest version of JDK 6. If you are on Windows, you can download it from the following URL: 
+                    You should download and install the latest version of JDK 7. If you are on Windows, you can download it from the following URL:
                     <link xlink:href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/technetwork/java/javase/downloads/index.html</link>.
                 </para>
                 <para>
-                    If you are on a Mac, then Java 6 should alredy be installed if you are up to date with the latest updates from Apple.
+                    If you are on a Mac, then Java 7 should alredy be installed if you are up to date with the latest updates from Apple.
                 </para>
             </section>
             <section>
@@ -588,7 +589,8 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
             <para>KPME ${project.version} supports the following Tomcat versions:</para>
             <itemizedlist>
                 <listitem>
-                    <para>Tomcat 6 (Servlet API 2.5, JSP 2.1) </para>
+                    <para>Tomcat 6 </para>
+                    <para>Tomcat 7 </para>
                 </listitem>
             </itemizedlist>
             <para>
@@ -708,7 +710,9 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
                         <title>Full Install</title>
 	                    <itemizedlist>
 	                        <listitem>
-	                            <para>Oracle Client</para>
+	                            <para>Oracle Client (note: for the rice scripts listed below, only run the scripts necessary based
+                                    on your current version of the rice database as seen here:
+                                    <link xlink:href="https://wiki.kuali.org/x/mMo3Ew">https://wiki.kuali.org/x/mMo3Ew</link>)</para>
 	                            <orderedlist>
 	                                <listitem><emphasis role="bold">1.2.0/oracle/rice-1.0.3-oracle-client-install.sql</emphasis></listitem>
 	                                <listitem><emphasis role="bold">1.2.0/oracle/rice-2.0.0-oracle-client-install.sql</emphasis></listitem>
@@ -736,7 +740,8 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
 	                        </listitem>
 	                        <listitem>
 	                            <para>MySQL Client (note: for the rice scripts listed below, only run the scripts necessary based
-                                    on your current version of the rice database.)</para>
+                                    on your current version of the rice database as seen here:
+                                    <link xlink:href="https://wiki.kuali.org/x/mMo3Ew">https://wiki.kuali.org/x/mMo3Ew</link>)</para>
 	                            <orderedlist>
 		                            <listitem><emphasis role="bold">1.2.0/mysql/rice-1.0.3-mysql-client-install.sql</emphasis></listitem>
 		                            <listitem><emphasis role="bold">1.2.0/mysql/rice-2.0.0-mysql-client-install.sql</emphasis></listitem>

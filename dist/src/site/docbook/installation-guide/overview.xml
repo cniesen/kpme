@@ -36,6 +36,9 @@
             Additionally, KPME will likely work on other Unix operating systems such as Oracle Solaris and IBM AIX, although the software has not
             been tested here.
         </para>
+        <para>
+            KPME has only been tested with the oracle distribution of the JDK.  Any other jdk (IBM, OpenJDK, etc) must be used at your own risk.
+        </para>
     </section>
     <section>
         <title>Obtaining the Software</title>
