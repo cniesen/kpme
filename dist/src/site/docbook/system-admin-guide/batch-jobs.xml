@@ -125,7 +125,7 @@
 	                    </row>
 	                    <row>
 	                        <entry>Batch End Pay Period Date/Time</entry>
-	                        <entry>The date and time when to close timesheet clock logs associated with this calendar entry and open clock logs associated with the next calendar entry.</entry>
+	                        <entry>The date and time when to close timesheet clock logs associated with this calendar entry.</entry>
 	                    </row>
 	                    <row>
 	                        <entry>Batch Employee Approval Date/Time</entry>
@@ -134,6 +134,10 @@
 	                    <row>
 	                        <entry>Batch Supervisor Approval Date/Time</entry>
 	                        <entry>The date and time when to approve timesheets or leave calendars associated with this calendar entry.</entry>
+	                    </row>
+	                    <row>
+	                        <entry>Batch Payroll Approval Date/Time</entry>
+	                        <entry>The date and time when to approve timesheets or leave calendars associated with this calendar entry and to send out FYI notification to Payroll Processors.</entry>
 	                    </row>
 	                </tbody>
 	            </tgroup>
@@ -184,8 +188,17 @@
                     <para>
                         Approves any timesheets or leave calendars associated with this calendar entry if they have been sent to the supervisors for approval.  
                         If there are any non-approved missed punch documents belonging to these timesheets or if any of these timesheets or leave calendars are 
-                        not in a state to be approved, then the job is rescheduled until these are done.  This job is typically run a couple days after the 
-                        Employee Approval Job.
+                        not in a state to be approved, then the job is rescheduled until these are done. This job is typically run a couple days after the Employee
+                        Approval Job.
+                    </para>
+                </listitem>
+                 <listitem>
+                    <para>Payroll Approval Job</para>
+                    <para>
+                        Approves any timesheets or leave calendars associated with this calendar entry if they have been sent to the Payroll Processors for approval.  
+                        If there are any non-approved missed punch documents belonging to these timesheets or if any of these timesheets or leave calendars are 
+                        not in a state to be approved, then the job is rescheduled until these are done. A FYI notification of the automated approve will be sent
+                        to the payroll processors. This job is typically run a couple days after the Employee Approval Job.
                     </para>
                 </listitem>
             </itemizedlist>
