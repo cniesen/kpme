@@ -86,7 +86,7 @@ LOG.info("Clock OUT log created, the id is " + clockOutLog.getTkClockLogId() + "
 LOG.info("Next Time document is not null, the document id is " + nextTdh.getDocumentId());
 	            }
 LOG.info("Before creating clock IN log!");	 	            
-	            ClockLog clockInLog = TkServiceLocator.getClockLogService().processClockLog(beginNextPeriodDateTime, assignment, calendarEntry, ipAddress, 
+	            ClockLog clockInLog = TkServiceLocator.getClockLogService().processClockLog(beginNextPeriodDateTime, assignment, nextCalendarEntry, ipAddress, 
 	            		beginNextPeriodDateTime.toLocalDate(), nextTimeDoc, TkConstants.CLOCK_IN, false, principalId, batchUserPrincipalId);
 LOG.info("Clock IN log created, the id is " + clockInLog.getTkClockLogId() + ", timestamp is " + clockInLog.getTimestamp().toString());
 
