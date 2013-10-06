@@ -382,7 +382,7 @@ public class BatchJobServiceImpl implements BatchJobService {
 		
 	@Override
 	public void scheduleLeaveCalendarDelinquencyJobs(CalendarEntry calendarEntry) throws SchedulerException {
-		schedulePayrollApprovalJobs(calendarEntry, calendarEntry.getBatchPayrollApprovalFullDateTime());
+		scheduleLeaveCalendarDelinquencyJobs(calendarEntry, calendarEntry.getBatchPayrollApprovalFullDateTime());
 	}
 	
 	@Override
