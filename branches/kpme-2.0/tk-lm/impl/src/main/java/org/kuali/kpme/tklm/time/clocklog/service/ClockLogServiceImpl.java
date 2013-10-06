@@ -41,6 +41,7 @@ import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class ClockLogServiceImpl implements ClockLogService {
@@ -177,7 +178,9 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
     }
 
     public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntry calendarEntry) {
-        return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
+        TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, calendarEntry.getBeginPeriodFullDateTime(), calendarEntry.getEndPeriodFullDateTime());
+        return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, tdh.getDocumentId());
+        //return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
     }
 
     @Override
