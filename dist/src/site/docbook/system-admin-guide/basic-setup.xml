@@ -263,7 +263,8 @@
     </section>
     <section>
     	<title>Work Area</title>
-    	<para></para>
+    	<para>The system will allow routing to be configured by the Position or a Person using the Work Area maintenance document. The work area must have at least one valid approver
+    		to route a timesheet and/or leave calendars and requests. KPME 2.0 has moved the distribute hours flag from Time Collection Rule to Work Area.</para>
         <table frame="none">
             <title>Work Area Fields</title>
             <tgroup cols="2">
@@ -278,7 +279,7 @@
                 <tbody>
                     <row>
                         <entry>Effective Date</entry>
-                        <entry>The date the work area record is to become effective</entry>
+                        <entry>The date the work area record is to become effective.</entry>
                     </row>
                     <row>
                         <entry>Work Area</entry>
@@ -286,38 +287,41 @@
                     </row>
                     <row>
                         <entry>Description</entry>
-                        <entry>Long Description of the work area</entry>
+                        <entry>Long Description of the work area.</entry>
                     </row>
                     <row>
                         <entry>Overtime Edit Role</entry>
-                        <entry></entry>
+                        <entry>Defines the role that can edit the overtime code.</entry>
                     </row>
                     <row>
                         <entry>Default Overtime Earn Code</entry>
-                        <entry></entry>
+                        <entry>Defines the default earn code for overtime earnings. Only earn codes that are designated as an Overtime Earn Code can be used.
+                        	If no earn code is submitted then overtime rule's earn codes will apply to the overtime hours.</entry>
                     </row>
                     <row>
                         <entry>Department</entry>
-                        <entry></entry>
+                        <entry>The department this work area is associated with.</entry>
                     </row>
                     <row>
                         <entry>Admin Description</entry>
-                        <entry></entry>
+                        <entry>Additional description field, with a larger character limit.</entry>
                     </row>
                     <row>
                         <entry>HR Distribution</entry>
-                        <entry></entry>
+                        <entry>Used to allow employees to clock in and out of a single assignment and the distribute hours at the end of the day to multiple assignments.
+                        	Hours distribution is only available for time blocks created by the clock. KPME 2.0: This flag was moved from Time Collection to
+                        	Work Area to simply use of the flag. This will avoid multiple wildcarded and overlapping rules that complicate the time collection rule.</entry>
                     </row>
                     <row>
                         <entry>Active</entry>
-                        <entry></entry>
+                        <entry>Status of the work area checked, 'Y', indicates Active. Unchecked, 'N' indicates inactive. If the rule is being eliminated, insert a new
+                        effective dated row and uncheck the active box.</entry>
                     </row>
                 </tbody>
             </tgroup>
         </table>
     	<section>
     		<title>Work Area Task</title>
-    		<para>TODO: define basic object, describe relationship</para>
 	        <table frame="none">
 	            <title>Work Area Task Fields</title>
 	            <tgroup cols="2">
@@ -332,23 +336,24 @@
 	                <tbody>
 	                    <row>
 	                        <entry>Effective Date</entry>
-	                        <entry></entry>
+	                        <entry>The date that this task is to become effective</entry>
 	                    </row>
 	                    <row>
 	                        <entry>Task</entry>
-	                        <entry></entry>
+	                        <entry>A numeric value for the task</entry>
 	                    </row>
 	                    <row>
 	                        <entry>Description</entry>
-	                        <entry></entry>
+	                        <entry>Text field used to identify the task. This description is presented to the employee when selecting the assignment to clock in or manually record their time.</entry>
 	                    </row>
 	                    <row>
 	                        <entry>Administrative Description</entry>
-	                        <entry></entry>
+	                        <entry>Additional description field. This could be longer since it is not going to be displayed on the timesheet assignment drop down.</entry>
 	                    </row>
 	                    <row>
 	                        <entry>Active</entry>
-	                        <entry></entry>
+	                        <entry>Status of the task. 'Y' for active, 'N' for inactive. To eliminate the task, a new effective date is entered and the field is unchecked.
+	                        	The task becomes inactive as of the newly entered effective date.</entry>
 	                    </row>
 	                </tbody>
 	            </tgroup>
@@ -360,7 +365,7 @@
 	    		principal if more than one employee is allowed to hold a single position.</para>
 	    	<section>
 	    		<title>Work Area Principal Role Member</title>
-	    		<para>TODO: Describe purpose for Work Area Principal Role Members, define basic object</para>
+	    		<para>This role member is assigned by principal id.</para>
 		        <table frame="none">
 		            <title>Work Area Principal Role Member Fields</title>
 		            <tgroup cols="2">
@@ -400,7 +405,7 @@
 	    	</section>
 	    	<section>
 	    		<title>Work Area Position Role Member</title>
-	    		<para>TODO: Describe purpose for Work Area Position Role Members, define basic object</para>
+	    		<para>This role member is assigned by position number.</para>
 		        <table frame="none">
 		            <title>Work Area Position Role Member Fields</title>
 		            <tgroup cols="2">
@@ -500,7 +505,8 @@
     </section>
     <section>
     	<title>Pay Grade</title>
-    	<para>TODO: Provide field mapping for Pay Grade, define basic object</para>
+    	<para>Pay Grade is used to define a classification of position / job, divide groups of employees based on pay, and for the purposes of defining rules
+    		within the Time and Attendance system. Pay grade can be used to define specific shift differential rules for the employees in the identified pay grade.</para>
         <table frame="none">
             <title>Pay Grade Fields</title>
             <tgroup cols="2">
@@ -514,52 +520,54 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date for which the record will become effective. This date needs to be on/prior to the date the record takes effect.
+                        	When editing, it will determine the date the new values go into effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Grade</entry>
+                        <entry>Text field used to identify the Pay Grade</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Salary Group</entry>
+                        <entry>The salary group this Pay Grade belongs to.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Description of the Pay Grade</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Institution</entry>
+                        <entry>The instutution the Pay Grade is associated with.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The location for which this Pay Grade will be available. Wild card values accepted.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Status of the record. Checked 'Y' indicates Active, unchecked 'N' indicates inactive. If the record is being eliminated,
+                        	change the effective date to when the record will be eliminated and uncheck the active box.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Minimum Rate</entry>
+                        <entry>Minimum pay rate for this Pay Grade.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Mid Point Rate</entry>
+                        <entry>Mid Point pay rate for this Pay Grade</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Maximum Rate</entry>
+                        <entry>Maximum pay rate for this Pay Grade</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Hiring Maximum Rate</entry>
+                        <entry>Maximum pay rate for this Pay Grade at the time of hire.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Rate Type</entry>
+                        <entry>Select the measurement of the pay rate ranges being defined for this Pay Grade.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -567,7 +575,8 @@
     </section>
     <section>
     	<title>Pay Step</title>
-    	<para>TODO: Provide field mapping for Pay Step, define basic object</para>
+    	<para>Used to define incremental step increases within a Pay Grade. A position of a specific salary group and grade may have pay steps defined for incremental
+    		increases to the position's compensation rate.</para>
         <table frame="none">
             <title>Pay Step Fields</title>
             <tgroup cols="2">
@@ -581,48 +590,56 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The date for which the record will become effective. This date needs to be on/prior to the date the record is to take effect.
+                        	When editing, it will determine the date the new values go into effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Step</entry>
+                        <entry>Text field used to identify the Pay Step.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Institution</entry>
+                        <entry>The institution for which the Pay Step should be made available.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The location for which the Pay Step should be made available.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Salary Group</entry>
+                        <entry>The Salary Group this Pay Step belongs to.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Grade</entry>
+                        <entry>The pay grade this Pay Step belongs to. This field is validated with the above salary group field, and should belong to the entered salary group.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Step Number</entry>
+                        <entry>The position along the ladder this pay step resides.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Compensation Rate</entry>
+                        <entry>Compensation rate that will be applied to the position's pay rate. This is a baseline rate, that typically increases as the employee moves up along the
+                        	steps of the pay grade.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                    	<entry>Service Amount</entry>
+                    	<entry>A numerical value that, when given the units supplied by the "Service Unit" field, determines a lenth of time from an employee's service date
+                    		that the pay step should become applicable.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Service Unit</entry>
+                        <entry>Unit of measurement to be given to the "Serivce Amount" field.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Time Amount</entry>
+                        <entry>Amount of time from position incumbent's service date to when the step is applied.</entry>
+                    </row>
+                    <row>
+                        <entry>Active</entry>
+                        <entry>Status of the record. Checked, 'Y', indicates active, unchecked, 'N', indicates inactive. If the record is being eliminated, change the effective
+                        	date to when the record will be eliminated and uncheck the active box.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -632,7 +649,6 @@
 		<title>Earn Codes with Earn Code Security</title>
 		<section>
 			<title>Earn Code</title>
-			<para>TODO: Update to reflect the change in field organization, add any new/changed fields.</para>
 			<para>
                 The Earn Code maintenance page is used to define codes to categorize employee’s hours/earnings and time off.  For each earn code, you can define 
                 how the employees records - in/out time, hours, days or flat dollar amount.  These codes may or may not be attached to an accrual category for
@@ -701,6 +717,13 @@
 							</entry>
 						</row>
 						<row>
+							<entry>Counts as Regular Pay</entry>
+							<entry>
+								Use this field to cacluate the "Worked Hours" in the Time Summary. This flag can be used by implementing institutions to 
+								develop payroll extracts.
+							</entry>
+						</row>
+						<row>
 							<entry>Inflate Min Hours</entry>
 							<entry>
                                 Hours incurred will be inflated to this minimum hours value.  For example, Call Back Time rules specify the employee earns a
@@ -716,14 +739,6 @@
 								on the timesheet will be the inflated value. The employee will know the exact number of hours earned.
 							</entry>
 						</row>
-						<row>
-							<entry>Counts as Regular Pay</entry>
-							<entry>
-								Use this field to cacluate the "Worked Hours"" in the Time Summary. This flag can be used by implementing institutions to 
-								develop payroll extracts
-							</entry>
-						</row>
-
 						<row>
 							<entry>Leave Plan</entry>
 							<entry>Employees with the indicated Leave Plan may have access to this Earn Code on their Leave Calendar and Time Sheet</entry>
@@ -746,7 +761,7 @@
 						</row>
 						<row>
 							<entry>Fractional time allowed</entry>
-							<entry>Define fractional unit of time used for reporting leave.  Indicate number of decimals.</entry>
+							<entry>Define fractional unit of time used for reporting leave. Indicate number of decimals.</entry>
 						</row>
 						<row>
 							<entry>Usage Limit</entry>
@@ -804,11 +819,9 @@
 					will not be displayed by default.
 				</para>
 			</note>
-			<para>TODO: Define basic earn code(s) for use with other business objects</para>
 		</section>
 		<section>
 			<title>Earn Code Security</title>
-			<para>TODO: Update mapping to reflect new or changed fields.</para>
 			<para>
                 The Earn Code Security maintenance page is used to define which roles (employee, approver) see specific earn codes on the timesheet and/or Leave 
                 Calendar. This is definable at the department, salary group or location value. These fields are accept wild cards (%).
@@ -857,7 +870,8 @@
 						</row>
 						<row>
 							<entry>Employee/Approver/Payroll Processor</entry>
-							<entry>The role checked can select the specified code on the time/leave entry box.</entry>
+							<entry>The role checked can select the specified code on the time/leave entry box, if they have this role within 
+								the location/department.</entry>
 						</row>
 						<row>
 							<entry>Active</entry>
@@ -869,12 +883,10 @@
 					</tbody>
 				</tgroup>
 			</table>
-			<para>TOOD: Define basic Earn Code Security for use with other objects</para>
 		</section>
 	</section>
 	<section>
 		<title>Earn Code Group</title>
-		<para>TODO: Update mapping to reflect any new or changed fields.</para>
 		<para>
             The Earn Code Group maintenance page is used to define groupings of earn codes.  In timekeeping, these groups are also used to define the summary
 			sections on the timesheet and in the overtime rule setup page.
@@ -945,19 +957,16 @@
 					<tbody>
 						<row>
 							<entry>Earn Code</entry>
-							<entry>
-	                            In the Earn Group Definitions section, add the earn codes to be included in this group.
-							</entry>
+							<entry>The Earn Code that should be a member of this group.</entry>
 						</row>
 						<row>
 							<entry>Description</entry>
-							<entry>Read-only field that auto-populates with the description of the earn code</entry>
+							<entry>Read-only field that auto-populates with the description of the earn code.</entry>
 						</row>
 					</tbody>
 				</tgroup>
 			</table>
 		</section>
-		<para>TODO: define basic earn code group for use with other objects</para>
 	</section>
 	
 	<section>
@@ -1014,11 +1023,9 @@
 					</tbody>
 				</tgroup>
 			</table>
-			<para>TODO: Define basic calendar(s) for use with other objects</para>
 		</section>
 		<section>
-			<title>Calendar Entries</title>
-			<para>TODO: Add field mappings for Batch Payroll Approval</para>
+			<title>Calendar Entry</title>
 			<para>
                 The system can define calendars for Pay or Leave. The Calendar Entry maintenance page defines the pay period (timesheet) and/or leave 
                 reporting period.
@@ -1027,7 +1034,7 @@
                 Entries must be created for a time period before a timesheet and/or leave calendar can be created.
             </para>
 			<table frame="none">
-				<title>Calendar Entries Fields</title>
+				<title>Calendar Entry Fields</title>
 				<tgroup cols="2">
 					<colspec colname="c1" colnum="1" colwidth="2.00*" />
 					<colspec colname="c2" colnum="2" colwidth="4.00*" />
@@ -1040,7 +1047,7 @@
 					<tbody>
 						<row>
 							<entry>Calendar Name</entry>
-							<entry>Calendar to be associated with Calendar Entries.</entry>
+							<entry>The calendar within which this entry resides.</entry>
 						</row>
 						<row>
 							<entry>Begin Period Date/Time</entry>
@@ -1081,13 +1088,14 @@
                     To learn more about how to configure the batch Date/Time fields, please see the Batch Jobs documentation.
                 </para>
 			</note>
-			<para>TODO: Define basic calendar entry for use with leave and time managmenet</para>
 		</section>
 	</section>
 
     <section>
     	<title>Pay Type</title>
-    	<para>TODO: Provide field mapping for Pay Type, define basic object</para>
+    	<para>Pay Type, similar to Pay Step, defines a classification of position / job used to divide groups of employees, however does so according to payroll attributes.
+    		This attribute will also be associated with an employees job and is further used when defining rules such as Daily Overtime. Pay Type will likely be defined
+    		off of an existing payroll attribute and created at implementation time to designate different rules for different populations of employees.</para>
         <table frame="none">
             <title>Pay Type Fields</title>
             <tgroup cols="2">
@@ -1101,40 +1109,43 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                    <entry>Effective Date</entry>
+                        <entry>The date for which the record will become effective. This date needs to be on/prior to the date the record is to take effect.
+                        	When editing, it will determine the date the new values go into effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Type</entry>
+                        <entry>Text field used to identify the Pay Type.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Description</entry>
+                        <entry>Text which describes the Pay Type.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Regular Earn Code</entry>
+                        <entry>The earn code which will be used to record regular time by this Pay Type.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The location to which the Pay Step should be made available.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Insitution</entry>
+                        <entry>The institution to which the Pay Step should be made available.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>FLSA Status</entry>
+                        <entry>Indicates if Position is FLSA exmpt or non-exempt. The FLSA status of the Position's Pay Type will populate the job that is used
+                        	by KPME's timekeeping and leave management modules.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Frequency</entry>
+                        <entry>Frequency of payroll</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Status of the pay type. Checked, 'Y', indicates Active, unchecked, 'N', indicates inactive. If the rule is being eliminated, insert
+                        	a new effective dated row and uncheck the active box.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -1142,7 +1153,7 @@
     </section>	
    	<section>
 		<title>Position Base</title>
-		<para>TODO: Provide field mapping for Position Base, define basic object</para>
+		<para>Position Base defines a core-set of attributes associated with a position needed by Time and Attendance, and Leave Managment systems.</para>
         <table frame="none">
             <title>Position Base Fields</title>
             <tgroup cols="2">
@@ -1156,20 +1167,18 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Position Number</entry>
+                        <entry>Read only field, assigned when the position is created.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The effective date for which the Position will be effective. This date needs to be on/prior to the date the rule takes effect.
+                        	When editing, it will determine the date the new values go into effect.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
-                    </row>
-                    <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Status of the Position. Checked, 'Y', indicates active. Unchecked 'N', indicates inactive. If the rule is being eliminated,
+                        	insert a new effective dated row and uncheck the active box.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -1178,7 +1187,9 @@
 
 	<section>
 		<title>Job</title>
-		<para>TODO: Provide field mapping for Job, define basic object</para>
+		<para>The Job maintenance page is used to associate a person with job attributes. A single person may have multiple	jobs, but each job can have only one pay rate.
+			 Each job for a given employee is assigned a unique job number. Attributes on the job maintenance page are used to determine which Time and Attendance rules to apply,
+			 such as if the job is eligible for leave, compensation rate, etc. It is likely that these attributes will be mapped to an existing payroll/HR system.</para>
         <table frame="none">
             <title>Job Fields</title>
             <tgroup cols="2">
@@ -1192,72 +1203,74 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effective Date</entry>
+                        <entry>The effective date for which the job will begin. Changes to job attributes can be effective dated to take place in the future or past.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Principal ID</entry>
+                        <entry>Used to assign a principal to the job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Principal Name</entry>
+                        <entry>Read-only field populated with the name of the principal.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Job Number</entry>
+                        <entry>Read-only auto-generated sequential number identifying the job. Unique over the set of all the employees jobs.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Department Name</entry>
+                        <entry>The department within which the job resides. This drives the available work areas when setting up assignments for this job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Salary Group</entry>
+                        <entry>The salary group to which this job belongs.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Location</entry>
+                        <entry>The location in which the job resides.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Position Number</entry>
+                        <entry>Position associated with this job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Type</entry>
+                        <entry>The pay type value appropriate for this job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Pay Grade</entry>
+                        <entry>The pay grade to which this job belongs. The value in this field should exist within the salary group defined on this job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Compensation Rate</entry>
+                        <entry>The hourly rate for this job. Only one rate per job is supported.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Standard Hours</entry>
+                        <entry>The standard hours for this job. i.e. 40. Based on the value entered in this field, FTE will be calculated accordingly. I.e. 40 hours = 1.0 FTE</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>FTE</entry>
+                        <entry>Derived from Standard Hours, Full Time Engagement, or FTE, is used by the accrual service to calculate leave.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Eligible for Leave</entry>
+                        <entry>Flag indicating the job is leave eligible, 'Y', or not, 'N'.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Primary Indicator</entry>
+                        <entry>Flag indicating the job is primary, 'Y', or not, 'N'.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>FLSA Status</entry>
+                        <entry>Flag used to indicate if the Job is FLSA exempt or non-exmpt. This field, along with Eligible for Leave, is also used to determine which calendar(s) the
+                        	employee will have access to. I.e. for a non-exempt leave eligble job, the leave calendar will be made available to the employee, given the employee
+                        	has a leave plan defined for them in their Principal HR Attributes.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Status of the Job record. checked, 'Y', indicates active. Unchecked, 'N', indicates inactive.</entry>
                     </row>
                 </tbody>
             </tgroup>
@@ -1266,9 +1279,12 @@
 
 	<section>
 		<title>Assignment</title>
-		<para>TODO: Provide field mapping for Assignment, define basic object</para>
+		<para>Assignments are used to define funding attributes for a given employee's job record. An employee can be given one to many assignments, and the funding per
+			assignment must total to 100%. Multiple assignments can be used when the employee reports to different time approvers, or when different accounts should be
+			charged based on the work done. An employee records their hours against assignments. An Assignment is a unique combination of job number, work area and task.</para>
         <table frame="none">
             <title>Assignment Fields</title>
+
             <tgroup cols="2">
                 <colspec colname="c1" colnum="1" colwidth="2.00*" />
                 <colspec colname="c2" colnum="2" colwidth="4.00*" />
@@ -1280,43 +1296,43 @@
                 </thead>
                 <tbody>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Effecitve Date</entry>
+                        <entry>The effective date for which the job is to begin. Changes to job attributes can be effective dated to take place in the futre or past.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Principal ID</entry>
+                        <entry>Identifier of the employee that is to be given this assignment.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Principal Name</entry>
+                        <entry>Read-only auto-generated field populated with the name of the employee identified by the Principal ID field.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Job Number</entry>
+                        <entry>The job for which this assignment should be associated with.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Department Name</entry>
+                        <entry>Auto-generated field populated from the department of the entered Job Number.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Work Area</entry>
+                        <entry>The work area within which time will be recorded. Work area must belong to the given department. This value supports approval routing.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Task</entry>
+                        <entry>Optional task that can be assigned to the job.</entry>
                     </row>
                     <row>
-                        <entry></entry>
-                        <entry></entry>
+                        <entry>Active</entry>
+                        <entry>Reflects the status of the assignment. If the assignment is being eliminated, effective date a new row and uncheck the active box.</entry>
                     </row>
                 </tbody>
             </tgroup>
         </table>
         <section>
         	<title>Assignment Account</title>
-			<para>TODO: Provide field mapping for Assignment, define basic object</para>
+			<para>The assignment account references an administrative Account record. When attached to an Assignment, time reported for this assignment can be compensated from this account.</para>
 	        <table frame="none">
 	            <title>Assignment Fields</title>
 	            <tgroup cols="2">
@@ -1330,44 +1346,48 @@
 	                </thead>
 	                <tbody>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>COA</entry>
+	                        <entry>Read-only auto-generated field populated from the Account Number.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Account Number</entry>
+	                        <entry>The account to be associated with this assignment account.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Earn Code</entry>
+	                        <entry>The earn code used to extract reported time from the system. When time is reported for an assignment, the total time can be
+	                        	multiplied by the percentage defined on the account, and extracted along with other data to determine what amount is to be taken from each account.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Sub-Account Number</entry>
+	                        <entry>Optional sub-account component of the chart of accounts to be charged when time is recorded against this work area and task.
+	                        	This value must be defined for the account selected to be available for entry.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Object Code</entry>
+	                        <entry>Object code component of the chart of accounts to be charged when time is recorded against this work area and task.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Sub-Object Code</entry>
+	                        <entry>Optional sub-object code component of the chart of accounts to be charged when is time recorded against this work area and task.
+	                        	Sub-object code must be associated with the object code.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Project Code</entry>
+	                        <entry>Optional project code component of the chart of accounts to be charged when time is recorded against this work area and task.
+	                        	This value must be established on the project table.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Org Ref Id</entry>
+	                        <entry>Optional funding attribute, free form entry field.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Percent</entry>
+	                        <entry>The percent of funding this account provides to the assignment. Whole numbers, must total 100 over all assignment accounts.</entry>
 	                    </row>
 	                    <row>
-	                        <entry></entry>
-	                        <entry></entry>
+	                        <entry>Active</entry>
+	                        <entry>Status of the assignment funding line. Checked, 'Y', indicates active. Unchecked, 'N', indicates inactive.</entry>
 	                    </row>
 	                </tbody>
 	            </tgroup>
