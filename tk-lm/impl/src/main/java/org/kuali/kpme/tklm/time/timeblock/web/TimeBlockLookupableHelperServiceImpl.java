@@ -20,9 +20,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,7 +69,7 @@ public class TimeBlockLookupableHelperServiceImpl extends KPMELookupableImpl {
 	@Override
 	protected List<?> getSearchResults(LookupForm form,
 			Map<String, String> searchCriteria, boolean unbounded) {
-		// TODO Auto-generated method stub
+		// TODO: This Lookup is implemented to fulfill a requirement that time calendar type leave blocks show in results.
 		 if (searchCriteria.containsKey(BEGIN_DATE_ID)) {
 			 //beginDate = searchCriteria.get(BEGIN_DATE);
 			 searchCriteria.put(BEGIN_TIMESTAMP, searchCriteria.get(BEGIN_DATE_ID));
@@ -120,11 +122,22 @@ public class TimeBlockLookupableHelperServiceImpl extends KPMELookupableImpl {
 		//Could also simply use super.getSearchResults for an initial object list, then invoke LeaveBlockService with the relevant query params.
 		List<TimeBlock> timeBlockList = TkServiceLocator.getTimeBlockService().getTimeBlocksForLookup(documentId, principalId, userPrincipalId, fromDate, toDate);
 		List<TimeBlock> objectList = new ArrayList<TimeBlock>();
+		
 		for(TimeBlock tBlock : timeBlockList) {
 
 			TimesheetDocumentHeader timesheetHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(tBlock.getDocumentId());
 			
 			if(timesheetHeader != null) {
+				
+				if(StringUtils.isBlank(principalId) && StringUtils.isNotBlank(documentId)) {
+					//one-to-one relationship between timesheet document id and principal id. We do not want to set the principal id in this manner if
+					//no document id was supplied - only leave blocks for one principal will be returned in search results.
+					//Other option is to supply a set of principals to the leave block DAO below, which would likely result in a very large query string. 
+					//We MUST set the principal id if it is not already set.
+					//Leave Blocks for this results cannot currently be searched on using a timesheet document id. ( The document id of such leave blocks is null ).
+					//if principalId was not provided in search criteria, get it from the timesheet header. This will be used for TIME_CALENDAR type leave block lookup below.
+					principalId = timesheetHeader.getPrincipalId();
+				}
 				if(StringUtils.isNotBlank(searchCriteria.get(DOC_STATUS_ID))) {
 					//only add if doc status is one of those specified
 					if(searchCriteria.get(DOC_STATUS_ID).contains("category")) {
@@ -170,12 +183,16 @@ public class TimeBlockLookupableHelperServiceImpl extends KPMELookupableImpl {
 		for(LeaveBlock leaveBlock : leaveBlocks) {
 			TimesheetDocumentHeader timesheetHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(leaveBlock.getPrincipalId(), 
 					new DateTime(leaveBlock.getLeaveDate().getTime()));
-
+			if(StringUtils.isNotBlank(documentId) && timesheetHeader != null && !StringUtils.equals(documentId,timesheetHeader.getDocumentId())) {
+				//if a document id was provided in the search, and the retreived timesheet header's doc id doesn't match the one supplied,
+				//skip this leave block from result addition.
+				continue;
+			}
 			// NOTE: Do NOT set tkTimeBlockId.
 			// We'll leave this field blank. When getActionUrlHref is called with this object
 			// we can infer that the object is a "mocked" time block, and remove the "view" link from results.
 			TimeBlock tBlock = new TimeBlock();
-			tBlock.setAmount(leaveBlock.getAmount());
+			tBlock.setAmount(leaveBlock.getLeaveAmount());
 			tBlock.setHours(leaveBlock.getHours());
 			tBlock.setJobNumber(leaveBlock.getJobNumber());
 			tBlock.setEarnCode(leaveBlock.getEarnCode());

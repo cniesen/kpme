@@ -253,6 +253,17 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 					TimesheetDocumentHeader timesheetHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(history.getDocumentId());
 					
 					if(timesheetHeader != null) {
+						
+						if(StringUtils.isBlank(principalId) && StringUtils.isNotBlank(documentId)) {
+							//one-to-one relationship between timesheet document id and principal id. We do not want to set the principal id in this manner if
+							//no document id was supplied - only leave blocks for one principal will be returned in search results.
+							//Other option is to supply a set of principals to the leave block DAO below, which would likely result in a very large query string. 
+							//We MUST set the principal id if it is not already set.
+							//Leave Blocks for this results cannot currently be searched on using a timesheet document id. ( The document id of such leave blocks is null ).
+							//if principalId was not provided in search criteria, get it from the timesheet header. This will be used for TIME_CALENDAR type leave block lookup below.
+							principalId = timesheetHeader.getPrincipalId();
+						}
+						
 						if(StringUtils.isNotBlank(searchCriteria.get(DOC_STATUS_ID))) {
 							//only add if doc status is one of those specified
 							//format for categorical statuses is "category:Q" where 'Q' is one of "P,S,U". This format is specific to KRAD View handlers.
@@ -307,14 +318,22 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 		//be incorporated into the method to appropriately filter histories.
 		objectList = filterByPrincipalId(objectList, GlobalVariables.getUserSession().getPrincipalId());
 		objectList = addDetails(objectList);
-		
+		List<TimeBlockHistory> leaveObjectList = new ArrayList<TimeBlockHistory>();
 		for(LeaveBlock leaveBlock : leaveBlockList) {
+
+			TimesheetDocumentHeader timesheetHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(leaveBlock.getPrincipalId(), 
+					new DateTime(leaveBlock.getLeaveDate().getTime()));
+			
+			if(StringUtils.isNotBlank(documentId) && timesheetHeader != null && !StringUtils.equals(documentId,timesheetHeader.getDocumentId())) {
+				//if a document id was provided in the search, and the retreived timesheet header's doc id doesn't match the one supplied,
+				//skip this leave block from result addition.
+				continue;
+			}
+			
 			List<LeaveBlockHistory> histories = LmServiceLocator.getLeaveBlockHistoryService().getLeaveBlockHistoryByLmLeaveBlockId(leaveBlock.getLmLeaveBlockId());
+			
 			for(LeaveBlockHistory history : histories) {
 
-				TimesheetDocumentHeader timesheetHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(history.getPrincipalId(), 
-						new DateTime(history.getLeaveDate().getTime()));
-				
 				boolean addToHistory = false;
 				if(modifiedFromDate != null && modifiedToDate != null) {
 					if(history.getTimestamp().compareTo(modifiedFromDate.toDate()) >= 0
@@ -336,16 +355,20 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 					addToHistory = true;
 				}
 				if(addToHistory) {
+					/**
+					 * Need to pull task, jobNumber, workArea and principalIdModified from leaveBlock. These properties don't exist for histories...
+					 */
 					TimeBlockHistory tBlock = new TimeBlockHistory();
 					tBlock.setAmount(history.getLeaveAmount());
 					tBlock.setHours(history.getHours());
-					tBlock.setJobNumber(history.getJobNumber());
+					tBlock.setJobNumber(leaveBlock.getJobNumber());
 					tBlock.setEarnCode(history.getEarnCode());
 					tBlock.setPrincipalId(history.getPrincipalId());
-					tBlock.setUserPrincipalId(history.getPrincipalIdModified());
-					tBlock.setPrincipalIdModified(history.getPrincipalIdModified());
-					tBlock.setWorkArea(history.getWorkArea());
-					tBlock.setTask(history.getTask());
+					//can remove userPrincipalId if needed
+					tBlock.setUserPrincipalId(leaveBlock.getPrincipalIdModified());
+					tBlock.setPrincipalIdModified(leaveBlock.getPrincipalIdModified());
+					tBlock.setWorkArea(leaveBlock.getWorkArea());
+					tBlock.setTask(leaveBlock.getTask());
 					tBlock.setOvertimePref(history.getOvertimePref());
 					tBlock.setLunchDeleted(history.getLunchDeleted());
 					tBlock.setDocumentId(history.getDocumentId());
@@ -369,41 +392,41 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 								if(searchCriteria.get(DOC_STATUS_ID).contains(":P")) {
 									//pending statuses
 									if("I,S,R,E".contains(timesheetHeader.getDocumentStatus())) {
-										objectList.add(tBlock);
+										leaveObjectList.add(tBlock);
 									}
 								}
 								else if(searchCriteria.get(DOC_STATUS_ID).contains(":S")) {
 									//successful statuses
 									if("P,F".contains(timesheetHeader.getDocumentStatus())) {
-										objectList.add(tBlock);
+										leaveObjectList.add(tBlock);
 									}
 								}
 								else if(searchCriteria.get(DOC_STATUS_ID).contains(":U")) {
 									//unsuccessful statuses
 									if("X,D".contains(timesheetHeader.getDocumentStatus())) {
-										objectList.add(tBlock);
+										leaveObjectList.add(tBlock);
 									}
 								}
 							}
 							else if(StringUtils.equals(searchCriteria.get(DOC_STATUS_ID),timesheetHeader.getDocumentStatus())) {
 								//match the specific doc status
-								objectList.add(tBlock);
+								leaveObjectList.add(tBlock);
 							}
 						}
 						else {
 							//no status specified, add regardless of status
-							objectList.add(tBlock);
+							leaveObjectList.add(tBlock);
 						}
 					}
 					else if(StringUtils.isBlank(searchCriteria.get(DOC_STATUS_ID))) {
 						//can't match doc status with a non existent header
 						//only add to list if no status was selected
-						objectList.add(tBlock);
+						leaveObjectList.add(tBlock);
 					}
 				}
 			}
 		}
-
+		objectList.addAll(this.filterByPrincipalId(leaveObjectList, GlobalVariables.getUserSession().getPrincipalId()));
 		return objectList;
 	}
 

@@ -205,7 +205,7 @@ public interface LeaveBlockService {
      * @param toDate	optional upper bound date, exclusive. matches against LeaveBlock.leaveDate
      * @return
      */
-    @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getTimeCalendarLeaveBlocksForTimeBlockLookup}' + 'principalId=' + #p0 + '|' + 'lastRanTime=' + #p1")
+    @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getTimeCalendarLeaveBlocksForTimeBlockLookup}' + 'documentId=' + #p0 + '|' + 'principalId=' + #p1 + '|' + 'userPrincipalId=' + #p2 + '|' + 'fromDate=' + #p3 + '|' + 'toDate=' + #p4")
 	public List<LeaveBlock> getTimeCalendarLeaveBlocksForTimeBlockLookup(
 			String documentId, String principalId, String userPrincipalId,
 			LocalDate fromDate, LocalDate toDate);
