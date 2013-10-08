@@ -638,7 +638,7 @@
         <title>Earn Code - Leave Management Attributes </title>
          <para>
             We seperated Time and Leave attributes into different sections on Earn Code Maintenance Document to better organize the fields and make the GUI more user friendly. 
-            Please refer to the field definition of Earn Code in System Admin Guild.
+            Please refer to the field definition of Earn Code in Basic Setup guide.
             <mediaobject>
 	            <imageobject>
 	                <imagedata fileref="../images/lm/EarnCodeLeaveSection.jpg" format="JPG" scale="40"/>
