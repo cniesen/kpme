@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.tklm.leave.payout.web;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -26,15 +27,20 @@ import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
@@ -101,28 +107,17 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
 	
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
 						
-			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
-			        			KPMENamespace.KPME_LM.getNamespaceCode(), 
-			        			KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(),
-			        			department, 
-			        			effectiveDate)
-							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
-									KPMENamespace.KPME_LM.getNamespaceCode(),
-									KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(),
-									location,
-									effectiveDate)
-									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
-						        			KPMENamespace.KPME_TK.getNamespaceCode(), 
-						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
-						        			department, 
-						        			effectiveDate)
-										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
-												KPMENamespace.KPME_TK.getNamespaceCode(),
-												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
-												location,
-												effectiveDate)) {
-							canView = true;
-							break;
+						Map<String, String> roleQualification = new HashMap<String, String>();
+			        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, GlobalVariables.getUserSession().getPrincipalId());
+			        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
+			        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
+			        	
+			        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+			    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+			    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+			    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+								canView = true;
+								break;
 						}
 					}
 	
