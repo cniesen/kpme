@@ -19,8 +19,10 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -59,6 +61,7 @@ import org.kuali.rice.krad.util.ObjectUtils;
 
 public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 
+	/*
 	//the "to" and "from" accrual categories should be in the supplied principal's leave plan as of the effective date.
 	private boolean validateLeavePlan(PrincipalHRAttributes pha,
 			AccrualCategory fromAccrualCategory, AccrualCategory toAccrualCategory, LocalDate effectiveDate) {
@@ -93,8 +96,6 @@ public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 		}
 		return isValid;
 	}
-	
-	/*
 	
 	//See isTransferAmountUnderMaxLimit for futher validation
 	private boolean validateTransferAmount(BigDecimal transferAmount,
@@ -151,70 +152,7 @@ public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 		}
 		return isValid;
 	}
-*/
-	//no validation
-	private boolean validatePrincipal(String principalId, Date effectiveDate, String userPrincipalId) {
-		boolean isValid = true;
-		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.fromDateFields(effectiveDate));
 
-		if(pha == null) {
-			GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "balanceTransfer.principal.noAttributes");
-			isValid &= false;
-		}
-		else {
-			boolean canCreate = false;
-			if(!StringUtils.equals(principalId,userPrincipalId)) {
-				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, LocalDate.fromDateFields(effectiveDate));
-				for(Job job : principalsJobs) {
-					
-					if(job.isEligibleForLeave()) {
-						String department = job != null ? job.getDept() : null;
-	
-						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(effectiveDate)) : null;
-						String location = departmentObj != null ? departmentObj.getLocation() : null;
-			        	
-			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
-			        			KPMENamespace.KPME_LM.getNamespaceCode(), 
-			        			KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(),
-			        			department, 
-			        			new DateTime(effectiveDate.getTime()))
-							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
-									KPMENamespace.KPME_LM.getNamespaceCode(),
-									KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(),
-									location,
-									new DateTime(effectiveDate.getTime()))
-									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
-						        			KPMENamespace.KPME_LM.getNamespaceCode(), 
-						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
-						        			department, 
-						        			new DateTime(effectiveDate.getTime()))
-										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
-												KPMENamespace.KPME_LM.getNamespaceCode(),
-												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
-												location,
-												new DateTime(effectiveDate.getTime()))) {
-							canCreate = true;
-						}
-					}
-	
-				}
-			}
-			else {
-				//should be able to submit their own transaction documents...
-				//max balance triggered transactions go through this validation. Set a userPrincipal to system and deny LEAVE DEPT/LOC Admins ability to submit their own
-				//transactions these simplified rules??
-				canCreate = false;
-			}
-			
-			if(!canCreate) {
-				GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "balanceTransfer.userNotAuthorized");
-				isValid &= false;
-			}
-		}
-		return isValid;
-	}
-	
-	/*
 	//transfer amount must be under max limit when submitted via max balance triggered action or by a work area approver.
 	private boolean isTransferAmountUnderMaxLimit(String principalId, LocalDate effectiveDate, String accrualCategory,
 			BigDecimal transferAmount, AccrualCategoryRule accrualRule, String leavePlan) {
@@ -447,6 +385,69 @@ public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 			isValid &= ValidationUtils.validatePrincipalId(principalId);
 			if(!isValid) {
 				GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "balanceTransfer.principal.exists");
+			}
+		}
+		return isValid;
+	}
+
+	private boolean validatePrincipal(String principalId, Date effectiveDate, String userPrincipalId) {
+		boolean isValid = true;
+		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.fromDateFields(effectiveDate));
+
+		if(pha == null) {
+			GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "balanceTransfer.principal.noAttributes");
+			isValid &= false;
+		}
+		else {
+			boolean canCreate = false;
+			if(!StringUtils.equals(principalId,userPrincipalId)) {
+				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, LocalDate.fromDateFields(effectiveDate));
+
+				for(Job job : principalsJobs) {
+					
+					if(job.isEligibleForLeave()) {
+						String department = job != null ? job.getDept() : null;
+
+						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(effectiveDate)) : null;
+
+						String location = departmentObj != null ? departmentObj.getLocation() : null;
+						
+			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
+			        			KPMENamespace.KPME_LM.getNamespaceCode(), 
+			        			KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(),
+			        			department, 
+			        			new DateTime(effectiveDate.getTime()))
+							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
+									KPMENamespace.KPME_LM.getNamespaceCode(),
+									KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(),
+									location,
+									new DateTime(effectiveDate.getTime()))
+									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
+						        			KPMENamespace.KPME_TK.getNamespaceCode(), 
+						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
+						        			department, 
+						        			new DateTime(effectiveDate.getTime()))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
+												KPMENamespace.KPME_TK.getNamespaceCode(),
+												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
+												location,
+												new DateTime(effectiveDate.getTime()))) {
+							canCreate = true;
+						}
+					}
+	
+				}
+			}
+			else {
+				//should be able to submit their own transaction documents...
+				//max balance triggered transactions go through this validation. Set a userPrincipal to system and deny LEAVE DEPT/LOC Admins ability to submit their own
+				//transactions these simplified rules??
+				canCreate = false;
+			}
+			
+			if(!canCreate) {
+				GlobalVariables.getMessageMap().putError("document.newMaintainableObject.principalId", "balanceTransfer.userNotAuthorized");
+				isValid &= false;
 			}
 		}
 		return isValid;
