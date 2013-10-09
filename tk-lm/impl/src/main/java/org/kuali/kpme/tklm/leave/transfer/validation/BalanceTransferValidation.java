@@ -173,17 +173,26 @@ public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(effectiveDate)) : null;
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
 			        	
-			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId,
+			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
 			        			KPMENamespace.KPME_LM.getNamespaceCode(), 
 			        			KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(),
 			        			department, 
 			        			new DateTime(effectiveDate.getTime()))
-							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, 
+							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
 									KPMENamespace.KPME_LM.getNamespaceCode(),
 									KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(),
 									location,
-									new DateTime(effectiveDate.getTime()))) {
-			        		// may need to include TIME_DEPARTMENT_ADMINISTRATOR and TIME_LOCATION_ADMINISTRATOR
+									new DateTime(effectiveDate.getTime()))
+									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
+						        			KPMENamespace.KPME_LM.getNamespaceCode(), 
+						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
+						        			department, 
+						        			new DateTime(effectiveDate.getTime()))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
+												KPMENamespace.KPME_LM.getNamespaceCode(),
+												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
+												location,
+												new DateTime(effectiveDate.getTime()))) {
 							canCreate = true;
 						}
 					}
