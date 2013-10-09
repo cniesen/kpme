@@ -15,11 +15,20 @@
  */
 package org.kuali.kpme.tklm.leave.payout.web;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -64,8 +73,69 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
         String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
 
-        return LmServiceLocator.getLeavePayoutService().getLeavePayouts(principalId, fromAccrualCategory, payoutAmount, earnCode, forfeitedAmount, 
-        		TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt));
+        List<LeavePayout> payouts =  LmServiceLocator.getLeavePayoutService().getLeavePayouts(principalId, fromAccrualCategory, payoutAmount, earnCode, forfeitedAmount, 
+        									TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt));
+        payouts = filterByPrincipalId(payouts);
+        
+        return payouts;
     }
+    
+	private List<LeavePayout> filterByPrincipalId(
+			List<LeavePayout> payouts) {
+		if(!payouts.isEmpty()) {
+			Iterator<? extends BusinessObject> iter = payouts.iterator();
+			while(iter.hasNext()) {
+				LeavePayout payout = (LeavePayout) iter.next();
+				LocalDate effectiveLocalDate = payout.getEffectiveLocalDate();
+				DateTime effectiveDate = effectiveLocalDate.toDateTimeAtStartOfDay();
+				String principalId = payout.getPrincipalId();
+				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, effectiveLocalDate);
+				String userPrincipalId = HrContext.getPrincipalId();
+				boolean canView = false;
+				for(Job job : principalsJobs) {
+					
+					if(job.isEligibleForLeave()) {
+						String department = job != null ? job.getDept() : null;
+	
+						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, effectiveLocalDate) : null;
+	
+						String location = departmentObj != null ? departmentObj.getLocation() : null;
+						
+			        	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
+			        			KPMENamespace.KPME_LM.getNamespaceCode(), 
+			        			KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(),
+			        			department, 
+			        			effectiveDate)
+							|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
+									KPMENamespace.KPME_LM.getNamespaceCode(),
+									KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(),
+									location,
+									effectiveDate)
+									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
+						        			KPMENamespace.KPME_TK.getNamespaceCode(), 
+						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
+						        			department, 
+						        			effectiveDate)
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
+												KPMENamespace.KPME_TK.getNamespaceCode(),
+												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
+												location,
+												effectiveDate)) {
+							canView = true;
+							break;
+						}
+					}
+	
+				}
+				if(!canView) {
+					iter.remove();
+				}
+			}
+			
+
+		}
+
+		return payouts;
+	}
 
 }

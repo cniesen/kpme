@@ -444,16 +444,15 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 									location,
 									new DateTime(effectiveDate.getTime()))
 									|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(userPrincipalId,
-						        			KPMENamespace.KPME_LM.getNamespaceCode(), 
+						        			KPMENamespace.KPME_TK.getNamespaceCode(), 
 						        			KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(),
 						        			department, 
 						        			new DateTime(effectiveDate.getTime()))
 										|| HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(userPrincipalId, 
-												KPMENamespace.KPME_LM.getNamespaceCode(),
+												KPMENamespace.KPME_TK.getNamespaceCode(),
 												KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(),
 												location,
 												new DateTime(effectiveDate.getTime()))) {
-			        		// may need to include TIME_DEPARTMENT_ADMINISTRATOR and TIME_LOCATION_ADMINISTRATOR
 							canCreate = true;
 						}
 					}
