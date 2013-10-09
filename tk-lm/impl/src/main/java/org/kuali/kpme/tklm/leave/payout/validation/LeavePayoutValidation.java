@@ -27,6 +27,7 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.job.Job;
@@ -432,24 +433,27 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, LocalDate.fromDateFields(effectiveDate));
 				for(Job job : principalsJobs) {
 					
+					
 					if(job.isEligibleForLeave()) {
-						String department = job != null ? job.getDept() : null;
 						
+						String department = job != null ? job.getDept() : null;
 						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(effectiveDate)) : null;
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
-			        	
-						Map<String, String> roleQualification = new HashMap<String, String>();
-			        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID,userPrincipalId);
-			        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
-			        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
-			        	
-			        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				KPMEPermissionTemplate.CREATE_KPME_MAINTENANCE_DOCUMENT.getPermissionTemplateName(), new HashMap<String, String>())
-			    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				  KPMEPermissionTemplate.CREATE_KPME_MAINTENANCE_DOCUMENT.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+
+			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "Create Leave Payout", department, new DateTime(effectiveDate.getTime()))
+							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "Create Leave Payout", location, new DateTime(effectiveDate.getTime()))) {
 								canCreate = true;
 								break;
 						}
+			        	else {
+							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.fromDateFields(effectiveDate));
+							for(Assignment assignment : assignments) {
+								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Leave Payout", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))) {
+									canCreate = true;
+									break;
+								}
+							}
+			        	}
 					}
 				}
 			}
