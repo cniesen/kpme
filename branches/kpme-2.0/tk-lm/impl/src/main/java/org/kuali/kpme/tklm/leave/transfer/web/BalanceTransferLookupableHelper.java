@@ -25,6 +25,7 @@ import java.util.Properties;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelper;
@@ -97,43 +98,38 @@ public class BalanceTransferLookupableHelper extends KPMELookupableHelper {
 				BalanceTransfer transfer = (BalanceTransfer) iter.next();
 				LocalDate effectiveLocalDate = transfer.getEffectiveLocalDate();
 				DateTime effectiveDate = effectiveLocalDate.toDateTimeAtStartOfDay();
-				String principalId = transfer.getPrincipalId();
-				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, effectiveLocalDate);
+				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(transfer.getPrincipalId(), effectiveLocalDate);
 				String userPrincipalId = HrContext.getPrincipalId();
 				boolean canView = false;
 				for(Job job : principalsJobs) {
 					
 					if(job.isEligibleForLeave()) {
+						
 						String department = job != null ? job.getDept() : null;
-	
 						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, effectiveLocalDate) : null;
-	
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
 
-						Map<String, String> roleQualification = new HashMap<String, String>();
-			        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, GlobalVariables.getUserSession().getPrincipalId());
-			        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
-			        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
-			        	
-			        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
-			    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "View Balance Transfer", department, effectiveDate)
+							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "View Balance Transfer", location, effectiveDate)) {
 								canView = true;
 								break;
 						}
-			        	
+			        	else {
+							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(transfer.getPrincipalId(), job.getJobNumber(), effectiveLocalDate);
+							for(Assignment assignment : assignments) {
+								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "View Balance Transfer", assignment.getWorkArea(), effectiveDate)) {
+									canView = true;
+									break;
+								}
+							}
+			        	}
 					}
-	
 				}
 				if(!canView) {
 					iter.remove();
 				}
 			}
-			
-
 		}
-
 		return transfers;
 	}
 

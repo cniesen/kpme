@@ -24,6 +24,7 @@ import java.util.Properties;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelper;
@@ -101,26 +102,25 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
 				for(Job job : principalsJobs) {
 					
 					if(job.isEligibleForLeave()) {
-						String department = job != null ? job.getDept() : null;
-	
-						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, effectiveLocalDate) : null;
-	
-						String location = departmentObj != null ? departmentObj.getLocation() : null;
 						
-						Map<String, String> roleQualification = new HashMap<String, String>();
-			        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, GlobalVariables.getUserSession().getPrincipalId());
-			        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
-			        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
-			        	
-			        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
-			    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-			    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+						String department = job != null ? job.getDept() : null;
+						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, effectiveLocalDate) : null;
+						String location = departmentObj != null ? departmentObj.getLocation() : null;
+			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "View Leave Payout", department, effectiveDate)
+							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "View Leave Payout", location, effectiveDate)) {
 								canView = true;
 								break;
 						}
+			        	else {
+							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(payout.getPrincipalId(), job.getJobNumber(), effectiveLocalDate);
+							for(Assignment assignment : assignments) {
+								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "View Leave Payout", assignment.getWorkArea(), effectiveDate)) {
+									canView = true;
+									break;
+								}
+							}
+			        	}
 					}
-	
 				}
 				if(!canView) {
 					iter.remove();
