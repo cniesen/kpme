@@ -419,7 +419,8 @@ public class BalanceTransferValidation extends MaintenanceDocumentRuleBase {
 			        	else {
 							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.fromDateFields(effectiveDate));
 							for(Assignment assignment : assignments) {
-								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Balance Transfer", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))) {
+								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Balance Transfer", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))
+										|| LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Edit Balance Transfer", assignment.getJobNumber(), new DateTime(effectiveDate.getTime()))) {
 									canCreate = true;
 									break;
 								}
