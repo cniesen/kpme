@@ -448,7 +448,8 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 			        	else {
 							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.fromDateFields(effectiveDate));
 							for(Assignment assignment : assignments) {
-								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Leave Payout", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))) {
+								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Leave Payout", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))
+										|| LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Edit Leave Payout", assignment.getJobNumber(), new DateTime(effectiveDate.getTime()))) {
 									canCreate = true;
 									break;
 								}
