@@ -112,9 +112,13 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
 								break;
 						}
 			        	else {
-							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(payout.getPrincipalId(), job.getJobNumber(), effectiveLocalDate);
+			        		//do NOT block approvers, processors, delegates from approving the document.
+							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), effectiveLocalDate);
 							for(Assignment assignment : assignments) {
-								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "View Leave Payout", assignment.getWorkArea(), effectiveDate)) {
+								if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))) {
 									canView = true;
 									break;
 								}

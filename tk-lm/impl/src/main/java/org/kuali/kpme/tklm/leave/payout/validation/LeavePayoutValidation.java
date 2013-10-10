@@ -46,6 +46,10 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
 import org.kuali.kpme.tklm.time.util.TkContext;
+import org.kuali.rice.kew.api.WorkflowDocument;
+import org.kuali.rice.kew.api.action.RequestedActions;
+import org.kuali.rice.kew.api.document.DocumentContent;
+import org.kuali.rice.kew.api.document.node.RouteNodeInstance;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
@@ -341,7 +345,7 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 			isValid &= validateEarnCode(toEarnCode,leavePayout.getEffectiveLocalDate());
 			isValid &= validatePayoutAmount(principalId,payoutAmount,fromAccrualCat,leavePayout.getEffectiveLocalDate());
 			if(validatePrincipalId(principalId,leavePayout.getEffectiveLocalDate())) {
-				isValid &= validatePrincipal(principalId,leavePayout.getEffectiveDate(),GlobalVariables.getUserSession().getPrincipalId());
+				isValid &= validatePrincipal(principalId,leavePayout.getEffectiveDate(),GlobalVariables.getUserSession().getPrincipalId(),document.getDocumentHeader().getWorkflowDocument());
 			}
 			else {
 				isValid &= false;
@@ -419,7 +423,7 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 		return isValid;
 	}
 	
-	private boolean validatePrincipal(String principalId, Date effectiveDate, String userPrincipalId) {
+	private boolean validatePrincipal(String principalId, Date effectiveDate, String userPrincipalId, WorkflowDocument workflowDocument) {
 		boolean isValid = true;
 		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.fromDateFields(effectiveDate));
 
@@ -440,16 +444,20 @@ public class LeavePayoutValidation extends MaintenanceDocumentRuleBase {
 						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(effectiveDate)) : null;
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
 
+						//logged in user may ONLY submit documents for principals in authorized departments / location.
 			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "Create Leave Payout", department, new DateTime(effectiveDate.getTime()))
 							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "Create Leave Payout", location, new DateTime(effectiveDate.getTime()))) {
 								canCreate = true;
 								break;
 						}
 			        	else {
+			        		//do NOT block approvers, processors, delegates from approving the document.
 							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.fromDateFields(effectiveDate));
 							for(Assignment assignment : assignments) {
-								if(LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Create Leave Payout", assignment.getWorkArea(), new DateTime(effectiveDate.getTime()))
-										|| LmServiceLocator.getLMPermissionService().isAuthorizedInWorkArea(userPrincipalId, "Edit Leave Payout", assignment.getJobNumber(), new DateTime(effectiveDate.getTime()))) {
+								if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
+										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))) {
 									canCreate = true;
 									break;
 								}
