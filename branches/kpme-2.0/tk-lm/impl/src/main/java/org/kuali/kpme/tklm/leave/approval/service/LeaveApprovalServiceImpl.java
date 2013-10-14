@@ -237,9 +237,10 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         LocalDateTime weekStart = actualStartDate;
         LocalDateTime weekEnd = actualStartDate;
         Set<Date> dates = new TreeSet<Date>();
-        for (LocalDateTime currentDate = actualStartDate; currentDate.compareTo(actualEndDate) < 0; currentDate = currentDate.plusDays(1)) {
+        for (LocalDateTime currentDate = actualStartDate; currentDate.compareTo(actualEndDate) <= 0; currentDate = currentDate.plusDays(1)) {
         	
-            if (currentDate.getDayOfWeek() == flsaBeginDay && afterFirstDay) {
+            if ( (currentDate.getDayOfWeek() == flsaBeginDay && afterFirstDay)
+            		|| currentDate.compareTo(actualEndDate) == 0) {
             	String weekString = "Week " + week;
                 StringBuilder display = new StringBuilder();
                 // show the week's range within the calendar period
@@ -256,11 +257,9 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
                 dates.add(currentDate.toDate());
                 weekStart = currentDate;
                 week++;
-
             } else {
             	dates.add(currentDate.toDate());
             }
-
             weekEnd = weekEnd.plusDays(1);
             afterFirstDay = true;
         }
