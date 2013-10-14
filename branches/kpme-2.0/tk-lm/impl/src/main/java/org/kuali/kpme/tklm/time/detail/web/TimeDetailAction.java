@@ -624,7 +624,7 @@ public class TimeDetailAction extends TimesheetAction {
 	        	if ((StringUtils.isNotEmpty(tdaf.getTkTimeBlockId()) && tdaf.getTkTimeBlockId().equals(tb.getTkTimeBlockId()))
 	        		|| (tb.getBeginTimestamp().equals(startTime) && tb.getEndTimestamp().equals(endTime))) {
 	                tb.setOvertimePref(tdaf.getOvertimePref());
-	            } 
+	            }
 	        }
         }
 

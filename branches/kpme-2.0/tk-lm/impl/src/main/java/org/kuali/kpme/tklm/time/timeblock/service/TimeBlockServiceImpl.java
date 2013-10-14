@@ -251,8 +251,6 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         //and compare if the hours specified is less than min hours awarded for this
         //earn code
 
-        hours = applyInflateMinHoursAndFactor(earnCodeObj, hours);
-
         tb.setEarnCodeType(earnCodeObj.getEarnCodeType());
         tb.setHours(hours);
         tb.setClockLogCreated(clockLogCreated);
@@ -260,7 +258,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         tb.setTimestamp(TKUtils.getCurrentTimestamp());
         tb.setLunchDeleted(lunchDeleted);
 
-        tb.setTimeHourDetails(this.createTimeHourDetails(tb.getEarnCode(), tb.getHours(), tb.getAmount(), tb.getTkTimeBlockId()));
+        tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, hours, amount, tb.getTkTimeBlockId()));
 
         return tb;
     }
@@ -288,7 +286,8 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 
     public void resetTimeHourDetail(List<TimeBlock> origTimeBlocks) {
         for (TimeBlock tb : origTimeBlocks) {
-            tb.setTimeHourDetails(createTimeHourDetails(tb.getEarnCode(), tb.getHours(), tb.getAmount(), tb.getTkTimeBlockId()));
+        	EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(tb.getEarnCode(), tb.getBeginDateTime().toLocalDate());
+            tb.setTimeHourDetails(createTimeHourDetails(earnCode, tb.getHours(), tb.getAmount(), tb.getTkTimeBlockId()));
             //reset time block history details
             for(TimeBlockHistory tbh : tb.getTimeBlockHistories()) {
             	TkServiceLocator.getTimeBlockHistoryService().addTimeBlockHistoryDetails(tbh,tb);
@@ -296,12 +295,12 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         }
     }
 
-    private List<TimeHourDetail> createTimeHourDetails(String earnCode, BigDecimal hours, BigDecimal amount, String timeBlockId) {
+    private List<TimeHourDetail> createTimeHourDetails(EarnCode earnCode, BigDecimal hours, BigDecimal amount, String timeBlockId) {
         List<TimeHourDetail> timeHourDetails = new ArrayList<TimeHourDetail>();
 
         TimeHourDetail timeHourDetail = new TimeHourDetail();
-        timeHourDetail.setEarnCode(earnCode);
-        timeHourDetail.setHours(hours);
+        timeHourDetail.setEarnCode(earnCode.getEarnCode());
+        timeHourDetail.setHours(this.applyInflateMinHoursAndFactor(earnCode, hours));
         timeHourDetail.setAmount(amount);
         timeHourDetail.setTkTimeBlockId(timeBlockId);
         timeHourDetails.add(timeHourDetail);
