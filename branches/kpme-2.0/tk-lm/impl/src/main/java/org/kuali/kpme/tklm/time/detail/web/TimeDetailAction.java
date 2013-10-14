@@ -29,14 +29,17 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
+import org.apache.struts.Globals;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
+import org.apache.struts.action.ActionRedirect;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -80,6 +83,7 @@ import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kns.web.struts.form.KualiForm;
 import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.UrlFactory;
@@ -106,12 +110,10 @@ public class TimeDetailAction extends TimesheetAction {
     @Override
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ActionForward forward = super.execute(mapping, form, request, response);
-
         TimeDetailActionForm timeDetailActionForm = (TimeDetailActionForm) form;
 
         CalendarEntry calendarEntry = timeDetailActionForm.getCalendarEntry();
         TimesheetDocument timesheetDocument = timeDetailActionForm.getTimesheetDocument();
-
 
         if (calendarEntry != null && timesheetDocument != null) {
 			List<String> assignmentKeys = new ArrayList<String>();
@@ -186,7 +188,6 @@ public class TimeDetailAction extends TimesheetAction {
 	        setMessages(timeDetailActionForm);
 
         }
-        
         return forward;
     }
 
@@ -383,7 +384,7 @@ public class TimeDetailAction extends TimesheetAction {
      */
     public ActionForward addTimeBlock(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeDetailActionForm tdaf = (TimeDetailActionForm) form;
-        
+        //if(this.isTokenValid(request,true)) {
         if(StringUtils.isNotEmpty(tdaf.getLmLeaveBlockId())) {
         	List<String> errors = TimeDetailValidationUtil.validateLeaveEntry(tdaf);
         	if(errors.isEmpty()) {
@@ -423,10 +424,13 @@ public class TimeDetailAction extends TimesheetAction {
                 }
         	}
         }
-        
        // ActionFormUtils.validateHourLimit(tdaf);
+        // Removing the redirect and returning the basic action mapping forward results in
+        // duplicate time detail entry forms being submitted on browser refresh or back actions.
         ActionFormUtils.addWarningTextFromEarnGroup(tdaf);
-        return mapping.findForward("basic");
+        ActionRedirect redirect = new ActionRedirect();
+        redirect.setPath("/TimeDetail.do");
+        return redirect;
     }
     
     private void removeOldTimeBlock(TimeDetailActionForm tdaf) {
@@ -570,7 +574,6 @@ public class TimeDetailAction extends TimesheetAction {
                     tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(), startTime,
                     endTime, tdaf.getHours(), tdaf.getAmount(), isClockLogCreated, Boolean.parseBoolean(tdaf.getLunchDeleted()),
                     tdaf.getSpanningWeeks(), HrContext.getPrincipalId(), clockLogBeginId, clockLogEndId);
-           
         } else {
             timeBlocksToAdd = TkServiceLocator.getTimeBlockService().buildTimeBlocks(currentAssignment,
                     tdaf.getSelectedEarnCode(), tdaf.getTimesheetDocument(), startTime,
@@ -638,7 +641,7 @@ public class TimeDetailAction extends TimesheetAction {
         TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, finalNewTimeBlocks, HrContext.getPrincipalId());
         
         generateTimesheetChangedNotification(HrContext.getPrincipalId(), HrContext.getTargetPrincipalId(), tdaf.getDocumentId());
-
+        
 	}
 	
 	/**
@@ -858,6 +861,26 @@ public class TimeDetailAction extends TimesheetAction {
 		Properties params = new Properties();
 		params.put("documentId", documentId);
 		return UrlFactory.parameterizeUrl(getApplicationBaseUrl() + "/TimeDetail.do", params);
+	}
+
+	@Override
+	protected String generateToken(HttpServletRequest request) {
+		return super.generateToken(request);
+	}
+
+	@Override
+	protected boolean isTokenValid(HttpServletRequest request, boolean reset) {
+		return super.isTokenValid(request, reset);
+	}
+
+	@Override
+	protected void resetToken(HttpServletRequest request) {
+		super.resetToken(request);
+	}
+
+	@Override
+	protected void saveToken(HttpServletRequest request) {
+		super.saveToken(request);
 	}
 
 }
