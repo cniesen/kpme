@@ -135,6 +135,7 @@ public class SimpleTimeEntryValidationTest extends KPMEWebTestCase {
         // Note - This currently uses a less than desirable method to accomplish this...
         page = TimeDetailTestUtils.submitTimeDetails(getWebClient(), baseUrl, tdaf);
         Assert.assertNotNull(page);
+        page = getWebClient().getPage(baseUrl);
         //HtmlUnitUtil.createTempFile(page, "TimeBlockPresent");
 
         // Verify block present on rendered page.
