@@ -15,8 +15,7 @@
  */
 package org.kuali.kpme.core.assignment.service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.assignment.Assignment;
@@ -61,6 +60,12 @@ public interface AssignmentService {
 	 */
     @Cacheable(value= Assignment.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
+
+    @Cacheable(value= Assignment.CACHE_NAME, key="'{getPrincipalIdsInActiveAssigmentsForWorkArea}' + 'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
+    public List<String> getPrincipalIdsInActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
+
+    @Cacheable(value= Assignment.CACHE_NAME, key="'{getPrincipalIdsInActiveAssigmentsForWorkAreas}' + 'workAreas=' + T(org.kuali.rice.core.api.cache.CacheKeyUtils).key(#p0) + '|' + 'asOfDate=' + #p1")
+    public List<String> getPrincipalIdsInActiveAssignmentsForWorkAreas(List<Long> workAreas, LocalDate asOfDate);
 
 	/**
 	 * Get active assignments for all users for the current date

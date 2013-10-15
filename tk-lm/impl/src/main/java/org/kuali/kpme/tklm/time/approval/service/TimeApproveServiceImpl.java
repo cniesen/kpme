@@ -319,7 +319,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		if (eligibilities != null) {
 			for (Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
 				for(LeaveBlock lb : entry.getValue()) {
-					AccrualCategoryRule rule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(lb.getAccrualCategoryRuleId());
+					AccrualCategoryRule rule = lb.getAccrualCategoryRule();
 					if (rule != null) {
 						AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(rule.getLmAccrualCategoryId());
 						if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER)) {

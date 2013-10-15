@@ -239,8 +239,8 @@ public class TimeDetailAction extends TimesheetAction {
         		for (Entry<String,Set<LeaveBlock>> entry : maxBalInfractions.entrySet()) {
         			for (LeaveBlock lb : entry.getValue()) {
         				if (calendarInterval.contains(lb.getLeaveDate().getTime())) {
-	    	        		AccrualCategory accrualCat = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(lb.getAccrualCategory(), lb.getLeaveLocalDate());
-				        	AccrualCategoryRule aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(lb.getAccrualCategoryRuleId());
+	    	        		AccrualCategory accrualCat = lb.getAccrualCategoryObj();
+				        	AccrualCategoryRule aRule = lb.getAccrualCategoryRule();
 				        	if (StringUtils.equals(aRule.getActionAtMaxBalance(),HrConstants.ACTION_AT_MAX_BALANCE.LOSE)) {
 				        		DateTime aDate = null;
 				        		if (StringUtils.equals(aRule.getMaxBalanceActionFrequency(), HrConstants.MAX_BAL_ACTION_FREQ.YEAR_END)) {
@@ -256,7 +256,7 @@ public class TimeDetailAction extends TimesheetAction {
 					    			AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(aRule.getLmAccrualCategoryId());
 					    			BigDecimal accruedBalance = LmServiceLocator.getAccrualService().getAccruedBalanceForPrincipal(principalId, accrualCategory, lb.getLeaveLocalDate());
 						        	
-						        	BalanceTransfer loseTransfer = LmServiceLocator.getBalanceTransferService().initializeTransfer(principalId, lb.getAccrualCategoryRuleId(), accruedBalance, lb.getLeaveLocalDate());
+						        	BalanceTransfer loseTransfer = LmServiceLocator.getBalanceTransferService().initializeTransfer(principalId, aRule.getLmAccrualCategoryRuleId(), accruedBalance, lb.getLeaveLocalDate());
 						        	boolean valid = BalanceTransferValidationUtils.validateTransfer(loseTransfer);
 						        	if (valid) {
 						        		//validation occurs again before the "transfer" action occurs that submits the forfeiture.
