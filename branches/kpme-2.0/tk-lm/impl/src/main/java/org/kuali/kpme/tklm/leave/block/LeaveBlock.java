@@ -96,12 +96,16 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	@Transient
 	private String planningDescription;
 
+    @Transient
+    private AccrualCategoryRule accrualCategoryRule;
+
+    @Transient
+    private AccrualCategory accrualCategoryObj;
+
 	private String transactionalDocId;
 
 	public String getAccrualCategoryRuleId() {
-		AccrualCategory category = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getLeaveLocalDate());
-		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, getLeaveLocalDate());
-		AccrualCategoryRule aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(category, getLeaveLocalDate(), pha.getServiceLocalDate());
+        AccrualCategoryRule aRule = getAccrualCategoryRule();
 		return ObjectUtils.isNull(aRule) ? null : aRule.getLmAccrualCategoryRuleId();
 	}
 	
@@ -582,5 +586,21 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	public void setEarnCode(String earnCode) {
 		this.earnCode = earnCode;
 	}
-	
+
+    public AccrualCategoryRule getAccrualCategoryRule() {
+        if (accrualCategoryRule == null) {
+            AccrualCategory category = getAccrualCategoryObj();
+            PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, getLeaveLocalDate());
+            accrualCategoryRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(category, getLeaveLocalDate(), pha.getServiceLocalDate());
+        }
+        return accrualCategoryRule;
+    }
+
+    public AccrualCategory getAccrualCategoryObj() {
+        if (accrualCategoryObj == null) {
+            accrualCategoryObj = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getLeaveLocalDate());
+        }
+        return accrualCategoryObj;
+    }
+
 }

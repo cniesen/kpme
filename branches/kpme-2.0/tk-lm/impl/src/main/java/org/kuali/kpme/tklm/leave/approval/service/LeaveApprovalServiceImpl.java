@@ -334,8 +334,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
     	if (eligibilities != null) {
     		for (Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
     			for(LeaveBlock block : entry.getValue()) {
-
-    				AccrualCategoryRule rule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(block.getAccrualCategoryRuleId());
+                    AccrualCategoryRule rule = block.getAccrualCategoryRule();
     				if (rule != null) {
     					AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(rule.getLmAccrualCategoryId());
     					if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER)) {
@@ -520,7 +519,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 		for (LeaveBlock lb : leaveBlocks) {
 			DateTime leaveDate = lb.getLeaveLocalDate().toDateTimeAtStartOfDay();
 			
-			AccrualCategory ac = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(lb.getAccrualCategory(), lb.getLeaveLocalDate());
+			AccrualCategory ac = lb.getAccrualCategoryObj();
 			if (ac != null && ac.getShowOnGrid().equals("Y")) {
 				if (accrualCategoryLeaveHours.get(leaveDate.toDate()) != null) {
 					Map<String, BigDecimal> leaveHours = accrualCategoryLeaveHours.get(leaveDate.toDate());
