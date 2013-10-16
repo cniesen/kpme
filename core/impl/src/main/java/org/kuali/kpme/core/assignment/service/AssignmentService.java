@@ -101,6 +101,7 @@ public interface AssignmentService {
      * @param payCalendarEntry
      * @return
      */
+    @Cacheable(value= Assignment.CACHE_NAME, key="'{getAssignmentsByPayEntry}' + 'principalId=' + #p0 + '|' + 'payCalendarEntry=' + #p1.getHrCalendarEntryId()")
     public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntry payCalendarEntry);
     /**
      * Get assignments for Time Calendar by calendar entry
@@ -108,6 +109,7 @@ public interface AssignmentService {
      * @param calendarEntry
      * @return
      */
+    @Cacheable(value= Assignment.CACHE_NAME, key="'{getAssignmentsByCalEntryForTimeCalendar}' + 'principalId=' + #p0 + '|' + 'payCalendarEntry=' + #p1.getHrCalendarEntryId()")
     public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntry calendarEntry);
     /**
      * Get assignments for Leave Calendar by calendar entry
@@ -115,6 +117,7 @@ public interface AssignmentService {
      * @param calendarEntry
      * @return
      */
+    @Cacheable(value= Assignment.CACHE_NAME, key="'{getAssignmentsByCalEntryForLeaveCalendar}' + 'principalId=' + #p0 + '|' + 'payCalendarEntry=' + #p1.getHrCalendarEntryId()")
     public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntry calendarEntry);
     
     /**
