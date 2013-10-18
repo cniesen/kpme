@@ -99,7 +99,7 @@ public class BatchJobServiceImpl implements BatchJobService {
 				for (Assignment assignment : assignments) {
 					Job job = assignment.getJob();
 					
-					if (StringUtils.equalsIgnoreCase(job.getFlsaStatus(), TkConstants.FLSA_STATUS_EXEMPT)) {
+					if (StringUtils.equalsIgnoreCase(job.getFlsaStatus(), TkConstants.FLSA_STATUS_NON_EXEMPT)) {
 						TimesheetDocumentHeader timesheetDocumentHeader = getTimesheetDocumentHeaderService().getDocumentHeader(principalId, beginDate, endDate);
 						if (timesheetDocumentHeader == null || StringUtils.equals(timesheetDocumentHeader.getDocumentStatus(), TkConstants.ROUTE_STATUS.CANCEL)) {
 							scheduleInitiateJob(calendarEntry, scheduleDate, assignment.getPrincipalId());
@@ -117,7 +117,7 @@ public class BatchJobServiceImpl implements BatchJobService {
 				for (Assignment assignment : assignments) {
 					Job job = assignment.getJob();
 					
-					if (job.isEligibleForLeave() && StringUtils.equalsIgnoreCase(job.getFlsaStatus(), TkConstants.FLSA_STATUS_NON_EXEMPT)) {
+					if (job.isEligibleForLeave() && StringUtils.equalsIgnoreCase(job.getFlsaStatus(), TkConstants.FLSA_STATUS_EXEMPT)) {
 						LeaveCalendarDocumentHeader leaveCalendarDocumentHeader = getLeaveCalendarDocumentHeaderService().getDocumentHeader(principalId, beginDate, endDate);
 						if (leaveCalendarDocumentHeader == null || StringUtils.equals(leaveCalendarDocumentHeader.getDocumentStatus(), TkConstants.ROUTE_STATUS.CANCEL)) {
 							scheduleInitiateJob(calendarEntry, scheduleDate, assignment.getPrincipalId());
