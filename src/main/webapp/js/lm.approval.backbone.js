@@ -97,7 +97,7 @@ $(function () {
 	                // add the title row for the detail section
 					var firstMap = AccrualCategorySections.first().toJSON();
 					var daysNumber = firstMap["daysSize"] + 2;
-	                var tempString = "<tr class='leaveDetailRow_" + docId + "'><th colspan='" + daysNumber + "'/><th>Period Usage</th><th>Available</th></tr>"
+	                var tempString = "<tr class='leaveDetailRow_" + docId + "'><th colspan='" + daysNumber + "'/><th>Period Total</th><th>Available</th></tr>"
 	                $parent.after(tempString);
                 }
 
