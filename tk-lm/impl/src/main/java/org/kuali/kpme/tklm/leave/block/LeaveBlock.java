@@ -30,6 +30,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.api.assignment.Assignable;
@@ -49,7 +50,10 @@ import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.leave.workflow.LeaveRequestDocument;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.krad.util.ObjectUtils;
@@ -81,7 +85,10 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     private String leaveRequestDocumentId;
         
 	protected String lmLeaveBlockId;
+	private String userPrincipalId;
     
+	@Transient
+	private Date beginDate;
     @Transient
 	private boolean submit;
 	@Transient
@@ -103,6 +110,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     private AccrualCategory accrualCategoryObj;
 
 	private String transactionalDocId;
+	private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
 
 	public String getAccrualCategoryRuleId() {
         AccrualCategoryRule aRule = getAccrualCategoryRule();
@@ -130,6 +138,8 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		private Long jobNumber;
 		private Long task;
 		private String leaveBlockType;
+		private String userPrincipalId;
+		private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
 		
 		public Builder(LocalDate leaveDate, String documentId,
 				String principalId, String earnCode, BigDecimal leaveAmount) {
@@ -203,11 +213,21 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 			this.leaveBlockType = leaveBlockType;
 			return this;
 		}
+		
+		public Builder userPrincipalId(String userPrincipalId) {
+			this.userPrincipalId = userPrincipalId;
+			return this;
+		}
 
+		public Builder LeaveCalendarDocumentHeader(LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
+			this.leaveCalendarDocumentHeader = leaveCalendarDocumentHeader;
+			return this;
+		}
+		
 		public LeaveBlock build() {
 			return new LeaveBlock(this);
 		}
-
+		
 	}
 
 	private LeaveBlock(Builder builder) {
@@ -228,6 +248,8 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		jobNumber = builder.jobNumber;
 		task = builder.task;
 		leaveBlockType = builder.leaveBlockType;
+		userPrincipalId = builder.userPrincipalId;
+		leaveCalendarDocumentHeader = builder.leaveCalendarDocumentHeader;
 		// TODO: need to hook up leaveCodeObj, systemScheduledTimeOffObj,
 		// accrualCategoryObj, and ids for individual obj
 	}
@@ -236,6 +258,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
 	}
 
+	
 	public String getAccrualCategory() {
 		return accrualCategory;
 	}
@@ -402,6 +425,20 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		this.leaveBlockType = leaveBlockType;
 	}
 
+	public LeaveCalendarDocumentHeader getLeaveCalendarDocumentHeader() {
+        if (leaveCalendarDocumentHeader == null && this.getDocumentId() != null) {
+            setLeaveCalendarDocumentHeader(LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(this.getDocumentId()));
+        }
+        return leaveCalendarDocumentHeader;
+    }
+
+    public void setLeaveCalendarDocumentHeader(
+    		LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
+        this.leaveCalendarDocumentHeader = leaveCalendarDocumentHeader;
+    }
+
+
+	
     public boolean isEditable() {
         return LmServiceLocator.getLMPermissionService().canEditLeaveBlock(HrContext.getPrincipalId(), this);
     }
@@ -523,6 +560,30 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		beginTimestamp = beginDateTime != null ? beginDateTime.toDate() : null;
 	}
 	
+	
+	public Date getBeginDate() {
+	    	Date beginDate = null;	    	
+	    	if (beginTimestamp != null) {
+	    		beginDate = new Date(beginTimestamp.getTime());
+	    	}
+	        return beginDate;
+	}
+
+	public Timestamp getBeginTimestampVal() {
+	        return new Timestamp(beginTimestamp.getTime());
+	}
+
+	public Timestamp getEndTimestampVal() {
+	        return new Timestamp(endTimestamp.getTime());
+	}
+
+	public void setBeginDate(Date beginDate) {
+	    	DateTime dateTime = new DateTime(beginTimestamp);
+	    	LocalDate localDate = new LocalDate(beginDate);
+	    	LocalTime localTime = new LocalTime(beginTimestamp);
+	    	beginTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+	}
+	
 	public DateTime getEndDateTime() {
 		return endTimestamp != null ? new DateTime(endTimestamp) : null;
 	}
@@ -603,4 +664,12 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
         return accrualCategoryObj;
     }
 
+	public String getUserPrincipalId() {
+	    return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+	   	this.userPrincipalId = userPrincipalId;
+	}
+	
 }
