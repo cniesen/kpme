@@ -15,7 +15,10 @@
  */
 package org.kuali.hr.time.principal.service;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
+import org.kuali.hr.core.KPMEConstants;
 import org.kuali.hr.core.cache.CacheUtils;
 import org.kuali.hr.time.HrBusinessObject;
 import org.kuali.hr.time.principal.PrincipalHRAttributes;
@@ -24,8 +27,6 @@ import org.kuali.hr.time.util.HrBusinessObjectMaintainableImpl;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
-
-import java.util.Map;
 
 public class PrincipalHRAttributesMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 	private static final long serialVersionUID = 1L;
@@ -52,6 +53,7 @@ public class PrincipalHRAttributesMaintainableImpl extends HrBusinessObjectMaint
 	public void saveBusinessObject() {
 		super.saveBusinessObject();
 		CacheUtils.flushCache(PrincipalHRAttributes.CACHE_NAME);
+		CacheUtils.flushCache(KPMEConstants.KPME_GLOBAL_CACHE_NAME);
 	}
 
 	@Override
