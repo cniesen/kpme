@@ -34,6 +34,7 @@ import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TkConstants;
+import org.kuali.hr.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class ClockLogServiceImpl implements ClockLogService {
@@ -161,7 +162,12 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntries calendarEntry) {
-        return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
+        //return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
+        TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, calendarEntry.getBeginPeriodDateTime(), calendarEntry.getEndPeriodDateTime());
+        if (tdh == null) {
+            return null;
+        }
+        return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, tdh.getDocumentId());
     }
 
     @Override

@@ -29,6 +29,7 @@ import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.kuali.hr.time.assignment.Assignment;
 import org.kuali.hr.time.timeblock.TimeBlock;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class TimeBlockDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implements TimeBlockDao {
 
@@ -36,7 +37,7 @@ public class TimeBlockDaoSpringOjbImpl extends PlatformAwareDaoBaseOjb implement
     private static final Logger LOG = Logger.getLogger(TimeBlockDaoSpringOjbImpl.class);
 
     public void saveOrUpdate(TimeBlock timeBlock) {
-        this.getPersistenceBrokerTemplate().store(timeBlock);
+        KRADServiceLocator.getBusinessObjectService().save(timeBlock);
     }
 
     public void saveOrUpdate(List<TimeBlock> timeBlockList) {
