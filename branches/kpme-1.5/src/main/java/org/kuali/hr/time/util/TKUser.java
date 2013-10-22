@@ -242,9 +242,17 @@ public class TKUser {
 		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getOrgAdminCharts();
 	}
 
+    public static Set<String> getLocationAdminAreas(UserRoles userRoles) {
+        return userRoles.getOrgAdminCharts();
+    }
+
 	public static Set<String> getDepartmentAdminAreas() {
 		return TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId()).getOrgAdminDepartments();
 	}
+
+    public static Set<String> getDepartmentAdminAreas(UserRoles userRoles) {
+        return userRoles.getOrgAdminDepartments();
+    }
 
     public static SortedSet<Long> getWorkAreasFromUserRoles() {
     	UserRoles userRoles = TkUserRoles.getUserRoles(GlobalVariables.getUserSession().getPrincipalId());
