@@ -25,6 +25,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.kuali.hr.job.Job;
@@ -198,7 +199,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      */
 	public List<EarnGroupSection> getEarnGroupSections(TkTimeBlockAggregate tkTimeBlockAggregate, int numEntries, List<Boolean> dayArrangements, Date asOfDate , Date docEndDate){
 		List<EarnGroupSection> earnGroupSections = new ArrayList<EarnGroupSection>();
-		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+//		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(TKUtils.getSystemDateTimeZone());
 		Map<String, EarnCodeSection> earnCodeToEarnCodeSection = new TreeMap<String, EarnCodeSection>();
 		Map<String, EarnGroupSection> earnGroupToEarnGroupSection = new HashMap<String, EarnGroupSection>();
 		
@@ -367,7 +369,9 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
     private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate, Set<String> regularEarnCodes) {
         List<BigDecimal> hours = new ArrayList<BigDecimal>();
         BigDecimal periodTotal = TkConstants.BIG_DECIMAL_SCALED_ZERO;
-        for (FlsaWeek week : aggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback())) {
+        List<FlsaWeek> weekList = aggregate.getFlsaWeeks(TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+//        List<FlsaWeek> weekList = aggregate.getFlsaWeeks(DateTimeZone.forID(TKUtils.getSystemTimeZone()));
+        for (FlsaWeek week : weekList) {
             BigDecimal weeklyTotal = TkConstants.BIG_DECIMAL_SCALED_ZERO;
             for (FlsaDay day : week.getFlsaDays()) {
                 BigDecimal totalForDay = TkConstants.BIG_DECIMAL_SCALED_ZERO;
