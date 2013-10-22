@@ -41,7 +41,6 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.joda.time.LocalDateTime;
 import org.kuali.hr.lm.LMConstants;
 import org.kuali.hr.lm.accrual.AccrualCategory;
 import org.kuali.hr.lm.accrual.AccrualCategoryRule;
@@ -125,16 +124,8 @@ public class TimeDetailAction extends TimesheetAction {
         for(Assignment assign : timeAssignments) {
         	tAssignmentKeys.add(assign.getAssignmentKey());
         }
-       
-        Date endDate = payCalendarEntry.getEndPeriodDate();
-        LocalDateTime tempLocalDate = payCalendarEntry.getEndLocalDateTime();
-        // if the end date of the calendar entry is the beginning time of a day, use the previous day as the end date to retrieve blocks
-        if(tempLocalDate.getHourOfDay() == 0 && tempLocalDate.getMinuteOfHour() == 0 && tempLocalDate.getMillisOfSecond() == 0) {
-        	endDate = new java.sql.Date(tempLocalDate.minusDays(1).toDate().getTime());
-        }
-        
         List<LeaveBlock> leaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(TKContext.getCurrentTimesheetDocument().getPrincipalId(), 
-        					payCalendarEntry.getBeginPeriodDate(), endDate, tAssignmentKeys);
+        					payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate(), tAssignmentKeys);
         List<LeaveBlock> balanceTransferLeaveBlocks = TkServiceLocator.getLeaveBlockService().getLeaveBlocksWithType(TKContext.getCurrentTimesheetDocument().getPrincipalId(),
         		 payCalendarEntry.getBeginPeriodDate(), payCalendarEntry.getEndPeriodDate(), LMConstants.LEAVE_BLOCK_TYPE.BALANCE_TRANSFER);
         
