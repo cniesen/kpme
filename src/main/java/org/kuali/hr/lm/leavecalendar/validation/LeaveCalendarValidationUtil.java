@@ -292,12 +292,13 @@ public class LeaveCalendarValidationUtil {
 					}
 				}
 				//multiply by days in span in case the user has also edited the start/end dates.
-				BigDecimal desiredUsage =null;
-				if(!TkConstants.EARN_CODE_TIME.equals(earnCodeObj.getRecordMethod())) {
-					desiredUsage = leaveAmount.multiply(new BigDecimal(daysSpan+1));
-				} else {
-					desiredUsage = leaveAmount.multiply(new BigDecimal(daysSpan));
-				}
+				// daySpan for the same start/end dates is 0 so we need to add 1 to it
+				BigDecimal desiredUsage = leaveAmount.multiply(new BigDecimal(daysSpan+1));
+//				if(!TkConstants.EARN_CODE_TIME.equals(earnCodeObj.getRecordMethod())) {
+//					desiredUsage = leaveAmount.multiply(new BigDecimal(daysSpan+1));
+//				} else {
+//					desiredUsage = leaveAmount.multiply(new BigDecimal(daysSpan));
+//				}
 				
 				if(desiredUsage.compareTo(availableBalance) >  0 ) {
 					errors.add("Requested leave amount " + desiredUsage.toString() + " is greater than available leave balance " + availableBalance.toString());      //errorMessages
