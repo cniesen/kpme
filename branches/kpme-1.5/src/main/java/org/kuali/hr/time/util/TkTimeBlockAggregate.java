@@ -459,6 +459,7 @@ public class TkTimeBlockAggregate {
         if (tbAggregate != null
                 && lbAggregate != null
                 && tbAggregate.getDayTimeBlockList().size() == lbAggregate.getDayLeaveBlockList().size()) {
+            DateTimeZone dtz = TkServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
             for (int i = 0; i < tbAggregate.getDayTimeBlockList().size(); i++) {
                 List<LeaveBlock> leaveBlocks = lbAggregate.getDayLeaveBlockList().get(i);
                 if (CollectionUtils.isNotEmpty(leaveBlocks)) {
@@ -467,8 +468,11 @@ public class TkTimeBlockAggregate {
                         //conveniently, we only really need the hours amount
                         TimeBlock timeBlock = new TimeBlock();
                         timeBlock.setHours(lb.getLeaveAmount().negate());
-                        timeBlock.setBeginTimestamp(new Timestamp(lb.getLeaveDate().getTime()));
-                        timeBlock.setEndTimestamp(new Timestamp(new DateTime(lb.getLeaveDate()).plusMinutes(timeBlock.getHours().intValue()).getMillis()));
+                        //DateTime beginTime = new DateTime(lb.getLeaveDate().getTime());
+                        //beginTime = beginTime.
+                        DateTime beginTime = new DateTime(lb.getLeaveDate()).toLocalDate().toDateTimeAtStartOfDay().withZoneRetainFields(dtz);
+                        timeBlock.setBeginTimestamp(new Timestamp(beginTime.getMillis()));
+                        timeBlock.setEndTimestamp(new Timestamp(beginTime.plusMinutes(timeBlock.getHours().intValue()).getMillis()));
                         timeBlock.setAssignmentKey(lb.getAssignmentKey());
                         timeBlock.setEarnCode(lb.getEarnCode());
                         timeBlock.setPrincipalId(lb.getPrincipalId());
