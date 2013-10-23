@@ -138,7 +138,8 @@ public class ApprovalAction extends TkAction{
 		taf.setHrPyCalendarId(payCalendarEntries.getHrCalendarId());
 		taf.setHrPyCalendarEntriesId(payCalendarEntries.getHrCalendarEntriesId());
 		taf.setPayBeginDate(payCalendarEntries.getBeginPeriodDateTime());
-		taf.setPayEndDate(DateUtils.addMilliseconds(payCalendarEntries.getEndPeriodDateTime(),-1));
+        taf.setPayEndDate(payCalendarEntries.getEndPeriodDateTime());
+		//taf.setPayEndDate(DateUtils.addMilliseconds(payCalendarEntries.getEndPeriodDateTime(),-1));
 		
 		CalendarEntries prevPayCalendarEntries = TkServiceLocator.getCalendarEntriesService().getPreviousCalendarEntriesByCalendarId(taf.getHrPyCalendarId(), payCalendarEntries);
 		if (prevPayCalendarEntries != null) {
