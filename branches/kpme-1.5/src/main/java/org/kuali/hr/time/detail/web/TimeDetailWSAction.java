@@ -15,6 +15,7 @@
  */
 package org.kuali.hr.time.detail.web;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -46,7 +47,6 @@ import org.kuali.hr.time.timesheet.TimesheetDocument;
 import org.kuali.hr.time.timesheet.web.TimesheetAction;
 import org.kuali.hr.time.util.TKContext;
 import org.kuali.hr.time.util.TKUtils;
-import org.kuali.hr.time.util.TkConstants;
 import org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm;
 import org.kuali.rice.krad.util.ObjectUtils;
 
@@ -101,15 +101,22 @@ public class TimeDetailWSAction extends TimesheetAction {
 				lb = TkServiceLocator.getLeaveBlockService().getLeaveBlock(tdaf.getLmLeaveBlockId());
 			}
 			
+			BigDecimal leaveAmount = tdaf.getLeaveAmount();
+			if(leaveAmount == null) {
+		        Long startTime = TKUtils.convertDateStringToTimestampWithoutZone(tdaf.getStartDate(), tdaf.getStartTime()).getTime();
+		        Long endTime = TKUtils.convertDateStringToTimestampWithoutZone(tdaf.getEndDate(), tdaf.getEndTime()).getTime();
+		        leaveAmount = TKUtils.getHoursBetween(startTime, endTime);
+			}
+			
 			// Validate LeaveBlock timings and all that
 			errorMsgList.addAll(LeaveCalendarValidationUtil.validateParametersForLeaveEntry(tdaf.getSelectedEarnCode(), tdaf.getPayCalendarDates(),
 					tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getStartTime(), tdaf.getEndTime(), tdaf.getSelectedAssignment(), null, tdaf.getLmLeaveBlockId()));
 			
 			errorMsgList.addAll(LeaveCalendarValidationUtil.validateAvailableLeaveBalanceForUsage(tdaf.getSelectedEarnCode(), 
-					tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getLeaveAmount(), lb));
+					tdaf.getStartDate(), tdaf.getEndDate(), leaveAmount, lb));
 			//Validate leave block does not exceed max usage. Leave Calendar Validators at this point rely on a leave summary.
 	        errorMsgList.addAll(LeaveCalendarValidationUtil.validateLeaveAccrualRuleMaxUsage(ls, tdaf.getSelectedEarnCode(),
-                    tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getLeaveAmount(), lb));
+                    tdaf.getStartDate(), tdaf.getEndDate(), leaveAmount, lb));
 		}
 		return errorMsgList;
     }
