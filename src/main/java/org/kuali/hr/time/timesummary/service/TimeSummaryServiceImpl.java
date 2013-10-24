@@ -16,16 +16,23 @@
 package org.kuali.hr.time.timesummary.service;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.*;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
 import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.kuali.hr.job.Job;
@@ -81,8 +88,15 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
             tAssignmentKeys.add(assign.getAssignmentKey());
             regularEarnCodes.add(assign.getJob().getPayTypeObj().getRegEarnCode());
         }
+        
+        Date endDate = timesheetDocument.getCalendarEntry().getEndPeriodDate();
+        LocalDateTime tempLocalDate = timesheetDocument.getCalendarEntry().getEndLocalDateTime();
+        // if the end date of the calendar entry is the beginning time of a day, use the previous day as the end date to retrieve blocks
+        if(tempLocalDate.getHourOfDay() == 0 && tempLocalDate.getMinuteOfHour() == 0 && tempLocalDate.getMillisOfSecond() == 0) {
+        	endDate = new java.sql.Date(tempLocalDate.minusDays(1).toDate().getTime());
+        }
         List<LeaveBlock> leaveBlocks =  TkServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(timesheetDocument.getPrincipalId(),
-                timesheetDocument.getCalendarEntry().getBeginPeriodDate(), timesheetDocument.getCalendarEntry().getEndPeriodDate(), tAssignmentKeys);
+                timesheetDocument.getCalendarEntry().getBeginPeriodDate(), endDate, tAssignmentKeys);
         LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
         tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
 
@@ -327,8 +341,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 	protected List<String> getSummaryHeader(CalendarEntries payCalEntry){
 		List<String> summaryHeader = new ArrayList<String>();
 		int dayCount = 0;
-		Date beginDateTime = payCalEntry.getBeginPeriodDateTime();
-		Date endDateTime = payCalEntry.getEndPeriodDateTime();
+		java.util.Date beginDateTime = payCalEntry.getBeginPeriodDateTime();
+		java.util.Date endDateTime = payCalEntry.getEndPeriodDateTime();
 		boolean virtualDays = false;
         LocalDateTime endDate = payCalEntry.getEndLocalDateTime();
 
@@ -337,7 +351,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
             virtualDays = true;
         }
 		
-		Date currDateTime = beginDateTime;
+		java.util.Date currDateTime = beginDateTime;
 		java.util.Calendar cal = GregorianCalendar.getInstance();
 		
 		while(currDateTime.before(endDateTime)){
