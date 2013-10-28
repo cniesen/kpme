@@ -23,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -64,6 +63,14 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 			errorMsgList.addAll(CalendarValidationUtil.validateEarnCode(tdaf.getSelectedEarnCode(),tdaf.getStartDate(),tdaf.getEndDate()));
 			if(errorMsgList.isEmpty()) {
 				LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(HrContext.getTargetPrincipalId(), TKUtils.formatDateString(tdaf.getEndDate()));
+				
+				  BigDecimal leaveAmount = tdaf.getLeaveAmount();
+                  if(leaveAmount == null) {
+	                  Long startTime = TKUtils.convertDateStringToDateTimeWithoutZone(tdaf.getStartDate(), tdaf.getStartTime()).getMillis();
+	                  Long endTime = TKUtils.convertDateStringToDateTimeWithoutZone(tdaf.getEndDate(), tdaf.getEndTime()).getMillis();
+	                  leaveAmount = TKUtils.getHoursBetween(startTime, endTime);
+                  }
+				
 				// Validate LeaveBlock timings and all that
 				/**
 				 * In all cases, TIME, AMOUNT, HOUR, DAY, we should validate usage and balance limits. But depending on earn code record method, the derivation of requested
@@ -73,12 +80,12 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 				 */
 				errorMsgList.addAll(TimeDetailValidationUtil.validateLeaveParametersByEarnCodeRecordMethod(tdaf));
 				errorMsgList.addAll(LeaveCalendarValidationUtil.validateAvailableLeaveBalanceForUsage(tdaf.getSelectedEarnCode(), 
-						tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getLeaveAmount(), lb));
+						tdaf.getStartDate(), tdaf.getEndDate(), leaveAmount, lb));
 				//Validate leave block does not exceed max usage. Leave Calendar Validators at this point rely on a leave summary.
 		        errorMsgList.addAll(LeaveCalendarValidationUtil.validateLeaveAccrualRuleMaxUsage(ls, tdaf.getSelectedEarnCode(),
-		                tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getLeaveAmount(), lb));
+		                tdaf.getStartDate(), tdaf.getEndDate(), leaveAmount, lb));
 		        errorMsgList.addAll(LeaveCalendarValidationUtil.validateHoursUnderTwentyFour(tdaf.getSelectedEarnCode(),
-		        		tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getLeaveAmount()));
+		        		tdaf.getStartDate(), tdaf.getEndDate(),leaveAmount));
 			}
 		}
 		return errorMsgList;
