@@ -61,7 +61,7 @@ public class LeaveActionFormUtils {
 	            LeaveBlockMap.put("endTime", end.toString(TkConstants.DT_MILITARY_TIME_FORMAT));
             }
         		
-            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
+            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
             String workAreaDesc = workArea == null ? "" : workArea.getDescription();
             // Roles
             Boolean getAnyApprover = HrContext.isAnyApprover();

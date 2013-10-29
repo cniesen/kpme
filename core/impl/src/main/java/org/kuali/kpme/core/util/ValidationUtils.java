@@ -279,7 +279,7 @@ public class ValidationUtils {
         if (StringUtils.isEmpty(department)) {
           // do nothing, let false be returned.
         } else if (asOfDate != null) {
-			Department d = HrServiceLocator.getDepartmentService().getDepartment(department, asOfDate);
+			Department d = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, asOfDate);
 		    valid = (d != null);
 		} else {
 			int count = HrServiceLocator.getDepartmentService().getDepartmentCount(department);
@@ -325,7 +325,7 @@ public class ValidationUtils {
 		} else if (workArea.equals(HrConstants.WILDCARD_LONG)) {
 			valid = true;
 		} else if (asOfDate != null) {
-			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, asOfDate);
+			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
             if (wa != null && dept != null) {
                 valid = StringUtils.equalsIgnoreCase(dept, wa.getDept());
             } else {

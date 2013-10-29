@@ -28,7 +28,7 @@ public class WorkAreaEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     	boolean futureEffectiveDateExists = false;
     	
         WorkArea workArea = (WorkArea) pbo;
-        WorkArea lastWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(workArea.getWorkArea(), TKUtils.END_OF_TIME);
+        WorkArea lastWorkArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea.getWorkArea(), TKUtils.END_OF_TIME);
         if (lastWorkArea != null && lastWorkArea.getEffectiveLocalDate() != null && workArea.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastWorkArea.getEffectiveLocalDate().isAfter(workArea.getEffectiveLocalDate());
         }

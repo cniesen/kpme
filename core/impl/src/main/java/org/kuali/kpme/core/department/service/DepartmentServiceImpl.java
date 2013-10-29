@@ -98,6 +98,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 		return departmentObj;
 	}
 
+    @Override
+    public Department getDepartmentWithoutRoles(String department, LocalDate asOfDate) {
+        return departmentDao.getDepartment(department, asOfDate);
+    }
+
 
     @Override
     public List<String> getDepartmentsForLocation(String location, LocalDate asOfDate) {
@@ -144,7 +149,7 @@ public class DepartmentServiceImpl implements DepartmentService {
     	if (department != null && asOfDate != null 
     			&& CollectionUtils.isEmpty(department.getRoleMembers()) && CollectionUtils.isEmpty(department.getInactiveRoleMembers())) {
     		Set<RoleMember> roleMembers = new HashSet<RoleMember>();
-    		
+
 	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInDepartment(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_VIEW_ONLY.getRoleName(), department.getDept(), asOfDate.toDateTimeAtStartOfDay(), false));
 	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInDepartment(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), department.getDept(), asOfDate.toDateTimeAtStartOfDay(), false));
 	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInDepartment(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_VIEW_ONLY.getRoleName(), department.getDept(), asOfDate.toDateTimeAtStartOfDay(), false));

@@ -110,7 +110,7 @@ public class WorkAreaMaintenanceDocumentTest extends KPMEWebTestCase {
         Assert.assertTrue("Page contains test Earn Code", searchPage.asText().contains(workArea.toString()));
 		
 		DateTime aDate = new DateTime(2011, 5, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-		WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, aDate.toLocalDate());
+		WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, aDate.toLocalDate());
 		String workAreaId = wa.getTkWorkAreaId().toString();
 		this.workArea = wa.getWorkArea();
 		
@@ -126,8 +126,8 @@ public class WorkAreaMaintenanceDocumentTest extends KPMEWebTestCase {
 	
 	@Override
 	public void tearDown() throws Exception {
-		Department deptObj = HrServiceLocator.getDepartmentService().getDepartment(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
-		WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, LocalDate.now());
+		Department deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
+		WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, LocalDate.now());
 		KRADServiceLocator.getBusinessObjectService().delete(workAreaObj);
 		KRADServiceLocator.getBusinessObjectService().delete(deptObj);
 		super.tearDown();

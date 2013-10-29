@@ -69,10 +69,11 @@ public class WorkAreaServiceImpl implements WorkAreaService {
         List<WorkArea> results = new ArrayList<WorkArea>();
 		
 		List<WorkArea> workAreaObjs = workAreaDao.getWorkAreas(dept, workArea, workAreaDescr, fromEffdt, toEffdt, active, showHistory);
-		
+
+        //TODO - performance
         for (WorkArea workAreaObj : workAreaObjs) {
         	String department = workAreaObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, workAreaObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, workAreaObj.getEffectiveLocalDate());
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();
@@ -112,6 +113,11 @@ public class WorkAreaServiceImpl implements WorkAreaService {
         
 		return workAreaObj;
 	}
+
+    @Override
+    public WorkArea getWorkAreaWithoutRoles(Long workArea, LocalDate asOfDate) {
+        return workAreaDao.getWorkArea(workArea, asOfDate);
+    }
 
     @Override
     public List<WorkArea> getWorkAreasWithoutRoles(List<Long> workAreas, LocalDate asOfDate) {

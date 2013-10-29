@@ -214,10 +214,10 @@ public abstract class HrPermissionServiceBase {
     	boolean isAuthorized = false;
     	
 		Long workArea = assignment.getWorkArea();
-    	WorkArea workAreaObj = getWorkAreaService().getWorkArea(workArea, assignment.getEffectiveLocalDate());
-		
+    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, assignment.getEffectiveLocalDate());
+
 		String department = workAreaObj != null ? workAreaObj.getDept() : null;
-    	Department departmentObj = getDepartmentService().getDepartment(department, assignment.getEffectiveLocalDate());
+    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, assignment.getEffectiveLocalDate());
     	
     	String location = departmentObj != null ? departmentObj.getLocation() : null;
     	

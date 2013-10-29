@@ -294,7 +294,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 										assignment.setJob(aJob);
 									}
 									if(assignment.getWorkAreaObj() == null){
-										WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
+										WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
 										assignment.setWorkAreaObj(aWorkArea);
 									}
 									assignRow.setDescr(assignment.getAssignmentDescription());

@@ -312,7 +312,7 @@ public class ClockActionForm extends TimesheetActionForm {
 				if (timeBlock.getClockLogCreated()) {
 					Assignment assignment = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(AssignmentDescriptionKey.get(timeBlock.getAssignmentKey()), LocalDate.fromDateFields(timeBlock.getBeginDate()));
 					if (assignment != null) {
-						WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), LocalDate.fromDateFields(timeBlock.getBeginDate()));
+						WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), LocalDate.fromDateFields(timeBlock.getBeginDate()));
 						if(assignment.getJob() != null) {
 							TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.fromDateFields(timeBlock.getBeginDate()));
 							if (rule != null && aWorkArea != null && aWorkArea.isHrsDistributionF() && rule.isClockUserFl()) {
@@ -345,7 +345,7 @@ public class ClockActionForm extends TimesheetActionForm {
 			LinkedHashMap<String, String> desList = new LinkedHashMap<String, String>();
 			List<String> distributeAssignList = new ArrayList<String>();
 			for (Assignment assignment : getTimesheetDocument().getAssignments()) {
-				WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), LocalDate.fromDateFields(tb.getBeginDate()));
+				WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), LocalDate.fromDateFields(tb.getBeginDate()));
 				if(assignment.getJob() != null) {
 					TimeCollectionRule rule = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.fromDateFields(tb.getBeginDate()));
 					if (rule != null && aWorkArea != null && aWorkArea.isHrsDistributionF() && rule.isClockUserFl()) {

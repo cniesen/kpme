@@ -44,6 +44,8 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.rice.kim.api.role.RoleService;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import com.google.common.collect.Ordering;
@@ -164,17 +166,18 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             addEarnCode = true;
         }
 
+        RoleService roleService = KimApiServiceLocator.getRoleService();
         if (!addEarnCode && (security.isEmployee() || security.isApprover() || security.isPayrollProcessor())) {
             String principalId = GlobalVariables.getUserSession().getPrincipalId();
-
-            Set<Long> workAreas = new HashSet<Long>();
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_SYSTEM_ADMINISTRATOR.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_SYSTEM_ADMINISTRATOR.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
+            List<String> roleIds = new ArrayList<String>();
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_SYSTEM_ADMINISTRATOR.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_SYSTEM_ADMINISTRATOR.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName()));
+            List<Long> workAreas = HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
             for (Long wa : workAreas) {
-                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(wa, asOfDate);
                 if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
                     addEarnCode = true;
                     break;
@@ -184,14 +187,15 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         // Check approver flag
         if (!addEarnCode && security.isApprover()) {
         	String principalId = GlobalVariables.getUserSession().getPrincipalId();
-        	
-        	Set<Long> workAreas = new HashSet<Long>();
-        	workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
+
+            List<String> roleIds = new ArrayList<String>();
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName()));
+            List<Long> workAreas = HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
             for (Long wa : workAreas) {
-                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(wa, asOfDate);
                 if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
                     addEarnCode = true;
                     break;
@@ -201,14 +205,13 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
         if (!addEarnCode && security.isPayrollProcessor()) {
         	String principalId = GlobalVariables.getUserSession().getPrincipalId();
-        	
-        	Set<String> depts = new HashSet<String>();
-            
-            depts.addAll(HrServiceLocator.getKPMERoleService().getDepartmentsForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
-            depts.addAll(HrServiceLocator.getKPMERoleService().getDepartmentsForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), asOfDate.toDateTimeAtStartOfDay(), true));
+            List<String> roleIds = new ArrayList<String>();
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName()));
+            roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName()));
+            List<String> depts = HrServiceLocator.getKPMERoleService().getDepartmentsForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
             for (String dept : depts) {
-                Department department = HrServiceLocator.getDepartmentService().getDepartment(dept, asOfDate);
+                Department department = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(dept, asOfDate);
                 if (department!= null && a.getDept().equalsIgnoreCase(department.getDept())) {
                     addEarnCode = true;
                     break;
