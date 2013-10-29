@@ -20,12 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import org.joda.time.*;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
@@ -422,8 +417,27 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                 	DateTime start_dt_timezone = new DateTime(startTime);
                 	DateTime end_dt_timezone = new DateTime(endTime);
                 	Interval converted_intv = new Interval(start_dt_timezone.getMillis(), end_dt_timezone.getMillis()); // interval with start/end datetime in server timezone
-                	if (isRegularEarnCode && timeBlockInterval.overlaps(converted_intv) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
-                        errors.add("The time block you are trying to add overlaps with an existing time block.");
+                    List<Interval> intervals = new ArrayList<Interval>();
+                    if (acrossDays) {
+                        List<LocalDate> localDates = new ArrayList<LocalDate>();
+                        LocalDate startDay = new LocalDate(start_dt_timezone);
+                        int days = Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
+                        for (int i=0; i < days; i++) {
+                            LocalDate d = startDay.withFieldAdded(DurationFieldType.days(), i);
+                            localDates.add(d);
+                        }
+                        for (LocalDate localDate : localDates) {
+                            intervals.add(new Interval(localDate.toDateTime(start_dt_timezone.toLocalTime()), localDate.toDateTime(end_dt_timezone.toLocalTime())));
+                        }
+
+                    } else {
+                        intervals.add(converted_intv);
+                    }
+
+                    for (Interval interval : intervals) {
+                        if (isRegularEarnCode && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
+                            errors.add("The time block you are trying to add overlaps with an existing time block.");
+                        }
                     }
                 }
             }
