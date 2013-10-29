@@ -222,9 +222,12 @@ public class ClockAction extends TimesheetAction {
     	TimesheetDocument timesheetDocument = caf.getTimesheetDocument();
     	if (timesheetDocument != null) {
     		int eligibleAssignmentCount = 0;
-    		for (Assignment assignment : timesheetDocument.getAssignments()) {
-    			Long workArea = assignment.getWorkArea();
-    			WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, timesheetDocument.getDocEndDate());
+            Set<Long> waValues = new HashSet<Long>();
+            for (Assignment a : timesheetDocument.getAssignments()) {
+                waValues.add(a.getWorkArea());
+            }
+            List<WorkArea> workAreas = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(new ArrayList<Long>(waValues), timesheetDocument.getDocEndDate());
+    		for (WorkArea aWorkArea : workAreas) {
     			if(aWorkArea != null && aWorkArea.isHrsDistributionF()) {
     				eligibleAssignmentCount++;
     			}

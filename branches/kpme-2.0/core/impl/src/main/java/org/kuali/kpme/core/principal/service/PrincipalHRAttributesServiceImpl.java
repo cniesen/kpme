@@ -117,12 +117,13 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
     	List<PrincipalHRAttributes> results = new ArrayList<PrincipalHRAttributes>();
     	
     	List<PrincipalHRAttributes> principalHRAttributeObjs = principalHRAttributesDao.getPrincipalHrAtributes(principalId, leavePlan, fromEffdt, toEffdt, active, showHistory);
-    
+
+        //TODO - performance
     	for (PrincipalHRAttributes principalHRAttributeObj : principalHRAttributeObjs) {
         	Job jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalHRAttributeObj.getPrincipalId(), principalHRAttributeObj.getEffectiveLocalDate());
     		
     		String department = jobObj != null ? jobObj.getDept() : null;
-        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartment(department, jobObj.getEffectiveLocalDate()) : null;
+        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, jobObj.getEffectiveLocalDate()) : null;
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();

@@ -161,7 +161,7 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
     
     	for (ClockLocationRule clockLocationRuleObj : clockLocationRuleObjs) {
         	String department = clockLocationRuleObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, clockLocationRuleObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, clockLocationRuleObj.getEffectiveLocalDate());
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();

@@ -35,6 +35,9 @@ public interface LeavePlanService {
 
     @Cacheable(value= LeavePlan.CACHE_NAME, key="'leavePlan=' + #p0 + '|' + 'asOfDate=' + #p1")
     public LeavePlan getLeavePlan(String leavePlan, LocalDate asOfDate);
+
+    @Cacheable(value= LeavePlan.CACHE_NAME, key="'leavePlans=' + T(org.kuali.rice.core.api.cache.CacheKeyUtils).key(#p0) + '|' + 'asOfDate=' + #p1")
+    public List<LeavePlan> getLeavePlans(List<String> leavePlan, LocalDate asOfDate);
     
     public boolean isValidLeavePlan(String leavePlan);
     

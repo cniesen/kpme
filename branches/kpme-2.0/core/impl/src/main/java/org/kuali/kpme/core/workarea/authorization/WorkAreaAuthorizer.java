@@ -41,7 +41,7 @@ public class WorkAreaAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
 			if (workAreaObj != null) {
 				department = cleanAttributeValue(workAreaObj.getDept());
 				
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, workAreaObj.getEffectiveLocalDate());
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, workAreaObj.getEffectiveLocalDate());
 			
 				if (departmentObj != null) {
 					location = cleanAttributeValue(departmentObj.getLocation());

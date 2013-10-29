@@ -99,12 +99,14 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
 				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, effectiveLocalDate);
 				String userPrincipalId = HrContext.getPrincipalId();
 				boolean canView = false;
+
+                //TODO - performance, get a job/dept map in 1 query
 				for(Job job : principalsJobs) {
 					
 					if(job.isEligibleForLeave()) {
 						
 						String department = job != null ? job.getDept() : null;
-						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartment(department, effectiveLocalDate) : null;
+						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, effectiveLocalDate) : null;
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
 			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "View Leave Payout", department, effectiveDate)
 							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "View Leave Payout", location, effectiveDate)) {

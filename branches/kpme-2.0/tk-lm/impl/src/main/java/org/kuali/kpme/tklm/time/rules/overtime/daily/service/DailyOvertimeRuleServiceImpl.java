@@ -376,7 +376,7 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 	
     	for (DailyOvertimeRule dailyOvertimeRuleObj : dailyOvertimeRuleObjs) {
         	String department = dailyOvertimeRuleObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, dailyOvertimeRuleObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, dailyOvertimeRuleObj.getEffectiveLocalDate());
         	String loc = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();

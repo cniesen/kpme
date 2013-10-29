@@ -60,7 +60,7 @@ public class WorkAreaMaintenanceTest extends KPMEWebTestCase {
 	
 	@Test
 	public void testWorkAreaFetch() throws Exception{
-		WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(1234L, LocalDate.now());
+		WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(1234L, LocalDate.now());
 		Assert.assertTrue("Work area is not null and valid", workArea != null && workArea.getWorkArea().longValue() == 1234L);
 	}
 	

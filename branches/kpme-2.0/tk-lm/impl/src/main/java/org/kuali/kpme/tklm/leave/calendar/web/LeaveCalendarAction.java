@@ -314,7 +314,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 				 // if user is location admin, then the user can access this assignment
 					// use job to find the department, then use the location from Department to get the location roles
 				    // aJob.getDeptObj() does not reliably return a Department Object.
-					Department aDept = HrServiceLocator.getDepartmentService().getDepartment(aJob.getDept(), asOfDate.toLocalDate());
+					Department aDept = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(aJob.getDept(), asOfDate.toLocalDate());
 					if(aDept != null) {
 					    if(HrServiceLocator.getKPMERoleService()
 					    		.principalHasRoleInLocation(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), aDept.getLocation(), asOfDate)

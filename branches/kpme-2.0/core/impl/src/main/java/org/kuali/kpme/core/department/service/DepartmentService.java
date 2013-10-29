@@ -30,6 +30,8 @@ public interface DepartmentService {
      */
     @Cacheable(value=Department.CACHE_NAME, key="'hrDeptId=' + #p0")
     Department getDepartment(String hrDeptId);
+
+
     
     List<Department> getDepartments(String userPrincipalId, String department, String location, String descr, String active, String showHistory);
     
@@ -48,6 +50,15 @@ public interface DepartmentService {
 	 */
     @Cacheable(value=Department.CACHE_NAME, key="'department=' + #p0 + '|' + 'asOfDate=' + #p1")
 	Department getDepartment(String department, LocalDate asOfDate);
+
+    /**
+     * Fetch department by id without sub kim role member data
+     * @param department
+     * @param asOfDate
+     * @return Department
+     */
+    @Cacheable(value=Department.CACHE_NAME, key="'{getDepartmentWithoutRoles}' + 'department=' + #p0 + '|' + 'asOfDate=' + #p1")
+    Department getDepartmentWithoutRoles(String department, LocalDate asOfDate);
 
     /**
      * Fetches a list of Department objects as of the specified date all of which

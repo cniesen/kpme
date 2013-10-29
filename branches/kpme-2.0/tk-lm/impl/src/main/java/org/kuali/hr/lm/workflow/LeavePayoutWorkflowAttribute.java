@@ -110,7 +110,7 @@ public class LeavePayoutWorkflowAttribute extends AbstractRoleAttribute {
         }
         
         if (leavePayout != null) {
-	        WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, leavePayout.getEffectiveLocalDate());
+	        WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workAreaNumber, leavePayout.getEffectiveLocalDate());
 	
 	        List<RoleMember> roleMembers = new ArrayList<RoleMember>();
 	        

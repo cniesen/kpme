@@ -362,7 +362,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		StringBuilder b = new StringBuilder();
 
 		if (this.workArea != null) {
-			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(
+			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(
 					this.workArea, LocalDate.now());
 			if (wa != null) {
 				b.append(wa.getDescription());

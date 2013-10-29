@@ -139,7 +139,7 @@ public class TKUtils {
     	
     	if (jobNumber != null && workArea != null && task != null) {
         	Job jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
-        	WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, asOfDate);
+        	WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
         	Task taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
         	
         	String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;

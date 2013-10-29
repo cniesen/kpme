@@ -71,7 +71,7 @@ public class PositionDepartmentValidation extends MaintenanceDocumentRuleBase  {
 					+ positionDepartment.getDepartment() + "'");
 			return false;
 		}
-		Department dep = HrServiceLocator.getDepartmentService().getDepartment(positionDepartment.getDepartment(), positionDepartment.getEffectiveLocalDate());
+		Department dep = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(positionDepartment.getDepartment(), positionDepartment.getEffectiveLocalDate());
 		if(dep == null ) {
 			this.putFieldError("department", "error.existence", "Department '"
 					+ positionDepartment.getDepartment() + "'");

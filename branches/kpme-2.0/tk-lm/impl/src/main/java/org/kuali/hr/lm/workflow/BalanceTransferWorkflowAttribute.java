@@ -112,7 +112,7 @@ public class BalanceTransferWorkflowAttribute extends AbstractRoleAttribute {
         }
         
         if (balanceTransfer != null) {
-	        WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, balanceTransfer.getEffectiveLocalDate());
+	        WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workAreaNumber, balanceTransfer.getEffectiveLocalDate());
 	
 	        List<RoleMember> roleMembers = new ArrayList<RoleMember>();
 	        

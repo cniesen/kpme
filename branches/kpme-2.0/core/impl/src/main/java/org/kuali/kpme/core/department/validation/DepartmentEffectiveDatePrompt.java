@@ -28,7 +28,7 @@ public class DepartmentEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     	boolean futureEffectiveDateExists = false;
     	
         Department department = (Department) pbo;
-        Department lastDepartment = HrServiceLocator.getDepartmentService().getDepartment(department.getDept(), TKUtils.END_OF_TIME);
+        Department lastDepartment = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department.getDept(), TKUtils.END_OF_TIME);
         if (lastDepartment != null && lastDepartment.getEffectiveLocalDate() != null && department.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastDepartment.getEffectiveLocalDate().isAfter(department.getEffectiveLocalDate());
         }
