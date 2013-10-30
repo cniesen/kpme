@@ -427,6 +427,7 @@ public class TimeDetailAction extends TimesheetAction {
         ActionFormUtils.addWarningTextFromEarnGroup(tdaf);
         ActionRedirect redirect = new ActionRedirect();
         redirect.setPath("/TimeDetail.do");
+        redirect.addParameter("documentId", tdaf.getDocumentId());
         return redirect;
     }
     
