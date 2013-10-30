@@ -21,6 +21,7 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
@@ -29,7 +30,7 @@ import com.google.common.collect.ImmutableList;
 public class EmployeeOverride extends HrBusinessObject implements EmployeeOverrideContract {
 
 	private static final long serialVersionUID = 1L;
-	//KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	
+    public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "EmployeeOverride";
 	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
             .add("principalId")
             .add("leavePlan")

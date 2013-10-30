@@ -54,6 +54,9 @@ public interface LeavePlanService {
     
     public List<LeavePlan> getLeavePlansNeedsCarryOverScheduled(int thresholdDays, LocalDate asOfDate);
 
+    @Cacheable(value= LeavePlan.CACHE_NAME, key="'{getFirstDayOfLeavePlan}' + 'leavePlan=' + #p0 + '|' + 'date=' + #p1")
     public DateTime getFirstDayOfLeavePlan(String leavePlan, LocalDate date);
+
+    @Cacheable(value= LeavePlan.CACHE_NAME, key="'{getRolloverDayOfLeavePlan}' + 'leavePlan=' + #p0 + '|' + 'date=' + #p1")
     public DateTime getRolloverDayOfLeavePlan(String leavePlan, LocalDate asOfDate);
 }
