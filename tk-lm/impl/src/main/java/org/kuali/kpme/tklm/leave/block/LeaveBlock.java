@@ -109,6 +109,9 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     @Transient
     private AccrualCategory accrualCategoryObj;
 
+    @Transient
+    private PrincipalHRAttributes principalHRAttributes;
+
 	private String transactionalDocId;
 	private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
 
@@ -387,18 +390,20 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	}
 
 	public String getCalendarId() {
-		PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(this.principalId, LocalDate.now());
-		Calendar pcal= null;
-		if(principalHRAttributes != null) {
-			//pcal = principalHRAttributes.getCalendar() != null ? principalHRAttributes.getCalendar() : principalHRAttributes.getLeaveCalObj() ;
-			pcal = principalHRAttributes.getLeaveCalObj() != null ? principalHRAttributes.getLeaveCalObj() : principalHRAttributes.getCalendar();
-            if(pcal!= null) {
-				CalendarEntry calEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(pcal.getHrCalendarId(), getLeaveLocalDate().toDateTimeAtStartOfDay());
-				if(calEntries != null) {
-					this.calendarId = calEntries.getHrCalendarEntryId();
-				}
-			}
-		}
+        if (StringUtils.isEmpty(calendarId)) {
+            PrincipalHRAttributes principalHRAttributes = getPrincipalHRAttributes();
+            Calendar pcal= null;
+            if(principalHRAttributes != null) {
+                //pcal = principalHRAttributes.getCalendar() != null ? principalHRAttributes.getCalendar() : principalHRAttributes.getLeaveCalObj() ;
+                pcal = principalHRAttributes.getLeaveCalObj() != null ? principalHRAttributes.getLeaveCalObj() : principalHRAttributes.getCalendar();
+                if(pcal!= null) {
+                    CalendarEntry calEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(pcal.getHrCalendarId(), getLeaveLocalDate().toDateTimeAtStartOfDay());
+                    if(calEntries != null) {
+                        this.calendarId = calEntries.getHrCalendarEntryId();
+                    }
+                }
+            }
+        }
 		return calendarId;
 	}
 
@@ -651,7 +656,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     public AccrualCategoryRule getAccrualCategoryRule() {
         if (accrualCategoryRule == null) {
             AccrualCategory category = getAccrualCategoryObj();
-            PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, getLeaveLocalDate());
+            PrincipalHRAttributes pha = getPrincipalHRAttributes();
             accrualCategoryRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(category, getLeaveLocalDate(), pha.getServiceLocalDate());
         }
         return accrualCategoryRule;
@@ -664,7 +669,18 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
         return accrualCategoryObj;
     }
 
-	public String getUserPrincipalId() {
+    public PrincipalHRAttributes getPrincipalHRAttributes() {
+        if (principalHRAttributes == null) {
+            principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, getLeaveLocalDate());
+        }
+        return principalHRAttributes;
+    }
+
+    public void setPrincipalHRAttributes(PrincipalHRAttributes principalHRAttributes) {
+        this.principalHRAttributes = principalHRAttributes;
+    }
+
+    public String getUserPrincipalId() {
 	    return userPrincipalId;
 	}
 
