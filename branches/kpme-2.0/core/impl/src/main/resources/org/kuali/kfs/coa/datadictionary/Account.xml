@@ -179,7 +179,7 @@
         <bean parent="FieldDefinition" p:attributeName="accountNumber"/>
         <bean parent="FieldDefinition" p:attributeName="accountName"/>
         <bean parent="FieldDefinition" p:attributeName="organizationCode"/>
-        <bean parent="FieldDefinition" p:attributeName="closed"/>
+        <bean parent="FieldDefinition" p:attributeName="closed" p:defaultValue="N"/>
       </list>
     </property>
     <property name="resultFields">
