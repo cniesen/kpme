@@ -63,7 +63,12 @@ public class GracePeriodServiceImpl implements GracePeriodService {
 		        	gracePeriodDateTime = gracePeriodDateTime.withMinuteOfHour(bottomInterval.setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
 		        } else {
 		        	if (topInterval.equals(new BigDecimal(60))) {
+                        BigDecimal hour = new BigDecimal(gracePeriodDateTime.getHourOfDay());
+                        if (hour.equals(new BigDecimal(23))) {
+                            gracePeriodDateTime = gracePeriodDateTime.plusDays(1).withHourOfDay(0).withMinuteOfHour(0);
+                        } else {
 		        		gracePeriodDateTime = gracePeriodDateTime.withHourOfDay(gracePeriodDateTime.getHourOfDay() + 1).withMinuteOfHour(0);
+                        }
 		        	} else {
 		        		gracePeriodDateTime = gracePeriodDateTime.withMinuteOfHour(topInterval.setScale(0, BigDecimal.ROUND_HALF_UP).intValue());
 		        	}
