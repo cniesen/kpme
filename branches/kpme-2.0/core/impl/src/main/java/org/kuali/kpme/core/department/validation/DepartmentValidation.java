@@ -164,7 +164,7 @@ public class DepartmentValidation extends MaintenanceDocumentRuleBase {
 		}
 
         if (payrollProcessorRequired && !payrollProcessorFlag) {
-            this.putGlobalError("role.payrollProcessorRequired");
+            this.putFieldError("add.roleMembers.roleName","role.payrollProcessorRequired");
         }
 
 		return valid & activeFlag;
