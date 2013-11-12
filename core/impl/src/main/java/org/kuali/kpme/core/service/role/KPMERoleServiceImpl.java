@@ -460,7 +460,7 @@ public class KPMERoleServiceImpl implements KPMERoleService {
         List<String> groupIds = getGroupService().getGroupIdsByPrincipalId(principalId);
 
         List<Predicate> predicates = new ArrayList<Predicate>();
-        predicates.add(in(KimConstants.PrimaryKeyConstants.SUB_ROLE_ID, roleIds));
+        predicates.add(in(KimConstants.PrimaryKeyConstants.SUB_ROLE_ID, roleIds.toArray(new String[roleIds.size()])));
 
         List<Predicate> principalPredicates = new ArrayList<Predicate>();
         principalPredicates.add(equal(KIMPropertyConstants.RoleMember.MEMBER_TYPE_CODE, MemberType.PRINCIPAL.getCode()));
