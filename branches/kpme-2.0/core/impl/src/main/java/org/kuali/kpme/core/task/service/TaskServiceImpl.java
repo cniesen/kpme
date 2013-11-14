@@ -22,6 +22,7 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.task.dao.TaskDao;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class TaskServiceImpl implements TaskService {
 
@@ -77,4 +78,9 @@ public class TaskServiceImpl implements TaskService {
     public int getTaskCount(Long task) {
     	return taskDao.getTaskCount(task);
     }
+    
+    @Override
+    public Long getNextTaskKey(){
+		 return taskDao.getNextTaskKey();
+	}
 }
