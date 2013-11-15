@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.bouncycastle.asn1.cmp.CAKeyUpdAnnContent;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.authorization.DepartmentalRule;
@@ -436,11 +435,6 @@ public class ValidationUtils {
 	 * Checks for row presence of a pay calendar
 	 */
 	public static boolean validateCalendar(String calendarName) {
-//		Map<String, String> fieldValues = new HashMap<String, String>();
-//		fieldValues.put("calendarName", calendarName);
-//		int matches = KRADServiceLocator.getBusinessObjectService().countMatching(Calendar.class, fieldValues);
-//
-//        return matches > 0;
 		Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(calendarName);
 		System.out.println("Calendar: "  + calendarName);
 		if(calendar!=null){
