@@ -15,12 +15,18 @@
  */
 package org.kuali.kpme.tklm.time.timehourdetail;
 
-import java.util.List;
+import java.util.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailRendererContract;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -34,12 +40,34 @@ public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
     public TimeHourDetailRenderer(TimeHourDetail d) {
         this.timeHourDetail = d;
 
-        TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().getTimeBlock(timeHourDetail.getTkTimeBlockId());
-        if (timeBlock != null) {
-	        List<String> ovtEarnCodes = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(timeBlock.getBeginDateTime().toLocalDate());
-	        if(ovtEarnCodes != null && !ovtEarnCodes.isEmpty()){
-	        	setOvertimeEarnCode(ovtEarnCodes.contains(d.getEarnCode()));
-	        }
+        TimeBlock tb = TkServiceLocator.getTimeBlockService().getTimeBlock(timeHourDetail.getTkTimeBlockId());
+        if(tb != null) {
+            List<EarnCode> overtimeEarnCodeObjs = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodes(LocalDate.now());
+            List<String> overtimeEarnCodeStrings = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(tb.getBeginDateTime().toLocalDate());
+            List<String> eligibleOvertimeEarnCodeListStrings = new ArrayList<String>();
+
+            Job job = HrServiceLocator.getJobService().getJob(HrContext.getTargetPrincipalId(), tb.getJobNumber(), tb.getEndDateTime().toLocalDate());
+            if(job != null) {
+                for (EarnCode earnCode : overtimeEarnCodeObjs) {
+                    String employee = HrContext.isActiveEmployee() ? "Y" : null;
+                    String approver = HrContext.isApprover() ? "Y" : null;
+                    String payrollProcessor = HrContext.isPayrollProcessor() ? "Y" : null;
+
+                    List<EarnCodeSecurity> securityList = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurityList(job.getDept(), job.getHrSalGroup(), earnCode.getEarnCode(), employee, approver, payrollProcessor, job.getLocation(),
+                            "Y", tb.getEndDateTime().toLocalDate());
+                    if(CollectionUtils.isNotEmpty(securityList)) {
+                        eligibleOvertimeEarnCodeListStrings.add(earnCode.getEarnCode());
+                    }
+                }
+            }
+
+            /*
+            KPME-3029 checks to see if user can make a change to the overtime earncode before flagging it as overtime,
+            by either having > 1 earncode opt or having an opt that is different than the timeHourDetail earncode
+            */
+            if((CollectionUtils.isNotEmpty(eligibleOvertimeEarnCodeListStrings) && CollectionUtils.isNotEmpty(overtimeEarnCodeStrings)) && overtimeEarnCodeStrings.contains(d.getEarnCode()) && (eligibleOvertimeEarnCodeListStrings.size() > 1 || !eligibleOvertimeEarnCodeListStrings.contains(d.getEarnCode()))){
+                setOvertimeEarnCode(true);
+            }
         }
     }
 
