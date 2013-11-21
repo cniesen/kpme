@@ -98,7 +98,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		List<List<FlsaWeek>> flsaWeeks = new ArrayList<List<FlsaWeek>>();
 		
         DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
-		List<FlsaWeek> currentWeeks = aggregate.getFlsaWeeks(zone);
+		List<FlsaWeek> currentWeeks = aggregate.getFlsaWeeks(zone, 0, false);
 		
 		for (ListIterator<FlsaWeek> weekIterator = currentWeeks.listIterator(); weekIterator.hasNext(); ) {
 			List<FlsaWeek> flsaWeek = new ArrayList<FlsaWeek>();
@@ -120,7 +120,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
                     if (CollectionUtils.isNotEmpty(timeBlocks)) {
 						CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
 						TkTimeBlockAggregate previousAggregate = new TkTimeBlockAggregate(timeBlocks, leaveBlocks, calendarEntry, calendarEntry.getCalendarObj(), true);
-						List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone);
+						List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone, 0, false);
 						if (CollectionUtils.isNotEmpty(previousWeek)) {
 							flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
 						}
@@ -143,7 +143,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 					if (CollectionUtils.isNotEmpty(timeBlocks)) {
 						CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(principalId, timesheetDocumentHeader.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
 						TkTimeBlockAggregate nextAggregate = new TkTimeBlockAggregate(timeBlocks, leaveBlocks, calendarEntry, calendarEntry.getCalendarObj(), true);
-						List<FlsaWeek> nextWeek = nextAggregate.getFlsaWeeks(zone);
+						List<FlsaWeek> nextWeek = nextAggregate.getFlsaWeeks(zone, 0 , false);
 						if (CollectionUtils.isNotEmpty(nextWeek)) {
 							flsaWeek.add(nextWeek.get(0));
 						}
