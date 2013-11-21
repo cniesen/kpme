@@ -390,8 +390,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 
         TkTimeBlockAggregate tkTimeBlockAggregate = buildAndMergeAggregates(lstTimeBlocks, leaveBlocks, payCalendarEntry, payCalendar, dayIntervals);
 
-		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate
-				.getFlsaWeeks(dateTimeZone);
+		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone,0, false);
 		for (FlsaWeek week : flsaWeeks) {
 			for (FlsaDay day : week.getFlsaDays()) {
 				BigDecimal total = new BigDecimal(0.00);
