@@ -65,7 +65,7 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 				fieldValues.put("name", "");
 			}
 		}
-		if(StringUtils.equals(getMaintenanceAction(),"New")){
+		if(StringUtils.equals(getMaintenanceAction(),"New") || StringUtils.equals(getMaintenanceAction(),"Copy")){
 			if (!fieldValues.containsKey("jobNumber") || StringUtils.isEmpty(fieldValues.get("jobNumber"))) {
 				if (fieldValues.containsKey("principalId") && StringUtils.isNotEmpty(fieldValues.get("principalId"))) {
 					Job maxJob = HrServiceLocator.getJobService().getMaxJob(fieldValues.get("principalId"));
@@ -81,6 +81,15 @@ public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 		return super.populateBusinessObject(fieldValues, maintenanceDocument,
 				methodToCall); 
 	}
+	
+	@Override
+	public void processAfterCopy(MaintenanceDocument document,
+			Map<String, String[]> parameters) {
+		super.processAfterCopy(document, parameters);
+		Job job = (Job) document.getNewMaintainableObject().getBusinessObject();
+		job.setPrincipalId(null);
+		job.setJobNumber(null);
+	}	
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
