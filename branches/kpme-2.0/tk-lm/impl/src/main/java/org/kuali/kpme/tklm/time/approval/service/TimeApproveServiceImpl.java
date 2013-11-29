@@ -234,15 +234,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			approvalSummaryRow.setPayCalendarGroup(calGroup);
 			approvalSummaryRow.setDocumentId(documentId);
 
-            //get role name for action request if available
-            if (StringUtils.isNotBlank(documentId)) {
-                List<ActionRequest> actionRequests = KewApiServiceLocator.getWorkflowDocumentService().getPendingActionRequests(documentId);
-                Map<String, String> roleNames = new HashMap<String, String>();
-                for (ActionRequest ar : actionRequests) {
-                    roleNames.put(ar.getPrincipalId(), ar.getQualifiedRoleNameLabel());
-                }
-                approvalSummaryRow.setRoleNames(roleNames);
-            }
+            
 			approvalSummaryRow.setHoursToPayLabelMap(hoursToPayLabelMap);
 			approvalSummaryRow.setHoursToFlsaPayLabelMap(hoursToFlsaPayLabelMap);
 			approvalSummaryRow.setPeriodTotal(hoursToPayLabelMap
