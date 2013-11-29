@@ -20,6 +20,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 
 public class AssignmentDescriptionKey {
 
@@ -85,11 +86,12 @@ public class AssignmentDescriptionKey {
 	}
 
     public String toAssignmentKeyString() {
-        return jobNumber + HrConstants.ASSIGNMENT_KEY_DELIMITER + workArea + HrConstants.ASSIGNMENT_KEY_DELIMITER + task;
+        return TKUtils.formatAssignmentKey(jobNumber, workArea, task);
     }
 
     public static String getAssignmentKeyString(Assignment a) {
-        return a.getJobNumber() + HrConstants.ASSIGNMENT_KEY_DELIMITER + a.getWorkArea() + HrConstants.ASSIGNMENT_KEY_DELIMITER + a.getTask();
+//        return a.getJobNumber() + HrConstants.ASSIGNMENT_KEY_DELIMITER + a.getWorkArea() + HrConstants.ASSIGNMENT_KEY_DELIMITER + a.getTask();
+    	return TKUtils.formatAssignmentKey(a.getJobNumber(), a.getWorkArea(), a.getTask());
     }
     
     @Override

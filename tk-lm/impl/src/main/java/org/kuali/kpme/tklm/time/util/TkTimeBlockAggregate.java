@@ -476,6 +476,9 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 						timeBlock.setBeginTimestamp(new Timestamp(lb.getLeaveDate().getTime()));
 						timeBlock.setEndTimestamp(new Timestamp(new DateTime(lb.getLeaveDate()).plusMinutes(timeBlock.getHours().intValue()).getMillis()));
 						timeBlock.setAssignmentKey(lb.getAssignmentKey());
+						timeBlock.setJobNumber(lb.getJobNumber());
+						timeBlock.setWorkArea(lb.getWorkArea());
+						timeBlock.setTask(lb.getTask());
 						timeBlock.setEarnCode(lb.getEarnCode());
 						
 						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
