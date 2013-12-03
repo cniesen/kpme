@@ -17,6 +17,7 @@ package org.kuali.kpme.tklm.time.batch;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -28,7 +29,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class InitiateJob implements Job {
+public class InitiateJob extends BatchJob {
 	
 	private static final Logger LOG = Logger.getLogger(InitiateJob.class);
 	

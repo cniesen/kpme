@@ -31,6 +31,7 @@ import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.service.AccrualCategoryService;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.assignment.service.AssignmentService;
+import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.entry.service.CalendarEntryService;
 import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.leaveplan.service.LeavePlanService;
@@ -54,7 +55,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class CarryOverJob implements Job{
+public class CarryOverJob extends BatchJob {
 
 	private static final Logger LOG = Logger.getLogger(CarryOverJob.class);
 
@@ -140,7 +141,7 @@ public class CarryOverJob implements Job{
                 }
             }
         } else {
-            String principalName = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.BATCH_USER_PRINCIPAL_NAME);
+            String principalName = getBatchUserPrincipalName();
             LOG.error("Could not run batch jobs due to missing batch user " + principalName);
         }
 	
@@ -272,10 +273,6 @@ public class CarryOverJob implements Job{
 		return leaveBlocks;
 	}
 
-    private String getBatchUserPrincipalId() {
-        String principalName = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.BATCH_USER_PRINCIPAL_NAME);
-        Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(principalName);
-        return principal == null ? null : principal.getPrincipalId();
-    }
+
 
 }
