@@ -18,6 +18,7 @@ package org.kuali.kpme.tklm.time.batch;
 import java.text.DateFormat;
 
 import org.joda.time.DateTime;
+import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.quartz.Job;
@@ -25,7 +26,7 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class EndReportingPeriodJob implements Job {
+public class EndReportingPeriodJob extends BatchJob {
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();

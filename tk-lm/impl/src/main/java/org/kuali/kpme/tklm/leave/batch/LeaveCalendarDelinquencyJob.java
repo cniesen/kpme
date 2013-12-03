@@ -23,6 +23,7 @@ import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.calendar.entry.service.CalendarEntryService;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
@@ -34,7 +35,7 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-public class LeaveCalendarDelinquencyJob implements Job {
+public class LeaveCalendarDelinquencyJob extends BatchJob {
 	
 	private static int CALENDAR_ENTRIES_POLLING_WINDOW;
 
