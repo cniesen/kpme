@@ -79,8 +79,4 @@ public class TaskServiceImpl implements TaskService {
     	return taskDao.getTaskCount(task);
     }
     
-    @Override
-    public Long getNextTaskKey(){
-		 return taskDao.getNextTaskKey();
-	}
 }
