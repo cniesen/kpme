@@ -561,7 +561,6 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 	public List<TimeBlock> getTimeBlocksForLookup(String documentId,
 			String principalId, String userPrincipalId, LocalDate fromDate,
 			LocalDate toDate) {
-		// TODO Auto-generated method stub
 		return timeBlockDao.getTimeBlocksForLookup(documentId,principalId,userPrincipalId,fromDate,toDate);
 	}
 }
