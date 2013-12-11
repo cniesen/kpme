@@ -724,7 +724,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 
 	@Override
 	public String getConcreteBlockType() {
-		return this.getClass().getName();
+		return super.concreteBlockType == null ? this.getClass().getName() : super.concreteBlockType;
 	}
 
 	@Override
