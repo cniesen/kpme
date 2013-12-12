@@ -116,9 +116,14 @@ public class KPMERoleServiceImpl implements KPMERoleService {
                     }
                 } else if (MemberType.ROLE.equals(roleMember.getType())) {
                 	Role derivedRole = getRoleService().getRoleByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.DERIVED_ROLE_POSITION.getRoleName());
+                	// check if the member represents the (nested) derived role 'position'
                 	if(derivedRole != null && roleMember.getMemberId().equals(derivedRole.getId())) {
-                		principalHasRole = true;
-                		break;
+                		// return true if the principal id is a member of the (nested) derived role 'position'
+                		RoleTypeService roleTypeService = getRoleTypeService(derivedRole);
+                		if(roleTypeService.hasDerivedRole(principalId, new ArrayList<String>(), derivedRole.getNamespaceCode(), derivedRole.getName(), qualification)) {
+	                		principalHasRole = true;
+	                		break;
+                		}
                 	}
                 }
             }
