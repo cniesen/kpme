@@ -125,27 +125,24 @@ public class TKUtilsTest extends Assert {
 	
 	@Test
 	public void testConvertTimeForDifferentTimeZone() {
-		DateTimeZone fromTimeZone = DateTimeZone.forID("America/Chicago");
-		DateTimeZone toTimeZone = DateTimeZone.forID("America/Indiana/Indianapolis");
-		DateTime originalDateTime = new DateTime(2011, 8, 28, 0, 0, 0, 0, fromTimeZone);		// time to show in Chicago time
+		// it's hard to test this functionality since it depends on the sytem time the user is running the test from
+		// picked Alaska time since we have no user working from Alaska time yet
+		DateTimeZone fromTimeZone = TKUtils.getSystemDateTimeZone();
+		DateTimeZone toTimeZone = DateTimeZone.forID("America/Anchorage");
+		DateTime originalDateTime = new DateTime(2011, 8, 28, 0, 0, 0, 0, fromTimeZone);
 		
-		// convert to the Indianapolis time, should be one hour before Chicago time
 		DateTime newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, fromTimeZone, toTimeZone);	
 		assertNotNull(newDateTime);
-		String newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
-		assertTrue("newDateTimeString should be 08/27/2011 23:00:00, not " + newDateTimeString, newDateTimeString.equals("08/27/2011 23:00:00"));
+		assertTrue("newDateTime should be different than originalDateTime", !newDateTime.equals(originalDateTime));
 		
 		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, null, toTimeZone);
-		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
-		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
+		assertTrue("newDateTime should be the same as originalDateTime", newDateTime.equals(originalDateTime));
 		
 		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, null, null);
-		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
-		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
+		assertTrue("newDateTime should be the same as originalDateTime", newDateTime.equals(originalDateTime));
 		
 		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, fromTimeZone, null);
-		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
-		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
+		assertTrue("newDateTime should be the same as originalDateTime", newDateTime.equals(originalDateTime));
 	}
 
 }
