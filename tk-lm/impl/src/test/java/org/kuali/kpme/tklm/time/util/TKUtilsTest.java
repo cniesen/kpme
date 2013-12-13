@@ -20,12 +20,16 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.service.timezone.TimezoneServiceImpl;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 
 @IntegrationTest
 public class TKUtilsTest extends Assert {
@@ -117,6 +121,31 @@ public class TKUtilsTest extends Assert {
 		toDateString = TKUtils.getToDateString(dateString);
 		assertTrue("toDateString should be 2/01/2012, not " + toDateString, toDateString.equals("2/01/2012"));
 		assertNotNull(TKUtils.formatDateString(toDateString));
+	}
+	
+	@Test
+	public void testConvertTimeForDifferentTimeZone() {
+		DateTimeZone fromTimeZone = DateTimeZone.forID("America/Chicago");
+		DateTimeZone toTimeZone = DateTimeZone.forID("America/Indiana/Indianapolis");
+		DateTime originalDateTime = new DateTime(2011, 8, 28, 0, 0, 0, 0, fromTimeZone);		// time to show in Chicago time
+		
+		// convert to the Indianapolis time, should be one hour before Chicago time
+		DateTime newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, fromTimeZone, toTimeZone);	
+		assertNotNull(newDateTime);
+		String newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
+		assertTrue("newDateTimeString should be 08/27/2011 23:00:00, not " + newDateTimeString, newDateTimeString.equals("08/27/2011 23:00:00"));
+		
+		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, null, toTimeZone);
+		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
+		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
+		
+		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, null, null);
+		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
+		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
+		
+		newDateTime = TKUtils.convertTimeForDifferentTimeZone(originalDateTime, fromTimeZone, null);
+		newDateTimeString = TKUtils.formatDateTimeLong(newDateTime);
+		assertTrue("newDateTimeString should be the same as oritinal dateTime, not " + newDateTimeString, newDateTimeString.equals(TKUtils.formatDateTimeLong(originalDateTime)));
 	}
 
 }
