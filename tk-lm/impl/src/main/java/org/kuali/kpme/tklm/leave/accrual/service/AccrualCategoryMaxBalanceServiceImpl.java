@@ -175,6 +175,9 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 					continue;
 				AccrualCategory accrualCategory = lb.getAccrualCategoryObj();
 				BigDecimal tally = accruedBalance.get(accrualCategory.getLmAccrualCategoryId());
+				if(tally==null){
+					tally = new BigDecimal(0);
+				}
 				tally = tally.add(lb.getLeaveAmount());
 				
 				AccrualCategoryRule asOfLeaveDateRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCategory, lb.getLeaveLocalDate(), pha.getServiceLocalDate());
