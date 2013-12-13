@@ -558,7 +558,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
     	CalendarEntry calendarEntry = leaveCalendarForm.getCalendarEntry();
     	PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     	
-        Map<String, Set<String>> allMessages = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks);
+        Map<String, Set<String>> allMessages = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks, calendarEntry.getBeginPeriodDate(), calendarEntry.getEndPeriodDate());
 
         // add warning message for accrual categories that have exceeded max balance.
         // Could set a flag on the transferable rows here so that LeaveCalendarSubmit.do knows
@@ -655,22 +655,6 @@ public class LeaveCalendarAction extends CalendarFormAction {
 					String message = "Your pending leave balance is greater than the annual max carry over for accrual category '" + accrualCategory.getAccrualCategory() + "' and upon approval, the excess balance will be lost.";
 					if (!allMessages.get("warningMessages").contains(message)) {
                         allMessages.get("warningMessages").add(message);
-					}
-				}
-			}
-			
-			// KPME-1279 check for Absent Earn code to add warning.
-			List<EarnCode> earnCodes = HrServiceLocator.getEarnCodeService().getEarnCodesForPrincipal(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate(), true);
-			if (earnCodes != null && !earnCodes.isEmpty()) {
-				for (EarnCode earnCodeObj : earnCodes) {
-					if (earnCodeObj != null) {
-						if("Y".equalsIgnoreCase(earnCodeObj.getAffectPay()) && "N".equalsIgnoreCase(earnCodeObj.getEligibleForAccrual())) {
-							String message = "Absent time cannot be used until other accrual balances are zero or below a specified accrual balance.";
-							if (!allMessages.get("warningMessages").contains(message)) {
-	                            allMessages.get("warningMessages").add(message);
-	                            break;
-							}
-						}
 					}
 				}
 			}
