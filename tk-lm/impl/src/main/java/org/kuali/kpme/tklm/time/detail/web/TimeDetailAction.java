@@ -220,7 +220,7 @@ public class TimeDetailAction extends TimesheetAction {
         List<LeaveBlock> balanceTransferLeaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksWithType(timesheetDocument.getPrincipalId(),
        		 calendarEntry.getBeginPeriodFullDateTime().toLocalDate(), calendarEntry.getEndPeriodFullDateTime().toLocalDate(), LMConstants.LEAVE_BLOCK_TYPE.BALANCE_TRANSFER);
        
-        Map<String, Set<String>> allMessages = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(balanceTransferLeaveBlocks);
+        Map<String, Set<String>> allMessages = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(balanceTransferLeaveBlocks, calendarEntry.getBeginPeriodDate(), calendarEntry.getEndPeriodDate());
        
         // add warning messages based on max carry over balances for each accrual category for non-exempt leave users
         List<BalanceTransfer> losses = new ArrayList<BalanceTransfer>();
