@@ -720,6 +720,11 @@ public class TimeDetailAction extends TimesheetAction {
         if (updatedLeaveBlock.isEditable()) {
             if (!updatedLeaveBlock.getLeaveAmount().equals(tdaf.getLeaveAmount())) {
                 updatedLeaveBlock.setLeaveAmount(tdaf.getLeaveAmount());
+                Assignment assignment = tdaf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(tdaf.getSelectedAssignment()));
+                updatedLeaveBlock.setAssignmentKey(tdaf.getSelectedAssignment());
+                updatedLeaveBlock.setJobNumber(assignment.getJobNumber());
+                updatedLeaveBlock.setWorkArea(assignment.getWorkArea());
+                updatedLeaveBlock.setTask(assignment.getTask());
             }
             
             DateTime beginDate = null;
