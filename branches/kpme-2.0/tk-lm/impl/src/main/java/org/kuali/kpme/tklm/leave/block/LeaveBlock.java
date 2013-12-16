@@ -111,6 +111,9 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
     @Transient
     private PrincipalHRAttributes principalHRAttributes;
+  
+    @Transient
+    private String affectPay;
 
 	private String transactionalDocId;
 	private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
@@ -686,6 +689,14 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
 	public void setUserPrincipalId(String userPrincipalId) {
 	   	this.userPrincipalId = userPrincipalId;
+	}
+
+	public String getAffectPay() {
+		return affectPay;
+	}
+
+	public void setAffectPay(String affectPay) {
+		this.affectPay = affectPay;
 	}
 	
 }

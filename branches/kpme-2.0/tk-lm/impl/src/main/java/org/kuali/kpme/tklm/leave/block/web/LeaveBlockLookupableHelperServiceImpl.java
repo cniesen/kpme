@@ -30,6 +30,7 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
 import org.kuali.kpme.core.role.KPMERole;
@@ -74,6 +75,7 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 		String principalId = searchCriteria.get("principalId");
 		String userPrincipalId = searchCriteria.get("userPrincipalId");
 		String leaveBlockType = searchCriteria.get("leaveBlockType");
+		String affectPay = searchCriteria.get("affectPay");
 		String fromDateString = TKUtils.getFromDateString(searchCriteria.get(BEGIN_TIMESTAMP));
 		String toDateString = TKUtils.getToDateString(searchCriteria.get(BEGIN_TIMESTAMP));
 		
@@ -198,6 +200,15 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 				if (!valid) {
 					itr.remove();
 					continue;
+				} else {
+					// check for affects pay
+					if(affectPay != null && !affectPay.isEmpty()) {
+						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+						if(!(earnCodeObj != null && affectPay.equalsIgnoreCase(earnCodeObj.getAffectPay()))) {
+							itr.remove();
+							continue;
+						} 
+					}
 				}
         	}
 						
