@@ -20,13 +20,13 @@
     <parent>
         <groupId>org.kuali.pom</groupId>
         <artifactId>kuali-common</artifactId>
-        <version>3.3.17</version>
+        <version>3.3.36</version>
     </parent>
     <groupId>org.kuali.kpme</groupId>
     <artifactId>kpme</artifactId>
     <packaging>pom</packaging>
     <name>Kuali People Management for the Enterprise</name>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.0.1-RC1-SNAPSHOT</version>
     <description>Kuali People Management for the Enterprise (KPME) is an open-source, comprehensive HR/Payroll System built by higher education for higher education.</description>
     <url>http://${kuali.site.hostname}/kpme/${project.version}</url>
     <modules>
