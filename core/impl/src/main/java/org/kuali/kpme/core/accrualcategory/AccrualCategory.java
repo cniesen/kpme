@@ -28,16 +28,13 @@ import org.kuali.kpme.core.util.HrConstants;
 
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class AccrualCategory extends HrBusinessObject implements AccrualCategoryContract {
-    private static final String ACCRUAL_CATEGORY = "accrualCategory";
-
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategory";
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategory";
     
     //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(ACCRUAL_CATEGORY)
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("accrualCategory")
             .build();	
 	private static final long serialVersionUID = 1L;
 	private String lmAccrualCategoryId;
@@ -61,12 +58,6 @@ public class AccrualCategory extends HrBusinessObject implements AccrualCategory
 	private String earnCode;
 	private EarnCode earnCodeObj;
 	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(ACCRUAL_CATEGORY, this.getAccrualCategory())		
-				.build();
-	}
 
 	public String getHasRules() {
 		return hasRules;

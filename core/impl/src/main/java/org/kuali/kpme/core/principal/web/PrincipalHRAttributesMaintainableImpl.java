@@ -66,7 +66,7 @@ public class PrincipalHRAttributesMaintainableImpl extends HrBusinessObjectMaint
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalHRAttributes(id);
+		return HrServiceLocator.getPrincipalHRAttributeService().getPrincipalHRAttributes(id);
 	}
 	
 	

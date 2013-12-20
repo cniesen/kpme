@@ -20,20 +20,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.paytype.PayTypeContract;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.assignment.account.AssignmentAccount;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.kfs.coa.businessobject.Account;
+import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
 
 /**
  * Override the Maintenance page behavior for Assignment object
@@ -95,9 +94,9 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 				&& assignment.getPrincipalId() != null 
 				&& assignment.getJobNumber() != null 
 				&& assignment.getEffectiveDate() != null) {
-			  JobContract job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
+			  Job job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
 			  if(job != null) {
-					PayTypeContract payType = HrServiceLocator.getPayTypeService().getPayType(job.getHrPayType(), assignment.getEffectiveLocalDate());
+					PayType payType = HrServiceLocator.getPayTypeService().getPayType(job.getHrPayType(), assignment.getEffectiveLocalDate());
 					fieldValues.put("assignmentAccounts.earnCode", (payType != null) ? payType.getRegEarnCode() : "");
 				}
 			}
@@ -127,7 +126,7 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject)HrServiceLocator.getAssignmentService().getAssignment(id);
+		return HrServiceLocator.getAssignmentService().getAssignment(id);
 	}
 
 	@Override
@@ -138,18 +137,7 @@ public class AssignmentMaintainableServiceImpl extends HrBusinessObjectMaintaina
 				assignAcct.setTkAssignAcctId(null);
 			}
 			assignAcct.setTkAssignmentId(assignment.getTkAssignmentId());
-
 		}
 	}
-
-    //KPME-2624 added logic to save current logged in user to UserPrincipal id for collections
-    @Override
-    public void prepareForSave() {
-    Assignment assignment = (Assignment)this.getBusinessObject();
-        for (AssignmentAccount assignAcct : assignment.getAssignmentAccounts()) {
-            assignAcct.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-        }
-    super.prepareForSave();
-    }
 
 }

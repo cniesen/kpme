@@ -25,9 +25,10 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.document.calendar.CalendarDocumentContract;
 import org.kuali.kpme.core.api.document.calendar.CalendarDocumentHeaderContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -79,15 +80,15 @@ public class TkSearchableAttributeServiceImpl implements
 			if(!workAreas.contains(assign.getWorkArea())){
 				workAreas.add(assign.getWorkArea());
 			}
-			JobContract job = HrServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), assign.getEffectiveLocalDate());
+			Job job = HrServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), assign.getEffectiveLocalDate());
 
 			if(!salGroups.contains(job.getHrSalGroup())){
 				salGroups.add(job.getHrSalGroup());
 			}
 		}
 
-        List<? extends WorkAreaContract> workAreaList = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(workAreas, asOfDate);
-		for(WorkAreaContract workAreaObj : workAreaList){
+        List<WorkArea> workAreaList = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(workAreas, asOfDate);
+		for(WorkArea workAreaObj : workAreaList){
 			String department = workAreaObj != null ? workAreaObj.getDept() : null;
 			
 			if (department != null) {

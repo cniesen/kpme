@@ -185,7 +185,7 @@
   </bean>
   
    <!-- KRAD Lookup View Definition -->
-  <bean id="ObjectCode-LookupView" parent="KPME-ChangedPageSizeLookupView">
+  <bean id="ObjectCode-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="ObjectCode KRAD Lookup View" />
     <property name="dataObjectClassName" value="org.kuali.kpme.core.kfs.coa.businessobject.ObjectCode" />
     <property name="criteriaFields">

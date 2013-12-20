@@ -33,8 +33,6 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
-import com.google.common.collect.ImmutableMap;
-
 public class LeavePayout extends HrBusinessObject implements Assignable, LeavePayoutContract {
 
 	private static final long serialVersionUID = 1L;
@@ -58,13 +56,6 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
     private String payoutLeaveBlockId;
 
 	private String status;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 
 	public String getEarnCode() {
 		return earnCode;
@@ -74,7 +65,7 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 	}
 	public EarnCode getEarnCodeObj() {
 		if (earnCodeObj == null) {
-            earnCodeObj = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, getEffectiveLocalDate());
+            earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, getEffectiveLocalDate());
         }
         return earnCodeObj;
 	}
@@ -102,7 +93,7 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 	
 	public String getLeavePlan() {
 		if (!StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
+			principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
 		}
 		return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
 	}
@@ -136,7 +127,7 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
     }
 	public AccrualCategory getFromAccrualCategoryObj() {
         if (fromAccrualCategoryObj == null) {
-            fromAccrualCategoryObj =  (AccrualCategory) HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate());
+            fromAccrualCategoryObj =  HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate());
         }
         return fromAccrualCategoryObj;
 	}
@@ -269,6 +260,6 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 
     @Override
     public List<Assignment> getAssignments() {
-        return (List<Assignment>) HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), getEffectiveLocalDate());
+        return HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), getEffectiveLocalDate());
     }
 }

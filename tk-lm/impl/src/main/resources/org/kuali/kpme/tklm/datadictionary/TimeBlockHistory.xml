@@ -401,7 +401,7 @@
     </bean>
 
 	<!-- KRAD Lookup View -->
-  <bean id="TimeBlockHistory-lookupView" parent="KPMEUif-ViewLinkLookupView">
+  <bean id="TimeBlockHistory-lookupView" parent="KPMEUif-LookupView">
   	<property name="headerText" value="Time Block History Lookup" />
   	<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.timeblock.TimeBlockHistory"/>
   	<property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.time.timeblock.web.TimeBlockHistoryLookupableHelperServiceImpl"/>
@@ -438,13 +438,16 @@
   				</property>
   			</bean>
   			<bean parent="Uif-LookupCriteriaInputField" p:propertyName="timesheetDocumentHeader.documentStatus"
-  						p:optionsFinderClass="org.kuali.rice.kew.impl.document.search.DocumentStatusValuesFinder"
+  						p:optionsFinderClass="org.kuali.kpme.core.calendar.web.CalendarDocumentStatusValuesFinder"
                         p:enableAutoDirectInquiry="false"
                         p:enableAutoQuickfinder="false"
   						p:label="Document Status">
-  				<property name="control">
-  					<bean parent="Uif-DropdownControl"/>
-  				</property>
+  				<!--<property name="control">
+  					<bean parent="Uif-MultiSelectControl"/>
+  				</property>-->
+                <property name="control">
+                    <bean parent="Uif-DropdownControl"/>
+                </property>
   			</bean>
   			<bean parent="Uif-LookupCriteriaInputField" p:propertyName="beginDate" p:ranged="true" p:label="Begin Date">
   				<property name="control">

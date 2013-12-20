@@ -31,12 +31,11 @@ import org.junit.Test;
 import org.kuali.hr.time.util.TimeDetailTestUtils;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.service.EarnCodeService;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.service.EarnCodeService;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.detail.web.TimeDetailActionFormBase;
@@ -71,7 +70,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	@Test
 	public void getEarnCodes() throws Exception {
         LocalDate asOfDate = LocalDate.now();
-		List<Assignment> assignments = (List<Assignment>) HrServiceLocator.getAssignmentService().getAssignments(TEST_USER, asOfDate);
+		List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(TEST_USER, asOfDate);
 		Assert.assertNotNull(assignments);
 		Assert.assertTrue("Emtpy assignment list", !assignments.isEmpty());
 
@@ -100,21 +99,21 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
         //  Testing getEarnCodes* - these routines are separated among Leave and Time calendars. Run both, then run a combined routine that may not get used in practice.
         //  As the testing data gets better, the Time and Leave results should have little to no overlap, and the assertions will need to be correspondingly updated.
         // Testing standard lookup.
-		List<? extends EarnCodeContract> earnCodes1t = timesheetService.getEarnCodesForTime(assignment1, asOfDate);
+		List<EarnCode> earnCodes1t = timesheetService.getEarnCodesForTime(assignment1, asOfDate);
 		Assert.assertEquals("Wrong number of earn codes returned.", 7, earnCodes1t.size());
-        List<? extends EarnCodeContract> earnCodes1l = earnCodeService.getEarnCodesForLeave(assignment1, asOfDate, false);
+        List<EarnCode> earnCodes1l = earnCodeService.getEarnCodesForLeave(assignment1, asOfDate, false);
         Assert.assertEquals("Wrong number of earn codes returned.", 0, earnCodes1l.size());
 
         // Wildcard on SalaryGroup
-        List<? extends EarnCodeContract> earnCodes2t = timesheetService.getEarnCodesForTime(assignment2, asOfDate);
+        List<EarnCode> earnCodes2t = timesheetService.getEarnCodesForTime(assignment2, asOfDate);
 		Assert.assertEquals("Wrong number of earn codes returned.", 2, earnCodes2t.size());
-        List<? extends EarnCodeContract> earnCodes2l = earnCodeService.getEarnCodesForLeave(assignment2, asOfDate, false);
+        List<EarnCode> earnCodes2l = earnCodeService.getEarnCodesForLeave(assignment2, asOfDate, false);
         Assert.assertEquals("Wrong number of earn codes returned.", 0, earnCodes2l.size());
 
         // Dual Wildcards
-        List<? extends EarnCodeContract> earnCodes3t = timesheetService.getEarnCodesForTime(assignment3, asOfDate);
+        List<EarnCode> earnCodes3t = timesheetService.getEarnCodesForTime(assignment3, asOfDate);
 		Assert.assertEquals("Wrong number of earn codes returned.",1, earnCodes3t.size());
-        List<? extends EarnCodeContract> earnCodes3l = earnCodeService.getEarnCodesForLeave(assignment3, asOfDate, false);
+        List<EarnCode> earnCodes3l = earnCodeService.getEarnCodesForLeave(assignment3, asOfDate, false);
         Assert.assertEquals("Wrong number of earn codes returned.",0, earnCodes3l.size());
     }
 	
@@ -125,7 +124,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 
 		super.setUp();
 
-		payCal = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(
+		payCal = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(
 				USER_PRINCIPAL_ID, TIME_SHEET_DATE);
 		Assert.assertNotNull("Pay calendar entries not found for admin", payCal);
 
@@ -139,7 +138,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 				tdocId, true);
 		Assert.assertNotNull(page);
 
-		assignmentsOfUser = (List<Assignment>) HrServiceLocator.getAssignmentService()
+		assignmentsOfUser = HrServiceLocator.getAssignmentService()
 				.getAssignments(USER_PRINCIPAL_ID, TIME_SHEET_DATE.toLocalDate());
 		Assert.assertNotNull("No Assignments found for the user ", assignmentsOfUser);
 
@@ -162,17 +161,17 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	public void testAddTimeBlock() throws Exception {
 		HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), USER_PRINCIPAL_ID, tdocId, true);
 
-		Assignment assignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
 		HtmlForm form = page.getFormByName("TimeDetailActionForm");
 		Assert.assertNotNull(form);
 
-		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
+		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 		DateTime endTime = new DateTime(2011, 2, 15, 11, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 
 		// Setup TimeDetailActionForm
-		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true, null, null, null, null, null, null);
+		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true);
 		List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
 
 		// Check for errors
@@ -226,8 +225,8 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	public void testEditTimeBlock() throws Exception {
 		HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), USER_PRINCIPAL_ID, tdocId, true);
 
-		Assignment assignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
-		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 		DateTime endTime = new DateTime(2011, 2, 15, 11, 0, 0, 0, TKUtils.getSystemDateTimeZone());
@@ -236,7 +235,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		Assert.assertNotNull(form);
 
 		// Setup TimeDetailActionForm for adding time block
-		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true, null, null, null, null, null, null);
+		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true);
 		List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
 
 		// Check for errors
@@ -254,7 +253,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 
 		String createdTBId = timeDoc.getTimeBlocks().get(0).getTkTimeBlockId();
 
-		Assignment newAssignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("1_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		Assignment newAssignment = HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("1_1234_1"), TIME_SHEET_DATE.toLocalDate());
 		HtmlUnitUtil.createTempFile(page);
 
 
@@ -263,7 +262,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 
 		form = page.getFormByName("TimeDetailActionForm");
 
-		TimeDetailActionFormBase updateTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, newAssignment, earnCode, startTime1, endTime1, null, true, createdTBId, true, null, null, null, null, null, null);
+		TimeDetailActionFormBase updateTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, newAssignment, earnCode, startTime1, endTime1, null, true, createdTBId, true);
 
 		// validation of time block
 		errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, updateTB);
@@ -284,8 +283,8 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 	public void testDeleteTimeBlock() throws Exception {
 		HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), USER_PRINCIPAL_ID,tdocId, true);
 
-		Assignment assignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
-		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
+		Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(USER_PRINCIPAL_ID, AssignmentDescriptionKey.get("4_1234_1"), TIME_SHEET_DATE.toLocalDate());
+		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode("RGN", TIME_SHEET_DATE.toLocalDate());
 
 		DateTime startTime = new DateTime(2011, 2, 15, 9, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 		DateTime endTime = new DateTime(2011, 2, 15, 11, 0, 0, 0, TKUtils.getSystemDateTimeZone());
@@ -294,7 +293,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		Assert.assertNotNull(form);
 
 		// Setup TimeDetailActionForm
-		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true, null, null, null, null, null, null);
+		TimeDetailActionFormBase addTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, null, true);
 		List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
 
 		// Check for errors
@@ -316,7 +315,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		Assert.assertNotNull(form);
 
 		// set detail for deleting time block
-		TimeDetailActionFormBase deleteTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, createTBId, true, null, null, null, null, null, null);
+		TimeDetailActionFormBase deleteTB = TimeDetailTestUtils.buildDetailActionForm(timeDoc, assignment, earnCode, startTime, endTime, null, true, createTBId, true);
 		deleteTB.setMethodToCall("deleteTimeBlock");
 
 		// submitting the page
@@ -357,7 +356,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		// Setup TimeDetailActionForm1
 		TimeDetailActionFormBase addTB = TimeDetailTestUtils
 				.buildDetailActionForm(timeDoc, assToBeSelected, earnCode, startTime,
-						endTime, null, true, null, true, null, null, null, null, null, null); // last argument true = include weekends
+						endTime, null, true, null, true); // last argument true = include weekends
 		List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form,
 				addTB);
 		// Check for errors - spanning weeks includes weekends, and include weekends box is checked - should give no error
@@ -375,7 +374,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		// Setup TimeDetailActionForm2
 		addTB = TimeDetailTestUtils
 				.buildDetailActionForm(timeDoc, assToBeSelected, earnCode, startTime,
-						endTime, null, true, null, false, null, null, null, null, null, null); // last argument false = do not include weekends
+						endTime, null, true, null, false); // last argument false = do not include weekends
 		errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
 		// Check for errors - spanning weeks includes weekends, and include weekends box is not not checked - should give an error
 		Assert.assertEquals(
@@ -391,7 +390,7 @@ public class TimesheetIntegrationTest extends TimesheetWebTestBase {
 		// Setup TimeDetailActionForm2
 		addTB = TimeDetailTestUtils
 				.buildDetailActionForm(timeDoc, assToBeSelected, earnCode, startTime,
-						endTime, null, true, null, false, null, null, null, null, null, null); // last argument false = do not include weekends
+						endTime, null, true, null, false); // last argument false = do not include weekends
 		errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, addTB);
 		// Check for errors - spanning weeks includes weekends, an include weekends box is not not checked - should give an error
 		// hours > 24.

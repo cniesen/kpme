@@ -19,7 +19,6 @@ import org.kuali.kpme.core.position.PositionBase;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class PositionBaseValidation extends MaintenanceDocumentRuleBase {
 
@@ -32,11 +31,6 @@ public class PositionBaseValidation extends MaintenanceDocumentRuleBase {
 
 		if (position != null) {
 			valid = true;
-		}
-		
-		if (valid && document.isNew()) {
-			String positionNumber = KRADServiceLocator.getSequenceAccessorService().getNextAvailableSequenceNumber("hr_position_s", PositionBase.class).toString();
-	    	position.setPositionNumber(positionNumber);		
 		}
 		
 		if (valid && document.isNew()) {

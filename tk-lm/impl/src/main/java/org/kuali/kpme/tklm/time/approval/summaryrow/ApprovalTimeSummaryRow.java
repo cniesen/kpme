@@ -27,7 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.approval.summaryrow.ApprovalTimeSummaryRowContract;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -65,7 +64,6 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     private String payCalendarGroup;
     private List<Note> notes = new ArrayList<Note>();
     private List<String> warnings = new ArrayList<String>();
-    private List<MissedPunch> missedPunchList = new ArrayList<MissedPunch>();
     private Set<String> workAreas;
     private String principalId;
     private Boolean clockedInOverThreshold = Boolean.FALSE;    
@@ -151,14 +149,8 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
 	public String getClockStatusMessage() {
 		return clockStatusMessage;
 	}
-    public List<MissedPunch> getMissedPunchList() {
-		return missedPunchList;
-	}
-	public void setMissedPunchList(List<MissedPunch> missedPunchList) {
-		this.missedPunchList = missedPunchList;
-	}
 
-	public String getPayCalendarGroup() {
+    public String getPayCalendarGroup() {
         return payCalendarGroup;
     }
 

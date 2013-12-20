@@ -17,12 +17,11 @@ package org.kuali.kpme.pm.positionreportcat.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.api.positionreporttype.PositionReportTypeContract;
 import org.kuali.kpme.pm.positionreportcat.PositionReportCategory;
 import org.kuali.kpme.pm.positionreporttype.PositionReportType;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 
 public class PositionReportCatValidation extends MaintenanceDocumentRuleBase  {
 	
@@ -30,7 +29,7 @@ public class PositionReportCatValidation extends MaintenanceDocumentRuleBase  {
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Report Category");
-		PositionReportCategory prc = (PositionReportCategory) this.getNewDataObject();
+		PositionReportCategory prc = (PositionReportCategory) this.getNewBo();
 		
 		if (prc != null) {
 			valid = true;
@@ -43,7 +42,7 @@ public class PositionReportCatValidation extends MaintenanceDocumentRuleBase  {
 	
 	private boolean validatePositionReportType(PositionReportCategory prc) {
 		// validatePositionReportType handles wild card for institution and location
-		PositionReportTypeContract aType = PmServiceLocator.getPositionReportTypeService().getPositionReportType(prc.getPositionReportType(), prc.getEffectiveLocalDate());
+		PositionReportType aType = PmServiceLocator.getPositionReportTypeService().getPositionReportType(prc.getPositionReportType(), prc.getEffectiveLocalDate());
 		String positionReportTypeError = "PositionReportType '" + prc.getPositionReportType() + "'";
 		if(aType == null) {
 			this.putFieldError("positionReportType", "error.existence", positionReportTypeError);

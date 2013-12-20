@@ -15,6 +15,8 @@
  */
 package org.kuali.kpme.tklm.time.timeblock;
 
+import org.joda.time.DateTimeZone;
+
 import java.math.BigDecimal;
 import java.sql.Time;
 import java.sql.Timestamp;
@@ -24,15 +26,13 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.block.CalendarBlock;
 import org.kuali.kpme.core.block.CalendarBlockBase;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -46,6 +46,7 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kim.api.identity.Person;
+import org.apache.commons.lang.ObjectUtils;
 
 public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockContract {
 
@@ -82,8 +83,6 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     @Transient
     private Boolean overtimeEditable;
 
-    @Transient
-    private Boolean clockedByMissedPunch;
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
     @Transient
     private Boolean pushBackward = false;
@@ -99,8 +98,8 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     public TimeBlock() {
     	super();
     }
-
-	public Date getBeginDate() {
+    
+    public Date getBeginDate() {
     	Date beginDate = null;
     	
     	if (beginTimestamp != null) {
@@ -446,7 +445,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 
     public String getAssignmentDescription() {
         AssignmentDescriptionKey adk = new AssignmentDescriptionKey(this.getJobNumber(), this.getWorkArea(), this.getTask());
-        AssignmentContract anAssignment = HrServiceLocator.getAssignmentService().getAssignment(principalId, adk, this.getBeginDateTime().toLocalDate());
+        Assignment anAssignment = HrServiceLocator.getAssignmentService().getAssignment(principalId, adk, this.getBeginDateTime().toLocalDate());
         return anAssignment == null ? this.getAssignmentKey() : anAssignment.getAssignmentDescription();
     }
 
@@ -581,35 +580,28 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     */
     public String getActualBeginTimeString() {
         if (this.getClockLogBeginId() != null) {
+        	 DateTimeZone dtz = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone());
         	 if (getOvernightTimeClockLog(clockLogBeginId)) {
-                 return getBeginDateTime().toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                 return getBeginDateTime().withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
              } else {
                  ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(this.getClockLogBeginId());
                  if (cl != null) {
-                     return new DateTime(cl.getTimestamp()).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                     return new DateTime(cl.getTimestamp()).withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
                  }
              }
-//            DateTimeZone dtz = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone());
-//            if (getOvernightTimeClockLog(clockLogEndId)) {
-//                return getBeginDateTime().withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
-//            } else {
-//                ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(this.getClockLogBeginId());
-//                if (cl != null) {
-//                    return new DateTime(cl.getTimestamp()).withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
-//                }
-//            }
         }
         return "";
     }
 
     public String getActualEndTimeString() {
         if (this.getClockLogEndId() != null) {
+        	DateTimeZone dtz = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone());
             if (getOvernightTimeClockLog(clockLogEndId)) {
-                return getEndDateTime().toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                return getEndDateTime().withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
             } else {
                 ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(this.getClockLogEndId());
                 if (cl != null) {
-                    return new DateTime(cl.getTimestamp()).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+                    return new DateTime(cl.getTimestamp()).withZone(dtz).toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
                 }
             }
 
@@ -634,15 +626,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 	public Boolean getOvertimeEditable() {
 		return TkServiceLocator.getTKPermissionService().canEditOvertimeEarnCode(HrContext.getPrincipalId(), this);
 	}
-    
-    public Boolean getClockedByMissedPunch() {
-		return clockedByMissedPunch;
-	}
 
-	public void setClockedByMissedPunch(Boolean clockedByMissedPunch) {
-		this.clockedByMissedPunch = clockedByMissedPunch;
-	}
-	
     public Boolean getTimeBlockEditable(){
         return TkServiceLocator.getTKPermissionService().canEditTimeBlock(HrContext.getPrincipalId(), this);
     }
@@ -740,7 +724,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 
 	@Override
 	public String getConcreteBlockType() {
-		return this.getClass().getName();
+		return super.concreteBlockType == null ? this.getClass().getName() : super.concreteBlockType;
 	}
 
 	@Override

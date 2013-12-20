@@ -16,23 +16,18 @@
 package org.kuali.kpme.core.earncode.group;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class EarnCodeGroup extends HrBusinessObject implements EarnCodeGroupContract {
 
-	private static final String EARN_CODE_GROUP = "earnCodeGroup";
-
 	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(EARN_CODE_GROUP)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("earnCodeGroup")
             .build();
 
 	private static final long serialVersionUID = -3034933572755800531L;
@@ -51,13 +46,6 @@ public class EarnCodeGroup extends HrBusinessObject implements EarnCodeGroupCont
 	
 	private String warningText;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(EARN_CODE_GROUP, this.getEarnCodeGroup())		
-				.build();
-	}
 	
 
 	public Boolean getHistory() {

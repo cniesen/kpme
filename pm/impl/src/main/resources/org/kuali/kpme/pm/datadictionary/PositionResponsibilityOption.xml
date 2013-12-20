@@ -32,7 +32,6 @@
 	        <ref bean="PositionResponsibilityOption-prOptionName"/>
 	        <ref bean="PositionResponsibilityOption-prDescription"/>
 	        <ref bean="PositionResponsibilityOption-active"/>
-            <ref bean="PositionResponsibilityOption-userPrincipalId"/>  
 		 </list>
 	    </property>
 	    <property name="objectLabel" value="Position Responsibility Option"/>
@@ -41,7 +40,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionResponsibilityOption-prOptionId" parent="PositionResponsibilityOption-prOptionId-parentBean"/>
 	 <bean id="PositionResponsibilityOption-prOptionId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -67,7 +65,6 @@
 	
 	<bean id="PositionResponsibilityOption-prOptionName" parent="PositionResponsibilityOption-prOptionName-parentBean" />
 	<bean id="PositionResponsibilityOption-prOptionName-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Category" />
 		<property name="controlField">
@@ -80,7 +77,6 @@
 
 	<bean id="PositionResponsibilityOption-prDescription" parent="PositionResponsibilityOption-prDescription-parentBean" />
 	<bean id="PositionResponsibilityOption-prDescription-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="500" />
 		<property name="required" value="yes" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -93,31 +89,15 @@
     <bean id="PositionResponsibilityOption-active" parent="PositionResponsibilityOption-active-parentBean"/>
  	<bean id="PositionResponsibilityOption-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
    		<property name="name" value="active"/>
-  	</bean>
+  	</bean>  
 
-    <!--userPrincipalId-->
-    <bean id="PositionResponsibilityOption-userPrincipalId" parent="PositionResponsibilityOption-userPrincipalId-parentBean" />
-    <bean id="PositionResponsibilityOption-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="name" value="userPrincipalId" />
-        <property name="label" value="User Principal Id" />
-        <property name="shortLabel" value="User Principal Id" />
-        <property name="maxLength" value="40" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="40" />
-        </property>
-    </bean>
 <!--*************************************************************************** 
 							Views
  ***************************************************************************-->  	
   	
   <!-- Position Responsibility Option Lookup View -->
  
-  <bean id="PositionResponsibilityOption-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
+  <bean id="PositionResponsibilityOption-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Responsibility Option Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption" />
     <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />  <!--KPME-2699-->
@@ -163,7 +143,6 @@
 			       	<bean parent="Uif-DataField" p:propertyName="prOptionName" />
 			       	<bean parent="Uif-DataField" p:propertyName="prDescription" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Responsibility Option Inquiry"/>
@@ -174,7 +153,7 @@
   
 <!--  Position Responsibility Option Maintenance View -->
   <bean id="PositionResponsibilityOption-MaintenanceView" parent="PositionResponsibilityOption-MaintenanceView-parentBean"/>
-  <bean id="PositionResponsibilityOption-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionResponsibilityOption-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Responsibility Option Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption"/>
     <property name="items">

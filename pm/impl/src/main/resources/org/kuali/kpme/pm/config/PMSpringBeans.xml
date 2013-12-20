@@ -134,6 +134,8 @@
     <bean id="positionResponsibilityOptionDao" class="org.kuali.kpme.pm.positionResponsibilityOption.dao.PositionResponsibilityOptionDaoObjImpl" parent="platformAwareDao" />
 
     <bean id="positionResponsibilityDao" class="org.kuali.kpme.pm.positionresponsibility.dao.PositionResponsibilityDaoObjImpl" parent="platformAwareDao" />
+
+    <bean id="positionDepartmentAffiliationDao" class="org.kuali.kpme.pm.positiondepartmentaffiliation.dao.PositionDepartmentAffiliationDaoObjImpl" parent="platformAwareDao" />
  	
  	<bean id="positionDepartmentDao" class="org.kuali.kpme.pm.positiondepartment.dao.PositionDepartmentDaoObjImpl" parent="platformAwareDao" />	
  	
@@ -204,6 +206,10 @@
     <bean id="pstnContractTypeService" class="org.kuali.kpme.pm.pstncontracttype.service.PstnContractTypeServiceImpl">
         <property name="pstnContractTypeDao" ref="pstnContractTypeDao"/>
     </bean>
+  
+    <bean id="positionDepartmentAffiliationService" class="org.kuali.kpme.pm.positiondepartmentaffiliation.service.PositionDepartmentAffiliationServiceImpl">
+        <property name="positionDepartmentAffiliationDao" ref="positionDepartmentAffiliationDao"/>
+    </bean>
     
     <bean id="positionDepartmentService" class="org.kuali.kpme.pm.positiondepartment.service.PositionDepartmentServiceImpl">
         <property name="positionDepartmentDao" ref="positionDepartmentDao"/>
@@ -239,9 +245,29 @@
 
     <!-- PM Lookupable Definitions -->
     
+    
+    
+ 	<bean id="positionReportTypeLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+    		<bean class="org.kuali.kpme.pm.positionreporttype.web.PositionReportTypeLookupableHelper"/>
+    	</property>    
+    </bean>
+    
+ 	<bean id="positionReportGroupLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    	<property name="lookupableHelperService">
+    		<bean class="org.kuali.kpme.pm.positionreportgroup.web.PositionReportGroupLookupableHelper"/>
+    	</property>    
+    </bean>
+    
     <bean id="positionReportCatLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
 	   	<property name="lookupableHelperService">
 	   		<bean class="org.kuali.kpme.pm.positionreportcat.web.PositionReportCatLookupableHelper"/>
+	   	</property>    
+    </bean>
+    
+    <bean id="positionReportSubCatLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+	   	<property name="lookupableHelperService">
+	   		<bean class="org.kuali.kpme.pm.positionreportsubcat.web.PositionReportSubCatLookupableHelper"/>
 	   	</property>    
     </bean>
 
@@ -266,6 +292,7 @@
                 <idref local="pstnQlfctnVlService"/>
                 <idref local="positionAppointmentService"/>
                 <idref local="pstnContractTypeService"/>
+                <idref local="positionDepartmentAffiliationService"/>
                 <idref local="positionDepartmentService"/>
                 <idref local="positionResponsibilityOptionService"/>
                 <idref local="positionResponsibilityService"/>

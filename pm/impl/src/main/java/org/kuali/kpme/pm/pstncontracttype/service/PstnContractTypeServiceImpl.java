@@ -18,7 +18,6 @@ package org.kuali.kpme.pm.pstncontracttype.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.pstncontracttype.service.PstnContractTypeService;
 import org.kuali.kpme.pm.pstncontracttype.PstnContractType;
 import org.kuali.kpme.pm.pstncontracttype.dao.PstnContractTypeDao;
 
@@ -45,11 +44,6 @@ public class PstnContractTypeServiceImpl implements PstnContractTypeService {
 	@Override
 	public List<PstnContractType> getPstnContractTypeList(String institution, String location, LocalDate asOfDate) {
 		return pstnContractTypeDao.getPstnContractTypeList( institution, location, asOfDate);
-	}
-	
-	@Override
-	public List<PstnContractType> getPstnContractTypeList(String name, String institution, String location, LocalDate asOfDate) {
-		return pstnContractTypeDao.getPstnContractTypeList(name, institution, location, asOfDate);
 	}
 
 }

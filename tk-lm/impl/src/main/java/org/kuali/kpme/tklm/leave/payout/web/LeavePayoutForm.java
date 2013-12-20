@@ -116,11 +116,11 @@ public class LeavePayoutForm extends KualiTransactionalDocumentFormBase {
 	}
 
 	public EarnCode getPayoutEarnCodeObj() {
-		return (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, LocalDate.fromDateFields(effectiveDate));
+		return HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, LocalDate.fromDateFields(effectiveDate));
 	}
 
 	public AccrualCategory getDebitedAccrualCategory() {
-		return (AccrualCategory) HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, LocalDate.fromDateFields(effectiveDate));
+		return HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, LocalDate.fromDateFields(effectiveDate));
 	}
 	
     @Override

@@ -18,7 +18,6 @@ package org.kuali.kpme.core.position.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.position.service.PositionBaseService;
 import org.kuali.kpme.core.position.PositionBase;
 import org.kuali.kpme.core.position.dao.PositionBaseDao;
 

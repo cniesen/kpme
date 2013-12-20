@@ -17,129 +17,115 @@ package org.kuali.kpme.pm.api.positiondepartment;
 
 
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.core.api.departmentaffiliation.DepartmentAffiliationContract;
+import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.api.institution.InstitutionContract;
 import org.kuali.kpme.core.api.location.LocationContract;
 
+import org.kuali.kpme.pm.api.positiondepartmentaffiliation.PositionDepartmentAffiliationContract;
 
-
-
+/**
+ * <p>PositionDepartmentContract interface</p>
+ *
+ */
 public interface PositionDepartmentContract extends HrBusinessObjectContract {
 
+    /**
+     * The position department affiliation associated with the PositionDepartment
+     *
+     * <p>
+     * positionDeptAffl for the PositionDepartment.
+     * <p>
+     *
+     * @return positionDeptAffl for PositionDepartment
+     */
+	public String getPositionDeptAffl();
 
     /**
-     * Department Affiliation
+     * The PositionDepartmentAffiliation object associated with the PositionDepartment
      *
      * <p>
-     * feptAffl for the Position Department.
+     * positionDeptAfflObj for the PositionDepartment.
      * <p>
      *
-     * @return deptAffl for Position Department
+     * @return positionDeptAfflObj for PositionDepartment
      */
-    public String getDeptAffl();
+	public PositionDepartmentAffiliationContract getPositionDeptAfflObj();
 
     /**
-     * Department Affiliation   Object
+     * The primary key for a PositionDepartment entry saved in the database
      *
      * <p>
-     * deptAfflObj for the Position Department.
+     * pmPositionDeptId for the PositionDepartment.
      * <p>
      *
-     * @return deptAfflObj for Position Department
+     * @return pmPositionDeptId for PositionDepartment
      */
-    public DepartmentAffiliationContract getDeptAfflObj();
+	public String getPmPositionDeptId();
 
     /**
-     * Position Department ID
+     * The institution associated with the PositionDepartment
      *
      * <p>
-     * pmPositionDeptId for the Position Department.
+     * institution for the PositionDepartment.
      * <p>
      *
-     * @return pmPositionDeptId for Position Department
+     * @return institution for PositionDepartment
      */
-    public String getPmPositionDeptId();
+	public String getInstitution();
 
     /**
-     * Position Department Institution
+     * The location associated with the PositionDepartment
      *
      * <p>
-     * institution for the Position Department.
+     * location for the PositionDepartment.
      * <p>
      *
-     * @return institution for Position Department
+     * @return location for PositionDepartment
      */
-    public String getInstitution();
+	public String getLocation();
 
     /**
-     * Position Department Location
+     * The Location object associated with the PositionDepartment
      *
      * <p>
-     * location for the Position Department.
+     * locationObj for the PositionDepartment.
      * <p>
      *
-     * @return location for Position Department
+     * @return locationObj for PositionDepartment
      */
-    public String getLocation();
+	public LocationContract getLocationObj();
 
     /**
-     * Position Department Location Object
+     * The department name associated with the PositionDepartment
      *
      * <p>
-     * locationObj for the Position Department.
+     * department for the PositionDepartment.
      * <p>
      *
-     * @return locationObj for Position Department
+     * @return department for PositionDepartment
      */
-    public LocationContract getLocationObj();
+	public String getDepartment();
 
     /**
-     * Position Department Department
+     * The Institution object associated with the PositionDepartment
      *
      * <p>
-     * department for the Position Department.
+     * institutionObj for the PositionDepartment.
      * <p>
      *
-     * @return department for Position Department
+     * @return institutionObj for PositionDepartment
      */
-    public String getDepartment();
+	public InstitutionContract getInstitutionObj();
 
     /**
-     * Position Department Institution
+     * The Department object associated with the PositionDepartment
      *
      * <p>
-     * institutionObj for the Position Department.
+     * departmentObj for the PositionDepartment.
      * <p>
      *
-     * @return institutionObj for Position Department
+     * @return departmentObj for PositionDepartment
      */
-    public InstitutionContract getInstitutionObj();
-
-    /**
-     * Position Department Department Object
-     *
-     * <p>
-     * departmentObj for the Position Department.
-     * <p>
-     *
-     * @return departmentObj for Position Department
-     */
-    //public Department getDepartmentObj();
-    //TODO find correct contract
-
-
-
-    /**
-     * Position Department HrPositionId
-     *
-     * <p>
-     * hrPositionId for the Position Department collection in Position.
-     * <p>
-     *
-     * @return hrPositionId for Position Department
-     */
-    public String getHrPositionId();
-
-
+	public DepartmentContract getDepartmentObj();
 
 }

@@ -39,13 +39,12 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.kuali.kpme.core.KPMEConstants;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.util.KpmeUtils;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.util.RiceKeyConstants;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
@@ -112,10 +111,23 @@ public class TKUtils {
         return hrsReminder.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
     }
 
-
-    public static Map<String, String> formatAssignmentDescription(AssignmentContract assignment) {
+    public static String formatAssignmentKey(Long jobNumber, Long workArea, Long task) {
+    	String assignmentKey = StringUtils.EMPTY;
+    	
+    	String jobNumberString = ObjectUtils.toString(jobNumber, "0");
+    	String workAreaString = ObjectUtils.toString(workArea, "0");
+    	String taskString = ObjectUtils.toString(task, "0");
+    	
+    	if (!jobNumberString.equals("0") || !workAreaString.equals("0") || !taskString.equals("0")) {
+    		assignmentKey = StringUtils.join(new String[] {jobNumberString, workAreaString, taskString}, HrConstants.ASSIGNMENT_KEY_DELIMITER);
+    	}
+    	
+    	return assignmentKey;
+    }
+    
+    public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        String assignmentDescKey = KpmeUtils.formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
+        String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
         String assignmentDescValue = getAssignmentString(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask(), assignment.getEffectiveLocalDate());
         assignmentDescriptions.put(assignmentDescKey, assignmentDescValue);
 
@@ -126,9 +138,9 @@ public class TKUtils {
     	StringBuilder builder = new StringBuilder();
     	
     	if (jobNumber != null && workArea != null && task != null) {
-        	JobContract jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
-        	WorkAreaContract workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
-        	TaskContract taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
+        	Job jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+        	WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
+        	Task taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
         	
         	String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;
         	KualiDecimal compensationRate = jobObj != null ? jobObj.getCompRate() : KualiDecimal.ZERO;
@@ -561,5 +573,20 @@ public class TKUtils {
         docDescription.append(personName + " (" + principalId + ")  - " + date);
 		return docDescription.toString();
 	}
+	
+	/*
+	 * aDateTime is the dateTime we would like to display in the fromTimeZone. 
+	 * The results of the method is the time showing in the toTimeZone considering the time difference between these two time zones
+	 */
+	public static DateTime convertTimeForDifferentTimeZone(DateTime aDateTime, DateTimeZone fromTimeZone, DateTimeZone toTimeZone) {
+		if(fromTimeZone == null || toTimeZone == null || fromTimeZone.equals(toTimeZone))
+			return aDateTime;	// no conversion is needed
+		
+		Long millisOfSysTime = fromTimeZone.getMillisKeepLocal(toTimeZone, aDateTime.getMillis());
+		DateTime toTime = new DateTime(millisOfSysTime);
+		
+		return toTime;
+	}
+
 
 }

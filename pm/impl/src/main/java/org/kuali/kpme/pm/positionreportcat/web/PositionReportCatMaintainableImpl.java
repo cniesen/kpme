@@ -23,7 +23,7 @@ public class PositionReportCatMaintainableImpl extends HrBusinessObjectMaintaina
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject)PmServiceLocator.getPositionReportCatService().getPositionReportCatById(id);
+		return PmServiceLocator.getPositionReportCatService().getPositionReportCatById(id);
 	}
 
 }

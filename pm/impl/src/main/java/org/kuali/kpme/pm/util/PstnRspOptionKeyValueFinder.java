@@ -19,19 +19,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.pm.api.positionresponsibilityoption.PositionResponsibilityOptionContract;
-import org.kuali.kpme.pm.position.Position;
-import org.kuali.kpme.pm.positionresponsibility.PositionResponsibility;
+import org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
-import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
-import org.kuali.rice.krad.uif.field.InputField;
-import org.kuali.rice.krad.uif.view.ViewModel;
-import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
+import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
-public class PstnRspOptionKeyValueFinder extends UifKeyValuesFinderBase {
+public class PstnRspOptionKeyValueFinder extends KeyValuesBase{
+
+	
 
 	/**
 	 * 
@@ -41,48 +37,14 @@ public class PstnRspOptionKeyValueFinder extends UifKeyValuesFinderBase {
 	@Override
 	public List<KeyValue> getKeyValues() {
 		List<KeyValue> keyValues = new ArrayList<KeyValue>();
-		List<? extends PositionResponsibilityOptionContract> typeList = PmServiceLocator.getPositionResponsibilityOptionService().getAllActivePstnRspOptions();
+		List<PositionResponsibilityOption> typeList = PmServiceLocator.getPositionResponsibilityOptionService().getAllActivePstnRspOptions();
 		keyValues.add(new ConcreteKeyValue("", ""));
 		if(CollectionUtils.isNotEmpty(typeList)) {
-			for(PositionResponsibilityOptionContract aType : typeList) {
+			for(PositionResponsibilityOption aType : typeList) {
 				keyValues.add(new ConcreteKeyValue((String) aType.getPrOptionId(), (String) aType.getPrOptionName()));
 			}
 		}         
 		return keyValues;
-	}
-	
-	// KPME-2360
-	@Override
-    public List<KeyValue> getKeyValues(ViewModel model, InputField field){
-		 
-		MaintenanceDocumentForm docForm = (MaintenanceDocumentForm) model;
-		HrBusinessObject anHrObject = (HrBusinessObject) docForm.getDocument().getNewMaintainableObject().getDataObject();
-		List<KeyValue> options = new ArrayList<KeyValue>();
-		
-		if (field.getId().contains("add")) {
-			// For "add" line, just delegate to getKeyValues() method as it is working correctly
-			options = getKeyValues();	
-		} else {
-			// Strip index off field id
-			String fieldId = field.getId();
-			int line_index = fieldId.indexOf("line");
-			int index = Integer.parseInt(fieldId.substring(line_index+4));
-
-			Position aClass = (Position)anHrObject;
-			List<PositionResponsibility> posRresponsibilityList = aClass.getPositionResponsibilityList(); // holds "added" lines
-			PositionResponsibility posResponsibility = (PositionResponsibility)posRresponsibilityList.get(index);
-			
-			List<? extends PositionResponsibilityOptionContract> typeList = PmServiceLocator.getPositionResponsibilityOptionService().getAllActivePstnRspOptions();
-			options.add(new ConcreteKeyValue("", ""));
-			if(CollectionUtils.isNotEmpty(typeList)) {
-				for(PositionResponsibilityOptionContract aType : typeList) {
-					options.add(new ConcreteKeyValue((String) aType.getPrOptionId(), (String) aType.getPrOptionName()));
-				}
-			}      
-		} 
-
-		return options;
-		
 	}
 
 }

@@ -202,7 +202,6 @@
                             <bean parent="FieldDefinition" p:attributeName="tkTaskId" />
                             <bean parent="FieldDefinition" p:attributeName="workArea" />
                             <bean parent="FieldDefinition" p:attributeName="description" />
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
                         </list>
                     </property>
                     <property name="title" value="Task" />

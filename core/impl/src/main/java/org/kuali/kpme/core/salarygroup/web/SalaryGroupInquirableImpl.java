@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.salarygroup.SalaryGroupContract;
 import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -33,7 +32,7 @@ public class SalaryGroupInquirableImpl extends KualiInquirableImpl {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public BusinessObject getBusinessObject(Map fieldValues) {
-		SalaryGroupContract salaryGroup = null;
+		SalaryGroup salaryGroup = null;
 		
 		if (StringUtils.isNotBlank((String)fieldValues.get("hrSalGroupId"))) {
 			salaryGroup = HrServiceLocator.getSalaryGroupService().getSalaryGroup((String) fieldValues.get("hrSalGroupId"));

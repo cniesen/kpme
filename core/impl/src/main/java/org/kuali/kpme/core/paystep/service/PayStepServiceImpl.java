@@ -17,7 +17,6 @@ package org.kuali.kpme.core.paystep.service;
 
 import java.util.List;
 
-import org.kuali.kpme.core.api.paystep.service.PayStepService;
 import org.kuali.kpme.core.paystep.PayStep;
 import org.kuali.kpme.core.paystep.dao.PayStepDao;
 

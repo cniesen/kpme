@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.TaskContract;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
@@ -29,7 +28,7 @@ public class TaskInquirableImpl extends KualiInquirableImpl {
 	
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-        TaskContract task = null;
+        Task task = null;
         if (StringUtils.isNotBlank((String)fieldValues.get("tkTaskId"))) {
         	task = HrServiceLocator.getTaskService().getTask((String) fieldValues.get("tkTaskId"));
         } else if (fieldValues.containsKey("task")) {

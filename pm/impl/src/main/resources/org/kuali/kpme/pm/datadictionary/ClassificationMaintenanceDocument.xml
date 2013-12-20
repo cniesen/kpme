@@ -31,7 +31,7 @@
   
   <!--  Position Classification Maintenance View -->
   <bean id="Classification-MaintenanceView" parent="Classification-MaintenanceView-parentBean"/>
-  <bean id="Classification-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="Classification-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Classification Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.classification.Classification"/>
     <property name="items">
@@ -105,13 +105,6 @@
 				   	   </property>
 				   	   <property name="quickfinder.autoSearch" value="true"/>
 			       </bean>
-                   <bean parent="Uif-InputField" p:propertyName="payGrade">
-                       <property name="quickfinder">
-                           <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGrade"
-                                 p:fieldConversions="payGrade:payGrade"/>
-                       </property>
-                       <property name="quickfinder.autoSearch" value="true"/>
-                   </bean>
 			       <bean parent="Uif-InputField" p:propertyName="percentTime" p:exclusiveMin="0" p:inclusiveMax="100"
 			        	 p:constraintText="Must be a number between 0 and 100.">
 			        	<property name="validCharactersConstraint">

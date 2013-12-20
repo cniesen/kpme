@@ -45,8 +45,8 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
 		Criteria currentRecordCriteria = new Criteria();
 
 		currentRecordCriteria.addEqualTo("payType", payType);
-        currentRecordCriteria.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayType.class, effectiveDate, PayType.BUSINESS_KEYS, false));
-        currentRecordCriteria.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.BUSINESS_KEYS, false));
+        currentRecordCriteria.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayType.class, effectiveDate, PayType.EQUAL_TO_FIELDS, false));
+        currentRecordCriteria.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.EQUAL_TO_FIELDS, false));
 		
 //		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 //		activeFilter.addEqualTo("active", true);
@@ -134,8 +134,8 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
         }
         
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PayType.class, effectiveDateFilter, PayType.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PayType.class, effectiveDateFilter, PayType.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(PayType.class, root);

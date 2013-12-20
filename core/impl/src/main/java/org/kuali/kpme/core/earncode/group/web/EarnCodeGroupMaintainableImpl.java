@@ -60,19 +60,19 @@ public class EarnCodeGroupMaintainableImpl extends HrBusinessObjectMaintainableI
        super.addNewLineToCollection(collectionName);
     }
 	
-//	@Override
-//    public void processAfterEdit( MaintenanceDocument document, Map<String,String[]> parameters ) {
-//		EarnCodeGroup earnGroup = (EarnCodeGroup)this.getBusinessObject();
-//		int count = HrServiceLocator.getEarnCodeGroupService().getNewerEarnCodeGroupCount(earnGroup.getEarnCodeGroup(), earnGroup.getEffectiveLocalDate());
-//		if(count > 0) {
-//			GlobalVariables.getMessageMap().putWarningWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE + "effectiveDate", 
-//					"earngroup.effectiveDate.newr.exists");
-//		}
-//	}
+	@Override
+    public void processAfterEdit( MaintenanceDocument document, Map<String,String[]> parameters ) {
+		EarnCodeGroup earnGroup = (EarnCodeGroup)this.getBusinessObject();
+		int count = HrServiceLocator.getEarnCodeGroupService().getNewerEarnCodeGroupCount(earnGroup.getEarnCodeGroup(), earnGroup.getEffectiveLocalDate());
+		if(count > 0) {
+			GlobalVariables.getMessageMap().putWarningWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE + "effectiveDate", 
+					"earngroup.effectiveDate.newr.exists");
+		}
+	}
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(id);
+		return HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(id);
 	} 
 
     @Override

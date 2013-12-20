@@ -17,7 +17,6 @@ package org.kuali.kpme.pm.position;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.pm.api.position.PositionQualificationContract;
-import org.kuali.kpme.pm.api.pstnqlfrtype.PstnQlfrTypeContract;
 import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
@@ -58,7 +57,7 @@ public class PositionQualification extends PersistableBusinessObjectBase impleme
 
 	public String getTypeValue() {
 		if(StringUtils.isNotEmpty(this.getQualificationType())) {
-			PstnQlfrTypeContract aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(this.getQualificationType());
+			PstnQlfrType aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(this.getQualificationType());
 			if(aTypeObj != null) {
 				return aTypeObj.getTypeValue();
 			}

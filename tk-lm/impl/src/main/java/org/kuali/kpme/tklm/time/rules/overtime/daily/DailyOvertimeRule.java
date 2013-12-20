@@ -29,21 +29,16 @@ import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class DailyOvertimeRule extends TkRule implements DailyOvertimeRuleContract {
 
-	private static final String WORK_AREA = "workArea";
-	private static final String DEPT = "dept";
-	private static final String PAY_TYPE = "payType";
-	private static final String LOCATION = "location";
 	private static final long serialVersionUID = 2064326101630818390L;
 	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(LOCATION)
-	            .add(PAY_TYPE)
-	            .add(DEPT)
-	            .add(WORK_AREA)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+	            .add("location")
+	            .add("payType")
+	            .add("dept")
+	            .add("workArea")
 	            .build();
 
 		
@@ -61,6 +56,7 @@ public class DailyOvertimeRule extends TkRule implements DailyOvertimeRuleContra
 
 	private BigDecimal maxGap;
 	private BigDecimal minHours;
+	private String userPrincipalId;
 	private boolean history;
 	private Boolean ovtEarnCode;
 
@@ -76,16 +72,6 @@ public class DailyOvertimeRule extends TkRule implements DailyOvertimeRuleContra
 	private EarnCodeGroup fromEarnGroupObj;
 	private EarnCode earnCodeObj;
 	private Location locationObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-    		.put(LOCATION, this.getLocation())
-    		.put(PAY_TYPE, this.getPaytype())
-			.put(DEPT, this.getDept())
-			.put(WORK_AREA, this.getWorkArea())
-			.build();
-	}
 
 	public String getTkDailyOvertimeRuleId() {
 		return tkDailyOvertimeRuleId;
@@ -109,6 +95,14 @@ public class DailyOvertimeRule extends TkRule implements DailyOvertimeRuleContra
 
 	public void setMaxGap(BigDecimal maxGap) {
 		this.maxGap = maxGap;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
 	}
 
 	public Department getDepartmentObj() {

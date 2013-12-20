@@ -23,11 +23,9 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.util.HrConstants;
 
-import com.google.common.collect.ImmutableMap;
-
 
 public class AccrualCategoryRule extends HrBusinessObject implements AccrualCategoryRuleContract {
-   
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategoryRule";
 	/**
 	 * 
 	 */
@@ -52,13 +50,6 @@ public class AccrualCategoryRule extends HrBusinessObject implements AccrualCate
 	private String lmAccrualCategoryId;
 	
 	private EarnCode earnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 
 	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;

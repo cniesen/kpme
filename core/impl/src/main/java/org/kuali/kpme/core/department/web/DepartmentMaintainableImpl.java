@@ -23,7 +23,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.department.Department;
@@ -48,7 +47,7 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
 	
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) HrServiceLocator.getDepartmentService().getDepartment(id);
+		return HrServiceLocator.getDepartmentService().getDepartment(id);
 	}
 	
 	@Override
@@ -71,25 +70,25 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
         Department oldMaintainableObject = (Department) document.getOldMaintainableObject().getBusinessObject();
         Department newMaintainableObject = (Department) document.getNewMaintainableObject().getBusinessObject();
         
-        DepartmentContract oldDepartment = oldMaintainableObject;
+        Department oldDepartment = oldMaintainableObject;
         if(StringUtils.isNotBlank(oldMaintainableObject.getHrDeptId())) {
         	oldDepartment = HrServiceLocator.getDepartmentService().getDepartment(oldMaintainableObject.getHrDeptId());
         } else {
         	oldDepartment = HrServiceLocator.getDepartmentService().getDepartment(oldMaintainableObject.getDept(), oldMaintainableObject.getEffectiveLocalDate());
         }
         
-        oldMaintainableObject.setRoleMembers((List<DepartmentPrincipalRoleMemberBo>) oldDepartment.getRoleMembers());
-        oldMaintainableObject.setInactiveRoleMembers((List<DepartmentPrincipalRoleMemberBo>) oldDepartment.getInactiveRoleMembers());
+        oldMaintainableObject.setRoleMembers(oldDepartment.getRoleMembers());
+        oldMaintainableObject.setInactiveRoleMembers(oldDepartment.getInactiveRoleMembers());
         
-        DepartmentContract newDepartment = newMaintainableObject;
+        Department newDepartment = newMaintainableObject;
         if(StringUtils.isNotBlank(newMaintainableObject.getHrDeptId())) {
         	newDepartment = HrServiceLocator.getDepartmentService().getDepartment(newMaintainableObject.getHrDeptId());
         } else {
         	newDepartment = HrServiceLocator.getDepartmentService().getDepartment(newMaintainableObject.getDept(), newMaintainableObject.getEffectiveLocalDate());
         }
         
-        newMaintainableObject.setRoleMembers((List<DepartmentPrincipalRoleMemberBo>) newDepartment.getRoleMembers());
-        newMaintainableObject.setInactiveRoleMembers((List<DepartmentPrincipalRoleMemberBo>) newDepartment.getInactiveRoleMembers());
+        newMaintainableObject.setRoleMembers(newDepartment.getRoleMembers());
+        newMaintainableObject.setInactiveRoleMembers(newDepartment.getInactiveRoleMembers());
         
         super.processAfterEdit(document, parameters);
     }

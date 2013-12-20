@@ -15,7 +15,6 @@
  */
 package org.kuali.kpme.pm.classification.service;
 
-import org.kuali.kpme.pm.api.classification.service.ClassificationService;
 import org.kuali.kpme.pm.classification.Classification;
 import org.kuali.kpme.pm.classification.dao.ClassificationDao;
 

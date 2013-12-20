@@ -29,44 +29,28 @@ import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRuleContract {
-
-	private static final String SATURDAY = "saturday";
-	private static final String FRIDAY = "friday";
-	private static final String THURSDAY = "thursday";
-	private static final String WEDNESDAY = "wednesday";
-	private static final String TUESDAY = "tuesday";
-	private static final String MONDAY = "monday";
-	private static final String SUNDAY = "sunday";
-	private static final String END_TIME = "endTime";
-	private static final String BEGIN_TIME = "beginTime";
-	private static final String PY_CALENDAR_GROUP = "pyCalendarGroup";
-	private static final String EARN_CODE = "earnCode";
-	private static final String PAY_GRADE = "payGrade";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String LOCATION = "location";
 
 	private static final long serialVersionUID = -3990672795815968915L;
 
 	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "ShiftDifferentialRule";
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(LOCATION)
-            .add(HR_SAL_GROUP)
-            .add(PAY_GRADE)
-            .add(EARN_CODE)
-            .add(PY_CALENDAR_GROUP)
-            .add(BEGIN_TIME)
-            .add(END_TIME)
-            .add(SUNDAY)
-            .add(MONDAY)
-            .add(TUESDAY)
-            .add(WEDNESDAY)
-            .add(THURSDAY)
-            .add(FRIDAY)
-            .add(SATURDAY)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("location")
+            .add("hrSalGroup")
+            .add("payGrade")
+            .add("earnCode")
+            .add("pyCalendarGroup")
+            .add("beginTime")
+            .add("endTime")
+            .add("sunday")
+            .add("monday")
+            .add("tuesday")
+            .add("wednesday")
+            .add("thursday")
+            .add("friday")
+            .add("saturday")
             .build();
 	
 	private String tkShiftDiffRuleId;
@@ -87,6 +71,7 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 	private String fromEarnGroup;
 	private String pyCalendarGroup;
 	private BigDecimal maxGap; // Gap is in HOURS
+	private String userPrincipalId;
 
 	private String hrSalGroupId;
 	private String hrLocationId;
@@ -100,27 +85,6 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
     private Calendar payCalendar;
     private Location locationObj;
     private PayGrade payGradeObj;
-    
-    @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(LOCATION, this.getLocation())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(LOCATION, this.getLocation())
-			.put(PAY_GRADE, this.getPayGrade())
-            .put(EARN_CODE, this.getEarnCode())
-            .put(PY_CALENDAR_GROUP, this.getPyCalendarGroup())
-            .put(BEGIN_TIME, this.getBeginTime())
-            .put(END_TIME, this.getEndTime())
-            .put(SUNDAY, this.isSunday())
-            .put(MONDAY, this.isMonday())
-            .put(TUESDAY, this.isTuesday())
-            .put(WEDNESDAY, this.isWednesday())
-            .put(THURSDAY, this.isThursday())
-            .put(FRIDAY, this.isFriday())
-            .put(SATURDAY, this.isSaturday())
-			.build();
-	}
     
 	public String getTkShiftDiffRuleId() {
 		return tkShiftDiffRuleId;
@@ -175,6 +139,14 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
      */
 	public void setMaxGap(BigDecimal maxGap) {
 		this.maxGap = maxGap;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
 	}
 
 	public String getHrSalGroup() {

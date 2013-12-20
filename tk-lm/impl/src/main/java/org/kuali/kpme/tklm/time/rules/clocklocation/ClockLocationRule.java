@@ -29,27 +29,18 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class ClockLocationRule extends TkRule implements DepartmentalRule, ClockLocationRuleContract {
-
-	private static final String PRINCIPAL_ID = "principalId";
-
-	private static final String JOB_NUMBER = "jobNumber";
-
-	private static final String WORK_AREA = "workArea";
-
-	private static final String DEPT = "dept";
 
 	private static final long serialVersionUID = 959554402289679184L;
 
 	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "ClockLocationRule";
 	//KPME-2273/1965 Primary Business Keys List. 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DEPT)
-            .add(WORK_AREA)
-            .add(JOB_NUMBER)
-            .add(PRINCIPAL_ID)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("dept")
+            .add("workArea")
+            .add("jobNumber")
+            .add("principalId")
             .build();
 
 
@@ -66,23 +57,13 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 	private String hrJobId;
 
 	private List<ClockLocationRuleIpAddress> ipAddresses = new ArrayList<ClockLocationRuleIpAddress>();
+	private String userPrincipalId;
 	private Boolean history;
 
 	private WorkArea workAreaObj;
 	private Job job;
 	private transient Person principal;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DEPT, this.getDept())
-			.put(WORK_AREA, this.getWorkArea())
-			.put(JOB_NUMBER, this.getJobNumber())
-			.put(PRINCIPAL_ID, this.getPrincipalId())
-			.build();
-	}
-	
 	public Long getWorkArea() {
 		return workArea;
 	}
@@ -97,6 +78,14 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 
 	public void setPrincipalId(String principalId) {
 		this.principalId = principalId;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
 	}
 
 	public Long getJobNumber() {

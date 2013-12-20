@@ -34,12 +34,7 @@ import org.joda.time.LocalDate;
 import org.joda.time.format.ISODateTimeFormat;
 import org.json.simple.JSONValue;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.leaveplan.LeavePlan;
@@ -48,6 +43,7 @@ import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -178,7 +174,7 @@ public class ActionFormUtils {
         for (TimeBlock timeBlock : timeBlocks) {
             Map<String, Object> timeBlockMap = new LinkedHashMap<String, Object>();
 
-            WorkAreaContract workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(timeBlock.getWorkArea(), timeBlock.getEndDateTime().toLocalDate());
+            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(timeBlock.getWorkArea(), timeBlock.getEndDateTime().toLocalDate());
             String workAreaDesc = workArea.getDescription();
 
             timeBlockMap.put("isApprover", isAnyApprover);
@@ -211,7 +207,7 @@ public class ActionFormUtils {
 
             timeBlockMap.put("documentId", timeBlock.getDocumentId());
             timeBlockMap.put("title", workAreaDesc);
-            EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getBeginDateTime().toLocalDate());
+            EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getBeginDateTime().toLocalDate());
             timeBlockMap.put("earnCode", timeBlock.getEarnCode());
             timeBlockMap.put("earnCodeDesc", ec != null ? ec.getDescription() : StringUtils.EMPTY);
             //TODO: need to cache this or pre-load it when the app boots up
@@ -327,7 +323,7 @@ public class ActionFormUtils {
         for (CalendarEntry pce : payPeriods) {
         	// Check if service date of user is after the Calendar entry
             DateTime asOfDate = pce.getEndPeriodFullDateTime().minusDays(1);
-    		PrincipalHRAttributesContract principalHRAttributes = null;
+    		PrincipalHRAttributes principalHRAttributes = null;
     		
     		if(viewPrincipal != null) {
     			principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(viewPrincipal, asOfDate.toLocalDate());
@@ -356,7 +352,7 @@ public class ActionFormUtils {
     // detect if the passed-in calendar entry is the current one
     public static boolean isOnCurrentPeriodFlag(CalendarEntry pce) {
     	String viewPrincipal = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
 
         if(pce != null && calendarEntry != null && calendarEntry.equals(pce)) {
     		return true;
@@ -376,12 +372,12 @@ public class ActionFormUtils {
     
     public static int getPlanningMonthsForEmployee(String principalid) {
 		int plannningMonths = 0;
-		PrincipalHRAttributesContract principalHRAttributes = HrServiceLocator
+		PrincipalHRAttributes principalHRAttributes = HrServiceLocator
 				.getPrincipalHRAttributeService().getPrincipalCalendar(
 						principalid, LocalDate.now());
 		if (principalHRAttributes != null
 				&& principalHRAttributes.getLeavePlan() != null) {
-			LeavePlanContract lp = HrServiceLocator.getLeavePlanService()
+			LeavePlan lp = HrServiceLocator.getLeavePlanService()
 					.getLeavePlan(principalHRAttributes.getLeavePlan(),
 							LocalDate.now());
 			if (lp != null && lp.getPlanningMonths() != null) {

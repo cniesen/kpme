@@ -38,7 +38,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="ClassFlag-pmFlagId" parent="ClassFlag-pmFlagId-parentBean"/>
 	 <bean id="ClassFlag-pmFlagId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -52,7 +51,7 @@
 	<bean id="ClassFlag-category" parent="ClassFlag-category-parentBean" />
 	<bean id="ClassFlag-category-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
-		<property name="maxLength" value="50"/>
+		<property name="maxLength" value="20"/>
 		<property name="controlField">
 			<bean parent="Uif-TextAreaControl" />
 		</property>
@@ -75,7 +74,6 @@
 	
  	<bean id="ClassFlag-pmPositionClassId" parent="ClassFlag-pmPositionClassId-parentBean"/>
 	<bean id="ClassFlag-pmPositionClassId-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>

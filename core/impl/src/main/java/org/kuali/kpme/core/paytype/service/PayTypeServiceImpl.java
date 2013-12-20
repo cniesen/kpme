@@ -18,8 +18,6 @@ package org.kuali.kpme.core.paytype.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.paytype.PayTypeContract;
-import org.kuali.kpme.core.api.paytype.service.PayTypeService;
 import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.paytype.dao.PayTypeDao;
 
@@ -28,13 +26,13 @@ public class PayTypeServiceImpl implements PayTypeService {
 	private PayTypeDao payTypeDao;
 
 	@Override
-	public void saveOrUpdate(PayTypeContract payType) {
-		payTypeDao.saveOrUpdate((PayType)payType);
+	public void saveOrUpdate(PayType payType) {
+		payTypeDao.saveOrUpdate(payType);
 	}
 
 	@Override
-	public void saveOrUpdate(List<? extends PayTypeContract> payTypeList) {
-		payTypeDao.saveOrUpdate((List<PayType>) payTypeList);
+	public void saveOrUpdate(List<PayType> payTypeList) {
+		payTypeDao.saveOrUpdate(payTypeList);
 	}
 
 	public void setPayTypeDao(PayTypeDao payTypeDao) {

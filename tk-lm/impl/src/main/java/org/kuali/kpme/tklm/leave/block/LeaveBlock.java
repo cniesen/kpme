@@ -33,33 +33,31 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.util.KpmeUtils;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.block.CalendarBlock;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.leave.workflow.LeaveRequestDocument;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.krad.util.ObjectUtils;
+import org.springframework.expression.spel.ast.Assign;
 
 public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockContract {
 	
@@ -106,19 +104,22 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	private String planningDescription;
 
     @Transient
-    private AccrualCategoryRuleContract accrualCategoryRule;
+    private AccrualCategoryRule accrualCategoryRule;
 
     @Transient
     private AccrualCategory accrualCategoryObj;
 
     @Transient
-    private PrincipalHRAttributesContract principalHRAttributes;
+    private PrincipalHRAttributes principalHRAttributes;
+  
+    @Transient
+    private String affectPay;
 
 	private String transactionalDocId;
 	private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
 
 	public String getAccrualCategoryRuleId() {
-        AccrualCategoryRuleContract aRule = getAccrualCategoryRule();
+        AccrualCategoryRule aRule = getAccrualCategoryRule();
 		return ObjectUtils.isNull(aRule) ? null : aRule.getLmAccrualCategoryRuleId();
 	}
 	
@@ -361,18 +362,18 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     public List<Assignment> getAssignments() {
         AssignmentDescriptionKey key = AssignmentDescriptionKey.get(getAssignmentKey());
         return Collections.singletonList(
-                (Assignment)HrServiceLocator.getAssignmentService().getAssignment(getPrincipalId(), key, getLeaveLocalDate()));
+                HrServiceLocator.getAssignmentService().getAssignment(getPrincipalId(), key, getLeaveLocalDate()));
     }
 	public String getAssignmentTitle() {
 		StringBuilder b = new StringBuilder();
 
 		if (this.workArea != null) {
-			WorkAreaContract wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(
+			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(
 					this.workArea, LocalDate.now());
 			if (wa != null) {
 				b.append(wa.getDescription());
 			}
-			TaskContract task = HrServiceLocator.getTaskService().getTask(
+			Task task = HrServiceLocator.getTaskService().getTask(
 					this.getTask(), this.getLeaveLocalDate());
 			if (task != null) {
 				// do not display task description if the task is the default
@@ -393,13 +394,13 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
 	public String getCalendarId() {
         if (StringUtils.isEmpty(calendarId)) {
-            PrincipalHRAttributesContract principalHRAttributes = getPrincipalHRAttributes();
-            CalendarContract pcal= null;
+            PrincipalHRAttributes principalHRAttributes = getPrincipalHRAttributes();
+            Calendar pcal= null;
             if(principalHRAttributes != null) {
                 //pcal = principalHRAttributes.getCalendar() != null ? principalHRAttributes.getCalendar() : principalHRAttributes.getLeaveCalObj() ;
                 pcal = principalHRAttributes.getLeaveCalObj() != null ? principalHRAttributes.getLeaveCalObj() : principalHRAttributes.getCalendar();
                 if(pcal!= null) {
-                    CalendarEntryContract calEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(pcal.getHrCalendarId(), getLeaveLocalDate().toDateTimeAtStartOfDay());
+                    CalendarEntry calEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(pcal.getHrCalendarId(), getLeaveLocalDate().toDateTimeAtStartOfDay());
                     if(calEntries != null) {
                         this.calendarId = calEntries.getHrCalendarEntryId();
                     }
@@ -416,7 +417,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	public String getEarnCodeDescription() {
 		String earnCodeDescription = "";
 		
-		EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getLeaveLocalDate());
+		EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getLeaveLocalDate());
 		if (earnCodeObj != null) {
 			earnCodeDescription = earnCodeObj.getDescription();
 		}
@@ -456,7 +457,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
     
     public String getAssignmentKey() {
         if (assignmentKey == null) {
-            this.setAssignmentKey(KpmeUtils.formatAssignmentKey(jobNumber, workArea, task));
+            this.setAssignmentKey(TKUtils.formatAssignmentKey(jobNumber, workArea, task));
         }
         return assignmentKey;
     }
@@ -655,10 +656,10 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 		this.earnCode = earnCode;
 	}
 
-    public AccrualCategoryRuleContract getAccrualCategoryRule() {
+    public AccrualCategoryRule getAccrualCategoryRule() {
         if (accrualCategoryRule == null) {
             AccrualCategory category = getAccrualCategoryObj();
-            PrincipalHRAttributesContract pha = getPrincipalHRAttributes();
+            PrincipalHRAttributes pha = getPrincipalHRAttributes();
             accrualCategoryRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(category, getLeaveLocalDate(), pha.getServiceLocalDate());
         }
         return accrualCategoryRule;
@@ -666,12 +667,12 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
     public AccrualCategory getAccrualCategoryObj() {
         if (accrualCategoryObj == null) {
-            accrualCategoryObj = (AccrualCategory) HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getLeaveLocalDate());
+            accrualCategoryObj = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getLeaveLocalDate());
         }
         return accrualCategoryObj;
     }
 
-    public PrincipalHRAttributesContract getPrincipalHRAttributes() {
+    public PrincipalHRAttributes getPrincipalHRAttributes() {
         if (principalHRAttributes == null) {
             principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, getLeaveLocalDate());
         }
@@ -688,6 +689,14 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 
 	public void setUserPrincipalId(String userPrincipalId) {
 	   	this.userPrincipalId = userPrincipalId;
+	}
+
+	public String getAffectPay() {
+		return affectPay;
+	}
+
+	public void setAffectPay(String affectPay) {
+		this.affectPay = affectPay;
 	}
 	
 }

@@ -35,7 +35,6 @@
 	        <ref bean="PositionQualifierType-typeValue"/>
 	        <ref bean="PositionQualifierType-selectValues"/>	
 	        <ref bean="PositionQualifierType-active"/>
-            <ref bean="PositionQualifierType-userPrincipalId"/>
 		 </list>
 	    </property>
 <!-- 	    <property name="collections"> -->
@@ -49,7 +48,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionQualifierType-pmPstnQlfrTypeId" parent="PositionQualifierType-pmPstnQlfrTypeId-parentBean"/>
 	 <bean id="PositionQualifierType-pmPstnQlfrTypeId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60"/>
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -75,11 +73,10 @@
 	
 	<bean id="PositionQualifierType-code" parent="PositionQualifierType-code-parentBean" />
 	<bean id="PositionQualifierType-code-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50"/>
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Code" />
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="50" />
+			<bean parent="Uif-TextControl" p:size="40" />
 		</property>
 		<property name="name" value="code" />
 		<property name="label" value="Code" />
@@ -88,10 +85,9 @@
 
 	<bean id="PositionQualifierType-type" parent="PositionQualifierType-type-parentBean" />
 	<bean id="PositionQualifierType-type-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50"/>
 		<property name="required" value="yes" />
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="50" />
+			<bean parent="Uif-TextControl" p:size="40" />
 		</property>
 		<property name="name" value="type" />
 		<property name="label" value="Type" />
@@ -100,7 +96,6 @@
 
 	<bean id="PositionQualifierType-descr" parent="PositionQualifierType-descr-parentBean" />
 	<bean id="PositionQualifierType-descr-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100"/>
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -126,7 +121,6 @@
 
 	<bean id="PositionQualifierType-selectValues" parent="PositionQualifierType-selectValues-parentBean" />
 	<bean id="PositionQualifierType-selectValues-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100"/>
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -139,24 +133,9 @@
     <bean id="PositionQualifierType-active" parent="PositionQualifierType-active-parentBean"/>
  	<bean id="PositionQualifierType-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
    		<property name="name" value="active"/>
-  	</bean>
+  	</bean> 
 
-    <!--userPrincipalId-->
-    <bean id="PositionQualifierType-userPrincipalId" parent="PositionQualifierType-userPrincipalId-parentBean" />
-    <bean id="PositionQualifierType-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="name" value="userPrincipalId" />
-        <property name="label" value="User Principal Id" />
-        <property name="shortLabel" value="User Principal Id" />
-        <property name="maxLength" value="40" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="40" />
-        </property>
-    </bean>
+  	
   	 
 
 <!--*************************************************************************** 
@@ -165,7 +144,7 @@
   	
   <!-- Position Qualifier Type Lookup View -->
  
-  <bean id="PositionQualifierType-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
+  <bean id="PositionQualifierType-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Qualifier Type Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType" />
     <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />  <!--KPME-2699-->
@@ -216,7 +195,6 @@
 			       	<bean parent="Uif-DataField" p:propertyName="typeValue" />
 			       	<bean parent="Uif-DataField" p:propertyName="selectValues" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Qualifier Type Inquiry"/>
@@ -227,7 +205,7 @@
   
 <!--  Position Qualifier Type Maintenance View -->
   <bean id="PositionQualifierType-MaintenanceView" parent="PositionQualifierType-MaintenanceView-parentBean"/>
-  <bean id="PositionQualifierType-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionQualifierType-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Qualifier Type Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType"/>
     <property name="items">

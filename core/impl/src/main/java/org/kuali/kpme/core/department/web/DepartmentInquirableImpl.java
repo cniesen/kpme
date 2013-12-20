@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -32,7 +31,7 @@ public class DepartmentInquirableImpl extends KualiInquirableImpl {
     @Override
     @SuppressWarnings("rawtypes")
     public BusinessObject getBusinessObject(Map fieldValues) {
-        DepartmentContract departmentObj = null;
+        Department departmentObj = null;
 
         if (StringUtils.isNotBlank((String) fieldValues.get("hrDeptId"))) {
             departmentObj = HrServiceLocator.getDepartmentService().getDepartment((String) fieldValues.get("hrDeptId"));
@@ -42,7 +41,7 @@ public class DepartmentInquirableImpl extends KualiInquirableImpl {
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
             departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, effectiveDate);
         } else {
-            departmentObj = (DepartmentContract) super.getBusinessObject(fieldValues);
+            departmentObj = (Department) super.getBusinessObject(fieldValues);
         }
 
         return departmentObj;

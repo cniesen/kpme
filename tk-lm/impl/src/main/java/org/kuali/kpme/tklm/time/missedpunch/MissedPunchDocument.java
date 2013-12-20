@@ -15,15 +15,18 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchDocumentContract;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class MissedPunchDocument extends TransactionalDocumentBase implements MissedPunchDocumentContract {
 

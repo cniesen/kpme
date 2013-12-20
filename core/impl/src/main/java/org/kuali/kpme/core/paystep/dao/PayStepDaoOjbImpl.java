@@ -74,8 +74,8 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 		crit.addAndCriteria(activeFilter);
 		
         if (StringUtils.equals(history, "N")) {
-            crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayStep.class, PayStep.BUSINESS_KEYS, false));
-            crit.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayStep.class, PayStep.BUSINESS_KEYS, false));
+            crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayStep.class, PayStep.EQUAL_TO_FIELDS, false));
+            crit.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayStep.class, PayStep.EQUAL_TO_FIELDS, false));
         }
 		
 		Query query = QueryFactory.newQuery(PayStep.class, crit);

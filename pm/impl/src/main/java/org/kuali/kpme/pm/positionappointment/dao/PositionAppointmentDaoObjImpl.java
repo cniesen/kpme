@@ -24,20 +24,16 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.PMConstants;
 import org.kuali.kpme.pm.positionappointment.PositionAppointment;
-import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 import com.google.common.collect.ImmutableList;
 
 public class PositionAppointmentDaoObjImpl extends PlatformAwareDaoBaseOjb implements PositionAppointmentDao {
 
-	private static final ImmutableList<String> PRG_BUSINESS_KEYS  = new ImmutableList.Builder<String>()
+	private static final ImmutableList<String> PRG_EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
 			.add("positionAppointment").add("institution").add("location")
 			.build();
 
@@ -98,11 +94,11 @@ public class PositionAppointmentDaoObjImpl extends PlatformAwareDaoBaseOjb imple
             root.addAndCriteria(activeFilter);
         }
 		
-		//root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionAppointment.class, asOfDate, PRG_BUSINESS_KEYS , false));
-		//root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PRG_BUSINESS_KEYS , false));
+		//root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionAppointment.class, asOfDate, PRG_EQUAL_TO_FIELDS, false));
+		//root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PRG_EQUAL_TO_FIELDS, false));
 		if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PositionAppointment.class, effectiveDateFilter, PRG_BUSINESS_KEYS , false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PRG_BUSINESS_KEYS , false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PositionAppointment.class, effectiveDateFilter, PRG_EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PRG_EQUAL_TO_FIELDS, false));
         }
 		
 
@@ -115,87 +111,5 @@ public class PositionAppointmentDaoObjImpl extends PlatformAwareDaoBaseOjb imple
 
 		return prgList;
 	}
-	
-	public List<PositionAppointment> getPositionAppointmentList(String positionAppointment, String institution, String location, LocalDate asOfDate) {
-	
-		List<PositionAppointment> prgList = new ArrayList<PositionAppointment>();
-		Criteria root = new Criteria();
 
-		if (StringUtils.isNotEmpty(positionAppointment) 
-				&& !ValidationUtils.isWildCard(positionAppointment)) {
-			root.addLike("UPPER(`pstn_appointment`)", positionAppointment.toUpperCase());
-		}
-		
-		if (StringUtils.isNotEmpty(institution) 
-				&& !ValidationUtils.isWildCard(institution)) {
-			root.addLike("UPPER(`institution`)", institution.toUpperCase());
-		}
-		
-		if (StringUtils.isNotEmpty(location) 
-				&& !ValidationUtils.isWildCard(location)) {
-			root.addLike("UPPER(`location`)", location.toUpperCase());
-		}
-
-		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionAppointment.class, asOfDate, PositionAppointment.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PositionAppointment.BUSINESS_KEYS, false));
-        
-        Criteria activeFilter = new Criteria();
-        activeFilter.addEqualTo("active", true);
-        root.addAndCriteria(activeFilter);
-
-		Query query = QueryFactory.newQuery(PositionAppointment.class, root);
-
-		Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-		
-		if (!c.isEmpty())
-			prgList.addAll(c);
-
-		return prgList;
-	}
-
-    public List<PositionAppointment> getValidPositionAppointmentList(String positionAppointment, String institution, String location, LocalDate asOfDate) {
-
-        List<PositionAppointment> prgList = new ArrayList<PositionAppointment>();
-
-        Criteria root = new Criteria();
-
-        if (StringUtils.isNotEmpty(positionAppointment)
-                && !ValidationUtils.isWildCard(positionAppointment)) {
-            root.addLike("UPPER(`pstn_appointment`)", positionAppointment.toUpperCase());
-        }
-
-        if (StringUtils.isNotEmpty(institution)
-                && !ValidationUtils.isWildCard(institution)) {
-            List<String> institutionList = new ArrayList<String>();
-            institutionList.add(institution.toUpperCase());
-            institutionList.add(PMConstants.WILDCARD_CHARACTER);
-            institutionList.add(HrConstants.WILDCARD_CHARACTER);
-            root.addColumnIn("UPPER(`institution`)", institutionList);
-        }
-
-        if (StringUtils.isNotEmpty(location)
-                && !ValidationUtils.isWildCard(location)) {
-            List<String> locationList = new ArrayList<String>();
-            locationList.add(location.toUpperCase());
-            locationList.add(PMConstants.WILDCARD_CHARACTER);
-            locationList.add(HrConstants.WILDCARD_CHARACTER);
-            root.addColumnIn("UPPER(`location`)", locationList);
-        }
-
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionAppointment.class, asOfDate, PositionAppointment.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionAppointment.class, PositionAppointment.BUSINESS_KEYS, false));
-
-        Criteria activeFilter = new Criteria();
-        activeFilter.addEqualTo("active", true);
-        root.addAndCriteria(activeFilter);
-
-        Query query = QueryFactory.newQuery(PositionAppointment.class, root);
-
-        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-
-        if (!c.isEmpty())
-            prgList.addAll(c);
-
-        return prgList;
-    }
 }

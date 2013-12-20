@@ -16,150 +16,52 @@
 package org.kuali.kpme.pm.position.validation;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.classification.Classification;
+import org.kuali.kpme.pm.classification.duty.ClassificationDuty;
 import org.kuali.kpme.pm.position.Position;
 import org.kuali.kpme.pm.position.PositionDuty;
-import org.kuali.kpme.pm.positiondepartment.PositionDepartment;
-import org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliation;
-import org.kuali.kpme.pm.util.PmValidationUtils;
+import org.kuali.kpme.pm.position.funding.PositionFunding;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
 public class PositionValidation extends MaintenanceDocumentRuleBase {
 	@Override
-	protected boolean processCustomRouteDocumentBusinessRules(
-			MaintenanceDocument document) {
+	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position");
 		Position aPosition = (Position) this.getNewDataObject();
-
+		
 		if (aPosition != null) {
 			valid = true;
-			valid &= this.validateOverviewPage(aPosition);
-			valid &= this.validateClassificationPage(aPosition);
 			valid &= this.validateDutyListPercentage(aPosition);
-			valid &= this.validatePrimaryDepartment(aPosition);
 		}
 		return valid;
 	}
-
+	
 	private boolean validateDutyListPercentage(Position aPosition) {
-		if (CollectionUtils.isNotEmpty(aPosition.getDutyList())) {
+		if(CollectionUtils.isNotEmpty(aPosition.getDutyList())) {
 			BigDecimal sum = BigDecimal.ZERO;
-			for (PositionDuty aDuty : aPosition.getDutyList()) {
-				if (aDuty != null && aDuty.getPercentage() != null) {
+			for(PositionDuty aDuty : aPosition.getDutyList()) {
+				if(aDuty != null && aDuty.getPercentage() != null) {
 					sum = sum.add(aDuty.getPercentage());
 				}
 			}
-			if (sum.compareTo(new BigDecimal(100)) > 0) {
+			if(sum.compareTo(new BigDecimal(100)) > 0) {
 				String[] parameters = new String[1];
 				parameters[0] = sum.toString();
-				this.putFieldError("dataObject.dutyList",
-						"duty.percentage.exceedsMaximum", parameters);
+				this.putFieldError("dataObject.dutyList", "duty.percentage.exceedsMaximum", parameters);
 				return false;
 			}
-		}
+		}		
 		return true;
 	}
-
-	// KPME-3016  
-	// Now each section is its own page that if you want to show errors globally, you have to catch them globally
-	private boolean validateOverviewPage(Position aPosition) {
-
-		// required fields
-		if (aPosition.getEffectiveDate() == null
-				|| StringUtils.isEmpty(aPosition.getDescription())
-				|| StringUtils.isEmpty(aPosition.getPositionStatus())
-				|| StringUtils.isEmpty(aPosition.getAppointmentType())
-				|| StringUtils.isEmpty(aPosition.getTemporary())
-				|| StringUtils.isEmpty(aPosition.getContract())) {
-
-			this.putFieldError("positionNumber", "error.overview.fields.required");
-			return false;
-		}
 		
-		// validate appointment type
-		if (!StringUtils.isEmpty(aPosition.getAppointmentType())) {
-			List <PositionDepartment> depts = aPosition.getDepartmentList();
-			if (depts != null && depts.size() > 0) {
-				boolean found = false;
-				for (PositionDepartment aPos : depts) {
-					if (PmValidationUtils.validatePositionAppointmentType(aPosition.getAppointmentType(), aPos.getInstitution(), aPos.getLocation(), aPosition.getEffectiveLocalDate())) {
-						found = true;
-						break;
-					}
-				}
-				if (!found) {
-					this.putFieldError("appointmentType", "error.existence", "Appointment Type '" + aPosition.getAppointmentType() + "'");
-					return false;						
-				}
-			}
-		}
-		
-		// validate contract and contrqact type
-		if (StringUtils.equals(aPosition.getContract(), "Y")) {
-			if (StringUtils.isEmpty(aPosition.getContractType())) {
-				this.putFieldError("contractType", "error.overview.fields.required");
-				return false;
-			} else {
-				if (!PmValidationUtils.validatePositionContractType(aPosition.getContractType(), aPosition.getInstitution(), aPosition.getLocation(), aPosition.getEffectiveLocalDate())) {
-					this.putFieldError("contractType", "error.existence", "Contract Type '" + aPosition.getContractType() + "'");
-					return false;
-				}
-			}
-		}
-		
-		// validate renewal eligible
-		if (aPosition.getExpectedEndDate() != null) {
-			if (StringUtils.isEmpty(aPosition.getRenewEligible())) {
-				this.putFieldError("renewEligible", "error.overview.fields.required");
-				return false;
-			}
-		}
-		
-		return true;
-	}
-	
-	private boolean validateClassificationPage(Position aPosition) {
-
-		if (StringUtils.isEmpty(aPosition.getPmPositionClassId())
-				|| StringUtils.isEmpty(aPosition.getTenureEligible())
-				|| StringUtils.isEmpty(aPosition.getBenefitsEligible())
-				|| StringUtils.isEmpty(aPosition.getLeaveEligible())) {
-
-			this.putFieldError("pmPositionClassId", "error.classication.fields.required");
-			return false;
-		}
-		// validate leave plan
-		if (StringUtils.equals(aPosition.getLeaveEligible(), "Y")) {
-			if (StringUtils.isEmpty(aPosition.getLeavePlan())) {
-				this.putFieldError("leavePlan", "error.classication.fields.required");
-				return false;
-			} 
-		}
-		
-		return true;
-	}
-	
-	private boolean validatePrimaryDepartment(Position aPosition) {
-
-		if (CollectionUtils.isNotEmpty(aPosition.getDepartmentList())) {
-			for (PositionDepartment aDepartment : aPosition.getDepartmentList()) {
-				if(aDepartment != null && aDepartment.getDeptAfflObj() != null) {
-					DepartmentAffiliation pda = (DepartmentAffiliation)aDepartment.getDeptAfflObj();
-					if (pda.isPrimaryIndicator()) {
-						return true;
-					}
-				}
-			}
-		}
-
-		this.putFieldError("primaryDepartment", "error.primaryDepartment.required");
-		return false;
-	}
-
-
 }

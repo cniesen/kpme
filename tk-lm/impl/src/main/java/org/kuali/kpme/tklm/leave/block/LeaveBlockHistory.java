@@ -18,8 +18,6 @@ package org.kuali.kpme.tklm.leave.block;
 import java.sql.Timestamp;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
@@ -57,6 +55,10 @@ public class LeaveBlockHistory extends LeaveBlock implements LeaveBlockHistoryCo
 		this.setLeaveBlockType(lb.getLeaveBlockType());
 		this.setBeginTimestamp(lb.getBeginTimestamp());
 		this.setEndTimestamp(lb.getEndTimestamp());
+        this.setWorkArea(lb.getWorkArea());
+        this.setTask(lb.getTask());
+        this.setJobNumber(lb.getJobNumber());
+        this.setTransactionDocId(lb.getTransactionalDocId());
 	}
 	
 	
@@ -97,12 +99,12 @@ public class LeaveBlockHistory extends LeaveBlock implements LeaveBlockHistoryCo
 		LeaveBlock lb = LmServiceLocator.getLeaveBlockService().getLeaveBlock(super.getLmLeaveBlockId());
 		if(lb != null){
 			if (lb.getWorkArea() != null) {
-				WorkAreaContract wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(
+				WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(
 					lb.getWorkArea(), LocalDate.now());
 				if (wa != null) {
 					b.append(wa.getDescription());
 				}
-				TaskContract task = HrServiceLocator.getTaskService().getTask(
+				Task task = HrServiceLocator.getTaskService().getTask(
 						this.getTask(), this.getLeaveLocalDate());
 				if (task != null) {
 					// do not display task description if the task is the default

@@ -21,8 +21,6 @@ import java.util.Date;
 import org.joda.time.LocalDate;
 import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-
-import com.google.common.collect.ImmutableMap;
 /**
  * <p>HrBusinessObjectContract interface.</p>
  *
@@ -84,24 +82,4 @@ public interface HrBusinessObjectContract extends PersistableBusinessObject, Ina
 	 * @return timestamp of HrBusinessObject
 	 */
 	public Timestamp getTimestamp();
-	
-	
-	
-	/**
-	 * The map of key-vaue pairs that together form the business key criteria for this instance.
-	 * 
-	 * @return map of key-value pairs that comprise the business key
-	 */
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap();
-
-    /**
-     * The userPrincipalId of when this HrBusinessObject was last created/updated
-     *
-     * <p>
-     * userPrincipalId of HrBusinessObject
-     * <p>
-     *
-     * @return userPrincipalId of HrBusinessObject
-     */
-    public String getUserPrincipalId();
 }

@@ -71,8 +71,8 @@ public class PayrollApprovalJob extends BatchJob {
 			String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 			String documentId = jobDataMap.getString("documentId");
 	
-			CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-			Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+			CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+			Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 			
 			List<RoleMember> roleMembers = new ArrayList<RoleMember>();
 			String subject = new String();

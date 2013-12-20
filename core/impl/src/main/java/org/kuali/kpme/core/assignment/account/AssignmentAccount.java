@@ -27,8 +27,6 @@ import org.kuali.kpme.core.kfs.coa.businessobject.ProjectCode;
 import org.kuali.kpme.core.kfs.coa.businessobject.SubAccount;
 import org.kuali.kpme.core.kfs.coa.businessobject.SubObjectCode;
 
-import com.google.common.collect.ImmutableMap;
-
 public class AssignmentAccount extends HrBusinessObject implements AssignmentAccountContract {
 
 	private static final long serialVersionUID = 2414818440020234952L;
@@ -52,13 +50,6 @@ public class AssignmentAccount extends HrBusinessObject implements AssignmentAcc
 	private SubObjectCode subObjectCodeObj;
 	private ProjectCode projectCodeObj;
 	private EarnCode earnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 	
 	public Assignment getAssignmentObj() {
 		return assignmentObj;

@@ -21,7 +21,6 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.calendar.CalendarContract;
 import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
 import org.kuali.rice.kim.api.identity.Person;
 
 /**
@@ -30,7 +29,6 @@ import org.kuali.rice.kim.api.identity.Person;
  */
 public interface PrincipalHRAttributesContract extends HrBusinessObjectContract {
 
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
 	/**
 	 * The principalId the PrincipalHRAttributes is associated with
 	 * 
@@ -64,7 +62,6 @@ public interface PrincipalHRAttributesContract extends HrBusinessObjectContract 
 	 * @return payCalendar for PrincipalHRAttributes
 	 */
 	public String getPayCalendar();
-
 	
 	/**
 	 * The name of the LeavePlan object the PrincipalHRAttributes is associated with
@@ -175,17 +172,6 @@ public interface PrincipalHRAttributesContract extends HrBusinessObjectContract 
 	 * @return leaveCalendar for PrincipalHRAttributes
 	 */
 	public String getLeaveCalendar();
-
-    /**
-     * The Calendar object for Leave the PrincipalHRAttributes is associated with
-     *
-     * <p>
-     * leave calendar of a PrincipalHRAttributes
-     * </p>
-     *
-     * @return leave calendar for PrincipalHRAttributes
-     */
-    public CalendarContract getLeaveCalObj();
 	
 	/**
 	 * The primary key of a PrincipalHRAttributes entry saved in a database

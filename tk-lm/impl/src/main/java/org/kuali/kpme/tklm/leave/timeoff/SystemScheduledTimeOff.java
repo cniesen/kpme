@@ -31,29 +31,21 @@ import org.kuali.kpme.tklm.api.leave.timeoff.SystemScheduledTimeOffContract;
 import org.kuali.kpme.tklm.common.TkConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class SystemScheduledTimeOff extends HrBusinessObject implements SystemScheduledTimeOffContract {
-
-	private static final String ACCRUED_DATE = "accruedDate";
-	private static final String ACCRUAL_CATEGORY = "accrualCategory";
-	private static final String LOCATION = "location";
-	private static final String LEAVE_PLAN = "leavePlan";
-	private static final String EARN_CODE = "earnCode";
 
 	private static final long serialVersionUID = 6660625335629574993L;
 
 	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "SystemScheduledTimeOff";
 	//KPME-2273/1965 Primary Business Keys List.
 	public static final ImmutableList<String> fields = new ImmutableList.Builder<String>()
-             .add(EARN_CODE)             
-             .add(LEAVE_PLAN)
-             .add(LOCATION)
-             .add(ACCRUAL_CATEGORY)
-             .add(ACCRUED_DATE)
+             .add("earnCode")             
+             .add("leavePlan")
+             .add("location")
+             .add("leavePlan")
+             .add("accrualCategory")
+             .add("accruedDate")
              .build();
-	
-	
 	private String lmSystemScheduledTimeOffId;
 	private String leavePlan;
 	private String accrualCategory;
@@ -75,18 +67,6 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 	private EarnCode transferToEarnCodeObj;
 	private Location locationObj;
 	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(EARN_CODE, this.getEarnCode())
-			.put(LEAVE_PLAN, this.getLeavePlan())
-			.put(LOCATION, this.getLocation())
-			.put(ACCRUAL_CATEGORY, this.getAccrualCategory())
-			.put(ACCRUED_DATE, this.getAccruedDate())
-			.build();
-	}
-	
 	public String getLmSystemScheduledTimeOffId() {
 		return lmSystemScheduledTimeOffId;
 	}
@@ -101,7 +81,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 		}
 		if (this.earnCodeObj == null && 
 				(!StringUtils.isEmpty(this.earnCode) && getEffectiveDate() != null)) {		
-			earnCodeObj =  (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
+			earnCodeObj =  HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
 		}
 		leavePlan = (earnCodeObj != null) ? earnCodeObj.getLeavePlan() : "";
 		return leavePlan;
@@ -117,7 +97,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
         }
 		if (this.earnCodeObj == null &&
 				(!StringUtils.isEmpty(this.earnCode) && getEffectiveDate() != null)) {
-			earnCodeObj =  (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
+			earnCodeObj =  HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
 		}
 		accrualCategory = (earnCodeObj != null) ? earnCodeObj.getAccrualCategory() : "";
 		return accrualCategory;

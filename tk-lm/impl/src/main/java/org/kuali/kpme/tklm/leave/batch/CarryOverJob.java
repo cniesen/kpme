@@ -27,25 +27,30 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.accrualcategory.service.AccrualCategoryService;
-import org.kuali.kpme.core.api.assignment.service.AssignmentService;
-import org.kuali.kpme.core.api.calendar.entry.service.CalendarEntryService;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
-import org.kuali.kpme.core.api.leaveplan.service.LeavePlanService;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.api.principal.service.PrincipalHRAttributesService;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.service.AccrualCategoryService;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.service.AssignmentService;
 import org.kuali.kpme.core.batch.BatchJob;
+import org.kuali.kpme.core.calendar.entry.service.CalendarEntryService;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.leaveplan.service.LeavePlanService;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.principal.service.PrincipalHRAttributesService;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.service.LeaveBlockService;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
 import org.kuali.kpme.tklm.leave.summary.service.LeaveSummaryService;
+import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.kim.api.identity.principal.Principal;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -72,8 +77,8 @@ public class CarryOverJob extends BatchJob {
             if (leavePlan!= null) {
 
             	LocalDate asOfDate = LocalDate.now();
-                LeavePlanContract leavePlanObj = getLeavePlanService().getLeavePlan(leavePlan, asOfDate);
-                List<Assignment> assignments = (List<Assignment>) getAssignmentService().getActiveAssignments(asOfDate);
+                LeavePlan leavePlanObj = getLeavePlanService().getLeavePlan(leavePlan, asOfDate);
+                List<Assignment> assignments = getAssignmentService().getActiveAssignments(asOfDate);
 
                 //holds a list of principalIds so this isn't run multiple time for the same person
                 Set<String> principalIds = new HashSet<String>();
@@ -81,7 +86,7 @@ public class CarryOverJob extends BatchJob {
                     String principalId = assignment.getPrincipalId();
                     if (assignment.getJob().isEligibleForLeave() && !principalIds.contains(principalId)) {
 
-                        PrincipalHRAttributesContract principalHRAttributes = getPrincipalHRAttributesService().getPrincipalCalendar(principalId, asOfDate);
+                        PrincipalHRAttributes principalHRAttributes = getPrincipalHRAttributesService().getPrincipalCalendar(principalId, asOfDate);
                         principalIds.add(principalId);
 
                         if (principalHRAttributes != null) {
@@ -228,7 +233,7 @@ public class CarryOverJob extends BatchJob {
         if(leaveSummaryRows !=null && !leaveSummaryRows.isEmpty()){
 
             for(LeaveSummaryRow lsr : leaveSummaryRows){
-                AccrualCategoryContract accrualCategory = getAccrualCategoryService().getAccrualCategory(lsr.getAccrualCategoryId());
+                AccrualCategory accrualCategory = getAccrualCategoryService().getAccrualCategory(lsr.getAccrualCategoryId());
 
                 LeaveBlock leaveBlock = new LeaveBlock();
                 leaveBlock.setAccrualCategory(lsr.getAccrualCategory());

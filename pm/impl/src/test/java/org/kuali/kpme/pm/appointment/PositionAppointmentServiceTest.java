@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.pm.PMIntegrationTestCase;
-import org.kuali.kpme.pm.api.positionappointment.PositionAppointmentContract;
 import org.kuali.kpme.pm.positionappointment.PositionAppointment;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 
@@ -54,7 +53,7 @@ public class PositionAppointmentServiceTest extends PMIntegrationTestCase {
 	@Test
 	public void testGetPositionAppointmentById() throws Exception {
 
-		PositionAppointmentContract positionAppointment = PmServiceLocator.getPositionAppointmentService().getPositionAppointmentById(pmPositionAppointmentId);
+		PositionAppointment positionAppointment = PmServiceLocator.getPositionAppointmentService().getPositionAppointmentById(pmPositionAppointmentId);
 		assertEquals("testAppointment", positionAppointment.getPositionAppointment());
 	}
 	
@@ -62,7 +61,7 @@ public class PositionAppointmentServiceTest extends PMIntegrationTestCase {
 	public void testGetPositionAppointmentList() throws Exception {
 
 		LocalDate todayDate = new LocalDate();
-		List<? extends PositionAppointmentContract> positionAppointments = PmServiceLocator.getPositionAppointmentService().getPositionAppointmentList(positionAppointment, "%", institution, location, 
+		List<PositionAppointment> positionAppointments = PmServiceLocator.getPositionAppointmentService().getPositionAppointmentList(positionAppointment, "%", institution, location, 
 				TKUtils.formatDateString(""), TKUtils.formatDateString(""), "Y", "Y");
 		assertTrue(positionAppointments.size() == 1);
 	}
