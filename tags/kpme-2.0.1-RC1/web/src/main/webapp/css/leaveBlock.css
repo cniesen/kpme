@@ -1,0 +1,52 @@
+/**
+ * Copyright 2004-2013 The Kuali Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.opensource.org/licenses/ecl2.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.leaveBlock {
+    background-color: #98a386;
+    color: white;
+    margin: 3px;
+    width: 98%;
+    text-align: center;
+    padding: 4px 0 4px 0;
+}
+
+.leaveBlock .leaveBlock-delete {
+    width: 15px;
+    height: 15px;
+    margin: 0 4px 0 0;
+    z-index: 15;
+    cursor: pointer;
+    float: right;
+}
+
+.approved {
+    background-color: #008800;
+}
+
+.planned {
+    background-color: #0033CC;
+}
+
+.requested {
+    background-color: #666600;
+}
+
+.deferred {
+    background-color: #0000CC;
+}
+
+.usage {
+    background-color: #98a386;
+}
