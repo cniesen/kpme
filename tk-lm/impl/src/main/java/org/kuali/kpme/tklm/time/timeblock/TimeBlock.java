@@ -82,6 +82,9 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     
     @Transient
     private Boolean overtimeEditable;
+    
+    @Transient
+	private Boolean clockedByMissedPunch;
 
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
     @Transient
@@ -99,7 +102,15 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	super();
     }
     
-    public Date getBeginDate() {
+    public Boolean getClockedByMissedPunch() {
+		return clockedByMissedPunch;
+	}
+
+	public void setClockedByMissedPunch(Boolean clockedByMissedPunch) {
+		this.clockedByMissedPunch = clockedByMissedPunch;
+	}
+
+	public Date getBeginDate() {
     	Date beginDate = null;
     	
     	if (beginTimestamp != null) {
