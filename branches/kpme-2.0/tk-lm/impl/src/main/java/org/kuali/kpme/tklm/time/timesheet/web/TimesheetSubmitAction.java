@@ -47,6 +47,7 @@ import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.web.KPMEAction;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -76,7 +77,7 @@ public class TimesheetSubmitAction extends KPMEAction {
         TimesheetSubmitActionForm tsaf = (TimesheetSubmitActionForm)form;
         List<String> errorList = new ArrayList<String>();
         TimesheetDocument document = TkServiceLocator.getTimesheetService().getTimesheetDocument(tsaf.getDocumentId());
-
+        
         // Switched to grab the target (chain, resolution: target -> backdoor -> actual) user.
         // Approvals still using backdoor > actual
         if (StringUtils.equals(tsaf.getAction(), HrConstants.DOCUMENT_ACTIONS.ROUTE)) {
@@ -161,7 +162,17 @@ public class TimesheetSubmitAction extends KPMEAction {
                 		return payoutRedirect;
             		}
             	}
-                TkServiceLocator.getTimesheetService().routeTimesheet(HrContext.getTargetPrincipalId(), document);
+            	ClockLog clockLog = TkServiceLocator.getClockLogService().getLastClockLog(HrContext.getTargetPrincipalId());
+                if(clockLog!=null){
+                	String lastClockLogAction = clockLog.getClockAction();
+                	if(lastClockLogAction.equals("CI") || lastClockLogAction.equals("LI")){
+                		errorList.add("Please Clock Out/Lunch Out to submit timesheet for approval");
+                	}else{
+                		TkServiceLocator.getTimesheetService().routeTimesheet(HrContext.getTargetPrincipalId(), document);
+                	}
+                }else{ 
+                	TkServiceLocator.getTimesheetService().routeTimesheet(HrContext.getTargetPrincipalId(), document);
+                }
             }
         } else if (StringUtils.equals(tsaf.getAction(), HrConstants.DOCUMENT_ACTIONS.APPROVE)) {
         	if(TkServiceLocator.getTimesheetService().isReadyToApprove(document)) {
