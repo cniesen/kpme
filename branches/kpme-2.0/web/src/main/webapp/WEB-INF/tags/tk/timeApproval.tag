@@ -116,7 +116,7 @@
 									<td style="width: 30px;">${aMp.clockAction}</td>
 									<td>
 										<div class="warning-note-message">
-											${aMp.getAssignmentValue()}</div>
+											${aMp.assignmentValue}</div>
 									</td>
 								</tr>
 							</c:forEach>
