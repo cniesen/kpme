@@ -154,7 +154,7 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
     }
 
 	public Date getActionDateTime() {
-		return actionDateTime;
+		return new Date(actionDateTime.getTime());
 	}
 
     public Timestamp getActionDateTimestamp() {
@@ -162,7 +162,7 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
     }
 
 	public void setActionDateTime(Date actionDateTime) {
-		this.actionDateTime = actionDateTime;
+		this.actionDateTime = new Date(actionDateTime.getTime());
 	}
 	
     public Date getActionDate() {
@@ -209,11 +209,11 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 	}
 
 	public Timestamp getTimestamp() {
-		return timestamp;
+		return new Timestamp(timestamp.getTime());
 	}
 
 	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
+		this.timestamp = new Timestamp(timestamp.getTime());
 	}
 
 	public String getPrincipalName() {
