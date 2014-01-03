@@ -33,7 +33,7 @@ public interface DepartmentService {
 
 
     
-    List<Department> getDepartments(String userPrincipalId, String department, String location, String descr, String active, String showHistory);
+    List<Department> getDepartments(String userPrincipalId, String department, String location, String descr, String active, String showHistory, String payrollApproval);
     
     /**
 	 * get count of department with given department
