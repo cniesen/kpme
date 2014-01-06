@@ -520,7 +520,6 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         header.put(DateTimeConstants.FRIDAY, "Fri");
         header.put(DateTimeConstants.SATURDAY, "Sat");
         
-        int flsaBeginDay = this.getPayCalendarForEntry(cal).getFlsaBeginDayConstant();
         LocalDateTime startDate = cal.getBeginPeriodLocalDateTime();
         LocalDateTime endDate = cal.getEndPeriodLocalDateTime();
 
@@ -558,7 +557,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LocalDateTime weekEnd = actualStartDate;
         for (LocalDateTime currentDate = actualStartDate; currentDate.compareTo(actualEndDate) < 0; currentDate = currentDate.plusDays(1)) {
         	
-            if (currentDate.getDayOfWeek() == flsaBeginDay && afterFirstDay) {
+            if (currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY && afterFirstDay) {
                 StringBuilder display = new StringBuilder();
                 display.append(weekStart.toString(TkConstants.DT_ABBREV_DATE_FORMAT));
                 display.append(" - ");
