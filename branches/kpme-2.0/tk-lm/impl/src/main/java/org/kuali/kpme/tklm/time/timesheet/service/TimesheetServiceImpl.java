@@ -398,9 +398,9 @@ public class TimesheetServiceImpl implements TimesheetService {
 //            throw new RuntimeException("No regular earn code defined for job pay type.");
         } else {
             //  if you are a clock user and this is your timesheet and you are processing the reg earn code, do not add this earn code. Use the clock in/out mechanism.
-        	if (!isClockUser || !isUsersTimesheet || includeRegularEarnCode) {
-                earnCodes.add(regularEarnCode);
-            }
+//        	if (!isClockUser || !isUsersTimesheet || includeRegularEarnCode) {
+//                earnCodes.add(regularEarnCode);
+//            }
         }
 
         List<String> listAccrualCategories = new LinkedList<String>();
@@ -463,9 +463,13 @@ public class TimesheetServiceImpl implements TimesheetService {
 	                                        //  non-Holiday earn code will go on, Holiday earn code must meet some requirements in the method.
 	                                    	// KPME-2556
 	                                        //if ( !StringUtils.equals(regularEarnCode.toString(), dec.getEarnCode()) ) {
-	                                    	if (!StringUtils.equals(regularEarnCode.getEarnCode(), dec.getEarnCode()) ) {
-	                                            //  add earn code if it is not the reg earn code.
-	                                            earnCodes.add(ec);
+	                                    	if (StringUtils.equals(regularEarnCode.getEarnCode(), dec.getEarnCode()) ) {
+		                                    	if (!isClockUser || !isUsersTimesheet || includeRegularEarnCode) {
+		                                            earnCodes.add(ec);
+		                                        }
+	                                        } else {
+	                                        	//  add earn code if it is not the reg earn code.
+	                                        	earnCodes.add(ec);
 	                                        }
 	                                    }
 	                                }
