@@ -38,6 +38,7 @@ import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesheet.service.TimesheetService;
 import org.kuali.kpme.tklm.time.util.TkContext;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
@@ -132,7 +133,45 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
     	Job job = HrServiceLocator.getJobService().getJob(
                  HrContext.getTargetPrincipalId(), aTimeBlock.getJobNumber(),
                  aTimeBlock.getEndDateTime().toLocalDate());
-    	// need to use earnCodeSecurity employee/approver/payrollProcessor flags to determine if the user has edit permission to the earn code 
+    	
+        PayType payType = HrServiceLocator.getPayTypeService().getPayType(
+                job.getHrPayType(), aTimeBlock.getEndDateTime().toLocalDate()); 
+        
+        DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+        boolean isReviewerOrApprover = HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), aTimeBlock.getWorkArea(), asOfDate)
+						  		    	|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), aTimeBlock.getWorkArea(), asOfDate)
+						  		    	|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), aTimeBlock.getWorkArea(), asOfDate);
+        boolean isPayrollProcessor = HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), job.getDept(), asOfDate)
+		    							|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), job.getDept(), asOfDate);
+        
+        // when the earn code is regular earn code, don't use earn code security to determine the permissions
+        if (payType != null && StringUtils.equals(payType.getRegEarnCode(), aTimeBlock.getEarnCode())) {
+        	if (aTimeBlock.getPrincipalId().equals(principalId)) {
+        		 TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(job.getDept(),aTimeBlock.getWorkArea(), payType.getPayType(), aTimeBlock.getBeginDateTime().toLocalDate());
+        		 if (tcr == null || tcr.isClockUserFl()) {
+                     //if there is only 1 assignment here, it isn't editable.
+                     TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(aTimeBlock.getDocumentId());
+                     Map<String, String> assignments = td.getAssignmentDescriptions(true);
+                     if (assignments.size() <= 1) {
+                         return false;
+                     } else {
+                    	 return true;
+                     }
+                 } else {
+                	 return true;
+                 }
+        	} else {
+        		// approver, reviewer and payroll processor should have edit access to regular earn code
+	        	  if(isReviewerOrApprover || isPayrollProcessor) {
+	        		  return true;
+	        	  } else {
+	        		  return false;
+	        	  }
+        	}
+        		  
+        }
+
+    	// use earnCodeSecurity employee/approver/payrollProcessor flags to determine if the user has edit permission to the earn code 
     	List<EarnCodeSecurity> earnCodeSecurityList = HrServiceLocator
                   .getEarnCodeSecurityService().getEarnCodeSecurities(
                           job.getDept(), job.getHrSalGroup(),
@@ -141,9 +180,6 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
     	if(CollectionUtils.isEmpty(earnCodeSecurityList))
     		return false; 
     	
-        PayType payType = HrServiceLocator.getPayTypeService().getPayType(
-                 job.getHrPayType(), aTimeBlock.getEndDateTime().toLocalDate()); 
-        
     	// user working on his/her own timesheet
         if (StringUtils.equals(TkContext.getTargetPrincipalId(), principalId)) {    	
         	boolean employeeSecurityFlag = false;
@@ -168,12 +204,9 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
 		        	return true;
 		        }
         	}        	
-        } else {        // user not working on his/her own timesheet		    
-	    	DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+        } else {        // user not working on his/her own timesheet	
 		    // Reviewer/Approver/Approver Delegate
-		    if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), aTimeBlock.getWorkArea(), asOfDate)
-		    	|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), aTimeBlock.getWorkArea(), asOfDate)
-		    	|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), aTimeBlock.getWorkArea(), asOfDate)) {
+		    if(isReviewerOrApprover) {
 		    	for(EarnCodeSecurity ecs : earnCodeSecurityList ) {
 	        		if(ecs.isApprover() && StringUtils.equals(ecs.getEarnCode(),aTimeBlock.getEarnCode()))
 	        			return true;
@@ -181,8 +214,7 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
 	        }
 		    
 		    // Payroll Processor / Payroll Processor Delegate
-		    if(HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), job.getDept(), asOfDate)
-			    	|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), job.getDept(), asOfDate)) {
+		    if(isPayrollProcessor) {
 		    	for(EarnCodeSecurity ecs : earnCodeSecurityList ) {
 	        		if(ecs.isPayrollProcessor() && StringUtils.equals(ecs.getEarnCode(),aTimeBlock.getEarnCode()))
 	        			return true;
