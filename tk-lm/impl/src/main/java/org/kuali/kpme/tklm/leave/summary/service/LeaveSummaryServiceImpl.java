@@ -36,6 +36,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.api.earncode.EarnCodeContract;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.leaveplan.LeavePlan;
@@ -466,21 +467,29 @@ public class LeaveSummaryServiceImpl implements LeaveSummaryService {
                                      accrualedBalance = accrualedBalance.add(aLeaveBlock.getLeaveAmount());
                                  }                     			 
                     		 } else if (ec != null && StringUtils.equals(ec.getAccrualBalanceAction(), HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)) {
-                    			 if (aLeaveBlock.getLeaveDate().getTime() > cutOffDate.toDate().getTime()) {
-                     				approvedUsage = approvedUsage.add(aLeaveBlock.getLeaveAmount());
-                     				if(ec.getFmla().equals("Y")) {
-                     					fmlaUsage = fmlaUsage.add(aLeaveBlock.getLeaveAmount());
-                     				}
-                     			} else {
-                     				//these usages are for previous years, to help figure out correct carry over values
-                     				String yearKey = getYearKey(aLeaveBlock.getLeaveLocalDate(), lp);
-                     				BigDecimal use = yearlyUsage.get(yearKey);
-                     				if (use == null) {
-                     					use = BigDecimal.ZERO.setScale(2);
-                     				}
-                     				use = use.add(aLeaveBlock.getLeaveAmount());
-                     				yearlyUsage.put(yearKey, use);
-                     			}
+                    			 // check for TC, LC and Leave Adjustment leave blocks
+                    			 if(StringUtils.equals(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_CALENDAR, aLeaveBlock.getLeaveBlockType()) ||
+                    					 StringUtils.equals(LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR, aLeaveBlock.getLeaveBlockType()) ||
+                    					 StringUtils.equals(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_ADJUSTMENT_MAINT, aLeaveBlock.getLeaveBlockType())) {
+	                    			 if (aLeaveBlock.getLeaveDate().getTime() > cutOffDate.toDate().getTime()) {
+	                    				//KPME-3094 - check if leaveblock has request status approved.
+	                    				if(StringUtils.equals(HrConstants.REQUEST_STATUS.APPROVED, aLeaveBlock.getRequestStatus())) {
+	                    					approvedUsage = approvedUsage.add(aLeaveBlock.getLeaveAmount());
+	                    				}
+	                     				if(ec.getFmla().equals("Y")) {
+	                     					fmlaUsage = fmlaUsage.add(aLeaveBlock.getLeaveAmount());
+	                     				}
+	                     			} else {
+	                     				//these usages are for previous years, to help figure out correct carry over values
+	                     				String yearKey = getYearKey(aLeaveBlock.getLeaveLocalDate(), lp);
+	                     				BigDecimal use = yearlyUsage.get(yearKey);
+	                     				if (use == null) {
+	                     					use = BigDecimal.ZERO.setScale(2);
+	                     				}
+	                     				use = use.add(aLeaveBlock.getLeaveAmount());
+	                     				yearlyUsage.put(yearKey, use);
+	                     			}
+                    			 }
                     		 }
                     	 }
                     }
@@ -516,16 +525,25 @@ public class LeaveSummaryServiceImpl implements LeaveSummaryService {
 		BigDecimal pendingRequests = BigDecimal.ZERO.setScale(2);
         if (CollectionUtils.isNotEmpty(pendingLeaveBlocks)) {
             for(LeaveBlock aLeaveBlock : pendingLeaveBlocks) {
-            	if(!aLeaveBlock.getLeaveBlockType().equals(LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER)) {
-                if((StringUtils.isBlank(accrualCategory) && StringUtils.isBlank(aLeaveBlock.getAccrualCategory()))
-                        || (StringUtils.isNotBlank(aLeaveBlock.getAccrualCategory())
-                            && StringUtils.equals(aLeaveBlock.getAccrualCategory(), accrualCategory))) {
-                    if(aLeaveBlock.getLeaveAmount().compareTo(BigDecimal.ZERO) >= 0) {
-                        pendingAccrual = pendingAccrual.add(aLeaveBlock.getLeaveAmount());
-                    } else {
-                        pendingRequests = pendingRequests.add(aLeaveBlock.getLeaveAmount());
-                    }
-                }
+            	if(aLeaveBlock.getLeaveBlockType().equals(LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR) || 
+            			aLeaveBlock.getLeaveBlockType().equals(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_CALENDAR) ||
+            			aLeaveBlock.getLeaveBlockType().equals(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_ADJUSTMENT_MAINT)) {
+            		// check if leave block is planned, requested or approved
+	            	if(aLeaveBlock.getRequestStatus().equals(HrConstants.REQUEST_STATUS.PLANNED) || aLeaveBlock.getRequestStatus().equals(HrConstants.REQUEST_STATUS.REQUESTED) || aLeaveBlock.getRequestStatus().equals(HrConstants.REQUEST_STATUS.APPROVED) ) {
+	            		// check if earncode is of Usage.
+	            		EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(aLeaveBlock.getEarnCode(), aLeaveBlock.getLeaveLocalDate());
+	            		if (ec != null && StringUtils.equals(ec.getAccrualBalanceAction(), HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)) {
+			                if((StringUtils.isBlank(accrualCategory) && StringUtils.isBlank(aLeaveBlock.getAccrualCategory()))
+			                        || (StringUtils.isNotBlank(aLeaveBlock.getAccrualCategory())
+			                            && StringUtils.equals(aLeaveBlock.getAccrualCategory(), accrualCategory))) {
+			                    if(aLeaveBlock.getLeaveAmount().compareTo(BigDecimal.ZERO) >= 0) {
+			                        pendingAccrual = pendingAccrual.add(aLeaveBlock.getLeaveAmount());
+			                    } else {
+			                        pendingRequests = pendingRequests.add(aLeaveBlock.getLeaveAmount());
+			                    }
+			                }
+	            		}
+	            	}
             	}
             }
         }
