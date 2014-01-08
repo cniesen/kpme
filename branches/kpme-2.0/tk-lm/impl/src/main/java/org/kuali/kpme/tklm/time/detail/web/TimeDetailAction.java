@@ -781,6 +781,12 @@ public class TimeDetailAction extends TimesheetAction {
 
         //Grab timeblock to be updated from form
         List<TimeBlock> timeBlocks = tdaf.getTimesheetDocument().getTimeBlocks();
+        // We need a  cloned reference set so we know whether or not to
+        // persist any potential changes without making hundreds of DB calls.
+        List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>(timeBlocks.size());
+        for (TimeBlock tb : timeBlocks) {
+            referenceTimeBlocks.add(tb.copy());
+        }
         TimeBlock updatedTimeBlock = null;
         List<TimeHourDetail> oldDetailList = new ArrayList<TimeHourDetail>();
         String oldAssignmenString = "";
@@ -826,7 +832,11 @@ public class TimeDetailAction extends TimesheetAction {
             }        	
             List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(HrContext.getTargetPrincipalId(), tdaf.getTimesheetDocument().getAsOfDate(), tdaf.getTimesheetDocument().getDocEndDate(), assignmentKeys);
 
+            TkServiceLocator.getTimesheetService().resetTimeBlock(timeBlocks, tdaf.getTimesheetDocument().getAsOfDate());
         	TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, timeBlocks, leaveBlocks, tdaf.getCalendarEntry(), tdaf.getTimesheetDocument(), HrContext.getPrincipalId());
+            TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, timeBlocks, HrContext.getPrincipalId());
+
+            generateTimesheetChangedNotification(HrContext.getPrincipalId(), HrContext.getTargetPrincipalId(), tdaf.getDocumentId());
         }
         
         //addTimeBlock handles validation and creation of object. Do not save time blocks directly in this method without validating the entry!
