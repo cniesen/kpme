@@ -278,6 +278,8 @@ public class TimeBlockServiceImpl implements TimeBlockService {
                 lunchDeleted, userPrincipalId);
         tb.setClockLogBeginId(clockLogBeginId);
         tb.setClockLogEndId(clockLogEndId);
+        tb.assignClockedByMissedPunch();
+        
         return tb;
     }
 
