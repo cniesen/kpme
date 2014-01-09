@@ -35,13 +35,10 @@ import org.joda.time.Hours;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.api.accrualcategory.AccrualEarnInterval;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupContract;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
@@ -99,7 +96,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
     		//earn code is validate through the span of the leave entry, could the earn code's record method change between then and the leave period end date?
     		//Why not use endDateS to retrieve the earn code?
     		CalendarEntry calendarEntry = lcf.getCalendarEntry();
-    		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     		if(earnCode != null) {
     			if(earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
     		    	return validateTimeParametersForLeaveEntry(earnCode, lcf.getCalendarEntry(), lcf.getStartDate(), lcf.getEndDate(), lcf.getStartTime(), lcf.getEndTime(), lcf.getSelectedAssignment(), lcf.getLeaveBlockId(), lcf.getSpanningWeeks());
@@ -163,7 +160,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
         
         //Check that assignment is valid for both days
         AssignmentDescriptionKey assignKey = HrServiceLocator.getAssignmentService().getAssignmentDescriptionKey(selectedAssignment);
-        AssignmentContract assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
+        Assignment assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
         
         if ((startTime.compareTo(endTime) > 0 || endTime.compareTo(startTime) < 0)) {
             errors.add("The time or date is not valid.");
@@ -208,10 +205,10 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
     			}
     		}
     		LocalDate aDate = TKUtils.formatDateString(leaveEndDateString);
-	    	EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, aDate);
+	    	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, aDate);
 	    	if(earnCodeObj != null && StringUtils.equals(earnCodeObj.getAccrualBalanceAction(),HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)
                     || StringUtils.equals(earnCodeObj.getUsageLimit(), "I")) {
-	    		AccrualCategoryContract accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCodeObj.getAccrualCategory(), aDate);
+	    		AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCodeObj.getAccrualCategory(), aDate);
 	    		if(accrualCategory != null) {
 	    			List<LeaveSummaryRow> rows = ls.getLeaveSummaryRows();
 	    			for(LeaveSummaryRow aRow : rows) {
@@ -351,13 +348,13 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
         if (CollectionUtils.isNotEmpty(leaveBlocks)) {
             for(LeaveBlock lb : leaveBlocks) {
             	if(lb.getLeaveDate().compareTo(beginDate) >= 0 && lb.getLeaveDate().compareTo(endDate) < 0) {
-	                EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+	                EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 	                if(ec != null) {
 	                	// KPME-2529
 	                    //EarnCodeGroup eg = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupForEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
-	                	List<? extends EarnCodeGroupContract> egs = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupsForEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+	                	List<EarnCodeGroup> egs = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupsForEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 	                	if (egs != null && egs.size() > 0) {                	    
-	                		for (EarnCodeGroupContract eg : egs) {
+	                		for (EarnCodeGroup eg : egs) {
 			                    if(!StringUtils.isEmpty(eg.getWarningText())) {
 			                        warningMessages.add(eg.getWarningText());
 			                    }
@@ -409,9 +406,9 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
 		LocalDate startDate = TKUtils.formatDateString(leaveStartDateString);
 		LocalDate endDate = TKUtils.formatDateString(leaveEndDateString);
 		long daysSpan = TKUtils.getDaysBetween(startDate,endDate);
-    	EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, endDate);
+    	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, endDate);
     	if(earnCodeObj != null && earnCodeObj.getAllowNegativeAccrualBalance().equals("N")) {
-    		AccrualCategoryContract accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCodeObj.getAccrualCategory(), endDate);
+    		AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCodeObj.getAccrualCategory(), endDate);
     		if(accrualCategory != null) {
                 AccrualEarnInterval accrualEarnInterval = AccrualEarnInterval.fromCode(accrualCategory.getAccrualEarnInterval());
                 DateTime nextIntervalDate;
@@ -566,7 +563,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
         String viewPrincipal = HrContext.getTargetPrincipalId();
         
         dayInt.add(addedTimeblockInterval);
-        List<Assignment> assignments = (List<Assignment>) HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(viewPrincipal, calendarEntry);
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(viewPrincipal, calendarEntry);
 		List<String> assignmentKeys = new ArrayList<String>();
         for(Assignment assign : assignments) {
         	assignmentKeys.add(assign.getAssignmentKey());
@@ -595,7 +592,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
     	
     	if (leaveAmount != null
             && StringUtils.isNotBlank(selectedEarnCode)) {
-    		EarnCodeContract  earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, aDate);
+    		EarnCode  earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, aDate);
 	    	
     		if(earnCode != null && earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_HOUR)) {
     			if(leaveAmount.compareTo(new BigDecimal(24.0)) > 0) {
@@ -603,7 +600,7 @@ public class LeaveCalendarValidationUtil extends CalendarValidationUtil {
     			}
     		}
     		else if (earnCode != null) {
-    			AccrualCategoryContract accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCode.getAccrualCategory(), aDate);
+    			AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(earnCode.getAccrualCategory(), aDate);
     			if(accrualCategory != null && StringUtils.equals(accrualCategory.getUnitOfTime(),"H")) {
     				if(leaveAmount.compareTo(new BigDecimal(24.0)) > 0) {
     					errors.add("Cannot exceed 24 hours in one day");

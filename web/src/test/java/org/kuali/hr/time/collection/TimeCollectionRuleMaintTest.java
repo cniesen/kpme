@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -139,7 +138,6 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 		department.setLocation("BL");
 		department.setEffectiveLocalDate(TEST_DATE);
         department.setActive(Boolean.TRUE);
-        department.setUserPrincipalId(TEST_CODE);
 		department = KRADServiceLocator.getBusinessObjectService().save(department);
 		
 		TimeCollectionRule timeCollectionRule = new TimeCollectionRule();
@@ -197,7 +195,7 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 		KRADServiceLocator.getBusinessObjectService().delete(
 				timeCollectionRuleObj);
 
-		DepartmentContract deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
+		Department deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
 		KRADServiceLocator.getBusinessObjectService().delete(deptObj);
 		super.tearDown();
 	}

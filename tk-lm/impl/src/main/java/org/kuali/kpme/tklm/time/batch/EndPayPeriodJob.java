@@ -21,13 +21,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.assignment.Assignment;
-import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
@@ -63,20 +58,20 @@ public class EndPayPeriodJob extends BatchJob {
 		    DateTime currentDateTime =  new DateTime();
 			LOG.info("EndOfPayPeiodJob is running at " + currentDateTime.toString() + " for hrCalendarEntryId " + hrCalendarEntryId);
 		    
-	        CalendarEntry calendarEntry = (CalendarEntry)HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-	        CalendarContract calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
-	        //calendarEntry.setCalendarObj(calendar);
+	        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+	        Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+	        calendarEntry.setCalendarObj(calendar);
 	        
 	        
 	    	String calendarName = calendarEntry.getCalendarName();
 	    	DateTime scheduleDate = calendarEntry.getBatchEndPayPeriodFullDateTime();
 	    	
-	    	List<? extends PrincipalHRAttributesContract> principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getActiveEmployeesForPayCalendar(calendarName, scheduleDate.toLocalDate());
-	    	for (PrincipalHRAttributesContract principalHRAttribute : principalHRAttributes) {
+	    	List<PrincipalHRAttributes> principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getActiveEmployeesForPayCalendar(calendarName, scheduleDate.toLocalDate());
+	    	for (PrincipalHRAttributes principalHRAttribute : principalHRAttributes) {
 	    		String pId = principalHRAttribute.getPrincipalId();
 	    	    
-	    		List<? extends AssignmentContract> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(pId, calendarEntry);
-	    		for (AssignmentContract assignment : assignments) {
+	    		List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(pId, calendarEntry);
+	    		for (Assignment assignment : assignments) {
 	    			String jobNumber = String.valueOf(assignment.getJobNumber());
 	    			String workArea = String.valueOf(assignment.getWorkArea());
 	    			String task = String.valueOf(assignment.getTask());
@@ -104,7 +99,7 @@ LOG.info("EndOfPayPeiodJob started for user " + principalId + " and clockLog " +
 		// time to use to create the CO clock log
         DateTime coLogDateTime = TKUtils.convertTimeForDifferentTimeZone(endPeriodDateTime,systemTimeZone,userTimezone);
 	        
-        CalendarEntry nextCalendarEntry = (CalendarEntry)HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+        CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
         DateTime beginNextPeriodDateTime = nextCalendarEntry.getBeginPeriodFullDateTime();
         // time to use to create the CI clock log
         DateTime ciLogDateTime = TKUtils.convertTimeForDifferentTimeZone(beginNextPeriodDateTime,systemTimeZone,userTimezone);

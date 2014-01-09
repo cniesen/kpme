@@ -21,18 +21,15 @@ import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.workarea.WorkArea;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class Task extends HrBusinessObject implements TaskContract {
-
-	private static final String TASK = "task";
 
 	private static final long serialVersionUID = -7536342291963303862L;
 
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Task";
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(TASK)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("task")
             .build();
 
     private String tkTaskId;
@@ -40,16 +37,10 @@ public class Task extends HrBusinessObject implements TaskContract {
     private Long workArea;
     private String description;
     private String administrativeDescription;
+    private String userPrincipalId;
     
     private WorkArea workAreaObj;
 	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(TASK, this.getTask())		
-				.build();
-	}
-    
 	public String getTkTaskId() {
 		return tkTaskId;
 	}
@@ -88,6 +79,14 @@ public class Task extends HrBusinessObject implements TaskContract {
 
     public void setAdministrativeDescription(String administrativeDescription) {
     	this.administrativeDescription = administrativeDescription;
+    }
+
+    public String getUserPrincipalId() {
+    	return userPrincipalId;
+    }
+
+    public void setUserPrincipalId(String userPrincipalId) {
+    	this.userPrincipalId = userPrincipalId;
     }
 
 	public WorkArea getWorkAreaObj() {

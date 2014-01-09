@@ -15,20 +15,19 @@
  */
 package org.kuali.kpme.core.principal.validation;
 
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class PrincipalHRAttributesEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class PrincipalHRAttributesEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
         PrincipalHRAttributes phrAttr = (PrincipalHRAttributes) pbo;
-        PrincipalHRAttributesContract lastPHRAttr = HrServiceLocator.getPrincipalHRAttributeService().getMaxTimeStampPrincipalHRAttributes(phrAttr.getPrincipalId());
+        PrincipalHRAttributes lastPHRAttr = HrServiceLocator.getPrincipalHRAttributeService().getMaxTimeStampPrincipalHRAttributes(phrAttr.getPrincipalId());
         if (lastPHRAttr != null && lastPHRAttr.getEffectiveLocalDate() != null && phrAttr.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastPHRAttr.getEffectiveLocalDate().isAfter(phrAttr.getEffectiveLocalDate());
         }

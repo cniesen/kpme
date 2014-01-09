@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.position.PositionBaseContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.position.PositionBase;
@@ -57,7 +56,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 	private static final long serialVersionUID = -624127817308880466L;
 	@Override
     public HrBusinessObject getObjectById(String id) {
-        return (HrBusinessObject) HrServiceLocator.getWorkAreaService().getWorkArea(id);
+        return HrServiceLocator.getWorkAreaService().getWorkArea(id);
     }
     
 	@Override
@@ -93,9 +92,9 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         
         WorkArea oldWorkArea = oldMaintainableObject;
         if(StringUtils.isNotBlank(oldMaintainableObject.getTkWorkAreaId())) {
-        	oldWorkArea = (WorkArea) HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getTkWorkAreaId());
+        	oldWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getTkWorkAreaId());
         } else {
-        	oldWorkArea = (WorkArea) HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getWorkArea(), oldMaintainableObject.getEffectiveLocalDate());
+        	oldWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getWorkArea(), oldMaintainableObject.getEffectiveLocalDate());
         }
         
         oldMaintainableObject.setTasks(oldWorkArea.getTasks());
@@ -106,9 +105,9 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         
         WorkArea newWorkArea = newMaintainableObject;
         if(StringUtils.isNotBlank(newMaintainableObject.getTkWorkAreaId())) {
-        	newWorkArea = (WorkArea) HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getTkWorkAreaId());
+        	newWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getTkWorkAreaId());
         } else {
-        	newWorkArea = (WorkArea) HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getWorkArea(), newMaintainableObject.getEffectiveLocalDate());
+        	newWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getWorkArea(), newMaintainableObject.getEffectiveLocalDate());
         }
         newMaintainableObject.setTasks(newWorkArea.getTasks());
         newMaintainableObject.setPrincipalRoleMembers(newWorkArea.getPrincipalRoleMembers());
@@ -155,7 +154,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         	PositionRoleMemberBo roleMember = (PositionRoleMemberBo) newCollectionLines.get(collectionName);
             if (roleMember != null) {
             	if (!StringUtils.isEmpty(roleMember.getPositionNumber())) {
-            		PositionBaseContract position = HrServiceLocator.getPositionService().getPosition(roleMember.getPositionNumber(), workArea.getEffectiveLocalDate());
+            		PositionBase position = HrServiceLocator.getPositionService().getPosition(roleMember.getPositionNumber(), workArea.getEffectiveLocalDate());
             		if (position == null) {
             			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"positionRoleMembers", 
                 				"error.role.positionNumber.notexist", roleMember.getPositionNumber());
@@ -352,14 +351,5 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         
         return inactiveRoleMembers;
     }
-
-    //KPME-2624 added logic to save current logged in user to UserPrincipal id for collections
-    @Override
-    public void prepareForSave() {
-        WorkArea workArea = (WorkArea)this.getBusinessObject();
-        for (Task task : workArea.getTasks()) {
-            task.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-        }
-        super.prepareForSave();
-    }
+    
 }

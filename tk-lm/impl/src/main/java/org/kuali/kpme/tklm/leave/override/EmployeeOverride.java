@@ -26,22 +26,16 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class EmployeeOverride extends HrBusinessObject implements EmployeeOverrideContract {
 
-	private static final String OVERRIDE_TYPE = "overrideType";
-	private static final String ACCRUAL_CATEGORY = "accrualCategory";
-	private static final String LEAVE_PLAN = "leavePlan";
-	private static final String PRINCIPAL_ID = "principalId";
-	
 	private static final long serialVersionUID = 1L;
     public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "EmployeeOverride";
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
-            .add(LEAVE_PLAN)
-            .add(ACCRUAL_CATEGORY)
-            .add(OVERRIDE_TYPE)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("principalId")
+            .add("leavePlan")
+            .add("accrualCategory")
+            .add("overrideType")
             .build();
 	
 	private String lmEmployeeOverrideId;
@@ -55,17 +49,6 @@ public class EmployeeOverride extends HrBusinessObject implements EmployeeOverri
 	private Long overrideValue;
 	private String description;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-    		.put(PRINCIPAL_ID, this.getPrincipalId())
-			.put(LEAVE_PLAN, this.getLeavePlan())
-			.put(ACCRUAL_CATEGORY, this.getAccrualCategory())
-			.put(OVERRIDE_TYPE, this.getOverrideType())
-			.build();
-	}
-	
 	@Override
 	public String getId() {
 		return getLmEmployeeOverrideId();
@@ -154,7 +137,7 @@ public class EmployeeOverride extends HrBusinessObject implements EmployeeOverri
             return leavePlan;
         }
 		if (this.principalHRAttrObj == null && !StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
+			principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
 		}
         leavePlan = principalHRAttrObj == null ? null : principalHRAttrObj.getLeavePlan();
 		return leavePlan;

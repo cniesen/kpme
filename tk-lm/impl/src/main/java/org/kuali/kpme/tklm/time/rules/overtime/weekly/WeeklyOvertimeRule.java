@@ -23,8 +23,6 @@ import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleCont
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 
-import com.google.common.collect.ImmutableMap;
-
 public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleContract {
 
 	private static final long serialVersionUID = 5229797885418317405L;
@@ -37,6 +35,7 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 	private String convertToEarnCode;
 	private BigDecimal step;
 	private BigDecimal maxHours;
+	private String userPrincipalId;
 	private Boolean ovtEarnCode;
 	
 	private Long tkWeeklyOvertimeRuleGroupId = 1L;
@@ -44,13 +43,6 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 	private EarnCodeGroup maxHoursEarnGroupObj;
 	private EarnCodeGroup convertFromEarnGroupObj;
 	private EarnCode convertToEarnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 	
 
 	public String getTkWeeklyOvertimeRuleId() {
@@ -101,6 +93,15 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 		this.maxHours = maxHours;
 	}
 
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
+	}
+	
+	
 	public Boolean getOvtEarnCode() {
 		return ovtEarnCode;
 	}

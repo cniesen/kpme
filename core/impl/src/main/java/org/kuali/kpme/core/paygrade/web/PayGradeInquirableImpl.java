@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.paygrade.PayGradeContract;
 import org.kuali.kpme.core.paygrade.PayGrade;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -33,7 +32,7 @@ public class PayGradeInquirableImpl extends KualiInquirableImpl {
 
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-        PayGradeContract payGrade = null;
+        PayGrade payGrade = null;
         if (StringUtils.isNotBlank((String) fieldValues.get("hrPayGradeId"))) {
             payGrade = HrServiceLocator.getPayGradeService().getPayGrade((String) fieldValues.get("hrPayGradeId"));
         } else if (fieldValues.containsKey("payGrade")

@@ -21,14 +21,11 @@ import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positionreporttype.PositionReportTypeContract;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PositionReportType extends HrBusinessObject implements PositionReportTypeContract {
-	private static final String POSITION_REPORT_TYPE = "positionReportType";
-
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		     .add(POSITION_REPORT_TYPE)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		     .add("positionReportType")
 		     .build();
 
 	private static final long serialVersionUID = 1L;
@@ -41,14 +38,6 @@ public class PositionReportType extends HrBusinessObject implements PositionRepo
 	
 	private Location locationObj;
 	private Institution institutionObj;	
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_TYPE, this.getPositionReportType())
-				.build();
-	}
 	
 	@Override
 	public String getId() {

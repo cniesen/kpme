@@ -37,15 +37,16 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.aspectj.weaver.MemberImpl;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.department.service.DepartmentService;
 import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.workarea.service.WorkAreaService;
+import org.kuali.kpme.core.department.service.DepartmentService;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.workarea.service.WorkAreaService;
 import org.kuali.rice.core.api.criteria.LookupCustomizer;
 import org.kuali.rice.core.api.criteria.Predicate;
 import org.kuali.rice.core.api.criteria.QueryByCriteria;
@@ -140,10 +141,10 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 	public boolean principalHasRoleInWorkArea(String principalId, String namespaceCode, String roleName, Long workArea, DateTime asOfDate) {
 		Map<String, String> qualification = new HashMap<String, String>();
 		qualification.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), String.valueOf(workArea));
-		JobContract jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
-        if(jobObj != null) {
-        	qualification.put(KPMERoleMemberAttribute.POSITION.getRoleMemberAttributeName(), jobObj.getPositionNumber());
-        }
+		//JobContract jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
+        //if(jobObj != null) {
+        //	qualification.put(KPMERoleMemberAttribute.POSITION.getRoleMemberAttributeName(), jobObj.getPositionNumber());
+        //}
 		return principalHasRole(principalId, namespaceCode, roleName, qualification, asOfDate);
 	}
 

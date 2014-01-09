@@ -59,8 +59,8 @@ public class TaskDaoOjbImpl extends PlatformAwareDaoBaseOjb implements TaskDao {
         Criteria root = new Criteria();
 
         root.addEqualTo("task", task);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Task.class, asOfDate, Task.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Task.class, Task.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(Task.class, asOfDate, Task.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Task.class, Task.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -123,8 +123,8 @@ public class TaskDaoOjbImpl extends PlatformAwareDaoBaseOjb implements TaskDao {
         activeFilter.addEqualTo("active", true);
         root.addAndCriteria(activeFilter);
 
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Task.class, effectiveDateFilter, Task.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Task.class, Task.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Task.class, effectiveDateFilter, Task.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Task.class, Task.EQUAL_TO_FIELDS, false));
 
         Query query = QueryFactory.newQuery(Task.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));

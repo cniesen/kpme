@@ -150,7 +150,7 @@
 
     <!-- CORE DAOs -->
     
-	<bean id="hrBusinessObjectDao" class="org.kuali.kpme.core.bo.dao.HrBusinessObjectDaoOjbImpl" parent="platformAwareDao" />
+
 
     <bean id="taskDao" class="org.kuali.kpme.core.task.dao.TaskDaoOjbImpl" parent="platformAwareDao" />
 
@@ -169,8 +169,6 @@
     <bean id="calendarEntryDao" class="org.kuali.kpme.core.calendar.entry.dao.CalendarEntryDaoOjbImpl" parent="platformAwareDao" />
 
     <bean id="departmentDao" class="org.kuali.kpme.core.department.dao.DepartmentDaoOjbImpl" parent="platformAwareDao" />
-
-    <bean id="departmentAffiliationDao" class="org.kuali.kpme.core.departmentaffiliation.dao.DepartmentAffiliationDaoObjImpl" parent="platformAwareDao" />
 
     <bean id="earnCodeSecurityDao" class="org.kuali.kpme.core.earncode.security.dao.EarnCodeSecurityDaoOjbImpl" parent="platformAwareDao" />
 
@@ -201,13 +199,6 @@
 
 
     <!-- CORE Service Definitions -->
-    
-    <bean id="hrBusinessObjectService" class="org.kuali.kpme.core.bo.service.HrBusinessObjectServiceImpl">
-        <property name="hrBusinessObjectDao" ref="hrBusinessObjectDao"/>
-    </bean>
-    
-    
-    
     <bean id="payStepService" class="org.kuali.kpme.core.paystep.service.PayStepServiceImpl">
         <property name="payStepDao" ref="payStepDao"/>
     </bean>
@@ -256,10 +247,6 @@
 
     <bean id="departmentService" class="org.kuali.kpme.core.department.service.DepartmentServiceImpl">
         <property name="departmentDao" ref="departmentDao"/>
-    </bean>
-
-    <bean id="departmentAffiliationService" class="org.kuali.kpme.core.departmentaffiliation.service.DepartmentAffiliationServiceImpl">
-        <property name="departmentAffiliationDao" ref="departmentAffiliationDao"/>
     </bean>
 
     <bean id="earnCodeService" class="org.kuali.kpme.core.earncode.service.EarnCodeServiceImpl">
@@ -415,66 +402,11 @@
             <bean class="org.kuali.kpme.core.earncode.security.web.EarnCodeSecurityLookupableHelper"/>
         </property>
     </bean>
-    
-	
-	
-<!--     common beans for KNS hr business object lookup -->
-	<bean id="kpmeHrBusinessObjectLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl">
-    	<property name="lookupableHelperService">
-       		<ref bean="kpmeHrBusinessObjectLookupableHelper"/>      		
-    	</property>
-	</bean>
-	
-	<bean id="kpmeHrBusinessObjectLookupableHelper" class="org.kuali.kpme.core.lookup.KpmeHrBusinessObjectLookupableHelper">
-    	<property name="lookupService">
-       		<ref bean="kpmeHrBusinessObjectLookupService"/>
-    	</property>
-	</bean>
-	
-<!-- 	<bean id="kpmeHrBusinessObjectWithoutViewLinkLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl"> -->
-<!--     	<property name="lookupableHelperService"> -->
-<!--        		<bean parent="kpmeHrBusinessObjectLookupableHelper" p:viewLinkEnabled="false" />      		 -->
-<!--     	</property> -->
-<!-- 	</bean> -->
-	
-    
-<!--     common beans for KNS/KRAD hr business object lookup -->
-  	<bean id="kpmeHrBusinessObjectLookupService" parent="lookupService">
-    	<property name="lookupDao">
-       		<ref bean="kpmeHrBusinessObjectLookupDao"/>
-    	</property>
-	</bean>
-
-	<bean id="kpmeHrBusinessObjectLookupDao" parent="lookupDao">
-		<property name="lookupDaoOjb">
-			<ref bean="kpmeHrBusinessObjectLookupDaoOjb"/>
-		</property>
-	</bean>    
-
-	<bean id="kpmeHrBusinessObjectLookupDaoOjb" parent="lookupDaoOjb" class="org.kuali.kpme.core.bo.dao.KpmeHrBusinessObjectLookupDaoOjbImpl" />
-    
-    
-<!--  parent beans for the above common beans for KNS/KRAD hr business object lookup; copied and pasted from KRAD spring bean file --> 
-    <bean id="lookupService" class="org.kuali.rice.krad.service.impl.LookupServiceImpl">
-    	<property name="lookupDao">
-      		<ref bean="lookupDao"/>
-    	</property>
-    	<property name="kualiConfigurationService">
-      		<ref bean="kualiConfigurationService"/>
-    	</property>
-  	</bean>
-  	<bean id="lookupDao" class="org.kuali.rice.krad.dao.proxy.LookupDaoProxy">
-    	<property name="lookupDaoJpa" ref="lookupDaoJpa"/>
-    	<property name="lookupDaoOjb" ref="lookupDaoOjb"/>
-  	</bean>
-    <bean id="lookupDaoOjb" parent="platformAwareDao" class="org.kuali.rice.krad.dao.impl.LookupDaoOjb">
-    	<property name="persistenceStructureService" ref="persistenceStructureService"/>
-    	<property name="dateTimeService" ref="dateTimeService"/>
-    	<property name="dataDictionaryService" ref="dataDictionaryService"/>
-  	</bean>
-    
-    
-    
+    <bean id="earnCodeLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+        <property name="lookupableHelperService">
+            <bean class="org.kuali.kpme.core.earncode.web.EarnCodeLookupableHelper"/>
+        </property>
+    </bean>
     <bean id="earnCodeGroupLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.kpme.core.earncode.group.web.EarnCodeGroupLookupableHelper"/>
@@ -487,7 +419,7 @@
     </bean>
     <bean id="departmentLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.core.department.web.DepartmentLookupableHelper" parent="kpmeHrBusinessObjectLookupableHelper"/>
+            <bean class="org.kuali.kpme.core.department.web.DepartmentLookupableHelper"/>
         </property>
     </bean>
     <bean id="workAreaLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
@@ -579,8 +511,6 @@
         </property>
         <property name="beanNames">
             <list>
-            	<idref local="hrBusinessObjectService"/>
-            	
                 <idref local="payStepService"/>
 
                 <idref local="timezoneService"/>
@@ -592,7 +522,6 @@
                 <idref local="principalHRAttributesService"/>
                 <idref local="earnCodeSecurityService"/>
                 <idref local="departmentService"/>
-                <idref local="departmentAffiliationService"/>
                 <idref local="earnCodeService"/>
                 <idref local="earnCodeGroupService"/>
                 <idref local="salaryGroupService"/>

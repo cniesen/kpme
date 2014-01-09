@@ -15,11 +15,12 @@
  */
 package org.kuali.kpme.core.earncode.security;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.EarnCode;
@@ -29,14 +30,8 @@ import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.core.util.HrConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecurityContract {
-
-	private static final String LOCATION = "location";
-	private static final String EARN_CODE = "earnCode";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String DEPT = "dept";
 
 	private static final long serialVersionUID = -4884673156883588639L;
 	
@@ -47,11 +42,11 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
             .add(CalendarBlockPermissions.CACHE_NAME)
             .build();
 	//KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DEPT)
-            .add(HR_SAL_GROUP)
-            .add(EARN_CODE)
-            .add(LOCATION)
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("dept")
+            .add("hrSalGroup")
+            .add("earnCode")
+            .add("location")
             .build();
 
 	private String hrEarnCodeSecurityId;
@@ -71,18 +66,6 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
     private Location locationObj;
     private String history;
 
-    
-    @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DEPT, this.getDept())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(EARN_CODE, this.getEarnCode())
-			.put(LOCATION, this.getLocation())
-			.build();
-	}
-    
-    
 	public String getHrEarnCodeSecurityId() {
 		return hrEarnCodeSecurityId;
 	}

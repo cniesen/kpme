@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupContract;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -30,7 +29,7 @@ public class EarnCodeGroupInquirableImpl extends KualiInquirableImpl {
 
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-		EarnCodeGroupContract ec = null;
+		EarnCodeGroup ec = null;
 		if(StringUtils.isNotBlank((String)fieldValues.get("hrEarnCodeGroupId"))) {
 			ec = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup((String)fieldValues.get("hrEarnCodeGroupId"));
 

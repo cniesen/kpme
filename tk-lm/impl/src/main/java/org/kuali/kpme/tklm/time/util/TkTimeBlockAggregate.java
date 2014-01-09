@@ -31,10 +31,10 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.time.util.TkTimeBlockAggregateContract;
@@ -62,7 +62,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
      * @param payCalendarEntry
      */
 	public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, CalendarEntry payCalendarEntry){
-		this(timeBlocks, payCalendarEntry, (Calendar)HrServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId()));
+		this(timeBlocks, payCalendarEntry, HrServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId()));
 	}
 
     /**
@@ -127,7 +127,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
      * @param payCalendarEntry
      */
 	public TkTimeBlockAggregate(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntry payCalendarEntry){
-		this(timeBlocks, leaveBlocks, payCalendarEntry, (Calendar)HrServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId()));
+		this(timeBlocks, leaveBlocks, payCalendarEntry, HrServiceLocator.getCalendarService().getCalendar(payCalendarEntry.getHrCalendarId()));
 	}
 
     /**
@@ -366,7 +366,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 			FlsaWeek currentWeek = weekIterator.next();
 			
 			if (index == 0 && !currentWeek.isFirstWeekFull()) {
-				CalendarEntry previousCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
+				CalendarEntry previousCalendarEntry = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
 				if (previousCalendarEntry != null) {
 					TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, previousCalendarEntry.getBeginPeriodFullDateTime(), previousCalendarEntry.getEndPeriodFullDateTime());
 					if (timesheetDocumentHeader != null) { 
@@ -392,7 +392,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 			flsaWeek.add(currentWeek);
 			
 			if (index == currentWeeks.size() - 1 && !currentWeek.isLastWeekFull()) {
-				CalendarEntry nextCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
+				CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
 				if (nextCalendarEntry != null) {
 					TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, nextCalendarEntry.getBeginPeriodFullDateTime(), nextCalendarEntry.getEndPeriodFullDateTime());
 					if (timesheetDocumentHeader != null) {
@@ -481,7 +481,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 						timeBlock.setTask(lb.getTask());
 						timeBlock.setEarnCode(lb.getEarnCode());
 						
-						EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 						if(earnCodeObj != null) {
 							timeBlock.setEarnCodeType(earnCodeObj.getEarnCodeType());
 						}

@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.earncode.security.EarnCodeType;
@@ -112,7 +111,7 @@ public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
 		
 		String principalId = GlobalVariables.getUserSession().getPrincipalId();
 		String department = departmentEarnCode.getDept();
-		DepartmentContract departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
+		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
 		String location = departmentObj != null ? departmentObj.getLocation() : null;
 
         DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();

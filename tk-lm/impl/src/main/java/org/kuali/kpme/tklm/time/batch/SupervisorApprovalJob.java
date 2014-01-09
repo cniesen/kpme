@@ -21,7 +21,6 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.batch.BatchJobUtil;
 import org.kuali.kpme.core.calendar.Calendar;
@@ -62,8 +61,8 @@ public class SupervisorApprovalJob extends BatchJob {
 			String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 //			String documentId = jobDataMap.getString("documentId");
 	
-			CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-			Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+			CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+			Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 			DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
 	    	DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
 	    	
@@ -78,7 +77,7 @@ public class SupervisorApprovalJob extends BatchJob {
 							TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
 							String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId);
 							if (TkConstants.SUPERVISOR_APPROVAL_DOC_STATUS.contains(documentStatus)) {
-								PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
+								PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
 								if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
 									TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 								}
@@ -96,7 +95,7 @@ public class SupervisorApprovalJob extends BatchJob {
 							LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(leaveCalendarDocumentHeader.getDocumentId());
 							String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(leaveCalendarDocument.getDocumentId());
 							if (TkConstants.SUPERVISOR_APPROVAL_DOC_STATUS.contains(documentStatus)) {
-								PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
+								PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
 								if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
 									LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 								}

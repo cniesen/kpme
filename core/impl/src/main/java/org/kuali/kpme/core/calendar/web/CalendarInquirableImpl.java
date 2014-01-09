@@ -17,7 +17,6 @@ package org.kuali.kpme.core.calendar.web;
 
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
@@ -30,7 +29,7 @@ public class CalendarInquirableImpl extends KualiInquirableImpl {
     @Override
     @SuppressWarnings("rawtypes")
     public BusinessObject getBusinessObject(Map fieldValues) {
-        CalendarContract calObj = null;
+        Calendar calObj = null;
 
         if (StringUtils.isNotBlank((String) fieldValues.get("hrCalendarId"))) {
             calObj = HrServiceLocator.getCalendarService().getCalendar((String) fieldValues.get("hrCalendarId"));

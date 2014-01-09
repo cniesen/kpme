@@ -32,7 +32,6 @@
 	        <ref bean="PositionFlag-category"/>
 	        <ref bean="PositionFlag-positionFlagName"/>
 	        <ref bean="PositionFlag-active"/>
-            <ref bean="PositionFlag-userPrincipalId"/>  
 		 </list>
 	    </property>
 	    <property name="objectLabel" value="Position Flag"/>
@@ -41,7 +40,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionFlag-pmPositionFlagId" parent="PositionFlag-pmPositionFlagId-parentBean"/>
 	 <bean id="PositionFlag-pmPositionFlagId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -55,7 +53,6 @@
 	 
 	<bean id="PositionFlag-effectiveDate" parent="PositionFlag-effectiveDate-parentBean" />
 	<bean id="PositionFlag-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="10" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Effective Date" />
 		<property name="controlField">
@@ -68,7 +65,6 @@
 	
 	<bean id="PositionFlag-category" parent="PositionFlag-category-parentBean" />
 	<bean id="PositionFlag-category-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Category" />
 		<property name="controlField">
@@ -81,7 +77,6 @@
 
 	<bean id="PositionFlag-positionFlagName" parent="PositionFlag-positionFlagName-parentBean" />
 	<bean id="PositionFlag-positionFlagName-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50" />
 		<property name="required" value="yes" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -94,32 +89,15 @@
     <bean id="PositionFlag-active" parent="PositionFlag-active-parentBean"/>
  	<bean id="PositionFlag-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
    		<property name="name" value="active"/>
-  	</bean>
+  	</bean>  
 
-    <!--userPrincipalId-->
-    <bean id="PositionFlag-userPrincipalId" parent="PositionFlag-userPrincipalId-parentBean" />
-    <bean id="PositionFlag-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="name" value="userPrincipalId" />
-        <property name="label" value="User Principal Id" />
-        <property name="shortLabel" value="User Principal Id" />
-        <property name="maxLength" value="40" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="40" />
-        </property>
-    </bean>
-    
 <!--*************************************************************************** 
 							Views
  ***************************************************************************-->  	
   	
   <!-- Position Flag Lookup View -->
  
-  <bean id="PositionFlag-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
+  <bean id="PositionFlag-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Flag Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionflag.PositionFlag" />
     <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />  <!--KPME-2699-->
@@ -164,7 +142,6 @@
 			       	<bean parent="Uif-DataField" p:propertyName="category" />
 			       	<bean parent="Uif-DataField" p:propertyName="positionFlagName" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Flag Inquiry"/>
@@ -175,7 +152,7 @@
   
 <!--  Position Flag Maintenance View -->
   <bean id="PositionFlag-MaintenanceView" parent="PositionFlag-MaintenanceView-parentBean"/>
-  <bean id="PositionFlag-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionFlag-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Flag Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionflag.PositionFlag"/>
     <property name="items">

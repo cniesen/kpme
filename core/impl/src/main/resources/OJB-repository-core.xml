@@ -54,8 +54,7 @@
         <field-descriptor name="hasRules"             column="HAS_RULES"              jdbc-type="VARCHAR"     length="1" nullable="false" />    
         <field-descriptor name="objectId"             column="OBJ_ID"                 jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"        column="VER_NBR"                jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"      column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
-
+        
         <collection-descriptor name="accrualCategoryRules" element-class-ref="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false">
             <inverse-foreignkey field-ref="lmAccrualCategoryId" />
         </collection-descriptor>
@@ -84,7 +83,6 @@
         <field-descriptor name="active"                                 column="ACTIVE"                         jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="objectId"                               column="OBJ_ID"                         jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"                          column="VER_NBR"                        jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"                        column="USER_PRINCIPAL_ID"              jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Assignment -->
@@ -100,8 +98,7 @@
         <field-descriptor name="objectId"       column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"          jdbc-type="TIMESTAMP"   nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
-
+        
         <collection-descriptor name="assignmentAccounts" element-class-ref="org.kuali.kpme.core.assignment.account.AssignmentAccount" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
             <inverse-foreignkey field-ref="tkAssignmentId" />
         </collection-descriptor>
@@ -122,7 +119,6 @@
  		<field-descriptor name="batchPriorYearCarryOverStartTime"    column="BATCH_CARRY_OVER_START_TIME"   jdbc-type="TIME" />
         <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  dbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     
         <!-- Department -->
@@ -138,23 +134,8 @@
         <field-descriptor name="effectiveDate"  	column="EFFDT"       	jdbc-type="DATE"       nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"      	column="TIMESTAMP"   	jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"         	column="ACTIVE"      	jdbc-type="VARCHAR"    length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
-
-
-    <!-- Department Affliation-->
-    <!-- Business Keys - [DeptAfflType : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliation" table="HR_DEPT_AFFL_T">
-        <field-descriptor name="hrDeptAfflId"           column="HR_DEPT_AFFL_ID"  	jdbc-type="VARCHAR"     length="60" 	  primarykey="true" autoincrement="true" sequence-name="HR_DEPT_AFFL_S" />
-        <field-descriptor name="deptAfflType"           column="DEPT_AFFL_TYP"		jdbc-type="VARCHAR"     length="60" 	  nullable="false" />
-        <field-descriptor name="active"                 column="ACTIVE"                 jdbc-type="VARCHAR"     length="1" 		  nullable="false"  conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
-        <field-descriptor name="primaryIndicator"       column="PRIMARY_INDICATOR"      jdbc-type="VARCHAR"     length="1" 		  nullable="false"  conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
-        <field-descriptor name="effectiveDate"          column="EFFDT"    		        jdbc-type="DATE"        nullable="true"	  conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
-        <field-descriptor name="timestamp"              column="TIMESTAMP"              jdbc-type="TIMESTAMP"   nullable="false"  conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="objectId"               column="OBJ_ID"          	    jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"          column="VER_NBR"                jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
-    </class-descriptor>
+    
     <!--  Added for Work Area Table -->
     <class-descriptor class="org.kuali.kpme.core.workarea.WorkArea" table="TK_WORK_AREA_T">
         <field-descriptor name="tkWorkAreaId"               column="TK_WORK_AREA_ID"            jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="TK_WORK_AREA_S" />
@@ -195,7 +176,6 @@
         <field-descriptor name="primaryIndicator"   column="PRIMARY_INDICATOR"  jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="active"             column="ACTIVE"             jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="flsaStatus"         column="FLSA_STATUS"        jdbc-type="VARCHAR"     nullable="true" length="15" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- EarnCode -->
     <!-- Business Keys - [earnCode : effectiveDate : timestamp] -->
@@ -227,7 +207,6 @@
         <field-descriptor name="countsAsRegularPay"             column="COUNT_AS_REG_PAY"           jdbc-type="VARCHAR"     length="5" nullable="false" />
         <field-descriptor name="objectId"                       column="OBJ_ID"                     jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"                  column="VER_NBR"                    jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"                column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Earn Code Group-->
@@ -243,7 +222,6 @@
         <field-descriptor name="timestamp"          column="TIMESTAMP"              jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"       column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
 
         <collection-descriptor name="earnCodeGroups" element-class-ref="org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-delete="object" auto-update="object" proxy="false">
             <inverse-foreignkey field-ref="hrEarnCodeGroupId" />
@@ -291,7 +269,6 @@
         <field-descriptor name="benefitsEligible"        column="BNFT_ELIG"           	 jdbc-type="VARCHAR"     length="1" 		nullable="false" />
         <field-descriptor name="leaveEligible"          column="LV_ELIG"           		 jdbc-type="VARCHAR"     length="1" 		nullable="false" />
         <field-descriptor name="leavePlan"    			column="LV_PLN"			 		jdbc-type="VARCHAR"     length="15" 		nullable="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- PayType -->
@@ -310,7 +287,6 @@
         <field-descriptor name="objectId"       column="OBJ_ID"         jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"        jdbc-type="BIGINT"      locking="true" />
         <field-descriptor name="active"         column="ACTIVE"         jdbc-type="VARCHAR"     length="1" nullable="false"    conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Assignment Account -->
@@ -329,7 +305,6 @@
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"  locking="true" />
         <field-descriptor name="earnCode"       column="EARN_CODE"          jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
         <field-descriptor name="active"         column="ACTIVE"             jdbc-type="VARCHAR" length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- Earn Code Security -->
     <!-- Business Keys - [location : hrSalGroup : dept : earnCode : effectiveDate : timestamp] -->
@@ -348,7 +323,6 @@
         <field-descriptor name="effectiveDate"          column="EFFDT"                      jdbc-type="DATE"        nullable="true" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"              column="TIMESTAMP"                  jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"                 column="ACTIVE"                     jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- PrincipalHRAttributes -->
     <!-- Business Keys - [principalId : effectiveDate : timestamp] -->
@@ -367,7 +341,6 @@
         <field-descriptor name="workersCompEligible"    column="workers_eligible"           jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="objectId"               column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
         <field-descriptor name="versionNumber"          column="VER_NBR" jdbc-type="BIGINT" locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     
     <!--  Calendar Entry -->
@@ -446,7 +419,6 @@
         <field-descriptor name="active"         column="ACTIVE"         jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="effectiveDate"  column="EFFDT"          jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"      jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Institution -->
@@ -460,7 +432,6 @@
         <field-descriptor name="timestamp"				column="TIMESTAMP"			jdbc-type="TIMESTAMP"	nullable="false"	conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"       		column="OBJ_ID"         	jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  		column="VER_NBR"        	jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- PayStep -->
@@ -481,7 +452,6 @@
         <field-descriptor name="timestamp"              column="TIMESTAMP"             	 jdbc-type="TIMESTAMP"   nullable="false"	conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"               column="OBJ_ID"                	 jdbc-type="VARCHAR"     index="true" 		/>
         <field-descriptor name="versionNumber"          column="VER_NBR"               	 jdbc-type="BIGINT"      locking="true" 	/>
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
 	<!-- Chart of Account -->	

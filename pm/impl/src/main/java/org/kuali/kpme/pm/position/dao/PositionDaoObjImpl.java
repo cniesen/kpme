@@ -39,8 +39,8 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
 	}
 
 	@Override
-	public List<Position> getPositions(String positionNum, String description, String location,
-            String institution, String classificationTitle, String positionType, String poolEligible, String positionStatus,
+	public List<Position> getPositions(String positionNum, String description, String workingPositionTitle, String campus,
+            String institution, String classificationTitle, String positionType, String poolEligible,
 			LocalDate fromEffdt, LocalDate toEffdt, String active,
 			String showHistory) {
 		List<Position> results = new ArrayList<Position>();
@@ -56,8 +56,12 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
             root.addLike("UPPER(`description`)", description.toUpperCase());
         }
 
-        if (StringUtils.isNotBlank(location)) {
-            root.addLike("UPPER(`location`)", location.toUpperCase());
+        if (StringUtils.isNotBlank(workingPositionTitle)) {
+            root.addLike("UPPER(`wk_pstn_ttl`)", workingPositionTitle.toUpperCase());
+        }
+
+        if (StringUtils.isNotBlank(campus)) {
+            root.addLike("UPPER(`campus`)", campus.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(institution)) {
@@ -74,12 +78,8 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
 
         if (StringUtils.isNotBlank(poolEligible)) {
             root.addEqualTo("poolEligible", poolEligible);
-        }
 
-        if (StringUtils.isNotBlank(positionStatus)) {
-            root.addLike("UPPER(`pstn_status`)", positionStatus.toUpperCase());
         }
-
         Criteria effectiveDateFilter = new Criteria();
         if (fromEffdt != null) {
             effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt.toDate());
@@ -103,11 +103,10 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Position.class, effectiveDateFilter, Position.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, Position.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Position.class, effectiveDateFilter, Position.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, Position.EQUAL_TO_FIELDS, false));
         }
-
-
+        
         Query query = QueryFactory.newQuery(Position.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
 

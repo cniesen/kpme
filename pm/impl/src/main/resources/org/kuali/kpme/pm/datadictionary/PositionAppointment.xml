@@ -35,7 +35,6 @@
 	        <ref bean="PositionAppointment-location"/>
 	        <ref bean="PositionAppointment-history"/>
 	        <ref bean="PositionAppointment-active"/>
-            <ref bean="PositionAppointment-userPrincipalId"/>  
 		 </list>
 	    </property>
 	    <property name="objectLabel" value="PositionAppointment"/>
@@ -44,7 +43,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionAppointment-pmPositionAppointmentId" parent="PositionAppointment-pmPositionAppointmentId-parentBean"/>
 	 <bean id="PositionAppointment-pmPositionAppointmentId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -70,7 +68,6 @@
 	
 	<bean id="PositionAppointment-positionAppointment" parent="PositionAppointment-positionAppointment-parentBean" />
 	<bean id="PositionAppointment-positionAppointment-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Pstn Assgt" />
 		<property name="controlField">
@@ -83,7 +80,6 @@
 
 	<bean id="PositionAppointment-description" parent="PositionAppointment-description-parentBean" />
 	<bean id="PositionAppointment-description-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100" />
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -95,14 +91,11 @@
 	
 	<bean id="PositionAppointment-institution" parent="PositionAppointment-institution-parentBean" />
 	<bean id="PositionAppointment-institution-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="15" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Institution" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="15" />
 		</property>
@@ -115,11 +108,9 @@
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Location" />
 		<property name="maxLength" value="15" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
@@ -143,24 +134,7 @@
         </property>
 		<property name="name" value="history" />
 		<property name="label" value="Show History" />
-	</bean>
-
-    <!--userPrincipalId-->
-    <bean id="PositionAppointment-userPrincipalId" parent="PositionAppointment-userPrincipalId-parentBean" />
-    <bean id="PositionAppointment-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="name" value="userPrincipalId" />
-        <property name="label" value="User Principal Id" />
-        <property name="shortLabel" value="User Principal Id" />
-        <property name="maxLength" value="40" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="40" />
-        </property>
-    </bean>
+	</bean>  
 
 <!--*************************************************************************** 
 							Views
@@ -168,7 +142,7 @@
   	
   <!-- Position Appointment Lookup View -->
  
-  <bean id="PositionAppointment-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="PositionAppointment-LookupView" parent="KPMEUif-LookupView">
     <property name="headerText" value="Position Appointment Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionappointment.PositionAppointment" />
     <property name="viewHelperServiceClass" value="org.kuali.kpme.pm.positionappointment.web.PositionAppointmentLookupableImpl" />
@@ -229,7 +203,6 @@
 			        <bean parent="Uif-DataField" p:propertyName="institution" />
 			        <bean parent="Uif-DataField" p:propertyName="location" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Appointment Inquiry"/>
@@ -240,7 +213,7 @@
   
 <!--  Position Appointment Maintenance View -->
   <bean id="PositionAppointment-MaintenanceView" parent="PositionAppointment-MaintenanceView-parentBean"/>
-  <bean id="PositionAppointment-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionAppointment-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Appointment Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionappointment.PositionAppointment"/>
     <property name="items">

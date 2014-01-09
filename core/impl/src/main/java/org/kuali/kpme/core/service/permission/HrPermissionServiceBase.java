@@ -20,13 +20,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.department.service.DepartmentService;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
-import org.kuali.kpme.core.api.workarea.service.WorkAreaService;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.department.service.DepartmentService;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.core.workarea.service.WorkAreaService;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.KimConstants;
 
@@ -215,10 +214,10 @@ public abstract class HrPermissionServiceBase {
     	boolean isAuthorized = false;
     	
 		Long workArea = assignment.getWorkArea();
-    	WorkAreaContract workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, assignment.getEffectiveLocalDate());
+    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, assignment.getEffectiveLocalDate());
 
 		String department = workAreaObj != null ? workAreaObj.getDept() : null;
-    	DepartmentContract departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, assignment.getEffectiveLocalDate());
+    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, assignment.getEffectiveLocalDate());
     	
     	String location = departmentObj != null ? departmentObj.getLocation() : null;
     	
