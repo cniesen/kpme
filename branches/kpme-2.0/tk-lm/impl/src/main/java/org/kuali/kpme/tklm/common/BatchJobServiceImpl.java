@@ -191,7 +191,6 @@ public class BatchJobServiceImpl implements BatchJobService {
 	
 	@Override
 	public void scheduleEndPayPeriodJobs(CalendarEntry calendarEntry) throws SchedulerException {
-//		scheduleEndPayPeriodJobs(calendarEntry, calendarEntry.getBatchEndPayPeriodFullDateTime());
 		TkServiceLocator.getBatchJobService().scheduleEndPayPeriodJobs(calendarEntry, calendarEntry.getBatchEndPayPeriodFullDateTime());
 	}
 	
@@ -204,37 +203,8 @@ public class BatchJobServiceImpl implements BatchJobService {
         jobDataMap.put("hrCalendarEntryId", calendarEntry.getHrCalendarEntryId());
 		
         scheduleJob(EndPayPeriodJob.class, scheduleDate, jobGroupDataMap, jobDataMap);
-		
-//		String calendarName = calendarEntry.getCalendarName();
-//		    	
-//    	List<PrincipalHRAttributes> principalHRAttributes = getPrincipalHRAttributesService().getActiveEmployeesForPayCalendar(calendarName, scheduleDate.toLocalDate());
-//        for (PrincipalHRAttributes principalHRAttribute : principalHRAttributes) {
-//        	String principalId = principalHRAttribute.getPrincipalId();
-//            
-//        	List<Assignment> assignments = getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(principalId, calendarEntry);
-//    		for (Assignment assignment : assignments) {
-//    			String jobNumber = String.valueOf(assignment.getJobNumber());
-//    			String workArea = String.valueOf(assignment.getWorkArea());
-//    			String task = String.valueOf(assignment.getTask());
-//    			
-//    			ClockLog lastClockLog = getClockLogService().getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
-//		    	if (lastClockLog != null && TkConstants.ON_THE_CLOCK_CODES.contains(lastClockLog.getClockAction())) {
-//		    		scheduleEndPayPeriodJob(calendarEntry, scheduleDate, lastClockLog);
-//		    	}
-//    		}
-//        }
 	}
-	
-	private void scheduleEndPayPeriodJob(CalendarEntry calendarEntry, DateTime scheduleDate, ClockLog clockLog) throws SchedulerException {
-        Map<String, String> jobGroupDataMap = new HashMap<String, String>();
-        jobGroupDataMap.put("hrCalendarEntryId", calendarEntry.getHrCalendarEntryId());
 		
-		Map<String, String> jobDataMap = new HashMap<String, String>();
-        jobDataMap.put("tkClockLogId", clockLog.getTkClockLogId());
-		
-        scheduleJob(EndPayPeriodJob.class, scheduleDate, jobGroupDataMap, jobDataMap);
-	}
-	
 	@Override
 	public void scheduleEmployeeApprovalJobs(CalendarEntry calendarEntry) throws SchedulerException {
 		scheduleEmployeeApprovalJobs(calendarEntry, calendarEntry.getBatchEmployeeApprovalFullDateTime());
