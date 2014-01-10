@@ -69,64 +69,37 @@ public class SupervisorApprovalJob extends BatchJob {
 			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {	
 				List<TimesheetDocumentHeader> timesheetDocumentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
 		        for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
-		        	String docId = timesheetDocumentHeader.getDocumentId();
 		        	if (timesheetDocumentHeader != null) {
-						if (missedPunchDocumentsEnroute(timesheetDocumentHeader.getDocumentId()) || documentNotEnroute(docId)) {
-							rescheduleJob(context);
-						} else {
-							TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
-							String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId);
-							if (TkConstants.SUPERVISOR_APPROVAL_DOC_STATUS.contains(documentStatus)) {
-								PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
-								if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
-									TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
-								}
+		        		String docId = timesheetDocumentHeader.getDocumentId();
+			        	TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
+						String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId);
+						
+						// only approve documents in enroute status
+		        		if(documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
+							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
+								TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
-						}
+		        		}
 		        	}
 		        }
 			} else if (StringUtils.equals(calendar.getCalendarTypes(), "Leave")) {
 		        List<LeaveCalendarDocumentHeader> leaveCalendarDocumentHeaders = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
 		        for (LeaveCalendarDocumentHeader leaveCalendarDocumentHeader : leaveCalendarDocumentHeaders) {
 		        	if (leaveCalendarDocumentHeader != null) {
-		        		if (documentNotEnroute(leaveCalendarDocumentHeader.getDocumentId())) {
-							rescheduleJob(context);
-						} else {
-							LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(leaveCalendarDocumentHeader.getDocumentId());
-							String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(leaveCalendarDocument.getDocumentId());
-							if (TkConstants.SUPERVISOR_APPROVAL_DOC_STATUS.contains(documentStatus)) {
-								PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
-								if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
-									LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
-								}
+		        		LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(leaveCalendarDocumentHeader.getDocumentId());
+						String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(leaveCalendarDocument.getDocumentId());
+						// only approve documents in enroute status
+						if (documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
+							if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
+								LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
 						}
 					}
 		        }
 	    	
 			}
-			
-//			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {
-//				TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
-//				if (timesheetDocumentHeader != null) {
-//					if (missedPunchDocumentsEnroute(documentId) || documentNotEnroute(documentId)) {
-//						rescheduleJob(context);
-//					} else {
-//						TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
-//						TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
-//					}
-//				}
-//			} else if (StringUtils.equals(calendar.getCalendarTypes(), "Leave")) {
-//				LeaveCalendarDocumentHeader leaveCalendarDocumentHeader = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(documentId);
-//				if (leaveCalendarDocumentHeader != null) {
-//					if (documentNotEnroute(documentId)) {
-//						rescheduleJob(context);
-//					} else {
-//						LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(documentId);
-//						LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
-//					}
-//				}
-//			}
         } else {
         	String principalName = getBatchUserPrincipalName();
         	LOG.error("Could not run batch jobs due to missing batch user " + principalName);
