@@ -105,13 +105,14 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
             CalendarBlockPermissions perms = HrServiceLocator.getHRPermissionService().getTimeBlockPermissions(timeBlock.getTkTimeBlockId());
             Boolean canEdit = perms.isPrincipalCanEdit(principalId);
 
-            if (canEdit != null)
+            if (canEdit != null) {
                 return canEdit;
-            
-            if(this.userHasRolesToEditTimeBlock(principalId, timeBlock))
+            }
+            if(userHasRolesToEditTimeBlock(principalId, timeBlock)) {
             	return updateCanEditTimeblockPerm(principalId, perms, true);
-            else
+            } else {
             	return updateCanEditTimeblockPerm(principalId, perms, false);
+            }
         }
         return false;
     }
@@ -119,8 +120,9 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
     @Override
     public boolean userHasRolesToEditTimeBlock(String principalId, TimeBlock aTimeBlock) {
     	// system admin, TimeSysAdmin and time location admin have full permissions when they are not working on their own timesheet, no need to check earnCodeSecurity in this case
-    	if(this.userHasTimeSysLocationAdminRoles(principalId,aTimeBlock) && !StringUtils.equals(TkContext.getTargetPrincipalId(), principalId))
+    	if(this.userHasTimeSysLocationAdminRoles(principalId,aTimeBlock) && !StringUtils.equals(TkContext.getTargetPrincipalId(), principalId)) {
     		return true;
+        }
     	
     	// timesheet is cancelled/disapproved, then no edit permissions for roles other than sys/location admins
     	if (StringUtils.isNotBlank(aTimeBlock.getDocumentId())) {

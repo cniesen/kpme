@@ -49,31 +49,31 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
 
     	// KPME-2695
         if (StringUtils.isNotBlank(positionNum)) {
-            root.addLike("UPPER(`position_nbr`)", positionNum.toUpperCase()); // just in case position number is not a number
+            root.addLike("UPPER(position_nbr)", positionNum.toUpperCase()); // just in case position number is not a number
         }
 
         if (StringUtils.isNotBlank(description)) {
-            root.addLike("UPPER(`description`)", description.toUpperCase());
+            root.addLike("UPPER(description)", description.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(workingPositionTitle)) {
-            root.addLike("UPPER(`wk_pstn_ttl`)", workingPositionTitle.toUpperCase());
+            root.addLike("UPPER(wk_pstn_ttl)", workingPositionTitle.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(campus)) {
-            root.addLike("UPPER(`campus`)", campus.toUpperCase());
+            root.addLike("UPPER(campus)", campus.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(institution)) {
-            root.addLike("UPPER(`institution`)", institution.toUpperCase());
+            root.addLike("UPPER(institution)", institution.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(classificationTitle)) {
-            root.addLike("UPPER(`cl_ttl`)", classificationTitle.toUpperCase());
+            root.addLike("UPPER(cl_ttl)", classificationTitle.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(positionType)) {
-            root.addLike("UPPER(`pstn_typ`)", positionType.toUpperCase());
+            root.addLike("UPPER(pstn_typ)", positionType.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(poolEligible)) {

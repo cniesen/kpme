@@ -565,7 +565,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	}
 	
 	public void setBeginDateTime(DateTime beginDateTime) {
-		beginTimestamp = beginDateTime != null ? beginDateTime.toDate() : null;
+		beginTimestamp = beginDateTime != null ? new Timestamp(beginDateTime.getMillis()) : null;
 	}
 	
 	
@@ -589,7 +589,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	    	DateTime dateTime = new DateTime(beginTimestamp);
 	    	LocalDate localDate = new LocalDate(beginDate);
 	    	LocalTime localTime = new LocalTime(beginTimestamp);
-	    	beginTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+	    	beginTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
 	}
 	
 	public DateTime getEndDateTime() {
@@ -597,7 +597,7 @@ public class LeaveBlock extends CalendarBlock implements Assignable, LeaveBlockC
 	}
 	
 	public void setEndDateTime(DateTime endDateTime) {
-		endTimestamp = endDateTime != null ? endDateTime.toDate() : null;
+		endTimestamp = endDateTime != null ? new Timestamp(endDateTime.getMillis()) : null;
 	}
 
 	public String getLmLeaveBlockId() {
