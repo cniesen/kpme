@@ -91,15 +91,15 @@ public class EmployeeOverrideDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(principalId)) {
-        	root.addLike("UPPER(`principal_id`)",principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+        	root.addLike("UPPER(principal_id)",principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
         
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addEqualTo("UPPER(`leave_plan`)",leavePlan.toUpperCase()); // KPME-2695
+        	root.addEqualTo("UPPER(leave_plan)",leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(accrualCategory)) {
-        	root.addLike("UPPER(`accrual_cat`)",accrualCategory.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(accrual_cat)",accrualCategory.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(overrideType)) {

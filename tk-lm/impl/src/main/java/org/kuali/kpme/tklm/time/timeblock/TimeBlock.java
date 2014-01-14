@@ -147,7 +147,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	DateTime dateTime = new DateTime(beginTimestamp);
     	LocalDate localDate = new LocalDate(beginDate);
     	LocalTime localTime = new LocalTime(beginTimestamp);
-    	beginTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+    	beginTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
     }
     
     public Time getBeginTime() {
@@ -164,7 +164,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	DateTime dateTime = new DateTime(beginTimestamp);
     	LocalDate localDate = new LocalDate(beginTimestamp);
     	LocalTime localTime = new LocalTime(beginTime);
-    	beginTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+    	beginTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
     }
     
     public DateTime getBeginDateTime() {
@@ -172,14 +172,14 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     }
     
     public void setBeginDateTime(DateTime beginDateTime) {
-    	beginTimestamp = beginDateTime != null ? beginDateTime.toDate() : null;
+    	beginTimestamp = beginDateTime != null ? new Timestamp(beginDateTime.getMillis()) : null;
     }
 
-    public Date getEndTimestamp() {
+    public Timestamp getEndTimestamp() {
         return endTimestamp;
     }
 
-    public void setEndTimestamp(Date endTimestamp) {
+    public void setEndTimestamp(Timestamp endTimestamp) {
         this.endTimestamp = endTimestamp;
     }
 
@@ -197,7 +197,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	DateTime dateTime = new DateTime(endTimestamp);
     	LocalDate localDate = new LocalDate(endDate);
     	LocalTime localTime = new LocalTime(endTimestamp);
-    	endTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+    	endTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
     }
 
     public Time getEndTime() {
@@ -214,7 +214,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	DateTime dateTime = new DateTime(endTimestamp);
     	LocalDate localDate = new LocalDate(endTimestamp);
     	LocalTime localTime = new LocalTime(endTime);
-    	endTimestamp = localDate.toDateTime(localTime, dateTime.getZone()).toDate();
+        endTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
     }
     
     public DateTime getEndDateTime() {
@@ -222,7 +222,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     }
     
     public void setEndDateTime(DateTime endDateTime) {
-    	endTimestamp = endDateTime != null ? endDateTime.toDate() : null;
+    	endTimestamp = endDateTime != null ? new Timestamp(endDateTime.getMillis()) : null;
     }
     
     public Boolean getClockLogCreated() {
