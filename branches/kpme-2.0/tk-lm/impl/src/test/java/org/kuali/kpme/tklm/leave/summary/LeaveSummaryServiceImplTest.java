@@ -66,8 +66,8 @@ public class LeaveSummaryServiceImplTest extends TKLMIntegrationTestCase {
 		Assert.assertTrue("Accrual cateogry for Row should be 'testAC', not " + aRow.getAccrualCategory(), aRow.getAccrualCategory().equals("testAC"));
 		Assert.assertTrue("Carry over for Row should be '0', not " + aRow.getCarryOver(), aRow.getCarryOver().compareTo(BigDecimal.ZERO)==0);
 		Assert.assertTrue("YTD accrual balance for Row should be '8', not " + aRow.getYtdAccruedBalance(), aRow.getYtdAccruedBalance().compareTo(new BigDecimal(8))==0);
-		Assert.assertTrue("YTD approved usage for Row should be '-3', not " + aRow.getYtdApprovedUsage(), aRow.getYtdApprovedUsage().compareTo(new BigDecimal(-3))==0);
-		Assert.assertTrue("Leave Balance for Row should be '11', not " + aRow.getLeaveBalance(), aRow.getLeaveBalance().compareTo(new BigDecimal(11))==0);
+		Assert.assertTrue("YTD approved usage for Row should be '-13', not " + aRow.getYtdApprovedUsage(), aRow.getYtdApprovedUsage().compareTo(new BigDecimal(-13))==0);
+		Assert.assertTrue("Leave Balance for Row should be '21', not " + aRow.getLeaveBalance(), aRow.getLeaveBalance().compareTo(new BigDecimal(21))==0);
 		Assert.assertTrue("Pending Leave Accrual for Row should be '0', not " + aRow.getPendingLeaveAccrual(), aRow.getPendingLeaveAccrual().compareTo(BigDecimal.ZERO)==0);
 		Assert.assertTrue("Pending Leave requests for Row should be '0', not " + aRow.getPendingLeaveRequests(), aRow.getPendingLeaveRequests().compareTo(new BigDecimal(0))==0);
 		//Assert.assertTrue("Pending Leave Balance for Row should be '13', not " + aRow.getPendingLeaveBalance(), aRow.getPendingLeaveBalance().equals(new BigDecimal(13)));
@@ -87,8 +87,8 @@ public class LeaveSummaryServiceImplTest extends TKLMIntegrationTestCase {
 			if(lsRow.getAccrualCategory().equals("testAC")) {
 				Assert.assertTrue("Carry over for Row should be '0', not " + lsRow.getCarryOver(), lsRow.getCarryOver().compareTo(BigDecimal.ZERO) == 0);
 				Assert.assertTrue("YTD accrualed balance for Row should be '8', not " + lsRow.getYtdAccruedBalance(), lsRow.getYtdAccruedBalance().compareTo(new BigDecimal(8)) == 0);
-				Assert.assertTrue("YTD approved usage for Row should be '-3', not " + lsRow.getYtdApprovedUsage(), lsRow.getYtdApprovedUsage().compareTo(new BigDecimal(-3)) == 0);
-				Assert.assertTrue("Leave Balance for Row should be '11', not " + lsRow.getLeaveBalance(), lsRow.getLeaveBalance().compareTo(new BigDecimal(11)) == 0);
+				Assert.assertTrue("YTD approved usage for Row should be '-13', not " + lsRow.getYtdApprovedUsage(), lsRow.getYtdApprovedUsage().compareTo(new BigDecimal(-13)) == 0);
+				Assert.assertTrue("Leave Balance for Row should be '21', not " + lsRow.getLeaveBalance(), lsRow.getLeaveBalance().compareTo(new BigDecimal(21)) == 0);
 				Assert.assertTrue("Pending Leave Accrual for Row should be '0', not " + lsRow.getPendingLeaveAccrual(), lsRow.getPendingLeaveAccrual().compareTo(BigDecimal.ZERO) == 0);
 				Assert.assertTrue("Pending Leave requests for Row should be '0', not " + lsRow.getPendingLeaveRequests(), lsRow.getPendingLeaveRequests().compareTo(new BigDecimal(0)) == 0);
 				//Assert.assertTrue("Pending Leave Balance for Row should be '13', not " + lsRow.getPendingLeaveBalance(), lsRow.getPendingLeaveBalance().equals(new BigDecimal(13)));
@@ -98,8 +98,8 @@ public class LeaveSummaryServiceImplTest extends TKLMIntegrationTestCase {
 			} else if(lsRow.getAccrualCategory().equals("testAC1")) {
 				Assert.assertTrue("Carry over for Row should be '0', not " + lsRow.getCarryOver(), lsRow.getCarryOver().compareTo(BigDecimal.ZERO) == 0);
 				Assert.assertTrue("YTD accrualed balance for Row should be '0', not " + lsRow.getYtdAccruedBalance(), lsRow.getYtdAccruedBalance().compareTo(new BigDecimal(0)) == 0);
-				Assert.assertTrue("YTD approved usage for Row should be '-0, not " + lsRow.getYtdApprovedUsage(), lsRow.getYtdApprovedUsage().compareTo(new BigDecimal(-0)) == 0);
-				Assert.assertTrue("Leave Balance for Row should be '0', not " + lsRow.getLeaveBalance(), lsRow.getLeaveBalance().compareTo(new BigDecimal(0)) == 0);
+				Assert.assertTrue("YTD approved usage for Row should be '-8', not " + lsRow.getYtdApprovedUsage(), lsRow.getYtdApprovedUsage().compareTo(new BigDecimal(-8)) == 0);
+				Assert.assertTrue("Leave Balance for Row should be '8', not " + lsRow.getLeaveBalance(), lsRow.getLeaveBalance().compareTo(new BigDecimal(8)) == 0);
 				Assert.assertTrue("Pending Leave Accrual for Row should be '0', not " + lsRow.getPendingLeaveAccrual(), lsRow.getPendingLeaveAccrual().compareTo(BigDecimal.ZERO) == 0);
 				Assert.assertTrue("Pending Leave requests for Row should be '0', not " + lsRow.getPendingLeaveRequests(), lsRow.getPendingLeaveRequests().compareTo(new BigDecimal(0)) == 0);
 				//Assert.assertTrue("Pending Leave Balance for Row should be '8', not " + lsRow.getPendingLeaveBalance(), lsRow.getPendingLeaveBalance().equals(new BigDecimal(8)));
