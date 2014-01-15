@@ -143,22 +143,22 @@ public class ValidationUtils {
 
 	public static boolean validateEarnCodeOfAccrualCategory(String earnCode, String accrualCategory, LocalDate asOfDate) {
 		boolean valid = false;
-		
-		if (asOfDate != null) {
-			AccrualCategory accrualCategoryObj = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, asOfDate);
-			if (accrualCategoryObj != null) {
-				if (StringUtils.equals(earnCode, accrualCategoryObj.getEarnCode())) {
-					valid = true;
-				}
-			}
-		} else {
-			Map<String, String> fieldValues = new HashMap<String, String>();
-			fieldValues.put("earnCode", earnCode);
-			int matches = KRADServiceLocator.getBusinessObjectService().countMatching(EarnCode.class, fieldValues);
-			
-			valid = matches > 0;
-		}
-		
+
+        if (asOfDate != null) {
+            EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
+            if (earnCodeObj != null) {
+                if(StringUtils.equals(earnCodeObj.getAccrualCategory(),accrualCategory)) {
+                    valid = true;
+                }
+            }
+        } else {
+            Map<String, String> fieldValues = new HashMap<String, String>();
+            fieldValues.put("earnCode", earnCode);
+            int matches = KRADServiceLocator.getBusinessObjectService().countMatching(EarnCode.class, fieldValues);
+
+            valid = matches > 0;
+        }
+
 		return valid;
 	}
 	
