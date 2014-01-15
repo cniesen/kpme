@@ -420,6 +420,9 @@ public class BatchJobServiceImpl implements BatchJobService {
 	
 	@SuppressWarnings("unchecked")
 	private void scheduleJob(Class<?> jobClass, DateTime jobDate, Map<String, String> jobGroupDataMap, Map<String, String> jobDataMap) throws SchedulerException {
+		if(jobDate == null) {
+			return;
+		}
 		String jobGroupName = BatchJobUtil.getJobGroupName(jobClass, jobGroupDataMap);
 		String jobName = BatchJobUtil.getJobName(jobClass, jobDataMap);
     	String[] jobNames = getScheduler().getJobNames(jobGroupName);
