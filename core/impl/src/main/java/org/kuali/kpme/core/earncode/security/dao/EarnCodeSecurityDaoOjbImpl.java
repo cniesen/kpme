@@ -145,11 +145,11 @@ public class EarnCodeSecurityDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
         }
 
         if (StringUtils.isNotBlank(salGroup)) {
-            root.addLike("UPPER(hr_sal_group)", salGroup.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(hrSalGroup)", salGroup.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(earnCode)) {
-            root.addLike("UPPER(earn_code)", earnCode.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(earnCode)", earnCode.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(location)) {

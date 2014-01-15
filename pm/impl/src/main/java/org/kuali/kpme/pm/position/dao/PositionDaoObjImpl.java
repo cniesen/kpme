@@ -49,7 +49,7 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
 
     	// KPME-2695
         if (StringUtils.isNotBlank(positionNum)) {
-            root.addLike("UPPER(position_nbr)", positionNum.toUpperCase()); // just in case position number is not a number
+            root.addLike("UPPER(positionNumber)", positionNum.toUpperCase()); // just in case position number is not a number
         }
 
         if (StringUtils.isNotBlank(description)) {
@@ -57,7 +57,7 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
         }
 
         if (StringUtils.isNotBlank(workingPositionTitle)) {
-            root.addLike("UPPER(wk_pstn_ttl)", workingPositionTitle.toUpperCase());
+            root.addLike("UPPER(workingPositionTitle)", workingPositionTitle.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(campus)) {
@@ -69,11 +69,11 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
         }
 
         if (StringUtils.isNotBlank(classificationTitle)) {
-            root.addLike("UPPER(cl_ttl)", classificationTitle.toUpperCase());
+            root.addLike("UPPER(classificationTitle)", classificationTitle.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(positionType)) {
-            root.addLike("UPPER(pstn_typ)", positionType.toUpperCase());
+            root.addLike("UPPER(positionType)", positionType.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(poolEligible)) {

@@ -141,7 +141,7 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addLike("UPPER(leave_plan)", leavePlan.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(calendarYearStart)) {

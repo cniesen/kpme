@@ -76,7 +76,7 @@ public class SalaryGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Sa
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(hrSalGroup)) {
-            root.addLike("UPPER(hr_sal_group)", hrSalGroup.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(hrSalGroup)", hrSalGroup.toUpperCase()); // KPME-2695
         }
 
         // KPME-2695/2710
@@ -87,7 +87,7 @@ public class SalaryGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Sa
             root.addLike("UPPER(location)", location.toUpperCase());
         }
         if (StringUtils.isNotBlank(leavePlan)) {
-            root.addLike("UPPER(lv_pln)", leavePlan.toUpperCase());
+            root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase());
         }
         
         
