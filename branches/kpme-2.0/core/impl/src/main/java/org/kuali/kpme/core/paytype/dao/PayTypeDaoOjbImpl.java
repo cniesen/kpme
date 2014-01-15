@@ -87,7 +87,7 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
         }
         
         if (StringUtils.isNotBlank(regEarnCode)) {
-            root.addLike("UPPER(reg_ern_code)", regEarnCode.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(regEarnCode)", regEarnCode.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(descr)) {

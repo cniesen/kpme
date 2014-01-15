@@ -52,7 +52,7 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 		// KPME-2695
 		// Also, changed addEqualTo to addLike
 		if(StringUtils.isNotBlank(payStep))
-			crit.addLike("UPPER(pay_step)", payStep.toUpperCase());
+			crit.addLike("UPPER(payStep)", payStep.toUpperCase());
 		if(StringUtils.isNotBlank(institution)
 				&& !StringUtils.equals(institution, HrConstants.WILDCARD_CHARACTER))
 			crit.addLike("UPPER(institution)", institution.toUpperCase());
@@ -60,9 +60,9 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 				&& !StringUtils.equals(location, HrConstants.WILDCARD_CHARACTER))
 			crit.addLike("UPPER(location)", location.toUpperCase());
 		if(StringUtils.isNotBlank(salaryGroup))
-			crit.addLike("UPPER(salary_group)", salaryGroup.toUpperCase());
+			crit.addLike("UPPER(salaryGroup)", salaryGroup.toUpperCase());
 		if(StringUtils.isNotBlank(payGrade))
-			crit.addLike("UPPER(pay_grade)", payGrade.toUpperCase());
+			crit.addLike("UPPER(payGrade)", payGrade.toUpperCase());
 		
 		Criteria activeFilter = new Criteria();
 		if(StringUtils.isNotBlank(active)) {

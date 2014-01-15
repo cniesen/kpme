@@ -100,11 +100,11 @@ public class ShiftDifferentialRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
         }        
         
         if (StringUtils.isNotBlank(hrSalGroup)) {
-        	root.addLike("UPPER(hr_sal_group)", hrSalGroup.toUpperCase());  // KPME-2635 ignore the case
+        	root.addLike("UPPER(hrSalGroup)", hrSalGroup.toUpperCase());  // KPME-2635 ignore the case
         }
         
         if (StringUtils.isNotBlank(payGrade)) {
-        	root.addLike("UPPER(pay_grade)", payGrade.toUpperCase()); // KPME-2635 ignore the case
+        	root.addLike("UPPER(payGrade)", payGrade.toUpperCase()); // KPME-2635 ignore the case
         }
 
         Criteria effectiveDateFilter = new Criteria();

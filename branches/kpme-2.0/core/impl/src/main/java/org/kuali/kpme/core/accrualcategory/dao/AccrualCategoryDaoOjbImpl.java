@@ -102,7 +102,7 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(accrualCategory)) {
-            root.addLike("UPPER(accrual_category)", accrualCategory.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(accrualCategory)", accrualCategory.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(descr)) {
@@ -110,7 +110,7 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
         }
         
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addLike("UPPER(leave_plan)", leavePlan.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(accrualEarnInterval)) {

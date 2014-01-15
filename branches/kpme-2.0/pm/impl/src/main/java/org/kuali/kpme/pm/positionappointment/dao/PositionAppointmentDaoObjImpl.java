@@ -54,7 +54,7 @@ public class PositionAppointmentDaoObjImpl extends PlatformAwareDaoBaseOjb imple
 
 		if (StringUtils.isNotEmpty(positionAppointment) 
 				&& !ValidationUtils.isWildCard(positionAppointment)) {
-			root.addLike("UPPER(pstn_appointment)", positionAppointment.toUpperCase());
+			root.addLike("UPPER(positionAppointment)", positionAppointment.toUpperCase());
 		}
 		
 		if (StringUtils.isNotEmpty(description) 
