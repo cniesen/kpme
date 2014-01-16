@@ -676,7 +676,8 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                     //if (overlap >= minMillis || overlapIntervals.size() == 1) {
                     Interval overlapShift = overlapToShift.get(overlapInterval);
                     Long totalOverlapMillisInShift = shiftOverlapMillis.get(overlapShift);
-                    if (totalOverlapMillisInShift >= minMillis) {
+                    if (totalOverlapMillisInShift >= minMillis
+                            || overlapIntervals.size() == 1) {
                         BigDecimal hoursToApply = hours.min(hoursMax.add(lunchSub));
                         allHoursToApply = allHoursToApply.add(hoursToApply);
                     }
