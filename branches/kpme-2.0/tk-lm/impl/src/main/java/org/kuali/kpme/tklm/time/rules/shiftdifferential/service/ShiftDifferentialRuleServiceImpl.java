@@ -585,6 +585,41 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
      * @param earnCode what earn code to create time hour detail entry for.
      */
 	protected void applyPremium(Interval shift, List<Interval> blockIntervals, List<TimeBlock> blocks, List<TimeBlock> previousBlocks, BigDecimal initialHours, BigDecimal hours, String earnCode, ShiftDifferentialRule rule) {
+        Map<Interval, Long> nextGaps = new HashMap<Interval, Long>();
+        List<Interval> possibleShifts = new ArrayList<Interval>(3);
+        possibleShifts.add(new Interval(shift.getStart().minusDays(1), shift.getEnd().minusDays(1)));
+        possibleShifts.add(shift);
+        possibleShifts.add(new Interval(shift.getStart().plusDays(1), shift.getEnd().plusDays(1)));
+        Map<Interval, Long> shiftOverlapMillis = new HashMap<Interval, Long>();
+        Map<Interval, Interval> overlapToShift = new HashMap<Interval, Interval>();
+        List<Interval> allOverlaps = new ArrayList<Interval>();
+        for (Interval interval : blockIntervals) {
+            allOverlaps.addAll(getOverlappingIntervals(interval, rule));
+        }
+        if (rule.getMaxGap().compareTo(BigDecimal.ZERO) != 0) {
+            for (int i = 0; i < allOverlaps.size(); i++) {
+                Long gap = 0L;
+                if (i+1 < allOverlaps.size()) {
+                    gap = allOverlaps.get(i+1).getStartMillis() - allOverlaps.get(i).getEndMillis();
+                }
+                nextGaps.put(allOverlaps.get(i), gap);
+            }
+        }
+        for (Interval overlap : allOverlaps) {
+            for (Interval possibleShift : possibleShifts) {
+                if (possibleShift.overlaps(overlap)) {
+                    overlapToShift.put(overlap, possibleShift);
+                    if (!shiftOverlapMillis.containsKey(possibleShift)) {
+                        shiftOverlapMillis.put(possibleShift, possibleShift.overlap(overlap).toDurationMillis());
+                    } else {
+                        shiftOverlapMillis.put(possibleShift, (shiftOverlapMillis.get(possibleShift) + possibleShift.overlap(overlap).toDurationMillis()));
+                    }
+                    //shiftOverlapMillis.put
+                    //totalOverlapMillisInShift += shift.overlap(overlap).toDurationMillis();
+                }
+            }
+        }
+
         for (int i=0; i<blocks.size(); i++) {
 			TimeBlock b = blocks.get(i);
 
@@ -628,7 +663,10 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                     BigDecimal hoursMax = TKUtils.convertMillisToHours(overlap); // Maximum number of possible hours applicable for this time block and shift rule
                     // Adjust this time block's hoursMax (below) by lunchSub to
                     // make sure the time applied is the correct amount per block.
-                    if (overlap >= minMillis || overlapIntervals.size() == 1) {
+                    //if (overlap >= minMillis || overlapIntervals.size() == 1) {
+                    Interval overlapShift = overlapToShift.get(overlapInterval);
+                    Long totalOverlapMillisInShift = shiftOverlapMillis.get(overlapShift);
+                    if (totalOverlapMillisInShift >= minMillis) {
                         BigDecimal hoursToApply = hours.min(hoursMax.add(lunchSub));
                         allHoursToApply = allHoursToApply.add(hoursToApply);
                     }
