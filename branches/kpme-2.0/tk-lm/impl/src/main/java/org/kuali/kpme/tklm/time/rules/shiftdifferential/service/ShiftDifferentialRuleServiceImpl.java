@@ -390,6 +390,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                         // has a valid window on multiple consecutive days. Time
                         // must be applied with the correct shift interval.
 						Interval overlap = previousDayShiftInterval.overlap(blockInterval);
+                        Interval overlapCurrentDay = shiftInterval.overlap(blockInterval);
                         evalInterval = previousDayShiftInterval;
                         boolean overlapFromPreviousDay = true;
 						if (overlap == null) {
@@ -418,6 +419,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                             overlapFromPreviousDay = false;
                         }
 
+
                         // Time bucketing and application as normal:
                         //
 						if (overlap != null) {
@@ -434,6 +436,14 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 	                                    accumulatedMillis = 0L; // reset accumulated hours..
 										hoursToApply = BigDecimal.ZERO;
 										hoursToApplyPrevious = BigDecimal.ZERO;
+
+                                        //didn't hit max gap for previous, but we still need to check for possible next shift
+                                        Interval currentShiftOverlap = shiftInterval.overlap(blockInterval);
+                                        if (currentShiftOverlap != null) {
+                                            long millis = currentShiftOverlap.toDurationMillis();
+                                            accumulatedMillis  += millis;
+                                            hoursToApply = hoursToApply.add(TKUtils.convertMillisToHours(millis));
+                                        }
 									} else {
                                     //We really need a list of the shift intervals here as overlap can happen more than one
                                     //per day
