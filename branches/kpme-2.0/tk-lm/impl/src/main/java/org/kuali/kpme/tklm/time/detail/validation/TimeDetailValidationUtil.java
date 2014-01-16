@@ -421,13 +421,16 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     if (acrossDays) {
                         List<LocalDate> localDates = new ArrayList<LocalDate>();
                         LocalDate startDay = new LocalDate(start_dt_timezone);
-                        int days = Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
+
+                        int days = end_dt_timezone.toLocalTime().equals(new LocalTime(0,0,0)) ? Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays() : Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
                         for (int i=0; i < days; i++) {
                             LocalDate d = startDay.withFieldAdded(DurationFieldType.days(), i);
                             localDates.add(d);
                         }
                         for (LocalDate localDate : localDates) {
-                            intervals.add(new Interval(localDate.toDateTime(start_dt_timezone.toLocalTime()), localDate.toDateTime(end_dt_timezone.toLocalTime())));
+                            DateTime startDateTime = localDate.toDateTime(start_dt_timezone.toLocalTime());
+                            DateTime endDateTime = end_dt_timezone.toLocalTime().equals(new LocalTime(0,0,0)) ? localDate.plusDays(1).toDateTime(end_dt_timezone.toLocalTime()) : localDate.toDateTime(end_dt_timezone.toLocalTime());
+                            intervals.add(new Interval(startDateTime,endDateTime));
                         }
 
                     } else {
@@ -437,6 +440,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     for (Interval interval : intervals) {
                         if (isRegularEarnCode && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
                             errors.add("The time block you are trying to add overlaps with an existing time block.");
+                            break;
                         }
                     }
                 }
