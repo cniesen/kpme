@@ -421,15 +421,17 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     if (acrossDays) {
                         List<LocalDate> localDates = new ArrayList<LocalDate>();
                         LocalDate startDay = new LocalDate(start_dt_timezone);
+                        DateTime userEndDateTime = end_dt_timezone.withZone(HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
 
-                        int days = end_dt_timezone.toLocalTime().equals(new LocalTime(0,0,0)) ? Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays() : Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
+                        int days = userEndDateTime.toLocalTime().equals(new LocalTime(0,0,0)) ? Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays() : Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
                         for (int i=0; i < days; i++) {
                             LocalDate d = startDay.withFieldAdded(DurationFieldType.days(), i);
                             localDates.add(d);
                         }
                         for (LocalDate localDate : localDates) {
                             DateTime startDateTime = localDate.toDateTime(start_dt_timezone.toLocalTime());
-                            DateTime endDateTime = end_dt_timezone.toLocalTime().equals(new LocalTime(0,0,0)) ? localDate.plusDays(1).toDateTime(end_dt_timezone.toLocalTime()) : localDate.toDateTime(end_dt_timezone.toLocalTime());
+
+                            DateTime endDateTime = userEndDateTime.toLocalTime().equals(new LocalTime(0, 0, 0)) ? localDate.plusDays(1).toDateTime(end_dt_timezone.toLocalTime()) : localDate.toDateTime(end_dt_timezone.toLocalTime());
                             intervals.add(new Interval(startDateTime,endDateTime));
                         }
 
