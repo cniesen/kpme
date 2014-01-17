@@ -45,7 +45,6 @@
 	        <ref bean="SalaryGroup-leavePlan"/>
 	        <ref bean="SalaryGroup-history"/>
 	        <ref bean="SalaryGroup-active"/>
-            <ref bean="SalaryGroup-userPrincipalId"/>  
 		 </list>
 	    </property>
 	    <property name="objectLabel" value="SalaryGroup"/>
@@ -138,11 +137,9 @@
 	<bean id="SalaryGroup-institution-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Institution" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
@@ -154,11 +151,9 @@
 	<bean id="SalaryGroup-location-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Location" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
@@ -263,35 +258,18 @@
     <bean id="SalaryGroup-active" parent="SalaryGroup-active-parentBean"/>
  	<bean id="SalaryGroup-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
    		<property name="name" value="active"/>
-  	</bean>
+  	</bean>  
 
-
-    <!--userPrincipalId-->
-    <bean id="SalaryGroup-userPrincipalId" parent="SalaryGroup-userPrincipalId-parentBean" />
-    <bean id="SalaryGroup-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
-        <property name="name" value="userPrincipalId" />
-        <property name="label" value="User Principal Id" />
-        <property name="shortLabel" value="User Principal Id" />
-        <property name="maxLength" value="40" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="40" />
-        </property>
-    </bean>
 <!--*************************************************************************** 
 							Views
  ***************************************************************************-->  	
   	
   <!-- Salary Group Lookup View -->
  
-  <bean id="SalaryGroup-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="SalaryGroup-LookupView" parent="KPMEUif-LookupView">
     <property name="headerText" value="Salary Group Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.core.salarygroup.SalaryGroup" />
-    <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KpmeHrBusinessObjectLookupableImpl" />
+    <property name="viewHelperServiceClass" value="org.kuali.kpme.core.salarygroup.web.SalaryGroupLookupableImpl" />
     <property name="criteriaFields">
       <list>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
@@ -308,6 +286,15 @@
 	        		 p:fieldConversions="location:location" />
 	   		 </property>
         </bean>
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="percentTime" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="benefitsEligible" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leaveEligible" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leavePlan">
+        	<property name="quickfinder">
+       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlan"
+        			 p:fieldConversions="leavePlan:leavePlan"/>
+   		 	</property>
+        </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
       </list>
@@ -323,6 +310,10 @@
         </bean>
         <bean parent="Uif-DataField" p:propertyName="institution" />
         <bean parent="Uif-DataField" p:propertyName="location" />
+        <bean parent="Uif-DataField" p:propertyName="percentTime" />
+        <bean parent="Uif-DataField" p:propertyName="benefitsEligible" />
+        <bean parent="Uif-DataField" p:propertyName="leaveEligible" />
+        <bean parent="Uif-DataField" p:propertyName="leavePlan" />
         <bean parent="Uif-DataField" p:propertyName="active"/>
       </list>
     </property>
@@ -343,6 +334,10 @@
 		        <bean parent="FieldDefinition" p:attributeName="hrSalGroup" />       
 		        <bean parent="FieldDefinition" p:attributeName="institution"/>
 		        <bean parent="FieldDefinition" p:attributeName="location"/>
+		        <bean parent="FieldDefinition" p:attributeName="percentTime" />
+		        <bean parent="FieldDefinition" p:attributeName="benefitsEligible" />
+		        <bean parent="FieldDefinition" p:attributeName="leaveEligible" />
+		        <bean parent="FieldDefinition" p:attributeName="leavePlan"/>
 		        <bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N" />
 		        <bean parent="FieldDefinition" p:attributeName="active" p:defaultValue="Y"/>
 			</list>
@@ -353,6 +348,10 @@
 		        <bean parent="FieldDefinition" p:attributeName="hrSalGroup"/>
 		        <bean parent="FieldDefinition" p:attributeName="institution" />
 		        <bean parent="FieldDefinition" p:attributeName="location" />
+		        <bean parent="FieldDefinition" p:attributeName="percentTime" />
+		        <bean parent="FieldDefinition" p:attributeName="benefitsEligible" />
+		        <bean parent="FieldDefinition" p:attributeName="leaveEligible" />
+		        <bean parent="FieldDefinition" p:attributeName="leavePlan" />
 		        <bean parent="FieldDefinition" p:attributeName="active"/>
 			</list>
 		</property>
@@ -381,7 +380,6 @@
                             <bean parent="FieldDefinition" p:attributeName="leaveEligible" />
                             <bean parent="FieldDefinition" p:attributeName="leavePlan" />
                             <bean parent="FieldDefinition" p:attributeName="active"/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
                         </list>
                     </property>
                     <property name="title" value="Salary Group" />
@@ -413,8 +411,7 @@
 			        <bean parent="Uif-DataField" p:propertyName="leaveEligible" />
 			        <bean parent="Uif-DataField" p:propertyName="leavePlan" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
-                </list>
+	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Salary Group Inquiry"/>
 	   	   </bean>
@@ -424,7 +421,7 @@
   
 <!--  Salary Group Maintenance View -->
   <bean id="SalaryGroup-MaintenanceView" parent="SalaryGroup-MaintenanceView-parentBean"/>
-  <bean id="SalaryGroup-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="SalaryGroup-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Salary Group Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.core.salarygroup.SalaryGroup"/>
     <property name="items">

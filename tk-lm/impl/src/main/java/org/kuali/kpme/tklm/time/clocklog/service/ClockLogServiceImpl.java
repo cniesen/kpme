@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -83,7 +81,12 @@ public class ClockLogServiceImpl implements ClockLogService {
             roundedClockDateTime = roundedClockDateTime.withMillisOfSecond(lastClockLogTime.getMillisOfSecond() + 1);
         }
 
+        //if span timesheets, we need to build some co/ci clock logs to close out the old period
+        if (lastClockLog != null
+              && !StringUtils.equals(lastClockLog.getDocumentId(), td.getDocumentId())
+              && (StringUtils.equals(clockAction, TkConstants.CLOCK_OUT) || StringUtils.equals(clockAction, TkConstants.LUNCH_OUT))) {
 
+        }
         ClockLog clockLog = buildClockLog(roundedClockDateTime, new Timestamp(System.currentTimeMillis()), assignment, td, clockAction, ip, userPrincipalId);
 
         if (runRules) {
@@ -160,7 +163,7 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
     	}
     }
 
-    private ClockLog buildClockLog(DateTime clockDateTime, Timestamp originalTimestamp, AssignmentContract assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId) {
+    private ClockLog buildClockLog(DateTime clockDateTime, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId) {
         ClockLog clockLog = new ClockLog();
         clockLog.setDocumentId(timesheetDocument.getDocumentId());
         clockLog.setPrincipalId(timesheetDocument.getPrincipalId());

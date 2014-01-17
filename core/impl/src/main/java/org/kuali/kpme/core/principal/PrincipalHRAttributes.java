@@ -27,16 +27,13 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PrincipalHRAttributes extends HrBusinessObject implements PrincipalHRAttributesContract {
 
-	private static final String PRINCIPAL_ID = "principalId";
-	
 	private static final long serialVersionUID = 6843318899816055301L;
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("principalId")
             .build();
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
 
@@ -60,13 +57,6 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 	private transient Person person;
 	private transient LeavePlan leavePlanObj;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(PRINCIPAL_ID, this.getPrincipalId())
-				.build();
-	}
 
 	public String getPrincipalId() {
 		return principalId;

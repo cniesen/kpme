@@ -57,8 +57,8 @@ public class EarnCodeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements EarnC
 		Criteria root = new Criteria();
 
 		root.addEqualTo("earnCode", earnCode);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCode.class, asOfDate, EarnCode.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCode.class, asOfDate, EarnCode.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -80,8 +80,8 @@ public class EarnCodeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements EarnC
 		Criteria root = new Criteria();
 
 		root.addEqualTo("ovtEarnCode", "Y");
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCode.class, asOfDate, EarnCode.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCode.class, asOfDate, EarnCode.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 		
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -156,15 +156,15 @@ public class EarnCodeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements EarnC
         }
         
         if (StringUtils.isNotBlank(descr)) {
-            root.addLike("UPPER(`descr`)", descr.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(descr)", descr.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addLike("UPPER(`leave_plan`)", leavePlan.toUpperCase()); // KPME-2695 
+        	root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(accrualCategory)) {
-        	root.addLike("UPPER(`accrual_category`)", accrualCategory.toUpperCase()); // KPME-2695 
+        	root.addLike("UPPER(accrualCategory)", accrualCategory.toUpperCase()); // KPME-2695
         }
         
         Criteria effectiveDateFilter = new Criteria();
@@ -190,8 +190,8 @@ public class EarnCodeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements EarnC
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCode.class, effectiveDateFilter, EarnCode.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCode.class, effectiveDateFilter, EarnCode.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCode.class, EarnCode.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(EarnCode.class, root);

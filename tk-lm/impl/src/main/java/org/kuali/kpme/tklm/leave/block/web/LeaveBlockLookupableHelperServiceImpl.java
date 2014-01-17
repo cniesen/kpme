@@ -15,7 +15,11 @@
  */
 package org.kuali.kpme.tklm.leave.block.web;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,10 +29,9 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -173,10 +176,10 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 				
 				Long workArea = lb.getWorkArea();
 				
-				JobContract job = HrServiceLocator.getJobService().getJob(lb.getPrincipalId(), lb.getJobNumber(), LocalDate.fromDateFields(lb.getLeaveDate()), false);
+				Job job = HrServiceLocator.getJobService().getJob(lb.getPrincipalId(), lb.getJobNumber(), LocalDate.fromDateFields(lb.getLeaveDate()), false);
 				String department = job != null ? job.getDept() : null;
 				
-				DepartmentContract departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(lb.getLeaveDate()));
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(lb.getLeaveDate()));
 				String location = departmentObj != null ? departmentObj.getLocation() : null;
 				
 				boolean valid = false;
@@ -200,7 +203,7 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 				} else {
 					// check for affects pay
 					if(affectPay != null && !affectPay.isEmpty()) {
-						EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 						if(!(earnCodeObj != null && affectPay.equalsIgnoreCase(earnCodeObj.getAffectPay()))) {
 							itr.remove();
 							continue;

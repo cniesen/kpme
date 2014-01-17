@@ -45,8 +45,8 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
 		Criteria currentRecordCriteria = new Criteria();
 
 		currentRecordCriteria.addEqualTo("payType", payType);
-        currentRecordCriteria.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayType.class, effectiveDate, PayType.BUSINESS_KEYS, false));
-        currentRecordCriteria.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.BUSINESS_KEYS, false));
+        currentRecordCriteria.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayType.class, effectiveDate, PayType.EQUAL_TO_FIELDS, false));
+        currentRecordCriteria.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.EQUAL_TO_FIELDS, false));
 		
 //		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 //		activeFilter.addEqualTo("active", true);
@@ -83,23 +83,23 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
         Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(payType)) {
-            root.addLike("UPPER(`paytype`)", payType.toUpperCase()); // KPME-2695 
+            root.addLike("UPPER(paytype)", payType.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(regEarnCode)) {
-            root.addLike("UPPER(`reg_ern_code`)", regEarnCode.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(regEarnCode)", regEarnCode.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(descr)) {
-            root.addLike("UPPER(`descr`)", descr.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(descr)", descr.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(location)) {
-            root.addLike("UPPER(`location`)", location.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(location)", location.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(institution)) {
-            root.addLike("UPPER(`institution`)", institution.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(institution)", institution.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(flsaStatus)) {
@@ -134,8 +134,8 @@ public class PayTypeDaoOjbImpl extends PlatformAwareDaoBaseOjb implements PayTyp
         }
         
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PayType.class, effectiveDateFilter, PayType.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PayType.class, effectiveDateFilter, PayType.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayType.class, PayType.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(PayType.class, root);

@@ -40,8 +40,8 @@ public class SalaryGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Sa
 		Criteria root = new Criteria();
 
 		root.addEqualTo("hrSalGroup", salGroup);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(SalaryGroup.class, asOfDate, SalaryGroup.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalaryGroup.class, SalaryGroup.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(SalaryGroup.class, asOfDate, SalaryGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalaryGroup.class, SalaryGroup.EQUAL_TO_FIELDS, false));
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
@@ -76,18 +76,18 @@ public class SalaryGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Sa
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(hrSalGroup)) {
-            root.addLike("UPPER(`hr_sal_group`)", hrSalGroup.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(hrSalGroup)", hrSalGroup.toUpperCase()); // KPME-2695
         }
 
         // KPME-2695/2710
         if (StringUtils.isNotBlank(institution)) {
-            root.addLike("UPPER(`institution`)", institution.toUpperCase());
+            root.addLike("UPPER(institution)", institution.toUpperCase());
         }
         if (StringUtils.isNotBlank(location)) {
-            root.addLike("UPPER(`location`)", location.toUpperCase());
+            root.addLike("UPPER(location)", location.toUpperCase());
         }
         if (StringUtils.isNotBlank(leavePlan)) {
-            root.addLike("UPPER(`lv_pln`)", leavePlan.toUpperCase());
+            root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase());
         }
         
         
@@ -132,8 +132,8 @@ public class SalaryGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Sa
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(SalaryGroup.class, effectiveDateFilter, SalaryGroup.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalaryGroup.class, SalaryGroup.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(SalaryGroup.class, effectiveDateFilter, SalaryGroup.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(SalaryGroup.class, SalaryGroup.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(SalaryGroup.class, root);

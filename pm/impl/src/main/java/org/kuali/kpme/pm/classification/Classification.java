@@ -27,21 +27,15 @@ import org.kuali.kpme.pm.classification.flag.ClassificationFlag;
 import org.kuali.kpme.pm.classification.qual.ClassificationQualification;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class Classification extends HrBusinessObject implements ClassificationContract {
 
-	private static final String LOCATION = "location";
-	private static final String INSTITUTION = "institution";
-	private static final String CLASSIFICATION_TITLE = "classificationTitle";
-	private static final String POSITION_CLASS = "positionClass";
-	
 	private static final long serialVersionUID = 1L;
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-											    .add(POSITION_CLASS)
-											    .add(CLASSIFICATION_TITLE)
-											    .add(INSTITUTION)
-											    .add(LOCATION)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+											    .add("positionClass")
+											    .add("classificationTitle")
+											    .add("institution")
+											    .add("location")
 											    .build();
 	private String pmPositionClassId;
 	private String positionClass;
@@ -50,7 +44,6 @@ public class Classification extends HrBusinessObject implements ClassificationCo
 	private String location;
 	// salary group fields
 	private String salaryGroup;
-    private String payGrade;
 	private BigDecimal percentTime;
 	private String benefitsEligible;
 	private String leaveEligible;
@@ -68,17 +61,6 @@ public class Classification extends HrBusinessObject implements ClassificationCo
 	// list of position flags, need to add flag maint section to Position maint doc
 	
 	private Location locationObj;
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_CLASS, this.getPositionClass())
-				.put(CLASSIFICATION_TITLE, this.getClassificationTitle())
-				.put(INSTITUTION, this.getInstitution())
-				.put(LOCATION, this.getLocation())
-				.build();
-	}
 	
 	@Override
 	public String getId() {
@@ -135,15 +117,7 @@ public class Classification extends HrBusinessObject implements ClassificationCo
 		this.salaryGroup = salaryGroup;
 	}
 
-    public String getPayGrade() {
-        return payGrade;
-    }
-
-    public void setPayGrade(String payGrade) {
-        this.payGrade = payGrade;
-    }
-
-    public BigDecimal getPercentTime() {
+	public BigDecimal getPercentTime() {
 		return percentTime;
 	}
 

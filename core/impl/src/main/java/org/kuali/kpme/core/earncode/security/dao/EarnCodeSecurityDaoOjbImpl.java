@@ -141,19 +141,19 @@ public class EarnCodeSecurityDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
         Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(dept)) {
-            root.addLike("UPPER(`dept`)", dept.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(dept)", dept.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(salGroup)) {
-            root.addLike("UPPER(`hr_sal_group`)", salGroup.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(hrSalGroup)", salGroup.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(earnCode)) {
-            root.addLike("UPPER(`earn_code`)", earnCode.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(earnCode)", earnCode.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(location)) {
-            root.addLike("UPPER(`location`)", location.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(location)", location.toUpperCase()); // KPME-2695
         }
 
         Criteria effectiveDateFilter = new Criteria();
@@ -180,8 +180,8 @@ public class EarnCodeSecurityDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCodeSecurity.class, effectiveDateFilter, EarnCodeSecurity.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeSecurity.class, EarnCodeSecurity.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCodeSecurity.class, effectiveDateFilter, EarnCodeSecurity.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeSecurity.class, EarnCodeSecurity.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(EarnCodeSecurity.class, root);
@@ -246,7 +246,7 @@ public class EarnCodeSecurityDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
     	  crit.addEqualTo("payrollProcessor", payrollProcessor);
       }
       crit.addEqualTo("active", active);
-      crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeSecurity.class, effdt, EarnCodeSecurity.BUSINESS_KEYS, false));
+      crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeSecurity.class, effdt, EarnCodeSecurity.EQUAL_TO_FIELDS, false));
       
       Query query = QueryFactory.newQuery(EarnCodeSecurity.class, crit);
       

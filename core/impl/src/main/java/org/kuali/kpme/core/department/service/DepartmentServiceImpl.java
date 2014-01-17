@@ -15,19 +15,11 @@
  */
 package org.kuali.kpme.core.department.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.department.service.DepartmentService;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.department.dao.DepartmentDao;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
@@ -97,7 +89,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 	
     @Override
-	public DepartmentContract getDepartment(String department, LocalDate asOfDate) {
+	public Department getDepartment(String department, LocalDate asOfDate) {
         Department departmentObj = departmentDao.getDepartment(department, asOfDate);
         
         if (departmentObj != null) {
@@ -108,7 +100,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
     @Override
-    public DepartmentContract getDepartmentWithoutRoles(String department, LocalDate asOfDate) {
+    public Department getDepartmentWithoutRoles(String department, LocalDate asOfDate) {
         return departmentDao.getDepartment(department, asOfDate);
     }
 

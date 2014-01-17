@@ -15,17 +15,14 @@
  */
 package org.kuali.kpme.tklm.time.detail.validation;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Days;
-import org.joda.time.DurationFieldType;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
+import org.joda.time.*;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -45,10 +42,6 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
@@ -99,7 +92,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
     		//earn code is validate through the span of the leave entry, could the earn code's record method change between then and the leave period end date?
     		//Why not use endDateS to retrieve the earn code?
     		CalendarEntry calendarEntry = lcf.getCalendarEntry();
-    		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     		if(earnCode != null) {
     			if(earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
     		    	return LeaveCalendarValidationUtil.validateTimeParametersForLeaveEntry(earnCode, lcf.getCalendarEntry(), lcf.getStartDate(), lcf.getEndDate(), lcf.getStartTime(), lcf.getEndTime(), lcf.getSelectedAssignment(), lcf.getLmLeaveBlockId(), lcf.getSpanningWeeks());
@@ -178,7 +171,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         CalendarEntry payCalEntry = timesheetDocument.getCalendarEntry();
         EarnCode earnCode = null;
         if (StringUtils.isNotBlank(selectedEarnCode)) {
-            earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, TKUtils.formatDateTimeStringNoTimezone(endDateS).toLocalDate());
+            earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, TKUtils.formatDateTimeStringNoTimezone(endDateS).toLocalDate());
         }
         boolean isTimeRecordMethod = earnCode != null && StringUtils.equalsIgnoreCase(earnCode.getRecordMethod(), HrConstants.EARN_CODE_TIME);
 
@@ -227,7 +220,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
         //Check that assignment is valid within the timeblock span. 
         AssignmentDescriptionKey assignKey = HrServiceLocator.getAssignmentService().getAssignmentDescriptionKey(selectedAssignment);
-        AssignmentContract assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
+        Assignment assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
         if (assign == null) errors.add("Assignment is not valid for start date " + TKUtils.formatDate(new LocalDate(startTime)));
         assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, endTemp.toLocalDate());
         if (assign == null) errors.add("Assignment is not valid for end date " + TKUtils.formatDate(new LocalDate(endTime)));
@@ -428,13 +421,18 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     if (acrossDays) {
                         List<LocalDate> localDates = new ArrayList<LocalDate>();
                         LocalDate startDay = new LocalDate(start_dt_timezone);
-                        int days = Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
+                        DateTime userEndDateTime = end_dt_timezone.withZone(HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+
+                        int days = userEndDateTime.toLocalTime().equals(new LocalTime(0,0,0)) ? Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays() : Days.daysBetween(startDay, new LocalDate(end_dt_timezone)).getDays()+1;
                         for (int i=0; i < days; i++) {
                             LocalDate d = startDay.withFieldAdded(DurationFieldType.days(), i);
                             localDates.add(d);
                         }
                         for (LocalDate localDate : localDates) {
-                            intervals.add(new Interval(localDate.toDateTime(start_dt_timezone.toLocalTime()), localDate.toDateTime(end_dt_timezone.toLocalTime())));
+                            DateTime startDateTime = localDate.toDateTime(start_dt_timezone.toLocalTime());
+
+                            DateTime endDateTime = userEndDateTime.toLocalTime().equals(new LocalTime(0, 0, 0)) ? localDate.plusDays(1).toDateTime(end_dt_timezone.toLocalTime()) : localDate.toDateTime(end_dt_timezone.toLocalTime());
+                            intervals.add(new Interval(startDateTime,endDateTime));
                         }
 
                     } else {
@@ -444,6 +442,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     for (Interval interval : intervals) {
                         if (isRegularEarnCode && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
                             errors.add("The time block you are trying to add overlaps with an existing time block.");
+                            break;
                         }
                     }
                 }

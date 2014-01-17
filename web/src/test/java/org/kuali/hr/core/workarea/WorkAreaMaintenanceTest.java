@@ -21,7 +21,6 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -49,7 +48,6 @@ public class WorkAreaMaintenanceTest extends KPMEWebTestCase {
 		workArea.setWorkArea(4444L);
 		workArea.setOvertimeEditRole("Employee");
 		workArea.setEffectiveLocalDate(LocalDate.now());
-        workArea.setUserPrincipalId("admin");
 		KRADServiceLocator.getBusinessObjectService().save(workArea);
 	}
 
@@ -62,7 +60,7 @@ public class WorkAreaMaintenanceTest extends KPMEWebTestCase {
 	
 	@Test
 	public void testWorkAreaFetch() throws Exception{
-		WorkAreaContract workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(1234L, LocalDate.now());
+		WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(1234L, LocalDate.now());
 		Assert.assertTrue("Work area is not null and valid", workArea != null && workArea.getWorkArea().longValue() == 1234L);
 	}
 	

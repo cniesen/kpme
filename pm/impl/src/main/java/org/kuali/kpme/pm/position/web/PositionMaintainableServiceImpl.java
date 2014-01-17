@@ -16,32 +16,28 @@
 package org.kuali.kpme.pm.position.web;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.departmentaffiliation.DepartmentAffiliationContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliation;
-import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.classification.Classification;
+import org.kuali.kpme.pm.classification.duty.ClassificationDuty;
+import org.kuali.kpme.pm.classification.flag.ClassificationFlag;
+import org.kuali.kpme.pm.classification.qual.ClassificationQualification;
 import org.kuali.kpme.pm.position.Position;
 import org.kuali.kpme.pm.position.PositionDuty;
 import org.kuali.kpme.pm.position.PositionQualification;
 import org.kuali.kpme.pm.position.PstnFlag;
 import org.kuali.kpme.pm.position.funding.PositionFunding;
-import org.kuali.kpme.pm.positiondepartment.PositionDepartment;
-import org.kuali.kpme.pm.positionresponsibility.PositionResponsibility;
+import org.kuali.kpme.pm.positionflag.PositionFlag;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
-import org.kuali.rice.kew.api.document.DocumentStatus;
-import org.kuali.rice.kew.api.exception.WorkflowException;
-import org.kuali.rice.krad.bo.DocumentHeader;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.view.View;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
 public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainableImpl {
@@ -50,7 +46,7 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) PmServiceLocator.getPositionService().getPosition(id);
+		return PmServiceLocator.getPositionService().getPosition(id);
 	}
 	
 	@Override
@@ -72,31 +68,7 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
 			aFunding.setHrPositionId(aPosition.getHrPositionId());
 			aFunding.setPmPositionFunctionId(null);
 		}
-        for(PositionDepartment aDepartment : aPosition.getDepartmentList()) {
-            aDepartment.setHrPositionId(aPosition.getHrPositionId());
-            aDepartment.setPmPositionDeptId(null);
-        }
-        for(PositionResponsibility aResponsibility : aPosition.getPositionResponsibilityList()) {
-        	aResponsibility.setHrPositionId(aPosition.getHrPositionId());
-        	aResponsibility.setPositionResponsibilityId(null);
-        }
-        
-        // KPME-3016 populate institution and location here
-        // We should be able to do this in addNewLineToCollection, but all the components are in "pages" now with the layout change, 
-        // not on the form, and addNewLineToCollection doesn't get called. 
-        if (aPosition.getDepartmentList() != null) {
-        	for(PositionDepartment aPositionDepartment : aPosition.getDepartmentList()) {
-        		if(aPositionDepartment != null && aPositionDepartment.getDeptAffl() != null) {
-        			DepartmentAffiliation pda = (DepartmentAffiliation)aPositionDepartment.getDeptAfflObj();
-        			if (pda.isPrimaryIndicator()) {
-        				aPosition.setLocation(aPositionDepartment.getLocation());
-        				aPosition.setInstitution(aPositionDepartment.getInstitution());
-        				break;
-        			}
-        		}
-        	}
-        }
-
+		
 	}
 	
 	@Override
@@ -124,20 +96,6 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
 		        		return false;
 		        	}
 		        }
-
-                /*
-
-                PositionDepartment -- if needed
-
-                // Department line validation
-                if (addLine instanceof PositionDepartment) {
-                    //PositionDepartment pdpt = (PositionDepartment) addLine;
-                    boolean results = this.validateAddDepartmentLine(aPosition);
-                    if(!results) {
-                        return false;
-                    }
-                }
-                                 */
 	        }
         }
 
@@ -188,7 +146,7 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
     	if(StringUtils.isNotEmpty(pf.getObjectCode())) {
     		boolean results = ValidationUtils.validateObjectCode(pf.getObjectCode(), pf.getChart(), Integer.valueOf(pf.getEffectiveLocalDate().getYear()));
     		if(!results) {
-      			 GlobalVariables.getMessageMap().putError("Position-fundings","error.existence", "Objecpublic PositionDepartment getPositionDepartmentById(String pmPositionDeptId);tCode '" + pf.getObjectCode() + "'");
+      			 GlobalVariables.getMessageMap().putError("Position-fundings","error.existence", "ObjectCode '" + pf.getObjectCode() + "'");
       			 return results;
     		}
     	}
@@ -207,98 +165,4 @@ public class PositionMaintainableServiceImpl extends HrBusinessObjectMaintainabl
     
 	}
 
-     /*
-
-     PositionDepartment -- if needed
-
-    private boolean validateAddDepartmentLine(Position aPosition)  {
-        if(CollectionUtils.isNotEmpty(aPosition.getDepartmentList())) {
-
-            for(PositionDepartment aPosDept : aPosition.getDepartmentList()) {
-                if(aPosDept != null && aPosDept.getEffectiveDate() != null) {
-                      if(aPosDept.getHrPositionId() == null) {
-                          return false;
-                      }
-                }
-            }
-        }
-        return true;
-     }
-         */
-	
-	
-	// KPME-3016
-	//set document description here so it passes validation.  It will get overriden in doRouteStatusChange method
-	@Override
-	public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> requestParameters) {
-        document.getDocumentHeader().setDocumentDescription("Edit Position");
-        super.processAfterEdit(document, requestParameters);
-    }
-	@Override 
-	public void processAfterNew(MaintenanceDocument document, Map<String, String[]> requestParameters) {
-        document.getDocumentHeader().setDocumentDescription("New Position");
-		super.processAfterNew(document, requestParameters);
-	} 
-	@Override
-    public void doRouteStatusChange(DocumentHeader documentHeader) {
-
-		String docDescription = null;
-		Position position = (Position)this.getDataObject();
-		DocumentStatus documentStatus = documentHeader.getWorkflowDocument().getStatus();
-	
-		//Set document description for real here
-		if (StringUtils.isEmpty(position.getPositionNumber())) {
-			docDescription = "Status: " + position.getProcess();
-		} else {
-			docDescription = "Position Number: " + position.getPositionNumber() + " Status: " + position.getProcess();;
-		}
-
-		if (DocumentStatus.ENROUTE.equals(documentStatus)) {
-			try {
-				MaintenanceDocument md = (MaintenanceDocument)KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(documentHeader.getDocumentNumber());
-		        md.getDocumentHeader().setDocumentDescription(docDescription);
-		        md.getNewMaintainableObject().setDataObject(position);
-		        KRADServiceLocatorWeb.getDocumentService().saveDocument(md);
-			} catch (WorkflowException e) {
-	            LOG.error("caught exception while handling doRouteStatusChange -> documentService.getByDocumentHeaderId(" + documentHeader.getDocumentNumber() + "). ", e);
-	            throw new RuntimeException("caught exception while handling doRouteStatusChange -> documentService.getByDocumentHeaderId(" + documentHeader.getDocumentNumber() + "). ", e);
-	        }
-		}
-    }
-
-    //KPME-2624 added logic to save current logged in user to UserPrincipal id for collections
-    @Override
-    public void prepareForSave() {
-        Position position = (Position)this.getDataObject();
-        boolean hasPrimaryDepartment = false;
-        for (PositionFunding positionFunding : position.getFundingList()) {
-            positionFunding.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-        }
-        for (PositionDepartment positionDepartment : position.getDepartmentList()) {
-            positionDepartment.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-            if (positionDepartment.getDeptAfflObj().isPrimaryIndicator()) {
-                hasPrimaryDepartment=true;
-                positionDepartment.setDepartment(position.getPrimaryDepartment());
-                positionDepartment.setLocation(position.getLocation());
-                positionDepartment.setInstitution(position.getInstitution());
-                positionDepartment.setDeptAffl(HrServiceLocator.getDepartmentAffiliationService().getPrimaryAffiliation().getDeptAfflType());
-                positionDepartment.setEffectiveDate(position.getEffectiveDate());
-            }
-        }
-
-        //create primary department
-        if (!hasPrimaryDepartment) {
-            PositionDepartment primaryDepartment = new PositionDepartment();
-            primaryDepartment.setDepartment(position.getPrimaryDepartment());
-            primaryDepartment.setLocation(position.getLocation());
-            primaryDepartment.setInstitution(position.getInstitution());
-            primaryDepartment.setDeptAffl(HrServiceLocator.getDepartmentAffiliationService().getPrimaryAffiliation().getDeptAfflType());
-            primaryDepartment.setEffectiveDate(position.getEffectiveDate());
-            primaryDepartment.setActive(true);
-            position.getDepartmentList().add(primaryDepartment);
-        }
-
-        super.prepareForSave();
-
-    }
 }

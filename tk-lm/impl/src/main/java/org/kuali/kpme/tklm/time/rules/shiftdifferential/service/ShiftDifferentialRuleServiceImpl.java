@@ -35,10 +35,10 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -68,7 +68,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 
 	private Map<Long,Set<ShiftDifferentialRule>> getJobNumberToShiftRuleMap(TimesheetDocument timesheetDocument) {
 		Map<Long,Set<ShiftDifferentialRule>> jobNumberToShifts = new HashMap<Long,Set<ShiftDifferentialRule>>();
-		PrincipalHRAttributesContract principalCal = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(),timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate());
+		PrincipalHRAttributes principalCal = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(),timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate());
 
 		for (Job job : timesheetDocument.getJobs()) {
 			List<ShiftDifferentialRule> shiftDifferentialRules = getShiftDifferentalRules(job.getLocation(),job.getHrSalGroup(),job.getPayGrade(),principalCal.getPayCalendar(), 
@@ -89,7 +89,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 		if (prevBlocks.size() > 0) {
 			TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(timesheetDocument.getPrincipalId(), timesheetDocument.getDocumentHeader().getBeginDateTime().toDateTime());
 			if (prevTdh != null) {
-				CalendarEntry prevPayCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(timesheetDocument.getPrincipalId(), prevTdh.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
+				CalendarEntry prevPayCalendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(timesheetDocument.getPrincipalId(), prevTdh.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
 				TkTimeBlockAggregate prevTimeAggregate = new TkTimeBlockAggregate(prevBlocks, prevPayCalendarEntry, prevPayCalendarEntry.getCalendarObj(), true);
 				List<List<TimeBlock>> dayBlocks = prevTimeAggregate.getDayTimeBlockList();
 				List<TimeBlock> previousPeriodLastDayBlocks = dayBlocks.get(dayBlocks.size() - 1);
@@ -305,20 +305,9 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 											if (rule.getMaxGap().compareTo(BigDecimal.ZERO) == 0 || bgdMinutes.compareTo(rule.getMaxGap()) <= 0) {
 												// Calculate Overlap and add it to hours before virtual day bucket.												
 												if (blockInterval.overlaps(previousDayShiftInterval)) {
-													boolean ruleAppliedAlready = false;
-													if(CollectionUtils.isNotEmpty(b.getTimeHourDetails())) {														
-														for(TimeHourDetail tbd : b.getTimeHourDetails()) {
-															if(tbd.getEarnCode().equals(rule.getEarnCode())) {
-																ruleAppliedAlready = true;
-															}
-														}
-													}
-													// if this time block already had this rule applied to it, no need to calculate the same hours again
-													if(!ruleAppliedAlready) {
 														BigDecimal hrs = TKUtils.convertMillisToHours(blockInterval.overlap(previousDayShiftInterval).toDurationMillis());
 														hoursBeforeVirtualDay = hoursBeforeVirtualDay.add(hrs);
 													}
-												}
 
 											} else {
 												// Time blocks are reverse sorted, we can jump out as soon as the max gap is exceeded.
@@ -401,6 +390,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                         // has a valid window on multiple consecutive days. Time
                         // must be applied with the correct shift interval.
 						Interval overlap = previousDayShiftInterval.overlap(blockInterval);
+                        Interval overlapCurrentDay = shiftInterval.overlap(blockInterval);
                         evalInterval = previousDayShiftInterval;
                         boolean overlapFromPreviousDay = true;
 						if (overlap == null) {
@@ -429,6 +419,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                             overlapFromPreviousDay = false;
                         }
 
+
                         // Time bucketing and application as normal:
                         //
 						if (overlap != null) {
@@ -445,6 +436,14 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 	                                    accumulatedMillis = 0L; // reset accumulated hours..
 										hoursToApply = BigDecimal.ZERO;
 										hoursToApplyPrevious = BigDecimal.ZERO;
+
+                                        //didn't hit max gap for previous, but we still need to check for possible next shift
+                                        Interval currentShiftOverlap = shiftInterval.overlap(blockInterval);
+                                        if (currentShiftOverlap != null) {
+                                            long millis = currentShiftOverlap.toDurationMillis();
+                                            accumulatedMillis  += millis;
+                                            hoursToApply = hoursToApply.add(TKUtils.convertMillisToHours(millis));
+                                        }
 									} else {
                                     //We really need a list of the shift intervals here as overlap can happen more than one
                                     //per day
@@ -453,8 +452,8 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
                                             long millis = overlapWithShift.toDurationMillis();
                                             accumulatedMillis  += millis;
                                             hoursToApply = hoursToApply.add(TKUtils.convertMillisToHours(millis));
-                                        }
-									}
+                                            }
+									    }
 								} else {
 									// rules from different days apply to time block on this day 
 									// finish applying accumulated hours to the previous block
@@ -596,6 +595,41 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
      * @param earnCode what earn code to create time hour detail entry for.
      */
 	protected void applyPremium(Interval shift, List<Interval> blockIntervals, List<TimeBlock> blocks, List<TimeBlock> previousBlocks, BigDecimal initialHours, BigDecimal hours, String earnCode, ShiftDifferentialRule rule) {
+        Map<Interval, Long> nextGaps = new HashMap<Interval, Long>();
+        List<Interval> possibleShifts = new ArrayList<Interval>(3);
+        possibleShifts.add(new Interval(shift.getStart().minusDays(1), shift.getEnd().minusDays(1)));
+        possibleShifts.add(shift);
+        possibleShifts.add(new Interval(shift.getStart().plusDays(1), shift.getEnd().plusDays(1)));
+        Map<Interval, Long> shiftOverlapMillis = new HashMap<Interval, Long>();
+        Map<Interval, Interval> overlapToShift = new HashMap<Interval, Interval>();
+        List<Interval> allOverlaps = new ArrayList<Interval>();
+        for (Interval interval : blockIntervals) {
+            allOverlaps.addAll(getOverlappingIntervals(interval, rule));
+        }
+        if (rule.getMaxGap().compareTo(BigDecimal.ZERO) != 0) {
+            for (int i = 0; i < allOverlaps.size(); i++) {
+                Long gap = 0L;
+                if (i+1 < allOverlaps.size()) {
+                    gap = allOverlaps.get(i+1).getStartMillis() - allOverlaps.get(i).getEndMillis();
+                }
+                nextGaps.put(allOverlaps.get(i), gap);
+            }
+        }
+        for (Interval overlap : allOverlaps) {
+            for (Interval possibleShift : possibleShifts) {
+                if (possibleShift.overlaps(overlap)) {
+                    overlapToShift.put(overlap, possibleShift);
+                    if (!shiftOverlapMillis.containsKey(possibleShift)) {
+                        shiftOverlapMillis.put(possibleShift, possibleShift.overlap(overlap).toDurationMillis());
+                    } else {
+                        shiftOverlapMillis.put(possibleShift, (shiftOverlapMillis.get(possibleShift) + possibleShift.overlap(overlap).toDurationMillis()));
+                    }
+                    //shiftOverlapMillis.put
+                    //totalOverlapMillisInShift += shift.overlap(overlap).toDurationMillis();
+                }
+            }
+        }
+
         for (int i=0; i<blocks.size(); i++) {
 			TimeBlock b = blocks.get(i);
 
@@ -628,23 +662,82 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 			if (hours.compareTo(BigDecimal.ZERO) > 0) {
                 Interval blockInterval = blockIntervals.get(i);
                 List<Interval> overlapIntervals = getOverlappingIntervals(blockInterval, rule);
+                BigDecimal allHoursToApply = BigDecimal.ZERO;
                 for (Interval overlapInterval : overlapIntervals) {
                     if (overlapInterval == null) {
                         continue;
                     }
 
+                    long minMillis = TKUtils.convertHoursToMillis(rule.getMinHours());
                     long overlap = overlapInterval.toDurationMillis();
                     BigDecimal hoursMax = TKUtils.convertMillisToHours(overlap); // Maximum number of possible hours applicable for this time block and shift rule
                     // Adjust this time block's hoursMax (below) by lunchSub to
                     // make sure the time applied is the correct amount per block.
-                    BigDecimal hoursToApply = hours.min(hoursMax.add(lunchSub));
-
-                    addPremiumTimeHourDetail(b, hoursToApply, earnCode);
-                    hours = hours.subtract(hoursToApply, HrConstants.MATH_CONTEXT);
+                    //if (overlap >= minMillis || overlapIntervals.size() == 1) {
+                    Interval overlapShift = overlapToShift.get(overlapInterval);
+                    Long totalOverlapMillisInShift = shiftOverlapMillis.get(overlapShift);
+                    if (totalOverlapMillisInShift >= minMillis
+                            || overlapIntervals.size() == 1) {
+                        BigDecimal hoursToApply = hours.min(hoursMax.add(lunchSub));
+                        allHoursToApply = allHoursToApply.add(hoursToApply);
+                    }
+                }
+                if (allHoursToApply.compareTo(BigDecimal.ZERO) > 0) {
+                    addPremiumTimeHourDetail(b, allHoursToApply, earnCode);
+                    hours = hours.subtract(allHoursToApply, HrConstants.MATH_CONTEXT);
                 }
 			}
 		}
 	}
+
+    /*protected List<List<Interval>> getOverlappingIntervalsPerShift(Interval timeBlockOverlap, ShiftDifferentialRule rule) {
+        List<List<Interval>> overlapsPer  = new ArrayList<Interval>();
+
+        DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+
+        //See if a shift interval starts on the previous day and has an overlap into the next day
+        DateTime previousDay = timeBlockOverlap.getStart().minusDays(1);
+        if(dayIsRuleActive(previousDay,rule)){
+            LocalTime ruleStart = new LocalTime(rule.getBeginTime(), zone);
+            LocalTime ruleEnd = new LocalTime(rule.getEndTime(), zone);
+
+            DateTime shiftEnd = ruleEnd.toDateTime(timeBlockOverlap.getStart());
+            if (ruleEnd.isAfter(ruleStart)) {
+                shiftEnd = ruleEnd.toDateTime(timeBlockOverlap.getEnd().minusDays(1));
+            }
+            DateTime shiftStart = ruleStart.toDateTime(previousDay);
+            Interval shiftInterval = new Interval(shiftStart,shiftEnd);
+            Interval overlapInterval = shiftInterval.overlap(timeBlockOverlap);
+            if(overlapInterval != null){
+
+                shiftIntervals.add(shiftInterval);
+            } else {
+                Collections.
+            }
+        }
+
+        DateTime currentDay = timeBlockOverlap.getStart();
+        if(dayIsRuleActive(currentDay,rule)){
+            LocalTime ruleStart = new LocalTime(rule.getBeginTime(), zone);
+            LocalTime ruleEnd = new LocalTime(rule.getEndTime(), zone);
+
+            DateTime shiftEnd = null;
+            if(ruleEnd.isBefore(ruleStart) || ruleEnd.isEqual(ruleStart)){
+                shiftEnd = ruleEnd.toDateTime(timeBlockOverlap.getEnd().plusDays(1));
+            }  else {
+                shiftEnd = ruleEnd.toDateTime(timeBlockOverlap.getEnd());
+            }
+            DateTime shiftStart = ruleStart.toDateTime(currentDay);
+            Interval shiftInterval = new Interval(shiftStart,shiftEnd);
+            Interval overlapInterval = shiftInterval.overlap(timeBlockOverlap);
+            if(overlapInterval != null){
+                shiftIntervals.add(shiftInterval);
+            }
+        }
+
+        return shiftIntervals;
+    }
+    */
 
     /**
      * This is to allow for two periods to be evaluated by the rule we probably can incorporate
@@ -656,7 +749,7 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
      * @param rule
      * @return
      */
-    List<Interval> getOverlappingIntervals(Interval timeBlockOverlap, ShiftDifferentialRule rule){
+    protected List<Interval> getOverlappingIntervals(Interval timeBlockOverlap, ShiftDifferentialRule rule){
         List<Interval> overlappingIntervals = new ArrayList<Interval>();
 
         DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();

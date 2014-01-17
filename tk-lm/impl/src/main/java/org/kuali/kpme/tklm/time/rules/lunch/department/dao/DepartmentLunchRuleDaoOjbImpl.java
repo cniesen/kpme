@@ -41,8 +41,8 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
 		root.addEqualTo("workArea", workArea);
 		root.addEqualTo("principalId", principalId);
 		root.addEqualTo("jobNumber", jobNumber);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DeptLunchRule.class, asOfDate, DeptLunchRule.BUSINESS_KEYS, true));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.BUSINESS_KEYS, true));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DeptLunchRule.class, asOfDate, DeptLunchRule.EQUAL_TO_FIELDS, true));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.EQUAL_TO_FIELDS, true));
 //		root.addEqualTo("active", true);
 
 		//Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -78,7 +78,7 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
         }
         
         if (StringUtils.isNotBlank(principalId)) {
-            root.addLike("UPPER(`principal_id`)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+            root.addLike("UPPER(principalId)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
         
 //        if (StringUtils.isNotBlank(jobNumber)) {
@@ -128,8 +128,8 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
         	root.addAndCriteria(effectiveDateFilter);
         }
         if (StringUtils.equals(showHistory, "N")) {
-        	root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DeptLunchRule.class, effectiveDateFilter, DeptLunchRule.BUSINESS_KEYS, false));
-        	root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.BUSINESS_KEYS, false));
+        	root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DeptLunchRule.class, effectiveDateFilter, DeptLunchRule.EQUAL_TO_FIELDS, false));
+        	root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(DeptLunchRule.class, root);

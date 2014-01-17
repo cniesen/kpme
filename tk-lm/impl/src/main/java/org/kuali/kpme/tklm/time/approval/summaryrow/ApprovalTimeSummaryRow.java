@@ -160,7 +160,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
 		return clockStatusMessage;
 	}
 
-	public String getPayCalendarGroup() {
+    public String getPayCalendarGroup() {
         return payCalendarGroup;
     }
 

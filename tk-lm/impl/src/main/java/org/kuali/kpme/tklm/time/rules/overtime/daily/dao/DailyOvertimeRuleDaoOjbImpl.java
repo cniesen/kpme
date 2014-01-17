@@ -37,8 +37,8 @@ public class DailyOvertimeRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb impleme
 		root.addEqualTo("workArea", workArea);
 		root.addEqualTo("location", location);
 		root.addEqualTo("paytype", paytype);
-		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DailyOvertimeRule.class, asOfDate, DailyOvertimeRule.BUSINESS_KEYS, false));
-		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DailyOvertimeRule.class, DailyOvertimeRule.BUSINESS_KEYS, false));
+		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DailyOvertimeRule.class, asOfDate, DailyOvertimeRule.EQUAL_TO_FIELDS, false));
+		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DailyOvertimeRule.class, DailyOvertimeRule.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -88,7 +88,7 @@ public class DailyOvertimeRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb impleme
         
 
         if (StringUtils.isNotBlank(location)) {
-            root.addLike("UPPER(`location`)", location.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(location)", location.toUpperCase()); // KPME-2695
         }
         
         Criteria effectiveDateFilter = new Criteria();
@@ -114,8 +114,8 @@ public class DailyOvertimeRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb impleme
         }
 
         if (StringUtils.equals(showHist, "N")) {
-    		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DailyOvertimeRule.class, effectiveDateFilter, DailyOvertimeRule.BUSINESS_KEYS, false));
-    		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DailyOvertimeRule.class, DailyOvertimeRule.BUSINESS_KEYS, false));
+    		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DailyOvertimeRule.class, effectiveDateFilter, DailyOvertimeRule.EQUAL_TO_FIELDS, false));
+    		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DailyOvertimeRule.class, DailyOvertimeRule.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(DailyOvertimeRule.class, root);

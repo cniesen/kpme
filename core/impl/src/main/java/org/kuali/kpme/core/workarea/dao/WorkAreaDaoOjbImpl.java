@@ -36,8 +36,8 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
 		Criteria root = new Criteria();
 
 		root.addEqualTo("workArea", workArea);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -52,8 +52,8 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
         Criteria root = new Criteria();
 
         root.addIn("workArea", workAreas);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -71,8 +71,8 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
         Criteria root = new Criteria();
 
         root.addIn("dept", departments);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -90,8 +90,8 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
         Criteria root = new Criteria();
 
         root.addEqualTo("dept", department);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -138,7 +138,7 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
 		}
 		
 		if (StringUtils.isNotBlank(description)) {
-			root.addLike("UPPER(`descr`)", description.toUpperCase()); // KPME-2695
+			root.addLike("UPPER(descr)", description.toUpperCase()); // KPME-2695
 		}
 		
 		Criteria effectiveDateFilter = new Criteria();
@@ -164,8 +164,8 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
         }
 		
 		if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(WorkArea.class, effectiveDateFilter, WorkArea.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(WorkArea.class, effectiveDateFilter, WorkArea.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 		}
 		
         Query query = QueryFactory.newQuery(WorkArea.class, root);

@@ -70,6 +70,4 @@ public class SalaryGroupValidation  extends MaintenanceDocumentRuleBase{
 			return true;
 		}
 	}
-
-
 }

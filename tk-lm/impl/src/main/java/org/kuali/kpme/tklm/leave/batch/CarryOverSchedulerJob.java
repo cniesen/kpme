@@ -41,7 +41,7 @@ public class CarryOverSchedulerJob extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		LocalDate asOfDate = LocalDate.now();
-		List<LeavePlan> leavePlans = (List<LeavePlan>) HrServiceLocator.getLeavePlanService().getLeavePlansNeedsCarryOverScheduled(getLeavePlanPollingWindow(), asOfDate);
+		List<LeavePlan> leavePlans = HrServiceLocator.getLeavePlanService().getLeavePlansNeedsCarryOverScheduled(getLeavePlanPollingWindow(), asOfDate);
         try {
         	if(CollectionUtils.isNotEmpty(leavePlans)) {
         		// schedule batch job for all LeavePlans who fall in leave polling window.

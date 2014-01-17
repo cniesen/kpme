@@ -17,11 +17,12 @@ package org.kuali.kpme.pm.positionresponsibility;
 
 import java.math.BigDecimal;
 
+import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.pm.api.positionresponsibility.PositionResponsibilityContract;
 import org.kuali.rice.location.impl.campus.CampusBo;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-public class PositionResponsibility extends PersistableBusinessObjectBase implements PositionResponsibilityContract {
+
+public class PositionResponsibility extends HrBusinessObject implements PositionResponsibilityContract {
 
 	/**
 	 * 
@@ -29,6 +30,8 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 	private static final long serialVersionUID = -1631206606795253956L;
 	
 	private String positionResponsibilityId;
+	private String institution;
+	private String location;
 	private String positionResponsibilityOption;
 	private BigDecimal percentTime;
 	private String hrPositionId;
@@ -40,6 +43,14 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 
 	public void setPositionResponsibilityId(String positionResponsibilityId) {
 		this.positionResponsibilityId = positionResponsibilityId;
+	}
+
+	public String getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
 	}
 
 	public String getPositionResponsibilityOption() {
@@ -58,6 +69,11 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 	public void setPercentTime(BigDecimal percentTime) {
 		this.percentTime = percentTime;
 	}
+
+	@Override
+	protected String getUniqueKey() {
+		return this.getInstitution() + "_" + this.getLocation();
+	}
 	
 	public CampusBo getCampusObj() {
 		return campusObj;
@@ -75,14 +91,26 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 		this.hrPositionId = hrPositionId;
 	}
 
+	@Override
 	public String getId() {
 		return this.getPositionResponsibilityId();
 	}
 
+	@Override
 	public void setId(String id) {
 		this.setPositionResponsibilityId(id);
 		
 	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
+	
 	
 	
 }

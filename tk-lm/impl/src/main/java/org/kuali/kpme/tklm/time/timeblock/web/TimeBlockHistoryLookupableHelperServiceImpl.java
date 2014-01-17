@@ -16,7 +16,7 @@
 package org.kuali.kpme.tklm.time.timeblock.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -30,8 +30,6 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
@@ -72,10 +70,10 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 
         //TODO - performance  too many db calls in loop
 		for (TimeBlockHistory timeBlockHistory : timeBlockHistories) {
-			JobContract jobObj = HrServiceLocator.getJobService().getJob(timeBlockHistory.getPrincipalId(), timeBlockHistory.getJobNumber(), LocalDate.fromDateFields(timeBlockHistory.getBeginDate()), false);
+			Job jobObj = HrServiceLocator.getJobService().getJob(timeBlockHistory.getPrincipalId(), timeBlockHistory.getJobNumber(), LocalDate.fromDateFields(timeBlockHistory.getBeginDate()), false);
 			String department = jobObj != null ? jobObj.getDept() : null;
 
-			DepartmentContract departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(timeBlockHistory.getBeginDate())) : null;
+			Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(timeBlockHistory.getBeginDate())) : null;
 			String location = departmentObj != null ? departmentObj.getLocation() : null;
 
 			Map<String, String> roleQualification = new HashMap<String, String>();

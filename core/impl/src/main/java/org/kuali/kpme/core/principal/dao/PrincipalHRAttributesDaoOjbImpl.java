@@ -48,8 +48,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .build();
 
 		root.addEqualTo("principalId", principalId);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -96,8 +96,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
         root.addAndCriteria(activeFilter);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
         Query query = QueryFactory.newQuery(PrincipalHRAttributes.class, root);
         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
@@ -121,8 +121,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("leaveCalendar")
 //                .add("principalId")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
@@ -149,8 +149,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("leaveCalendar")
 //                .add("principalId")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class,asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class,asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
@@ -184,8 +184,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("payCalendar")
 //                .add("principalId")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
@@ -219,8 +219,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("leavePlan")
 //                .add("principalId")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PrincipalHRAttributes.class, asOfDate, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
         root.addEqualTo("leavePlan", leavePlan);
         root.addEqualTo("active", true);
@@ -299,8 +299,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("leavePlan")
 //                .add("principalId")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effdt, PrincipalHRAttributes.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effdt, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
 
 		root.addEqualTo("principalId", principalId);
 
@@ -427,11 +427,11 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
     	Criteria root = new Criteria();
     	
         if (StringUtils.isNotBlank(principalId)) {
-            root.addLike("UPPER(`principal_id`)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+            root.addLike("UPPER(principalId)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
 
         if (StringUtils.isNotBlank(leavePlan)) {
-            root.addLike("UPPER(`leave_plan`)", leavePlan.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
 
         Criteria effectiveDateFilter = new Criteria();
@@ -462,8 +462,8 @@ public class PrincipalHRAttributesDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                    .add("principalId")
 //                    .add("leavePlan")
 //                    .build();
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effectiveDateFilter, PrincipalHRAttributes.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PrincipalHRAttributes.class, effectiveDateFilter, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PrincipalHRAttributes.class, PrincipalHRAttributes.EQUAL_TO_FIELDS, false));
        }
         
        Query query = QueryFactory.newQuery(PrincipalHRAttributes.class, root);

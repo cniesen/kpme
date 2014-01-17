@@ -37,8 +37,8 @@ public class EmployeeOverrideDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
         Criteria root = new Criteria();
 
         root.addEqualTo("principalId", principalId);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EmployeeOverride.class, asOfDate, EmployeeOverride.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EmployeeOverride.class, asOfDate, EmployeeOverride.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -62,8 +62,8 @@ public class EmployeeOverrideDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
         root.addEqualTo("accrualCategory", accrualCategory);
         root.addEqualTo("overrideType", overrideType);
 
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EmployeeOverride.class, asOfDate, EmployeeOverride.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EmployeeOverride.class, asOfDate, EmployeeOverride.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
@@ -91,15 +91,15 @@ public class EmployeeOverrideDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(principalId)) {
-        	root.addLike("UPPER(`principal_id`)",principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+        	root.addLike("UPPER(principalId)",principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
         
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addEqualTo("UPPER(`leave_plan`)",leavePlan.toUpperCase()); // KPME-2695
+        	root.addEqualTo("UPPER(leavePlan)",leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(accrualCategory)) {
-        	root.addLike("UPPER(`accrual_cat`)",accrualCategory.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(accrualCategory)",accrualCategory.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(overrideType)) {
@@ -128,8 +128,8 @@ public class EmployeeOverrideDaoOjbImpl extends PlatformAwareDaoBaseOjb implemen
             root.addAndCriteria(activeFilter);
         }
 
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EmployeeOverride.class, effectiveDateFilter, EmployeeOverride.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EmployeeOverride.class, effectiveDateFilter, EmployeeOverride.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EmployeeOverride.class, EmployeeOverride.EQUAL_TO_FIELDS, false));
 
         Query query = QueryFactory.newQuery(EmployeeOverride.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));

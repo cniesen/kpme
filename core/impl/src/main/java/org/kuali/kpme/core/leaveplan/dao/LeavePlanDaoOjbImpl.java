@@ -26,7 +26,6 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -48,8 +47,8 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
 
         Criteria root = new Criteria();
         root.addIn("leavePlan", leavePlan);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeavePlan.class, asOfDate, LeavePlan.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeavePlan.class, asOfDate, LeavePlan.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -71,8 +70,8 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
 
 		Criteria root = new Criteria();
 		root.addEqualTo("leavePlan", leavePlan);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeavePlan.class, asOfDate, LeavePlan.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeavePlan.class, asOfDate, LeavePlan.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.EQUAL_TO_FIELDS, false));
 		
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -142,7 +141,7 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addLike("UPPER(`leave_plan`)", leavePlan.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(calendarYearStart)) {
@@ -150,7 +149,7 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
         }
         
         if (StringUtils.isNotBlank(descr)) {
-        	root.addLike("UPPER(`descr`)", descr.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(descr)", descr.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(planningMonths)) {
@@ -180,8 +179,8 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(LeavePlan.class, effectiveDateFilter, LeavePlan.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(LeavePlan.class, effectiveDateFilter, LeavePlan.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeavePlan.class, LeavePlan.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(LeavePlan.class, root);

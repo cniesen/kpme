@@ -58,8 +58,8 @@ public class ShiftDifferentialRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
 //                .add("pyCalendarGroup")
 //                .add("earnCode")
 //                .build();
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(ShiftDifferentialRule.class, asOfDate, ShiftDifferentialRule.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ShiftDifferentialRule.class, ShiftDifferentialRule.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(ShiftDifferentialRule.class, asOfDate, ShiftDifferentialRule.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ShiftDifferentialRule.class, ShiftDifferentialRule.EQUAL_TO_FIELDS, false));
 
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -96,15 +96,15 @@ public class ShiftDifferentialRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(location)) {
-        	root.addLike("UPPER(`location`)", location.toUpperCase()); // KPME-2635 ignore the case
+        	root.addLike("UPPER(location)", location.toUpperCase()); // KPME-2635 ignore the case
         }        
         
         if (StringUtils.isNotBlank(hrSalGroup)) {
-        	root.addLike("UPPER(`hr_sal_group`)", hrSalGroup.toUpperCase());  // KPME-2635 ignore the case
+        	root.addLike("UPPER(hrSalGroup)", hrSalGroup.toUpperCase());  // KPME-2635 ignore the case
         }
         
         if (StringUtils.isNotBlank(payGrade)) {
-        	root.addLike("UPPER(`pay_grade`)", payGrade.toUpperCase()); // KPME-2635 ignore the case
+        	root.addLike("UPPER(payGrade)", payGrade.toUpperCase()); // KPME-2635 ignore the case
         }
 
         Criteria effectiveDateFilter = new Criteria();
@@ -130,8 +130,8 @@ public class ShiftDifferentialRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imp
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(ShiftDifferentialRule.class, effectiveDateFilter, ShiftDifferentialRule.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ShiftDifferentialRule.class, ShiftDifferentialRule.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(ShiftDifferentialRule.class, effectiveDateFilter, ShiftDifferentialRule.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ShiftDifferentialRule.class, ShiftDifferentialRule.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(ShiftDifferentialRule.class, root);

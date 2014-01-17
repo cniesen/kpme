@@ -15,7 +15,6 @@
  */
 package org.kuali.kpme.pm.pstnqlfctnvl.service;
 
-import org.kuali.kpme.pm.api.pstnqlfctnvl.service.PositionQualificationValueService;
 import org.kuali.kpme.pm.pstnqlfctnvl.PositionQualificationValue;
 import org.kuali.kpme.pm.pstnqlfctnvl.dao.PositionQualificationValueDao;
 

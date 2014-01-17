@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp" %>
 
 <%@ attribute name="day" required="true" type="org.kuali.kpme.core.calendar.web.CalendarDay" %>
+
 <%-- display time blocks for the day --%>
 <c:forEach var="block" items="${day.blockRenderers}" varStatus="status">
     <c:if test="${block.timeBlock.earnCode ne HrConstants.LUNCH_EARN_CODE}">
@@ -34,6 +35,7 @@
                               src='images/delete.png'/>
                     </div>
                 </c:if>
+
                 <c:choose>
                     <c:when test="${block.timeBlock.timeBlockEditable}">
                         <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>

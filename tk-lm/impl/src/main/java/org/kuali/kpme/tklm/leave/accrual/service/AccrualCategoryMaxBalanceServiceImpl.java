@@ -31,7 +31,6 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
@@ -62,7 +61,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 		if(!thisEntryInterval.contains(asOfDate.toDate().getTime()))
 			asOfDate = entry.getEndPeriodFullDateTime().minusDays(1).toLocalDate();
 
-		PrincipalHRAttributes pha = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, asOfDate);
+		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, asOfDate);
 		
 		if(pha == null)
 			return eligibilities;
@@ -73,7 +72,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 			return eligibilities;
 		
 		//Consider time sheet intervals that stagger a leave period end date...
-		List<CalendarEntry> leaveCalEntries = (List<CalendarEntry>) HrServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(cal.getHrCalendarId(), entry.getBeginPeriodFullDateTime(), entry.getEndPeriodFullDateTime());
+		List<CalendarEntry> leaveCalEntries = HrServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(cal.getHrCalendarId(), entry.getBeginPeriodFullDateTime(), entry.getEndPeriodFullDateTime());
 		CalendarEntry yearEndLeaveEntry = null;
 		CalendarEntry leaveLeaveEntry = null;
 		if(!leaveCalEntries.isEmpty()) {
@@ -93,7 +92,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 				yearEndPeriodInterval = leavePeriodInterval;
 		}
 		
-		List<AccrualCategory> accrualCategories = (List<AccrualCategory>) HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(pha.getLeavePlan(), asOfDate);
+		List<AccrualCategory> accrualCategories = HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(pha.getLeavePlan(), asOfDate);
 
 		if(!accrualCategories.isEmpty()) {
 			
@@ -181,7 +180,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 				}
 				tally = tally.add(lb.getLeaveAmount());
 				
-				AccrualCategoryRule asOfLeaveDateRule = (AccrualCategoryRule) HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCategory, lb.getLeaveLocalDate(), pha.getServiceLocalDate());
+				AccrualCategoryRule asOfLeaveDateRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCategory, lb.getLeaveLocalDate(), pha.getServiceLocalDate());
 
 				//Employee overrides...
 				if(ObjectUtils.isNotNull(asOfLeaveDateRule)) {
@@ -268,7 +267,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 		
 		for(Entry<String,Set<LeaveBlock>> entries : maxBalanceViolations.entrySet()) {
 			for(LeaveBlock lb : entries.getValue()) {
-				AccrualCategoryRuleContract aRule = lb.getAccrualCategoryRule();
+				AccrualCategoryRule aRule = lb.getAccrualCategoryRule();
                 eligibilities.get(aRule.getMaxBalanceActionFrequency()).add(lb);
 			}
 		}
@@ -279,7 +278,7 @@ public class AccrualCategoryMaxBalanceServiceImpl implements AccrualCategoryMaxB
 	protected LeaveBlock retreivePreviousInfraction(Set<LeaveBlock> eligibleLeaveBlocks, LeaveBlock lb, Interval leavePeriodInterval, Interval yearEndPeriodInterval, Interval thisEntryInterval, AccrualCategoryRule asOfLeaveDateRule) {
 		LeaveBlock tempLB = null;
 		for(LeaveBlock block : eligibleLeaveBlocks) {
-			AccrualCategoryRuleContract blockRule = block.getAccrualCategoryRule();
+			AccrualCategoryRule blockRule = block.getAccrualCategoryRule();
 			if(StringUtils.equals(asOfLeaveDateRule.getLmAccrualCategoryRuleId(),blockRule.getLmAccrualCategoryRuleId())) {
 				if((StringUtils.equals(asOfLeaveDateRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND)
 						&& StringUtils.equals(blockRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND))

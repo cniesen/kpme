@@ -35,8 +35,8 @@ public class PayGradeDaoObjImpl  extends PlatformAwareDaoBaseOjb implements PayG
 
 		root.addEqualTo("payGrade", payGrade);
 		root.addEqualTo("salGroup", salGroup);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayGrade.class, asOfDate, PayGrade.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayGrade.class, asOfDate, PayGrade.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
@@ -75,16 +75,16 @@ public class PayGradeDaoObjImpl  extends PlatformAwareDaoBaseOjb implements PayG
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(payGrade)) {
-            root.addLike("UPPER(`pay_grade`)", payGrade.toUpperCase()); // KPME-2695 
+            root.addLike("UPPER(payGrade)", payGrade.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(payGradeDescr)) {
-            root.addLike("UPPER(`description`)", payGradeDescr.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(description)", payGradeDescr.toUpperCase()); // KPME-2695
         }
         
         // KPME-2700
         if (StringUtils.isNotBlank(salGroup)) {
-            root.addLike("UPPER(`sal_group`)", salGroup.toUpperCase()); // KPME-2695 
+            root.addLike("UPPER(salGroup)", salGroup.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(active)) {
@@ -98,8 +98,8 @@ public class PayGradeDaoObjImpl  extends PlatformAwareDaoBaseOjb implements PayG
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayGrade.class, PayGrade.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayGrade.class, PayGrade.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(PayGrade.class, root);
@@ -117,8 +117,8 @@ public class PayGradeDaoObjImpl  extends PlatformAwareDaoBaseOjb implements PayG
 		Criteria root = new Criteria();
 
 		root.addEqualTo("salGroup", salaryGroup);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayGrade.class, asOfDate, PayGrade.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PayGrade.class, asOfDate, PayGrade.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayGrade.class, PayGrade.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);

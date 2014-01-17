@@ -40,8 +40,8 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
 		root.addEqualTo("workArea", workArea);
 		root.addEqualTo("principalId", principalId);
 		root.addEqualTo("jobNumber", jobNumber);
-		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(ClockLocationRule.class, asOfDate, ClockLocationRule.BUSINESS_KEYS, false));
-		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ClockLocationRule.class, ClockLocationRule.BUSINESS_KEYS, false));
+		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(ClockLocationRule.class, asOfDate, ClockLocationRule.EQUAL_TO_FIELDS, false));
+		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ClockLocationRule.class, ClockLocationRule.EQUAL_TO_FIELDS, false));
 		//root.addEqualTo("active", true);
 		
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -132,11 +132,11 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
         root.addAndCriteria(effectiveDateFilter);
 
         if (StringUtils.isNotBlank(principalId)) {
-            root.addLike("UPPER(`principal_id`)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+            root.addLike("UPPER(principalId)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
 
         if (StringUtils.isNotBlank(dept)) {
-            root.addLike("UPPER(`dept`)", dept.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(dept)", dept.toUpperCase()); // KPME-2695
         }
 
 //        if (StringUtils.isNotBlank(jobNumber)) {
@@ -172,8 +172,8 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-    		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(ClockLocationRule.class, effectiveDateFilter, ClockLocationRule.BUSINESS_KEYS, false));
-    		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ClockLocationRule.class, ClockLocationRule.BUSINESS_KEYS, false));
+    		root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(ClockLocationRule.class, effectiveDateFilter, ClockLocationRule.EQUAL_TO_FIELDS, false));
+    		root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(ClockLocationRule.class, ClockLocationRule.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(ClockLocationRule.class, root);

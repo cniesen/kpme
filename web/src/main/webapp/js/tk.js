@@ -742,17 +742,7 @@ function addTimeBlockRow(form, tempArr) {
     el.disabled = true;
     cellHours.appendChild(el);
 
-    var deleteButton = row.insertCell(6);
-    var el = document.createElement('input');
-    el.id = 'deleteButton'+iteration;
-    el.type = 'button';
-    el.value = 'Delete';
-    el.className += 'button ui-button ui-widget ui-state-default ui-corner-all';
-    el.onclick =function() {
-    	row.parentNode.removeChild(row);
-    	recalculateTotal();
-    };
-    deleteButton.appendChild(el);
+    row.insertCell(6);
     recalculateTotal();
 }
 

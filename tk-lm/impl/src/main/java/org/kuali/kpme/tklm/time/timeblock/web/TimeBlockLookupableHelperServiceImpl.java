@@ -25,9 +25,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
@@ -243,10 +241,10 @@ public class TimeBlockLookupableHelperServiceImpl extends KPMELookupableImpl {
 
         //TODO - performance  too many db calls in loop
         for (TimeBlock timeBlock : timeBlocks) {
-            JobContract jobObj = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), LocalDate.fromDateFields(timeBlock.getBeginDate()), false);
+            Job jobObj = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), LocalDate.fromDateFields(timeBlock.getBeginDate()), false);
             String department = jobObj != null ? jobObj.getDept() : null;
 
-            DepartmentContract departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(timeBlock.getBeginDate())) : null;
+            Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(timeBlock.getBeginDate())) : null;
             String location = departmentObj != null ? departmentObj.getLocation() : null;
 
             Map<String, String> roleQualification = new HashMap<String, String>();

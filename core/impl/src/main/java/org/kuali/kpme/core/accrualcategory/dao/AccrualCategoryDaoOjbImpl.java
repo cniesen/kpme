@@ -38,8 +38,8 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
 
         root.addEqualTo("accrualCategory", accrualCategory);
 		root.addEqualTo("active",true);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(AccrualCategory.class, asOfDate, AccrualCategory.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(AccrualCategory.class, asOfDate, AccrualCategory.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.EQUAL_TO_FIELDS, false));
 		
 		Query query = QueryFactory.newQuery(AccrualCategory.class, root);
 		Object obj = this.getPersistenceBrokerTemplate().getObjectByQuery(query);
@@ -102,15 +102,15 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
     	Criteria root = new Criteria();
 
         if (StringUtils.isNotBlank(accrualCategory)) {
-            root.addLike("UPPER(`accrual_category`)", accrualCategory.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(accrualCategory)", accrualCategory.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(descr)) {
-            root.addLike("UPPER(`descr`)", descr.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(descr)", descr.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(leavePlan)) {
-        	root.addLike("UPPER(`leave_plan`)", leavePlan.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(leavePlan)", leavePlan.toUpperCase()); // KPME-2695
         }
         
         if (StringUtils.isNotBlank(accrualEarnInterval)) {
@@ -148,8 +148,8 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(AccrualCategory.class, effectiveDateFilter, AccrualCategory.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(AccrualCategory.class, effectiveDateFilter, AccrualCategory.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.EQUAL_TO_FIELDS, false));
         }
 
         Query query = QueryFactory.newQuery(AccrualCategory.class, root);
@@ -164,8 +164,8 @@ public class AccrualCategoryDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
 		Criteria root = new Criteria();
 
 		root.addEqualTo("leavePlan", leavePlan);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(AccrualCategory.class, asOfDate, AccrualCategory.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(AccrualCategory.class, asOfDate, AccrualCategory.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AccrualCategory.class, AccrualCategory.EQUAL_TO_FIELDS, false));
 		
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);

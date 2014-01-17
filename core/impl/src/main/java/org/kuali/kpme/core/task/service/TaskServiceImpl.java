@@ -19,8 +19,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.task.service.TaskService;
 import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.task.dao.TaskDao;
 import org.kuali.kpme.core.util.HrConstants;
@@ -50,13 +48,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public void saveTask(TaskContract task) {
-        taskDao.saveOrUpdate((Task)task);
+    public void saveTask(Task task) {
+        taskDao.saveOrUpdate(task);
     }
 
     @Override
-    public void saveTasks(List<? extends TaskContract> tasks) {
-        taskDao.saveOrUpdate((List<Task>)tasks);
+    public void saveTasks(List<Task> tasks) {
+        taskDao.saveOrUpdate(tasks);
     }
 
     public void setTaskDao(TaskDao taskDao) {

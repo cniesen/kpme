@@ -94,7 +94,6 @@ public class JobTest extends CoreUnitTestCase {
 		payType.setInstitution("*");
 		payType.setFlsaStatus("NE");
 		payType.setPayFrequency("M");
-        payType.setUserPrincipalId("admin");
 
 		payType = (PayType) KRADServiceLocator.getBusinessObjectService().save(payType);
 		Assert.assertTrue(HrServiceLocator.getPayTypeService().getPayType(payType.getPayType(), payType.getEffectiveLocalDate()) != null);
@@ -108,7 +107,7 @@ public class JobTest extends CoreUnitTestCase {
 		 * This test is conducted in JobServiceImplTest.java
 		 */
 		DateTime payPeriodEndDate = new DateTime(2010,7,30,1,0,0,0, TKUtils.getSystemDateTimeZone());
-		List<Job> jobs = (List<Job>) HrServiceLocator.getJobService().getJobs(TEST_USER, payPeriodEndDate.toLocalDate());
+		List<Job> jobs = HrServiceLocator.getJobService().getJobs(TEST_USER, payPeriodEndDate.toLocalDate());
 		Assert.assertNotNull("Jobs was null", jobs);
 		Assert.assertEquals("Incorrect number of jobs", 2, jobs.size());
 	}

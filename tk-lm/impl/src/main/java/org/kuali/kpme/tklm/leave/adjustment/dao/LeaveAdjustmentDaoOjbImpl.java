@@ -36,8 +36,8 @@ public class LeaveAdjustmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
         List<LeaveAdjustment> leaveAdjustments = new ArrayList<LeaveAdjustment>();
         Criteria root = new Criteria();
         root.addEqualTo("principalId", principalId);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeaveAdjustment.class, asOfDate, LeaveAdjustment.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeaveAdjustment.class, LeaveAdjustment.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(LeaveAdjustment.class, asOfDate, LeaveAdjustment.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(LeaveAdjustment.class, LeaveAdjustment.EQUAL_TO_FIELDS, false));
 
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
@@ -79,15 +79,15 @@ public class LeaveAdjustmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implement
         root.addAndCriteria(effectiveDateFilter);
         
         if (StringUtils.isNotBlank(principalId)) {
-            root.addLike("UPPER(`principal_id`)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
+            root.addLike("UPPER(principalId)", principalId.toUpperCase()); // KPME-2695 in case principal id is not a number
         }
 
         if (StringUtils.isNotBlank(accrualCategory)) {
-            root.addLike("UPPER(`accrual_cat`)", accrualCategory.toUpperCase()); // KPME-2695
+            root.addLike("UPPER(accrualCategory)", accrualCategory.toUpperCase()); // KPME-2695
         }
 
         if (StringUtils.isNotBlank(earnCode)) {
-        	root.addLike("UPPER(`earn_code`)", earnCode.toUpperCase()); // KPME-2695
+        	root.addLike("UPPER(earnCode)", earnCode.toUpperCase()); // KPME-2695
         }
 
         Query query = QueryFactory.newQuery(LeaveAdjustment.class, root);
