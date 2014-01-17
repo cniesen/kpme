@@ -62,6 +62,7 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 	//private Long tkWorkAreaId;
 	private Long task;
 	private String dept;
+	private boolean primaryAssign;
 
 	private transient WorkArea workAreaObj;
 	private Boolean history;
@@ -276,4 +277,13 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
     public String getAssignmentKey() {
         return new AssignmentDescriptionKey(this).toAssignmentKeyString();
     }
+    
+	public boolean isPrimaryAssign() {
+		return primaryAssign;
+	}
+
+	public void setPrimaryAssign(boolean primaryAssign) {
+		this.primaryAssign = primaryAssign;
+	}
+
 }
