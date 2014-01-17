@@ -270,6 +270,26 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return true;
 	}
 	
+	protected boolean validateOnePrimaryAssignment(Assignment assignment, Assignment oldAssignment) {
+		if (assignment.isPrimaryAssign()) {
+			//do not block editing of previous primary assignment
+			if(oldAssignment!=null && oldAssignment.isPrimaryAssign()){
+				return true;
+			}
+			Job job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
+			if(job != null && job.isEligibleForLeave()) {
+				List<Assignment> assignList = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate());
+				for(Assignment anAssignment : assignList) {
+					if(anAssignment != null && anAssignment.isPrimaryAssign()) {
+						this.putFieldError("primaryAssign", "error.primary.assignment.exists.for.leaveJob", assignment.getJobNumber().toString());
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+	}
+	
 /*	protected boolean validateActiveFlag(Assignment assign){
 		if(!assign.isActive()) {
 			List<TimeBlock> tbList = TkServiceLocator.getTimeBlockService().getTimeBlocksForAssignment(assign);
@@ -313,6 +333,11 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 				if(!assignment.getAssignmentAccounts().isEmpty()) {
 					valid &= this.validateRegPayEarnCode(assignment);
 					valid &= this.validateAccounts(assignment); // KPME-2780
+				}
+				// only allow one primary assignment for the leave eligible job
+				if(assignment.isPrimaryAssign()) {
+					Assignment oldAssignment = (Assignment) this.getOldBo();
+					valid &= this.validateOnePrimaryAssignment(assignment, oldAssignment);
 				}
 			}
 		}
