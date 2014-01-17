@@ -53,6 +53,8 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class TKUtils {
 
     private static final Logger LOG = Logger.getLogger(TKUtils.class);
@@ -266,7 +268,7 @@ public class TKUtils {
 
         return dateTime;
     }
-    
+
    public static String getIPAddressFromRequest(String remoteAddress) {
         // Check for IPv6 addresses - Not sure what to do with them at this point.
         // TODO: IPv6 - I see these on my local machine.
@@ -285,6 +287,25 @@ public class TKUtils {
             return "unknown";
         }
     }
+
+    public static String getIPAddressFromRequest(HttpServletRequest request) {
+        // Check for IPv6 addresses - Not sure what to do with them at this point.
+        // TODO: IPv6 - I see these on my local machine.
+        String fwdIp = request.getHeader("X-Forwarded-For");
+        if (fwdIp != null) {
+            LOG.info("Forwarded IP: " + fwdIp);
+            return fwdIp;
+        }
+
+        String ip = request.getRemoteAddr();
+        if (ip.indexOf(':') > -1) {
+            LOG.warn("ignoring IPv6 address for clock-in: " + ip);
+            ip = "";
+        }
+
+        return ip;
+    }
+
     //Used to preserve active row fetching based on max(timestamp)
     public static Timestamp subtractOneSecondFromTimestamp(Timestamp originalTimestamp) {
         DateTime dt = new DateTime(originalTimestamp);
