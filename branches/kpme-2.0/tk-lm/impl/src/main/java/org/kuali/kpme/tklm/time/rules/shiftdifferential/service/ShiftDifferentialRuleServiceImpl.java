@@ -597,9 +597,11 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
 	protected void applyPremium(Interval shift, List<Interval> blockIntervals, List<TimeBlock> blocks, List<TimeBlock> previousBlocks, BigDecimal initialHours, BigDecimal hours, String earnCode, ShiftDifferentialRule rule) {
         Map<Interval, Long> nextGaps = new HashMap<Interval, Long>();
         List<Interval> possibleShifts = new ArrayList<Interval>(3);
-        possibleShifts.add(new Interval(shift.getStart().minusDays(1), shift.getEnd().minusDays(1)));
-        possibleShifts.add(shift);
-        possibleShifts.add(new Interval(shift.getStart().plusDays(1), shift.getEnd().plusDays(1)));
+        if (shift != null) {
+            possibleShifts.add(new Interval(shift.getStart().minusDays(1), shift.getEnd().minusDays(1)));
+            possibleShifts.add(shift);
+            possibleShifts.add(new Interval(shift.getStart().plusDays(1), shift.getEnd().plusDays(1)));
+        }
         Map<Interval, Long> shiftOverlapMillis = new HashMap<Interval, Long>();
         Map<Interval, Interval> overlapToShift = new HashMap<Interval, Interval>();
         List<Interval> allOverlaps = new ArrayList<Interval>();
