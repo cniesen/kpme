@@ -74,6 +74,38 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 	}
 
 	public boolean principalHasRole(String principalId, String namespaceCode, String roleName, Map<String, String> qualification, DateTime asOfDate) {
+		// the return value
+		boolean principalHasRole = false;
+
+		// insert the role name and name-space code and the other method parameters into the qualification map.
+		// "KpmeProxiedRole" is used as the prefix for each method parameter's key name in the qualification.
+		qualification.put("KpmeProxiedRoleNamespaceCode", namespaceCode);
+		qualification.put("KpmeProxiedRoleRoleName", roleName);
+		qualification.put("KpmeProxiedRoleAsOfDate", asOfDate.toString());
+
+		// get the id for the KPME proxy role instance. This instance should contain only one member without 
+		// any membership qualification: a derived role whose service methods interact with the actual proxied role
+		// via KIM role services
+		String roleId = getRoleService().getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(),
+																				 KPMERole.KPME_PROXY_ROLE.getRoleName());
+
+		if(roleId != null) {
+			// call the KPME role proxy's method to check if the principal has the proxied role; this will in turn will call the 
+			// derived role member's method for checking that. The derived role member's method will interact with the actual 
+			// proxied role to verify membership. 
+			principalHasRole = getRoleService().principalHasRole(principalId, Collections.singletonList(roleId), qualification);
+			
+		}
+		else {
+        	LOG.error("Role id for role name " + KPMERole.KPME_PROXY_ROLE.getRoleName() + " with namespace code " + 
+        														KPMENamespace.KPME_HR.getNamespaceCode() + " was null");
+        }
+
+		return principalHasRole;
+	}
+	
+	
+	private boolean principalHasThisRole(String principalId, String namespaceCode, String roleName, Map<String, String> qualification, DateTime asOfDate) {
 		boolean principalHasRole = false;
 		
 		String roleId = getRoleService().getRoleIdByNamespaceCodeAndName(namespaceCode, roleName);
@@ -156,10 +188,52 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 		return getRoleMembers(namespaceCode, roleName, qualification, asOfDate, isActiveOnly);
 	}
 
-	public List<RoleMember> getRoleMembers(String namespaceCode, String roleName, Map<String, String> qualification, DateTime asOfDate, boolean isActiveOnly) {
-		Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
+	
+	public List<RoleMember> getRoleMembers(String namespaceCode, 
+										   String roleName,
+										   Map<String,
+										   String> qualification,
+										   DateTime asOfDate,
+										   boolean isActiveOnly) {
+//		Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
+//		
+//		return getRoleMembers(role, qualification, asOfDate, isActiveOnly);
 		
-		return getRoleMembers(role, qualification, asOfDate, isActiveOnly);
+		// the return value
+		List<RoleMember> roleMembers = new ArrayList<RoleMember>();
+		
+		// insert the role name and name-space code and the other method parameters into the qualification map. 
+		// "KpmeProxiedRole" is used as the prefix for each method parameter's key name in the qualification.
+		qualification.put("KpmeProxiedRoleNamespaceCode", namespaceCode);
+		qualification.put("KpmeProxiedRoleRoleName", roleName);
+		qualification.put("KpmeProxiedRoleAsOfDate", asOfDate.toString());
+		qualification.put("KpmeProxiedRoleIsActiveOnly", String.valueOf(isActiveOnly));
+		
+		// get the id for the KPME proxy role instance. This instance should contain only one member without 
+		// any membership qualification: a derived role whose service methods interact with the actual proxied role
+		// via KIM role services
+		String roleId = getRoleService().getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(),
+																		 KPMERole.KPME_PROXY_ROLE.getRoleName());
+		
+		if(roleId != null) {
+			// call the KPME role proxy's method to get the role members; this will in turn will call the 
+			// derived role member's method for role members. The derived role member's method for obtaining 
+			// the role members will interact with the actual proxied role and accumulate the role memberships. 
+			List<RoleMembership> memberships = getRoleService().getRoleMembers(Collections.singletonList(roleId), qualification);
+			
+			// convert the list of memberships into a list of members
+			for (RoleMembership membership : memberships) {
+	            RoleMember roleMember = RoleMember.Builder.create(membership.getRoleId(), membership.getId(), membership.getMemberId(),
+	                    membership.getType(), null, null, membership.getQualifier(), "", "").build();
+	            roleMembers.add(roleMember);
+	        }
+		}
+		else {
+        	LOG.error("Role id for role name " + KPMERole.KPME_PROXY_ROLE.getRoleName() + " with namespace code " + 
+        														KPMENamespace.KPME_HR.getNamespaceCode() + " was null");
+        }
+		
+		return roleMembers;
 	}
 	
 	/**
@@ -424,6 +498,7 @@ public class KPMERoleServiceImpl implements KPMERoleService {
      *
      * @return the map of qualifiers for the given {@code principalId} in {@code role}.
      */
+	// TODO the else pathway below will return only the top level members and not resolve the nested roles + groups.
     private List<Map<String, String>> getRoleQualifiers(String principalId, List<String> roleIds, Map<String, String> qualifiers, DateTime asOfDate, boolean activeOnly) {
         List<Map<String, String>> roleQualifiers = new ArrayList<Map<String, String>>();
 

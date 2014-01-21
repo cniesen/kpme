@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.job.service.JobService;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
@@ -71,11 +72,32 @@ public class PositionDerivedRoleTypeServiceImpl extends DerivedRoleTypeServiceBa
         if (role != null) {
 	        if (qualification.containsKey(KPMERoleMemberAttribute.POSITION.getRoleMemberAttributeName())) {
 				String positionNumber = qualification.get(KPMERoleMemberAttribute.POSITION.getRoleMemberAttributeName());
-	            List<String> principalIds = getJobService().getPrincipalIdsInPosition(positionNumber, LocalDate.now());
+				
+				// get the as-of date and the active flag values
+				DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+				String asOfDateString = qualification.remove("asOfDate");
+				if(asOfDateString != null) {
+					asOfDate = DateTime.parse(asOfDateString);
+				}
+				
+				@SuppressWarnings("unused")
+				boolean activeOnly = true;  // active is currently unused for this derived role , may need it in the future
+				String activeOnlyString = qualification.remove("activeOnly");
+				if(activeOnlyString != null) {
+					activeOnly = Boolean.parseBoolean(activeOnlyString);
+				}
+				
+				
+				// delegate the actual work of finding principals to the job service, at some future point we may also pass in the active flag
+	            List<String> principalIds = getJobService().getPrincipalIdsInPosition(positionNumber, asOfDate.toLocalDate());
+	            
 	            for (String principalId : principalIds) {
 	            	roleMembers.add(RoleMembership.Builder.create(role.getId(), null, principalId, MemberType.PRINCIPAL, qualification).build());
 	            }
 			}
+        }
+        else {
+        	LOG.error("Role for role name " + roleName + " with namespace code "  + namespaceCode + " was null");
         }
         
         return roleMembers;
