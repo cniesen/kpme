@@ -121,7 +121,7 @@
                             </c:choose>
                             <c:choose>
                                 <c:when test="${Form.clockButtonEnabled}">
-                                    <input type="button" class="button" value="Missed Punch" name="missedPunch" onClick="javascript: showLightboxUrl(extractUrlBase() + '/kpme/missedPunch?&methodToCall=start&viewId=MissedPunch-SubmitView&missedPunch.timesheetDocumentId=' + ${Form.timesheetDocument.documentId}, {minHeight: 500, height: 500, maxWidth: 600, closeBtn: false})" />
+                                    <input type="button" class="button" value="Missed Punch" name="missedPunch" onClick="javascript: showLightboxUrl(extractUrlBase() + '/kpme/missedPunch?&methodToCall=start&viewId=MissedPunch-SubmitView&missedPunch.timesheetDocumentId=' + ${Form.timesheetDocument.documentId}, {minHeight: 600, maxWidth: 600, closeBtn: false})" />
                                 </c:when>
                                 <c:otherwise>
                                     <input disabled type="button" class="button" value="Missed Punch" name="missedPunch"  />
