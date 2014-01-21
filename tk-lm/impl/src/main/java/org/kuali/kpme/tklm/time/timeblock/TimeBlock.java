@@ -86,6 +86,12 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     
     @Transient
 	private Boolean clockedByMissedPunch;
+    
+    private Date actionDateTime;
+    private String clockAction;
+    private String timeSheetDocumentId;
+    private String assignmentValue;
+    private String docStatus;
 
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
     @Transient
@@ -103,7 +109,47 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	super();
     }
     
-    public Boolean getClockedByMissedPunch() {
+    public String getDocStatus() {
+		return docStatus;
+	}
+
+	public void setDocStatus(String docStatus) {
+		this.docStatus = docStatus;
+	}
+
+	public Date getActionDateTime() {
+		return actionDateTime;
+	}
+
+	public void setActionDateTime(Date actionDateTime) {
+		this.actionDateTime = actionDateTime;
+	}
+
+	public String getClockAction() {
+		return clockAction;
+	}
+
+	public void setClockAction(String clockAction) {
+		this.clockAction = clockAction;
+	}
+
+	public String getTimeSheetDocumentId() {
+		return timeSheetDocumentId;
+	}
+
+	public void setTimeSheetDocumentId(String timeSheetDocumentId) {
+		this.timeSheetDocumentId = timeSheetDocumentId;
+	}
+
+	public String getAssignmentValue() {
+		return assignmentValue;
+	}
+
+	public void setAssignmentValue(String assignmentValue) {
+		this.assignmentValue = assignmentValue;
+	}
+
+	public Boolean getClockedByMissedPunch() {
     	if(clockedByMissedPunch == null) {
     		this.assignClockedByMissedPunch();
     	}
@@ -113,15 +159,28 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     public void assignClockedByMissedPunch() {
     	if(this.getClockLogCreated() != null && this.getClockLogCreated()){
   			MissedPunch missedPunchClockIn = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(this.getClockLogBeginId());
-  			MissedPunch missedPunchClockOut = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(this.getClockLogEndId());                                                   
-  			if (missedPunchClockIn != null || missedPunchClockOut != null) {
-  				this.setClockedByMissedPunch(Boolean.TRUE);
+  			MissedPunch missedPunchClockOut = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(this.getClockLogEndId());     
+  			if(missedPunchClockIn!=null){
+  				generateMissedPunchDetails(missedPunchClockIn);
   				return;
- 	 		}
+  			}else if(missedPunchClockOut!=null){
+  				generateMissedPunchDetails(missedPunchClockOut);
+  				return;
+  			}  			
     	}
     	this.setClockedByMissedPunch(Boolean.FALSE);
     }
 
+    private void generateMissedPunchDetails( MissedPunch missedPunch){
+    		actionDateTime = missedPunch.getActionDateTime();
+			clockAction = missedPunch.getClockAction();
+			timeSheetDocumentId = missedPunch.getTimesheetDocumentId();
+			assignmentValue = missedPunch.getAssignmentValue();
+			TimesheetDocumentHeader documentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(timeSheetDocumentId);
+			docStatus = HrConstants.DOC_ROUTE_STATUS.get(documentHeader.getDocumentStatus());
+			this.setClockedByMissedPunch(Boolean.TRUE);
+    }
+    
 	public void setClockedByMissedPunch(Boolean clockedByMissedPunch) {
 		this.clockedByMissedPunch = clockedByMissedPunch;
 	}
