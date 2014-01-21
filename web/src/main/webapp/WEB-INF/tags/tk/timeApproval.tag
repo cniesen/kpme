@@ -95,13 +95,14 @@
 				</div>
 				<div id="approvals-missedpunch-details"
 					class="approvals-missedpunch-details"
-					style="display: none; float: right; margin-left: 150px;">
+					style="display: none; float: right; margin-left: 200px;">
 					<table>
 						<thead>
 							<tr>
 								<th colspan="3"
-									style="font-size: 1.2em; font-weight: bold; text-align: left;">
-									Missed Punch:</th>
+									style="font-size: 1.2em; font-weight: bold; text-align: left; border-bottom: none;">
+									Missed Punch:
+								</th>
 							</tr>
 							<tr>
 								<th>Date</th>
@@ -116,7 +117,10 @@
 									<td style="width: 30px;">${aMp.clockAction}</td>
 									<td>
 										<div class="warning-note-message">
-											${aMp.assignmentValue}</div>
+											${aMp.assignmentValue}
+											<br/>Doc Id: <a href="changeTargetPerson.do?${row.timesheetUserTargetURLParams}&targetUrl=TimeDetail.do%3FdocumentId=${row.documentId}&returnUrl=TimeApproval.do%3FselectedPayCalendarGroup=${Form.selectedPayCalendarGroup}%26selectedDept=${Form.selectedDept}%26selectedWorkArea=${Form.selectedWorkArea}"> ${row.documentId}</a>
+											&nbsp;Doc Status: <span id="approvals-status" class="approvals-status">${row.approvalStatus}</span>
+									</div>
 									</td>
 								</tr>
 							</c:forEach>
