@@ -649,6 +649,7 @@ label.error {
 .approvals-missedpunch-details table tr td, .approvals-missedpunch-details table tr th,
 .approvals-status-details table tr td, .approvals-status-details table tr th {
     border: 1px solid gray;
+    color: black;
 }
 
 .warning-note-message {
