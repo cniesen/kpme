@@ -16,6 +16,7 @@
 <html lang="en">
 <head>
 <title>Kuali People Management for the Enterprise</title>
+<meta http-equiv="X-UA-Compatible" content="IE=8" />
 <tk:tkInclude />
 <tk:tkJsInclude />
 <c:if test="${nocache == 'true'}">
