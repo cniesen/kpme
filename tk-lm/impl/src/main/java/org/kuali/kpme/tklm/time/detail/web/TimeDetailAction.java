@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -726,9 +727,13 @@ public class TimeDetailAction extends TimesheetAction {
                 updatedLeaveBlock.setWorkArea(assignment.getWorkArea());
                 updatedLeaveBlock.setTask(assignment.getTask());
             }
-            
+
             DateTime beginDate = null;
     		DateTime endDate = null;
+
+    		beginDate = TKUtils.formatDateTimeStringNoTimezone(tdaf.getStartDate());
+			endDate = TKUtils.formatDateTimeStringNoTimezone(tdaf.getEndDate());
+        	updatedLeaveBlock.setLeaveDate(new Date(beginDate.getMillis()));
             
             EarnCode earnCode =  HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, updatedLeaveBlock.getLeaveLocalDate()); // selectedEarnCode = hrEarnCodeId
             if(earnCode != null && earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
