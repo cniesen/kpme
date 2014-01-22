@@ -18,6 +18,7 @@ package org.kuali.kpme.core.calendar.entry;
 import java.sql.Time;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
@@ -310,6 +311,9 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     }
 
 	public Calendar getCalendarObj() {
+		if(calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
+			this.setCalendarObj(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName()));
+		}		
 		return calendarObj;
 	}
 
