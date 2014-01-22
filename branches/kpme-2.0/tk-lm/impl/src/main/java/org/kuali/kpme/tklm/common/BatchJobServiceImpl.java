@@ -254,30 +254,40 @@ public class BatchJobServiceImpl implements BatchJobService {
 
 	@Override
 	public void scheduleMissedPunchApprovalJobs(CalendarEntry calendarEntry, DateTime scheduleDate) throws SchedulerException {
-		DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
-		DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
-   	
-		List<TimesheetDocumentHeader> timesheetDocumentHeaders = getTimesheetDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
-		for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
-			List<MissedPunchDocument> missedPunchDocuments = getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(timesheetDocumentHeader.getDocumentId());
-			for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
-				DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber());
-				if (DocumentStatus.ENROUTE.equals(documentStatus)) {
-					scheduleMissedPunchApprovalJob(calendarEntry, scheduleDate, missedPunchDocument.getMissedPunch());
-				}
-			}
-		}
-	}
-	
-	private void scheduleMissedPunchApprovalJob(CalendarEntry calendarEntry, DateTime scheduleDate, MissedPunch missedPunch) throws SchedulerException {
-        Map<String, String> jobGroupDataMap = new HashMap<String, String>();
+		Map<String, String> jobGroupDataMap = new HashMap<String, String>();
         jobGroupDataMap.put("hrCalendarEntryId", calendarEntry.getHrCalendarEntryId());
 		
 		Map<String, String> jobDataMap = new HashMap<String, String>();
-        jobDataMap.put("principalId", missedPunch.getPrincipalId());
+        jobDataMap.put("hrCalendarEntryId", calendarEntry.getHrCalendarEntryId());
 		
         scheduleJob(MissedPunchApprovalJob.class, scheduleDate, jobGroupDataMap, jobDataMap);
+		
+		
+		
+//		DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
+//		DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
+//   	
+//		List<TimesheetDocumentHeader> timesheetDocumentHeaders = getTimesheetDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
+//		for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
+//			List<MissedPunchDocument> missedPunchDocuments = getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(timesheetDocumentHeader.getDocumentId());
+//			for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
+//				DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber());
+//				if (DocumentStatus.ENROUTE.equals(documentStatus)) {
+//					scheduleMissedPunchApprovalJob(calendarEntry, scheduleDate, missedPunchDocument.getMissedPunch());
+//				}
+//			}
+//		}
 	}
+	
+//	private void scheduleMissedPunchApprovalJob(CalendarEntry calendarEntry, DateTime scheduleDate, MissedPunch missedPunch) throws SchedulerException {
+//        Map<String, String> jobGroupDataMap = new HashMap<String, String>();
+//        jobGroupDataMap.put("hrCalendarEntryId", calendarEntry.getHrCalendarEntryId());
+//		
+//		Map<String, String> jobDataMap = new HashMap<String, String>();
+//        jobDataMap.put("principalId", missedPunch.getPrincipalId());
+//		
+//        scheduleJob(MissedPunchApprovalJob.class, scheduleDate, jobGroupDataMap, jobDataMap);
+//	}
 	
 	@Override
 	public void scheduleSupervisorApprovalJobs(CalendarEntry calendarEntry) throws SchedulerException {
