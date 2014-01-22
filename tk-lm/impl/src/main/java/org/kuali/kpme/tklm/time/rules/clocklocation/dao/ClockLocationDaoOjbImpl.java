@@ -147,10 +147,12 @@ public class ClockLocationDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
             OjbSubQueryUtil.addNumericCriteria(root, "jobNumber", jobNumber);
         }
 
-        if (StringUtils.isNotBlank(dept)) {
+        if (StringUtils.isNotBlank(dept)
+                && StringUtils.isBlank(workArea)) {
             Criteria workAreaCriteria = new Criteria();
             LocalDate asOfDate = toEffdt != null ? toEffdt : LocalDate.now();
             List<Long> workAreasForDept = HrServiceLocator.getWorkAreaService().getWorkAreasForDepartment(dept, asOfDate);
+            workAreasForDept.add(-1L); //keep wild card records in mind
             if (CollectionUtils.isNotEmpty(workAreasForDept)) {
                 workAreaCriteria.addIn("workArea", workAreasForDept);
             }
