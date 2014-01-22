@@ -77,7 +77,16 @@ public class SupervisorApprovalJob extends BatchJob {
 						// only approve documents in enroute status
 		        		if(documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
 							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
-							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
+							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getPayCalendar()) && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {
+								// before approve the enroute timesheet doc, we need to find all enroute missed punch docs associated with this timesheet and approve them first
+								List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(docId);
+								for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
+									if(missedPunchDocument != null 
+											&& DocumentStatus.ENROUTE.getCode().equals(KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber())) ){
+										TkServiceLocator.getMissedPunchService().approveMissedPunchDocument(missedPunchDocument);
+									}
+								}
+								
 								TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
 		        		}
@@ -92,7 +101,7 @@ public class SupervisorApprovalJob extends BatchJob {
 						// only approve documents in enroute status
 						if (documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
 							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
-							if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
+							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getLeaveCalendar()) && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
 								LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
 						}
