@@ -26,6 +26,8 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -192,13 +194,27 @@ public class LeavePlanDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Leav
 	@Override
 	public List<LeavePlan> getLeavePlansNeedsScheduled(int thresholdDays,
 			LocalDate asOfDate) {
+        DateTimeFormatter fmt = DateTimeFormat.forPattern("MM/dd");
         DateTime current = asOfDate.toDateTimeAtStartOfDay();
         DateTime windowStart = current.minusDays(thresholdDays);
         DateTime windowEnd = current.plusDays(thresholdDays);
         Criteria root = new Criteria();
+        String start = fmt.print(windowStart);
+        String end = fmt.print(windowEnd);
 
-        root.addGreaterOrEqualThan("batchPriorYearCarryOverStartDate", windowStart.toDate());
-        root.addLessOrEqualThan("batchPriorYearCarryOverStartDate", windowEnd.toDate());
+        if (end.compareTo(start) >=0) {
+            root.addGreaterOrEqualThan("batchPriorYearCarryOverStartDate", start);
+            root.addLessOrEqualThan("batchPriorYearCarryOverStartDate", end);
+        } else {
+            Criteria subCrit = new Criteria();
+            Criteria beginCrit = new Criteria();
+            Criteria endCrit = new Criteria();
+            beginCrit.addGreaterOrEqualThan("batchPriorYearCarryOverStartDate", start);
+            endCrit.addLessOrEqualThanField("batchPriorYearCarryOverStartDate", end);
+            subCrit.addOrCriteria(beginCrit);
+            subCrit.addOrCriteria(endCrit);
+            root.addAndCriteria(subCrit);
+        }
 
         root.addEqualTo("active", true);
 
