@@ -92,7 +92,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate, regularEarnCodes, timeSummary));
 		
 		// Set Flsa week total map
-		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), null);
+		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), null, regularEarnCodes);
 		timeSummary.setFlsaWeekTotalMap(flsaWeekTotal);
 
         Map<String,List<EarnGroupSection>> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getTimeSummaryHeader().size()+1, 
@@ -628,7 +628,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
     }
 
     
-	private Map<String, BigDecimal> getHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea) {
+	private Map<String, BigDecimal> getHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea, Set<String> regularEarnCodes) {
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
 		DateTimeZone dateTimeZone = HrServiceLocator.getTimezoneService()
@@ -641,15 +641,20 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
 				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
 					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-						if (workArea != null) {
-							if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
-								weekTotal = weekTotal.add(timeBlock.getHours(), HrConstants.MATH_CONTEXT);
-							} else {
-								weekTotal = weekTotal.add(new BigDecimal("0"), HrConstants.MATH_CONTEXT);
-							}
-						} else {
-							weekTotal = weekTotal.add(timeBlock.getHours(),HrConstants.MATH_CONTEXT);
-						}
+	                    EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDateTime().toLocalDate());
+	                    if (ec != null
+	                            && (ec.getOvtEarnCode()
+	                            || regularEarnCodes.contains(ec.getEarnCode()) || ec.getCountsAsRegularPay().equals("Y"))) {
+								if (workArea != null) {
+									if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
+										weekTotal = weekTotal.add(timeBlock.getHours(), HrConstants.MATH_CONTEXT);
+									} else {
+										weekTotal = weekTotal.add(new BigDecimal("0"), HrConstants.MATH_CONTEXT);
+									}
+								} else {
+									weekTotal = weekTotal.add(timeBlock.getHours(),HrConstants.MATH_CONTEXT);
+								}
+	                    }
 					}
 				}
 			}
