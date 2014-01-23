@@ -152,6 +152,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
     	if(tdaf.getAcrossDays() != null) {
     		acrossDays = tdaf.getAcrossDays().equalsIgnoreCase("y");
     	}
+    	
         return validateTimeEntryDetails(
                 tdaf.getHours(), tdaf.getAmount(), tdaf.getStartTime(), tdaf.getEndTime(),
                 tdaf.getStartDate(), tdaf.getEndDate(), tdaf.getTimesheetDocument(),
@@ -167,7 +168,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
             errors.add("No timesheet document found.");
         }
         if (errors.size() > 0) return errors;
-
+        
         CalendarEntry payCalEntry = timesheetDocument.getCalendarEntry();
         EarnCode earnCode = null;
         if (StringUtils.isNotBlank(selectedEarnCode)) {
@@ -316,10 +317,10 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         //------------------------
 
         boolean isRegularEarnCode = StringUtils.equals(assign.getJob().getPayTypeObj().getRegEarnCode(),selectedEarnCode);
-        
         startTime = TKUtils.convertDateStringToDateTime(startDateS, startTimeS).getMillis();
         endTime = TKUtils.convertDateStringToDateTime(endDateS, endTimeS).getMillis();
-        errors.addAll(validateOverlap(startTime, endTime, acrossDays, startDateS, endTimeS,startTemp, endTemp, timesheetDocument, timeblockId, isRegularEarnCode));
+        
+        errors.addAll(validateOverlap(startTime, endTime, acrossDays, startDateS, endTimeS,startTemp, endTemp, timesheetDocument, timeblockId, isRegularEarnCode, selectedEarnCode));
         if (errors.size() > 0) return errors;
 
         // Accrual Hour Limits Validation
@@ -328,7 +329,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         return errors;
     }
 
-    public static List<String> validateOverlap(Long startTime, Long endTime, boolean acrossDays, String startDateS, String endTimeS, DateTime startTemp, DateTime endTemp, TimesheetDocument timesheetDocument, String timeblockId, boolean isRegularEarnCode) {
+    public static List<String> validateOverlap(Long startTime, Long endTime, boolean acrossDays, String startDateS, String endTimeS, DateTime startTemp, DateTime endTemp, TimesheetDocument timesheetDocument, String timeblockId, boolean isRegularEarnCode, String selectedEarnCode) {
         List<String> errors = new ArrayList<String>();
         Interval addedTimeblockInterval = new Interval(startTime, endTime);
         List<Interval> dayInt = new ArrayList<Interval>();
@@ -352,7 +353,6 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
             }
             
             Interval currentClockInInterval = new Interval(lastClockDateTime, currentTime);
-       
             if (isRegularEarnCode && addedTimeblockInterval.overlaps(currentClockInInterval)) {
                  errors.add("The time block you are trying to add overlaps with the current clock action.");
                  return errors;
@@ -441,8 +441,11 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
                     for (Interval interval : intervals) {
                         if (isRegularEarnCode && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
-                            errors.add("The time block you are trying to add overlaps with an existing time block.");
+                        	errors.add("The time block you are trying to add overlaps with an existing time block.");
                             break;
+                        }else if(timeBlock.getEarnCode().equals(selectedEarnCode) && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)){
+                        	errors.add("The time block you are trying to add overlaps with an existing time block.");
+                        	break;
                         }
                     }
                 }

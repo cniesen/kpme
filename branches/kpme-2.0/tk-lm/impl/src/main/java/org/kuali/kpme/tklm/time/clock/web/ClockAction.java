@@ -283,11 +283,12 @@ public class ClockAction extends TimesheetAction {
         	 List<TimeBlock> tbList = caf.getTimesheetDocument().getTimeBlocks();
 	         for(TimeBlock tb : tbList) {
 	        	 String earnCode = tb.getEarnCode();
+	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(),earnCode);
 	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, caf.getTimesheetDocument().getAsOfDate());
 	        	 if(earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
 	        		 Interval clockInterval = new Interval(new DateTime(tb.getBeginTimestamp().getTime()), new DateTime(tb.getEndTimestamp().getTime()));
-	        		 if(clockInterval.contains(clockBeginDateTime.getMillis())) {
-	        			 caf.setErrorMessage("User has already logged time for this clock period.");
+	        		 if(isRegularEarnCode && clockInterval.contains(clockBeginDateTime.getMillis())) {
+	        			 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 	        			 return mapping.findForward("basic");
 	        		 }
 	        	 }
@@ -348,7 +349,7 @@ public class ClockAction extends TimesheetAction {
 	        			// validation with previous calendar entry
 	        			// the datetime for the new clock log that's about to be created with grace period rule applied
 	        			DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(outLogDateTime, previousCalEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime);
+	        			boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
    		            		 return mapping.findForward("basic");
@@ -357,7 +358,7 @@ public class ClockAction extends TimesheetAction {
 	        			// validation with the next calendar entry
 		   	             // the datetime for the new clock log that's about to be created with grace period rule applied
 	        			endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(currentDateTime, nextCalendarEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime);
+	        			validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
   		            		 return mapping.findForward("basic");
@@ -392,8 +393,8 @@ public class ClockAction extends TimesheetAction {
 	                if (lastLog != null) {
 		   	            // the datetime for the new clock log that's about to be created with grace period rule applied
 		   	         	DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(), caf.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate());
-		   	         	 
-		   	         	boolean validation = this.validateOverlapping(caf.getTimesheetDocument().getAsOfDate(), caf.getTimesheetDocument().getTimeBlocks(), lastLog.getClockDateTime(), endDateTime);
+		   	         	
+		   	         	boolean validation = this.validateOverlapping(caf.getTimesheetDocument().getAsOfDate(), caf.getTimesheetDocument().getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 			            		 return mapping.findForward("basic");
@@ -411,13 +412,14 @@ public class ClockAction extends TimesheetAction {
         
     }
 
-    public boolean validateOverlapping(LocalDate asOfDate, List<TimeBlock> tbList, DateTime beginDateTime, DateTime endDateTime) {
+    public boolean validateOverlapping(LocalDate asOfDate, List<TimeBlock> tbList, DateTime beginDateTime, DateTime endDateTime, Assignment assignment) {
     	Interval clockInterval = new Interval(beginDateTime, endDateTime);
     	if(clockInterval != null) {
 	    	for(TimeBlock tb : tbList) {
 	        	 String earnCode = tb.getEarnCode();
+	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(),earnCode);
 	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
-	        	 if(earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
+	        	 if(isRegularEarnCode && earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
 	            	 if(clockInterval.contains(tb.getBeginDateTime().getMillis()) || clockInterval.contains(tb.getEndDateTime().getMillis())) {
 	            		 return false;
 	            	 }
