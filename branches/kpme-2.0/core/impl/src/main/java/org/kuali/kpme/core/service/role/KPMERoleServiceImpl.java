@@ -66,6 +66,7 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 	private KimTypeInfoService kimTypeInfoService;
 	private RoleService roleService;
 	private WorkAreaService workAreaService;
+	private KPMERoleServiceHelper roleServiceHelper;
 
 	public boolean principalHasRole(String principalId, String namespaceCode, String roleName, DateTime asOfDate) {
 		Map<String, String> qualification = new HashMap<String, String>();
@@ -81,6 +82,14 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 		// "KpmeProxiedRole" is used as the prefix for each method parameter's key name in the qualification.
 		qualification.put("KpmeProxiedRoleNamespaceCode", namespaceCode);
 		qualification.put("KpmeProxiedRoleRoleName", roleName);
+		if(asOfDate != null) {
+			// reset to start of the day
+			asOfDate = asOfDate.toLocalDate().toDateTimeAtStartOfDay();
+		}
+		else {
+			// default to start of today
+			asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+		}
 		qualification.put("KpmeProxiedRoleAsOfDate", asOfDate.toString());
 
 		// get the id for the KPME proxy role instance. This instance should contain only one member without 
@@ -191,50 +200,38 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 	
 	public List<RoleMember> getRoleMembers(String namespaceCode, 
 										   String roleName,
-										   Map<String,
-										   String> qualification,
+										   Map<String, String> qualification,
 										   DateTime asOfDate,
 										   boolean isActiveOnly) {
-//		Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
-//		
-//		return getRoleMembers(role, qualification, asOfDate, isActiveOnly);
+
+		List<RoleMember> returnList = new ArrayList<RoleMember>();
 		
-		// the return value
-		List<RoleMember> roleMembers = new ArrayList<RoleMember>();
-		
-		// insert the role name and name-space code and the other method parameters into the qualification map. 
-		// "KpmeProxiedRole" is used as the prefix for each method parameter's key name in the qualification.
-		qualification.put("KpmeProxiedRoleNamespaceCode", namespaceCode);
-		qualification.put("KpmeProxiedRoleRoleName", roleName);
-		qualification.put("KpmeProxiedRoleAsOfDate", asOfDate.toString());
-		qualification.put("KpmeProxiedRoleIsActiveOnly", String.valueOf(isActiveOnly));
-		
-		// get the id for the KPME proxy role instance. This instance should contain only one member without 
-		// any membership qualification: a derived role whose service methods interact with the actual proxied role
-		// via KIM role services
-		String roleId = getRoleService().getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(),
-																		 KPMERole.KPME_PROXY_ROLE.getRoleName());
-		
-		if(roleId != null) {
-			// call the KPME role proxy's method to get the role members; this will in turn will call the 
-			// derived role member's method for role members. The derived role member's method for obtaining 
-			// the role members will interact with the actual proxied role and accumulate the role memberships. 
-			List<RoleMembership> memberships = getRoleService().getRoleMembers(Collections.singletonList(roleId), qualification);
-			
-			// convert the list of memberships into a list of members
-			for (RoleMembership membership : memberships) {
-	            RoleMember roleMember = RoleMember.Builder.create(membership.getRoleId(), membership.getId(), membership.getMemberId(),
-	                    membership.getType(), null, null, membership.getQualifier(), "", "").build();
-	            roleMembers.add(roleMember);
-	        }
+		// set defaults for various args
+		if(qualification == null) {
+			qualification = new HashMap<String, String>();
+		}		
+		if(asOfDate != null) {
+			// reset to start of the date specified
+			asOfDate = asOfDate.toLocalDate().toDateTimeAtStartOfDay();
 		}
 		else {
-        	LOG.error("Role id for role name " + KPMERole.KPME_PROXY_ROLE.getRoleName() + " with namespace code " + 
-        														KPMENamespace.KPME_HR.getNamespaceCode() + " was null");
-        }
+			// default to start of today
+			asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+		}		
+		// invoke the helper's (caching) logic to query the role membership
+		returnList = getRoleServiceHelper().getRoleMembersCached(namespaceCode, roleName, qualification, asOfDate, isActiveOnly);
 		
-		return roleMembers;
+		return returnList;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Helper method to recursively search for role members.
@@ -246,7 +243,7 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 	 * 
 	 * @return the list of role members in {@code role}.
 	 */
-	private List<RoleMember> getRoleMembers(Role role, Map<String, String> qualification, DateTime asOfDate, boolean activeOnly) {
+	private List<RoleMember> getThisRoleMembers(Role role, Map<String, String> qualification, DateTime asOfDate, boolean activeOnly) {
 		List<RoleMember> roleMembers = new ArrayList<RoleMember>();
 		
 		if (role != null) {
@@ -289,7 +286,7 @@ public class KPMERoleServiceImpl implements KPMERoleService {
                                 roleMembers.add(primaryRoleMember);
                             } else {
                                 Role nestedRole = getRoleService().getRole(primaryRoleMember.getMemberId());
-                                roleMembers.addAll(getRoleMembers(nestedRole, primaryRoleMember.getAttributes(), asOfDate, activeOnly));
+                                roleMembers.addAll(getThisRoleMembers(nestedRole, primaryRoleMember.getAttributes(), asOfDate, activeOnly));
                             }
                         }
                     }
@@ -656,5 +653,13 @@ public class KPMERoleServiceImpl implements KPMERoleService {
     public void setWorkAreaService(WorkAreaService workAreaService) {
     	this.workAreaService = workAreaService;
     }
+
+	public KPMERoleServiceHelper getRoleServiceHelper() {
+		return roleServiceHelper;
+	}
+
+	public void setRoleServiceHelper(KPMERoleServiceHelper roleServiceHelper) {
+		this.roleServiceHelper = roleServiceHelper;
+	}
 
 }
