@@ -175,7 +175,8 @@ $(document).ready(function () {
     });
 
     // display warning and notes
-    $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide'});
+    //$(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide'});
+    $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide', position: 'top right', offset: '0 0', relative: 'true'});
 
 //    $('span[id^=showDetailButton]').click(function (e) {
 //
