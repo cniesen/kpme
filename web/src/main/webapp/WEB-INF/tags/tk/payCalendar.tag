@@ -52,9 +52,9 @@
 							</thead>
 							<tbody>
 								<tr>
-									<td style="width: 150px;">${block.timeBlock.actionDateTime}</td>
-									<td style="width: 30px;">${block.timeBlock.clockAction}</td>
-									<td>
+									<td style="width: 250px;height: auto;">${block.timeBlock.actionDateTime}</td>
+									<td style="width: 30px; height: auto;">${block.timeBlock.clockAction}</td>
+									<td style="height: auto">
 										<div class="warning-note-message">
                         					${block.timeBlock.assignmentValue}
 											<br/>Doc Id: ${block.timeBlock.timeSheetDocumentId}
