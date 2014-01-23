@@ -34,6 +34,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.service.role.KPMERoleServiceHelper;
 import org.kuali.rice.core.api.criteria.LookupCustomizer;
 import org.kuali.rice.core.api.criteria.Predicate;
 import org.kuali.rice.core.api.criteria.QueryByCriteria;
@@ -55,9 +56,10 @@ import org.kuali.rice.kim.impl.KIMPropertyConstants;
 import org.kuali.rice.kim.impl.common.attribute.AttributeTransform;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
 import org.kuali.rice.kns.kim.role.DerivedRoleTypeServiceBase;
+import org.springframework.cache.annotation.Cacheable;
 
 @SuppressWarnings("deprecation")
-public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServiceBase {
+public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServiceBase implements KPMERoleServiceHelper {
 	
 	private static final Logger LOG = Logger.getLogger(KpmeRoleProxyDerivedRoleTypeServiceImpl.class);
 	
@@ -109,14 +111,11 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		return false;
 	}
 	
+	
+	
 	@Override
 	public List<RoleMembership> getRoleMembersFromDerivedRole(String namespaceCode, String roleName, Map<String, String> qualification) {
 		List<RoleMembership> returnList = new ArrayList<RoleMembership>();
-		
-		// get the role instance based on the name and name-space passed in via the qualification
-		String proxiedNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
-		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");		
-		Role proxiedRole = getRoleService().getRoleByNamespaceCodeAndName(proxiedNamespaceCode, proxiedRoleName);
 		
 		// get the as-of date and the active flag values
 		DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
@@ -131,18 +130,25 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 			activeOnly = Boolean.parseBoolean(activeOnlyString);
 		}		
 		
-		if(proxiedRole != null) {
-			if ( (asOfDate.equals(LocalDate.now().toDateTimeAtStartOfDay())) && activeOnly ) {
-				// invoke the non-recursive helper that delegates to KIM
-	            returnList = convertToRoleMemberships(getActiveRoleMembersToday(proxiedRole, qualification));
-	        }
-			else {
-				// invoke the recursive helper
-				returnList = convertToRoleMemberships(getRoleMembers(proxiedRole, qualification, asOfDate, activeOnly));
-			}
+		String proxiedRoleNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
+		if(proxiedRoleNamespaceCode == null) {
+			// use the hook to get the namespace
+			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCodeHook();
+		}
+		
+		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");	
+		if(proxiedRoleName == null) {
+			// use the hook to get the role name
+			proxiedRoleName = this.getProxiedRoleNameHook();
+		}
+		
+		
+		// check that the role is valid and if so invoke the (caching) logic for querying the proxied role membership
+		if( getRoleService().getRoleByNamespaceCodeAndName(proxiedRoleNamespaceCode, proxiedRoleName) != null ) {
+			returnList = convertToRoleMemberships(getRoleMembersCached(proxiedRoleNamespaceCode, proxiedRoleName, qualification, asOfDate, activeOnly));
 		}
 		else {
-        	LOG.error("Role for role name " + proxiedRoleName + " with namespace code "  + proxiedNamespaceCode + " was null");
+        	LOG.error("Role instance for proxied role with name " + proxiedRoleName + " namespace " + proxiedRoleNamespaceCode + " was null");
         }
 		
 		return returnList;
@@ -150,6 +156,15 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 	
 	
+	protected String getProxiedRoleNamespaceCodeHook() {
+		return "";
+	}
+	
+	protected String getProxiedRoleNameHook() {
+		return "";
+	}
+	
+
 	private List<RoleMembership> convertToRoleMemberships(List<RoleMember> roleMembers) {
 		List<RoleMembership> roleMemberships = new ArrayList<RoleMembership>();
 		for(RoleMember roleMember: roleMembers) {
@@ -163,6 +178,36 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		}
 		return roleMemberships;
 	}
+	
+	
+	
+	
+	
+	
+	@Override
+	@Cacheable(value = "http://rice.kuali.org/kim/v2_0/RoleMemberType", key = "'{getRoleMembersCached}' + 'namespace=' + #p0 + '|' + 'roleName=' + #p1 + '|' + 'qualification=' + T(org.kuali.rice.core.api.cache.CacheKeyUtils).mapKey(#p2)  + '|' + 'asOfDate=' + #p3  + '|' + 'isActiveOnly=' + #p4")
+	public List<RoleMember> getRoleMembersCached(String namespaceCode, String roleName, Map<String, String> qualification, DateTime asOfDate, boolean isActiveOnly) {
+		
+		// the return value
+		List<RoleMember> roleMembers = new ArrayList<RoleMember>();
+		Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);		
+		if(role != null) {		
+			if ( (asOfDate.toLocalDate().toDateTimeAtStartOfDay().equals(LocalDate.now().toDateTimeAtStartOfDay())) && isActiveOnly ) {
+				// invoke the non-recursive helper that delegates to KIM
+			    roleMembers = getActiveRoleMembersToday(role, qualification);
+			}
+			else {
+				// invoke the recursive helper
+				roleMembers = getRoleMembers(role, qualification, asOfDate, isActiveOnly);
+			}
+		}
+		else {
+			LOG.error("Role instance for proxied role with name " + roleName + " namespace " + namespaceCode + " was null");
+		}
+				
+		return roleMembers;		
+	}
+	
 	
 	
 	// non-recursive helper that delegates most of the processing to KIM services 
@@ -321,7 +366,7 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		}		
 		
 		if(proxiedRole != null) {
-			if ( (asOfDate.equals(LocalDate.now().toDateTimeAtStartOfDay())) && activeOnly ) {
+			if ( (asOfDate.toLocalDate().toDateTimeAtStartOfDay().equals(LocalDate.now().toDateTimeAtStartOfDay())) && activeOnly ) {
 				// invoke the non-recursive helper that delegates to KIM
 	            retVal = isActiveMemberOfRoleToday(principalId, groupIds, proxiedRole, qualification);
 	        }
@@ -370,27 +415,13 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 		// then check each of the nested groups with the passed-in principal's group ids
 		if(!isActiveMemberOfRoleToday) {
-			// first check for identity
+			// check for identity only since group ids is transitive closure of all parent groups
 			outerLoop: {
 				for (RoleMember nestedGroupMember : nestedGroups) {
 					for(String groupId : groupIds) {
 						if( StringUtils.equals(nestedGroupMember.getMemberId(), groupId) ){
 							isActiveMemberOfRoleToday = true;
 							break outerLoop;
-						}
-					}
-				}
-			}
-			
-			// then check for membership
-			outerLoop: {
-				if(!isActiveMemberOfRoleToday) {
-					for (RoleMember nestedGroupMember : nestedGroups) {
-						for(String groupId : groupIds) {
-							if( getGroupService().isGroupMemberOfGroup(groupId, nestedGroupMember.getMemberId()) ){
-								isActiveMemberOfRoleToday = true;
-								break outerLoop;
-							}
 						}
 					}
 				}
@@ -565,6 +596,8 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 		return kimType != null ? kimType.getServiceName() : null;
 	}
+
+	
 	
 		
 }

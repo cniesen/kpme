@@ -317,6 +317,7 @@
         <property name="kimTypeInfoService" ref="kimTypeInfoService" />
         <property name="roleService" ref="kimRoleService" />
         <property name="workAreaService" ref="workAreaService" />
+        <property name="roleServiceHelper" ref="kpmeRoleProxyDerivedRoleTypeService" />
     </bean>
       
     <bean id="kpmeRoleProxyDerivedRoleTypeService" class="org.kuali.kpme.core.role.proxy.service.KpmeRoleProxyDerivedRoleTypeServiceImpl">
