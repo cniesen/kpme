@@ -211,14 +211,29 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 
     public List<Long> getWorkAreasForPrincipalInRole(String principalId, String namespaceCode, String roleName, DateTime asOfDate, boolean isActiveOnly) {
 		Set<Long> workAreas = new HashSet<Long>();
-		
-		Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
 
         Map<String, String> qualifiers = new HashMap<String, String>();
         qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
         qualifiers.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
         qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
-		List<Map<String, String>> roleQualifiers = getRoleQualifiers(principalId, role, qualifiers, asOfDate, isActiveOnly);
+		
+        List<Map<String, String>> roleQualifiers = new ArrayList<Map<String, String>>();
+		List<String> groupIds = getGroupService().getGroupIdsByPrincipalId(principalId);
+    	List<RoleMember> principalAndGroupRoleMembers = getRoleMembers(namespaceCode, roleName, qualifiers, asOfDate, isActiveOnly);
+    	for(RoleMember roleMember : principalAndGroupRoleMembers){
+    		// check for principals or groups
+    		if (MemberType.PRINCIPAL.equals(roleMember.getType())) {
+        		if(roleMember.getMemberId().equals(principalId)) {
+        			roleQualifiers.add(roleMember.getAttributes());
+        		}
+    		}
+    		else if( (MemberType.GROUP.equals(roleMember.getType())) && (CollectionUtils.isNotEmpty(groupIds)) ) {
+    			if(groupIds.contains(roleMember.getMemberId())) {
+    				roleQualifiers.add(roleMember.getAttributes());
+    			}
+    		}
+    	}
+		
 		
 		for (Map<String, String> roleQualifier : roleQualifiers) {
 			Long workArea = MapUtils.getLong(roleQualifier, KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName());
@@ -232,6 +247,11 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 
 		return new ArrayList<Long>(workAreas);
 	}
+    
+    
+    
+    
+    
 
     public List<String> getDepartmentsForPrincipalInRoles(String principalId, List<String> roleIds, DateTime asOfDate, boolean isActiveOnly) {
         Set<String> departments = new HashSet<String>();
