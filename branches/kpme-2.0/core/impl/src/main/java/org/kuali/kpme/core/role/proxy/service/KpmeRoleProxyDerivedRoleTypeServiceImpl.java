@@ -133,13 +133,13 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		String proxiedRoleNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
 		if(proxiedRoleNamespaceCode == null) {
 			// use the hook to get the namespace
-			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCodeHook();
+			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCode();
 		}
 		
 		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");	
 		if(proxiedRoleName == null) {
 			// use the hook to get the role name
-			proxiedRoleName = this.getProxiedRoleNameHook();
+			proxiedRoleName = this.getProxiedRoleName();
 		}
 		
 		
@@ -156,11 +156,11 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 	
 	
-	protected String getProxiedRoleNamespaceCodeHook() {
+	protected String getProxiedRoleNamespaceCode() {
 		return "";
 	}
 	
-	protected String getProxiedRoleNameHook() {
+	protected String getProxiedRoleName() {
 		return "";
 	}
 	
@@ -347,10 +347,17 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 	public boolean hasDerivedRole(String principalId, List<String> groupIds, String namespaceCode, String roleName, Map<String, String> qualification) {
 		boolean retVal = false;
 		
-		// get the role instance based on the name and name-space passed in via the qualification
-		String proxiedNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
-		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");		
-		Role proxiedRole = getRoleService().getRoleByNamespaceCodeAndName(proxiedNamespaceCode, proxiedRoleName);
+		String proxiedRoleNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
+		if(proxiedRoleNamespaceCode == null) {
+			// use the hook to get the namespace
+			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCode();
+		}
+		
+		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");	
+		if(proxiedRoleName == null) {
+			// use the hook to get the role name
+			proxiedRoleName = this.getProxiedRoleName();
+		}
 		
 		// get the as-of date and the active flag values
 		DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
@@ -363,7 +370,9 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		String activeOnlyString = qualification.remove("KpmeProxiedRoleIsActiveOnly");
 		if(activeOnlyString != null) {
 			activeOnly = Boolean.parseBoolean(activeOnlyString);
-		}		
+		}
+		
+		Role proxiedRole = getRoleService().getRoleByNamespaceCodeAndName(proxiedRoleNamespaceCode, proxiedRoleName);
 		
 		if(proxiedRole != null) {
 			if ( (asOfDate.toLocalDate().toDateTimeAtStartOfDay().equals(LocalDate.now().toDateTimeAtStartOfDay())) && activeOnly ) {
@@ -376,7 +385,7 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 			}
 		}
 		else {
-        	LOG.error("Role for role name " + proxiedRoleName + " with namespace code "  + proxiedNamespaceCode + " was null");
+        	LOG.error("Role for role name " + proxiedRoleName + " with namespace code "  + proxiedRoleNamespaceCode + " was null");
         }
 		
 		return retVal;

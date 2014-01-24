@@ -324,9 +324,9 @@
     	<property name="groupService" ref="kimGroupService" />
         <property name="kimTypeInfoService" ref="kimTypeInfoService" />
         <property name="roleService" ref="kimRoleService" />
-    </bean> 
-     
-     <bean id="kpmeRoleProxyDerivedRoleTypeService.exporter" parent="kpme.callback.service"
+    </bean>
+    
+    <bean id="kpmeRoleProxyDerivedRoleTypeService.exporter" parent="kpme.callback.service"
           p:callbackService-ref="kpmeRoleProxyDerivedRoleTypeService"
           p:localServiceName="kpmeRoleProxyDerivedRoleTypeService"
           p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />
@@ -337,6 +337,28 @@
           p:callbackService-ref="workAreaRoleTypeService"
           p:localServiceName="workAreaRoleTypeService"
           p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />
+          
+    <bean id="workAreaProxyDerivedRoleTypeService" parent="kpmeRoleProxyDerivedRoleTypeService" 
+    	class="org.kuali.kpme.core.role.proxy.service.WorkAreaProxyDerivedRoleTypeServiceImpl" abstract="true" />      
+    
+    <bean id="approverProxyDerivedRoleTypeService" parent="workAreaProxyDerivedRoleTypeService" 
+    	  p:proxiedRoleName="Approver"  
+    	  p:proxiedRoleNamespaceCode="KPME-HR" />          
+          
+    <bean id="approverProxyDerivedRoleTypeService.exporter" parent="kpme.callback.service"
+          p:callbackService-ref="approverProxyDerivedRoleTypeService"
+          p:localServiceName="approverProxyDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />  
+          
+    <bean id="approverDelegateProxyDerivedRoleTypeService" parent="workAreaProxyDerivedRoleTypeService" 
+    	  p:proxiedRoleName="Approver Delegate"  
+    	  p:proxiedRoleNamespaceCode="KPME-HR" />          
+          
+    <bean id="approverDelegateProxyDerivedRoleTypeService.exporter" parent="kpme.callback.service"
+          p:callbackService-ref="approverDelegateProxyDerivedRoleTypeService"
+          p:localServiceName="approverDelegateProxyDerivedRoleTypeService"
+          p:serviceInterface="org.kuali.rice.kim.framework.role.RoleTypeService" />      
+          
     <bean id="departmentRoleTypeService" class="org.kuali.kpme.core.department.service.DepartmentRoleTypeServiceImpl" />
     
     <bean id="departmentRoleTypeService.exporter" parent="kpme.callback.service"
