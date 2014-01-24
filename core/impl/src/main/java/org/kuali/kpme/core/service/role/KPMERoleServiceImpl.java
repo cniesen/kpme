@@ -213,10 +213,23 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 		Set<Long> workAreas = new HashSet<Long>();
 
         Map<String, String> qualifiers = new HashMap<String, String>();
-        qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
-        qualifiers.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
-        qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
-		
+//        Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
+//        
+//        if (role != null) {
+//			RoleTypeService roleTypeService = getRoleTypeService(role);
+//			List<String> attributesForExactMatch = roleTypeService.getQualifiersForExactMatch();
+//			if(CollectionUtils.isNotEmpty(attributesForExactMatch)) { 
+//				if(!attributesForExactMatch.contains(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName())) {
+//					qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
+//				}
+//			}
+//			else {
+//				qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
+//			}
+//			qualifiers.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
+//			qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
+//        }
+        
         List<Map<String, String>> roleQualifiers = new ArrayList<Map<String, String>>();
 		List<String> groupIds = getGroupService().getGroupIdsByPrincipalId(principalId);
     	List<RoleMember> principalAndGroupRoleMembers = getRoleMembers(namespaceCode, roleName, qualifiers, asOfDate, isActiveOnly);
