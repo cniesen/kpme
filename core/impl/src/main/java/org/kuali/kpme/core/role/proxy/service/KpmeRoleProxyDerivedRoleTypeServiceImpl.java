@@ -61,6 +61,14 @@ import org.springframework.cache.annotation.Cacheable;
 @SuppressWarnings("deprecation")
 public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServiceBase implements KPMERoleServiceHelper {
 	
+	private static final String KPME_PROXIED_ROLE_ROLE_NAME = "KpmeProxiedRoleRoleName";
+
+	private static final String KPME_PROXIED_ROLE_NAMESPACE_CODE = "KpmeProxiedRoleNamespaceCode";
+
+	private static final String KPME_PROXIED_ROLE_IS_ACTIVE_ONLY = "KpmeProxiedRoleIsActiveOnly";
+
+	private static final String KPME_PROXIED_ROLE_AS_OF_DATE = "KpmeProxiedRoleAsOfDate";
+
 	private static final Logger LOG = Logger.getLogger(KpmeRoleProxyDerivedRoleTypeServiceImpl.class);
 	
 	private RoleService roleService;
@@ -119,24 +127,24 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 		// get the as-of date and the active flag values
 		DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
-		String asOfDateString = qualification.remove("KpmeProxiedRoleAsOfDate");
+		String asOfDateString = qualification.remove(KPME_PROXIED_ROLE_AS_OF_DATE);
 		if(asOfDateString != null) {
 			asOfDate = DateTime.parse(asOfDateString);
 		}
 		
 		boolean activeOnly = true;
-		String activeOnlyString = qualification.remove("KpmeProxiedRoleIsActiveOnly");
+		String activeOnlyString = qualification.remove(KPME_PROXIED_ROLE_IS_ACTIVE_ONLY);
 		if(activeOnlyString != null) {
 			activeOnly = Boolean.parseBoolean(activeOnlyString);
 		}		
 		
-		String proxiedRoleNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
+		String proxiedRoleNamespaceCode =  qualification.remove(KPME_PROXIED_ROLE_NAMESPACE_CODE);
 		if(proxiedRoleNamespaceCode == null) {
 			// use the hook to get the namespace
 			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCode();
 		}
 		
-		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");	
+		String proxiedRoleName =  qualification.remove(KPME_PROXIED_ROLE_ROLE_NAME);	
 		if(proxiedRoleName == null) {
 			// use the hook to get the role name
 			proxiedRoleName = this.getProxiedRoleName();
@@ -279,9 +287,9 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 	}
 	
 	
-	// helper method to get the primary (first-level) members of a role, may contain nested group and role members
-	// along with the principal members
-	private List<RoleMember> getPrimaryRoleMembers(Role role, Map<String, String> qualification, DateTime asOfDate, boolean activeOnly) {
+	// gets the primary (first-level) members of a role, i.e. may contain nested group and role members along with the principal members
+	@Override
+	public List<RoleMember> getPrimaryRoleMembers(Role role, Map<String, String> qualification, DateTime asOfDate, boolean isActiveOnly) {
 		// define the return value
 		List<RoleMember> primaryRoleMembers = new ArrayList<RoleMember>();
 		
@@ -291,7 +299,7 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 			if (roleTypeService == null || !roleTypeService.isDerivedRoleType()) {
 				List<Predicate> predicates = new ArrayList<Predicate>();
                 predicates.add(equal(KimConstants.PrimaryKeyConstants.SUB_ROLE_ID, role.getId()));
-                if (activeOnly) {
+                if (isActiveOnly) {
                     predicates.add(or(isNull("activeFromDateValue"), lessThanOrEqual("activeFromDateValue", asOfDate)));
                     predicates.add(or(isNull("activeToDateValue"), greaterThan("activeToDateValue", asOfDate)));
                 }
@@ -319,7 +327,7 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 				// for derived roles just add the as-of date and active only flag to a copy of the qualification
 				Map<String, String> derivedRoleQualification = new HashMap<String, String>(qualification);
 				derivedRoleQualification.put("asOfDate", asOfDate.toString());
-				derivedRoleQualification.put("activeOnly", String.valueOf(activeOnly));
+				derivedRoleQualification.put("activeOnly", String.valueOf(isActiveOnly));
 				List<RoleMembership> derivedRoleMembers = roleTypeService.getRoleMembersFromDerivedRole(role.getNamespaceCode(), role.getName(), derivedRoleQualification);
 				// convert the role memberships into role members
 				for (RoleMembership derivedRoleMember : derivedRoleMembers) {
@@ -347,13 +355,13 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 	public boolean hasDerivedRole(String principalId, List<String> groupIds, String namespaceCode, String roleName, Map<String, String> qualification) {
 		boolean retVal = false;
 		
-		String proxiedRoleNamespaceCode =  qualification.remove("KpmeProxiedRoleNamespaceCode");
+		String proxiedRoleNamespaceCode =  qualification.remove(KPME_PROXIED_ROLE_NAMESPACE_CODE);
 		if(proxiedRoleNamespaceCode == null) {
 			// use the hook to get the namespace
 			proxiedRoleNamespaceCode = this.getProxiedRoleNamespaceCode();
 		}
 		
-		String proxiedRoleName =  qualification.remove("KpmeProxiedRoleRoleName");	
+		String proxiedRoleName =  qualification.remove(KPME_PROXIED_ROLE_ROLE_NAME);	
 		if(proxiedRoleName == null) {
 			// use the hook to get the role name
 			proxiedRoleName = this.getProxiedRoleName();
@@ -361,13 +369,13 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 		
 		// get the as-of date and the active flag values
 		DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
-		String asOfDateString = qualification.remove("KpmeProxiedRoleAsOfDate");
+		String asOfDateString = qualification.remove(KPME_PROXIED_ROLE_AS_OF_DATE);
 		if(asOfDateString != null) {
 			asOfDate = DateTime.parse(asOfDateString);
 		}
 		
 		boolean activeOnly = true;
-		String activeOnlyString = qualification.remove("KpmeProxiedRoleIsActiveOnly");
+		String activeOnlyString = qualification.remove(KPME_PROXIED_ROLE_IS_ACTIVE_ONLY);
 		if(activeOnlyString != null) {
 			activeOnly = Boolean.parseBoolean(activeOnlyString);
 		}

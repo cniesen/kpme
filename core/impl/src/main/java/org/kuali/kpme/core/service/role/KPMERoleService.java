@@ -239,4 +239,18 @@ public interface KPMERoleService {
     @Cacheable(value= RoleMember.Cache.NAME, key="'{getLocationsForPrincipalInRole}' + 'principal=' + #p0 + '|' + 'namespace=' + #p1 + '|' + 'roleName=' + #p2  + '|' + 'asOfDate=' + #p3 + '|' + 'isActiveOnly=' + #p4")
     List<String> getLocationsForPrincipalInRole(String principalId, String namespaceCode, String roleName, DateTime asOfDate, boolean isActiveOnly);
 
+    
+    /**
+	 * Gets the primary (first-level) members of the role {@code roleName} for the given work area.
+	 * 
+	 * @param namespaceCode The namespace of the role
+	 * @param roleName The name of the role
+	 * @param workArea The work area qualifier
+	 * @param asOfDate The effective date of the role
+	 * @param isActiveOnly Whether or not to get only active role members
+	 * 
+	 * @return the list of role members in the role {@code roleName} for the given work area.
+	 */
+	List<RoleMember> getPrimaryRoleMembersInWorkArea(String namespaceCode, String roleName, Long workArea, DateTime asOfDate, boolean isActiveOnly);
+
 }

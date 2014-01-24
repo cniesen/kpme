@@ -29,7 +29,6 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.core.workarea.dao.WorkAreaDao;
 import org.kuali.rice.kim.api.KimConstants;
-import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
@@ -172,9 +171,9 @@ public class WorkAreaServiceImpl implements WorkAreaService {
     			&& CollectionUtils.isEmpty(workArea.getPositionRoleMembers()) && CollectionUtils.isEmpty(workArea.getInactivePositionRoleMembers())) {
     		Set<RoleMember> roleMembers = new HashSet<RoleMember>();
     		
-	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
-	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
-	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getPrimaryRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getPrimaryRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getPrimaryRoleMembersInWorkArea(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), workArea.getWorkArea(), asOfDate.toDateTimeAtStartOfDay(), false));
     	
 	    	for (RoleMember roleMember : roleMembers) {
 	    		RoleMemberBo roleMemberBo = RoleMemberBo.from(roleMember);
