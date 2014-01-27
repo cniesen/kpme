@@ -25,6 +25,7 @@ import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
@@ -398,6 +399,12 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
         for (TimeBlock timeBlock : timesheetDocument.getTimeBlocks()) {
             if (errors.size() == 0 && StringUtils.equals(timeBlock.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
+            	// allow regular time blocks to be added with overlapping non-regular time blocks
+            	Job aJob = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), new LocalDate(timeBlock.getBeginDate()));
+            	if(aJob != null && aJob.getPayTypeObj() != null && isRegularEarnCode && !StringUtils.equals(aJob.getPayTypeObj().getRegEarnCode(),timeBlock.getEarnCode())) {
+            		continue;
+            	}
+            	
                 Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
                 for (Interval intv : dayInt) {
                 	// KPME-2720
