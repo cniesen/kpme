@@ -35,7 +35,7 @@
 					</div>
 					<div id="approvals-missedpunch-details"
 						class="approvals-missedpunch-details"
-						style="display: none; float: right; margin-left: 200px;">
+						style="display: none; float: right; margin-left: 20px;">
 						<table>
 							<thead>
 								<tr>
@@ -57,8 +57,8 @@
 									<td style="height: auto">
 										<div class="warning-note-message">
                         					${block.timeBlock.assignmentValue}
-											<br/>Doc Id: ${block.timeBlock.timeSheetDocumentId}
-											&nbsp;Doc Status: ${block.timeBlock.docStatus}
+											<br/>Doc Id: ${block.timeBlock.missedPunchDocId}
+											&nbsp;Doc Status: ${block.timeBlock.missedPunchDocStatus}
 									</div>
 									</td>
 								</tr>

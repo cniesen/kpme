@@ -89,9 +89,10 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     
     private Date actionDateTime;
     private String clockAction;
-    private String timeSheetDocumentId;
     private String assignmentValue;
-    private String docStatus;
+    
+    private transient String missedPunchDocId;
+    private transient String missedPunchDocStatus;
 
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
     @Transient
@@ -109,14 +110,6 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     	super();
     }
     
-    public String getDocStatus() {
-		return docStatus;
-	}
-
-	public void setDocStatus(String docStatus) {
-		this.docStatus = docStatus;
-	}
-
 	public Date getActionDateTime() {
 		return actionDateTime;
 	}
@@ -131,14 +124,6 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 
 	public void setClockAction(String clockAction) {
 		this.clockAction = clockAction;
-	}
-
-	public String getTimeSheetDocumentId() {
-		return timeSheetDocumentId;
-	}
-
-	public void setTimeSheetDocumentId(String timeSheetDocumentId) {
-		this.timeSheetDocumentId = timeSheetDocumentId;
 	}
 
 	public String getAssignmentValue() {
@@ -174,10 +159,9 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     private void generateMissedPunchDetails( MissedPunch missedPunch){
     		actionDateTime = missedPunch.getActionDateTime();
 			clockAction = missedPunch.getClockAction();
-			timeSheetDocumentId = missedPunch.getTimesheetDocumentId();
+			missedPunchDocId = missedPunch.getMissedPunchDocId();
+			missedPunchDocStatus = missedPunch.getMissedPunchDocStatus();
 			assignmentValue = missedPunch.getAssignmentValue();
-			TimesheetDocumentHeader documentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(timeSheetDocumentId);
-			docStatus = HrConstants.DOC_ROUTE_STATUS.get(documentHeader.getDocumentStatus());
 			this.setClockedByMissedPunch(Boolean.TRUE);
     }
     
@@ -817,6 +801,22 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
 	@Override
 	public void setConcreteBlockType(String ojbConcreteClass) {
 		super.concreteBlockType = ojbConcreteClass;
+	}
+
+	public String getMissedPunchDocId() {
+		return missedPunchDocId;
+	}
+
+	public void setMissedPunchDocId(String missedPunchDocId) {
+		this.missedPunchDocId = missedPunchDocId;
+	}
+
+	public String getMissedPunchDocStatus() {
+		return missedPunchDocStatus;
+	}
+
+	public void setMissedPunchDocStatus(String missedPunchDocStatus) {
+		this.missedPunchDocStatus = missedPunchDocStatus;
 	}
 	
 }
