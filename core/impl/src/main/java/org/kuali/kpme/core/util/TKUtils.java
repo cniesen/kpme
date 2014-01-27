@@ -232,7 +232,7 @@ public class TKUtils {
         String[] date = dateStr.split("/");
         String[] time = timeStr.split(":");
 
-        DateTimeZone dtz = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone());
+        DateTimeZone dtz = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getTargetUserTimezone());
 
         // this is from the jodattime javadoc:
         // DateTime(int year, int monthOfYear, int dayOfMonth, int hourOfDay, int minuteOfHour, int secondOfMinute, int millisOfSecond, DateTimeZone zone)
@@ -431,11 +431,11 @@ public class TKUtils {
     }
     
     public static List<Interval> getDaySpanForCalendarEntry(CalendarEntry calendarEntry) {
-        return getDaySpanForCalendarEntry(calendarEntry, HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+        return getDaySpanForCalendarEntry(calendarEntry, HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback());
     }
 
     public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntry calendarEntry) {
-        return getFullWeekDaySpanForCalendarEntry(calendarEntry, HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback());
+        return getFullWeekDaySpanForCalendarEntry(calendarEntry, HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback());
     }
     
     public static List<Interval> getFullWeekDaySpanForCalendarEntry(CalendarEntry calendarEntry, DateTimeZone timeZone) {
