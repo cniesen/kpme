@@ -523,50 +523,57 @@ public class KpmeRoleProxyDerivedRoleTypeServiceImpl extends DerivedRoleTypeServ
 	
 	
 	
-	
-	private boolean isMemberOfGroup(String principalId, Group group, DateTime asOfDate, boolean activeOnly) {
+	@Override
+	public boolean isMemberOfGroup(String principalId, Group group, DateTime asOfDate, boolean activeOnly) {
 		// the return value
 		boolean isMemberOfGroup = false;
 		
-		List<GroupMember> primaryGroupMembers = new ArrayList<GroupMember>();
-		if(group != null) {
-			//get the primary group members via a predicate-based query
-			List<Predicate> predicates = new ArrayList<Predicate>();
-            predicates.add(equal(KIMPropertyConstants.GroupMember.GROUP_ID, group.getId()));
-            if (activeOnly) {
-                predicates.add(or(isNull("activeFromDateValue"), lessThanOrEqual("activeFromDateValue", asOfDate)));
-                predicates.add(or(isNull("activeToDateValue"), greaterThan("activeToDateValue", asOfDate)));
-            }
-            primaryGroupMembers = getGroupService().findGroupMembers(QueryByCriteria.Builder.fromPredicates(predicates.toArray(new Predicate[] {}))).getResults();
-		}
-		
-		// iterate through the primary group members, first checking all principal type members before 
-		// descending recursively into any nested group members.
-		List<GroupMember> nestedGroups = new ArrayList<GroupMember>();
-		for(GroupMember groupMember: primaryGroupMembers) {
-			if(KimConstants.KimGroupMemberTypes.PRINCIPAL_MEMBER_TYPE.equals(groupMember.getType())) {
-				if(StringUtils.equals(groupMember.getMemberId(), principalId)) {
-					isMemberOfGroup = true;
-					break;
+		if ( (asOfDate.toLocalDate().toDateTimeAtStartOfDay().equals(LocalDate.now().toDateTimeAtStartOfDay())) && activeOnly ) {
+			// use the group service to get all the group ids in which the principal is a member.
+			List<String> groupIds = getGroupService().getGroupIdsByPrincipalId(principalId);
+			isMemberOfGroup = groupIds.contains(group.getId());
+        }
+		else {
+			List<GroupMember> primaryGroupMembers = new ArrayList<GroupMember>();
+			if(group != null) {
+				//get the primary group members via a predicate-based query
+				List<Predicate> predicates = new ArrayList<Predicate>();
+	            predicates.add(equal(KIMPropertyConstants.GroupMember.GROUP_ID, group.getId()));
+	            if (activeOnly) {
+	                predicates.add(or(isNull("activeFromDateValue"), lessThanOrEqual("activeFromDateValue", asOfDate)));
+	                predicates.add(or(isNull("activeToDateValue"), greaterThan("activeToDateValue", asOfDate)));
+	            }
+	            primaryGroupMembers = getGroupService().findGroupMembers(QueryByCriteria.Builder.fromPredicates(predicates.toArray(new Predicate[] {}))).getResults();
+			}
+			
+			// iterate through the primary group members, first checking all principal type members before 
+			// descending recursively into any nested group members.
+			List<GroupMember> nestedGroups = new ArrayList<GroupMember>();
+			for(GroupMember groupMember: primaryGroupMembers) {
+				if(KimConstants.KimGroupMemberTypes.PRINCIPAL_MEMBER_TYPE.equals(groupMember.getType())) {
+					if(StringUtils.equals(groupMember.getMemberId(), principalId)) {
+						isMemberOfGroup = true;
+						break;
+					}
+				}
+				else if(KimConstants.KimGroupMemberTypes.GROUP_MEMBER_TYPE.equals(groupMember.getType())) {
+					// put the nested group members into a different list for faster processing below
+					nestedGroups.add(groupMember);
 				}
 			}
-			else if(KimConstants.KimGroupMemberTypes.GROUP_MEMBER_TYPE.equals(groupMember.getType())) {
-				// put the nested group members into a different list for faster processing below
-				nestedGroups.add(groupMember);
-			}
-		}
-		
-		// check nested groups recursively if not found amongst primary principal type members
-		if(!isMemberOfGroup) {
-			for(GroupMember nestedGroupMember: nestedGroups) {
-				Group nestedGroup = getGroupService().getGroup(nestedGroupMember.getMemberId());
-				// recursive call to check nested group
-				if(isMemberOfGroup(principalId, nestedGroup, asOfDate, activeOnly)) {
-					isMemberOfGroup = true;
-					break;
+			
+			// check nested groups recursively if not found amongst primary principal type members
+			if(!isMemberOfGroup) {
+				for(GroupMember nestedGroupMember: nestedGroups) {
+					Group nestedGroup = getGroupService().getGroup(nestedGroupMember.getMemberId());
+					// recursive call to check nested group
+					if(isMemberOfGroup(principalId, nestedGroup, asOfDate, activeOnly)) {
+						isMemberOfGroup = true;
+						break;
+					}
 				}
 			}
-		}
+		}		
 		
 		return isMemberOfGroup;
 	}

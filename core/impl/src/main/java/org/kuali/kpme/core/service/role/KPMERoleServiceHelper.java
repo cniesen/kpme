@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.joda.time.DateTime;
+import org.kuali.rice.kim.api.group.Group;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,5 +30,7 @@ public interface KPMERoleServiceHelper {
 	public List<RoleMember> getRoleMembersCached(String namespaceCode, String roleName, Map<String, String> qualification, DateTime asOfDate, boolean isActiveOnly);
 
 	public List<RoleMember> getPrimaryRoleMembers(Role role, Map<String, String> qualification, DateTime asOfDate, boolean isActiveOnly);
+
+	public boolean isMemberOfGroup(String principalId, Group group, DateTime asOfDate, boolean activeOnly);
 
 }
