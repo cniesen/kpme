@@ -61,7 +61,7 @@ public class MissedPunchApprovalJob extends BatchJob {
 						List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(timeDocId);
 						for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
 							if(missedPunchDocument != null 
-									&& DocumentStatus.ENROUTE.getCode().equals(KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber())) ){
+									&& DocumentStatus.ENROUTE.equals(KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber())) ){
 								TkServiceLocator.getMissedPunchService().approveMissedPunchDocument(missedPunchDocument);
 							}
 						}
