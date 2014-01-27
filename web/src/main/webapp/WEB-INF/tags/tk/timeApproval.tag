@@ -118,8 +118,8 @@
 									<td>
 										<div class="warning-note-message">
 											${aMp.assignmentValue}
-											<br/>Doc Id: <a href="changeTargetPerson.do?${row.timesheetUserTargetURLParams}&targetUrl=TimeDetail.do%3FdocumentId=${row.documentId}&returnUrl=TimeApproval.do%3FselectedPayCalendarGroup=${Form.selectedPayCalendarGroup}%26selectedDept=${Form.selectedDept}%26selectedWorkArea=${Form.selectedWorkArea}"> ${row.documentId}</a>
-											&nbsp;Doc Status: <span id="approvals-status" class="approvals-status">${row.approvalStatus}</span>
+											<br/>Doc Id: <a href="changeTargetPerson.do?${row.timesheetUserTargetURLParams}&targetUrl=TimeDetail.do%3FdocumentId=${row.documentId}&returnUrl=TimeApproval.do%3FselectedPayCalendarGroup=${Form.selectedPayCalendarGroup}%26selectedDept=${Form.selectedDept}%26selectedWorkArea=${Form.selectedWorkArea}"> ${aMp.missedPunchDocId}</a>
+											&nbsp;Doc Status: <span id="approvals-status" class="approvals-status">${aMp.missedPunchDocStatus}</span>
 									</div>
 									</td>
 								</tr>
