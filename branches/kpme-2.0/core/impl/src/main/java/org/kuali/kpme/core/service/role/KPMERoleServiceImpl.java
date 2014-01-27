@@ -42,6 +42,7 @@ import org.kuali.rice.core.api.criteria.QueryByCriteria;
 import org.kuali.rice.core.api.membership.MemberType;
 import org.kuali.rice.core.api.resourceloader.GlobalResourceLoader;
 import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.group.Group;
 import org.kuali.rice.kim.api.group.GroupService;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleMember;
@@ -188,19 +189,45 @@ public class KPMERoleServiceImpl implements KPMERoleService {
 
     @Override
     public List<Long> getWorkAreasForPrincipalInRoles(String principalId, List<String> roleIds, DateTime asOfDate, boolean isActiveOnly) {
+    	
         Set<Long> workAreas = new HashSet<Long>();
 
-        Map<String, String> qualifiers = new HashMap<String, String>();
-        qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
-        qualifiers.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
-        qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
-        List<Map<String, String>> roleQualifiers = getRoleQualifiers(principalId, roleIds, qualifiers, asOfDate, isActiveOnly);
-
-        for (Map<String, String> roleQualifier : roleQualifiers) {
-            Long workArea = MapUtils.getLong(roleQualifier, KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName());
-            if (workArea != null) {
-                workAreas.add(workArea);
-            }
+        // iterate through the role ids getting the work areas for each one
+        for(String roleId: roleIds) {
+        	// get the role for the role id from the role service
+        	Role role = getRoleService().getRole(roleId);
+        	if(role != null) {
+        		String roleName = role.getName();
+        		String namespaceCode = role.getNamespaceCode();
+        		
+        		Map<String, String> qualifiers = new HashMap<String, String>();        
+                // empty qualifier map will match any attribute in the predicate query, i.e. will work like wildcarded entries
+                List<Map<String, String>> roleQualifiers = new ArrayList<Map<String, String>>();
+            	List<RoleMember> principalAndGroupRoleMembers = getRoleMembers(namespaceCode, roleName, qualifiers, asOfDate, isActiveOnly);
+            	for(RoleMember roleMember : principalAndGroupRoleMembers){
+            		// check for principals or groups
+            		if (MemberType.PRINCIPAL.equals(roleMember.getType())) {
+                		if(roleMember.getMemberId().equals(principalId)) {
+                			roleQualifiers.add(roleMember.getAttributes());
+                		}
+            		}
+            		else if( MemberType.GROUP.equals(roleMember.getType()) ) {
+            			// query the helper to see if the principal is a member of this nested member group
+            			Group nestedGroup = getGroupService().getGroup(roleMember.getMemberId());
+            			if(getRoleServiceHelper().isMemberOfGroup(principalId, nestedGroup, asOfDate, isActiveOnly)) {
+            				roleQualifiers.add(roleMember.getAttributes());
+            			}
+            		}
+            	}
+        		
+        		
+        		for (Map<String, String> roleQualifier : roleQualifiers) {
+        			Long workArea = MapUtils.getLong(roleQualifier, KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName());
+        			if(workArea != null) {
+        				workAreas.add(workArea);
+        			}
+        		}
+        	}      	
         }
 
         List<String> departments = getDepartmentsForPrincipalInRoles(principalId, roleIds, asOfDate, isActiveOnly);
@@ -212,26 +239,9 @@ public class KPMERoleServiceImpl implements KPMERoleService {
     public List<Long> getWorkAreasForPrincipalInRole(String principalId, String namespaceCode, String roleName, DateTime asOfDate, boolean isActiveOnly) {
 		Set<Long> workAreas = new HashSet<Long>();
 
-        Map<String, String> qualifiers = new HashMap<String, String>();
-//        Role role = getRoleService().getRoleByNamespaceCodeAndName(namespaceCode, roleName);
-//        
-//        if (role != null) {
-//			RoleTypeService roleTypeService = getRoleTypeService(role);
-//			List<String> attributesForExactMatch = roleTypeService.getQualifiersForExactMatch();
-//			if(CollectionUtils.isNotEmpty(attributesForExactMatch)) { 
-//				if(!attributesForExactMatch.contains(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName())) {
-//					qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
-//				}
-//			}
-//			else {
-//				qualifiers.put(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), "%");
-//			}
-//			qualifiers.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), "%");
-//			qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), "%");
-//        }
-        
+        Map<String, String> qualifiers = new HashMap<String, String>();        
+        // empty qualifier map will match any attribute in the predicate query, i.e. will work like wildcarded entries
         List<Map<String, String>> roleQualifiers = new ArrayList<Map<String, String>>();
-		List<String> groupIds = getGroupService().getGroupIdsByPrincipalId(principalId);
     	List<RoleMember> principalAndGroupRoleMembers = getRoleMembers(namespaceCode, roleName, qualifiers, asOfDate, isActiveOnly);
     	for(RoleMember roleMember : principalAndGroupRoleMembers){
     		// check for principals or groups
@@ -240,8 +250,10 @@ public class KPMERoleServiceImpl implements KPMERoleService {
         			roleQualifiers.add(roleMember.getAttributes());
         		}
     		}
-    		else if( (MemberType.GROUP.equals(roleMember.getType())) && (CollectionUtils.isNotEmpty(groupIds)) ) {
-    			if(groupIds.contains(roleMember.getMemberId())) {
+    		else if( MemberType.GROUP.equals(roleMember.getType()) ) {
+    			// query the helper to see if the principal is a member of this nested member group
+    			Group nestedGroup = getGroupService().getGroup(roleMember.getMemberId());
+    			if(getRoleServiceHelper().isMemberOfGroup(principalId, nestedGroup, asOfDate, isActiveOnly)) {
     				roleQualifiers.add(roleMember.getAttributes());
     			}
     		}
