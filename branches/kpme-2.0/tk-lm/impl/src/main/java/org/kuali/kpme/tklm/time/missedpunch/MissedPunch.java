@@ -114,7 +114,7 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 	public String getAssignmentValue() {
 		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
 		LocalDate asOfDate = timesheetDocument != null ? timesheetDocument.getAsOfDate() : null;
-		return TKUtils.getAssignmentString(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), asOfDate);
+		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), asOfDate);
 	}
 	
     public Date getRelativeEffectiveDate() {

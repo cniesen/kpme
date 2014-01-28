@@ -196,7 +196,7 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 	}
 
 	public String getAssignmentDescription() {
-		return TKUtils.getAssignmentString(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getEffectiveLocalDate());
+        return HrServiceLocator.getAssignmentService().getAssignmentDescription(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getEffectiveLocalDate());
 	}
 
 	public Person getPrincipal() {

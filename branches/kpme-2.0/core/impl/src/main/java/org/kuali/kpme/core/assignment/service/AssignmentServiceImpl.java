@@ -28,11 +28,15 @@ import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.assignment.dao.AssignmentDao;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
@@ -347,5 +351,28 @@ public class AssignmentServiceImpl implements AssignmentService {
 		}	
 		return assignmentDao.getAssignments(workAreaList, effdt, startDate, endDate);
 	}
+
+    @Override
+    public String getAssignmentDescription(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate) {
+        StringBuilder builder = new StringBuilder();
+
+        if (jobNumber != null && workArea != null && task != null) {
+            Job jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+            WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
+            Task taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
+
+            String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;
+            KualiDecimal compensationRate = jobObj != null ? jobObj.getCompRate() : KualiDecimal.ZERO;
+            String department = jobObj != null ? jobObj.getDept() : StringUtils.EMPTY;
+            String taskDescription = taskObj != null && !HrConstants.TASK_DEFAULT_DESP.equals(taskObj.getDescription()) ? taskObj.getDescription() : StringUtils.EMPTY;
+
+            builder.append(workAreaDescription).append(" : $").append(compensationRate).append(" Rcd ").append(jobNumber).append(" ").append(department);
+            if (StringUtils.isNotBlank(taskDescription)) {
+                builder.append(" ").append(taskDescription);
+            }
+        }
+
+        return builder.toString();
+    }
 
 }
