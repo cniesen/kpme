@@ -309,8 +309,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								earnCodeSection.addAssignmentRow(assignRow);
 							}
 							
-							assignRow.addToTotal(timeBlock.getBeginDateTime().getDayOfWeek(), thd.getHours());
-							assignRow.addToAmount(timeBlock.getBeginDateTime().getDayOfWeek(), thd.getAmount());
+							assignRow.addToTotal(timeBlock.getBeginTimeDisplay().getDayOfWeek(), thd.getHours());
+							assignRow.addToAmount(timeBlock.getBeginTimeDisplay().getDayOfWeek(), thd.getAmount());
 
 						}
 					}

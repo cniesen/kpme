@@ -376,7 +376,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
      */
     public DateTime getBeginTimeDisplay() {
     	if(beginTimeDisplay == null && this.getBeginDateTime() != null) {
-    		DateTimeZone timezone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    		DateTimeZone timezone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
     		if(ObjectUtils.equals(timezone, TKUtils.getSystemDateTimeZone()))
 				this.setBeginTimeDisplay(this.getBeginDateTime());
     		else
@@ -398,22 +398,22 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
     *   fix timezone issues caused by JScript, for GUI use only,
     */
     public String getBeginTimeDisplayDateOnlyString() {
-    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
         return getBeginDateTime() != null ? getBeginDateTime().withZone(zone).toString(HrConstants.DT_BASIC_DATE_FORMAT) : null;
     }
 
     public String getBeginTimeDisplayTimeOnlyString() {
-    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
     	return getBeginDateTime() != null ? getBeginDateTime().withZone(zone).toString(TkConstants.DT_BASIC_TIME_FORMAT) : null;
     }
 
     public String getEndTimeDisplayDateOnlyString() {
-    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
         return getEndDateTime() != null ? getEndDateTime().withZone(zone).toString(HrConstants.DT_BASIC_DATE_FORMAT) : null;
     }
 
     public String getEndTimeDisplayTimeOnlyString() {
-    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    	DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
         return getEndDateTime() != null ? getEndDateTime().withZone(zone).toString(TkConstants.DT_BASIC_TIME_FORMAT) : null;
     }
 
@@ -438,7 +438,7 @@ public class TimeBlock extends CalendarBlock implements Comparable, TimeBlockCon
      */
     public DateTime getEndTimeDisplay() {
     	if(endTimeDisplay == null && this.getEndDateTime() != null) {
-    		DateTimeZone timezone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
+    		DateTimeZone timezone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
      		if(ObjectUtils.equals(timezone, TKUtils.getSystemDateTimeZone()))
  				this.setEndTimeDisplay(this.getBeginDateTime());
      		else
