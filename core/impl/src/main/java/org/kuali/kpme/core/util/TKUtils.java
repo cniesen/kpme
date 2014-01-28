@@ -130,13 +130,13 @@ public class TKUtils {
     public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
         String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
-        String assignmentDescValue = getAssignmentString(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask(), assignment.getEffectiveLocalDate());
+        String assignmentDescValue = HrServiceLocator.getAssignmentService().getAssignmentDescription(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask(), assignment.getEffectiveLocalDate());
         assignmentDescriptions.put(assignmentDescKey, assignmentDescValue);
 
         return assignmentDescriptions;
     }
 
-    public static String getAssignmentString(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate) {
+/*    public static String getAssignmentString(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate) {
     	StringBuilder builder = new StringBuilder();
     	
     	if (jobNumber != null && workArea != null && task != null) {
@@ -156,7 +156,7 @@ public class TKUtils {
         }
         
         return builder.toString();
-    }
+    }*/
 
     /**
      * Constructs a list of Day Spans for the pay calendar entry provided. You
