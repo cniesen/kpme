@@ -120,7 +120,7 @@
 											${aMp.assignmentValue}
 											<br/>Doc Id: 
 <%-- 											<a href="changeTargetPerson.do?${aMp.missedPunchUserTargetURLParams}&targetUrl=kew/DocHandler.do?command=displayDocSearchView&docId=${aMp.missedPunchDocId}&returnUrl=TimeApproval.do%3FselectedPayCalendarGroup=${Form.selectedPayCalendarGroup}%26selectedDept=${Form.selectedDept}%26selectedWorkArea=${Form.selectedWorkArea}"> --%>
-											<a href="kew/DocHandler.do?command=displayDocSearchView&docId=${aMp.missedPunchDocId}" target="_blank">
+											<a href="${ConfigProperties.kew.url}/DocHandler.do?command=displayDocSearchView&docId=${aMp.missedPunchDocId}" target="_blank">
 											${aMp.missedPunchDocId}</a>
 											&nbsp;Doc Status: <span id="approvals-status" class="approvals-status">${aMp.missedPunchDocStatus}</span>
 									</div>
