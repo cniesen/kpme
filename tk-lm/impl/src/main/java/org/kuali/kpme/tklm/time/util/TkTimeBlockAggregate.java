@@ -480,7 +480,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 						timeBlock.setWorkArea(lb.getWorkArea());
 						timeBlock.setTask(lb.getTask());
 						timeBlock.setEarnCode(lb.getEarnCode());
-						
+						timeBlock.setLeaveDate(lb.getLeaveDate());
 						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 						if(earnCodeObj != null) {
 							timeBlock.setEarnCodeType(earnCodeObj.getEarnCodeType());
