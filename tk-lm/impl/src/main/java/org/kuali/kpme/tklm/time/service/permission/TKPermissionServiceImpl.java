@@ -43,11 +43,9 @@ import org.kuali.kpme.tklm.time.timesheet.service.TimesheetService;
 import org.kuali.kpme.tklm.time.util.TkContext;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
-import org.kuali.rice.kim.api.permission.PermissionService;
 
 public class TKPermissionServiceImpl extends HrPermissionServiceBase implements TKPermissionService {
 	
-	private PermissionService permissionService;
 	private TimesheetService timesheetService;
 
 	@Override
@@ -410,13 +408,6 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
     			|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea, asOfDate);
     }
 
-	public PermissionService getPermissionService() {
-		return permissionService;
-	}
-
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
 
 	public TimesheetService getTimesheetService() {
 		return timesheetService;
