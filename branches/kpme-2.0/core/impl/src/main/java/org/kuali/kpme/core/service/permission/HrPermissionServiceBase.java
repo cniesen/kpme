@@ -28,6 +28,7 @@ import javax.xml.namespace.QName;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.department.service.DepartmentService;
@@ -43,6 +44,7 @@ import org.kuali.rice.kim.api.permission.Permission;
 import org.kuali.rice.kim.api.permission.PermissionService;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleService;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.api.type.KimType;
 import org.kuali.rice.kim.api.type.KimTypeInfoService;
 import org.kuali.rice.kim.framework.permission.PermissionTypeService;
@@ -419,10 +421,15 @@ public abstract class HrPermissionServiceBase {
     	for(String roleId: roleIds) {
     		Role role = getRoleService().getRole(roleId);
     		if(role != null) {
-	    		if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, role.getNamespaceCode(), role.getName(), workArea, asOfDate)) {
-	    			retVal = true;
-	    			break;
-	    		}
+                KimType kimType = KimApiServiceLocator.getKimTypeInfoService().getKimType(role.getKimTypeId());
+                if (kimType != null
+                    &&  KPMENamespace.KPME_WKFLW.getNamespaceCode().equals(kimType.getNamespaceCode())
+                    && "Work Area".equals(kimType.getName())) {
+                    if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, role.getNamespaceCode(), role.getName(), workArea, asOfDate)) {
+                        retVal = true;
+                        break;
+                    }
+                }
     		}
     	}
     	return retVal;
