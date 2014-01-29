@@ -208,11 +208,14 @@ public abstract class HrPermissionServiceBase {
 	 * 
 	 * @return true if {@code principalId} is authorized to perform any permission templated by {@code permissionTemplateName} for the given document information, false otherwise.
 	 */
-    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, List<Assignment> assignments) {
+    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, List<Assignment> assignments, DateTime asOfDate) {
     	boolean isAuthorized = false;
+        if (asOfDate == null) {
+            asOfDate = DateTime.now();
+        }
     	
     	for (Assignment assignment : assignments) {
-            if (isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, documentId, documentStatus, assignment)) {
+            if (isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, documentId, documentStatus, assignment, asOfDate)) {
             	isAuthorized = true;
             	break;
             }
@@ -234,22 +237,22 @@ public abstract class HrPermissionServiceBase {
 	 * 
 	 * @return true if {@code principalId} is authorized to perform any permission templated by {@code permissionTemplateName} for the given document information, false otherwise.
 	 */
-    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, Assignment assignment) {
+    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, Assignment assignment, DateTime asOfDate) {
     	boolean isAuthorized = false;
     	
 		Long workArea = assignment.getWorkArea();
-    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, assignment.getEffectiveLocalDate());
+    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate.toLocalDate());
 
 		String department = workAreaObj != null ? workAreaObj.getDept() : null;
-    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, assignment.getEffectiveLocalDate());
+    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, asOfDate.toLocalDate());
     	
     	String location = departmentObj != null ? departmentObj.getLocation() : null;
     	
-        if (isAuthorizedByTemplateInDepartment(principalId, namespaceCode, permissionTemplateName, department, documentTypeName, documentId, documentStatus, assignment.getEffectiveLocalDate().toDateTimeAtStartOfDay())
+        if (isAuthorizedByTemplateInDepartment(principalId, namespaceCode, permissionTemplateName, department, documentTypeName, documentId, documentStatus, asOfDate)
             	|| 
-            isAuthorizedByTemplateInLocation(principalId, namespaceCode, permissionTemplateName, location, documentTypeName, documentId, documentStatus, assignment.getEffectiveLocalDate().toDateTimeAtStartOfDay())
+            isAuthorizedByTemplateInLocation(principalId, namespaceCode, permissionTemplateName, location, documentTypeName, documentId, documentStatus, asOfDate)
             	|| 
-            isAuthorizedByTemplateInWorkArea(principalId, namespaceCode, permissionTemplateName, workArea, documentTypeName, documentId, documentStatus, assignment.getEffectiveLocalDate().toDateTimeAtStartOfDay())) {
+            isAuthorizedByTemplateInWorkArea(principalId, namespaceCode, permissionTemplateName, workArea, documentTypeName, documentId, documentStatus, asOfDate)) {
         	
         	isAuthorized = true;
         }
