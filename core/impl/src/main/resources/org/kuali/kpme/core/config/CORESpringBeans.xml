@@ -305,8 +305,13 @@
         <property name="groupService" ref="kimGroupService" />
     </bean>
     
-    
-    <bean id="hrPermissionService" class="org.kuali.kpme.core.service.permission.HRPermissionServiceImpl" parent="hrPermissionServiceBase" />
+    <bean id="hrPermissionService" class="org.kuali.kpme.core.service.permission.HRPermissionServiceImpl">
+        <property name="permissionService" ref="kimPermissionService" />
+        <property name="workAreaService" ref="workAreaService" />
+        <property name="departmentService" ref="departmentService" />
+        <property name="kimTypeInfoService" ref="kimTypeInfoService" />
+        <property name="roleService" ref="kimRoleService" />
+    </bean>
     
     <bean id="kpmeRoleService" class="org.kuali.kpme.core.service.role.KPMERoleServiceImpl">
         <property name="departmentService" ref="departmentService" />
