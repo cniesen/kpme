@@ -118,7 +118,7 @@ public class HRPermissionServiceImpl extends HrPermissionServiceBase implements 
         	DocumentStatus documentStatus = DocumentStatus.fromCode(calendarDocument.getDocumentHeader().getDocumentStatus());
     		List<Assignment> assignments = calendarDocument.getAssignments();
         	
-        	isAuthorizedByTemplate = isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, calendarDocument.getDocumentId(), documentStatus, assignments);
+        	isAuthorizedByTemplate = isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, calendarDocument.getDocumentId(), documentStatus, assignments, calendarDocument.getCalendarEntry().getEndPeriodFullDateTime());
     	}
     	
     	return isAuthorizedByTemplate;
@@ -131,7 +131,7 @@ public class HRPermissionServiceImpl extends HrPermissionServiceBase implements 
     		String documentTypeName = calendarDocument.getCalendarType();
         	DocumentStatus documentStatus = DocumentStatus.fromCode(calendarDocument.getDocumentHeader().getDocumentStatus());
         	
-        	isAuthorizedByTemplate = isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, calendarDocument.getDocumentId(), documentStatus, assignment);
+        	isAuthorizedByTemplate = isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, calendarDocument.getDocumentId(), documentStatus, assignment, calendarDocument.getCalendarEntry().getEndPeriodFullDateTime());
     	}
     	
     	return isAuthorizedByTemplate;
