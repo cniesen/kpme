@@ -158,7 +158,7 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
         }
     }
 
-    @Test
+    // @Test
     public void testInitiatedTimesheetIsNotVisible() throws Exception {
         for (String uid : INVALID_NON_ENTRY_USERS) {
             LOG.info("Testing visibility for " + uid);
