@@ -15,7 +15,7 @@
  */
 package org.kuali.kpme.tklm.time.rules.timecollection;
 
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.paytype.PayType;
@@ -24,22 +24,17 @@ import org.kuali.kpme.tklm.api.time.rules.timecollection.TimeCollectionRuleContr
 import org.kuali.kpme.tklm.common.TkConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class TimeCollectionRule extends HrBusinessObject implements TimeCollectionRuleContract {
-
-	private static final String PAY_TYPE = "payType";
-	private static final String DEPT = "dept";
-	private static final String WORK_AREA = "workArea";
 
 	private static final long serialVersionUID = 7892616560736184294L;
 
 	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "TimeCollectionRule";
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(WORK_AREA)
-            .add(DEPT)
-            .add(PAY_TYPE)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("workArea")
+            .add("dept")
+            .add("payType")
             .build();
     public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
             .add(TimeCollectionRule.CACHE_NAME)
@@ -50,6 +45,7 @@ public class TimeCollectionRule extends HrBusinessObject implements TimeCollecti
 	private String dept;
 	private Long workArea;
 	private boolean clockUserFl;
+	private String userPrincipalId;
 
 	private String tkWorkAreaId;
 	private String hrDeptId;
@@ -64,16 +60,6 @@ public class TimeCollectionRule extends HrBusinessObject implements TimeCollecti
 	private String hrPayTypeId; 
 	private PayType payTypeObj;
 	// KPME-1152
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(WORK_AREA, this.getWorkArea())
-			.put(DEPT, this.getDept())
-			.put(PAY_TYPE, this.getPayType())
-			.build();
-	}
 
 	
 	public Department getDepartmentObj() {
@@ -130,6 +116,14 @@ public class TimeCollectionRule extends HrBusinessObject implements TimeCollecti
 
 	public void setClockUserFl(boolean clockUserFl) {
 		this.clockUserFl = clockUserFl;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
 	}
 
 	public String getTkTimeCollectionRuleId() {

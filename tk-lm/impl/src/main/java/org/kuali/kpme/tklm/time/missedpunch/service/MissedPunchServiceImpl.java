@@ -24,10 +24,9 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.assignment.service.AssignmentService;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.assignment.service.AssignmentService;
 import org.kuali.kpme.core.batch.BatchJobUtil;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -97,7 +96,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
     public void addClockLog(MissedPunch missedPunch, String ipAddress) {
         TimesheetDocument timesheetDocument = getTimesheetService().getTimesheetDocument(missedPunch.getTimesheetDocumentId());
         AssignmentDescriptionKey assignmentDescriptionKey = new AssignmentDescriptionKey(missedPunch.getJobNumber(), missedPunch.getWorkArea(), missedPunch.getTask());
-        Assignment assignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(missedPunch.getPrincipalId(), assignmentDescriptionKey, LocalDate.fromDateFields(missedPunch.getActionDate()));
+        Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(missedPunch.getPrincipalId(), assignmentDescriptionKey, LocalDate.fromDateFields(missedPunch.getActionDate()));
         CalendarEntry calendarEntry = timesheetDocument.getCalendarEntry();
         
         // use the actual date and time from the document to build the date time with user zone, then apply system time zone to it
@@ -164,7 +163,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
     private void addClockLogAndTimeBlocks(MissedPunch missedPunch, String ipAddress, String logEndId, String logBeginId) {
         TimesheetDocument timesheetDocument = getTimesheetService().getTimesheetDocument(missedPunch.getTimesheetDocumentId());
         AssignmentDescriptionKey assignmentDescriptionKey = new AssignmentDescriptionKey(missedPunch.getJobNumber(), missedPunch.getWorkArea(), missedPunch.getTask());
-        Assignment assignment = (Assignment) HrServiceLocator.getAssignmentService().getAssignment(missedPunch.getPrincipalId(), assignmentDescriptionKey, LocalDate.fromDateFields(missedPunch.getActionDate()));
+        Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(missedPunch.getPrincipalId(), assignmentDescriptionKey, LocalDate.fromDateFields(missedPunch.getActionDate()));
         CalendarEntry calendarEntry = timesheetDocument.getCalendarEntry();
         DateTime userActionDateTime = missedPunch.getActionFullDateTime();
         DateTimeZone userTimeZone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
@@ -225,8 +224,8 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>();
         boolean createNewTb = true;
         for (TimeBlock tb : newTimeBlocks) {
-        	if(beginClockLog != null && tb.getClockLogBeginId().equals(beginClockLog.getTkClockLogId())
-        			&& endClockLog != null && tb.getClockLogEndId().equals(endClockLog.getTkClockLogId())) {
+        	if(beginClockLog != null && StringUtils.isNotBlank(tb.getClockLogBeginId()) && tb.getClockLogBeginId().equals(beginClockLog.getTkClockLogId())
+        			&& endClockLog != null && StringUtils.isNotBlank(tb.getClockLogEndId()) && tb.getClockLogEndId().equals(endClockLog.getTkClockLogId())) {
         		// if there's already time block created with the same clock logs, don't create timeblock for it again
         		createNewTb = false;	
         	}

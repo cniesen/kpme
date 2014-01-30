@@ -29,6 +29,6 @@ public class PayGradeMaintainableServiceImpl extends HrBusinessObjectMaintainabl
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) HrServiceLocator.getPayGradeService().getPayGrade(id);
+		return HrServiceLocator.getPayGradeService().getPayGrade(id);
 	}
 }

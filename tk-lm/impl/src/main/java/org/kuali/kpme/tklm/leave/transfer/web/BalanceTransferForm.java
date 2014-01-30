@@ -115,11 +115,11 @@ public class BalanceTransferForm extends KualiTransactionalDocumentFormBase {
 	}
 
 	public AccrualCategory getCreditedAccrualCategory() {
-		return (AccrualCategory) HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, LocalDate.fromDateFields(effectiveDate));
+		return HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, LocalDate.fromDateFields(effectiveDate));
 	}
 
 	public AccrualCategory getDebitedAccrualCategory() {
-		return (AccrualCategory) HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, LocalDate.fromDateFields(effectiveDate));
+		return HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, LocalDate.fromDateFields(effectiveDate));
 	}
 	
     @Override

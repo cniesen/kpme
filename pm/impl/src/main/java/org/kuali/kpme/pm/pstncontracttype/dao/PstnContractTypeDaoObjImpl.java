@@ -17,18 +17,16 @@ package org.kuali.kpme.pm.pstncontracttype.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.PMConstants;
 import org.kuali.kpme.pm.pstncontracttype.PstnContractType;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
@@ -57,51 +55,8 @@ public class PstnContractTypeDaoObjImpl extends PlatformAwareDaoBaseOjb implemen
 			root.addEqualTo("location", location); 
 		}
         
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PstnContractType.class, asOfDate, PstnContractType.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PstnContractType.class, PstnContractType.BUSINESS_KEYS, false));
-        
-        Criteria activeFilter = new Criteria();
-        activeFilter.addEqualTo("active", true);
-        root.addAndCriteria(activeFilter);
-
-        Query query = QueryFactory.newQuery(PstnContractType.class, root);
-        
-        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
-		if(!c.isEmpty())
-			pctList.addAll(c);
-		
-		return pctList;
-	}
-	
-	@Override
-	public List<PstnContractType> getPstnContractTypeList(String name, String institution, String location, LocalDate asOfDate) {
-		List<PstnContractType> pctList = new ArrayList<PstnContractType>();
-		Criteria root = new Criteria();
-		Set<String> coll = new HashSet<String>();
-		
-		if(StringUtils.isNotEmpty(name) 
-				&& !ValidationUtils.isWildCard(name)) {
-			root.addEqualTo("name", name); 
-		}
-		
- 		if(StringUtils.isNotEmpty(institution) 
- 				&& !ValidationUtils.isWildCard(institution)) {
- 			coll.clear();
- 			coll.add(institution);
- 			coll.add(PMConstants.WILDCARD_CHARACTER);
- 			root.addIn("institution", coll);
-		}
- 		
-		if(StringUtils.isNotEmpty(location) 
-				&& !ValidationUtils.isWildCard(location)) {
-			coll.clear();
- 			coll.add(location);
- 			coll.add(PMConstants.WILDCARD_CHARACTER);
-			root.addIn("location", coll); 
-		}
-        
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PstnContractType.class, asOfDate, PstnContractType.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PstnContractType.class, PstnContractType.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PstnContractType.class, asOfDate, PstnContractType.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PstnContractType.class, PstnContractType.EQUAL_TO_FIELDS, false));
         
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);

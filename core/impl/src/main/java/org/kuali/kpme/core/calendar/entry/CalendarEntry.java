@@ -23,7 +23,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -49,10 +48,10 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     private Date batchSupervisorApprovalDateTime;
     private Date batchPayrollApprovalDateTime;
 
-    private transient CalendarContract calendarObj;
+    private transient Calendar calendarObj;
 
     public String getHrCalendarId() {
-        calendarObj = (Calendar)HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName());
+        calendarObj = HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName());
         if (calendarObj != null) {
             this.setHrCalendarId(calendarObj.getHrCalendarId());
         }
@@ -311,14 +310,14 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Comp
     	batchSupervisorApprovalDateTime = batchSupervisorApprovalFullDateTime != null ? batchSupervisorApprovalFullDateTime.toDate() : null;
     }
 
-	public CalendarContract getCalendarObj() {
+	public Calendar getCalendarObj() {
 		if(calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
 			this.setCalendarObj(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName()));
 		}		
 		return calendarObj;
 	}
 
-	public void setCalendarObj(CalendarContract calendarObj) {
+	public void setCalendarObj(Calendar calendarObj) {
 		this.calendarObj = calendarObj;
 	}
 

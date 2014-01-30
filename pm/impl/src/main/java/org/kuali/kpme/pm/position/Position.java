@@ -15,28 +15,26 @@
  */
 package org.kuali.kpme.pm.position;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliation;
-import org.kuali.kpme.core.position.PositionBase;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.pm.api.classification.ClassificationContract;
-import org.kuali.kpme.pm.api.classification.duty.ClassificationDutyContract;
-import org.kuali.kpme.pm.api.classification.flag.ClassificationFlagContract;
-import org.kuali.kpme.pm.api.position.PositionContract;
-import org.kuali.kpme.pm.classification.qual.ClassificationQualification;
-import org.kuali.kpme.pm.position.funding.PositionFunding;
-import org.kuali.kpme.pm.positiondepartment.PositionDepartment;
-import org.kuali.kpme.pm.positionresponsibility.PositionResponsibility;
-import org.kuali.kpme.pm.service.base.PmServiceLocator;
+import java.math.BigDecimal;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.kuali.rice.location.impl.campus.CampusBo;
+import org.kuali.kpme.core.position.PositionBase;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.pm.api.position.PositionContract;
+import org.kuali.kpme.pm.classification.duty.ClassificationDuty;
+import org.kuali.kpme.pm.classification.flag.ClassificationFlag;
+import org.kuali.kpme.pm.classification.qual.ClassificationQualification;
+import org.kuali.kpme.pm.position.funding.PositionFunding;
+import org.kuali.kpme.pm.positionresponsibility.PositionResponsibility;
+import org.kuali.kpme.pm.service.base.PmServiceLocator;
 
 public class Position extends PositionBase implements PositionContract {
 	private static final long serialVersionUID = 1L;
@@ -52,14 +50,13 @@ public class Position extends PositionBase implements PositionContract {
     private List<PstnFlag> flagList = new LinkedList<PstnFlag>();
     private List<PositionResponsibility> positionResponsibilityList = new LinkedList<PositionResponsibility>();
     private List<PositionFunding> fundingList = new ArrayList<PositionFunding>();
-    private List<PositionDepartment> departmentList = new ArrayList<PositionDepartment>();
 
     private String institution;
+    private String campus;
     private String salaryGroup;
     private String pmPositionClassId;
-    private transient String positionClass;
     private String classificationTitle;
-
+    private String workingPositionTitle;
     private BigDecimal percentTime;
     private int workMonths;
     private String benefitsEligible;
@@ -70,22 +67,8 @@ public class Position extends PositionBase implements PositionContract {
     private String poolEligible;
     private int maxPoolHeadCount;
     private String tenureEligible;
-    
-    // KPME-3016
-    private String location; 
-    private String process;
-    private String positionStatus;
-    private String primaryDepartment;
-    private String appointmentType;
-    private String reportsToPositionId;
-    private String reportsToPrincipalId;
-    private Date expectedEndDate;
-    private String renewEligible;
-    private String temporary;
-    private String contract;
-    private String contractType;
-    private String payGrade;
-    private String payStep;
+
+    private CampusBo campusObj;
     
     private String category;		// used to determine what fields should show when editing an existing maint doc
     
@@ -93,11 +76,11 @@ public class Position extends PositionBase implements PositionContract {
 
     public List<PositionDuty> getDutyList() {
     	if(CollectionUtils.isEmpty(dutyList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
-    		List<? extends ClassificationDutyContract> aList = PmServiceLocator.getClassificationDutyService().getDutyListForClassification(this.getPmPositionClassId());
+    		List<ClassificationDuty> aList = PmServiceLocator.getClassificationDutyService().getDutyListForClassification(this.getPmPositionClassId());
     		if(CollectionUtils.isNotEmpty(aList)) {
     			List<PositionDuty> pDutyList = new ArrayList<PositionDuty>();
     			// copy basic information from classificaton duty list
-    			for(ClassificationDutyContract aDuty : aList) {
+    			for(ClassificationDuty aDuty : aList) {
     				PositionDuty pDuty = new PositionDuty();
     				pDuty.setName(aDuty.getName());
     				pDuty.setDescription(aDuty.getDescription());
@@ -134,11 +117,11 @@ public class Position extends PositionBase implements PositionContract {
 
 	public List<PstnFlag> getFlagList() {
 		if(CollectionUtils.isEmpty(flagList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
-    		List<? extends ClassificationFlagContract> aList = PmServiceLocator.getClassificationFlagService().getFlagListForClassification(this.getPmPositionClassId());
+    		List<ClassificationFlag> aList = PmServiceLocator.getClassificationFlagService().getFlagListForClassification(this.getPmPositionClassId());
     		if(CollectionUtils.isNotEmpty(aList)) {
     			List<PstnFlag> pFlagList = new ArrayList<PstnFlag>();
     			// copy basic information from classificaton flag list
-    			for(ClassificationFlagContract aFlag : aList) {
+    			for(ClassificationFlag aFlag : aList) {
     				PstnFlag pFlag = new PstnFlag();
     				pFlag.setCategory(aFlag.getCategory());
     				pFlag.setNames(aFlag.getNames());
@@ -163,27 +146,14 @@ public class Position extends PositionBase implements PositionContract {
 	public void setPmPositionClassId(String id) {
 		this.pmPositionClassId = id;
 	}
-
-    public String getPositionClass() {
-        if (StringUtils.isBlank(positionClass) && StringUtils.isNotBlank(pmPositionClassId)) {
-            ClassificationContract classification = PmServiceLocator.getClassificationService().getClassificationById(this.pmPositionClassId);
-            positionClass = classification != null ? classification.getPositionClass() : null;
-        }
-
-        return positionClass;
-    }
-
-    public void setPositionClass(String positionClass) {
-        this.positionClass = positionClass;
-    }
-
-    public List<ClassificationQualification> getRequiredQualList() {
+	
+	public List<ClassificationQualification> getRequiredQualList() {
 		if(StringUtils.isNotEmpty(this.getPmPositionClassId())) {
 			// when Position Classification Id is changed, change the requiredQualList with it
 			if(CollectionUtils.isEmpty(requiredQualList) ||
 					(CollectionUtils.isNotEmpty(requiredQualList) 
 							&& !requiredQualList.get(0).getPmPositionClassId().equals(this.getPmPositionClassId()))) {
-				List<ClassificationQualification> aList = (List<ClassificationQualification>)PmServiceLocator.getClassificationQualService()
+				List<ClassificationQualification> aList = PmServiceLocator.getClassificationQualService()
 						.getQualListForClassification(this.getPmPositionClassId());
 				if(CollectionUtils.isNotEmpty(aList))
 					this.setRequiredQualList(aList);
@@ -221,6 +191,22 @@ public class Position extends PositionBase implements PositionContract {
         this.institution = institution;
     }
 
+    public String getCampus() {
+        return campus;
+    }
+
+    public void setCampus(String campus) {
+        this.campus = campus;
+    }
+
+    public CampusBo getCampusObj() {
+        return campusObj;
+    }
+
+    public void setCampusObj(CampusBo campusObj) {
+        this.campusObj = campusObj;
+    }
+
     public String getSalaryGroup() {
         return salaryGroup;
     }
@@ -237,6 +223,13 @@ public class Position extends PositionBase implements PositionContract {
         this.classificationTitle = classificationTitle;
     }
 
+    public String getWorkingPositionTitle() {
+        return workingPositionTitle;
+    }
+
+    public void setWorkingPositionTitle(String workingPositionTitle) {
+        this.workingPositionTitle = workingPositionTitle;
+    }
 
     public BigDecimal getPercentTime() {
         return percentTime;
@@ -317,138 +310,4 @@ public class Position extends PositionBase implements PositionContract {
     public void setWorkMonths(int workMonths) {
         this.workMonths = workMonths;
     }
-
-    public List<PositionDepartment> getDepartmentList() {
-        return departmentList;
-    }
-
-    public void setDepartmentList(List<PositionDepartment> departmentList) {
-        this.departmentList = departmentList;
-    }
-
-	public String getProcess() {
-		return process;
-	}
-
-	public void setProcess(String process) {
-		this.process = process;
-	}
-
-	public String getPositionStatus() {
-		return positionStatus;
-	}
-
-	public void setPositionStatus(String positionStatus) {
-		this.positionStatus = positionStatus;
-	}
-
-    public void setPrimaryDepartment () {
-
-    }
-	public String getPrimaryDepartment() {
-
-		if (this.primaryDepartment == null && this.departmentList != null && this.departmentList.size() > 0) {
-			for (PositionDepartment department: this.departmentList) {
-				DepartmentAffiliation pda = department.getDeptAfflObj();
-				if (pda.isPrimaryIndicator()) {
-					primaryDepartment = department.getDepartment();
-					break;
-				} 
-			}
-		}
-		
-		return primaryDepartment;
-	}
-
-    public void setPrimaryDepartment (String primaryDepartment) {
-        this.primaryDepartment = primaryDepartment;
-    }
-
-	public String getLocation() {
-		return location;
-	}
-
-	public void setLocation(String location) {
-		this.location = location;
-	}
-
-	public String getReportsToPositionId() {
-		return reportsToPositionId;
-	}
-
-	public void setReportsToPositionId(String reportsToPositionId) {
-		this.reportsToPositionId = reportsToPositionId;
-	}
-
-	public String getReportsToPrincipalId() {
-		return reportsToPrincipalId;
-	}
-
-	public void setReportsToPrincipalId(String reportsToPrincipalId) {
-		this.reportsToPrincipalId = reportsToPrincipalId;
-	}
-
-	public Date getExpectedEndDate() {
-		return expectedEndDate;
-	}
-
-	public void setExpectedEndDate(Date expectedEndDate) {
-		this.expectedEndDate = expectedEndDate;
-	}
-
-	public String getRenewEligible() {
-		return renewEligible;
-	}
-
-	public void setRenewEligible(String renewEligible) {
-		this.renewEligible = renewEligible;
-	}
-
-	public String getTemporary() {
-		return temporary;
-	}
-
-	public void setTemporary(String temporary) {
-		this.temporary = temporary;
-	}
-
-	public String getContract() {
-		return contract;
-	}
-
-	public void setContract(String contract) {
-		this.contract = contract;
-	}
-
-	public String getContractType() {
-		return contractType;
-	}
-
-	public void setContractType(String contractType) {
-		this.contractType = contractType;
-	}
-
-	public String getAppointmentType() {
-		return appointmentType;
-	}
-
-	public void setAppointmentType(String appointmentType) {
-		this.appointmentType = appointmentType;
-	}
-
-	public String getPayGrade() {
-		return payGrade;
-	}
-
-	public void setPayGrade(String payGrade) {
-		this.payGrade = payGrade;
-	}
-
-	public String getPayStep() {
-		return payStep;
-	}
-
-	public void setPayStep(String payStep) {
-		this.payStep = payStep;
-	}
 }

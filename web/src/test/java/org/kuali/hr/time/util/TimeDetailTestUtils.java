@@ -17,6 +17,7 @@ package org.kuali.hr.time.util;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,11 +25,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.kuali.hr.TestAutoLoginFilter;
 import org.kuali.hr.util.HtmlUnitUtil;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.kpme.tklm.time.detail.validation.TimeDetailValidationUtil;
 import org.kuali.kpme.tklm.time.detail.web.TimeDetailActionFormBase;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -57,7 +57,7 @@ public class TimeDetailTestUtils {
      *
      * @return A populated TimeDetailActionFormBase object.
      */
-    public static TimeDetailActionFormBase buildDetailActionForm(TimesheetDocument timeshetDocument, Assignment assignment, EarnCode earnCode, DateTime start, DateTime end, BigDecimal amount, boolean acrossDays, String timeblockId, boolean spanningWeeks, String outputString, List<String> warnings, String overtimePref, String leaveBlockId, BigDecimal leaveAmount, List<BalanceTransfer> forfeitures) {
+    public static TimeDetailActionFormBase buildDetailActionForm(TimesheetDocument timeshetDocument, Assignment assignment, EarnCode earnCode, DateTime start, DateTime end, BigDecimal amount, boolean acrossDays, String timeblockId, boolean spanningWeeks) {
         TimeDetailActionFormBase tdaf = new TimeDetailActionFormBase();
         /**
          * 
@@ -103,12 +103,6 @@ public class TimeDetailTestUtils {
         tdaf.setTimesheetDocument(timeshetDocument);
         tdaf.setSelectedAssignment(selectedAssignment);
         tdaf.setSelectedEarnCode(selectedEarnCode);
-        tdaf.setOvertimePref(overtimePref);
-        tdaf.setOutputString(outputString);
-        tdaf.setForfeitures(forfeitures);
-        tdaf.setWarnings(warnings);
-        tdaf.setLmLeaveBlockId(leaveBlockId);
-        tdaf.setLeaveAmount(leaveAmount);
         //tdaf.setPrincipalId(principalId);
         tdaf.setMethodToCall("addTimeBlock");
 

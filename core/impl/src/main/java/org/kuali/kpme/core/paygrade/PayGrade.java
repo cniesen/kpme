@@ -22,18 +22,14 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PayGrade extends HrBusinessObject implements PayGradeContract {
 
-	private static final String SAL_GROUP = "salGroup";
-	private static final String PAY_GRADE = "payGrade";
-	
 	private static final long serialVersionUID = -5736949952127760566L;
 	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PAY_GRADE)
-            .add(SAL_GROUP)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("payGrade")
+            .add("salGroup")
             .build();
 
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PayGrade";
@@ -41,6 +37,7 @@ public class PayGrade extends HrBusinessObject implements PayGradeContract {
 	private String hrPayGradeId;
 	private String payGrade;
 	private String description;
+	private String userPrincipalId;
 	private String salGroup;
     private String institution;
     private String location;
@@ -51,16 +48,6 @@ public class PayGrade extends HrBusinessObject implements PayGradeContract {
     private BigDecimal maxHiringRate;
     private String history;
  
-    
-    @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(PAY_GRADE, this.getPayGrade())
-			.put(SAL_GROUP, this.getSalGroup())
-			.build();
-	}
-    
-    
     public String getHrPayGradeId() {
 		return hrPayGradeId;
 	}
@@ -83,6 +70,14 @@ public class PayGrade extends HrBusinessObject implements PayGradeContract {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
 	}
 
 	@Override

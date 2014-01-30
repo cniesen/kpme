@@ -15,16 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.rules.overtime.daily.validation;
 
-import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
 import org.kuali.kpme.tklm.time.rules.overtime.daily.DailyOvertimeRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class DailyOvertimeRuleEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class DailyOvertimeRuleEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
         DailyOvertimeRule dor = (DailyOvertimeRule) pbo;

@@ -31,18 +31,15 @@ import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class WorkArea extends HrBusinessObject implements DepartmentalRule, WorkAreaContract {
-
-	private static final String WORK_AREA = "workArea";
 
 	private static final long serialVersionUID = 2637145083387914260L;
 
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "WorkArea";
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(WORK_AREA)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+	            .add("workArea")
 	            .build();
 
     private String tkWorkAreaId;
@@ -53,6 +50,7 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule, Work
     private Boolean ovtEarnCode;
     private String dept;
     private String adminDescr;
+    private String userPrincipalId;
 	private boolean history;
 	private boolean hrsDistributionF;	
 	
@@ -73,14 +71,6 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule, Work
     
     @Transient
     private List<WorkAreaPositionRoleMemberBo> inactivePositionRoleMembers = new ArrayList<WorkAreaPositionRoleMemberBo>();
-    
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(WORK_AREA, this.getWorkArea())		
-				.build();
-	}
-    
     
 	@Override
 	public String getUniqueKey() {
@@ -161,6 +151,14 @@ public class WorkArea extends HrBusinessObject implements DepartmentalRule, Work
         this.adminDescr = adminDescr;
     }
 
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
+
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
+    
 	public boolean isHistory() {
 		return history;
 	}

@@ -28,7 +28,6 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupContract;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
@@ -66,7 +65,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnGroup.setShowSummary(true);
         earnGroup.setActive(true);
         earnGroup.setEarnCodeGroups(earnGroups);
-        earnGroup.setUserPrincipalId("admin");
         KRADServiceLocator.getBusinessObjectService().save(earnGroup);
         hrEarnGroupId = earnGroup.getHrEarnCodeGroupId();
 
@@ -88,7 +86,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnCode.setOvtEarnCode(false);
         earnCode.setInflateMinHours(BigDecimal.ZERO);
         earnCode.setInflateFactor(BigDecimal.ZERO);
-        earnCode.setUserPrincipalId("admin");
         earnCode = KRADServiceLocator.getBusinessObjectService().save(earnCode);
         hrEarnCodeId = earnCode.getHrEarnCodeId();
 
@@ -99,7 +96,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnGroupRGG.setEffectiveLocalDate(TEST_DATE);
         earnGroupRGG.setShowSummary(true);
         earnGroupRGG.setActive(true);
-        earnGroupRGG.setUserPrincipalId("admin");
         earnGroupRGG = KRADServiceLocator.getBusinessObjectService().save(earnGroupRGG);
         hrEarnGroupIdRGG = earnGroupRGG.getHrEarnCodeGroupId();
     }
@@ -126,7 +122,7 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
 		HtmlUnitUtil.createTempFile(earnCodeLookUp);
 		Assert.assertTrue("Page contains REG entry", earnCodeLookUp.asText().contains("REG"));	
 		
-		EarnCodeGroupContract earnGroup = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup("REG", LocalDate.now());
+		EarnCodeGroup earnGroup = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup("REG", LocalDate.now());
 		String earnGroupId = earnGroup.getHrEarnCodeGroupId().toString();
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(earnCodeLookUp, "edit", earnGroupId);		
 		HtmlUnitUtil.createTempFile(maintPage);

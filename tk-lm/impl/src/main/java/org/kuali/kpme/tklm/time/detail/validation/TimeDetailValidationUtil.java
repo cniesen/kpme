@@ -15,13 +15,18 @@
  */
 package org.kuali.kpme.tklm.time.detail.validation;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.*;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
@@ -39,10 +44,6 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
@@ -93,7 +94,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
     		//earn code is validate through the span of the leave entry, could the earn code's record method change between then and the leave period end date?
     		//Why not use endDateS to retrieve the earn code?
     		CalendarEntry calendarEntry = lcf.getCalendarEntry();
-    		EarnCode earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     		if(earnCode != null) {
     			if(earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
     		    	return LeaveCalendarValidationUtil.validateTimeParametersForLeaveEntry(earnCode, lcf.getCalendarEntry(), lcf.getStartDate(), lcf.getEndDate(), lcf.getStartTime(), lcf.getEndTime(), lcf.getSelectedAssignment(), lcf.getLmLeaveBlockId(), lcf.getSpanningWeeks());
@@ -173,7 +174,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         CalendarEntry payCalEntry = timesheetDocument.getCalendarEntry();
         EarnCode earnCode = null;
         if (StringUtils.isNotBlank(selectedEarnCode)) {
-            earnCode = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, TKUtils.formatDateTimeStringNoTimezone(endDateS).toLocalDate());
+            earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, TKUtils.formatDateTimeStringNoTimezone(endDateS).toLocalDate());
         }
         boolean isTimeRecordMethod = earnCode != null && StringUtils.equalsIgnoreCase(earnCode.getRecordMethod(), HrConstants.EARN_CODE_TIME);
 
@@ -222,7 +223,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
         //Check that assignment is valid within the timeblock span. 
         AssignmentDescriptionKey assignKey = HrServiceLocator.getAssignmentService().getAssignmentDescriptionKey(selectedAssignment);
-        AssignmentContract assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
+        Assignment assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, startTemp.toLocalDate());
         if (assign == null) errors.add("Assignment is not valid for start date " + TKUtils.formatDate(new LocalDate(startTime)));
         assign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignKey, endTemp.toLocalDate());
         if (assign == null) errors.add("Assignment is not valid for end date " + TKUtils.formatDate(new LocalDate(endTime)));
@@ -368,10 +369,15 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         	// startTime would have 8a 8/19 and endTime would have 10a 8/21.  With the line below, "end" would have 10a 8/19, and
         	// an interval from 8a 8/19 to 10a 8/19 would be created.  However, since it was using convertDateStringToDateTime,
         	// which takes into account user time zone, "end" was off.  Use convertDateStringToDateTimeWithoutZone isntead
-        	// so that "end" would have the right time in default time zone. 
-            //DateTime end = TKUtils.convertDateStringToDateTime(startDateS, endTimeS);
-        	DateTime end = TKUtils.convertDateStringToDateTimeWithoutZone(startDateS, endTimeS);
-            if (endTemp.getDayOfYear() - startTemp.getDayOfYear() < 1) {
+        	// so that "end" would have the right time in default time zone.
+        	//        	DateTime end = TKUtils.convertDateStringToDateTimeWithoutZone(startDateS, endTimeS);
+        	
+        	// kpme-3181
+        	// revert the following line of change from kpme-2720 since it's using timezone for starttime but not endtime
+        	// that's causing interval not being build correctly issue
+            DateTime end = TKUtils.convertDateStringToDateTime(startDateS, endTimeS);
+        	
+        	if (endTemp.getDayOfYear() - startTemp.getDayOfYear() < 1) {
                 end = new DateTime(endTime);
             }
             DateTime groupEnd = new DateTime(endTime);
@@ -400,7 +406,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         for (TimeBlock timeBlock : timesheetDocument.getTimeBlocks()) {
             if (errors.size() == 0 && StringUtils.equals(timeBlock.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
             	// allow regular time blocks to be added with overlapping non-regular time blocks
-            	JobContract aJob = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), new LocalDate(timeBlock.getBeginDate()));
+            	Job aJob = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), new LocalDate(timeBlock.getBeginDate()));
             	if(aJob != null && aJob.getPayTypeObj() != null && isRegularEarnCode && !StringUtils.equals(aJob.getPayTypeObj().getRegEarnCode(),timeBlock.getEarnCode())) {
             		continue;
             	}
@@ -454,10 +460,10 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
                     for (Interval interval : intervals) {
                         if (isRegularEarnCode && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)) {
                         	errors.add("The time block you are trying to add overlaps with an existing time block.");
-                            break;
+                            return errors;
                         }else if(timeBlock.getEarnCode().equals(selectedEarnCode) && timeBlockInterval.overlaps(interval) && (timeblockId == null || timeblockId.compareTo(timeBlock.getTkTimeBlockId()) != 0)){
                         	errors.add("The time block you are trying to add overlaps with an existing time block.");
-                        	break;
+                        	return errors;
                         }
                     }
                 }

@@ -48,11 +48,11 @@ public class KpmeModuleService extends ModuleServiceBase {
         List<List<String>> retList = new ArrayList<List<String>>();
         List<String> keyList = new ArrayList<String>();
         try {
-            keyList.addAll((java.util.List<String>) businessObjectInterfaceClass.getDeclaredField("BUSINESS_KEYS").get(businessObjectInterfaceClass));
+            keyList.addAll((java.util.List<String>) businessObjectInterfaceClass.getDeclaredField("EQUAL_TO_FIELDS").get(businessObjectInterfaceClass));
         } catch (NoSuchFieldException e) {
-            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a BUSINESS_KEYS list");
+            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a EQUAL_TO_FIELDS list");
         } catch (IllegalAccessException e) {
-            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a BUSINESS_KEYS list");
+            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a EQUAL_TO_FIELDS list");
         }
 
         if (HrBusinessObject.class.isAssignableFrom(businessObjectInterfaceClass)) {

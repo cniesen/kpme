@@ -172,7 +172,7 @@ public class TkCalendar extends CalendarParent implements TkCalendarContract {
         for (TimeBlockRenderer tbr : day.getBlockRenderers()) {
             for (TimeHourDetailRenderer thdr : tbr.getDetailRenderers()) {
                 if (thdr.getTitle().equals(HrConstants.LUNCH_EARN_CODE)) {
-                    ec = (EarnCode) HrServiceLocator.getEarnCodeService().getEarnCode(thdr.getTitle(), tbr.getTimeBlock().getBeginDateTime().toLocalDate());
+                    ec = HrServiceLocator.getEarnCodeService().getEarnCode(thdr.getTitle(), tbr.getTimeBlock().getBeginDateTime().toLocalDate());
                     if (ec != null) {
                         label = ec.getDescription() + " : " + thdr.getHours() + " hours";
                         id = thdr.getTkTimeHourDetailId();

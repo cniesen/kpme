@@ -22,9 +22,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.assignment.account.AssignmentAccount;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -36,22 +35,16 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class Assignment extends HrBusinessObject implements AssignmentContract {
 
-	private static final String PRINCIPAL_ID = "principalId";
-	private static final String TASK = "task";
-	private static final String WORK_AREA = "workArea";
-	private static final String JOB_NUMBER = "jobNumber";
-	
 	private static final long serialVersionUID = 6347435053054442195L;
 	//KPME-2273/1965 Primary Business Keys List. 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(JOB_NUMBER)
-            .add(WORK_AREA)
-            .add(TASK)
-            .add(PRINCIPAL_ID)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("jobNumber")
+            .add("workArea")
+            .add("task")
+            .add("principalId")
             .build();
 
     public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
@@ -83,18 +76,6 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 
 	private List<AssignmentAccount> assignmentAccounts = new LinkedList<AssignmentAccount>();
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(JOB_NUMBER, this.getJobNumber())
-				.put(WORK_AREA, this.getWorkArea())
-				.put(TASK, this.getTask())
-				.put(PRINCIPAL_ID, this.getPrincipalId())
-				.build();
-	}
-	
-	
 	public List<AssignmentAccount> getAssignmentAccounts() {
 		return assignmentAccounts;
 	}
@@ -121,7 +102,7 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 
 	public Job getJob() {
 		if(job == null && this.getJobNumber() != null) {
-			this.setJob((Job)HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveLocalDate()));
+			this.setJob(HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveLocalDate()));
 		}
 		return job;
 	}
@@ -178,9 +159,9 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 		if(this.getJobNumber()!= null) {
 			if(this.getJob() == null || !this.getJobNumber().equals(this.getJob().getJobNumber())) {
 				if(this.getEffectiveDate()!=null){
-					this.setJob((Job) HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveLocalDate(), false));
+					this.setJob(HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), this.getEffectiveLocalDate(), false));
 				}else{
-					this.setJob((Job) HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), LocalDate.now(), false));
+					this.setJob(HrServiceLocator.getJobService().getJob(this.getPrincipalId(), this.getJobNumber(), LocalDate.now(), false));
 				}
 			}
 			setDept((this.getJob() != null) ? this.getJob().getDept() : "");
@@ -194,7 +175,7 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
 
 	public WorkArea getWorkAreaObj() {
 		if(workAreaObj == null && workArea != null) {
-			this.setWorkAreaObj((WorkArea) HrServiceLocator.getWorkAreaService().getWorkArea(this.getWorkArea(), this.getEffectiveLocalDate()));
+			this.setWorkAreaObj(HrServiceLocator.getWorkAreaService().getWorkArea(this.getWorkArea(), this.getEffectiveLocalDate()));
 		}
 		return workAreaObj;
 	}
@@ -297,8 +278,8 @@ public class Assignment extends HrBusinessObject implements AssignmentContract {
         return new AssignmentDescriptionKey(this).toAssignmentKeyString();
     }
     
-	public Boolean isPrimaryAssign() {
-		return Boolean.valueOf(primaryAssign);
+	public boolean isPrimaryAssign() {
+		return primaryAssign;
 	}
 
 	public void setPrimaryAssign(boolean primaryAssign) {

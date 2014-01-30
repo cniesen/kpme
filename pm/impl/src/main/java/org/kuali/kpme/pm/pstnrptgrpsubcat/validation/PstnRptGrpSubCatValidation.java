@@ -17,8 +17,6 @@ package org.kuali.kpme.pm.pstnrptgrpsubcat.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
-import org.kuali.kpme.pm.api.positionreportsubcat.PositionReportSubCategoryContract;
 import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
 import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategory;
 import org.kuali.kpme.pm.pstnrptgrpsubcat.PositionReportGroupSubCategory;
@@ -46,7 +44,7 @@ public class PstnRptGrpSubCatValidation extends MaintenanceDocumentRuleBase {
 	
 	private boolean validatePstnRptSubCat(PositionReportGroupSubCategory prgsc) {
 		// validatePositionReportSubCat handles wild card for Institution and Location
-		PositionReportSubCategoryContract aPrsc = PmServiceLocator.getPositionReportSubCatService().getPositionReportSubCat(prgsc.getPositionReportSubCat(), prgsc.getEffectiveLocalDate());
+		PositionReportSubCategory aPrsc = PmServiceLocator.getPositionReportSubCatService().getPositionReportSubCat(prgsc.getPositionReportSubCat(), prgsc.getEffectiveLocalDate());
 		String errorMes = "PositionReportSubCategory '" + prgsc.getPositionReportSubCat() + "'";
 		if(aPrsc == null) {
 			this.putFieldError("dataObject.positionReportSubCat", "error.existence", errorMes);
@@ -95,7 +93,7 @@ public class PstnRptGrpSubCatValidation extends MaintenanceDocumentRuleBase {
 	}
 	
 	private boolean validatePstnRptGroup(PositionReportGroupSubCategory prgsc) {
-		PositionReportGroupContract aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(prgsc.getPositionReportGroup(), prgsc.getEffectiveLocalDate());
+		PositionReportGroup aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(prgsc.getPositionReportGroup(), prgsc.getEffectiveLocalDate());
 		String errorMes = "PositionReportGroup '" + prgsc.getPositionReportGroup() + "'";
 		if(aPrg == null) {
 			this.putFieldError("dataObject.positionReportGroup", "error.existence", errorMes);

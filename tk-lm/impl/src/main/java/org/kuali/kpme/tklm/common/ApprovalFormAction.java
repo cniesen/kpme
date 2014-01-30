@@ -67,7 +67,7 @@ public abstract class ApprovalFormAction extends KPMEAction {
 	        approvalForm.setPayCalendarGroups(calendarGroups);
 		}
 
-        List<WorkArea> workAreasWithoutRoles = (List<WorkArea>) HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(new ArrayList<Long>(workAreas), currentDate);
+        List<WorkArea> workAreasWithoutRoles = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(new ArrayList<Long>(workAreas), currentDate);
 		if (CollectionUtils.isEmpty(approvalForm.getDepartments())) {
 			Set<String> departments = new TreeSet<String>();
 			

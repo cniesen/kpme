@@ -22,14 +22,13 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 import org.json.simple.JSONValue;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.request.approval.web.LeaveRequestApprovalRow;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
 public class LeaveActionFormUtils {
@@ -62,7 +61,7 @@ public class LeaveActionFormUtils {
 	            LeaveBlockMap.put("endTime", end.toString(TkConstants.DT_MILITARY_TIME_FORMAT));
             }
         		
-            WorkAreaContract workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
+            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
             String workAreaDesc = workArea == null ? "" : workArea.getDescription();
             // Roles
             Boolean getAnyApprover = HrContext.isAnyApprover();
@@ -89,32 +88,6 @@ public class LeaveActionFormUtils {
 
         
         return JSONValue.toJSONString(leaveBlockList);
-        
-    }
-    
-    
-    public static String getLeaveRequestsJson(List<LeaveRequestApprovalRow> reqRows) {
-
-        if (reqRows == null || reqRows.size() == 0) {
-            return "";
-        }
-
-        List<Map<String, Object>> leaveRequestList = new LinkedList<Map<String, Object>>();
-
-        for (LeaveRequestApprovalRow requestRow : reqRows) {
-            Map<String, Object> leaveRequestMap = new LinkedHashMap<String, Object>();
-            leaveRequestMap.put("id", requestRow.getLeaveRequestDocId());
-            leaveRequestMap.put("documentId", requestRow.getLeaveRequestDocId());
-            leaveRequestMap.put("leaveDate", requestRow.getRequestedDate()); 
-            leaveRequestMap.put("assignmentTitle", requestRow.getAssignmentTitle());
-            leaveRequestMap.put("leaveHours", requestRow.getRequestedHours());
-            leaveRequestMap.put("principalId", requestRow.getPrincipalId());
-            leaveRequestMap.put("principalName", requestRow.getEmployeeName());
-            leaveRequestMap.put("leaveCode", requestRow.getLeaveCode());
-            leaveRequestList.add(leaveRequestMap);
-        }
-        
-        return JSONValue.toJSONString(leaveRequestList);
         
     }
 

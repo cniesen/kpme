@@ -15,34 +15,30 @@
  */
 package org.kuali.kpme.core.assignment.service;
 
+import java.util.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.assignment.service.AssignmentService;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.workarea.WorkAreaContract;
 import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.assignment.dao.AssignmentDao;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.util.*;
 
 public class AssignmentServiceImpl implements AssignmentService {
 
@@ -97,7 +93,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     	
     	for (Assignment assignmentObj : assignmentObjs) {
         	String department = assignmentObj.getDept();
-        	DepartmentContract departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, assignmentObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, assignmentObj.getEffectiveLocalDate());
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();
@@ -116,7 +112,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     	return results;
     }
 
-    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntryContract payCalendarEntry) {
+    public List<Assignment> getAssignmentsByPayEntry(String principalId, CalendarEntry payCalendarEntry) {
     	DateTime entryEndDate = payCalendarEntry.getEndPeriodLocalDateTime().toDateTime();
         if (entryEndDate.getHourOfDay() == 0) {
             entryEndDate = entryEndDate.minusDays(1);
@@ -128,13 +124,13 @@ public class AssignmentServiceImpl implements AssignmentService {
         List<Assignment> finalAssignments = new ArrayList<Assignment>();
         Map<String, Assignment> assignKeyToAssignmentMap = new HashMap<String, Assignment>();
         for (Assignment assign : endPeriodAssign) {
-            assignKeyToAssignmentMap.put(AssignmentDescriptionKey.getAssignmentKeyString(assign), assign);
+            assignKeyToAssignmentMap.put(TKUtils.formatAssignmentKey(assign.getJobNumber(), assign.getWorkArea(), assign.getTask()), assign);
             finalAssignments.add(assign);
         }
 
         //Compare the begin and end and add any assignments to the end thats are not there
         for (Assignment assign : beginPeriodAssign) {
-            String assignKey = AssignmentDescriptionKey.getAssignmentKeyString(assign);
+            String assignKey = TKUtils.formatAssignmentKey(assign.getJobNumber(), assign.getWorkArea(), assign.getTask());
             if (!assignKeyToAssignmentMap.containsKey(assignKey)) {
                 finalAssignments.add(assign);
             }
@@ -142,7 +138,7 @@ public class AssignmentServiceImpl implements AssignmentService {
 
         // Add the assignments within the pay period
         for (Assignment assign : assignsWithPeriod) {
-            String assignKey = AssignmentDescriptionKey.getAssignmentKeyString(assign);
+            String assignKey = TKUtils.formatAssignmentKey(assign.getJobNumber(), assign.getWorkArea(), assign.getTask());
             if (!assignKeyToAssignmentMap.containsKey(assignKey)) {
                 finalAssignments.add(assign);
             }
@@ -152,29 +148,29 @@ public class AssignmentServiceImpl implements AssignmentService {
 
     }
     
-    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntryContract payCalendarEntry){
-        if (StringUtils.isEmpty(principalId)
-                || payCalendarEntry == null) {
-            return Collections.emptyList();
-        }	
-        List<Assignment> assignments = (List<Assignment>)HrServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results =(List<Assignment>) HrServiceLocator.getAssignmentService().filterAssignments(assignments, HrConstants.FLSA_STATUS_NON_EXEMPT, false);
-    	return results;
-    }
-    
-    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntryContract payCalendarEntry){
+    public List<Assignment> getAssignmentsByCalEntryForTimeCalendar(String principalId, CalendarEntry payCalendarEntry){
         if (StringUtils.isEmpty(principalId)
                 || payCalendarEntry == null) {
             return Collections.emptyList();
         }
-    	List<Assignment> assignments = getAssignmentsByPayEntry(principalId, payCalendarEntry);
-    	List<Assignment> results = filterAssignments(assignments, null, true);
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
+    	List<Assignment> results = HrServiceLocator.getAssignmentService().filterAssignments(assignments, HrConstants.FLSA_STATUS_NON_EXEMPT, false);
+    	return results;
+    }
+    
+    public List<Assignment> getAssignmentsByCalEntryForLeaveCalendar(String principalId, CalendarEntry payCalendarEntry){
+        if (StringUtils.isEmpty(principalId)
+                || payCalendarEntry == null) {
+            return Collections.emptyList();
+        }
+    	List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByPayEntry(principalId, payCalendarEntry);
+    	List<Assignment> results = HrServiceLocator.getAssignmentService().filterAssignments(assignments, null, true);
     	return results;
     }
 
-    public List<Assignment> filterAssignments(List<? extends AssignmentContract> assignments, String flsaStatus, boolean chkForLeaveEligible) {
+    public List<Assignment> filterAssignments(List<Assignment> assignments, String flsaStatus, boolean chkForLeaveEligible) {
     	List<Assignment> results = new ArrayList<Assignment>();
-    	for(AssignmentContract assignment : assignments) {
+    	for(Assignment assignment : assignments) {
     		boolean flag = false;
     		if(StringUtils.isNotEmpty(flsaStatus)) {
     			if(assignment != null 
@@ -200,7 +196,7 @@ public class AssignmentServiceImpl implements AssignmentService {
     		}
     		
 			if(flag) {
-				results.add((Assignment)assignment);
+				results.add(assignment);
 			}
     	}
     	
@@ -214,13 +210,13 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     @Override
-    public Map<String, String> getAssignmentDescriptions(AssignmentContract assignment) {
+    public Map<String, String> getAssignmentDescriptions(Assignment assignment) {
     	Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
         if (assignment == null) {
         	LOG.warn("Assignment is null");
 //            throw new RuntimeException("Assignment is null");
         } else { 
-	        assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription((Assignment) assignment));
+	        assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
         }	
         return assignmentDescriptions;
 
@@ -270,8 +266,8 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
 
     private void populateAssignment(Assignment assignment, LocalDate asOfDate) {
-        assignment.setJob((Job)HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
-        assignment.setWorkAreaObj((WorkArea)HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
+        assignment.setJob(HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), asOfDate));
+        assignment.setWorkAreaObj(HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), asOfDate));
     }
 
     public Assignment getAssignment(String principalId, AssignmentDescriptionKey key, LocalDate asOfDate) {
@@ -307,22 +303,22 @@ public class AssignmentServiceImpl implements AssignmentService {
     }
     
     @Override
-    public Map<String, String> getAssignmentDescriptionsForAssignments(List<? extends AssignmentContract> assignments) {
+    public Map<String, String> getAssignmentDescriptionsForAssignments(List<Assignment>  assignments) {
     	 Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-         for (AssignmentContract assignment : assignments) {
+         for (Assignment assignment : assignments) {
                  assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
          }
          return assignmentDescriptions;
     }
     
-    public Assignment getAssignment(List<? extends AssignmentContract> assignments, String assignmentKey, LocalDate beginDate) {
+    public Assignment getAssignment(List<Assignment> assignments, String assignmentKey, LocalDate beginDate) {
         AssignmentDescriptionKey desc = getAssignmentDescriptionKey(assignmentKey);
     	if (CollectionUtils.isNotEmpty(assignments)) {
-            for (AssignmentContract assignment : assignments) {
+            for (Assignment assignment : assignments) {
                 if (assignment.getJobNumber().compareTo(desc.getJobNumber()) == 0 &&
                         assignment.getWorkArea().compareTo(desc.getWorkArea()) == 0 &&
                         assignment.getTask().compareTo(desc.getTask()) == 0) {
-                    return (Assignment)assignment;
+                    return assignment;
                 }
             }
         }
@@ -361,9 +357,9 @@ public class AssignmentServiceImpl implements AssignmentService {
         StringBuilder builder = new StringBuilder();
 
         if (jobNumber != null && workArea != null && task != null) {
-            JobContract jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
-            WorkAreaContract workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
-            TaskContract taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
+            Job jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+            WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
+            Task taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
 
             String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;
             KualiDecimal compensationRate = jobObj != null ? jobObj.getCompRate() : KualiDecimal.ZERO;

@@ -25,10 +25,10 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.department.DepartmentContract;
-import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.service.permission.HrPermissionServiceBase;
@@ -49,12 +49,10 @@ import org.kuali.rice.kew.api.action.ActionType;
 import org.kuali.rice.kew.api.action.ValidActions;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.KimConstants;
-import org.kuali.rice.kim.api.permission.PermissionService;
 import org.kuali.rice.krad.util.KRADConstants;
 
 public class LMPermissionServiceImpl extends HrPermissionServiceBase implements LMPermissionService {
 	
-	private PermissionService permissionService;
 	private LeaveCalendarService leaveCalendarService;
 	private LeaveRequestDocumentService leaveRequestDocumentService;
 	
@@ -228,9 +226,9 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
         }
 	    
 	    // use job to find the department, then use the location from Department to get the location roles 
-	    JobContract aJob = HrServiceLocator.getJobService().getJob(aLeaveBlock.getPrincipalId(), aLeaveBlock.getJobNumber(), aLeaveBlock.getLeaveLocalDate());
+	    Job aJob = HrServiceLocator.getJobService().getJob(aLeaveBlock.getPrincipalId(), aLeaveBlock.getJobNumber(), aLeaveBlock.getLeaveLocalDate());
 	    if(aJob != null) {
-	    	DepartmentContract aDept = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(aJob.getDept(), aJob.getEffectiveLocalDate());
+	    	Department aDept = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(aJob.getDept(), aJob.getEffectiveLocalDate());
 	    	if(aDept != null) {
 	    		// LeaveLocationAdmin
 			    if(HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), aDept.getLocation(), LocalDate.now().toDateTimeAtStartOfDay()))
@@ -330,7 +328,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
 		   SystemScheduledTimeOff ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(lb.getScheduleTimeOffId());
 		   if(ssto != null && StringUtils.equals(ssto.getUnusedTime(), LMConstants.UNUSED_TIME.BANK)) {
 			   String viewPrincipal = HrContext.getTargetPrincipalId();
-			   CalendarEntryContract ce = HrServiceLocator.getCalendarEntryService()
+			   CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
 						.getCurrentCalendarDatesForLeaveCalendar(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
 			   if(ce != null) {
 				   if(!lb.getLeaveDate().before(ce.getBeginPeriodDate()) && !lb.getLeaveDate().after(ce.getEndPeriodDate())) {
@@ -351,7 +349,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
 		   SystemScheduledTimeOff ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(lb.getScheduleTimeOffId());
 		   if(ssto != null && LMConstants.UNUSED_TIME.TRANSFER.equals(ssto.getUnusedTime())) {
 			   String viewPrincipal = HrContext.getTargetPrincipalId();
-			   CalendarEntryContract ce = HrServiceLocator.getCalendarEntryService()
+			   CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
 						.getCurrentCalendarDatesForLeaveCalendar(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
 			   if(ce != null) {
 				   if(!lb.getLeaveDate().before(ce.getBeginPeriodDate()) && !lb.getLeaveDate().after(ce.getEndPeriodDate())) {
@@ -364,13 +362,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
 	   return false;
 	}
 	
-	public PermissionService getPermissionService() {
-		return permissionService;
-	}
-
-	public void setPermissionService(PermissionService permissionService) {
-		this.permissionService = permissionService;
-	}
+	
 
 	public LeaveCalendarService getLeaveCalendarService() {
 		return leaveCalendarService;

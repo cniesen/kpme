@@ -36,7 +36,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionQualificationValue-pmPstnQlfctnVlId" parent="PositionQualificationValue-pmPstnQlfctnVlId-parentBean"/>
 	 <bean id="PositionQualificationValue-pmPstnQlfctnVlId-parentBean" abstract="true" parent="AttributeDefinition">
-	    <property name="maxLength" value="60"/>
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -67,7 +66,7 @@
   	
   <!-- Position Qualification Value Lookup View -->
  
-  <bean id="PositionQualificationValue-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
+  <bean id="PositionQualificationValue-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Qualification Value Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfctnvl.PositionQualificationValue" />
     <property name="criteriaFields">
@@ -106,7 +105,7 @@
   
 <!--  Position Qualification Value Maintenance View -->
   <bean id="PositionQualificationValue-MaintenanceView" parent="PositionQualificationValue-MaintenanceView-parentBean"/>
-  <bean id="PositionQualificationValue-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionQualificationValue-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Qualification Value Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfctnvl.PositionQualificationValue"/>
     <property name="items">
