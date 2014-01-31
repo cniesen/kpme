@@ -39,11 +39,15 @@
         <module>dist</module>
     </modules>
     <properties>
-        <apache.cxf.version>2.7.0</apache.cxf.version>
+        <!-- Build settings -->
         <build.version>${project.name} :: ${project.version} :: ${kuali.build.timestamp}</build.version>
         <docbook.src>${basedir}/src/site/docbook</docbook.src>
         <docbook.filtered>${project.build.directory}/docbook-filtered</docbook.filtered>
         <docbook.dest>${project.build.directory}/site/reference</docbook.dest>
+        <readme.date.format>MMMM d, yyyy</readme.date.format>
+        <apache.cxf.version>2.7.0</apache.cxf.version>
+
+        <!-- dependency versions -->
         <displaytag.version>1.2</displaytag.version>
         <ehcache.version>2.5.0</ehcache.version>
         <enforcer.phase>validate</enforcer.phase>
@@ -88,6 +92,8 @@
         <mysql.host>localhost</mysql.host>
         <mysql.dba.username>root</mysql.dba.username>
         <mysql.dba.password>NONE</mysql.dba.password>
+
+
     </properties>
     <dependencyManagement>
         <dependencies>
