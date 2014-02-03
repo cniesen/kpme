@@ -36,6 +36,7 @@ import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
@@ -53,6 +54,7 @@ public class Job extends HrBusinessObject implements JobContract {
             .add(Job.CACHE_NAME)
             .add(Assignment.CACHE_NAME)
             .add(CalendarBlockPermissions.CACHE_NAME)
+            .add(RoleMember.Cache.NAME)
             .build();
 	
 	private String location;
