@@ -169,7 +169,7 @@ public class KpmeRoleServiceHelperTest extends CoreUnitTestCase {
 	}
 	
 	
-	@Test
+	// @Test
 	public void testGetRoleMembers() {
 		DateTime today = new DateTime();
 		DateTime yesterday = today.minusDays(1);
