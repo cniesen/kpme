@@ -66,7 +66,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
     //This function is used to build timeblocks that span days
     public List<TimeBlock> buildTimeBlocksSpanDates(Assignment assignment, String earnCode, TimesheetDocument timesheetDocument,
                                                     DateTime beginDateTime, DateTime endDateTime, BigDecimal hours, BigDecimal amount, 
-                                                    Boolean getClockLogCreated, Boolean getLunchDeleted, String spanningWeeks, String userPrincipalId,
+                                                    Boolean getClockLogCreated, Boolean getLunchDeleted, String userPrincipalId,
                                                     String clockLogBeginId, String clockLogEndId) {
         DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
         DateTime beginDt = beginDateTime.withZone(zone);
@@ -83,17 +83,9 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         for (Interval dayIn : dayInt) {
             if (dayIn.contains(beginDt)) {
                 if (dayIn.contains(endDt) || dayIn.getEnd().equals(endDt)) {
-                	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-                	if (StringUtils.isEmpty(spanningWeeks) && 
-                		(dayIn.getStart().getDayOfWeek() == DateTimeConstants.SATURDAY ||dayIn.getStart().getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-                		// Get difference in millis for the next time block - KPME-2568
-                		endOfFirstDay = endDt.withZone(zone);
-                		diffInMillis = endOfFirstDay.minus(beginDt.getMillis()).getMillis();
-                	} else {
                         firstTimeBlock = createTimeBlock(timesheetDocument, beginDateTime, endDt, assignment, earnCode,
                                 hours, amount, getClockLogCreated, getLunchDeleted, userPrincipalId, clockLogBeginId, clockLogEndId);
                         lstTimeBlocks.add(firstTimeBlock);                		
-                	}
                 } else {
                     //TODO move this to prerule validation
                     //throw validation error if this case met error
@@ -108,15 +100,9 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         }
         DateTime currTime = beginDt.plusDays(1);
         while (currTime.isBefore(endTime) || currTime.isEqual(endTime)) {
-        	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the timeblock list
-        	if (StringUtils.isEmpty(spanningWeeks) && 
-        		(currTime.getDayOfWeek() == DateTimeConstants.SATURDAY || currTime.getDayOfWeek() == DateTimeConstants.SUNDAY)) {
-        		// do nothing
-        	} else {
-	            TimeBlock tb = createTimeBlock(timesheetDocument, currTime, currTime.plus(diffInMillis), assignment, earnCode,
-                        hours, amount, getClockLogCreated, getLunchDeleted, userPrincipalId, clockLogBeginId, clockLogEndId);
-	            lstTimeBlocks.add(tb);
-        	}
+    	    TimeBlock tb = createTimeBlock(timesheetDocument, currTime, currTime.plus(diffInMillis), assignment, earnCode,
+                    hours, amount, getClockLogCreated, getLunchDeleted, userPrincipalId, clockLogBeginId, clockLogEndId);
+            lstTimeBlocks.add(tb);
         	currTime = currTime.plusDays(1);
         }
         return lstTimeBlocks;
@@ -577,4 +563,5 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 			LocalDate toDate) {
 		return timeBlockDao.getTimeBlocksForLookup(documentId,principalId,userPrincipalId,fromDate,toDate);
 	}
+
 }
