@@ -64,6 +64,10 @@ public class CalendarEntrySchedulerJob extends QuartzJobBean {
 	            if (calendarEntry.getBatchSupervisorApprovalDateTime() != null) {
 	            	getBatchJobService().scheduleSupervisorApprovalJobs(calendarEntry);
 	            }
+	            
+	            if (calendarEntry.getBatchPayrollApprovalDateTime() != null) {
+	            	getBatchJobService().schedulePayrollApprovalJobs(calendarEntry);
+	            }
 	        }
         } catch (SchedulerException se) {
         	LOG.error("Exception thrown during job scheduling", se);
