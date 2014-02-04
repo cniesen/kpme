@@ -39,6 +39,7 @@ import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.block.LeaveBlock;
@@ -74,8 +75,15 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         List<Boolean> dayArrangements = new ArrayList<Boolean>();
 
 		timeSummary.setTimeSummaryHeader(getHeaderForSummary(timesheetDocument.getCalendarEntry(), timeSummary));
-		
-		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), timesheetDocument.getCalendarEntry(), HrServiceLocator.getCalendarService().getCalendar(timesheetDocument.getCalendarEntry().getHrCalendarId()), true);
+
+		DateTimeZone userTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(timesheetDocument.getPrincipalId()));
+        if (userTimeZone == null) {
+            userTimeZone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
+        }
+
+        CalendarEntry payCalendarEntry = timesheetDocument.getCalendarEntry();
+
+		TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timesheetDocument.getTimeBlocks(), payCalendarEntry, HrServiceLocator.getCalendarService().getCalendar(timesheetDocument.getCalendarEntry().getHrCalendarId()), true, TKUtils.getDaySpanForCalendarEntry(payCalendarEntry,userTimeZone));
 
         List<Assignment> timeAssignments = timesheetDocument.getAssignments();
         List<String> tAssignmentKeys = new ArrayList<String>();
@@ -89,10 +97,10 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
         tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
 
-		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate, regularEarnCodes, timeSummary));
+		timeSummary.setWorkedHours(getWorkedHours(tkTimeBlockAggregate, regularEarnCodes, timeSummary, userTimeZone));
 		
 		// Set Flsa week total map
-		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), null, regularEarnCodes);
+		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), null, regularEarnCodes,userTimeZone);
 		timeSummary.setFlsaWeekTotalMap(flsaWeekTotal);
 
         Map<String,List<EarnGroupSection>> earnGroupSections = getEarnGroupSections(tkTimeBlockAggregate, timeSummary.getTimeSummaryHeader().size()+1, 
@@ -408,14 +416,15 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
      * @return A list of BigDecimals containing the number of hours worked.
      * This list will line up with the header.
      */
-    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate, Set<String> regularEarnCodes, TimeSummary timeSummary) {
+    private List<BigDecimal> getWorkedHours(TkTimeBlockAggregate aggregate, Set<String> regularEarnCodes, TimeSummary timeSummary,DateTimeZone timezone) {
         List<BigDecimal> hours = new ArrayList<BigDecimal>();
         Map<Integer, BigDecimal> weekHours = new TreeMap<Integer, BigDecimal>();
         Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
-        
+
         BigDecimal periodTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+
         int i=0;
-        for (FlsaWeek week : aggregate.getFlsaWeeks(HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback(), DateTimeConstants.SUNDAY, true)) {
+        for (FlsaWeek week : aggregate.getFlsaWeeks(timezone, DateTimeConstants.SUNDAY, true)) {
         	weekHours = new TreeMap<Integer, BigDecimal>();
         	
             BigDecimal weeklyTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
@@ -630,12 +639,11 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
     }
 
     
-	private Map<String, BigDecimal> getHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea, Set<String> regularEarnCodes) {
+	private Map<String, BigDecimal> getHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea, Set<String> regularEarnCodes, DateTimeZone timezone) {
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
-		DateTimeZone dateTimeZone = HrServiceLocator.getTimezoneService()
-				.getUserTimezoneWithFallback();
-		List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
+
+		List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(timezone, principalId);
 		
 		int weekCount = 1;
 		for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
