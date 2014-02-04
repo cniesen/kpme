@@ -171,7 +171,8 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
         clockLog.setJobNumber(assignment.getJobNumber());
         clockLog.setWorkArea(assignment.getWorkArea());
         clockLog.setTask(assignment.getTask());
-        clockLog.setClockTimestampTimezone(HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback().getID());
+//        clockLog.setClockTimestampTimezone(HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback().getID());
+        clockLog.setClockTimestampTimezone(HrServiceLocator.getTimezoneService().getUserTimezone(timesheetDocument.getPrincipalId()));
         clockLog.setClockDateTime(clockDateTime);
         clockLog.setClockAction(clockAction);
         clockLog.setIpAddress(ip);
