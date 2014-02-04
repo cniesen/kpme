@@ -92,7 +92,7 @@ public class TimeDetailTestUtils {
         selectedEarnCode = earnCode.getEarnCode();
 
         tdaf.setAcrossDays(acrossDays ? "y" : "n");
-        tdaf.setSpanningWeeks(spanningWeeks ? "y" : "n"); // KPME-1446
+//        tdaf.setSpanningWeeks(spanningWeeks ? "y" : "n"); // KPME-1446
         tdaf.setAmount(amount);
         tdaf.setHours(hours);
         tdaf.setStartTime(startTimeS);
