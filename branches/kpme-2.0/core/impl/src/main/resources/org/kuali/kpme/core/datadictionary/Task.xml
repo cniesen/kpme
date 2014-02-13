@@ -238,4 +238,35 @@
         <property name="title" value="Task Lookup" />
     </bean>
     
+    <!--***************************************************************************
+							Views
+ 	***************************************************************************-->
+ 	 
+    <!-- KRAD Lookup Definition -->
+  
+  	<bean id="Task-LookupView" parent="KPMEUif-LookupView">
+        <property name="headerText" value="Task Lookup"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.task.Task" />
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />
+        <property name="criteriaFields">
+            <list>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="task" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="description" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea" >
+					<property name="quickfinder">
+  						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkArea"
+  								p:fieldConversions="workArea:workArea,effectiveDate:effectiveDate"/>
+  					</property>
+				</bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true"/>
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean parent="Uif-DataField" p:propertyName="task" />
+				<bean parent="Uif-DataField" p:propertyName="description" />
+				<bean parent="Uif-DataField" p:propertyName="workArea" />
+            </list>
+        </property>
+    </bean>   
 </beans>

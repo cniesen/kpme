@@ -26,12 +26,6 @@
 		<property name="dataObjectClass" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
 		<property name="titleAttribute" value="tkClockLogId" />
 		<property name="objectLabel" value="Clock Log" />
-		<property name="inquiryDefinition">
-			<ref bean="ClockLog-inquiryDefinition" />
-		</property>
-		<!-- <property name="lookupDefinition">
-			<ref bean="ClockLog-lookupDefinition" />
-		</property> -->
 		<property name="attributes">
 			<list>
 			    <ref bean="ClockLog-documentId"/>
@@ -48,44 +42,7 @@
 				<ref bean="ClockLog-timestamp" />
 				<ref bean="ClockLog-clockedByMissedPunch"/>
 			</list>
-		</property>
-		 
-		<property name="relationships">
-			<list>
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="workAreaObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="workArea"
-								p:targetName="workArea" />
-						</list>
-					</property>
-				</bean>
-
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="taskObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="task"
-								p:targetName="task" />
-						</list>
-					</property>
-				</bean>
-			
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="principal" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="principalId"
-								p:targetName="principalId" />
-						</list>
-					</property>
-				</bean>
-						
-				 
-			</list>
-		</property>
-		 
+		</property> 
 	</bean>
 
 	<!-- Attribute Definition -->
@@ -174,11 +131,7 @@
 		parent="AttributeDefinition">
 		<property name="shortLabel" value="Clock Timestamp" />
 		<property name="maxLength" value="20" />
-		<!--  <property name="validationPattern">
-			<bean parent="TimestampValidationPattern" />
-		</property> -->
 		<property name="validCharactersConstraint">
-            <!-- <bean parent="TimeStampPatternConstraint"/> -->
             <bean parent="DatePatternConstraint"/>
         </property>
 		<property name="controlField">
@@ -264,7 +217,6 @@
 		<property name="shortLabel" value="Timestamp" />
 		<property name="maxLength" value="21" />
 		<property name="validCharactersConstraint">
-            <!-- <bean parent="TimeStampPatternConstraint"/> -->
             <bean parent="DatePatternConstraint"/>
         </property>
 		<property name="controlField">
@@ -289,39 +241,13 @@
 		<property name="name" value="clockedByMissedPunch" />
 		<property name="label" value="Clocked By Missed Punch" />
 	</bean>
-	<!--  Inquiry Definitions  -->
-  
-  	<bean id="ClockLog-inquiryDefinition" parent="ClockLog-inquiryDefinition-parentBean" />
 
-	<bean id="ClockLog-inquiryDefinition-parentBean" abstract="true"
-		parent="InquiryDefinition"  p:inquirableClass="org.kuali.kpme.tklm.time.clocklog.web.ClockLogInquirableImpl">
-		<property name="inquirySections">
-			<list>
-				<bean parent="InquirySectionDefinition">
-					<property name="numberOfColumns" value="1" />
-					<property name="inquiryFields">
-						<list>
-							<bean parent="FieldDefinition" p:attributeName="principalId" />
-							<bean parent="FieldDefinition" p:attributeName="workArea" />
-							<bean parent="FieldDefinition" p:attributeName="task" />
-							<bean parent="FieldDefinition" p:attributeName="clockTimestamp" />
-							<bean parent="FieldDefinition" p:attributeName="clockTimestampTimezone" />
-							<bean parent="FieldDefinition" p:attributeName="clockAction" />
-							<bean parent="FieldDefinition" p:attributeName="ipAddress" />
-							<bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
-							<bean parent="FieldDefinition" p:attributeName="timestamp" />
-							<bean parent="FieldDefinition" p:attributeName="clockedByMissedPunch" />
-							
-						</list>
-					</property>
-					<property name="title" value="Clock Log" />
-				</bean>
-			</list>
-		</property>
-		<property name="translateCodes" value="false"/>
-		<property name="title" value="Clock Log Inquiry" />
-	</bean>
 
+
+    <!--***************************************************************************
+							Views
+ 	***************************************************************************-->
+ 
 	<!-- KRAD Lookup View -->
 	
 	<bean id="ClockLog-LookupView" parent="KPMEUif-LookupView">
@@ -360,7 +286,12 @@
         <property name="resultFields">
             <list>
                 <bean parent="Uif-DataField" p:propertyName="documentId" />
-                <bean parent="Uif-DataField" p:propertyName="principalId"/>
+                <bean parent="Uif-DataField" p:propertyName="principalId">
+              		 <property name="inquiry">
+  						<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+  							p:inquiryParameters="principalId:principalId"/>
+  					</property>
+                </bean>
                 <bean parent="Uif-DataField" p:propertyName="workArea" />
                 <bean parent="Uif-DataField" p:propertyName="task" />
                 <bean parent="Uif-DataField" p:propertyName="ipAddress" />
@@ -371,7 +302,7 @@
    
     <!--KRAD Clock Log Inquiry View-->
     
-    <bean id="ClockLog-inquiryView" parent="Uif-InquiryView">
+    <bean id="ClockLog-InquiryView" parent="Uif-InquiryView">
         <property name="headerText" value="Clock Log Inquiry"/>
         <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog"/>
         <property name="singlePageView" value="true"/>
@@ -397,41 +328,6 @@
         </property>
         <property name="title" value="Clock Log Inquiry"/>
     </bean>
-    
-    <!-- Look up Definitions  -->
- 	
-	<!-- <bean id="ClockLog-lookupDefinition" parent="ClockLog-lookupDefinition-parentBean" />
-	<bean id="ClockLog-lookupDefinition-parentBean" abstract="true"
-		parent="LookupDefinition">
-		<property name="lookupableID" value="clockLogLookupable"></property>
-		<property name="lookupFields">
-			<list>
-				<bean parent="FieldDefinition" p:attributeName="documentId" />
-				<bean parent="FieldDefinition" p:attributeName="principalId" />
-				<bean parent="FieldDefinition" p:attributeName="workArea" p:noDirectInquiry="true" />
-				<bean parent="FieldDefinition" p:attributeName="task" p:noDirectInquiry="true" />
-				<bean parent="FieldDefinition" p:attributeName="ipAddress" />
-				<bean parent="FieldDefinition" p:attributeName="clockTimestamp" />
-			</list>
-		</property>
-		<property name="resultFields">
-			<list>
-				<bean parent="FieldDefinition" p:attributeName="documentId" />
-				<bean parent="FieldDefinition" p:attributeName="principalId" />
-				<bean parent="FieldDefinition" p:attributeName="workArea" />
-				<bean parent="FieldDefinition" p:attributeName="task" />
-				<bean parent="FieldDefinition" p:attributeName="ipAddress" />
-				<bean parent="FieldDefinition" p:attributeName="clockAction" />
-				<bean parent="FieldDefinition" p:attributeName="jobNumber" />
-				<bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
-				<bean parent="FieldDefinition" p:attributeName="clockTimestamp" />
-				<bean parent="FieldDefinition" p:attributeName="clockTimestampTimezone" />
-				<bean parent="FieldDefinition" p:attributeName="timestamp" />
-				<bean parent="FieldDefinition" p:attributeName="clockedByMissedPunch" />
-			</list>
-		</property>
-		<property name="title" value="Clock Log Lookup" />
-	</bean> --> 
 	
 	<!-- Maintenance Section Definitions -->	
 	
