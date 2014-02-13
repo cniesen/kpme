@@ -401,5 +401,42 @@
 			</list>
 		</property>
 	</bean>
+
+    <!--***************************************************************************
+							Views
+ 	***************************************************************************-->
+ 	
+	<!-- KRAD Lookup Definition -->
 	
+	<bean id="WorkArea-LookupView" parent="KPMEUif-LookupView">
+        <property name="headerText" value="Work Area Lookup"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.workarea.WorkArea"/>
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />
+        <property name="criteriaFields">
+            <list>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="dept" >
+                	<property name="quickfinder">
+  						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.department.Department"
+  								p:fieldConversions="dept:dept"/>
+  					</property>
+                </bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="description" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true"/>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" />
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean parent="Uif-DataField" p:propertyName="dept" />
+				<bean parent="Uif-DataField" p:propertyName="workArea" />
+				<bean parent="Uif-DataField" p:propertyName="description" />
+				<bean parent="Uif-DataField" p:propertyName="defaultOvertimeEarnCode" />
+				<bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+				<bean parent="Uif-DataField" p:propertyName="active" />
+            </list>
+        </property>
+    </bean>
+    
 </beans>
