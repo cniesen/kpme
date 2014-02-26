@@ -200,7 +200,7 @@
 
     <bean id="EarnCodeSecurity-relativeEffectiveDate" parent="EarnCodeSecurity-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 

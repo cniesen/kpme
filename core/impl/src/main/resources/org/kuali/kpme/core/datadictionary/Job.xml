@@ -376,7 +376,7 @@
 
     <bean id="Job-relativeEffectiveDate" parent="Job-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 

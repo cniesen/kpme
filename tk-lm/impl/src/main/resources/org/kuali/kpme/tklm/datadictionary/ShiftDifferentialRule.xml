@@ -235,7 +235,7 @@
 	<!-- effectiveDate-->
     <bean id="ShiftDifferentialRule-relativeEffectiveDate" parent="ShiftDifferentialRule-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 	<bean id="ShiftDifferentialRule-effectiveDate" parent="ShiftDifferentialRule-effectiveDate-parentBean" />
