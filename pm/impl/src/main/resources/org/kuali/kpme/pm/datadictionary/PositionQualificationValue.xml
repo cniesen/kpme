@@ -105,7 +105,7 @@
   
 <!--  Position Qualification Value Maintenance View -->
   <bean id="PositionQualificationValue-MaintenanceView" parent="PositionQualificationValue-MaintenanceView-parentBean"/>
-  <bean id="PositionQualificationValue-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PositionQualificationValue-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Qualification Value Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfctnvl.PositionQualificationValue"/>
     <property name="items">

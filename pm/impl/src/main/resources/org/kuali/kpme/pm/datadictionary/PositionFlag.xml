@@ -152,7 +152,7 @@
   
 <!--  Position Flag Maintenance View -->
   <bean id="PositionFlag-MaintenanceView" parent="PositionFlag-MaintenanceView-parentBean"/>
-  <bean id="PositionFlag-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PositionFlag-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Flag Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionflag.PositionFlag"/>
     <property name="items">

@@ -51,5 +51,11 @@
             </list>
         </property>
     </bean>
-	
+
+    <!-- Maintenance View for KPME to hide cancel button upon submit -->
+    <bean id="KPMEUif-MaintenanceView" parent="Uif-MaintenanceView">
+        <property name="presentationControllerClass"
+                  value="org.kuali.rice.krad.kpme.controller.KPMEMaintenanceViewPresentationControllerBase"/>
+    </bean>
+
 </beans>

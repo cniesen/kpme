@@ -224,7 +224,7 @@
   
 <!--  Position Department Maintenance View -->
   <bean id="PositionDepartment-MaintenanceView" parent="PositionDepartment-MaintenanceView-parentBean"/>
-  <bean id="PositionDepartment-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PositionDepartment-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Department Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiondepartment.PositionDepartment"/>
     <property name="items">

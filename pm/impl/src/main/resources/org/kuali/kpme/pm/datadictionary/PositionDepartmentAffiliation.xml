@@ -150,7 +150,7 @@
   
   <!--  Position Type Maintenance View -->
   <bean id="PositionDepartmentAffiliation-MaintenanceView" parent="PositionDepartmentAffiliation-MaintenanceView-parentBean"/>
-  <bean id="PositionDepartmentAffiliation-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PositionDepartmentAffiliation-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Department Affiliation Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation"/>
     <property name="items">
