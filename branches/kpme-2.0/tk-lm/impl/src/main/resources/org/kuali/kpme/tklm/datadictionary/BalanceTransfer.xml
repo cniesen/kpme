@@ -241,7 +241,7 @@
 	
     <bean id="BalanceTransfer-relativeEffectiveDate" parent="BalanceTransfer-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 	

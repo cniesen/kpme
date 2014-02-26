@@ -246,7 +246,7 @@
 
     <bean id="LeaveDonation-relativeEffectiveDate" parent="LeaveDonation-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 	<!-- amountReceived -->

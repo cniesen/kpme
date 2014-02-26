@@ -106,7 +106,7 @@
 
     <bean id="LeaveAdjustment-relativeEffectiveDate" parent="LeaveAdjustment-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
 	<bean id="LeaveAdjustment-effectiveDate" parent="LeaveAdjustment-effectiveDate-parentBean" />

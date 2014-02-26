@@ -146,9 +146,10 @@
     <!-- effectiveDate -->
     <bean id="LeavePayout-relativeEffectiveDate" parent="LeavePayout-effectiveDate-parentBean" p:name="relativeEffectiveDate">
         <property name="control">
-            <bean parent="TextControlDefinition" p:size="12"/>
+            <bean parent="HiddenControlDefinition"/>
         </property>
     </bean>
+
     <bean id="LeavePayout-effectiveDate" parent="LeavePayout-effectiveDate-parentBean" />
     <bean id="LeavePayout-effectiveDate-parentBean" abstract="true"
           parent="AttributeDefinition">
@@ -256,13 +257,15 @@
 					<property name="numberOfColumns" value="1" />
 					<property name="inquiryFields">
 						<list>
-                            <bean parent="FieldDefinition" p:attributeName="lmLeavePayoutId"/>
-                            <bean parent="FieldDefinition" p:attributeName="principalId"/>
-                            <bean parent="FieldDefinition" p:attributeName="earnCode"/>
-							<bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" p:noLookup="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="lmLeavePayoutId" />
+                            <bean parent="FieldDefinition" p:attributeName="principalId" p:required="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="earnCode" p:required="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="effectiveDate" p:required="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="fromAccrualCategory" p:required="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="payoutAmount" p:required="true"/>
+                            <bean parent="FieldDefinition" p:attributeName="forfeitedAmount"/>
                             <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
                                   p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
-							<bean parent="FieldDefinition" p:attributeName="fromAccrualCategory"/>
 						</list>
 					</property>
 					<property name="title" value="LeavePayout" />
