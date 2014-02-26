@@ -153,7 +153,7 @@
   
 <!--  Position Responsibility Option Maintenance View -->
   <bean id="PositionResponsibilityOption-MaintenanceView" parent="PositionResponsibilityOption-MaintenanceView-parentBean"/>
-  <bean id="PositionResponsibilityOption-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PositionResponsibilityOption-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Responsibility Option Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption"/>
     <property name="items">

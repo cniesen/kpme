@@ -206,7 +206,7 @@
   
 <!--  Position Type Maintenance View -->
   <bean id="PstnContractType-MaintenanceView" parent="PstnContractType-MaintenanceView-parentBean"/>
-  <bean id="PstnContractType-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PstnContractType-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Contract Type Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstncontracttype.PstnContractType"/>
     <property name="items">

@@ -232,7 +232,7 @@
   <!-- Maintenance View -->
 
   <bean id="PayStepMaintenanceDocument-PayStepMaintenance" parent="PayStepMaintenanceDocument-PayStepMaintenance-parentBean"/>
-  <bean id="PayStepMaintenanceDocument-PayStepMaintenance-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="PayStepMaintenanceDocument-PayStepMaintenance-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
   	<property name="headerText" value= "Pay Step Maintenance"/>
   	<property name="dataObjectClassName" value="org.kuali.kpme.core.paystep.PayStep"/>
     <property name="items">

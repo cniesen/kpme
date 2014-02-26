@@ -332,7 +332,7 @@
 	<!-- Maintenance Section Definitions -->	
 	
 	<bean id="ClockLog-MaintenanceView" parent="ClockLog-ClockLogMaintenance-parentBean" />
-	<bean id="ClockLog-ClockLogMaintenance-parentBean" abstract="true" parent="Uif-MaintenanceView">
+	<bean id="ClockLog-ClockLogMaintenance-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
 		<property name="headerText" value="Clock Log Maintenance" />
 		<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog"/>
 		<property name="items">

@@ -421,7 +421,7 @@
   
 <!--  Salary Group Maintenance View -->
   <bean id="SalaryGroup-MaintenanceView" parent="SalaryGroup-MaintenanceView-parentBean"/>
-  <bean id="SalaryGroup-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
+  <bean id="SalaryGroup-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Salary Group Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.core.salarygroup.SalaryGroup"/>
     <property name="items">
