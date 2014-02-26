@@ -24,6 +24,7 @@ import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -88,8 +89,11 @@ public class WorkAreaDaoOjbImpl extends PlatformAwareDaoBaseOjb implements WorkA
     @Override
      public List<WorkArea> getWorkArea(String department, LocalDate asOfDate) {
         Criteria root = new Criteria();
-
-        root.addEqualTo("dept", department);
+        if(StringUtils.contains(department, HrConstants.WILDCARD_CHARACTER)) {
+        	root.addLike("dept", department);
+        } else {
+        	root.addEqualTo("dept", department);
+        }
         root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(WorkArea.class, asOfDate, WorkArea.EQUAL_TO_FIELDS, false));
         root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(WorkArea.class, WorkArea.EQUAL_TO_FIELDS, false));
 
