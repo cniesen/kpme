@@ -278,7 +278,9 @@ public class ValidationUtils {
 
         if (StringUtils.isEmpty(department)) {
           // do nothing, let false be returned.
-        } else if (asOfDate != null) {
+        } else if (StringUtils.equals(department, HrConstants.WILDCARD_CHARACTER)) {
+        	valid = true;
+        }else if (asOfDate != null) {
 			Department d = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, asOfDate);
 		    valid = (d != null);
 		} else {
