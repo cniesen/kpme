@@ -26,7 +26,9 @@ import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchDocumentContract;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class MissedPunchDocument extends TransactionalDocumentBase implements MissedPunchDocumentContract {
 
@@ -116,5 +118,15 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
 
     public Department getDepartmentObj() {
         return departmentObj;
+    }
+    
+    @Override
+    public List<Assignment> getAssignments() {
+    	List<Assignment> assignments = new ArrayList<Assignment>();
+    	if( (getMissedPunch() != null) && (getMissedPunch().getActionFullDateTime() != null) ){
+    		assignments =  HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), 
+    													getMissedPunch().getActionFullDateTime().toLocalDate());
+    	}
+        return assignments; 
     }
 }
