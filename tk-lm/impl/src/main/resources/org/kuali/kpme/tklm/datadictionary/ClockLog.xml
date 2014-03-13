@@ -253,7 +253,8 @@
 	<bean id="ClockLog-LookupView" parent="KPMEUif-LookupView">
         <property name="headerText" value="Clock Log Lookup" />
         <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
-        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.time.clocklog.web.ClockLogLookupableImpl" />
+        <!-- <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" /> -->
         <property name="criteriaFields">
             <list>
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="documentId" />
@@ -290,7 +291,7 @@
               		 <property name="inquiry">
   						<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
   							p:inquiryParameters="principalId:principalId"/>
-  					</property>
+  					 </property>
                 </bean>
                 <bean parent="Uif-DataField" p:propertyName="workArea" />
                 <bean parent="Uif-DataField" p:propertyName="task" />
@@ -323,6 +324,7 @@
             				<bean parent="Uif-DataField" p:propertyName="clockedByMissedPunch" />
           				</list>   				
         			</property>
+        			<property name="title" value="Clock Log" />
         		</bean>
         	</list>
         </property>
