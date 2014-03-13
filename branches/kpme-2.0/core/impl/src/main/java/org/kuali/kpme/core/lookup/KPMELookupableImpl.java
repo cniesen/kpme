@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.krad.lookup.LookupableImpl;
 import org.kuali.rice.krad.uif.UifConstants;
 import org.kuali.rice.krad.uif.UifParameters;
