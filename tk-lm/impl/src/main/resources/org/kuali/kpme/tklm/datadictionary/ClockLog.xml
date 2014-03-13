@@ -331,32 +331,4 @@
         <property name="title" value="Clock Log Inquiry"/>
     </bean>
 	
-	<!-- Maintenance Section Definitions -->	
-	
-	<bean id="ClockLog-MaintenanceView" parent="ClockLog-ClockLogMaintenance-parentBean" />
-	<bean id="ClockLog-ClockLogMaintenance-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
-		<property name="headerText" value="Clock Log Maintenance" />
-		<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog"/>
-		<property name="items">
-			<list merge="true">
-				<bean parent="Uif-MaintenanceGridSection">
-					<property name="items">
-            			<list>
-            				<bean parent="Uif-InputField" p:propertyName="principalId" p:required="false"/>
-							<bean parent="Uif-InputField" p:propertyName="jobNumber" p:required="false"/>
-							<bean parent="Uif-InputField" p:propertyName="workArea" p:required="false"/>
-							<bean parent="Uif-InputField" p:propertyName="task" p:required="false"/>
-							<bean parent="Uif-InputField" p:propertyName="clockTimestamp" p:required="true"/>
-							<bean parent="Uif-InputField" p:propertyName="clockTimestampTimezone" p:required="false" />
-							<bean parent="Uif-InputField" p:propertyName="clockAction" p:required="false" />
-							<bean parent="Uif-InputField" p:propertyName="ipAddress" p:required="false" />
-							<bean parent="Uif-InputField" p:propertyName="clockedByMissedPunch" p:required="false"/>
-							<bean parent="Uif-InputField" p:propertyName="userPrincipalId" p:required="false" />
-							<bean parent="Uif-InputField" p:propertyName="timestamp" p:required="false" />
-            			</list>
-            		</property>
-				</bean>
-			</list>
-		</property>
-	</bean>
 </beans>
