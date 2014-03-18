@@ -27,6 +27,7 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.service.KEWServiceLocator;
 
 public class DeleteDocumentAction extends KPMEAction {
 
@@ -46,6 +47,10 @@ public class DeleteDocumentAction extends KPMEAction {
             	LmServiceLocator.getLeaveBlockService().deleteLeaveBlocksForDocumentId(documentId);
                 LmServiceLocator.getLeaveCalendarDocumentHeaderService().deleteLeaveCalendarHeader(documentId);
             }
+            
+            // KPME - 3294 : Delete ActionList items
+           KEWServiceLocator.getActionListService().deleteByDocumentId(documentId);
+    		
     	}
     	
     	return mapping.findForward("basic");
