@@ -25,9 +25,6 @@ public class KPMEAttributes extends TransientBusinessObjectBase {
 	private String department;
 	private String location;
 	private String position;
-	private String institution;
-	private String organization;
-	private String positionType; 
 	
 	public String getWorkArea() {
 		return workArea;
@@ -61,27 +58,4 @@ public class KPMEAttributes extends TransientBusinessObjectBase {
 		this.position = position;
 	}
 
-	public String getInstitution() {
-		return institution;
-	}
-
-	public void setInstitution(String institution) {
-		this.institution = institution;
-	}
-
-	public String getOrganization() {
-		return organization;
-	}
-
-	public void setOrganization(String organization) {
-		this.organization = organization;
-	}
-
-	public String getPositionType() {
-		return positionType;
-	}
-
-	public void setPositionType(String positionType) {
-		this.positionType = positionType;
-	}
 }

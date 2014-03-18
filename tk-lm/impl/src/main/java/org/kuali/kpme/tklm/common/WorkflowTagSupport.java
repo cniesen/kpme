@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.tklm.api.common.WorkflowTagSupportContract;
+import org.kuali.kpme.api.tklm.common.WorkflowTagSupportContract;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
@@ -167,13 +167,7 @@ public class WorkflowTagSupport implements WorkflowTagSupportContract {
     }
 
     public static boolean isTimesheetApprovalButtonsEnabled(String documentId) {
-        boolean isTimesheetApprovalButtonsEnabled = false;
-
-        if (StringUtils.isNotBlank(documentId) && isApprovalButtonsEnabled(documentId)) {
-            TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
-            isTimesheetApprovalButtonsEnabled = TkServiceLocator.getTimesheetService().isTimesheetValid(timesheetDocument);
-        }
-        return isTimesheetApprovalButtonsEnabled;
+        return isApprovalButtonsEnabled(documentId);
     }
 
     public static boolean isLeaveCalendarApprovalButtonsEnabled(String documentId) {

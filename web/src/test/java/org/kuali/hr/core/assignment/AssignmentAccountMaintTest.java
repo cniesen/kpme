@@ -15,8 +15,20 @@
  */
 package org.kuali.hr.core.assignment;
 
-/**
-//@FunctionalTest
+import java.math.BigDecimal;
+
+import org.junit.Assert;
+import org.junit.Test;
+import org.kuali.hr.KPMEWebTestCase;
+import org.kuali.hr.util.HtmlUnitUtil;
+import org.kuali.kpme.core.FunctionalTest;
+import org.kuali.kpme.core.assignment.account.AssignmentAccount;
+import org.kuali.kpme.core.util.HrTestConstants;
+import org.kuali.rice.krad.service.KRADServiceLocator;
+
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+@FunctionalTest
 public class AssignmentAccountMaintTest extends KPMEWebTestCase{
 	private static final String TEST_CODE="CD";
 	private static final String TEST_ID="1";
@@ -43,8 +55,7 @@ public class AssignmentAccountMaintTest extends KPMEWebTestCase{
 		assignmentAccount.setFinCoaCd(TEST_CODE);
 		assignmentAccount.setFinObjectCd(TEST_CODE);
 		assignmentAccount.setFinSubObjCd(TEST_CODE);
-		assignmentAccount.setPercent(TEST_PERCENT);
-        assignmentAccount.setUserPrincipalId("admin");
+		assignmentAccount.setPercent(TEST_PERCENT);		
 		KRADServiceLocator.getBusinessObjectService().save(assignmentAccount);
 		assignmentAccountId = assignmentAccount.getTkAssignAcctId();
 	}
@@ -58,4 +69,4 @@ public class AssignmentAccountMaintTest extends KPMEWebTestCase{
 	
 }
 
-*/
+

@@ -15,11 +15,14 @@
  */
 package org.kuali.kpme.core.position.web;
 
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import java.sql.Timestamp;
+import java.util.Map;
+
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.position.PositionBase;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
@@ -27,9 +30,6 @@ import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
-
-import java.sql.Timestamp;
-import java.util.Map;
 
 public class PositionBaseMaintainableServiceImpl extends HrBusinessObjectMaintainableImpl {
 
@@ -41,7 +41,7 @@ public class PositionBaseMaintainableServiceImpl extends HrBusinessObjectMaintai
 
     @Override
     public HrBusinessObject getObjectById(String id) {
-        return (HrBusinessObject) HrServiceLocator.getPositionService().getPosition(id);
+        return HrServiceLocator.getPositionService().getPosition(id);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class PositionBaseMaintainableServiceImpl extends HrBusinessObjectMaintai
 //        	position.setPositionNumber(null);
         	position.setTimestamp(null);
         }
-        
+
         KRADServiceLocator.getBusinessObjectService().save(position);
         CacheUtils.flushCache(PositionBase.CACHE_NAME);
     }

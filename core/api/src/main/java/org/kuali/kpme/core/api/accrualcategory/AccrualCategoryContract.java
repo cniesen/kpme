@@ -15,21 +15,21 @@
  */
 package org.kuali.kpme.core.api.accrualcategory;
 
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
-
 import java.math.BigDecimal;
+import java.util.List;
+
+import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.earncode.EarnCodeContract;
+import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 
 /**
  * <p>AccrualCategoryContract interface.</p>
  *
  */
-public interface AccrualCategoryContract extends KpmeEffectiveDataTransferObject {
+public interface AccrualCategoryContract extends HrBusinessObjectContract {
 	
-	 public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategory";
-	
-	 /**
+	/**
 	 * Flag that shows if the AccrualCetegory has any AccrualCategoryRules
 	 * 
 	 * <p>
@@ -61,7 +61,7 @@ public interface AccrualCategoryContract extends KpmeEffectiveDataTransferObject
 	 * 
 	 * @return leavePlanObj for AccrualCategory
 	 */
-	//public LeavePlanContract getLeavePlanObj();
+	public LeavePlanContract getLeavePlanObj();
 	
 	/**
 	 * The list of AccrualCaegoryRules of the AccrualCategory
@@ -72,7 +72,7 @@ public interface AccrualCategoryContract extends KpmeEffectiveDataTransferObject
 	 * 
 	 * @return accrualCategoryRules for AccrualCategory
 	 */
-	//public List<? extends AccrualCategoryRuleContract> getAccrualCategoryRules();
+	public List<? extends AccrualCategoryRuleContract> getAccrualCategoryRules();
 	
 	/**
 	 * The Primary Key of an AccrualCategory entry saved in a database
@@ -183,7 +183,7 @@ public interface AccrualCategoryContract extends KpmeEffectiveDataTransferObject
 	 * 
 	 * @return Y if on, N if not
 	 */
-	//public Boolean getHistory();
+	public Boolean getHistory();
 	
 	/**
 	 * The EarnCode of the earnCodeObject associated with an AccrualCategory

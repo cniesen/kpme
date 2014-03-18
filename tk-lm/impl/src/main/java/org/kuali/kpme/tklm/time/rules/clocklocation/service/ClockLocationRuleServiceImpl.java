@@ -15,11 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.rules.clocklocation.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
@@ -29,11 +34,6 @@ import org.kuali.kpme.tklm.time.rules.clocklocation.dao.ClockLocationDao;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 	private ClockLocationDao clockLocationDao;
@@ -64,27 +64,6 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		}
 		clockLog.setUnapprovedIP(true);
 		GlobalVariables.getMessageMap().putWarning("property", "ipaddress.invalid.format", clockLog.getIpAddress());
-
-	}
-	
-	public boolean isInValidIPClockLocation(String dept, Long workArea,String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate){
-		Boolean isInValid = true;
-		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(dept, workArea, principalId, jobNumber, asOfDate);
-		if(lstClockLocationRules.isEmpty()){
-			isInValid = false;
-			return isInValid;
-		}
-		for(ClockLocationRule clockLocationRule : lstClockLocationRules){
-			List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
-			String ipAddressClock = ipAddress;
-			for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
-				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddressClock)){
-					isInValid = false;
-					break;
-				}
-			}
-		}
-		return isInValid;
 
 	}
 
@@ -182,7 +161,7 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
     
     	for (ClockLocationRule clockLocationRuleObj : clockLocationRuleObjs) {
         	String department = clockLocationRuleObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, clockLocationRuleObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, clockLocationRuleObj.getEffectiveLocalDate());
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();

@@ -32,14 +32,14 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.hsqldb.lib.StringUtil;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.json.simple.JSONValue;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.leave.workflow.LeaveCalendarDocumentHeaderContract;
 import org.kuali.kpme.tklm.common.CalendarApprovalForm;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
@@ -89,7 +89,7 @@ public class LeaveApprovalWSAction extends KPMEAction {
 		  }
 		  
 	        if(StringUtils.isNotBlank(laaf.getSelectedPayPeriod())) {
-	        	CalendarEntryContract currentCE = HrServiceLocator.getCalendarEntryService().getCalendarEntry(laaf.getSelectedPayPeriod());
+	        	CalendarEntry currentCE = HrServiceLocator.getCalendarEntryService().getCalendarEntry(laaf.getSelectedPayPeriod());
 	        	if(currentCE != null) {
 				  LocalDate endDate = currentCE.getEndPeriodFullDateTime().toLocalDate();
 				  LocalDate beginDate = currentCE.getBeginPeriodFullDateTime().toLocalDate();
@@ -110,11 +110,11 @@ public class LeaveApprovalWSAction extends KPMEAction {
 						  }
 					  }
 				  } else if (StringUtils.equals(laaf.getSearchField(), CalendarApprovalForm.ORDER_BY_DOCID)) {
-					  Map<String, LeaveCalendarDocumentHeaderContract> principalDocumentHeaders =
+					  Map<String, LeaveCalendarDocumentHeader> principalDocumentHeaders =
 							  LmServiceLocator.getLeaveApprovalService().getPrincipalDocumentHeader(principalIds, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 					  List<String> docIdList = new ArrayList<String>();
 					  
-					  for (Map.Entry<String,LeaveCalendarDocumentHeaderContract> entry : principalDocumentHeaders.entrySet()) {
+					  for (Map.Entry<String,LeaveCalendarDocumentHeader> entry : principalDocumentHeaders.entrySet()) {						 
 						  if (StringUtils.contains(entry.getValue().getDocumentId(), laaf.getSearchTerm())) {
 							  docIdList.add(entry.getValue().getDocumentId());							  
 						  }

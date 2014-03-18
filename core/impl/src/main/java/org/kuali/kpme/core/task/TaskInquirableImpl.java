@@ -19,7 +19,6 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.TaskContract;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
@@ -29,17 +28,17 @@ public class TaskInquirableImpl extends KualiInquirableImpl {
 	
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-        TaskBo task = null;
+        Task task = null;
         if (StringUtils.isNotBlank((String)fieldValues.get("tkTaskId"))) {
-        	task = TaskBo.from(HrServiceLocator.getTaskService().getTask((String) fieldValues.get("tkTaskId")));
+        	task = HrServiceLocator.getTaskService().getTask((String) fieldValues.get("tkTaskId"));
         } else if (fieldValues.containsKey("task")) {
             String taskString = (String)fieldValues.get("task");
             Long taskNumber = taskString != null ? Long.parseLong(taskString) : null;
             String effDate = (String) fieldValues.get("effectiveDate");
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
-            task = TaskBo.from(HrServiceLocator.getTaskService().getTask(taskNumber, effectiveDate));
+            task = HrServiceLocator.getTaskService().getTask(taskNumber, effectiveDate);
         } else {
-        	task = (TaskBo) super.getBusinessObject(fieldValues);
+        	task = (Task) super.getBusinessObject(fieldValues);
         }
 
 		return task;

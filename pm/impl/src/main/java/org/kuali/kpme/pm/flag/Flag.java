@@ -15,8 +15,6 @@
  */
 package org.kuali.kpme.pm.flag;
 
-import java.util.List;
-
 import org.kuali.kpme.pm.api.flag.FlagContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
@@ -25,8 +23,7 @@ public class Flag extends PersistableBusinessObjectBase implements FlagContract 
 	
 	private String pmFlagId;
 	private String category;
-	//private String names;
-	private List<String> names; // KPME-2360/2958
+	private String names;
 	
 	public String getPmFlagId() {
 		return pmFlagId;
@@ -40,10 +37,10 @@ public class Flag extends PersistableBusinessObjectBase implements FlagContract 
 	public void setCategory(String category) {
 		this.category = category;
 	}
-	public List<String> getNames() {
+	public String getNames() {
 		return names;
 	}
-	public void setNames(List<String> names) {
+	public void setNames(String names) {
 		this.names = names;
 	}
 }

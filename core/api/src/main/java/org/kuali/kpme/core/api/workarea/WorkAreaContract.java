@@ -17,23 +17,18 @@ package org.kuali.kpme.core.api.workarea;
 
 import java.util.List;
 
-import org.kuali.kpme.core.api.authorization.DepartmentalRule;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 import org.kuali.kpme.core.api.role.workarea.WorkAreaPositionRoleMemberBoContract;
 import org.kuali.kpme.core.api.role.workarea.WorkAreaPrincipalRoleMemberBoContract;
 import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
 
 /**
  * <p>WorkAreaContract interface.</p>
  *
  */
-public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "WorkArea";
+public interface WorkAreaContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The Primary Key of a WorkArea entry saved in a database
@@ -55,7 +50,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
 	 * 
 	 * @return workArea for WorkArea
 	 */
-	//public Long getWorkArea();
+	public Long getWorkArea();
 	
 	/**
 	 * Text field which describes the work area. This description is presented to 
@@ -102,7 +97,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
 	 * 
 	 * @return true if workArea has overtime earn code, false if not
 	 */
-	public Boolean isOvtEarnCode();
+	public Boolean getOvtEarnCode();
 	
 	/**
    	 * The department this work area is associated with  
@@ -113,7 +108,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return dept for WorkArea
    	 */
-	//public String getDept();
+	public String getDept();
 
 	/**
    	 * Additional description field. This could be longer since it is not going to 
@@ -128,11 +123,22 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
     public String getAdminDescr();
 
     /**
-   	 *
+   	 * TODO: is this field needed???  
+   	 *   	 * 
    	 * @return userPrincipalId for WorkArea
    	 */
     public String getUserPrincipalId();
     
+    /**
+	 * History flag for WorkArea lookups 
+	 * 
+	 * <p>
+	 * history of WorkArea
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public boolean isHistory();
 
 	/**
    	 * The default overtime EarnCode object this work area is associated with  
@@ -165,7 +171,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return tasks for WorkArea
    	 */
-	//public List<? extends TaskContract> getTasks();
+	public List<? extends TaskContract> getTasks();
 	
 	/**
    	 * List of Active principal role approvers for this work area
@@ -176,7 +182,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return principalRoleMembers for WorkArea
    	 */
-	//public List<? extends WorkAreaPrincipalRoleMemberBoContract> getPrincipalRoleMembers();
+	public List<? extends WorkAreaPrincipalRoleMemberBoContract> getPrincipalRoleMembers();
 	
 	/**
    	 * List of Inactive principal role approvers for this work area
@@ -187,7 +193,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return inactivePrincipalRoleMembers for WorkArea
    	 */
-	//public List<? extends WorkAreaPrincipalRoleMemberBoContract> getInactivePrincipalRoleMembers();;
+	public List<? extends WorkAreaPrincipalRoleMemberBoContract> getInactivePrincipalRoleMembers();;
 
 	/**
    	 * List of Active Position role approvers for this work area
@@ -198,7 +204,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return positionRoleMembers for WorkArea
    	 */
-	//public List<? extends WorkAreaPositionRoleMemberBoContract> getPositionRoleMembers();
+	public List<? extends WorkAreaPositionRoleMemberBoContract> getPositionRoleMembers();
 
 	/**
    	 * List of Inactive Position role approvers for this work area
@@ -209,7 +215,7 @@ public interface WorkAreaContract extends DepartmentalRule, KpmeEffectiveDataTra
    	 * 
    	 * @return inactivePositionRoleMembers for WorkArea
    	 */
-	//public List<? extends WorkAreaPositionRoleMemberBoContract> getInactivePositionRoleMembers();
+	public List<? extends WorkAreaPositionRoleMemberBoContract> getInactivePositionRoleMembers();
 
 	 /**
 	 * Indicates if the hours logged under this work area can be distributed or not

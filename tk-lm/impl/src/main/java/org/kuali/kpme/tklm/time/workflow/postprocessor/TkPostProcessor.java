@@ -22,20 +22,19 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.earncode.EarnCode;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.framework.postprocessor.DocumentRouteStatusChange;
@@ -87,7 +86,7 @@ public class TkPostProcessor extends DefaultPostProcessor {
 					BigDecimal leaveAmount = null;
 					for (TimeHourDetail timeHourDetail : timeBlock.getTimeHourDetails()) {
 						EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(timeHourDetail.getEarnCode(),  endDate.toLocalDate());
-						if (earnCode != null && earnCode.isOvtEarnCode()) {
+						if (earnCode != null && earnCode.getOvtEarnCode()) {
 							overtimeEarnCode = earnCode;
 							leaveAmount = timeHourDetail.getHours();
 							//What if [can] the units are [be] days?
@@ -98,11 +97,11 @@ public class TkPostProcessor extends DefaultPostProcessor {
 						AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(overtimeEarnCode.getAccrualCategory(), endDate.toLocalDate());
 						
 						if (accrualCategory != null) {
-							LocalDate leaveDate = timeBlock.getBeginDateTime().toLocalDate();
-                            LeaveBlock.Builder builder = LeaveBlock.Builder.create(principalId, overtimeEarnCode.getEarnCode(), leaveAmount, leaveDate, null);
-                            builder.setAccrualCategory(accrualCategory.getAccrualCategory());
-                            builder.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.ACCRUAL_SERVICE);
-                            builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+							LocalDate leaveDate = LocalDate.fromDateFields(timeBlock.getBeginDate());
+							LeaveBlock.Builder builder = new LeaveBlock.Builder(leaveDate, null, principalId, overtimeEarnCode.getEarnCode(), leaveAmount)
+								.accrualCategory(accrualCategory.getAccrualCategory())
+								.leaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.ACCRUAL_SERVICE)
+								.requestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 							
 							leaveBlocks.add(builder.build());
 						}
@@ -122,10 +121,10 @@ public class TkPostProcessor extends DefaultPostProcessor {
 		if (DocumentStatus.ENROUTE.equals(newDocumentStatus)) {
 			//create pending carry over leave blocks.
 			
-			Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, endDate.toLocalDate(), true);
+			Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, endDate.toLocalDate(), true);
 			
 			if (calendar != null) {
-				List<CalendarEntry> calendarEntries = (List<CalendarEntry>) HrServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(calendar.getHrCalendarId(), beginDate, endDate);
+				List<CalendarEntry> calendarEntries = HrServiceLocator.getCalendarEntryService().getCalendarEntriesEndingBetweenBeginAndEndDate(calendar.getHrCalendarId(), beginDate, endDate);
 				
 				LmServiceLocator.getAccrualCategoryMaxCarryOverService().calculateMaxCarryOver(documentId, principalId, calendarEntries, endDate.toLocalDate());
 			}
@@ -136,9 +135,8 @@ public class TkPostProcessor extends DefaultPostProcessor {
 			List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, timesheetDocumentHeader.getBeginDateTime().toLocalDate(), endDate.toLocalDate());
 			for(LeaveBlock lb : leaveBlocks) {
 				if(StringUtils.equals(lb.getLeaveBlockType(), LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-					builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), HrContext.getPrincipalId());
+					lb.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, HrContext.getPrincipalId());
 				}
 			}
 		}

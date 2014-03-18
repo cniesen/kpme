@@ -15,54 +15,46 @@
  */
 package org.kuali.kpme.core.task.service;
 
-import org.apache.commons.collections.CollectionUtils;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.Task;
-import org.kuali.kpme.core.api.task.service.TaskService;
-import org.kuali.kpme.core.task.TaskBo;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.task.dao.TaskDao;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-
-import java.util.Collections;
-import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
 
     private TaskDao taskDao;
-
+    
 	@Override
 	public Task getTask(String tkTaskId) {
-		return TaskBo.to(taskDao.getTask(tkTaskId));
+		return taskDao.getTask(tkTaskId);
 	}
 
     @Override
     public Task getTask(Long task, LocalDate asOfDate) {
-        TaskBo taskObj =  taskDao.getTask(task, asOfDate);
+        Task taskObj =  taskDao.getTask(task, asOfDate);
         if(taskObj == null){
-        	taskObj = new TaskBo();
+        	taskObj = new Task();
         	taskObj.setActive(true);
         	taskObj.setEffectiveLocalDate(asOfDate);
         	taskObj.setTask(task);
         	taskObj.setDescription(HrConstants.TASK_DEFAULT_DESP);
         	taskObj.setTkTaskId("0");
         }
-        return TaskBo.to(taskObj);
+        return taskObj;
     }
 
     @Override
-    public Task saveTask(Task task) {
-        TaskBo bo = KRADServiceLocator.getBusinessObjectService().save(TaskBo.from(task));
-        return TaskBo.to(bo);
+    public void saveTask(Task task) {
+        taskDao.saveOrUpdate(task);
     }
 
     @Override
-    public List<Task> saveTasks(List<Task> tasks) {
-        List<TaskBo> bos = ModelObjectUtils.transform(tasks, TaskBo.toTaskBo);
-        bos = (List<TaskBo>)KRADServiceLocator.getBusinessObjectService().save(bos);
-        return CollectionUtils.isEmpty(bos) ? Collections.<Task>emptyList() : ModelObjectUtils.transform(bos, TaskBo.toTask);
+    public void saveTasks(List<Task> tasks) {
+        taskDao.saveOrUpdate(tasks);
     }
 
     public void setTaskDao(TaskDao taskDao) {
@@ -71,7 +63,7 @@ public class TaskServiceImpl implements TaskService {
 
 	@Override
 	public Task getMaxTask(){
-		return TaskBo.to(taskDao.getMaxTask());
+		return taskDao.getMaxTask();
 	}
 
     @Override
@@ -79,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
         Long taskNumber = StringUtils.isEmpty(task) ? null : Long.parseLong(task);
         Long workAreaNumber = StringUtils.isEmpty(workArea) ? null : Long.parseLong(workArea);
         
-        return ModelObjectUtils.transform(taskDao.getTasks(taskNumber, description, workAreaNumber, fromEffdt, toEffdt), TaskBo.toTask);
+        return taskDao.getTasks(taskNumber, description, workAreaNumber, fromEffdt, toEffdt);
     }
     
     @Override

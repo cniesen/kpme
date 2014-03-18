@@ -17,12 +17,8 @@ package org.kuali.kpme.pm.position.funding;
 
 import java.math.BigDecimal;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.pm.api.position.funding.PositionFundingContract;
-
-import com.google.common.collect.ImmutableMap;
 
 public class PositionFunding extends HrBusinessObject implements PositionFundingContract {
 	private static final long serialVersionUID = 1L;
@@ -44,13 +40,6 @@ public class PositionFunding extends HrBusinessObject implements PositionFunding
 	// indicates where the funding information comes from, it could be from maint document, Institution batch imports, etc..
 	// we use source on the maint document to determine which funding information is readonly
 	private String source;		
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 	
 
 	@Override
@@ -172,31 +161,5 @@ public class PositionFunding extends HrBusinessObject implements PositionFunding
 		this.priorityFlag = priorityFlag;
 	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (obj.getClass() != getClass())
-            return false;
-
-        PositionFunding rhs = (PositionFunding) obj;
-        return new EqualsBuilder()
-                .append(pmPositionFunctionId,rhs.getPmPositionFunctionId())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .append(chart, rhs.getChart())
-                .append(org, rhs.getOrg())
-                .append(account, rhs.getAccount())
-                .append(subAccount, rhs.getSubAccount())
-                .append(objectCode, rhs.getObjectCode())
-                .append(subObjectCode, rhs.getSubObjectCode())
-                .append(orgRefCode, rhs.getOrgRefCode())
-                .append(percent, rhs.getPercent())
-                .append(amount, rhs.getAmount())
-                .append(priorityFlag, rhs.isPriorityFlag())
-                .isEquals();
-
-    }
 	
 }

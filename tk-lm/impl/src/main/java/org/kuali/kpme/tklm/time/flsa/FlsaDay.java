@@ -15,20 +15,30 @@
  */
 package org.kuali.kpme.tklm.time.flsa;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.*;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.flsa.FlsaDayContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.api.time.flsa.FlsaDayContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 
 public class FlsaDay implements FlsaDayContract {
 
@@ -151,7 +161,7 @@ public class FlsaDay implements FlsaDayContract {
 		boolean zeroHoursTimeBlock = false;
 		boolean addLeaveBlock = false;
 		boolean isLeaveBlock = false;
-		if(block.getLeaveDateTime() == null) {
+		if(block.getLeaveDate() == null) {
 			beginDateTime = block.getBeginTimeDisplay();
 			endDateTime = block.getEndTimeDisplay();
 			if(flsaDateInterval.contains(beginDateTime)){
@@ -161,17 +171,17 @@ public class FlsaDay implements FlsaDayContract {
 			}
 		} else {
 			isLeaveBlock = true;
-			beginDateTime = new DateTime(block.getLeaveDateTime(), this.timeZone);
-			endDateTime = new DateTime(block.getLeaveDateTime(), this.timeZone);
+			beginDateTime = new DateTime(block.getLeaveDate(), this.timeZone);
+			endDateTime = new DateTime(block.getLeaveDate(), this.timeZone);
 			DateTime localTime = flsaDateInterval.getStart().toLocalDateTime().toDateTime();
 			String intervalStartDateString = localTime.toLocalDate().toString();
 			if(flsaDateInterval.getEnd().getHourOfDay() == 0) {
-				String lbDateString = block.getLeaveDateTime().toLocalDate().toString();
+				String lbDateString = LocalDate.fromDateFields(block.getLeaveDate()).toString();
 				if(intervalStartDateString.equals(lbDateString)) {
 					addLeaveBlock = true;
 				}
 			} else {
-                LocalDate localDate = block.getLeaveDateTime().toLocalDate();
+                LocalDate localDate = LocalDate.fromDateFields(block.getLeaveDate());
                 LocalDate dayIntBegin = flsaDateInterval.getStart().toLocalDate();
                 if(localDate.equals(dayIntBegin)){
 					addLeaveBlock = true;
@@ -268,8 +278,8 @@ public class FlsaDay implements FlsaDayContract {
 	 * TODO : Bucketing of partial FLSA days is still suspect, however real life examples of this are likely non-existent to rare.
 	 */
 	private boolean applyBlock(LeaveBlock block, List<LeaveBlock> applyList) {
-		DateTime beginDateTime = new DateTime(block.getLeaveDateTime().toDate(), this.timeZone);
-		DateTime endDateTime = new DateTime(block.getLeaveDateTime().toDate(), this.timeZone);
+		DateTime beginDateTime = new DateTime(block.getLeaveDate(), this.timeZone);
+		DateTime endDateTime = new DateTime(block.getLeaveDate(), this.timeZone);
 
 		if (beginDateTime.isAfter(flsaDateInterval.getEnd())) {
 			return false;

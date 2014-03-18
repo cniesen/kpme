@@ -16,8 +16,8 @@
 package org.kuali.kpme.tklm.common;
 
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.quartz.SchedulerException;
 
 public interface BatchJobService {
@@ -57,7 +57,5 @@ public interface BatchJobService {
 	void scheduleLeaveCalendarDelinquencyJobs(CalendarEntry calendarEntry) throws SchedulerException;
 	
 	void scheduleLeaveCalendarDelinquencyJobs(CalendarEntry calendarEntry, DateTime scheduleDate) throws SchedulerException;
-
-    void scheduleClockedInEmployeeJob(DateTime scheduleDate) throws SchedulerException;
     
 }

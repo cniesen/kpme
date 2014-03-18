@@ -25,16 +25,17 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.department.DepartmentBo;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.service.HrServiceLocatorInternal;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.Maintainable;
+import org.kuali.rice.kns.web.ui.Section;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
@@ -46,40 +47,55 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
 	
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject) HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(id);
+		return HrServiceLocator.getDepartmentService().getDepartment(id);
 	}
-
+	
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List getSections(MaintenanceDocument document, Maintainable oldMaintainable) {
+		List sections = super.getSections(document, oldMaintainable);
+		
+		for (Object obj : sections) {
+			Section sec = (Section) obj;
+			if (sec.getSectionId().equals("inactiveRoleMembers")) {
+            	sec.setHidden(!document.isOldBusinessObjectInDocument());
+            }
+		}
+		
+		return sections;
+	}
+	
     @Override
-    public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> requestParameters) {
-        DepartmentBo oldMaintainableObject = (DepartmentBo) document.getOldMaintainableObject().getDataObject();
-        DepartmentBo newMaintainableObject = (DepartmentBo) document.getNewMaintainableObject().getDataObject();
+    public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> parameters) {
+        Department oldMaintainableObject = (Department) document.getOldMaintainableObject().getBusinessObject();
+        Department newMaintainableObject = (Department) document.getNewMaintainableObject().getBusinessObject();
         
-        DepartmentBo oldDepartment = oldMaintainableObject;
+        Department oldDepartment = oldMaintainableObject;
         if(StringUtils.isNotBlank(oldMaintainableObject.getHrDeptId())) {
-        	oldDepartment = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(oldMaintainableObject.getHrDeptId());
+        	oldDepartment = HrServiceLocator.getDepartmentService().getDepartment(oldMaintainableObject.getHrDeptId());
         } else {
-        	oldDepartment = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(oldMaintainableObject.getDept(), oldMaintainableObject.getEffectiveLocalDate());
+        	oldDepartment = HrServiceLocator.getDepartmentService().getDepartment(oldMaintainableObject.getDept(), oldMaintainableObject.getEffectiveLocalDate());
         }
         
-        oldMaintainableObject.setRoleMembers((List<DepartmentPrincipalRoleMemberBo>) oldDepartment.getRoleMembers());
-        oldMaintainableObject.setInactiveRoleMembers((List<DepartmentPrincipalRoleMemberBo>) oldDepartment.getInactiveRoleMembers());
+        oldMaintainableObject.setRoleMembers(oldDepartment.getRoleMembers());
+        oldMaintainableObject.setInactiveRoleMembers(oldDepartment.getInactiveRoleMembers());
         
-        DepartmentBo newDepartment = newMaintainableObject;
+        Department newDepartment = newMaintainableObject;
         if(StringUtils.isNotBlank(newMaintainableObject.getHrDeptId())) {
-        	newDepartment = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(newMaintainableObject.getHrDeptId());
+        	newDepartment = HrServiceLocator.getDepartmentService().getDepartment(newMaintainableObject.getHrDeptId());
         } else {
-        	newDepartment = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(newMaintainableObject.getDept(), newMaintainableObject.getEffectiveLocalDate());
+        	newDepartment = HrServiceLocator.getDepartmentService().getDepartment(newMaintainableObject.getDept(), newMaintainableObject.getEffectiveLocalDate());
         }
         
         newMaintainableObject.setRoleMembers(newDepartment.getRoleMembers());
         newMaintainableObject.setInactiveRoleMembers(newDepartment.getInactiveRoleMembers());
         
-        super.processAfterEdit(document, requestParameters);
+        super.processAfterEdit(document, parameters);
     }
 
     @Override
 	protected void setNewCollectionLineDefaultValues(String collectionName, PersistableBusinessObject addLine) {
-    	DepartmentBo department = (DepartmentBo) this.getBusinessObject();
+    	Department department = (Department) this.getBusinessObject();
     	
     	if (department.getEffectiveDate() != null) {
 	    	if (addLine instanceof RoleMemberBo) {
@@ -112,7 +128,7 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
 
     @Override
 	public void customSaveLogic(HrBusinessObject hrObj) {
-		DepartmentBo department = (DepartmentBo) hrObj;
+		Department department = (Department) hrObj;
 		
 		List<DepartmentPrincipalRoleMemberBo> newInactiveRoleMembers = createInactiveRoleMembers(department.getRoleMembers());
 		List<DepartmentPrincipalRoleMemberBo> roleList = new ArrayList<DepartmentPrincipalRoleMemberBo> ();
@@ -135,7 +151,7 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
     		builder.setAttributes(Collections.singletonMap(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department.getDept()));
     		
     		if (StringUtils.isBlank(roleMember.getId())) {
-                KimApiServiceLocator.getRoleService().createRoleMember(builder.build());
+    			KimApiServiceLocator.getRoleService().createRoleMember(builder.build());
     		} else {
     			KimApiServiceLocator.getRoleService().updateRoleMember(builder.build());
     		}
@@ -146,7 +162,6 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
     		
     		if (StringUtils.isBlank(inactiveRoleMember.getId())) {
     			KimApiServiceLocator.getRoleService().createRoleMember(builder.build());
-
     		} else {
     			KimApiServiceLocator.getRoleService().updateRoleMember(builder.build());
     		}
@@ -180,6 +195,13 @@ public class DepartmentMaintainableImpl extends HrBusinessObjectMaintainableImpl
         
         return inactiveRoleMembers;
     }
-
-
+        
+    @Override
+    public Map<String, String> populateNewCollectionLines(Map<String, String> fieldValues,
+			MaintenanceDocument maintenanceDocument, String methodToCall) {
+    	if(fieldValues.containsKey("roleMembers.roleName") && StringUtils.isEmpty(fieldValues.get("roleMembers.roleName"))) {
+    		fieldValues.put("roleMembers.roleName", null);
+    	}
+    	return super.populateNewCollectionLines(fieldValues, maintenanceDocument, methodToCall);
+    }   
 }

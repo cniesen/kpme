@@ -22,7 +22,7 @@
 	
 	<bean name="EmployeeOverride" parent="EmployeeOverride-parentBean" />
 
-	<bean id="EmployeeOverride-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+	<bean id="EmployeeOverride-parentBean" abstract="true" parent="BusinessObjectEntry">
 		<property name="businessObjectClass" value="org.kuali.kpme.tklm.leave.override.EmployeeOverride" />
 		<property name="titleAttribute" value="id" />
 		<property name="objectLabel" value="employeeOverride" />
@@ -33,7 +33,9 @@
 			<ref bean="EmployeeOverride-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
+			<list>
+				<ref bean="EmployeeOverride-effectiveDate" />
+                <ref bean="EmployeeOverride-relativeEffectiveDate" />
 				<ref bean="EmployeeOverride-principalId" />
 				<ref bean="EmployeeOverride-name" />
 				<ref bean="EmployeeOverride-leavePlan" />
@@ -41,6 +43,7 @@
 				<ref bean="EmployeeOverride-overrideType" />
 				<ref bean="EmployeeOverride-overrideValue" />
 				<ref bean="EmployeeOverride-description" />
+				<ref bean="EmployeeOverride-active" />
 			</list>
 		</property>
 		<property name="relationships">
@@ -79,8 +82,42 @@
 		</property>
 	</bean>
 
+    <bean id="EmployeeOverride-relativeEffectiveDate" parent="EmployeeOverride-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12"/>
+        </property>
+    </bean>
+	<bean id="EmployeeOverride-effectiveDate" parent="EmployeeOverride-effectiveDate-parentBean" />
+	<bean id="EmployeeOverride-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
 	<bean id="EmployeeOverride-principalId" parent="EmployeeOverride-principalId-parentBean" />
-	<bean id="EmployeeOverride-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+	<bean id="EmployeeOverride-principalId-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Principal Id" />
+		<property name="maxLength" value="10" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="principalId" />
+		<property name="label" value="Principal Id" />
+	</bean>
 	
 	<bean id="EmployeeOverride-name" parent="EmployeeOverride-name-parentBean" />
 	<bean id="EmployeeOverride-name-parentBean" abstract="true"
@@ -158,6 +195,17 @@
 	</bean>
 	
 	
+	<bean id="EmployeeOverride-active" parent="EmployeeOverride-active-parentBean" />
+	<bean id="EmployeeOverride-active-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+	</bean>
+	
 	<!-- Inquiry Definitions -->
 	<bean id="EmployeeOverride-inquiryDefinition" parent="EmployeeOverride-inquiryDefinition-parentBean" />
 	<bean id="EmployeeOverride-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition" 
@@ -179,7 +227,6 @@
 							<bean parent="FieldDefinition" p:attributeName="active" />
                             <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
                                   p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
 						</list>
 					</property>
 					<property name="title" value="Employee Override" />

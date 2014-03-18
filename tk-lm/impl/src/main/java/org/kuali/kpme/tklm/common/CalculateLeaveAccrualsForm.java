@@ -24,10 +24,8 @@ public class CalculateLeaveAccrualsForm extends KPMEForm {
 	private String principalName;
     private String startDate;
 	private String endDate;
-	private String message;
-	private String leavePlanId;
 	
-	public String getPrincipalName() {
+    public String getPrincipalName() {
 		return principalName;
 	}
 
@@ -51,20 +49,4 @@ public class CalculateLeaveAccrualsForm extends KPMEForm {
 		this.endDate = endDate;
 	}
 
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public String getLeavePlanId() {
-		return leavePlanId;
-	}
-
-	public void setLeavePlanId(String leavePlanId) {
-		this.leavePlanId = leavePlanId;
-	}
-	
 }

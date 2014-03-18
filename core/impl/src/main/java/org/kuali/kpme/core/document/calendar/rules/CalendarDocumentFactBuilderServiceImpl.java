@@ -18,10 +18,9 @@ package org.kuali.kpme.core.document.calendar.rules;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.department.Department;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
 import org.kuali.kpme.core.krms.KpmeKrmsFactBuilderServiceHelper;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -35,7 +34,9 @@ import org.w3c.dom.Document;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -57,7 +58,7 @@ public class CalendarDocumentFactBuilderServiceImpl extends KpmeKrmsFactBuilderS
         addObjectMembersAsFacts(factsBuilder, document, contextId, namespace);
         factsBuilder.addFact(new Term("payrollProcessorApproval"), Boolean.FALSE);
         if (document != null) {
-            CalendarEntryContract ce = document.getCalendarEntry();
+            CalendarEntry ce = document.getCalendarEntry();
             LocalDate asOfDate = ce != null ? ce.getEndPeriodLocalDateTime().toLocalDate() : LocalDate.now();
             Set<String> workAreas = new HashSet<String>();
             Set<String> depts = new HashSet<String>();
@@ -65,7 +66,7 @@ public class CalendarDocumentFactBuilderServiceImpl extends KpmeKrmsFactBuilderS
             for (Assignment a : document.getAssignments()) {
                 workAreas.add(String.valueOf(a.getWorkArea()));
                 depts.add(a.getDept());
-                Department department = HrServiceLocator.getDepartmentService().getDepartment(a.getDept(), asOfDate);
+                Department department = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(a.getDept(), asOfDate);
                 if (department != null
                         && department.isPayrollApproval()) {
                     factsBuilder.addFact(new Term("payrollProcessorApproval"), Boolean.TRUE);

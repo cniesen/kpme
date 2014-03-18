@@ -25,15 +25,12 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kew.api.identity.Id;
 import org.kuali.rice.kew.api.identity.PrincipalId;
@@ -70,7 +67,7 @@ public class LeaveRequestRoleAttribute extends GenericRoleAttribute {
 		
         if (leaveRequestDocument != null) {
             LeaveBlock leaveBlock = leaveRequestDocument.getLeaveBlock();
-            CalendarEntryContract calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveBlock.getCalendarId());
+            CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveBlock.getCalendarId());
             List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(leaveBlock.getPrincipalId(), calendarEntry);
             for (Assignment assignment : assignments) {
             	roleNameQualifiers.add(String.valueOf(assignment.getWorkArea()));

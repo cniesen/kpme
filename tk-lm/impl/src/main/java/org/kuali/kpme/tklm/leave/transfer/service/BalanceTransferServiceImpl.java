@@ -26,20 +26,25 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.kpme.tklm.leave.transfer.dao.BalanceTransferDao;
 import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
@@ -225,13 +230,12 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 //			throw new RuntimeException("did not supply a valid BalanceTransfer object.");
 		} else {
 			BigDecimal transferAmount = balanceTransfer.getTransferAmount();
-			LeaveBlockBo aLeaveBlock = null;
+			LeaveBlock aLeaveBlock = null;
 
 			if(ObjectUtils.isNotNull(balanceTransfer.getAmountTransferred())) {
 				if(balanceTransfer.getAmountTransferred().compareTo(BigDecimal.ZERO) > 0 ) {
 
-                    //TODO switch to LeaveBlock.Builder
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					//Create a leave block that adds the adjusted transfer amount to the "transfer to" accrual category.
 					aLeaveBlock.setPrincipalId(balanceTransfer.getPrincipalId());
 					aLeaveBlock.setLeaveDate(balanceTransfer.getEffectiveDate());
@@ -249,16 +253,16 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					//Want to store the newly created leave block id on this maintainable object
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-                    LeaveBlock lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
 
-					balanceTransfer.setAccruedLeaveBlockId(lb.getLmLeaveBlockId());
+					balanceTransfer.setAccruedLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 				}
 			}
 
 			if(ObjectUtils.isNotNull(transferAmount)) {
 				if(transferAmount.compareTo(BigDecimal.ZERO) > 0) {					
 					//Create leave block that removes the correct transfer amount from the originating accrual category.
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					aLeaveBlock.setPrincipalId(balanceTransfer.getPrincipalId());
 					aLeaveBlock.setLeaveDate(balanceTransfer.getEffectiveDate());
 					aLeaveBlock.setEarnCode(balanceTransfer.getDebitedAccrualCategory().getEarnCode());
@@ -275,9 +279,9 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					//Want to store the newly created leave block id on this maintainable object.
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-                    LeaveBlock lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
 
-					balanceTransfer.setDebitedLeaveBlockId(lb.getLmLeaveBlockId());
+					balanceTransfer.setDebitedLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 				}
 			}
 
@@ -286,7 +290,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 				//Any amount forfeited must come out of the originating accrual category in order to bring balance back to max.
 				if(forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
 					//for balance transfers with action = lose, transfer amount must be moved to forfeitedAmount
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					aLeaveBlock.setPrincipalId(balanceTransfer.getPrincipalId());
 					aLeaveBlock.setLeaveDate(balanceTransfer.getEffectiveDate());
 					aLeaveBlock.setEarnCode(balanceTransfer.getDebitedAccrualCategory().getEarnCode());
@@ -303,9 +307,9 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 					//Want to store the newly created leave block id on this maintainable object
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-
-                    LeaveBlock lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
-					balanceTransfer.setForfeitedLeaveBlockId(lb.getLmLeaveBlockId());
+					
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
+					balanceTransfer.setForfeitedLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 				}
 			}
 			return balanceTransfer;
@@ -372,7 +376,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 			}
 			List<LeaveBlock> lbList = new ArrayList<LeaveBlock>();
 			// create a new leave block with transferred amount, make sure system scheduled timeoff id is added to it
-			LeaveBlockBo aLeaveBlock = new LeaveBlockBo();
+			LeaveBlock aLeaveBlock = new LeaveBlock();
 			aLeaveBlock.setPrincipalId(balanceTransfer.getPrincipalId());
 			aLeaveBlock.setLeaveDate(balanceTransfer.getEffectiveDate());
 			aLeaveBlock.setEarnCode(balanceTransfer.getCreditedAccrualCategory().getEarnCode());
@@ -386,7 +390,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 			aLeaveBlock.setScheduleTimeOffId(balanceTransfer.getSstoId());
 			aLeaveBlock.setDocumentId(leaveDocId);
 			
-			lbList.add(LeaveBlockBo.to(aLeaveBlock));
+			lbList.add(aLeaveBlock);
 			LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(lbList);
 
 	    	balanceTransfer.setAccruedLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());	

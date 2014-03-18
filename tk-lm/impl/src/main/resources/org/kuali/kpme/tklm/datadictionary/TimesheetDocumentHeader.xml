@@ -64,7 +64,14 @@
   </bean>
     
   <bean id="TimesheetDocumentHeader-principalId" parent="TimesheetDocumentHeader-principalId-parentBean" />
-  <bean id="TimesheetDocumentHeader-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+  <bean id="TimesheetDocumentHeader-principalId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="maxLength" value="40" />
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="40" />
+    </property>
+    <property name="name" value="principalId" />
+    <property name="label" value="Principal ID" />
+  </bean> 
   
   <bean id="TimesheetDocumentHeader-documentStatus" parent="TimesheetDocumentHeader-documentStatus-parentBean" />
   <bean id="TimesheetDocumentHeader-documentStatus-parentBean" abstract="true" parent="AttributeDefinition">
@@ -78,15 +85,31 @@
   
 
   <bean id="TimesheetDocumentHeader-payBeginDate" parent="TimesheetDocumentHeader-payBeginDate-parentBean"/>
-  <bean id="TimesheetDocumentHeader-payBeginDate-parentBean" abstract="true" parent="KpmeAttributeReference-datePicker">
+  <bean id="TimesheetDocumentHeader-payBeginDate-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Pay Begin Date"/>
+    <property name="maxLength" value="12"/>
+    <property name="validationPattern">
+ 		<bean parent="DateValidationPattern"/>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+    </property>
+    <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
     <property name="name" value="beginDate" />
     <property name="label" value="Pay Begin Date" />
   </bean> 
   
   <bean id="TimesheetDocumentHeader-payEndDate" parent="TimesheetDocumentHeader-payEndDate-parentBean"/>
-  <bean id="TimesheetDocumentHeader-payEndDate-parentBean" abstract="true" parent="KpmeAttributeReference-datePicker">
+  <bean id="TimesheetDocumentHeader-payEndDate-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="shortLabel" value="Pay End Date"/>
+    <property name="maxLength" value="12"/>
+    <property name="validationPattern">
+ 		<bean parent="DateValidationPattern"/>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+    </property>
+    <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
     <property name="name" value="endDate" />
     <property name="label" value="Pay End Date" />
   </bean>
@@ -94,7 +117,7 @@
      
 <!-- Business Object Lookup Definition -->
 
-  <bean id="TimesheetDocumentHeader-lookupView" parent="KPME-ChangedPageSizeLookupView">
+  <bean id="TimesheetDocumentHeader-lookupView" parent="Uif-LookupView">
     <property name="headerText" value="Timesheet Document Header Lookup"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader"/>
     <property name="criteriaFields" >

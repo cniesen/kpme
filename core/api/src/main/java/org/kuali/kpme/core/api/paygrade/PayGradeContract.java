@@ -15,18 +15,15 @@
  */
 package org.kuali.kpme.core.api.paygrade;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
-
 import java.math.BigDecimal;
+
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 
 /**
  * <p>PayGradeContract interface.</p>
  *
  */
-public interface PayGradeContract extends KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PayGrade";
+public interface PayGradeContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The Primary Key of a PayGrade entry saved in a database
@@ -62,6 +59,7 @@ public interface PayGradeContract extends KpmeEffectiveDataTransferObject {
 	public String getDescription();
 
 	/**
+	 *TODO: is this field needed?
 	 */
 	public String getUserPrincipalId() ;
 	
@@ -140,6 +138,17 @@ public interface PayGradeContract extends KpmeEffectiveDataTransferObject {
 	 * @return maxHiringRate for PayGrade
 	 */
     public BigDecimal getMaxHiringRate();
+
+    /**
+	 * History flag for PayGrade lookups 
+	 * 
+	 * <p>
+	 * history of PayGrade
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+    public String getHistory();
     
     /**
 	 * The name of the Location the PayGrade is associated with.

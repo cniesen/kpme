@@ -27,11 +27,10 @@ import org.kuali.kpme.core.FunctionalTest;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.rules.graceperiod.GracePeriodRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.utils.TkTestConstants;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -41,13 +40,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @FunctionalTest
 public class ActualTimeInquiryWebTest extends KPMEWebTestCase {
 	private String documentId;
-	private TimeBlockBo timeBlock;
+	private TimeBlock timeBlock;
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
 
-        CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry("5000");
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry("5000");
         TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().openTimesheetDocument("admin", calendarEntry);
         documentId = timesheetDocument.getDocumentId();
     }
@@ -73,7 +72,7 @@ public class ActualTimeInquiryWebTest extends KPMEWebTestCase {
 	}
 
 	public void createTB() {
-		timeBlock = new TimeBlockBo();
+		timeBlock = new TimeBlock();
 		timeBlock.setUserPrincipalId("admin");
 		timeBlock.setPrincipalId("admin");
 		timeBlock.setJobNumber(2L);
@@ -82,7 +81,7 @@ public class ActualTimeInquiryWebTest extends KPMEWebTestCase {
 		timeBlock.setEarnCode("RGN");
 		timeBlock.setBeginTimestamp(TKUtils.getCurrentTimestamp());
 		timeBlock.setEndTimestamp(TKUtils.getCurrentTimestamp());
-		TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
+		TimeHourDetail timeHourDetail = new TimeHourDetail();
 		timeHourDetail.setEarnCode("RGN");
 		timeHourDetail.setHours(new BigDecimal(2.0));
 		timeBlock.getTimeHourDetails().add(timeHourDetail);
@@ -90,10 +89,10 @@ public class ActualTimeInquiryWebTest extends KPMEWebTestCase {
 		timeBlock.setClockLogCreated(Boolean.TRUE);
 		List<TimeBlock> tbList = new ArrayList<TimeBlock>();
 		timeBlock.setDocumentId(documentId);
-		tbList.add(TimeBlockBo.to(timeBlock));
+		tbList.add(timeBlock);
 		TkServiceLocator.getTimeBlockService().saveTimeBlocks(tbList);
 
-		TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
+		TimesheetDocument td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId.toString());
 		td.setTimeBlocks(tbList);
 	}
 	

@@ -18,7 +18,7 @@ package org.kuali.kpme.core.location.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.location.Location;
 
 public interface LocationDao {
 	/**
@@ -27,19 +27,19 @@ public interface LocationDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public LocationBo getLocation(String location,LocalDate asOfDate);
+	public Location getLocation(String location,LocalDate asOfDate);
 	/**
 	 * Get location by unique id
 	 * @param hrLocationId
 	 * @return
 	 */
-	public LocationBo getLocation(String hrLocationId);
+	public Location getLocation(String hrLocationId);
 	
 	public int getLocationCount(String location,  LocalDate asOfDate);
 
-    public List<LocationBo> searchLocations(String location, String locationDescr, String active, String showHistory);
+    public List<Location> searchLocations(String location, String locationDescr, String active, String showHistory);
 
-    public List<LocationBo> getNewerVersionLocation(String location, LocalDate asOfDate);
+    public List<Location> getNewerVersionLocation(String location, LocalDate asOfDate);
 
-    List<LocationBo> getLocations(String location);
+    List<Location> getLocations(String location);
 }

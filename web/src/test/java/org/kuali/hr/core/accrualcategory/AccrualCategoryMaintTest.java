@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -49,7 +49,7 @@ public class AccrualCategoryMaintTest extends KPMEWebTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		AccrualCategoryBo accrualCategory = new AccrualCategoryBo();
+		AccrualCategory accrualCategory = new AccrualCategory();
 		accrualCategory.setAccrualCategory(TEST_CODE);
 		accrualCategory.setActive(true);
 		accrualCategory.setDescr(TEST_CODE);
@@ -59,16 +59,15 @@ public class AccrualCategoryMaintTest extends KPMEWebTestCase {
         accrualCategory.setAccrualEarnInterval("");
         accrualCategory.setUnitOfTime("");
         accrualCategory.setEarnCode("OC1");
-        accrualCategory.setUserPrincipalId("admin");
 		KRADServiceLocator.getBusinessObjectService().save(accrualCategory);
 		accrualCategoryId = accrualCategory.getLmAccrualCategoryId();
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		AccrualCategoryBo accrualCategory = KRADServiceLocator
+		AccrualCategory accrualCategory = KRADServiceLocator
 				.getBusinessObjectService().findBySinglePrimaryKey(
-						AccrualCategoryBo.class, accrualCategoryId);
+						AccrualCategory.class, accrualCategoryId);
 		KRADServiceLocator.getBusinessObjectService().delete(accrualCategory);
 		super.tearDown();
 	}

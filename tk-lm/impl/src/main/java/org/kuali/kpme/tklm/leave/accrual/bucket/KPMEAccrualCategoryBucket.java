@@ -31,12 +31,9 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -44,8 +41,7 @@ import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.KPMEAccrualCategoryBucketContract;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.KPMEBalanceException;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
 public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContract {
@@ -319,7 +315,7 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 		
 		//fetch calendar entries in this sequence belonging to the current leave year.
 		String dateString = TKUtils.formatDate(LocalDate.now());
-		List<CalendarEntry> calendarEntries = (List<CalendarEntry>) HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarIdAndYear(calendarEntry.getHrCalendarId(), dateString.substring(6, 10));
+		List<CalendarEntry> calendarEntries = HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarIdAndYear(calendarEntry.getHrCalendarId(), dateString.substring(6, 10));
 
 		//calendar change into a different leave calendar year
 		if(rolloverDate != null) {
@@ -447,7 +443,7 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 		        	rolloverDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.fromDateFields(itor.getBeginPeriodDate()));
 		        	leavePlanPrevStart = rolloverDate;
 		        }
-				itor = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(viewingCalendarEntry.getHrCalendarId(), itor);
+				itor = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(viewingCalendarEntry.getHrCalendarId(), itor);
 
 			}
 			
@@ -467,7 +463,7 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 					leavePlanStart = rolloverDate;
 				}
 				
-				itor = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(viewingCalendarEntry.getHrCalendarId(), itor);
+				itor = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(viewingCalendarEntry.getHrCalendarId(), itor);
 			}
 		}
 
@@ -537,7 +533,7 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 	}
 
 
-	public LeaveBlockBo withdrawal(AccrualCategoryBo accrualCategory,
+	public LeaveBlock withdrawal(AccrualCategory accrualCategory,
 			BigDecimal amount) {
 		return null;
 	}

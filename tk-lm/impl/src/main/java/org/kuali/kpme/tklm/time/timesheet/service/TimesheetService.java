@@ -15,18 +15,17 @@
  */
 package org.kuali.kpme.tklm.time.timesheet.service;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.springframework.cache.annotation.Cacheable;
-
-import java.util.List;
 
 public interface TimesheetService {
 
@@ -36,7 +35,7 @@ public interface TimesheetService {
 	 * @param principalId
 	 * @return
 	 */
-	public TimesheetDocument openTimesheetDocument(String principalId, CalendarEntryContract payCalendarDates) throws WorkflowException;
+	public TimesheetDocument openTimesheetDocument(String principalId, CalendarEntry payCalendarDates) throws WorkflowException;
 	/**
 	 * Route the given timesheet
 	 * @param principalId
@@ -83,7 +82,7 @@ public interface TimesheetService {
 	 */
 	public void deleteTimesheet(String documentId);
 	
-	public List<TimeBlock> resetTimeBlock(List<TimeBlock> timeBlock, LocalDate asOfDate);
+	public void resetTimeBlock(List<TimeBlock> timeBlock, LocalDate asOfDate);
 
     void approveTimesheet(String principalId, TimesheetDocument timesheetDocument, String action);
 
@@ -96,7 +95,7 @@ public interface TimesheetService {
 	 * @param asOfDate
 	 * @return
 	 */
-	@Cacheable(value= EarnCodeContract.CACHE_NAME, key="'{getEarnCodesForTime}' + 'principalId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getPrincipalId() + '|' + 'targetId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getTargetPrincipalId() + '|' + 'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'includeRegularEarnCode=' + false")
+	@Cacheable(value=EarnCode.CACHE_NAME, key="'{getEarnCodesForTime}' + 'principalId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getPrincipalId() + '|' + 'targetId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getTargetPrincipalId() + '|' + 'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'includeRegularEarnCode=' + false")
 	public List<EarnCode> getEarnCodesForTime(Assignment assignment, LocalDate asOfDate);
 	
 	/**
@@ -105,11 +104,6 @@ public interface TimesheetService {
 	 * @param asOfDate
 	 * @return
 	 */
-	@Cacheable(value= EarnCodeContract.CACHE_NAME, key="'{getEarnCodesForTime}' + 'principalId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getPrincipalId() + '|' + 'targetId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getTargetPrincipalId() + '|' + 'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'includeRegularEarnCode=' + #p2")
+	@Cacheable(value=EarnCode.CACHE_NAME, key="'{getEarnCodesForTime}' + 'principalId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getPrincipalId() + '|' + 'targetId=' + T(org.kuali.kpme.tklm.time.util.TkContext).getTargetPrincipalId() + '|' + 'a=' + #p0.getTkAssignmentId() + '|' + 'asOfDate=' + #p1 + '|' + 'includeRegularEarnCode=' + #p2")
 	public List<EarnCode> getEarnCodesForTime(Assignment a, LocalDate asOfDate, boolean includeRegularEarnCode);
-
-
-    public List<String> validateTimeBlock(TimesheetDocument td);
-    public List<String> validateHours(TimesheetDocument td);
-    public boolean isTimesheetValid(TimesheetDocument td);
 }

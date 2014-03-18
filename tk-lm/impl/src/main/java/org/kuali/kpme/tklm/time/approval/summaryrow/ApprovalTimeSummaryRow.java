@@ -27,11 +27,9 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.approval.summaryrow.ApprovalTimeSummaryRowContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryContract;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
 import org.kuali.rice.kew.api.KewApiConstants;
@@ -72,7 +70,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     private String principalId;
     private Boolean clockedInOverThreshold = Boolean.FALSE;    
     private String selected = "off";
-    private TimeSummaryContract timeSummary;
+    private TimeSummary timeSummary;
     private BigDecimal periodTotal = BigDecimal.ZERO;
     private String outputString;
     private String color;
@@ -162,7 +160,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
 		return clockStatusMessage;
 	}
 
-	public String getPayCalendarGroup() {
+    public String getPayCalendarGroup() {
         return payCalendarGroup;
     }
 
@@ -191,7 +189,7 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
     			String timesheetPrincipalId = timesheetDocument.getPrincipalId();
     			String approverPrincipalId = HrContext.getPrincipalId();
 
-    			if (!StringUtils.equals(timesheetPrincipalId, approverPrincipalId) && TkServiceLocator.getTimesheetService().isReadyToApprove(timesheetDocument) && TkServiceLocator.getTimesheetService().isTimesheetValid(timesheetDocument)) {
+    			if (!StringUtils.equals(timesheetPrincipalId, approverPrincipalId) && TkServiceLocator.getTimesheetService().isReadyToApprove(timesheetDocument)) {
     				DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(getDocumentId());
     				boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(approverPrincipalId, routeHeader, new SecuritySession(approverPrincipalId));
     				if (authorized) {
@@ -269,11 +267,11 @@ public class ApprovalTimeSummaryRow implements Comparable<ApprovalTimeSummaryRow
 		this.selected = selected;
 	}
 
-    public TimeSummaryContract getTimeSummary() {
+    public TimeSummary getTimeSummary() {
         return timeSummary;
     }
 
-    public void setTimeSummary(TimeSummaryContract timeSummary) {
+    public void setTimeSummary(TimeSummary timeSummary) {
         this.timeSummary = timeSummary;
     }
 

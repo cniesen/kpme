@@ -19,9 +19,6 @@
 <c:set var="Form" value="${LeaveCalendarForm}" scope="request"/>
 
 <tk:tkHeader tabId="leaveCalendar" nocache="true">
-   
- 	<script type="text/javascript" src="themes/kboot/scripts/kboot.2.3.5-r45274.min.js"></script>
- 	
     <html:form action="/LeaveCalendar.do" method="POST">
         <html:hidden property="reloadValue" value="" styleId="reloadValue"/>
         <html:hidden property="documentId" value="${Form.documentId}" styleId="documentId"/>
@@ -39,7 +36,6 @@
         <script src="${ConfigProperties.js.dir}/tk.ui.js"></script>
         <script src="${ConfigProperties.js.dir}/common.calendar.backbone.js"></script>
         <script src="${ConfigProperties.js.dir}/tk.leaveCalendar.backbone.js"></script>
-        
         <script type="text/javascript">
             jQuery(document).ready(function()
             {
@@ -59,7 +55,7 @@
         <c:if test="${not empty Form.calendarEntry}">
         
             <tk:calendar cal="${Form.leaveCalendar}" docId="${Form.documentId}" calType="leaveCalendar"/>
-            <a href="#" onClick="javascript: showLightboxUrl(extractUrlBase() + '/kpme/leaveBlock?&methodToCall=start&viewId=leaveUsageView', {minHeight: 300, height: 400, maxWidth: 600, closeBtn: false})" >Copy Leave Usage to External Calendar</a>
+            
             <%-- if this leave calendar does not have a leave calendar document, then do not show routing sections --%>
             <c:if test="${not empty Form.documentId}">
             	<%-- render the calendar buttons --%>
@@ -179,7 +175,6 @@
             </div>
         </html:form>
     </div>
-
 </div>
 
 <%-- Earn code template --%>

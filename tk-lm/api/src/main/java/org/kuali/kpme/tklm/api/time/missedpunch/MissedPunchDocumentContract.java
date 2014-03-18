@@ -15,7 +15,6 @@
  */
 package org.kuali.kpme.tklm.api.time.missedpunch;
 
-import org.kuali.kpme.core.api.assignment.Assignable;
 import org.kuali.rice.krad.document.SessionDocument;
 import org.kuali.rice.krad.document.TransactionalDocument;
 
@@ -25,7 +24,7 @@ import org.kuali.rice.krad.document.TransactionalDocument;
  * <p>MissedPunchDocumentContract interface</p>
  *
  */
-public interface MissedPunchDocumentContract extends Assignable, TransactionalDocument, SessionDocument {
+public interface MissedPunchDocumentContract extends TransactionalDocument, SessionDocument {
 
 	/**
 	 * The primary key of a MissedPunchDocument entry saved in a database

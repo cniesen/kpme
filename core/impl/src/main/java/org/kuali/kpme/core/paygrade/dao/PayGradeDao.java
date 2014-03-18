@@ -18,7 +18,7 @@ package org.kuali.kpme.core.paygrade.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
+import org.kuali.kpme.core.paygrade.PayGrade;
 
 public interface PayGradeDao {
 	/**
@@ -27,23 +27,23 @@ public interface PayGradeDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public PayGradeBo getPayGrade(String payGrade, String salGroup, LocalDate asOfDate);
+	public PayGrade getPayGrade(String payGrade, String salGroup, LocalDate asOfDate);
 	/**
 	 * Get paygrade by unique id
 	 * @param hrPayGradeId
 	 * @return
 	 */
-	public PayGradeBo getPayGrade(String hrPayGradeId);
+	public PayGrade getPayGrade(String hrPayGradeId);
 	
 	public int getPayGradeCount(String payGrade);
 
-    List<PayGradeBo> getPayGrades(String payGrade, String payGradeDescr, String salGroup, String active, String showHistory);
+    List<PayGrade> getPayGrades(String payGrade, String payGradeDescr, String salGroup, String active, String showHistory);
     /**
      * Retreives a list of pay grades active on the salary group as of a specific date.
      * @param salaryGroup
      * @param asOfDate
      * @return
      */
-	public List<PayGradeBo> getPayGradesForSalaryGroup(String salaryGroup,
+	public List<PayGrade> getPayGradesForSalaryGroup(String salaryGroup,
 			LocalDate asOfDate);
 }

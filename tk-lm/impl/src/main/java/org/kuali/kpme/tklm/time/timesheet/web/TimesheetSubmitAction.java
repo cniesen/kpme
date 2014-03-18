@@ -17,6 +17,7 @@ package org.kuali.kpme.tklm.time.timesheet.web;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,18 +36,20 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.krad.exception.AuthorizationException;
@@ -84,8 +87,8 @@ public class TimesheetSubmitAction extends KPMEAction {
             	boolean nonExemptLE = LmServiceLocator.getLeaveApprovalService().isActiveAssignmentFoundOnJobFlsaStatus(document.getPrincipalId(),
             				HrConstants.FLSA_STATUS_NON_EXEMPT, true);
             	if(nonExemptLE) {
-            		Map<String,Set<LeaveBlockContract>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(document.getCalendarEntry(), document.getPrincipalId());
-            		PrincipalHRAttributes pha = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(document.getPrincipalId(), document.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate());
+            		Map<String,Set<LeaveBlock>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(document.getCalendarEntry(), document.getPrincipalId());
+            		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(document.getPrincipalId(), document.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate());
 					Calendar cal = pha.getLeaveCalObj();
 					if(cal == null) {
 						//non exempt leave eligible employee without a leave calendar?
@@ -94,16 +97,16 @@ public class TimesheetSubmitAction extends KPMEAction {
 						return mapping.findForward("basic");
 //						throw new RuntimeException("Principal is without a leave calendar");
                     }
-    				List<LeaveBlockContract> eligibleTransfers = new ArrayList<LeaveBlockContract>();
-    				List<LeaveBlockContract> eligiblePayouts = new ArrayList<LeaveBlockContract>();
+    				List<LeaveBlock> eligibleTransfers = new ArrayList<LeaveBlock>();
+    				List<LeaveBlock> eligiblePayouts = new ArrayList<LeaveBlock>();
             		Interval interval = new Interval(document.getCalendarEntry().getBeginPeriodDate().getTime(), document.getCalendarEntry().getEndPeriodDate().getTime());
 
-	        		for(Entry<String,Set<LeaveBlockContract>> entry : eligibilities.entrySet()) {
+	        		for(Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
 	        			
-	            		for(LeaveBlockContract lb : entry.getValue()) {
-	            			if(interval.contains(lb.getLeaveDateTime())) {
+	            		for(LeaveBlock lb : entry.getValue()) {
+	            			if(interval.contains(lb.getLeaveDate().getTime())) {
 	            				//maxBalanceViolations should, if a violation exists, return a leave block with leave date either current date, or the end period date - 1 days.
-		        				AccrualCategoryRuleContract aRule = lb.getAccrualCategoryRule();
+		        				AccrualCategoryRule aRule = lb.getAccrualCategoryRule();
 	
 		            			if(ObjectUtils.isNotNull(aRule)
 		            					&& !StringUtils.equals(aRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND)) {
@@ -113,7 +116,7 @@ public class TimesheetSubmitAction extends KPMEAction {
 		            					if(interval.contains(rollOverDate.minusDays(1).getMillis())) {
 		            						//only leave blocks belonging to the calendar entry being submitted may reach this point
 		            						//if the infraction occurs before the relative end date of the leave plan year, then action will be executed.
-			            					if(lb.getLeaveDateTime().isBefore(rollOverDate)) {
+			            					if(lb.getLeaveDate().before(rollOverDate.toDate())) {
 						            			if(StringUtils.equals(aRule.getActionAtMaxBalance(),HrConstants.ACTION_AT_MAX_BALANCE.PAYOUT)) {
 						            				eligiblePayouts.add(lb);
 						            			}
@@ -126,7 +129,7 @@ public class TimesheetSubmitAction extends KPMEAction {
 		            				}
 		            				if(StringUtils.equals(aRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.LEAVE_APPROVE)) {
 		            					//a leave period should end within the time period.
-		            					CalendarEntry leaveEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), lb.getLeaveDateTime());
+		            					CalendarEntry leaveEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), lb.getLeaveLocalDate().toDateTimeAtStartOfDay());
 		            					if(ObjectUtils.isNotNull(leaveEntry)) {
 		            						//only leave blocks belonging to the calendar entry being submitted may reach this point.
 		            						//if the infraction occurs before the end of the leave calendar entry, then action will be executed.
@@ -174,11 +177,11 @@ public class TimesheetSubmitAction extends KPMEAction {
         } else if (StringUtils.equals(tsaf.getAction(), HrConstants.DOCUMENT_ACTIONS.APPROVE)) {
         	if(TkServiceLocator.getTimesheetService().isReadyToApprove(document)) {
 	            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
-                    if(TkServiceLocator.getTimesheetService().isTimesheetValid(document)) {
-                        TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getPrincipalId(), document);
-                    } else {
-                        errorList.add("Timesheet " + document.getDocumentId() + " could not be approved as it contains errors, see time detail for more info");
-                    }
+	                if(!isOverlapTimeBlocks(document)) {
+	            		TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getPrincipalId(), document);
+	            	} else {
+	            		errorList.add("Timesheet "+document.getDocumentId()+ " could not be approved as it contains overlapping time blocks");
+	            	}
 	            }
         	} else {
         		//ERROR!!!
@@ -212,11 +215,11 @@ public class TimesheetSubmitAction extends KPMEAction {
         } else if (StringUtils.equals(tsaf.getAction(), HrConstants.DOCUMENT_ACTIONS.APPROVE)) {
         	if(TkServiceLocator.getTimesheetService().isReadyToApprove(document)) {
 	            if (document.getDocumentHeader().getDocumentStatus().equals(DocumentStatus.ENROUTE.getCode())) {
-                    if(TkServiceLocator.getTimesheetService().isTimesheetValid(document)) {
-                        TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getPrincipalId(), document);
-                    } else {
-                        errorList.add("Timesheet " + document.getDocumentId() + " could not be approved as it contains errors, see time detail for more info");
-                    }
+	            	if(!isOverlapTimeBlocks(document)) {
+	            		TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getPrincipalId(), document);
+	            	} else {
+	            		errorList.add("Timesheet "+document.getDocumentId()+ " could not be approved as it contains overlapping time blocks");
+	            	}
 	            }
         	} else {
         		//ERROR!!!
@@ -244,5 +247,51 @@ public class TimesheetSubmitAction extends KPMEAction {
         	redirect.addParameter("errorMessageList", errorList);
         }
         return redirect;
+    }
+    
+    private boolean isOverlapTimeBlocks(TimesheetDocument tDoc) {
+    	boolean isOverLap = false;
+        Map<String, String> earnCodeTypeMap = new HashMap<String, String>();
+    	List<TimeBlock> timeBlocks = tDoc.getTimeBlocks();
+        for(TimeBlock tb1 : timeBlocks) {
+        	String earnCode = tb1.getEarnCode();
+        	String earnCodeType = null;
+        	if(earnCodeTypeMap.containsKey(earnCode)) {
+        		earnCodeType = earnCodeTypeMap.get(earnCode);
+        	} else {
+       	 		EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, tDoc.getAsOfDate());
+       	 		if(earnCodeObj != null) {
+       	 			earnCodeType = earnCodeObj.getEarnCodeType();
+       	 		}
+        	}
+       	 	if(earnCodeType != null && HrConstants.EARN_CODE_TIME.equals(earnCodeType)) {
+            	DateTime beginDate = tb1.getBeginDateTime();
+            	for(TimeBlock tb2 : timeBlocks){
+            		if(!tb1.getTkTimeBlockId().equals(tb2.getTkTimeBlockId())) {
+	            		earnCode = tb2.getEarnCode();
+	            		earnCodeType = null;
+	            		if(earnCodeTypeMap.containsKey(earnCode)) {
+	                		earnCodeType = earnCodeTypeMap.get(earnCode);
+	                	} else {
+	   	        	 		EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, tDoc.getAsOfDate());
+	   	        	 		if(earnCodeObj != null) {
+	   	        	 			earnCodeType = earnCodeObj.getEarnCodeType();
+	   	        	 		}
+	                	}
+	            		if(earnCodeType != null && HrConstants.EARN_CODE_TIME.equals(earnCodeType)) {
+	                		Interval blockInterval = new Interval(tb2.getBeginDateTime(), tb2.getEndDateTime());
+	                		if(blockInterval.contains(beginDate.getMillis())) {
+	   	        			    isOverLap= true;	
+	   	        			    break;
+	                		}
+	            		}
+	            	}
+            	}
+            	if(isOverLap){
+            		break;
+            	}
+       	 	}
+        }
+        return isOverLap;
     }
 }

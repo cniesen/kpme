@@ -21,16 +21,13 @@ import java.util.Date;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDateTime;
 import org.kuali.kpme.core.api.calendar.CalendarContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 /**
  * <p>CalendarEntryContract interface</p>
  *
  */
-public interface CalendarEntryContract extends PersistableBusinessObject, Comparable<CalendarEntryContract> {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "CalendarEntry";
+public interface CalendarEntryContract extends PersistableBusinessObject {
 	
 	/**
 	 * The hrCalendarId the CalendarEntry is associated with

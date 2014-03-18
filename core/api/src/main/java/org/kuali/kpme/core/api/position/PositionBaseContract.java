@@ -16,15 +16,12 @@
 package org.kuali.kpme.core.api.position;
 
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
 
 /**
  * <p>PositionBaseContract interface.</p>
  *
  */
 public interface PositionBaseContract extends HrBusinessObjectContract {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PositionBase";
 	
 	/**
 	 * The Primary Key of a PositionBase entry saved in a database
@@ -58,4 +55,15 @@ public interface PositionBaseContract extends HrBusinessObjectContract {
 	 * @return description for PositionBase
 	 */
 	public String getDescription();
+
+	 /**
+	 * History flag for PositionBase lookups 
+	 * 
+	 * <p>
+	 * history of PositionBase
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public String getHistory();
 }

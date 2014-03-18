@@ -17,9 +17,8 @@ package org.kuali.kpme.core.earncode.group;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
 import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupDefinitionContract;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
@@ -36,7 +35,10 @@ public class EarnCodeGroupDefinition extends PersistableBusinessObjectBase imple
 
 	private String hrEarnCodeGroupId;
 
-    private EarnCodeBo earnCodeObj;
+    private EarnCode earnCodeObj;
+
+    // this is for the maintenance screen
+    private String earnCodeDesc;
 
 	public String getEarnCode() {
 		return earnCode;
@@ -62,17 +64,21 @@ public class EarnCodeGroupDefinition extends PersistableBusinessObjectBase imple
 		this.hrEarnCodeGroupId = hrEarnCodeGroupId;
 	}
 
-	public EarnCodeBo getEarnCodeObj() {
+	public void setEarnCodeDesc(String earnCodeDesc) {
+		this.earnCodeDesc = earnCodeDesc;
+	}
+
+	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;
 	}
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 	
 	// this is for the maintenance screen
 	public String getEarnCodeDesc() {
-		EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, LocalDate.now());
+		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, LocalDate.now());
 		
 		if(earnCode != null && StringUtils.isNotBlank(earnCode.getDescription())) {
 			return earnCode.getDescription();

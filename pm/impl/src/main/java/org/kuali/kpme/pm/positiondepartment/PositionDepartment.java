@@ -15,29 +15,18 @@
  */
 package org.kuali.kpme.pm.positiondepartment;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.kuali.kpme.core.api.departmentaffiliation.service.DepartmentAffiliationService;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliation;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positiondepartment.PositionDepartmentContract;
-import org.kuali.kpme.pm.position.Position;
-import org.springframework.util.StringUtils;
+import org.kuali.kpme.pm.positiondepartmentaffiliation.PositionDepartmentAffiliation;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 public class PositionDepartment extends HrBusinessObject implements PositionDepartmentContract {
 	
-    private static final String DEPARTMENT = "department";
-
-	//TODO reslove the issue with DepartmentAffiliation to implement  PositionDepartmentContract
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(DEPARTMENT)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("department")
 		    .build();
 	
 	private static final long serialVersionUID = 1L;
@@ -46,21 +35,13 @@ public class PositionDepartment extends HrBusinessObject implements PositionDepa
 	private String institution;
 	private String location;
 	private String department;
-	private String deptAffl;
+	private String positionDeptAffl;
+		
+	private Location locationObj;
+	private Institution institutionObj;
+	private Department departmentObj;
+	private PositionDepartmentAffiliation positionDeptAfflObj;
 
-    private String hrPositionId;
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
-	private DepartmentBo departmentObj;
-	private DepartmentAffiliation deptAfflObj;
-
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(DEPARTMENT, this.getDepartment())
-				.build();
-	}	
-	
 	@Override
 	public String getId() {
 		return this.getPmPositionDeptId();
@@ -73,61 +54,39 @@ public class PositionDepartment extends HrBusinessObject implements PositionDepa
 
 	@Override
 	protected String getUniqueKey() {
-		return  getInstitution() + "_" + getLocation() + "_" + getDepartment() + "_" + getDeptAffl()	;
+		return  getInstitution() + "_" + getLocation() + "_" + getDepartment() + "_" + getPositionDeptAffl()	;
 	}
 
 	/**
-	 * @return the DeptAffl
+	 * @return the positionDeptAffl
 	 */
-	public String getDeptAffl() {
-		return deptAffl;
+	public String getPositionDeptAffl() {
+		return positionDeptAffl;
 	}
 
 	/**
-	 * @param deptAffl the deptAffl to set
+	 * @param positionDeptAffl the positionDeptAffl to set
 	 */
-	public void setDeptAffl(String deptAffl) {
-		this.deptAffl = deptAffl;
+	public void setPositionDeptAffl(String positionDeptAffl) {
+		this.positionDeptAffl = positionDeptAffl;
 	}
 
 	/**
-	 * @return the deptAfflObj
+	 * @return the positionDeptAfflObj
 	 */
-	public DepartmentAffiliation getDeptAfflObj() {
-		
-		if (deptAfflObj == null) {
-			if (!StringUtils.isEmpty(deptAffl)) {
-				DepartmentAffiliationService pdaService = HrServiceLocator.getDepartmentAffiliationService();
-				deptAfflObj = (DepartmentAffiliation)pdaService.getDepartmentAffiliationByType(deptAffl);
-			}
-		} 
-		
-		return deptAfflObj;
+	public PositionDepartmentAffiliation getPositionDeptAfflObj() {
+		return positionDeptAfflObj;
 	}
 
 	/**
-	 * @param deptAfflObj the deptAfflObj to set
+	 * @param positionDeptAfflObj the positionDeptAfflObj to set
 	 */
-	public void setDeptAfflObj(
-			DepartmentAffiliation deptAfflObj) {
-		this.deptAfflObj = deptAfflObj;
+	public void setPositionDeptAfflObj(
+			PositionDepartmentAffiliation positionDeptAfflObj) {
+		this.positionDeptAfflObj = positionDeptAfflObj;
 	}
 
-    /**
-     * @return the hrPositionId
-     */
-    public String getHrPositionId() {
-        return hrPositionId;
-    }
-    /**
-     * @param hrPositionId the hrPositionId to set
-     */
-    public void setHrPositionId(String hrPositionId) {
-        this.hrPositionId = hrPositionId;
-    }
-
-
-    /**
+	/**
 	 * @return the pmPositionDeptId
 	 */
 	public String getPmPositionDeptId() {
@@ -174,14 +133,14 @@ public class PositionDepartment extends HrBusinessObject implements PositionDepa
 	/**
 	 * @return the locationObj
 	 */
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
 	/**
 	 * @param locationObj the locationObj to set
 	 */
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
@@ -202,50 +161,29 @@ public class PositionDepartment extends HrBusinessObject implements PositionDepa
 	/**
 	 * @return the institutionObj
 	 */
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
 	/**
 	 * @param institutionObj the institutionObj to set
 	 */
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 
 	/**
 	 * @return the departmentObj
 	 */
-	public DepartmentBo getDepartmentObj() {
+	public Department getDepartmentObj() {
 		return departmentObj;
 	}
 
 	/**
 	 * @param departmentObj the departmentObj to set
 	 */
-	public void setDepartmentObj(DepartmentBo departmentObj) {
+	public void setDepartmentObj(Department departmentObj) {
 		this.departmentObj = departmentObj;
 	}
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (obj.getClass() != getClass())
-            return false;
-
-        PositionDepartment rhs = (PositionDepartment)obj;
-        return new EqualsBuilder()
-                .append(pmPositionDeptId,rhs.getPmPositionDeptId())
-                .append(institution, rhs.getInstitution())
-                .append(location, rhs.getLocation())
-                .append(department, rhs.getDepartment())
-                .append(deptAffl, rhs.getDeptAffl())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .isEquals();
-
-    }
 
 }

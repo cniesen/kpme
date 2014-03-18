@@ -52,14 +52,13 @@ public class SystemScheduledTimeOffDaoOjbImpl extends PlatformAwareDaoBaseOjb im
 		Criteria root = new Criteria();
 		root.addEqualTo("leavePlan", leavePlan);
 		root.addEqualTo("accruedDate", startDate.toDate());
-		root.addEqualTo("active", true);
 		return (SystemScheduledTimeOff)this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(SystemScheduledTimeOff.class, root));
 	}
 
 	@Override
     @SuppressWarnings("unchecked")
     public List<SystemScheduledTimeOff> getSystemScheduledTimeOffs(LocalDate fromEffdt, LocalDate toEffdt, String earnCode, LocalDate fromAccruedDate,LocalDate toAccruedDate, 
-    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String premiumEarnCode, String active, String showHistory) {
+    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String active, String showHistory) {
         
     	List<SystemScheduledTimeOff> results = new ArrayList<SystemScheduledTimeOff>();
     	
@@ -67,10 +66,6 @@ public class SystemScheduledTimeOffDaoOjbImpl extends PlatformAwareDaoBaseOjb im
 
         if (StringUtils.isNotBlank(earnCode)) {
             root.addLike("UPPER(earnCode)", earnCode.toUpperCase()); // KPME-2695
-        }
-        
-        if (StringUtils.isNotBlank(premiumEarnCode)) {
-            root.addLike("UPPER(premiumEarnCode)", premiumEarnCode.toUpperCase()); // KPME-3161
         }
 
         Criteria effectiveDateFilter = new Criteria();

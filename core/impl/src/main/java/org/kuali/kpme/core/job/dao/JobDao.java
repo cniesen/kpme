@@ -18,7 +18,7 @@ package org.kuali.kpme.core.job.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.job.Job;
 
 public interface JobDao {
 
@@ -26,12 +26,12 @@ public interface JobDao {
 	 * Saves or Updates a Job
 	 * @param job
 	 */
-	public void saveOrUpdate(JobBo job);
+	public void saveOrUpdate(Job job);
 	/**
 	 * Saves or updates a job list 
 	 * @param jobList
 	 */
-	public void saveOrUpdate(List<JobBo> jobList);
+	public void saveOrUpdate(List<Job> jobList);
 	
 	/**
 	 * Provides a list of current jobs that are valid relative to the provided effective date.  
@@ -42,7 +42,7 @@ public interface JobDao {
 	 * @param payPeriodEndDate
 	 * @return
 	 */
-	public List<JobBo> getJobs(String principalId, LocalDate payPeriodEndDate);
+	public List<Job> getJobs(String principalId, LocalDate payPeriodEndDate);
 	/**
 	 * 
 	 * @param principalId
@@ -50,7 +50,7 @@ public interface JobDao {
 	 * @param asOfDate
 	 * @return a Job per the critieria passed in
 	 */
-	public JobBo getJob(String principalId, Long jobNumber, LocalDate asOfDate);
+	public Job getJob(String principalId, Long jobNumber, LocalDate asOfDate);
 	
 	/**
 	 * Get Primary Job as indicated by primary indicator on Job table
@@ -58,7 +58,7 @@ public interface JobDao {
 	 * @param payPeriodEndDate
 	 * @return
 	 */
-	public JobBo getPrimaryJob(String principalId, LocalDate payPeriodEndDate);
+	public Job getPrimaryJob(String principalId, LocalDate payPeriodEndDate);
 	
 	/**
 	 * Fetch active jobs that are incumbents of the payType
@@ -66,23 +66,23 @@ public interface JobDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public List<JobBo> getActiveJobsForPayType(String hrPayType, LocalDate asOfDate);
+	public List<Job> getActiveJobsForPayType(String hrPayType, LocalDate asOfDate);
 	
 	/**
 	 * Get job based on id
 	 * @param hrJobId
 	 * @return
 	 */
-	public JobBo getJob(String hrJobId);
+	public Job getJob(String hrJobId);
 	
 	/**
 	 * Get job with max(jobNumber) for a certain principalId
 	 * @param principalId
 	 * @return
 	 */
-	public JobBo getMaxJob(String principalId);
+	public Job getMaxJob(String principalId);
 
-    List<JobBo> getJobs(String principalId, String jobNumber, String dept, String positionNbr, String payType, LocalDate fromEffdt, LocalDate toEffdt, String active,
+    List<Job> getJobs(String principalId, String jobNumber, String dept, String positionNbr, String payType, LocalDate fromEffdt, LocalDate toEffdt, String active, 
     				  String showHistory);
     
     /**
@@ -93,15 +93,15 @@ public interface JobDao {
      */
     public int getJobCount(String principalId, Long jobNumber, String dept);
     
-    public List<JobBo> getActiveLeaveJobs(String principalId, LocalDate asOfDate);
+    public List<Job> getActiveLeaveJobs(String principalId, LocalDate asOfDate);
     
-    public List<JobBo> getAllActiveLeaveJobs(String principalId, LocalDate asOfDate);
+    public List<Job> getAllActiveLeaveJobs(String principalId, LocalDate asOfDate);
     
-    public List<JobBo> getInactiveLeaveJobs(Long jobNumber, LocalDate endDate);
+    public List<Job> getInactiveLeaveJobs(Long jobNumber, LocalDate endDate);
     
-    public List<JobBo> getAllInActiveLeaveJobsInRange(String principalId, LocalDate endDate);
+    public List<Job> getAllInActiveLeaveJobsInRange(String principalId, LocalDate endDate);
     
-    public JobBo getMaxTimestampJob(String principalId);
+    public Job getMaxTimestampJob(String principalId);
     
 	/**
 	 * Returns all of the principal ids actively particpating in a job in the given position number

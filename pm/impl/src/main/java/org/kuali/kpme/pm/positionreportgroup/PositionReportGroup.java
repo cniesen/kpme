@@ -16,19 +16,16 @@
 package org.kuali.kpme.pm.positionreportgroup;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PositionReportGroup extends HrBusinessObject implements PositionReportGroupContract {
-	private static final String POSITION_REPORT_GROUP = "positionReportGroup";
-
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(POSITION_REPORT_GROUP)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("positionReportGroup")
 		    .build();
 
 	private static final long serialVersionUID = 1L;
@@ -39,15 +36,8 @@ public class PositionReportGroup extends HrBusinessObject implements PositionRep
 	private String institution;
 	private String location;
 	
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_GROUP, this.getPositionReportGroup())
-				.build();
-	}
+	private Location locationObj;
+	private Institution institutionObj;
 
 	@Override
 	public String getId() {
@@ -104,19 +94,19 @@ public class PositionReportGroup extends HrBusinessObject implements PositionRep
 		this.location = location;
 	}
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 

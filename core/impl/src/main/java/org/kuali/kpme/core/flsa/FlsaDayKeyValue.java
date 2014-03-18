@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
-import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
+import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
 
-public class FlsaDayKeyValue extends UifKeyValuesFinderBase {
+public class FlsaDayKeyValue extends KeyValuesBase {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -38,4 +38,5 @@ public class FlsaDayKeyValue extends UifKeyValuesFinderBase {
         keyValues.add(new ConcreteKeyValue("Sat", "Sat"));
         return keyValues;
 	}
+
 }

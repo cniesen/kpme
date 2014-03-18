@@ -22,10 +22,15 @@
 
 	<bean id="AssignmentAccount" parent="AssignmentAccount-parentBean" />
 
-	<bean id="AssignmentAccount-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
-		<property name="dataObjectClass"
-			value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo" />
+	<bean id="AssignmentAccount-parentBean" abstract="true"
+		parent="BusinessObjectEntry">
+		<property name="businessObjectClass"
+			value="org.kuali.kpme.core.assignment.account.AssignmentAccount" />
+		<property name="titleAttribute" value="id" />
 		<property name="objectLabel" value="Assignment Account" />
+		<property name="lookupDefinition">
+			<ref bean="AssignmentAccount-lookupDefinition" />
+		</property>
 		<property name="attributes">
 			<list>
 				<ref bean="AssignmentAccount-finCoaCd" />
@@ -39,7 +44,77 @@
 				<ref bean="AssignmentAccount-active" />
 				<ref bean="AssignmentAccount-tkAssignmentId" />
 				<ref bean="AssignmentAccount-earnCode" />
-                <ref bean="AssignmentAccount-userPrincipalId" />
+			</list>
+		</property>
+		<property name="relationships">
+			<list>
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="accountObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="finCoaCd"
+								p:targetName="chartOfAccountsCode" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="accountNbr"
+								p:targetName="accountNumber" />
+						</list>
+					</property>
+				</bean>
+				
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="earnCodeObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="earnCode"
+								p:targetName="earnCode" />
+						</list>
+					</property>
+                    <property name="supportAttributes">
+                        <list>
+                            <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate"
+                                  p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+				</bean>
+				
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="subAccountObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="subAcctNbr"
+								p:targetName="subAccountNumber" />
+						</list>
+					</property>
+				</bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="objectCodeObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="finObjectCd"
+								p:targetName="financialObjectCode" />
+						</list>
+					</property>
+				</bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="subObjectCodeObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="finSubObjCd"
+								p:targetName="financialSubObjectCode" />
+						</list>
+					</property>
+				</bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="projectCodeObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="projectCd"
+								p:targetName="chartOfAccountsCode" />
+						</list>
+					</property>
+				</bean>
 			</list>
 		</property>
 	</bean>
@@ -55,8 +130,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="2" />
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="2" />
 		</property>
 		<property name="name" value="finCoaCd" />
 		<property name="label" value="COA" />
@@ -72,8 +147,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="7" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="7" />
 		</property>
 		<property name="name" value="accountNbr" />
 		<property name="label" value="Account Number" />
@@ -89,8 +164,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="5" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="5" />
 		</property>
 		<property name="name" value="subAcctNbr" />
 		<property name="label" value="Sub-Account Number" />
@@ -106,8 +181,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="15" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="15" />
 		</property>
 		<property name="name" value="finObjectCd" />
 		<property name="label" value="Object Code" />
@@ -123,8 +198,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="3" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="3" />
 		</property>
 		<property name="name" value="finSubObjCd" />
 		<property name="label" value="SubObject Code" />
@@ -140,8 +215,8 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
 		</property>
 		<property name="name" value="projectCd" />
 		<property name="label" value="Project Code" />
@@ -156,8 +231,8 @@
 		<property name="validationPattern">
 			<bean parent="AnyCharacterValidationPattern" />
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="8" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="8" />
 		</property>
 		<property name="name" value="orgRefId" />
 		<property name="label" value="Org Ref Id" />
@@ -165,31 +240,30 @@
 
 	<!--  percentage validation -->
 	<bean id="AssignmentAccount-percent" parent="AssignmentAccount-percent-parentBean" />
-	<bean id="AssignmentAccount-percent-parentBean" abstract="true"	parent="AttributeDefinition">
+	<bean id="AssignmentAccount-percent-parentBean" abstract="true"
+		parent="AttributeDefinition">
 		<property name="shortLabel" value="Percent" />
-		<property name="controlField">
-			<bean parent="Uif-SpinnerControl">
-				<property name="spinner">
-					<bean parent="Uif-Spinner">
-						<property name="templateOptions">
-							<map merge="true">
-								<entry key="start" value="0.01" />
-								<entry key="step" value="0.01" />
-								<entry key="max" value="100" />
-								<entry key="numberFormat" value="n" />
-							</map>
-						</property>
-					</bean>
-				</property>
-			</bean>
+		<property name="maxLength" value="7" />
+		<property name="validationPattern">
+			<bean parent="NumericValidationPattern" />
 		</property>
-		<property name="required" value="true" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="7" />
+		</property>
 		<property name="name" value="percent" />
 		<property name="label" value="Percent" />
 	</bean>
 	
 	<bean id="AssignmentAccount-active" parent="AssignmentAccount-active-parentBean" />
-	<bean id="AssignmentAccount-active-parentBean" abstract="true" parent="KpmeAttributeReference-active"/>
+	<bean id="AssignmentAccount-active-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+	</bean>
 
 	<bean id="AssignmentAccount-tkAssignmentId" parent="AssignmentAccount-tkAssignmentId-parentBean" />
 	<bean id="AssignmentAccount-tkAssignmentId-parentBean" abstract="true"
@@ -201,40 +275,53 @@
 				<property name="allowWhitespace" value="false" />
 			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="60" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="60" />
 		</property>
 		<property name="name" value="tkAssignmentId" />
 		<property name="label" value="Assignment" />
 	</bean>
 
 	<bean id="AssignmentAccount-earnCode" parent="AssignmentAccount-earnCode-parentBean" />
-	<bean id="AssignmentAccount-earnCode-parentBean" abstract="true" parent="KpmeAttributeReference-earnCode" />
+	<bean id="AssignmentAccount-earnCode-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Earn Code" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="15" />
+		</property>
+		<property name="name" value="earnCode" />
+		<property name="label" value="Earn Code" />
+	</bean>
 
-    <!--userPrincipalId-->
-    <bean id="AssignmentAccount-userPrincipalId" parent="AssignmentAccount-userPrincipalId-parentBean" />
-    <bean id="AssignmentAccount-userPrincipalId-parentBean" abstract="true" parent="KpmeAttributeReference-userPrincipalId" />
 
-	<!--  Lookup View -->
-	<bean id="AssignmentAccount-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
-    <property name="headerText" value="Assignment Account Lookup" />
-    <property name="dataObjectClassName" value="org.kuali.kpme.core.assignment.AssignmentAccount" />
-    <property name="criteriaFields">
-      <list merge="true">
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="tkAssignmentId" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="accountNbr" />       
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="subAcctNbr" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="projectCd" />
-      </list>
-    </property>
-    <property name="resultFields">
-      <list>
-        <bean parent="Uif-DataField" p:propertyName="tkAssignmentId" />
-        <bean parent="Uif-DataField" p:propertyName="accountNbr" />
-        <bean parent="Uif-DataField" p:propertyName="subAcctNbr" />
-        <bean parent="Uif-DataField" p:propertyName="projectCd" />
-      </list>
-    </property>
-  </bean> 
+	<!--  Inquiry Definitions  -->
+	<bean id="AssignmentAccount-lookupDefinition" parent="AssignmentAccount-lookupDefinition-parentBean" />
+	<bean id="AssignmentAccount-lookupDefinition-parentBean" abstract="true"
+		parent="LookupDefinition">
+		<property name="lookupFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="tkAssignmentId" />
+				<bean parent="FieldDefinition" p:attributeName="accountNbr" p:noDirectInquiry="true"/>
+				<bean parent="FieldDefinition" p:attributeName="subAcctNbr" p:noDirectInquiry="true"/>
+				<bean parent="FieldDefinition" p:attributeName="projectCd" p:noDirectInquiry="true"/>
+
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="tkAssignmentId" />
+				<bean parent="FieldDefinition" p:attributeName="accountNbr" />
+				<bean parent="FieldDefinition" p:attributeName="subAcctNbr" />
+				<bean parent="FieldDefinition" p:attributeName="percent" />
+			</list>
+		</property>
+		<property name="title" value="Assignment Account Lookup" />
+	</bean>
 
 </beans>

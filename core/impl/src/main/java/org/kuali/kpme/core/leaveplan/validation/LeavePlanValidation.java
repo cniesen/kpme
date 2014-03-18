@@ -21,7 +21,7 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
@@ -33,7 +33,7 @@ public class LeavePlanValidation extends MaintenanceDocumentRuleBase {
 
 	// KPME-1250 Kagata
 	// This method determines if the leave plan can be inactivated
-	boolean validateInactivation(LeavePlanBo leavePlan) {
+	boolean validateInactivation(LeavePlan leavePlan) {
 		boolean valid = true;
 		// Get a list of active employees based on leave plan and its effective
 		// date.
@@ -41,7 +41,7 @@ public class LeavePlanValidation extends MaintenanceDocumentRuleBase {
 		// plan can't be inactivated, so return false otherwise true
 		if (!leavePlan.isActive()) {
 			// this has to use the effective date of the job passed in
-			List<PrincipalHRAttributes> pList = (List<PrincipalHRAttributes>) HrServiceLocator
+			List<PrincipalHRAttributes> pList = HrServiceLocator
 					.getPrincipalHRAttributeService()
 					.getActiveEmployeesForLeavePlan(leavePlan.getLeavePlan(),
 							leavePlan.getEffectiveLocalDate());
@@ -105,8 +105,8 @@ public class LeavePlanValidation extends MaintenanceDocumentRuleBase {
 		LOG.debug("entering custom validation for Leave Plan");
 		PersistableBusinessObject pbo = (PersistableBusinessObject) this
 				.getNewBo();
-		if (pbo instanceof LeavePlanBo) {
-			LeavePlanBo leavePlan = (LeavePlanBo) pbo;
+		if (pbo instanceof LeavePlan) {
+			LeavePlan leavePlan = (LeavePlan) pbo;
 			if (leavePlan != null) {
 				valid = true;
 				valid &= this.validateInactivation(leavePlan);

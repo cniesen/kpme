@@ -15,7 +15,8 @@
  */
 package org.kuali.kpme.tklm.time.timesheet.web;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,14 +28,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.common.CalendarFormAction;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
@@ -104,7 +104,7 @@ public class TimesheetAction extends CalendarFormAction {
 		String documentId = timesheetActionForm.getDocumentId();
         String principalId = HrContext.getTargetPrincipalId();
         timesheetActionForm.setPrincipalId(principalId);
-		CalendarEntryContract calendarEntry = null;
+		CalendarEntry calendarEntry = null;
 		TimesheetDocument timesheetDocument = null;
 
         if (StringUtils.isNotBlank(documentId)) {
@@ -115,14 +115,14 @@ public class TimesheetAction extends CalendarFormAction {
             }
         } else {
         	if (StringUtils.isNotBlank(timesheetActionForm.getHrCalendarEntryId())) {
-        		calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(timesheetActionForm.getHrCalendarEntryId());
+        		calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(timesheetActionForm.getHrCalendarEntryId());
         	} else {
-        		calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, new LocalDate().toDateTimeAtStartOfDay());
+        		calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, new LocalDate().toDateTimeAtStartOfDay());
             	//the above service call returns a LEAVE calendar type when no PAY calendar type is found.
         	}
         	
         	if (calendarEntry != null) {
-            	Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+            	Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
             	if(calendar != null && StringUtils.equals(calendar.getCalendarTypes(),TkConstants.CALENDAR_TYPE_PAY)) {
             		//view does not like a null timesheet document on form.
             		timesheetDocument = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId, calendarEntry);
@@ -140,10 +140,10 @@ public class TimesheetAction extends CalendarFormAction {
 	        	timesheetActionForm.setBeginCalendarEntryDate(calendarEntry.getBeginPeriodDateTime());
 	        	timesheetActionForm.setEndCalendarEntryDate(DateUtils.addMilliseconds(calendarEntry.getEndPeriodDateTime(), -1));
 	    		
-	    		CalendarEntry prevCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+	    		CalendarEntry prevCalendarEntry = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
 	    		timesheetActionForm.setPrevHrCalendarEntryId(prevCalendarEntry != null ? prevCalendarEntry.getHrCalendarEntryId() : null);
 	    		
-	    		CalendarEntry nextCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+	    		CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
 	    		timesheetActionForm.setNextHrCalendarEntryId(nextCalendarEntry != null ? nextCalendarEntry.getHrCalendarEntryId() : null);
 	        }
 	        
@@ -163,13 +163,13 @@ public class TimesheetAction extends CalendarFormAction {
         	EntityNamePrincipalName entityNamePrincipalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
             GlobalVariables.getMessageMap().putError(KRADConstants.GLOBAL_ERRORS, "error.missing.payCalendar", entityNamePrincipalName.getPrincipalName());
         }
-        setMessages(timesheetActionForm);
+
 		return super.execute(mapping, form, request, response);
 	}
     
     @Override
-    protected List<CalendarEntryContract> getCalendarEntries(CalendarEntryContract currentCalendarEntry) {
-        List<CalendarEntryContract> calendarEntries = new ArrayList<CalendarEntryContract>();
+    protected List<CalendarEntry> getCalendarEntries(CalendarEntry currentCalendarEntry) {
+        List<CalendarEntry> calendarEntries = new ArrayList<CalendarEntry>();
         
         List<TimesheetDocumentHeader> timesheetDocumentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeadersForPrincipalId(HrContext.getTargetPrincipalId());
         for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
@@ -177,13 +177,6 @@ public class TimesheetAction extends CalendarFormAction {
         }
         
         return calendarEntries;
-    }
-
-    protected void setMessages(TimesheetActionForm timesheetActionForm) {
-       List<String> errorList = new ArrayList<String>();
-       errorList.addAll(TkServiceLocator.getTimesheetService().validateTimeBlock(timesheetActionForm.getTimesheetDocument()));
-       errorList.addAll(TkServiceLocator.getTimesheetService().validateHours(timesheetActionForm.getTimesheetDocument()));
-       timesheetActionForm.setActionMessages(errorList);
     }
 
 }

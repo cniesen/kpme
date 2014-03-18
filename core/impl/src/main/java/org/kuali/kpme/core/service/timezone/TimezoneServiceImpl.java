@@ -20,10 +20,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.location.LocationContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.location.Location;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
@@ -33,14 +32,14 @@ public class TimezoneServiceImpl implements TimezoneService {
 
     @Override
     public String getUserTimezone(String principalId) {
-        PrincipalHRAttributesContract principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
+        PrincipalHRAttributes principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
         if(principalCalendar != null && principalCalendar.getTimezone() != null){
             return principalCalendar.getTimezone();
         }
         List<Job> jobs = HrServiceLocator.getJobService().getJobs(principalId, LocalDate.now());
         if (jobs.size() > 0) {
             // Grab the location off the first job in the list
-            LocationContract location = HrServiceLocator.getLocationService().getLocation(jobs.get(0).getLocation(), LocalDate.now());
+            Location location = HrServiceLocator.getLocationService().getLocation(jobs.get(0).getLocation(), LocalDate.now());
             if (location!=null){
                 if(StringUtils.isNotBlank(location.getTimezone())){
                     return location.getTimezone();
@@ -103,7 +102,7 @@ public class TimezoneServiceImpl implements TimezoneService {
 
 	@Override
 	public String getApproverTimezone(String principalId) {
-		PrincipalHRAttributesContract principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
+		PrincipalHRAttributes principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
 	    if(principalCalendar != null && principalCalendar.getTimezone() != null){
 	        return principalCalendar.getTimezone();
 	    }

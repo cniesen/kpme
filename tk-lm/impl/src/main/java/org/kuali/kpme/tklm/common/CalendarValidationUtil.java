@@ -25,9 +25,8 @@ import org.joda.time.DateTimeConstants;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
@@ -73,7 +72,7 @@ public class CalendarValidationUtil {
     	return errors;
     }
     
-    public static List<String> validateInterval(CalendarEntryContract payCalEntry, Long startTime, Long endTime) {
+    public static List<String> validateInterval(CalendarEntry payCalEntry, Long startTime, Long endTime) {
         List<String> errors = new ArrayList<String>();
         LocalDateTime pcb_ldt = payCalEntry.getBeginPeriodLocalDateTime();
         LocalDateTime pce_ldt = payCalEntry.getEndPeriodLocalDateTime();
@@ -98,7 +97,7 @@ public class CalendarValidationUtil {
     }
 
 	protected static List<String> validateDayParametersForLeaveEntry(EarnCode earnCode,
-                                                                     CalendarEntryContract calendarEntry, String startDate, String endDate, BigDecimal leaveAmount) {
+			CalendarEntry calendarEntry, String startDate, String endDate, BigDecimal leaveAmount) {
 		List<String> errors = new ArrayList<String>();
 		if(leaveAmount == null) {
 			 errors.add("The Day field should not be empty.");
@@ -109,7 +108,7 @@ public class CalendarValidationUtil {
 	}
 
 	public static List<String> validateHourParametersForLeaveEntry(EarnCode earnCode,
-                                                                   CalendarEntryContract calendarEntry, String startDate, String endDate, BigDecimal leaveAmount) {
+			CalendarEntry calendarEntry, String startDate, String endDate, BigDecimal leaveAmount) {
 		List<String> errors = new ArrayList<String>();
 		if(leaveAmount == null) {
 			 errors.add("The Hour field should not be empty.");
@@ -123,7 +122,7 @@ public class CalendarValidationUtil {
 	 * Validates if the state/end dates is within the range of the calendar entry
 	 */
 	public static List<String> validateDateTimeParametersForCalendarEntry(EarnCode earnCode,
-                                                                          CalendarEntryContract calendarEntry, String startDate, String endDate) {
+			CalendarEntry calendarEntry, String startDate, String endDate) {
 		if(!(earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_HOUR)
 				|| earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_AMOUNT) ))
 			return new ArrayList<String>();

@@ -36,13 +36,12 @@ import org.kuali.kpme.core.FunctionalTest;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.graceperiod.GracePeriodRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.kpme.tklm.utils.TkTestConstants;
@@ -74,11 +73,11 @@ public class ClockWebTest extends KPMEWebTestCase {
     }
 
     public Long maxTimeBlockId() {
-        Collection aCol = KRADServiceLocator.getBusinessObjectService().findAll(TimeBlockBo.class);
+        Collection aCol = KRADServiceLocator.getBusinessObjectService().findAll(TimeBlock.class);
         Long maxId = new Long(-1);
-        Iterator<TimeBlockBo> itr = aCol.iterator();
+        Iterator<TimeBlock> itr = aCol.iterator();
         while (itr.hasNext()) {
-            TimeBlockBo tb = itr.next();
+            TimeBlock tb = itr.next();
             Long temp = new Long(tb.getTkTimeBlockId());
             if (temp > maxId) {
                 maxId = temp;
@@ -88,7 +87,7 @@ public class ClockWebTest extends KPMEWebTestCase {
     }
 
     public void createTB() {
-        TimeBlockBo timeBlock = new TimeBlockBo();
+        TimeBlock timeBlock = new TimeBlock();
         timeBlock.setUserPrincipalId("admin");
         timeBlock.setJobNumber(2L);
         timeBlock.setWorkArea(1234L);
@@ -96,7 +95,7 @@ public class ClockWebTest extends KPMEWebTestCase {
         timeBlock.setEarnCode("RGN");
         timeBlock.setBeginTimestamp(TKUtils.getCurrentTimestamp());
         timeBlock.setEndTimestamp(TKUtils.getCurrentTimestamp());
-        TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
+        TimeHourDetail timeHourDetail = new TimeHourDetail();
         timeHourDetail.setEarnCode("RGN");
         timeHourDetail.setHours(new BigDecimal(2.0));
         timeBlock.getTimeHourDetails().add(timeHourDetail);
@@ -104,7 +103,7 @@ public class ClockWebTest extends KPMEWebTestCase {
         List<TimeBlock> tbList = new ArrayList<TimeBlock>();
         String documentId = this.maxDocumentId().toString();
         timeBlock.setDocumentId(documentId);
-        tbList.add(TimeBlockBo.to(timeBlock));
+        tbList.add(timeBlock);
         TkServiceLocator.getTimeBlockService().saveTimeBlocks(tbList);
 
         tbId = timeBlock.getTkTimeBlockId();

@@ -23,7 +23,5 @@ public interface PstnQlfrTypeDao {
 
 	public PstnQlfrType getPstnQlfrTypeById(String pmPstnQlfrTypeId);
 	
-	public PstnQlfrType getPstnQlfrTypeByType(String pmPstnQlfrType);
-	
 	public List<PstnQlfrType> getAllActivePstnQlfrTypes();
 }

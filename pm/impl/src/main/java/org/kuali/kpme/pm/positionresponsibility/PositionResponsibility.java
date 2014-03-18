@@ -15,15 +15,14 @@
  */
 package org.kuali.kpme.pm.positionresponsibility;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.kuali.kpme.pm.api.positionresponsibility.PositionResponsibilityContract;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-import org.kuali.rice.location.api.campus.Campus;
-
 import java.math.BigDecimal;
 
-public class PositionResponsibility extends PersistableBusinessObjectBase implements PositionResponsibilityContract {
+import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.pm.api.positionresponsibility.PositionResponsibilityContract;
+import org.kuali.rice.location.impl.campus.CampusBo;
+
+
+public class PositionResponsibility extends HrBusinessObject implements PositionResponsibilityContract {
 
 	/**
 	 * 
@@ -31,10 +30,12 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 	private static final long serialVersionUID = -1631206606795253956L;
 	
 	private String positionResponsibilityId;
+	private String institution;
+	private String location;
 	private String positionResponsibilityOption;
 	private BigDecimal percentTime;
 	private String hrPositionId;
-	private Campus campusObj;
+	private CampusBo campusObj;
 
 	public String getPositionResponsibilityId() {
 		return positionResponsibilityId;
@@ -42,6 +43,14 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 
 	public void setPositionResponsibilityId(String positionResponsibilityId) {
 		this.positionResponsibilityId = positionResponsibilityId;
+	}
+
+	public String getInstitution() {
+		return institution;
+	}
+
+	public void setInstitution(String institution) {
+		this.institution = institution;
 	}
 
 	public String getPositionResponsibilityOption() {
@@ -60,12 +69,17 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 	public void setPercentTime(BigDecimal percentTime) {
 		this.percentTime = percentTime;
 	}
+
+	@Override
+	protected String getUniqueKey() {
+		return this.getInstitution() + "_" + this.getLocation();
+	}
 	
-	public Campus getCampusObj() {
+	public CampusBo getCampusObj() {
 		return campusObj;
 	}
 
-	public void setCampusObj(Campus campusObj) {
+	public void setCampusObj(CampusBo campusObj) {
 		this.campusObj = campusObj;
 	}
 
@@ -77,32 +91,26 @@ public class PositionResponsibility extends PersistableBusinessObjectBase implem
 		this.hrPositionId = hrPositionId;
 	}
 
+	@Override
 	public String getId() {
 		return this.getPositionResponsibilityId();
 	}
 
+	@Override
 	public void setId(String id) {
 		this.setPositionResponsibilityId(id);
 		
 	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (obj.getClass() != getClass())
-            return false;
+	public String getLocation() {
+		return location;
+	}
 
-        PositionResponsibility rhs = (PositionResponsibility)obj;
-        return new EqualsBuilder()
-                .append(positionResponsibilityId, rhs.getPositionResponsibilityId())
-                .append(positionResponsibilityOption, rhs.getPositionResponsibilityOption())
-                .append(percentTime, rhs.getPercentTime())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .isEquals();
+	public void setLocation(String location) {
+		this.location = location;
+	}
 
-    }
+	
+	
 	
 }

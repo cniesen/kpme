@@ -50,17 +50,12 @@
 	              <portal:mainTab />
 	          </c:when>
 	          
-              <c:when test='${selectedTab == "kpmemaintenance"}'>
+              <c:when test='${selectedTab == "maintenance"}'>
                   <portal:maintenanceTab />
               </c:when>
 	          
-	          
-	          <c:when test='${selectedTab == "riceadministration"}'>
+	          <c:when test='${selectedTab == "administration"}'>
 	              <portal:administrationTab />
-	          </c:when>
-	          
-	          <c:when test='${selectedTab == "tkandlm"}'>
-	                <portal:tkAndLmTab />
 	          </c:when>
 	          
 	          <%-- as backup go to the main menu index --%>

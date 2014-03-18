@@ -15,23 +15,21 @@
  */
 package org.kuali.kpme.tklm.leave.calendar.web;
 
-import org.joda.time.DateTime;
-import org.json.simple.JSONValue;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.leave.request.approval.web.LeaveRequestApprovalRow;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.DateTime;
+import org.json.simple.JSONValue;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
 public class LeaveActionFormUtils {
 
@@ -51,10 +49,10 @@ public class LeaveActionFormUtils {
         List<Map<String, Object>> leaveBlockList = new LinkedList<Map<String, Object>>();
         String timezone = HrServiceLocator.getTimezoneService().getUserTimezone();
 
-        for (LeaveBlockContract leaveBlock : leaveBlocks) {
+        for (LeaveBlock leaveBlock : leaveBlocks) {
             Map<String, Object> LeaveBlockMap = new LinkedHashMap<String, Object>();
             
-            if(leaveBlock.getBeginDateTime() != null && leaveBlock.getEndDateTime() != null) {
+            if(leaveBlock.getBeginTimestamp() != null && leaveBlock.getEndTimestamp() != null) {
 	            DateTime start = leaveBlock.getBeginDateTime();
 	        	DateTime end = leaveBlock.getEndDateTime();
 	        	LeaveBlockMap.put("startTimeHourMinute", start.toString(TkConstants.DT_BASIC_TIME_FORMAT));
@@ -63,7 +61,7 @@ public class LeaveActionFormUtils {
 	            LeaveBlockMap.put("endTime", end.toString(TkConstants.DT_MILITARY_TIME_FORMAT));
             }
         		
-            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
+            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(leaveBlock.getWorkArea(), leaveBlock.getLeaveLocalDate());
             String workAreaDesc = workArea == null ? "" : workArea.getDescription();
             // Roles
             Boolean getAnyApprover = HrContext.isAnyApprover();
@@ -74,7 +72,7 @@ public class LeaveActionFormUtils {
             DateTime dtLeaveDate = leaveBlock.getLeaveLocalDate().toDateTimeAtStartOfDay();
             LeaveBlockMap.put("leaveDate", dtLeaveDate.toString(HrConstants.DT_BASIC_DATE_FORMAT));
         		
-            LeaveBlockMap.put("id", leaveBlock.getLmLeaveBlockId());
+            LeaveBlockMap.put("id", leaveBlock.getLmLeaveBlockId().toString());
             LeaveBlockMap.put("timezone", timezone);
             LeaveBlockMap.put("assignment", new AssignmentDescriptionKey(leaveBlock.getJobNumber(), leaveBlock.getWorkArea(), leaveBlock.getTask()).toAssignmentKeyString());
             LeaveBlockMap.put("lmLeaveBlockId", leaveBlock.getLmLeaveBlockId() != null ? leaveBlock.getLmLeaveBlockId() : "");
@@ -82,7 +80,7 @@ public class LeaveActionFormUtils {
             LeaveBlockMap.put("leaveAmount", leaveBlock.getLeaveAmount());
             LeaveBlockMap.put("description", leaveBlock.getDescription());
             LeaveBlockMap.put("leaveBlockType", leaveBlock.getLeaveBlockType());
-            LeaveBlockMap.put("editable", LmServiceLocator.getLMPermissionService().canEditLeaveBlock(HrContext.getPrincipalId(), leaveBlock));
+            LeaveBlockMap.put("editable", leaveBlock.isEditable());
             LeaveBlockMap.put("requestStatus", leaveBlock.getRequestStatus());
             LeaveBlockMap.put("canTransfer", LmServiceLocator.getLMPermissionService().canTransferSSTOUsage(leaveBlock));
             leaveBlockList.add(LeaveBlockMap);
@@ -90,32 +88,6 @@ public class LeaveActionFormUtils {
 
         
         return JSONValue.toJSONString(leaveBlockList);
-        
-    }
-    
-    
-    public static String getLeaveRequestsJson(List<LeaveRequestApprovalRow> reqRows) {
-
-        if (reqRows == null || reqRows.size() == 0) {
-            return "";
-        }
-
-        List<Map<String, Object>> leaveRequestList = new LinkedList<Map<String, Object>>();
-
-        for (LeaveRequestApprovalRow requestRow : reqRows) {
-            Map<String, Object> leaveRequestMap = new LinkedHashMap<String, Object>();
-            leaveRequestMap.put("id", requestRow.getLeaveRequestDocId());
-            leaveRequestMap.put("documentId", requestRow.getLeaveRequestDocId());
-            leaveRequestMap.put("leaveDate", requestRow.getRequestedDate()); 
-            leaveRequestMap.put("assignmentTitle", requestRow.getAssignmentTitle());
-            leaveRequestMap.put("leaveHours", requestRow.getRequestedHours());
-            leaveRequestMap.put("principalId", requestRow.getPrincipalId());
-            leaveRequestMap.put("principalName", requestRow.getEmployeeName());
-            leaveRequestMap.put("leaveCode", requestRow.getLeaveCode());
-            leaveRequestList.add(leaveRequestMap);
-        }
-        
-        return JSONValue.toJSONString(leaveRequestList);
         
     }
 

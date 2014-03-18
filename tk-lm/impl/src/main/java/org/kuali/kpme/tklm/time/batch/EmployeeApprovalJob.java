@@ -19,19 +19,20 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
@@ -45,8 +46,8 @@ public class EmployeeApprovalJob extends BatchJob {
 		String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 //		String documentId = jobDataMap.getString("documentId");
 
-		CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-		Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+		Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 		
 		DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
     	DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
@@ -63,7 +64,7 @@ public class EmployeeApprovalJob extends BatchJob {
 							// use the range of the calendar entry to retrieve the correct PrincipalHrAtrribute record for the employee
 							// then check if the calendar name/id matches the one from the calendar entry
 							String principalId = timesheetDocument.getPrincipalId();
-							PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
 							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {		
 								TkServiceLocator.getTimesheetService().routeTimesheet(principalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
 				            }
@@ -79,7 +80,7 @@ public class EmployeeApprovalJob extends BatchJob {
 					LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(docId);
 					if (TkConstants.EMPLOYEE_APPROVAL_DOC_STATUS.contains(KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId))) {
 						String principalId = leaveCalendarDocument.getPrincipalId();
-						PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
+						PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
 						if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
 							LmServiceLocator.getLeaveCalendarService().routeLeaveCalendar(principalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
 						}

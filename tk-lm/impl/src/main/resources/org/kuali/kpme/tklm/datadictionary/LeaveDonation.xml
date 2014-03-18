@@ -23,7 +23,7 @@
 	<bean name="LeaveDonation" parent="LeaveDonation-parentBean" />
 
 	<bean id="LeaveDonation-parentBean" abstract="true"
-		parent="KPMEHrBusinessObjectParent">
+		parent="BusinessObjectEntry">
 		<property name="businessObjectClass" value="org.kuali.kpme.tklm.leave.donation.LeaveDonation" />
 		<property name="titleAttribute" value="id" />
 		<property name="objectLabel" value="leaveDonation" />
@@ -34,8 +34,7 @@
 			<ref bean="LeaveDonation-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
-				<ref bean="LeaveDonation-lmLeaveDonationId" />
+			<list>
 				<ref bean="LeaveDonation-donatedAccrualCategory" />
 				<ref bean="LeaveDonation-recipientsAccrualCategory" />
 				<ref bean="LeaveDonation-donatedEarnCode" />
@@ -45,6 +44,11 @@
 				<ref bean="LeaveDonation-donorsPrincipalID" />
 				<ref bean="LeaveDonation-recipientsPrincipalID" />
 				<ref bean="LeaveDonation-description" />
+				<ref bean="LeaveDonation-effectiveDate" />
+				<ref bean="LeaveDonation-timestamp" />
+				<ref bean="LeaveDonation-history" />
+				<ref bean="LeaveDonation-active" />
+                <ref bean="LeaveDonation-relativeEffectiveDate" />
 			</list>
 		</property>
 		<property name="relationships">
@@ -131,17 +135,24 @@
 		</property>
 	</bean>
 
-	<bean id="LeaveDonation-lmLeaveDonationId" parent="LeaveDonation-lmLeaveDonationId-parentBean"/>
-	<bean id="LeaveDonation-lmLeaveDonationId-parentBean" abstract="true" parent="AttributeDefinition">
-	   	<property name="shortLabel" value="Lm Leave Donation Id" />
-		<property name="maxLength" value="60" />
-		<property name="control">
-			<bean parent="TextControlDefinition" p:size="60" />
+	<!-- leaveDonation -->
+	<bean id="LeaveDonation-leaveDonation" parent="LeaveDonation-leaveDonation-parentBean" />
+	<bean id="LeaveDonation-leaveDonation-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Leave Plan" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
 		</property>
-		<property name="name" value="lmLeaveDonationId" />
-		<property name="label" value="Lm Leave Donation Id" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="leaveDonation" />
+		<property name="label" value="Leave Plan" />
 	</bean>
-
+	
 	<!-- donatedAccrualCategory	 -->
 	<bean id="LeaveDonation-donatedAccrualCategory" parent="LeaveDonation-donatedAccrualCategory-parentBean" />
 	<bean id="LeaveDonation-donatedAccrualCategory-parentBean" abstract="true"
@@ -233,6 +244,11 @@
 		<property name="label" value="Amount Donated" />
 	</bean>
 
+    <bean id="LeaveDonation-relativeEffectiveDate" parent="LeaveDonation-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12"/>
+        </property>
+    </bean>
 	<!-- amountReceived -->
 	<bean id="LeaveDonation-amountReceived" parent="LeaveDonation-amountReceived-parentBean" />
 	<bean id="LeaveDonation-amountReceived-parentBean" abstract="true"
@@ -306,6 +322,66 @@
 		<property name="label" value="Description" />
 	</bean>
 	
+	<!-- effectiveDate -->
+	<bean id="LeaveDonation-effectiveDate" parent="LeaveDonation-effectiveDate-parentBean" />
+	<bean id="LeaveDonation-effectiveDate-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
+	<!-- timeStamp -->
+	<bean id="LeaveDonation-timestamp" parent="LeaveDonation-timestamp-parentBean" />
+	<bean id="LeaveDonation-timestamp-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Timestamp" />
+		<property name="maxLength" value="15" />
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+		</property>
+		<property name="formatterClass"
+			value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+		<property name="name" value="timestamp" />
+		<property name="label" value="Time Stamp" />
+	</bean>
+	
+	<!-- history -->
+	<bean id="LeaveDonation-history" parent="LeaveDonation-history-parentBean" />
+	<bean id="LeaveDonation-history-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Show History" />
+		<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder">
+			</bean>
+		</property>
+		<property name="name" value="history" />
+		<property name="label" value="Show History" />
+	</bean>
+	
+	<!-- active -->
+	<bean id="LeaveDonation-active" parent="LeaveDonation-active-parentBean" />
+	<bean id="LeaveDonation-active-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+	</bean>
+
+
+	
 	<!--  Inquiry Definitions  -->
   
   	<bean id="LeaveDonation-inquiryDefinition" parent="LeaveDonation-inquiryDefinition-parentBean" />
@@ -329,7 +405,6 @@
 							<bean parent="FieldDefinition" p:attributeName="active" />
                             <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
                                   p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
 						</list>
 					</property>
 					<property name="title" value="LeaveDonation" />

@@ -15,6 +15,23 @@
  */
 package org.kuali.kpme.tklm.leave.calendar.web;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -30,31 +47,26 @@ import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryContract;
 import org.kuali.kpme.tklm.common.CalendarFormAction;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendar;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
@@ -78,14 +90,6 @@ import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.Map.Entry;
 
 public class LeaveCalendarAction extends CalendarFormAction {
 
@@ -152,7 +156,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		LeaveCalendarForm leaveCalendarForm = (LeaveCalendarForm) form;
 		String documentId = leaveCalendarForm.getDocumentId();
 		String principalId = HrContext.getTargetPrincipalId();
-		CalendarEntryContract calendarEntry = null;
+		CalendarEntry calendarEntry = null;
 		LeaveCalendarDocument leaveCalendarDocument = null;
 		if (StringUtils.isNotBlank(documentId)) {
 			leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(documentId);
@@ -162,9 +166,9 @@ public class LeaveCalendarAction extends CalendarFormAction {
 			}
 		} else {
 			if (StringUtils.isNotBlank(leaveCalendarForm.getHrCalendarEntryId())) {
-				calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveCalendarForm.getHrCalendarEntryId());
+				calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveCalendarForm.getHrCalendarEntryId());
 			} else {
-				calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarDatesForLeaveCalendar(principalId, new LocalDate().toDateTimeAtStartOfDay());
+				calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDatesForLeaveCalendar(principalId, new LocalDate().toDateTimeAtStartOfDay());
 			}
 			
 			if (calendarEntry != null) {
@@ -185,12 +189,12 @@ public class LeaveCalendarAction extends CalendarFormAction {
         	leaveCalendarForm.setBeginCalendarEntryDate(calendarEntry.getBeginPeriodDateTime());
         	leaveCalendarForm.setEndCalendarEntryDate(DateUtils.addMilliseconds(calendarEntry.getEndPeriodDateTime(), -1));
 
-    		CalendarEntry previousCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+    		CalendarEntry previousCalendarEntry = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
             if (previousCalendarEntry != null) {
             	LocalDate previousBeginDate = previousCalendarEntry.getBeginPeriodFullDateTime().toLocalDate();
             	LocalDate previousEndDate = previousCalendarEntry.getEndPeriodFullDateTime().toLocalDate().minusDays(1);
 
-        		PrincipalHRAttributesContract principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, previousEndDate);
+        		PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, previousEndDate);
         		if (principalHRAttributes != null) {
         			LocalDate serviceDate = principalHRAttributes.getServiceLocalDate();
         			if (serviceDate != null) {
@@ -205,9 +209,9 @@ public class LeaveCalendarAction extends CalendarFormAction {
 
     		int planningMonths = ActionFormUtils.getPlanningMonthsForEmployee(principalId);
             if (planningMonths != 0) {
-                List<CalendarEntry> futureCalendarEntries = (List<CalendarEntry>) HrServiceLocator.getCalendarEntryService().getFutureCalendarEntries(calendarEntry.getHrCalendarId(), new LocalDate().toDateTimeAtStartOfDay(), planningMonths);
+                List<CalendarEntry> futureCalendarEntries = HrServiceLocator.getCalendarEntryService().getFutureCalendarEntries(calendarEntry.getHrCalendarId(), new LocalDate().toDateTimeAtStartOfDay(), planningMonths);
                 if (!futureCalendarEntries.isEmpty()) {
-                    CalendarEntry nextCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+                    CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
                 	CalendarEntry lastFutureCalendarEntry = futureCalendarEntries.get(futureCalendarEntries.size() - 1);
 
                     if (nextCalendarEntry != null && futureCalendarEntries != null) {
@@ -237,7 +241,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 	        
 	        // use the logged in user's id to retrieve assignments so that approver can only see assignments they have permission to edit
         	String loggedInUserId = HrContext.getPrincipalId();
-        	new ArrayList<AssignmentBo>();
+        	new ArrayList<Assignment>();
         	DateTime asOfDate = calendarEntry.getBeginPeriodFullDateTime();
         	// if user is working on his/her own calendar, use the original assignment list,
         	// otherwise, call the method to make sure the user has permission for the assignments
@@ -302,7 +306,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 					loggedInUserassignments.add(anAssignment);
 			    	continue;
 				}
-				JobContract aJob = HrServiceLocator.getJobService().getJob(anAssignment.getPrincipalId(), anAssignment.getJobNumber(), asOfDate.toLocalDate());
+				Job aJob = HrServiceLocator.getJobService().getJob(anAssignment.getPrincipalId(), anAssignment.getJobNumber(), asOfDate.toLocalDate());
 				if(aJob != null) {
 					// Payroll Processor / Payroll Processor Delegate
 				    if(HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), aJob.getDept(), asOfDate)
@@ -313,7 +317,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 				 // if user is location admin, then the user can access this assignment
 					// use job to find the department, then use the location from Department to get the location roles
 				    // aJob.getDeptObj() does not reliably return a Department Object.
-					Department aDept = HrServiceLocator.getDepartmentService().getDepartment(aJob.getDept(), asOfDate.toLocalDate());
+					Department aDept = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(aJob.getDept(), asOfDate.toLocalDate());
 					if(aDept != null) {
 					    if(HrServiceLocator.getKPMERoleService()
 					    		.principalHasRoleInLocation(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), aDept.getLocation(), asOfDate)
@@ -334,7 +338,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		LeaveCalendarDocument lcd = lcf.getLeaveCalendarDocument();
 		String principalId = HrContext.getPrincipalId();
 		String targetPrincipalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = lcf.getCalendarEntry();
+		CalendarEntry calendarEntry = lcf.getCalendarEntry();
 		String selectedAssignment = lcf.getSelectedAssignment();
 		
 		//KPME-2832: validate leave entry prior to save.
@@ -370,8 +374,8 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		String approval = lcf.getApproval(); // KPME-2540
 		
 		String documentId = lcd != null ? lcd.getDocumentId() : "";
-
-        Assignment assignment = null;
+		
+		Assignment assignment = null;
 		if(lcd != null) {
 			assignment = lcd.getAssignment(AssignmentDescriptionKey.get(selectedAssignment));
 			if(assignment == null)
@@ -395,8 +399,8 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		 }
 		// recalculate summary
 		if (calendarEntry != null) {
-			LeaveSummaryContract ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
-		    lcf.setLeaveSummary((LeaveSummary)ls);
+			LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
+		    lcf.setLeaveSummary(ls);
 		}
 		
 		// KPME-2540 replicate submitForApproval method in LeaveRequestAction here
@@ -417,7 +421,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 
 		String principalId = HrContext.getPrincipalId();
 		String targetPrincipalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = lcf.getCalendarEntry();
+		CalendarEntry calendarEntry = lcf.getCalendarEntry();
 		String leaveBlockId = lcf.getLeaveBlockId();
 		
 		String documentId = lcd != null ? lcd.getDocumentId() : "";
@@ -466,7 +470,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
         }
 		// recalculate summary
 		if(lcf.getCalendarEntry() != null) {
-			LeaveSummary ls = (LeaveSummary)LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
+			LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
 		    lcf.setLeaveSummary(ls);
 		}
 		return mapping.findForward("basic");
@@ -474,16 +478,13 @@ public class LeaveCalendarAction extends CalendarFormAction {
 	
 	
     @Override
-    protected List<CalendarEntryContract> getCalendarEntries(CalendarEntryContract currentCalendarEntry) {
-        List<? extends CalendarEntryContract> calendarEntryContracts = HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarIdUpToPlanningMonths(currentCalendarEntry.getHrCalendarId(), HrContext.getTargetPrincipalId());
-        List<CalendarEntryContract> entries = new ArrayList<CalendarEntryContract>();
-        entries.addAll(calendarEntryContracts);
-        return entries;
+    protected List<CalendarEntry> getCalendarEntries(CalendarEntry currentCalendarEntry) {
+        return HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarIdUpToPlanningMonths(currentCalendarEntry.getHrCalendarId(), HrContext.getTargetPrincipalId());
     }
     
     protected void runAccrualService(LeaveCalendarForm leaveCalendarForm) {
     	String principalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = leaveCalendarForm.getCalendarEntry();
+    	CalendarEntry calendarEntry = leaveCalendarForm.getCalendarEntry();
     	
         // check configuration setting for allowing accrual service to be ran from leave calendar
 		String runAccrualFlag = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.RUN_ACCRUAL_FROM_CALENDAR);
@@ -498,7 +499,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		}
     }
     
-    protected List<LeaveBlock> getLeaveBlocks(String principalId, CalendarEntryContract calendarEntry, LeaveCalendarDocument leaveCalendarDocument, List<String> assignmentKeys) {
+    protected List<LeaveBlock> getLeaveBlocks(String principalId, CalendarEntry calendarEntry, LeaveCalendarDocument leaveCalendarDocument, List<String> assignmentKeys) {
         List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
         
         if (leaveCalendarDocument != null) {
@@ -511,7 +512,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
     }
     
     protected void setLeaveBlocks(LeaveCalendarForm leaveCalendarForm, String principalId, List<LeaveBlock> leaveBlocks, List<String> assignmentKeys) {
-        CalendarEntryContract calendarEntry = leaveCalendarForm.getCalendarEntry();
+    	CalendarEntry calendarEntry = leaveCalendarForm.getCalendarEntry();
         
         leaveCalendarForm.setLeaveCalendar(new LeaveCalendar(principalId, calendarEntry, assignmentKeys));
         
@@ -521,8 +522,8 @@ public class LeaveCalendarAction extends CalendarFormAction {
     
     protected void setLeaveSummary(LeaveCalendarForm leaveCalendarForm) throws Exception {
     	String principalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = leaveCalendarForm.getCalendarEntry();
-    	PrincipalHRAttributesContract principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    	CalendarEntry calendarEntry = leaveCalendarForm.getCalendarEntry();
+    	PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate());
 
     	//check to see if we are on a previous leave plan
         if (principalHRAttributes != null) {
@@ -530,12 +531,12 @@ public class LeaveCalendarAction extends CalendarFormAction {
             DateTime calEntryEndDate = calendarEntry.getEndPeriodFullDateTime();
             if (calEntryEndDate.getMillis() > currentYearBeginDate.getMillis()) {
             	//current or future year
-                LeaveSummary ls = (LeaveSummary)LmServiceLocator.getLeaveSummaryService().getLeaveSummary(principalId, calendarEntry);
+                LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(principalId, calendarEntry);
                 leaveCalendarForm.setLeaveSummary(ls);
             } else {
                 //current year roll over date has been passed, all previous calendars belong to the previous leave plan calendar year.
                 DateTime effDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalHRAttributes.getLeavePlan(), calEntryEndDate.minusDays(1).toLocalDate());
-                LeaveSummary ls = (LeaveSummary)LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDateWithoutFuture(principalId, effDate.toLocalDate());
+                LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDateWithoutFuture(principalId, effDate.toLocalDate());
                 //override title element (based on date passed in)
                 DateFormat formatter = new SimpleDateFormat("MMMM d");
                 DateFormat formatter2 = new SimpleDateFormat("MMMM d yyyy");
@@ -554,8 +555,8 @@ public class LeaveCalendarAction extends CalendarFormAction {
     
     protected void setMessages(LeaveCalendarForm leaveCalendarForm, List<LeaveBlock> leaveBlocks) {
     	String principalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = leaveCalendarForm.getCalendarEntry();
-    	PrincipalHRAttributesContract principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    	CalendarEntry calendarEntry = leaveCalendarForm.getCalendarEntry();
+    	PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     	
         Map<String, Set<String>> allMessages = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks, calendarEntry.getBeginPeriodDate(), calendarEntry.getEndPeriodDate());
 
@@ -565,7 +566,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
         List<BalanceTransfer> losses = new ArrayList<BalanceTransfer>();
 
         Interval calendarInterval = new Interval(calendarEntry.getBeginPeriodDate().getTime(), calendarEntry.getEndPeriodDate().getTime());
-        Map<String,Set<LeaveBlockContract>> maxBalInfractions = new HashMap<String,Set<LeaveBlockContract>>();
+        Map<String,Set<LeaveBlock>> maxBalInfractions = new HashMap<String,Set<LeaveBlock>>();
         
         Date effectiveDate = LocalDate.now().toDate();
         if (!calendarInterval.contains(effectiveDate.getTime())) {
@@ -576,18 +577,18 @@ public class LeaveCalendarAction extends CalendarFormAction {
 	        maxBalInfractions = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry, principalId);
 	        
 	        LeaveSummary summary = leaveCalendarForm.getLeaveSummary();
-	        for (Entry<String,Set<LeaveBlockContract>> entry : maxBalInfractions.entrySet()) {
-	        	for (LeaveBlockContract lb : entry.getValue()) {
-	        		AccrualCategoryContract accrualCat = lb.getAccrualCategoryObj();
-		        	AccrualCategoryRuleContract aRule = lb.getAccrualCategoryRule();
+	        for (Entry<String,Set<LeaveBlock>> entry : maxBalInfractions.entrySet()) {
+	        	for (LeaveBlock lb : entry.getValue()) {
+	        		AccrualCategory accrualCat = lb.getAccrualCategoryObj();
+		        	AccrualCategoryRule aRule = lb.getAccrualCategoryRule();
 		        	List<LeaveSummaryRow> summaryRows = summary.getLeaveSummaryRows();
 		        	if (StringUtils.equals(aRule.getActionAtMaxBalance(),HrConstants.ACTION_AT_MAX_BALANCE.LOSE)) {
 		        		DateTime aDate = null;
 		        		if (StringUtils.equals(aRule.getMaxBalanceActionFrequency(), HrConstants.MAX_BAL_ACTION_FREQ.YEAR_END)) {
 		        			aDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalHRAttributes.getLeavePlan(), lb.getLeaveLocalDate());
 		        		} else {
-			        		Calendar cal = (Calendar) HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, lb.getLeaveLocalDate(), true);
-			        		CalendarEntryContract leaveEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), lb.getLeaveDateTime());
+			        		Calendar cal = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, new LocalDate(lb.getLeaveDate()), true);
+			        		CalendarEntry leaveEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(cal.getHrCalendarId(), new DateTime(lb.getLeaveDate()));
 			        		aDate = new DateTime(leaveEntry.getEndPeriodDate());
 		        		}
 		        		aDate = aDate.minusDays(1);
@@ -604,7 +605,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
 				        	}
 		        		}
 		        	} else if (StringUtils.equals(HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND, aRule.getMaxBalanceActionFrequency())) {
-			        	if (calendarInterval.contains(lb.getLeaveLocalDate().toDate().getTime())) {
+			        	if (calendarInterval.contains(lb.getLeaveDate().getTime())) {
 				        	// accrual categories within the leave plan that are hidden from the leave summary will not appear.
 				        	List<LeaveSummaryRow> updatedSummaryRows = new ArrayList<LeaveSummaryRow>(summaryRows.size());
 				        	//AccrualCategoryRule currentRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCat, effectiveDate, principalCalendar.getServiceDate());
@@ -626,9 +627,9 @@ public class LeaveCalendarAction extends CalendarFormAction {
 			        	}
 		        	}
 
-    				if (calendarInterval.contains(lb.getLeaveLocalDate().toDate().getTime())) {
+    				if (calendarInterval.contains(lb.getLeaveDate().getTime())) {
     		        	// accrual categories within the leave plan that are hidden from the leave summary WILL appear.
-        				String message = "You have exceeded the maximum balance limit for '" + accrualCat.getAccrualCategory() + "' as of " + lb.getLeaveLocalDate() + ". "
+        				String message = "You have exceeded the maximum balance limit for '" + accrualCat.getAccrualCategory() + "' as of " + lb.getLeaveDate() + ". " 
         						+ "Depending upon the accrual category rules, leave over this limit may be forfeited.";
                         //  leave blocks are sorted in getMaxBalanceViolations() method, so we just take the one with the earliest leave date for an accrual category.
         				if (!StringUtils.contains(allMessages.get("warningMessages").toString(), "You have exceeded the maximum balance limit for '" + accrualCat.getAccrualCategory())) {
@@ -682,8 +683,8 @@ public class LeaveCalendarAction extends CalendarFormAction {
 	 * @param endDate
 	 */
 	private void rerunAccrualForNotEligibleForAccrualChanges(String earnCode, String previousEarnCode, LocalDate asOfDate, LocalDate startDate, LocalDate endDate) {
-		EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
-		EarnCodeContract previousEc = null;
+		EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
+		EarnCode previousEc = null;
 		if(StringUtils.isNotBlank(previousEarnCode)) {
 			previousEc = HrServiceLocator.getEarnCodeService().getEarnCode(previousEarnCode, asOfDate);
 		}
@@ -703,15 +704,15 @@ public class LeaveCalendarAction extends CalendarFormAction {
 		
 		String principalId = HrContext.getPrincipalId();
 		String targetPrincipalId = HrContext.getTargetPrincipalId();
-        CalendarEntryContract calendarEntry = lcf.getCalendarEntry();
+		CalendarEntry calendarEntry = lcf.getCalendarEntry();
 		String selectedEarnCode = lcf.getSelectedEarnCode();
 		String leaveBlockId = lcf.getLeaveBlockId();
 		String approval = lcf.getApproval(); // KPME-2540
 		
 		String documentId = lcd != null ? lcd.getDocumentId() : "";
 		
-		LeaveBlock updatedLeaveBlock = LmServiceLocator.getLeaveBlockService().getLeaveBlock(leaveBlockId);
-
+		LeaveBlock updatedLeaveBlock = null;
+		updatedLeaveBlock = LmServiceLocator.getLeaveBlockService().getLeaveBlock(leaveBlockId);
 		String previousEarnCode = null;
 		if(updatedLeaveBlock != null) {
 			previousEarnCode = updatedLeaveBlock.getEarnCode();
@@ -725,13 +726,12 @@ public class LeaveCalendarAction extends CalendarFormAction {
 			return mapping.findForward("basic");
 		}
 		
-        if (LmServiceLocator.getLMPermissionService().canEditLeaveBlock(HrContext.getPrincipalId(), updatedLeaveBlock)) {
-            LeaveBlock.Builder builder = LeaveBlock.Builder.create(updatedLeaveBlock);
+        if (updatedLeaveBlock.isEditable()) {
             if (StringUtils.isNotBlank(lcf.getDescription())) {
-                builder.setDescription(lcf.getDescription().trim());
+                updatedLeaveBlock.setDescription(lcf.getDescription().trim());
             }
             if (!updatedLeaveBlock.getLeaveAmount().equals(lcf.getLeaveAmount())) {
-                builder.setLeaveAmount(lcf.getLeaveAmount());
+                updatedLeaveBlock.setLeaveAmount(lcf.getLeaveAmount());
             }
             
             DateTime beginDate = null;
@@ -739,9 +739,9 @@ public class LeaveCalendarAction extends CalendarFormAction {
     		
 			beginDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate());
 			endDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate());
-            builder.setLeaveDateTime(beginDate);
+        	updatedLeaveBlock.setLeaveDate(new Date(beginDate.getMillis()));
         	
-            EarnCodeContract earnCode =  HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, updatedLeaveBlock.getLeaveLocalDate()); // selectedEarnCode = hrEarnCodeId
+            EarnCode earnCode =  HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, updatedLeaveBlock.getLeaveLocalDate()); // selectedEarnCode = hrEarnCodeId
             if(earnCode != null && earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
             	if(lcf.getStartTime() != null && lcf.getEndTime() != null) {
         			beginDate = TKUtils.convertDateStringToDateTimeWithoutZone(lcf.getStartDate(), lcf.getStartTime());
@@ -750,13 +750,13 @@ public class LeaveCalendarAction extends CalendarFormAction {
         			beginDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getStartDate());
         			endDate = TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate());
         		}
-                builder.setBeginDateTime(beginDate);
-                builder.setEndDateTime(endDate);
-                builder.setLeaveAmount(TKUtils.getHoursBetween(beginDate.getMillis(), endDate.getMillis()));
+            	updatedLeaveBlock.setBeginTimestamp(new Timestamp(beginDate.getMillis()));
+            	updatedLeaveBlock.setEndTimestamp(new Timestamp(endDate.getMillis()));
+            	updatedLeaveBlock.setLeaveAmount(TKUtils.getHoursBetween(beginDate.getMillis(), endDate.getMillis()));
             }
             
             if (!updatedLeaveBlock.getEarnCode().equals(earnCode.getEarnCode())) {
-                builder.setEarnCode(earnCode.getEarnCode());
+                updatedLeaveBlock.setEarnCode(earnCode.getEarnCode());
             }
             
             LmServiceLocator.getLeaveBlockService().updateLeaveBlock(updatedLeaveBlock, principalId);
@@ -767,7 +767,7 @@ public class LeaveCalendarAction extends CalendarFormAction {
             lcf.setSelectedEarnCode(null);
     		// recalculate summary
     		if(lcf.getCalendarEntry() != null) {
-    			LeaveSummary ls = (LeaveSummary)LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
+    			LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(targetPrincipalId, calendarEntry);
     		    lcf.setLeaveSummary(ls);
     		    // call accrual service if earn code is not eligible for accrual
     		    this.rerunAccrualForNotEligibleForAccrualChanges(selectedEarnCode, previousEarnCode, TKUtils.formatDateTimeStringNoTimezone(lcf.getEndDate()).toLocalDate(), calendarEntry.getBeginPeriodFullDateTime().toLocalDate(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());

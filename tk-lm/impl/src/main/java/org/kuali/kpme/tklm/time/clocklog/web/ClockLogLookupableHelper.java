@@ -15,12 +15,18 @@
  */
 package org.kuali.kpme.tklm.time.clocklog.web;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
@@ -34,8 +40,6 @@ import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
-
-import java.util.*;
 
 @SuppressWarnings("deprecation")
 public class ClockLogLookupableHelper extends KPMELookupableHelper {
@@ -94,10 +98,10 @@ public class ClockLogLookupableHelper extends KPMELookupableHelper {
                 }
             }
 
-            JobContract jobObj = HrServiceLocator.getJobService().getJob(clockLog.getPrincipalId(), clockLog.getJobNumber(), LocalDate.fromDateFields(clockLog.getClockTimestamp()), false);
+            Job jobObj = HrServiceLocator.getJobService().getJob(clockLog.getPrincipalId(), clockLog.getJobNumber(), LocalDate.fromDateFields(clockLog.getClockTimestamp()), false);
             String department = jobObj != null ? jobObj.getDept() : null;
 
-            Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(clockLog.getClockTimestamp())) : null;
+            Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(clockLog.getClockTimestamp())) : null;
             String location = departmentObj != null ? departmentObj.getLocation() : null;
 
             Map<String, String> roleQualification = new HashMap<String, String>();

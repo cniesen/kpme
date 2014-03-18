@@ -18,17 +18,18 @@ package org.kuali.kpme.core.earncode.security.validation;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
+import org.kuali.kpme.core.earncode.security.EarnCodeType;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
         if (StringUtils.equals(departmentEarnCode.getLocation(), HrConstants.WILDCARD_CHARACTER)) {
             return true;
         }
-        List<String> depts = HrServiceLocator.getDepartmentService().getDepartmentValuesWithLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate());
+        List<String> depts = HrServiceLocator.getDepartmentService().getDepartmentsForLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate());
         if (depts.isEmpty()) {
 
             this.putFieldError("dept", "error.department.location.nomatch", departmentEarnCode.getDept());
@@ -110,7 +111,7 @@ public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
 		
 		String principalId = GlobalVariables.getUserSession().getPrincipalId();
 		String department = departmentEarnCode.getDept();
-		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.now());
+		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
 		String location = departmentObj != null ? departmentObj.getLocation() : null;
 
         DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
@@ -160,7 +161,7 @@ public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for EarnCodeSecurity");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		if (pbo instanceof EarnCodeSecurity) {
 			EarnCodeSecurity departmentEarnCode = (EarnCodeSecurity) pbo;
 

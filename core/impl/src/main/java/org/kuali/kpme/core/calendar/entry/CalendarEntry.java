@@ -19,19 +19,17 @@ import java.sql.Time;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.builder.EqualsBuilder;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-public class CalendarEntry extends PersistableBusinessObjectBase implements CalendarEntryContract {
+public class CalendarEntry extends PersistableBusinessObjectBase implements Comparable<CalendarEntry>, CalendarEntryContract {
 
 	private static final long serialVersionUID = -1977756526579659122L;
 
@@ -50,10 +48,10 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Cale
     private Date batchSupervisorApprovalDateTime;
     private Date batchPayrollApprovalDateTime;
 
-    private transient CalendarContract calendarObj;
+    private transient Calendar calendarObj;
 
     public String getHrCalendarId() {
-        calendarObj = (Calendar)HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName());
+        calendarObj = HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName());
         if (calendarObj != null) {
             this.setHrCalendarId(calendarObj.getHrCalendarId());
         }
@@ -312,18 +310,18 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Cale
     	batchSupervisorApprovalDateTime = batchSupervisorApprovalFullDateTime != null ? batchSupervisorApprovalFullDateTime.toDate() : null;
     }
 
-	public CalendarContract getCalendarObj() {
+	public Calendar getCalendarObj() {
 		if(calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
 			this.setCalendarObj(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName()));
 		}		
 		return calendarObj;
 	}
 
-	public void setCalendarObj(CalendarContract calendarObj) {
+	public void setCalendarObj(Calendar calendarObj) {
 		this.calendarObj = calendarObj;
 	}
 
-    public int compareTo(CalendarEntryContract pce) {
+    public int compareTo(CalendarEntry pce) {
         return this.getBeginPeriodDate().compareTo(pce.getBeginPeriodDate());
     }
 
@@ -331,9 +329,11 @@ public class CalendarEntry extends PersistableBusinessObjectBase implements Cale
 	public boolean equals(Object obj) {
 		if(obj instanceof CalendarEntry) {
 			CalendarEntry other = (CalendarEntry) obj;
-            return this.hrCalendarId.equals(other.hrCalendarId)
-                && this.hrCalendarEntryId.equals(other.hrCalendarEntryId);
-        }
+			if(other != null) {
+				return this.hrCalendarId == other.hrCalendarId
+					&& this.hrCalendarEntryId == other.hrCalendarEntryId;
+			}
+		}
 		return super.equals(obj);
 	}
 

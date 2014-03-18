@@ -26,7 +26,6 @@ import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.Principal;
@@ -41,18 +40,16 @@ public class InitiateDocumentAction extends KPMEAction {
     	
     	if (StringUtils.isNotBlank(principalId) && StringUtils.isNotBlank(hrCalendarEntryId)) {
     		Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
-    		CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+    		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
     		
     		if (principal != null && calendarEntry != null) {
-    			Calendar calendar = (Calendar) HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+    			Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
     			
     			if (calendar != null) {
     				if (StringUtils.equals(calendar.getCalendarTypes(), TkConstants.CALENDAR_TYPE_PAY)) {
     					TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId, calendarEntry);
-    					initiateDocumentForm.setMessage("Timesheet initiated sucessfully.");
     				} else if (StringUtils.equals(calendar.getCalendarTypes(), TkConstants.CALENDAR_TYPE_LEAVE)) {
     					LmServiceLocator.getLeaveCalendarService().openLeaveCalendarDocument(principalId, calendarEntry);
-    					initiateDocumentForm.setMessage("Leave Calendar initiated sucessfully.");
     				}
     			}
     		}

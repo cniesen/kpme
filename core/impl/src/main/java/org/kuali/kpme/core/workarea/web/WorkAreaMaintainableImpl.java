@@ -24,11 +24,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.position.PositionBaseContract;
-import org.kuali.kpme.core.api.task.Task;
+import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
+import org.kuali.kpme.core.position.PositionBase;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.role.PositionRoleMemberBo;
@@ -36,19 +35,17 @@ import org.kuali.kpme.core.role.PrincipalRoleMemberBo;
 import org.kuali.kpme.core.role.workarea.WorkAreaPositionRoleMemberBo;
 import org.kuali.kpme.core.role.workarea.WorkAreaPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.service.HrServiceLocatorInternal;
-import org.kuali.kpme.core.task.TaskBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.core.api.membership.MemberType;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
-/*import org.kuali.rice.kns.document.MaintenanceDocument;
-import org.kuali.rice.kns.maintenance.Maintainable;*/
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.Maintainable;
+import org.kuali.rice.kns.web.ui.Section;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
@@ -57,13 +54,12 @@ import org.kuali.rice.krad.util.KRADConstants;
 public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
 	private static final long serialVersionUID = -624127817308880466L;
-
 	@Override
     public HrBusinessObject getObjectById(String id) {
-        return HrServiceLocatorInternal.getWorkAreaInternalService().getWorkArea(id);
+        return HrServiceLocator.getWorkAreaService().getWorkArea(id);
     }
     
-	/*@Override
+	@Override
 	@SuppressWarnings("rawtypes")
     public List getSections(MaintenanceDocument document, Maintainable oldMaintainable) {
         List sections = super.getSections(document, oldMaintainable);
@@ -76,11 +72,11 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         }
         
         return sections;
-    }*/
+    }
     
     @Override
     public void processAfterNew(MaintenanceDocument document, Map<String, String[]> parameters) {
-        WorkAreaBo workArea = (WorkAreaBo) this.getBusinessObject();
+        WorkArea workArea = (WorkArea) this.getBusinessObject();
         
         if (workArea.getWorkArea() == null) {
             workArea.setWorkArea(HrServiceLocator.getWorkAreaService().getNextWorkAreaKey());
@@ -90,15 +86,15 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
     }
     
     @Override
-    public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> requestParameters) {
-        WorkAreaBo oldMaintainableObject = (WorkAreaBo) document.getOldMaintainableObject().getDataObject();
-        WorkAreaBo newMaintainableObject = (WorkAreaBo) document.getNewMaintainableObject().getDataObject();
+    public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> parameters) {
+        WorkArea oldMaintainableObject = (WorkArea) document.getOldMaintainableObject().getBusinessObject();
+        WorkArea newMaintainableObject = (WorkArea) document.getNewMaintainableObject().getBusinessObject();
         
-        WorkAreaBo oldWorkArea = oldMaintainableObject;
+        WorkArea oldWorkArea = oldMaintainableObject;
         if(StringUtils.isNotBlank(oldMaintainableObject.getTkWorkAreaId())) {
-        	oldWorkArea = HrServiceLocatorInternal.getWorkAreaInternalService().getWorkArea(oldMaintainableObject.getTkWorkAreaId());
+        	oldWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getTkWorkAreaId());
         } else {
-        	oldWorkArea = HrServiceLocatorInternal.getWorkAreaInternalService().getWorkArea(oldMaintainableObject.getWorkArea(), oldMaintainableObject.getEffectiveLocalDate());
+        	oldWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(oldMaintainableObject.getWorkArea(), oldMaintainableObject.getEffectiveLocalDate());
         }
         
         oldMaintainableObject.setTasks(oldWorkArea.getTasks());
@@ -107,11 +103,11 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         oldMaintainableObject.setPositionRoleMembers(oldWorkArea.getPositionRoleMembers());
         oldMaintainableObject.setInactivePositionRoleMembers(oldWorkArea.getInactivePositionRoleMembers());
         
-        WorkAreaBo newWorkArea = newMaintainableObject;
+        WorkArea newWorkArea = newMaintainableObject;
         if(StringUtils.isNotBlank(newMaintainableObject.getTkWorkAreaId())) {
-        	newWorkArea = HrServiceLocatorInternal.getWorkAreaInternalService().getWorkArea(newMaintainableObject.getTkWorkAreaId());
+        	newWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getTkWorkAreaId());
         } else {
-        	newWorkArea = HrServiceLocatorInternal.getWorkAreaInternalService().getWorkArea(newMaintainableObject.getWorkArea(), newMaintainableObject.getEffectiveLocalDate());
+        	newWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(newMaintainableObject.getWorkArea(), newMaintainableObject.getEffectiveLocalDate());
         }
         newMaintainableObject.setTasks(newWorkArea.getTasks());
         newMaintainableObject.setPrincipalRoleMembers(newWorkArea.getPrincipalRoleMembers());
@@ -119,15 +115,15 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         newMaintainableObject.setPositionRoleMembers(newWorkArea.getPositionRoleMembers());
         newMaintainableObject.setInactivePositionRoleMembers(newWorkArea.getInactivePositionRoleMembers());
         
-        super.processAfterEdit(document, requestParameters);
+        super.processAfterEdit(document, parameters);
     }
 
     @Override
     protected void setNewCollectionLineDefaultValues(String collectionName, PersistableBusinessObject addLine) {
-    	WorkAreaBo workArea = (WorkAreaBo) getBusinessObject();
+    	WorkArea workArea = (WorkArea) getBusinessObject();
         if (workArea.getEffectiveDate() != null) {
-	        if (addLine instanceof TaskBo) {
-	            TaskBo task = (TaskBo) addLine;
+	        if (addLine instanceof Task) {
+	            Task task = (Task) addLine;
 	            task.setEffectiveDate(workArea.getEffectiveDate());
 	        } else if (addLine instanceof RoleMemberBo) {
 	        	RoleMemberBo roleMember = (RoleMemberBo) addLine;
@@ -140,7 +136,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
     public void addNewLineToCollection(String collectionName) {
-    	WorkAreaBo workArea = (WorkAreaBo) getBusinessObject();
+    	WorkArea workArea = (WorkArea) getBusinessObject();
     	
 		if (collectionName.equals("principalRoleMembers")) {
 			PrincipalRoleMemberBo roleMember = (PrincipalRoleMemberBo) newCollectionLines.get(collectionName);
@@ -158,7 +154,7 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         	PositionRoleMemberBo roleMember = (PositionRoleMemberBo) newCollectionLines.get(collectionName);
             if (roleMember != null) {
             	if (!StringUtils.isEmpty(roleMember.getPositionNumber())) {
-            		PositionBaseContract position = HrServiceLocator.getPositionService().getPosition(roleMember.getPositionNumber(), workArea.getEffectiveLocalDate());
+            		PositionBase position = HrServiceLocator.getPositionService().getPosition(roleMember.getPositionNumber(), workArea.getEffectiveLocalDate());
             		if (position == null) {
             			GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"positionRoleMembers", 
                 				"error.role.positionNumber.notexist", roleMember.getPositionNumber());
@@ -173,27 +169,26 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
     public void customSaveLogic(HrBusinessObject hrObj) {
-        WorkAreaBo workArea = (WorkAreaBo) hrObj;
+        WorkArea workArea = (WorkArea) hrObj;
         
         saveTasks(workArea);
         saveRoleMembers(workArea);
     }
     
-    private void saveTasks(WorkAreaBo workArea) {
-        List<TaskBo> tasks = workArea.getTasks();
+    private void saveTasks(WorkArea workArea) {
+        List<Task> tasks = workArea.getTasks();
         
-        for (TaskBo task : tasks) {
+        for (Task task : tasks) {
             task.setTkTaskId(null);
             task.setTimestamp(new Timestamp(System.currentTimeMillis()));
             task.setWorkArea(workArea.getWorkArea());
         }
         workArea.setTasks(tasks);
 
-
-        HrServiceLocator.getTaskService().saveTasks(ModelObjectUtils.transform(tasks, TaskBo.toTask));
+        HrServiceLocator.getTaskService().saveTasks(tasks);
     }
     
-    private void saveRoleMembers(WorkAreaBo workArea) {
+    private void saveRoleMembers(WorkArea workArea) {
     	List<WorkAreaPrincipalRoleMemberBo> newInactivePrincipalRoleMembers = createInactivePrincipalRoleMembers(workArea.getWorkArea(), workArea.getPrincipalRoleMembers());
     	List<WorkAreaPositionRoleMemberBo> newInactivePositionRoleMembers = createInactivePositionRoleMembers(workArea.getWorkArea(), workArea.getPositionRoleMembers());
           	
@@ -356,14 +351,5 @@ public class WorkAreaMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         
         return inactiveRoleMembers;
     }
-
-    //KPME-2624 added logic to save current logged in user to UserPrincipal id for collections
-    @Override
-    public void prepareForSave() {
-        WorkAreaBo workArea = (WorkAreaBo)this.getBusinessObject();
-        for (TaskBo task : workArea.getTasks()) {
-            task.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-        }
-        super.prepareForSave();
-    }
+    
 }

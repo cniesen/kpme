@@ -15,14 +15,13 @@
  */
 package org.kuali.kpme.core.department;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.service.HrServiceLocator;
-
-import java.util.List;
 
 @IntegrationTest
 public class DepartmentServiceImplTest extends CoreUnitTestCase {

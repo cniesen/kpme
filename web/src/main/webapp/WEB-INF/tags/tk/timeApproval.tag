@@ -154,13 +154,7 @@
 	     <display:column title="Time Summary" style="width:80%;">
 	        <%-- render time summary --%>
             <c:if test="${row.timeSummary != null}">
-                <c:set var="error" value=""/>
-                <c:forEach var="action" items="${Form.errorMessageList}">
-                   <c:if test="${fn:containsIgnoreCase(action,row.documentId)}">
-                        <c:set var="error" value="block-error"/>
-                    </c:if>
-                </c:forEach>
-            	<tk:timeApprovalSummary error="${error}" timeApprovalSummary="${row.timeSummary}" principalId="${row.principalId}"/>
+            	<tk:timeApprovalSummary timeApprovalSummary="${row.timeSummary}" principalId="${row.principalId}"/>
             </c:if>
             
 	    </display:column>

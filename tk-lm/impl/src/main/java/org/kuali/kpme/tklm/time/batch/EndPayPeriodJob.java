@@ -15,18 +15,21 @@
  */
 package org.kuali.kpme.tklm.time.batch;
 
+import java.sql.Timestamp;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.CalendarContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.batch.BatchJob;
+import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -34,9 +37,6 @@ import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import java.sql.Timestamp;
-import java.util.List;
 
 public class EndPayPeriodJob extends BatchJob {
 	
@@ -54,16 +54,16 @@ public class EndPayPeriodJob extends BatchJob {
 		    DateTime currentDateTime =  new DateTime();
 			LOG.info("EndOfPayPeiodJob is running at " + currentDateTime.toString() + " for hrCalendarEntryId " + hrCalendarEntryId);
 		    
-	        CalendarEntry calendarEntry = (CalendarEntry)HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-	        CalendarContract calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
-	        //calendarEntry.setCalendarObj(calendar);
+	        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+	        Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+	        calendarEntry.setCalendarObj(calendar);
 	        
 	        
 	    	String calendarName = calendarEntry.getCalendarName();
 	    	DateTime scheduleDate = calendarEntry.getBatchEndPayPeriodFullDateTime();
 	    	
-	    	List<? extends PrincipalHRAttributesContract> principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getActiveEmployeesForPayCalendar(calendarName, scheduleDate.toLocalDate());
-	    	for (PrincipalHRAttributesContract principalHRAttribute : principalHRAttributes) {
+	    	List<PrincipalHRAttributes> principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getActiveEmployeesForPayCalendar(calendarName, scheduleDate.toLocalDate());
+	    	for (PrincipalHRAttributes principalHRAttribute : principalHRAttributes) {
 	    		String pId = principalHRAttribute.getPrincipalId();
 	    	    
 	    		List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(pId, calendarEntry);
@@ -95,7 +95,7 @@ LOG.info("EndOfPayPeiodJob started for user " + principalId + " and clockLog " +
 		// time to use to create the CO clock log
         DateTime coLogDateTime = TKUtils.convertTimeForDifferentTimeZone(endPeriodDateTime,systemTimeZone,userTimezone);
 	        
-        CalendarEntry nextCalendarEntry = (CalendarEntry)HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+        CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
         DateTime beginNextPeriodDateTime = nextCalendarEntry.getBeginPeriodFullDateTime();
         // time to use to create the CI clock log
         DateTime ciLogDateTime = TKUtils.convertTimeForDifferentTimeZone(beginNextPeriodDateTime,systemTimeZone,userTimezone);
@@ -105,7 +105,7 @@ LOG.info("EndOfPayPeiodJob started for user " + principalId + " and clockLog " +
 	    if (timesheetDocumentHeader != null) {
 	        TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentHeader.getDocumentId());
 	        AssignmentDescriptionKey assignmentKey = new AssignmentDescriptionKey(openClockLog.getJobNumber(), openClockLog.getWorkArea(), openClockLog.getTask());
-            Assignment assignment = timesheetDocument.getAssignment(assignmentKey);
+	        Assignment assignment = timesheetDocument.getAssignment(assignmentKey);
 	        ClockLog clockOutLog = TkServiceLocator.getClockLogService().processClockLog(coLogDateTime, assignment, calendarEntry, ipAddress,
 	            		endPeriodDateTime.toLocalDate(), timesheetDocument, TkConstants.CLOCK_OUT, false, principalId, batchUserPrincipalId);
 

@@ -19,22 +19,14 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanService;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.leaveplan.dao.LeavePlanDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class LeavePlanServiceImpl implements LeavePlanService {
 
 	private LeavePlanDao leavePlanDao;
-    private static final ModelObjectUtils.Transformer<LeavePlanBo, LeavePlan> toLeavePlan =
-            new ModelObjectUtils.Transformer<LeavePlanBo, LeavePlan>() {
-                public LeavePlan transform(LeavePlanBo input) {
-                    return LeavePlanBo.to(input);
-                };
-            };
+ 
 	public LeavePlanDao getLeavePlanDao() {
 		return leavePlanDao;
 	}
@@ -47,24 +39,16 @@ public class LeavePlanServiceImpl implements LeavePlanService {
 
 	@Override
 	public LeavePlan getLeavePlan(String lmLeavePlanId) {
-		return LeavePlanBo.to(getLeavePlanBo(lmLeavePlanId));
+		return getLeavePlanDao().getLeavePlan(lmLeavePlanId);
 	}
-
-    protected LeavePlanBo getLeavePlanBo(String lmLeavePlanId) {
-        return leavePlanDao.getLeavePlan(lmLeavePlanId);
-    }
-    protected LeavePlanBo getLeavePlanBo(String leavePlan, LocalDate asOfDate) {
-        return leavePlanDao.getLeavePlan(leavePlan, asOfDate);
-    }
-    
 	
 	@Override
 	public LeavePlan getLeavePlan(String leavePlan, LocalDate asOfDate) {
-		return LeavePlanBo.to(getLeavePlanBo(leavePlan, asOfDate));
+		return getLeavePlanDao().getLeavePlan(leavePlan, asOfDate);
 	}
 
     public List<LeavePlan> getLeavePlans(List<String> leavePlans, LocalDate asOfDate) {
-        return ModelObjectUtils.transform(leavePlanDao.getLeavePlans(leavePlans, asOfDate), toLeavePlan);
+        return getLeavePlanDao().getLeavePlans(leavePlans, asOfDate);
     }
    
 	@Override
@@ -77,24 +61,23 @@ public class LeavePlanServiceImpl implements LeavePlanService {
 	
 	@Override
 	public List<LeavePlan> getAllActiveLeavePlan(String leavePlan, LocalDate asOfDate) {
-		 return ModelObjectUtils.transform(leavePlanDao.getAllActiveLeavePlan(leavePlan, asOfDate), toLeavePlan);
+		 return leavePlanDao.getAllActiveLeavePlan(leavePlan, asOfDate);
 	 }
 	@Override
 	public List<LeavePlan> getAllInActiveLeavePlan(String leavePlan, LocalDate asOfDate) {
-		 return ModelObjectUtils.transform(leavePlanDao.getAllInActiveLeavePlan(leavePlan, asOfDate), toLeavePlan);
+		 return leavePlanDao.getAllInActiveLeavePlan(leavePlan, asOfDate);
 	 }
 
     @Override
     public List<LeavePlan> getLeavePlans(String leavePlan, String calendarYearStart, String descr, String planningMonths, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-        return ModelObjectUtils.transform(leavePlanDao.getLeavePlans(
-                leavePlan, calendarYearStart, descr, planningMonths, fromEffdt, toEffdt, active, showHistory), toLeavePlan);
+        return leavePlanDao.getLeavePlans(leavePlan, calendarYearStart, descr, planningMonths, fromEffdt, toEffdt, active, showHistory);
     }
     
     @Override
-	public boolean isFirstCalendarPeriodOfLeavePlan(CalendarEntryContract calendarEntry, String leavePlan, LocalDate asOfDate) {
+	public boolean isFirstCalendarPeriodOfLeavePlan(CalendarEntry calendarEntry, String leavePlan, LocalDate asOfDate) {
 		boolean isFirstCalendarPeriodOfLeavePlan = false;
     	
-    	LeavePlanBo leavePlanObj = getLeavePlanBo(leavePlan, asOfDate);
+    	LeavePlan leavePlanObj = getLeavePlan(leavePlan, asOfDate);
 		
     	if (leavePlanObj != null) {
 			DateTime calendarEntryEndDate = calendarEntry.getBeginPeriodFullDateTime();
@@ -111,10 +94,10 @@ public class LeavePlanServiceImpl implements LeavePlanService {
 	}
     
     @Override
-	public boolean isLastCalendarPeriodOfLeavePlan(CalendarEntryContract calendarEntry, String leavePlan, LocalDate asOfDate) {
+	public boolean isLastCalendarPeriodOfLeavePlan(CalendarEntry calendarEntry, String leavePlan, LocalDate asOfDate) {
     	boolean isLastCalendarPeriodOfLeavePlan = false;
     	
-    	LeavePlanBo leavePlanObj = getLeavePlanBo(leavePlan, asOfDate);
+    	LeavePlan leavePlanObj = getLeavePlan(leavePlan, asOfDate);
 		
     	if (leavePlanObj != null) {
 			DateTime calendarEntryEndDate = calendarEntry.getEndPeriodFullDateTime();
@@ -133,7 +116,7 @@ public class LeavePlanServiceImpl implements LeavePlanService {
     @Override
     public DateTime getFirstDayOfLeavePlan(String leavePlan, LocalDate asOfDate) {
     	//The only thing this method does is tack on the year of the supplied asOfDate to the calendar year start date.
-        LeavePlanBo lp = getLeavePlanBo(leavePlan, asOfDate);
+        LeavePlan lp = getLeavePlan(leavePlan, asOfDate);
 
         int priorYearCutOffMonth = Integer.parseInt(lp.getCalendarYearStartMonth());
         int priorYearCutOffDay = Integer.parseInt(lp.getCalendarYearStartDayOfMonth());
@@ -147,7 +130,7 @@ public class LeavePlanServiceImpl implements LeavePlanService {
 
     @Override
     public DateTime getRolloverDayOfLeavePlan(String leavePlan, LocalDate asOfDate) {
-        LeavePlanBo lp = getLeavePlanBo(leavePlan, asOfDate);
+        LeavePlan lp = getLeavePlan(leavePlan, asOfDate);
 
         int priorYearCutOffMonth = Integer.parseInt(lp.getCalendarYearStartMonth());
         int priorYearCutOffDay = Integer.parseInt(lp.getCalendarYearStartDayOfMonth());
@@ -164,7 +147,7 @@ public class LeavePlanServiceImpl implements LeavePlanService {
 	@Override
 	public List<LeavePlan> getLeavePlansNeedsCarryOverScheduled(int thresholdDays,
                                                                 LocalDate asOfDate) {
-		return ModelObjectUtils.transform(leavePlanDao.getLeavePlansNeedsScheduled(thresholdDays, asOfDate), toLeavePlan);
+		return leavePlanDao.getLeavePlansNeedsScheduled(thresholdDays, asOfDate);
 	}
 	
 }

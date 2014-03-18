@@ -21,64 +21,26 @@
     xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<!-- lookup view for maint docs that have page size of 25. Used by maint docs that do not need the view link  -->
-    <bean id="KPME-ChangedPageSizeLookupView" parent="Uif-LookupView" abstract="true">
-        <property name="resultsGroup.layoutManager.richTable">
-	      <bean parent="Uif-PagedRichTable">
-	        <property name="templateOptions">
-	          <map merge="true">
-	            <entry key="iDisplayLength" value ="25"/>
-	          </map>
-	        </property>
-	      </bean>
-        </property>
-    </bean>    
-    	
-    <!-- lookup view for maint docs that have View action link. The page size is changed to 25 in the super view  -->
-    <bean id="KPMEUif-ViewLinkLookupView" parent="KPME-ChangedPageSizeLookupView" abstract="true">
+    <bean id="KPMEUif-LookupView" parent="Uif-LookupView">
         <property name="resultsGroup">
-        	<bean parent="KPMEAttributes-LookupView-ViewLink"/>
+	        <bean id="KPMEAttributes-LookupView-ViewLink" parent="Uif-LookupResultsCollectionSection">
+		        <property name="lineActions">
+		            <list merge="true">
+		                <bean parent="Uif-ActionLink" p:order="10">
+		                    <property name="actionLabel" value="view" />
+		                    <property name="finalizeMethodToCall" value="getMaintenanceActionLink"/>
+		                    <property name="finalizeMethodAdditionalArguments">
+		                        <list>
+		                            <value>maintenanceView</value>
+		                        </list>
+		                    </property>
+		                </bean>
+		            </list>
+		        </property>
+            </bean>
         </property>
     </bean>
-    
-    <bean id="KPMEAttributes-LookupView-ViewLink" parent="Uif-LookupResultsCollectionSection">
-		<property name="lineActions">
-			<list merge="true">
-		    	<bean parent="Uif-ActionLink" p:order="10">
-		        	<property name="actionLabel" value="view" />
-		            <property name="finalizeMethodToCall" value="getMaintenanceActionLink"/>
-		            <property name="finalizeMethodAdditionalArguments">
-		            	<list>
-		                	<value>maintenanceView</value>
-		                </list>
-		            </property>
-		         </bean>
-		    </list>
-		</property>
-	</bean>
-    
-     <!-- lookup view for BO's that use effective date (but no view link from lookup); maintainance for such BOs is performed via a special controller specified by the overriden property. -->
-    <bean id="KPMEUif-EffectiveDateBONoViewLinkLookupView" parent="KPME-ChangedPageSizeLookupView" abstract="true">
-    	 <property name="maintenanceUrlMapping" value="kpme/effectiveDateMaintenance"/>
-    	 <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KpmeHrBusinessObjectLookupableImpl" /> 
-    	 <property name="criteriaFields">
-		      <list>
-		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
-		      </list>
-    	 </property>        
-    </bean>
-    
-    
-    <!-- lookup view for BO's that use effective date (and a view link from lookup); maintainance for such BOs is performed via a special controller specified by the overriden property. -->
-    <bean id="KPMEUif-EffectiveDateBOLookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView" abstract="true">
-    	<property name="resultsGroup">
-        	<bean parent="KPMEAttributes-LookupView-ViewLink"/>
-   		</property>       
-    </bean>
-    
-   
-    
-   
+
     <bean id="MaintDoc-HiddenFields-parentBean"
           abstract="true" parent="MaintainableSectionDefinition"  >
         <property name="hidden" value="true" />
@@ -89,97 +51,5 @@
             </list>
         </property>
     </bean>
-
-    <!-- maintenance view to hide cancel button upon submit -->
-	<bean id="KPMEUif-MaintenanceView" parent="Uif-MaintenanceView">
-        <property name="presentationControllerClass"
-                  value="org.kuali.rice.krad.kpme.controller.KPMEMaintenanceViewPresentationControllerBase"/>
-	</bean>
-
-	<bean id="KPMEEffectiveDateBO-MaintenanceView" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView-parentBean"/>
-  	<bean id="KPMEEffectiveDateBO-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
-  		<property name="dialogs">
-    		<list>
-        		<bean id="KPMEEffectiveDateWarning-Dialog" parent="KPMEEffectiveDateWarning-Dialog-parentBean"/>
-    		</list>
-  		</property>
-  	</bean>
-  	
-  	<bean id="KPMEEffectiveDateWarning-Dialog-parentBean" parent="Uif-Yes-No-DialogGroup">
-  		<property name="headerText" value="Effective date warning!"/>
-		<property name="promptText" value="A record for this object exists with a later effective date, if you continue with submission, this record will be overwritten when the future effective date takes effect.  Are you sure you want to continue?"/>
-	</bean>
-
-    <bean id="KPMEUif-DocumentNotesSection" parent="Uif-DocumentNotesSection"
-          p:layoutManager.suppressLineWrapping="true">
-        <property name="layoutManager.renderSequenceField" value="false"/>
-        <property name="items">
-            <list>
-                <bean parent="Uif-VerticalFieldGroup" p:label="Principal Name">
-                    <property name="items">
-                        <list>
-                            <bean parent="Uif-DataField" p:propertyName="authorUniversal.principalName" p:readOnly="true" p:fieldLabel.render="false"/>
-                            <bean parent="Uif-DataField" p:propertyName="notePostedTimestamp" p:readOnly="true" p:fieldLabel.render="false"/>
-                        </list>
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="noteTopicText" p:render="@{#DocumentEntry.displayTopicFieldInNotes}"/>
-                <bean parent="Uif-InputField" p:propertyName="noteText" p:required="true" p:readOnly="@{#line.noteText != ''}"/>
-                <bean parent="Uif-VerticalFieldGroup" p:label="Attached File" p:render="@{#DocumentEntry.allowsNoteAttachments}">
-                    <property name="items">
-                        <list>
-                            <bean parent="Uif-InputField" p:propertyName="attachmentFile"
-                                  p:bindingInfo.bindingPath="attachmentFile" p:fieldLabel.render="false">
-                                <property name="control">
-                                    <bean parent="Uif-FileControl" p:size="15"/>
-                                </property>
-                            </bean>
-                            <bean parent="Uif-PrimaryActionButton-Small" p:methodToCall="cancelAttachment"
-                                  p:actionLabel="cancel" p:title="Cancel Attachment"/>
-                        </list>
-                    </property>
-                    <property name="propertyReplacers">
-                        <list>
-                            <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="items"
-                                  p:condition="@{!#isAddLine and #line.attachment != null and #line.attachment.complete}">
-                                <property name="replacement">
-                                    <list>
-                                        <bean parent="Uif-PrimaryActionButton-Small" p:methodToCall="downloadAttachment"
-                                              p:ajaxSubmit="false"
-                                              p:actionLabel="download attachment" p:title="download attachment"
-                                              p:disableBlocking="true"
-                                              p:onClickScript="writeHiddenToForm(&quot;ajaxReturnType&quot;, &quot;update-none&quot;);">
-                                            <property name="actionParameters">
-                                                <map>
-                                                    <entry key="selectedLineIndex" value="@{#index}"/>
-                                                </map>
-                                            </property>
-                                        </bean>
-
-                                        <bean parent="Uif-Message" p:messageText="@{#line.attachment?.attachmentFileName}"/>
-                                        <bean parent="Uif-Message"
-                                              p:messageText="(@{#line.attachment?.attachmentFileSizeWithUnits}, @{#line.attachment?.attachmentMimeTypeCode})"/>
-
-                                    </list>
-                                </property>
-                            </bean>
-                            <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="items"
-                                  p:condition="@{!#isAddLine and (#line.attachment == null or !#line.attachment.complete)}">
-                                <property name="replacement">
-                                    <list>
-                                        <bean parent="Uif-SpaceField"/>
-                                    </list>
-                                </property>
-                            </bean>
-                        </list>
-                    </property>
-                </bean>
-                <!-- TODO: field needs translation to options label when read-only -->
-                <bean parent="Uif-InputField" p:propertyName="attachment.attachmentTypeCode"
-                      p:render="@{#DocumentEntry.allowsNoteAttachments and #DocumentEntry.attachmentTypesValuesFinderClass != null}"/>
-                <bean parent="Uif-InputField" p:propertyName="adHocRouteRecipient.id" p:readOnly="@{!#isAddLine}"
-                      p:render="@{#DocumentEntry.allowsNoteFYI and #actionFlags[#Constants.KUALI_ACTION_CAN_SEND_NOTE_FYI]}"/>
-            </list>
-        </property>
-    </bean>
+	
 </beans>

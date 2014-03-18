@@ -16,23 +16,11 @@
 package org.kuali.kpme.pm.pstnrptgrpsubcat;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.pstnrptgrpsubcat.PositionReportGroupSubCategoryContract;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
 public class PositionReportGroupSubCategory extends HrBusinessObject implements PositionReportGroupSubCategoryContract {
-	
-	private static final String POSITION_REPORT_GROUP = "positionReportGroup";
-	private static final String POSITION_REPORT_SUB_CAT = "positionReportSubCat";
-
 	private static final long serialVersionUID = 1L;
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		     .add(POSITION_REPORT_SUB_CAT)
-		     .add(POSITION_REPORT_GROUP)
-		     .build();
 	
 	private String pmPstnRptGrpSubCatId;
 	private String pstnRptGrpSubCat;
@@ -42,15 +30,7 @@ public class PositionReportGroupSubCategory extends HrBusinessObject implements 
 	private String institution;
 	private String location;
 
-	private LocationBo locationObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_SUB_CAT, this.getPositionReportSubCat())
-				.put(POSITION_REPORT_GROUP, this.getPositionReportGroup())
-				.build();
-	}	
+	private Location locationObj;	
 	
 	@Override
 	public String getId() {
@@ -123,11 +103,11 @@ public class PositionReportGroupSubCategory extends HrBusinessObject implements 
 		this.location = location;
 	}
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 

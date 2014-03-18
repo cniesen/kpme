@@ -15,21 +15,19 @@
  */
 package org.kuali.kpme.core.paygrade.validation;
 
-import org.kuali.kpme.core.api.paygrade.PayGrade;
-import org.kuali.kpme.core.api.paygrade.PayGradeContract;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
+import org.kuali.kpme.core.paygrade.PayGrade;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class PayGradeEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class PayGradeEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
-        PayGradeBo payGrade = (PayGradeBo) pbo;
+        PayGrade payGrade = (PayGrade) pbo;
         PayGrade lastPayGrade = HrServiceLocator.getPayGradeService().getPayGrade(payGrade.getPayGrade(), payGrade.getSalGroup(), TKUtils.END_OF_TIME);
         if (lastPayGrade != null && lastPayGrade.getEffectiveLocalDate() != null && payGrade.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastPayGrade.getEffectiveLocalDate().isAfter(payGrade.getEffectiveLocalDate());

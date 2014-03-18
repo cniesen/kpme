@@ -35,9 +35,8 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.request.service.LeaveRequestDocumentService;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -66,13 +65,13 @@ public class LeaveRequestAction extends KPMEAction {
         LocalDate endDate = new LocalDate(leaveForm.getYear(), 12, 31);
 
 //        CalendarEntry calendarEntry = HrServiceLocator.getCalendarService().getCurrentCalendarDatesForLeaveCalendar(principalId, currentDate);
-        CalendarEntry calendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarDatesForLeaveCalendar(principalId, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDatesForLeaveCalendar(principalId, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
 
         //  If the current pay period ends before the current leave calendar ends, then we need to include any planned leave blocks that occur
         //  in this window between the current pay end and the beginning of the leave planning calendar (the next future leave period).
         //  The most common scenario occurs when a non-monthly pay period ends before the current leave calendar ends.
 
-        CalendarEntry payCalendarEntry = (CalendarEntry) HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
+        CalendarEntry payCalendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, beginDate.toDateTimeAtStartOfDay(), endDate.toDateTimeAtStartOfDay());
         Boolean checkLeaveEligible = true;
         Boolean nonExemptLeaveEligible = LmServiceLocator.getLeaveApprovalService().isActiveAssignmentFoundOnJobFlsaStatus(principalId, HrConstants.FLSA_STATUS_NON_EXEMPT,checkLeaveEligible);
         if(nonExemptLeaveEligible && calendarEntry != null && payCalendarEntry != null) {
@@ -107,7 +106,7 @@ public class LeaveRequestAction extends KPMEAction {
         Collections.sort(plannedLeaves, new Comparator<LeaveBlock>() {
             @Override
             public int compare(LeaveBlock leaveBlock1, LeaveBlock leaveBlock2) {
-                return ObjectUtils.compare(leaveBlock1.getLeaveDateTime(), leaveBlock2.getLeaveDateTime());
+                return ObjectUtils.compare(leaveBlock1.getLeaveDate(), leaveBlock2.getLeaveDate());
             }
         });
 
@@ -131,13 +130,9 @@ public class LeaveRequestAction extends KPMEAction {
 	  
 	public ActionForward submitForApproval(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		LeaveRequestForm lf = (LeaveRequestForm) form;
-		for(int i=0; i< lf.getPlannedLeaves().size(); i++) {
-            LeaveBlock leaveBlock = lf.getPlannedLeaves().get(i);
-            String submit = request.getParameter("plannedLeaves["+i+"].submit");
-            if (submit != null
-                    && Boolean.valueOf(submit)) {
+		for(LeaveBlock leaveBlock : lf.getPlannedLeaves()) {
 			// check if check box is checked
-			//if(leaveBlock.isSubmit()) {
+			if(leaveBlock.isSubmit()) {
                 LeaveRequestDocument lrd = LmServiceLocator.getLeaveRequestDocumentService().createLeaveRequestDocument(leaveBlock.getLmLeaveBlockId());
                 LmServiceLocator.getLeaveRequestDocumentService().requestLeave(lrd.getDocumentNumber());
 		    }
@@ -157,7 +152,7 @@ public class LeaveRequestAction extends KPMEAction {
         		docs.put(leaveBlock.getLmLeaveBlockId(), getLeaveRequestDocumentService().getLeaveRequestDocument(leaveBlock.getLeaveRequestDocumentId()));	
         	}
         }
-        for (LeaveBlock leaveBlock : form.getApprovedLeaves()) {
+        for (LeaveBlock leaveBlock : form.getApprovedLeaves()) {        	
         	if(leaveBlock.getLeaveRequestDocumentId() != null && !leaveBlock.getLeaveRequestDocumentId().isEmpty()){
             docs.put(leaveBlock.getLmLeaveBlockId(), getLeaveRequestDocumentService().getLeaveRequestDocument(leaveBlock.getLeaveRequestDocumentId()));
         	}
@@ -180,7 +175,7 @@ public class LeaveRequestAction extends KPMEAction {
         }
         return docs;
     }
-    
+
     private LeaveRequestDocumentService getLeaveRequestDocumentService() {
         if (leaveRequestDocumentService == null) {
             leaveRequestDocumentService = LmServiceLocator.getLeaveRequestDocumentService();

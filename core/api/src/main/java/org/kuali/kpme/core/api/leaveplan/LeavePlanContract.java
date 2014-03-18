@@ -17,24 +17,13 @@ package org.kuali.kpme.core.api.leaveplan;
 
 import java.sql.Time;
 
-import org.joda.time.LocalTime;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.core.api.mo.Effective;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.mo.UserModified;
-import org.kuali.kpme.core.api.util.HrApiConstants;
-import org.kuali.rice.core.api.mo.common.GloballyUnique;
-import org.kuali.rice.core.api.mo.common.Identifiable;
-import org.kuali.rice.core.api.mo.common.Versioned;
-import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 
 /**
  * <p>LeavePlanContract interface.</p>
  *
  */
-public interface LeavePlanContract extends KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "LeavePlan";
+public interface LeavePlanContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The date batch job should run to create a carry over leave block 
@@ -58,7 +47,7 @@ public interface LeavePlanContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return batchPriorYearCarryOverStartTime for LeavePlan
 	 */
-	public LocalTime getBatchPriorYearCarryOverStartLocalTime();
+	public Time getBatchPriorYearCarryOverStartTime();
 	
 	/**
 	 * The Number of months to build accruals for for a LeavePlan
@@ -115,4 +104,14 @@ public interface LeavePlanContract extends KpmeEffectiveDataTransferObject {
 	 */
 	public String getCalendarYearStart() ;
 
+	/**
+	 * The history flag of a LeavePlan
+	 * 
+	 * <p>
+	 * history flag of a LeavePlan
+	 * <p>
+	 * 
+	 * @return Y if on, N if not
+	 */
+	public Boolean getHistory();
 }

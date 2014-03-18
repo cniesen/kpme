@@ -15,8 +15,11 @@
  */
 package org.kuali.kpme.tklm.time.docsearch;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.assignment.Assignment;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kew.api.document.DocumentWithContent;
@@ -24,9 +27,6 @@ import org.kuali.rice.kew.api.extension.ExtensionDefinition;
 import org.kuali.rice.kew.docsearch.SearchableAttributeLongValue;
 import org.kuali.rice.kew.docsearch.SearchableAttributeValue;
 import org.kuali.rice.kew.docsearch.xml.StandardGenericXMLSearchableAttribute;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class WorkAreaSearchableAttribute extends StandardGenericXMLSearchableAttribute{
 

@@ -28,9 +28,8 @@ import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
 
 @IntegrationTest
@@ -58,24 +57,24 @@ public class TkTimeBlockAggregateTest extends TKLMIntegrationTestCase {
 	private List<TimeBlock> getSomeTimeBlocks() {
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
 
-		TimeBlockBo block = TkTestUtils.createDummyTimeBlock(
+		TimeBlock block = TkTestUtils.createDummyTimeBlock(
 				new DateTime(2010, 1, 1, 15, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new DateTime(2010, 1, 1, 16, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new BigDecimal(1),
 				"REG");
-		blocks.add(TimeBlockBo.to(block));
+		blocks.add(block);
 		block = TkTestUtils.createDummyTimeBlock(
 				new DateTime(2010, 1, 2, 15, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new DateTime(2010, 1, 2, 16, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new BigDecimal(1),
 				"REG");
-        blocks.add(TimeBlockBo.to(block));
+		blocks.add(block);
 		block = TkTestUtils.createDummyTimeBlock(
 				new DateTime(2010, 1, 5, 15, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new DateTime(2010, 1, 5, 16, 0, 0, 0, TKUtils.getSystemDateTimeZone()),
 				new BigDecimal(1),
 				"REG");
-        blocks.add(TimeBlockBo.to(block));
+		blocks.add(block);
 
 		return blocks;
 	}

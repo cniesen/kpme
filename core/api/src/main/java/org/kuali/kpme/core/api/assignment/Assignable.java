@@ -19,5 +19,5 @@ import java.util.List;
 
 public interface Assignable {
     static String ASSIGNABLE_TERM_NAME = "Assignments";
-    List<Assignment> getAssignments();
+    List<? extends AssignmentContract> getAssignments();
 }

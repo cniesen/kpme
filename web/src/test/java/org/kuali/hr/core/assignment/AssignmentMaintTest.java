@@ -28,14 +28,13 @@ import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-//@FunctionalTest
-/**
+@FunctionalTest
 public class AssignmentMaintTest extends KPMEWebTestCase {
 	
 	//data defined in boot strap script
 	private static final String TEST_CODE="admin";
 	final String ERROR_EFF_DATE = "Effective Date (Effective Date) is a required field.";
-	final String ERROR_PRINCIPAL_ID = "Principal ID (Principal ID) is a required field.";
+	final String ERROR_PRINCIPAL_ID = "Principal Id (Principal Id) is a required field.";
 	final String ERROR_JOB_NUMBER = "Job Number (Job Number) is a required field.";
 	final String ERROR_WORK_AREA = "Work Area (Work Area) is a required field.";
 	final String ERROR_TASK = "Task (Task) is a required field.";
@@ -44,7 +43,7 @@ public class AssignmentMaintTest extends KPMEWebTestCase {
 	final String ERROR_JOB_NUMBER_INVALID = "The specified jobNumber '1' does not exist.";
 	
 	
-//	@Test
+	@Test
 	public void testAssignmentMaint() throws Exception {
 		HtmlPage assignmentLookUp = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), HrTestConstants.Urls.ASSIGNMENT_MAINT_URL);
 		HtmlUnitUtil.setFieldValue(assignmentLookUp, "workArea", "30");
@@ -57,7 +56,7 @@ public class AssignmentMaintTest extends KPMEWebTestCase {
 		Assert.assertTrue("Maintenance Page contains test assignment",maintPage.asText().contains(TEST_CODE.toString()));	
 	}
 	
-//	@Test
+	@Test
 	public void testAssignmentCreateNew() throws Exception {
 		
     	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), HrTestConstants.Urls.ASSIGNMENT_MAINT_NEW_URL);
@@ -81,7 +80,7 @@ public class AssignmentMaintTest extends KPMEWebTestCase {
         Assert.assertFalse("page contains: " + ERROR_TASK_NULL, nextPage.asText().contains(ERROR_TASK_NULL));
 	}
 	
-//	@Test
+	@Test
 	public void testAssignmentCreateNewJobValidation() throws Exception {
 		
 		HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), HrTestConstants.Urls.ASSIGNMENT_MAINT_NEW_URL);
@@ -115,4 +114,3 @@ public class AssignmentMaintTest extends KPMEWebTestCase {
 	}
 
 }
-*/

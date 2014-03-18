@@ -19,803 +19,247 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:dd="http://rice.kuali.org/dd"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-                           http://www.springframework.org/schema/util
-                           http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://rice.kuali.org/dd
+                           http://rice.kuali.org/dd/dd.xsd">
 
-<bean id="PositionMaintenanceDocument" parent="PositionMaintenanceDocument-parentBean" />
-	<bean id="PositionMaintenanceDocument-parentBean" abstract="true"
-		parent="uifMaintenanceDocumentEntry" p:dataObjectClass="org.kuali.kpme.pm.position.Position"
-		p:businessRulesClass="org.kuali.kpme.pm.position.validation.PositionValidation">
-		<property name="maintainableClass"
-			value="org.kuali.kpme.pm.position.web.PositionMaintainableServiceImpl" />
-		<property name="lockingKeys">
-			<list>
-				<value>positionNumber</value>
-			</list>
-		</property>
-		<property name="documentTypeName" value="PositionMaintenanceDocumentType" />
+  <bean id="PositionMaintenanceDocument" parent="PositionMaintenanceDocument-parentBean"/>
+  <bean id="PositionMaintenanceDocument-parentBean" abstract="true" parent="uifMaintenanceDocumentEntry"
+  		p:dataObjectClass="org.kuali.kpme.pm.position.Position"
+  		p:businessRulesClass="org.kuali.kpme.pm.position.validation.PositionValidation">
+    <property name="maintainableClass" value="org.kuali.kpme.pm.position.web.PositionMaintainableServiceImpl"/>
+    <property name="lockingKeys">
+        <list>
+            <value>positionNumber</value>
+        </list>
+    </property>
+    <property name="documentTypeName" value="PositionMaintenanceDocumentType"/>
+    
+    <!-- 05.02.2013 This is a kns property, which will be supported in rice 2.3 -->
+    <!-- We will need to find a work around before KPME release in August
+    <property name="promptBeforeValidationClass" value="org.kuali.kpme.core.position.validation.PositionEffectiveDatePrompt"/>
+    -->
 
-	</bean>
+  </bean>
 
-	<!-- Maintenance Section Definitions -->
-	<bean id="PositionMaintenanceDocument-MaintenanceView"
-		parent="PositionMaintenanceDocument-PositionMaintenance-parentBean" />
-	<bean id="PositionMaintenanceDocument-PositionMaintenance-parentBean"
-		abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
-		<property name="headerText" value="Position Maintenance" />
-		<property name="dataObjectClassName" value="org.kuali.kpme.pm.position.Position" />
-		<property name="items">
-			<list>
-				<ref bean="Pos-OverviewPage" />
-				<ref bean="Pos-ClassificationPage" />
-				<ref bean="Pos-DepartmentPage" />
-				<ref bean="Pos-QualificationPage" />
-				<ref bean="Pos-DutyPage" />
-				<ref bean="Pos-FlagPage" />
-				<ref bean="Pos-ResponsibilityPage" />
-				<ref bean="Pos-FundingPage" />
-				<ref bean="Pos-NoteAttachmentPage" />
-				<ref bean="Pos-AdHocPage" />
-				<ref bean="Pos-RouteLogPage" />
-			</list>
-		</property> 
-		<property name="navigation">
-			<ref bean="positionMenuNavigation" />
-		</property>
-		<property name="singlePageView" value="false" />
-		<property name="header">
-			<bean parent="KPME-Uif-DocumentViewHeader" />
-		</property>
-		<property name="stickyHeader" value="true" />
-		<!-- 
-		<property name="footer">
-			<bean parent="KPME-Uif-FooterBase" />
-		</property>  --> 
-		<property name="applyDirtyCheck" value="false" />
-	</bean> <!-- maintenance -->
+  <!-- Maintenance Section Definitions -->
 
-	<!-- Navigation -->
-	<bean id="positionMenuNavigation" parent="Uif-MenuNavigationGroup">
-		<property name="items">
-			<list>
-				<bean parent="Uif-HeaderTwo" p:headerText="Position Details" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-OverviewPage" p:actionLabel="Overview" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-ClassificationPage" p:actionLabel="Classification" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-DepartmentPage" p:actionLabel="Additional Departments" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-QualificationPage" p:actionLabel="Qualifications" p:render="@{#dp.displayQualifications}"/>
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-DutyPage" p:actionLabel="Duties" p:render="@{#dp.displayDuties}"/> <!--@{#dp.displayDuties}-->
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-FlagPage" p:actionLabel="Position Flags" p:render="@{#dp.displayFlags}" /> <!--@{#dp.displayFlags}-->
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-ResponsibilityPage" p:actionLabel="Responsibility" p:render="@{#dp.displayResponsibility}" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-FundingPage" p:actionLabel="Funding"  p:render="@{#dp.displayFunding}" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-NoteAttachmentPage" p:actionLabel="Notes @{#DocumentEntry.allowsNoteAttachments ? 'and Attachments' : ''} (@{document.notes.size()})" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-AdHocPage" p:actionLabel="Ad Hoc Recipients" p:render="@{#dp.displayAdHocRecipients}" />
-				<bean parent="Uif-NavigationActionLink"
-					p:navigateToPageId="Pos-RouteLogPage" p:actionLabel="Route Log" />
-			</list>
-		</property>
-	</bean>
+  <bean id="PositionMaintenanceDocument-MaintenanceView" parent="PositionMaintenanceDocument-PositionMaintenance-parentBean"/>
+  <bean id="PositionMaintenanceDocument-PositionMaintenance-parentBean" abstract="true" parent="Uif-MaintenanceView">
+    <property name="headerText" value="Position Maintenance"/>
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.position.Position"/>
+<!--     <property name="viewHelperServiceClass" value="org.kuali.kpme.pm.position.web.PositionMaintainableServiceImpl" /> -->
+    <property name="items">
+      <list merge="true">
+        <bean parent="Uif-MaintenanceGridSection">
+        	<property name="items">
+            	<list>
+<!--             		<bean parent="Uif-InputField" p:propertyName="category" p:readOnly="true" p:required="false"/> -->
+			        <bean parent="Uif-InputField" p:propertyName="positionNumber" p:readOnly="true" p:required="false"/>
+                    <!-- bean parent="Uif-InputField" p:propertyName="workingPositionTitle"
+                          p:required="true" / -->
+			        <!--<bean parent="MaintainableFieldDefinition" p:name="positionNumber" p:unconditionallyReadOnly="true" p:defaultValueFinderClass="org.kuali.kfs.sys.businessobject.defaultvalue.NextUniquePositionNumberFinder"/>-->
+			        <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
+			        <bean parent="Uif-InputField" p:propertyName="description" p:required="true" />
+<!-- 			         p:readOnly="@{#dp.positionNumber eq '2086'}" /> -->
+			        <bean parent="Uif-InputField" p:propertyName="active" p:required="true"/>
+			        			       
+			     </list>
+			</property>
+	    </bean>
+          <!-- Location -->
+          <bean parent="Uif-MaintenanceGridSection">
+              <property name="headerText" value="Location" />
+              <property name="items">
+                  <list>
+                      <bean parent="Uif-InputField" p:propertyName="institution">
+                          <property name="quickfinder">
+                              <bean parent="Uif-QuickFinderByScript"
+                                    p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
+                                    p:fieldConversions="institutionCode:institution" />
+                          </property>
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="campus" />
+                  </list>
+              </property>
+          </bean>
 
-	<!-- Overview Section -->
-	<bean id="Pos-OverviewPage" parent="Uif-MaintenancePage" >
-		<property name="items">
-			<list>
-				<ref bean="Pos-OverviewPage-Widgets" />
-				<bean parent="PositionNavigationButton" p:navigateToPageId="Pos-ClassificationPage" p:actionLabel="Classification"/>
-			</list>
-		</property>
-	</bean>
+          <!-- Classification -->
+          <bean parent="Uif-MaintenanceGridSection">
+              <property name="headerText" value="Classification" />
+              <property name="items">
+                  <list>
+                      <bean parent="Uif-InputField" p:propertyName="pmPositionClassId">
 
-	<bean id="Pos-OverviewPage-Widgets" parent="Uif-VerticalBoxSection"
-		p:headerText="Overview">
-		<property name="items">
-			<list>
-				<bean parent="Uif-InputField" p:propertyName="process"
-					p:required="true" id="position_process"
-                    p:onChangeScript="if (jQuery('#position_process_control').val() == '') {jQuery('.ui-datepicker-trigger').hide();} else {jQuery('.ui-datepicker-trigger').show();}"
-                       >
-					<property name="control">
-						<bean parent="Uif-DropdownControl" />
-					</property>
-					<property name="optionsFinder">
-						<bean class="org.kuali.kpme.pm.util.ProcessKeyValueFinder"
-							p:addBlankOption="false" />
-					</property>
-				</bean>
-				<ref bean="Pos-OverviewPage-Section" />
-			</list>
-		</property>
-	</bean>
+                          <!-- property name="quickfinder.dataObjectClassName"
+                                    value="org.kuali.kpme.pm.classification.Classification" / -->
+                          <property name="quickfinder">
+                              <bean parent="Uif-QuickFinder"
+                                    p:dataObjectClassName="org.kuali.kpme.pm.classification.Classification"/>
+                          </property>
+                          <property name="quickfinder.fieldConversions">
+                              <map>
+                                  <entry key="pmPositionClassId" value="pmPositionClassId" />
+                                  <entry key="classificationTitle" value="classificationTitle" />
+                                  <entry key="salaryGroup" value="salaryGroup" />
+                                  <entry key="percentTime" value="percentTime" />
+                                  <entry key="benefitsEligible" value="benefitsEligible" />
+                                  <entry key="leaveEligible" value="leaveEligible" />
+                                  <entry key="leavePlan" value="leavePlan" />
+                                  <entry key="positionReportGroup" value="positionReportGroup" />
+                                  <entry key="positionType" value="positionType" />
+                                  <entry key="poolEligible" value="poolEligible" />
+                                  <entry key="tenureEligible" value="tenureEligible" />
+                                  <entry key="active" value="active" />
+                              </map>
+                          </property>
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="classificationTitle">
+                          <property name="control">
+                              <bean parent="Uif-TextControl" p:disabled="true"
+                                    p:enabledWhenChangedPropertyNames="pmPositionClassId"
+                                    p:evaluateDisabledOnKeyUp="true" />
+                          </property>
+                      </bean>
 
-	<bean id="Pos-OverviewPage-Section" parent="Uif-MaintenanceGridSection">
+                      <bean parent="Uif-InputField" p:propertyName="positionReportGroup"
+                            p:readOnly="true" />
+                      <bean parent="Uif-InputField" p:propertyName="positionType"
+                            p:readOnly="true" />
+                      <bean parent="Uif-InputField" p:propertyName="poolEligible"
+                            p:required="true" />
+                      <bean parent="Uif-InputField" p:propertyName="maxPoolHeadCount"
+                            p:constraintText="Must be a number.">
+                          <property name="validCharactersConstraint">
+                              <bean parent="IntegerPatternConstraint" p:allowNegative="false" />
+                          </property>
+
+                          <!-- this is still not working, this should disable maxPoolHeadCount
+                              if pool eligiable is no -->
+                          <!-- property name="control">
+                              <bean parent="Uif-TextControl" p:disabled="@{#poolEligible eq 'No'}" />
+                          </property>
+                          < this works <property name="control"> <bean parent="Uif-TextControl"
+                              p:disabled="true"/> </property> -->
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="tenureEligible"
+                            p:required="true" />
+                      <bean parent="Uif-InputField" p:propertyName="salaryGroup">
+                          <!-- property name="quickfinder">
+                              <bean parent="Uif-QuickFinderByScript"
+                                    p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroup"
+                                    p:fieldConversions="hrSalGroup:salaryGroup" />
+                          </property -->
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="percentTime"
+                            p:exclusiveMin="0" p:inclusiveMax="100"
+                            p:constraintText="Must be a number between 0 and 100.">
+                          <property name="validCharactersConstraint">
+                              <bean parent="FixedPointPatternConstraint"
+                                    p:allowNegative="false" p:precision="5" p:scale="2" />
+                          </property>
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="workMonths"
+                            p:constraintText="Must be a number between 1 and 12.">
+                          <property name="validCharactersConstraint">
+                              <bean parent="IntegerPatternConstraint" p:allowNegative="false" />
+                          </property>
+                      </bean>
+                      <bean parent="Uif-InputField" p:propertyName="benefitsEligible"
+                            p:required="true" />
+                      <bean parent="Uif-InputField" p:propertyName="leaveEligible"
+                            p:required="true" />
+                      <bean parent="Uif-InputField" p:propertyName="leavePlan"
+                            p:constraintText="Required if Leave Eligible is Yes.">
+                          <property name="caseConstraint">
+                              <bean parent="CaseConstraint">
+                                  <property name="propertyName" value="leaveEligible" />
+                                  <property name="whenConstraint">
+                                      <list>
+                                          <bean parent="WhenConstraint">
+                                              <property name="values">
+                                                  <list>
+                                                      <value>Y</value>
+                                                  </list>
+                                              </property>
+                                              <property name="constraint">
+                                                  <bean parent="RequiredConstraint" />
+                                              </property>
+                                          </bean>
+                                      </list>
+                                  </property>
+                              </bean>
+                          </property>
+                          <!-- property name="quickfinder">
+                              <bean parent="Uif-QuickFinderByScript"
+                                    p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlan"
+                                    p:fieldConversions="leavePlan:leavePlan" />
+                          </property -->
+                      </bean>
 
 
-
-		<property name="items">
-			<list>
-				<bean parent="Uif-InputField" p:propertyName="effectiveDate"
-					p:required="true"
-                    >
-                    <property name="validCharactersConstraint">
-                        <bean parent="BasicDatePatternConstraint"/>
-                    </property>
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="datePicker">
-                                <bean parent="Uif-DatePicker" p:onDocumentReadyScript="if (jQuery('#position_process_control').val() == '') {jQuery('.ui-datepicker-trigger').hide();} else {jQuery('.ui-datepicker-trigger').show();}"/>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="institution" id="position_institution"
-                      p:onDocumentReadyScript="
-                        var options = jQuery('#position_institution_control option');
-                        if (options.length == 2) {
-                            jQuery('#position_institution_control').val(options[1].value);
-                         }"
-                      p:required="true"
-                      p:refreshWhenChangedPropertyNames="#dp.effectiveDate">
-                    <property name="control">
-                        <bean parent="Uif-DropdownControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update'  or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-                    <property name="optionsFinder">
-                        <bean class="org.kuali.kpme.core.util.InstitutionKeyValueFinder" />
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="location" id="position_location"
-                      p:onDocumentReadyScript="
-                        var options = jQuery('#position_location_control option');
-                        if (options.length == 2) {
-                            jQuery('#position_location_control').val(options[1].value);
-                         }"
-                      p:required="true"
-                      p:refreshWhenChangedPropertyNames="#dp.institution" >
-                    <property name="control">
-                        <bean parent="Uif-DropdownControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null  or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-                    <property name="optionsFinder">
-                        <bean class="org.kuali.kpme.pm.util.LocationKeyValueFinder" />
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="primaryDepartment"
-                      p:required="true">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-                    <property name="quickfinder">
-                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.department.DepartmentBo"
-                              p:fieldConversions="dept:primaryDepartment"
-                              p:lookupParameters="location:location,institution:institution" />
-                    </property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Data Update'}" >
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="positionClass"
-                      p:required="true"
-                      >
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="true"/>
-                    </property>
-                    <property name="quickfinder">
-                        <bean parent="Uif-QuickFinder"
-                              p:dataObjectClassName="org.kuali.kpme.pm.classification.Classification"
-                              p:lookupParameters="location:location,institution:institution"/>
-                    </property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update'}" >
-                    </property>
-                    <property name="quickfinder.fieldConversions">
-                        <map>
-                            <entry key="positionClass" value="positionClass"/>
-                            <entry key="pmPositionClassId" value="pmPositionClassId" />
-                            <entry key="classificationTitle" value="classificationTitle" />
-                            <entry key="salaryGroup" value="salaryGroup" />
-                            <entry key="percentTime" value="percentTime" />
-                            <entry key="benefitsEligible" value="benefitsEligible" />
-                            <entry key="leaveEligible" value="leaveEligible" />
-                            <entry key="leavePlan" value="leavePlan" />
-                            <entry key="payGrade" value="payGrade" />
-                            <entry key="positionReportGroup" value="positionReportGroup" />
-                            <entry key="positionType" value="positionType" />
-                            <entry key="poolEligible" value="poolEligible" />
-                            <entry key="tenureEligible" value="tenureEligible" />
-                            <entry key="active" value="active" />
-                        </map>
-                    </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="classificationTitle" p:readOnly="true "/>
-				<bean parent="Uif-InputField" p:propertyName="description"
-					p:required="true" >
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="positionStatus"
-					p:required="true">
-					<property name="control">
-						<bean parent="Uif-DropdownControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-					</property>
-					<property name="optionsFinder">
-						<bean class="org.kuali.kpme.pm.util.StatusKeyValueFinder"
-							p:addBlankOption="false" />
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="appointmentType"
-					p:required="true">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="quickfinder">
-						<bean parent="Uif-QuickFinderByScript"
-							p:dataObjectClassName="org.kuali.kpme.pm.positionappointment.PositionAppointment"
-							p:fieldConversions="positionAppointment:appointmentType"
-							p:lookupParameters="location:location,institution:institution"/>
-					</property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}" >
-                    </property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="temporary"
-					p:required="true" p:defaultValue="N" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="contract"
-					p:required="true" p:defaultValue="N" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                                <property name="options">
-                                    <list>
-                                        <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                        <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                    </list>
-                                </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="contractType" p:constraintText="Required if Contract is Yes.">
-					<property name="control">
-						<bean parent="Uif-TextControl"
-							p:disabled="@{document.newMaintainableObject.dataObject.contract ne 'Y' or #dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                            p:refreshWhenChangedPropertyNames="#dp.contract,#dp.process"/>
-					</property>
-					<property name="quickfinder">
-						<bean parent="Uif-QuickFinderByScript"
-							p:dataObjectClassName="org.kuali.kpme.pm.pstncontracttype.PstnContractType"
-							p:fieldConversions="name:contractType" 
-							p:lookupParameters="location:location,institution:institution" />
-					</property>					
-					<property name="quickfinder.quickfinderAction.disabled"
-						value="@{document.newMaintainableObject.dataObject.contract ne 'Y' or #dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}" >
-					</property>
-					<property name="caseConstraint">
-				        <bean parent="CaseConstraint">
-				        	<property name="propertyName" value="contract" />
-							<property name="whenConstraint">
-					  			<list>
-						          <bean parent="WhenConstraint">
-						              <property name="values">
-						                  <list>
-						                      <value>Y</value>
-						                  </list>
-						              </property>
-						              <property name="constraint">
-						                  <bean parent="RequiredConstraint" />
-						              </property>
-						          </bean>
-					         	 </list>
-					         </property>
-				         </bean>
-					</property>	
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="reportsToPositionId" p:propertyNamesForAdditionalDisplay="reportsToWorkingTitle" >
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null  or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="quickfinder">
-						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.pm.position.Position" 
-						      p:fieldConversions="positionNumber:reportsToPositionId" 
-						      p:lookupParameters="location:location,institution:institution" />
-					</property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null  or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}" >
-                    </property>
-                    <property name="attributeQuery">
-	            		<bean parent="Uif-AttributeQueryConfig" p:dataObjectClassName="org.kuali.kpme.pm.position.Position"
-	                  		p:queryFieldMapping="reportsToPositionId:positionNumber" p:returnFieldMapping="description:reportsToWorkingTitle"/>
-	        		</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="expectedEndDate">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-                    <property name="validCharactersConstraint">
-						<bean parent="BasicDatePatternConstraint" />
-					</property>
-					<property name="dependencyConstraints">
-						<list>
-							<bean parent="PrerequisiteConstraint" p:propertyName="renewEligible" />
+                  </list>
+              </property>
+          </bean>
+	    <bean parent="Uif-TabGroup">
+			  <property name="items">
+			    <list>
+			      <bean parent="Uif-VerticalBoxSection" p:headerText="Qualification">
+			      	<property name="items">
+			      		<list>
+			      			<bean parent="Uif-VerticalBoxSection">
+				      			<property name="items">
+				      				<list>
+					      				<bean parent="Position-requiredQualList"/>
+					      			</list>
+					      		</property>
+				      		</bean>
+				      		<bean parent="Uif-VerticalBoxSection" p:headerText="Preferred Qualification">
+				      			<property name="items">
+				      				<list>
+					      				<bean parent="Position-qualifications"/>
+					      			</list>
+					      		</property>
+				      		</bean>
 						</list>
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="renewEligible"
-					p:constraintText="Required if Expected End Date is filled.">
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-				</bean>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Classification Section -->
-	<bean id="Pos-ClassificationPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<ref bean="Pos-ClassificationPage-Widgets" />
-				<bean parent="PositionNavigationButton" p:navigateToPageId="Pos-DepartmentPage" p:actionLabel="Additional Departments" />
-			</list>
-		</property>
-	</bean>
-	<bean id="Pos-ClassificationPage-Widgets" parent="Uif-MaintenanceGridSection"
-		p:headerText="Classification">
-		<property name="items">
-			<list>
-                <bean parent="Uif-InputField" p:propertyName="positionClass"
-                      p:required="true" p:readOnly="true">
-                    <property name="control">
-                        <bean parent="Uif-TextControl" />
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="positionReportGroup"
-					p:readOnly="true" />
-				<bean parent="Uif-InputField" p:propertyName="positionType"
-					p:readOnly="true" />
-				<bean parent="Uif-InputField" p:propertyName="poolEligible"
-					p:defaultValue="N" p:required="true" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="maxPoolHeadCount"
-					p:constraintText="Must be a number.">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="validCharactersConstraint">
-						<bean parent="IntegerPatternConstraint" p:allowNegative="false" />
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="tenureEligible"
-					p:required="true" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="salaryGroup">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="percentTime"
-					p:exclusiveMin="0" p:inclusiveMax="100"
-					p:constraintText="Must be a number between 0 and 100.">
-                    <property name="control">
-                        <bean parent="Uif-SpinnerControl" p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="spinner">
-                                <bean parent="Uif-Spinner">
-                                    <property name="templateOptions">
-                                        <map merge="true">
-                                            <entry key="start" value="0.01" />
-                                            <entry key="step" value="0.01" />
-                                            <entry key="max" value="100" />
-                                            <entry key="numberFormat" value="n" />
-                                        </map>
-                                    </property>
-                                </bean>
-                            </property>
-                        </bean>
-                    </property>
-					<property name="validCharactersConstraint">
-						<bean parent="FixedPointPatternConstraint" p:allowNegative="false"
-							p:precision="5" p:scale="2" />
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="workMonths"
-					p:constraintText="Must be a number between 1 and 12.">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="validCharactersConstraint">
-						<bean parent="IntegerPatternConstraint" p:allowNegative="false" />
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="benefitsEligible"
-					p:required="true" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="leaveEligible"
-					p:required="true" >
-                    <property name="control">
-                        <bean parent="Uif-HorizontalRadioControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process">
-                            <property name="options">
-                                <list>
-                                    <bean parent="Uif-KeyLabelPair" p:key="Y" p:value="Yes" />
-                                    <bean parent="Uif-KeyLabelPair" p:key="N" p:value="No" />
-                                </list>
-                            </property>
-                        </bean>
-                    </property>
-                </bean>
-				<bean parent="Uif-InputField" p:propertyName="leavePlan"
-					p:constraintText="Required if Leave Eligible is Yes.">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="caseConstraint">
-						<bean parent="CaseConstraint">
-							<property name="propertyName" value="leaveEligible" />
-							<property name="whenConstraint">
-								<list>
-									<bean parent="WhenConstraint">
-										<property name="values">
-											<list>
-												<value>Y</value>
-											</list>
-										</property>
-										<property name="constraint">
-											<bean parent="RequiredConstraint" />
-										</property>
-									</bean>
-								</list>
-							</property>
-						</bean>
-					</property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="payGrade" >
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="quickfinder">
-						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
-							p:fieldConversions="payGrade:payGrade" p:lookupParameters="salaryGroup:salGroup" />
-					</property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}" >
-                    </property>
-				</bean>
-				<bean parent="Uif-InputField" p:propertyName="payStep">
-                    <property name="control">
-                        <bean parent="Uif-TextControl"
-                              p:disabled="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}"
-                              p:refreshWhenChangedPropertyNames="#dp.process"/>
-                    </property>
-					<property name="quickfinder">
-						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paystep.PayStep"
-							p:fieldConversions="payStep:payStep" p:lookupParameters="payGrade:payGrade" />
-					</property>
-                    <property name="quickfinder.quickfinderAction.disabled"
-                              value="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Reorganization' or #dp.process eq 'Data Update' or #dp.process eq 'Change Status'}" >
-                    </property>
-				</bean>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Position Department Section -->
-	<bean id="Pos-DepartmentPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Additional Departments" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}" >
-					<property name="items">
-						<list>
-							<bean parent="Position-departments" />
+			      	 </property>
+			      </bean>
+ 				  <!--bean parent="Uif-VerticalBoxSection" p:headerText="Duties">
+	      			<property name="items">
+	      				<list>
+	      					<ref bean="Position-duties"/>
 						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="@{#dp.displayQualifications ? 'Pos-QualificationPage' : 
-				(#dp.displayDuties ? 'Pos-DutyPage' : (#dp.displayFlags ? 'Pos-FlagPage' : (#dp.displayResponsibility ? 'Pos-ResponsibilityPage' :
-				 (#dp.displayFunding ? 'Pos-FundingPage' : 'Pos-OverviewPage'))))}"  
-				p:actionLabel="@{#dp.displayQualifications ? 'Qualifications' : 
-				(#dp.displayDuties ? 'Duties' : (#dp.displayFlags ? 'Position Flags' : (#dp.displayResponsibility ? 'Responsibility' :
-				 (#dp.displayFunding ? 'Funding' : 'Back to Overview'))))}"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Position Qualification Section -->
-	<bean id="Pos-QualificationPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:readOnly="true">
-					<property name="items">
-						<list>
-							<bean parent="Position-QualificationsInquiryPage-Required-Section" />
+				    </property>
+				  </bean -->
+			      <bean parent="Uif-VerticalBoxSection" p:headerText="Flags">
+			      	<property name="items">
+			      		<list>
+			      		<bean parent="Position-flags"/>
+			      		</list>
+		      		</property>
+		      	  </bean>
+ 				  <bean parent="Uif-VerticalBoxSection" p:headerText="Position Responsibilities">
+			      	<property name="items">
+			      		<list>
+			      			<bean parent="Position-responsibilities"/>
 						</list>
-					</property>
-				</bean>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Preferred Qualification" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}">
-					<property name="items">
-						<list>
-							<bean parent="Position-qualifications" />
+			      	 </property>
+			      </bean>
+ 				  <bean parent="Uif-VerticalBoxSection" p:headerText="Funding">
+	      			<property name="items">
+	      				<list>
+	      					<ref bean="Position-fundings"/>
 						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="@{#dp.displayDuties ? 'Pos-DutyPage' : (#dp.displayFlags ? 'Pos-FlagPage' : (#dp.displayResponsibility ? 'Pos-ResponsibilityPage' :
-				 (#dp.displayFunding ? 'Pos-FundingPage' : 'Pos-OverviewPage')))}" 
-				  p:actionLabel="@{#dp.displayDuties ? 'Duties' : (#dp.displayFlags ? 'Position Flags' : (#dp.displayResponsibility ? 'Responsibility' :
-				 (#dp.displayFunding ? 'Funding' : 'Back to Overview')))}"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Position Duty Section -->
-	<bean id="Pos-DutyPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Duties" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}">
-					<property name="items">
-						<list>
-							<bean parent="Position-duties" />
-						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="@{#dp.displayFlags ? 'Pos-FlagPage' : (#dp.displayResponsibility ? 'Pos-ResponsibilityPage' :
-				 (#dp.displayFunding ? 'Pos-FundingPage' : 'Pos-OverviewPage'))}" 
-				  p:actionLabel="@{#dp.displayFlags ? 'Position Flags' : (#dp.displayResponsibility ? 'Responsibility' :
-				 (#dp.displayFunding ? 'Funding' : 'Back to Overview'))}" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Position Flag Section -->
-	<bean id="Pos-FlagPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Position Flags" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}">
-					<property name="items">
-						<list>
-							<bean parent="Position-flags" />
-						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="@{#dp.displayResponsibility ? 'Pos-ResponsibilityPage' :
-				 (#dp.displayFunding ? 'Pos-FundingPage' : 'Pos-OverviewPage')}" 
-				  p:actionLabel="@{#dp.displayResponsibility ? 'Responsibility' :
-				 (#dp.displayFunding ? 'Funding' : 'Back to Overview')}" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Responsibility Section -->
-	<bean id="Pos-ResponsibilityPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Responsibility" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}">
-					<property name="items">
-						<list>
-							<bean parent="Position-responsibilities" />
-						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="@{#dp.displayFunding ? 'Pos-FundingPage' : 'Pos-OverviewPage'}" 
-				  p:actionLabel="@{#dp.displayFunding ? 'Funding' : 'Back to Overview'}" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Funding Section -->
-	<bean id="Pos-FundingPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-VerticalBoxSection" p:headerText="Funding" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #dp.process eq 'Change Status' or #parent.readOnly}">
-					<property name="items">
-						<list>
-							<bean parent="Position-fundings" />
-						</list>
-					</property>
-				</bean>
-				<bean parent="PositionNavigationButton" p:navigateToPageId="Pos-OverviewPage" p:actionLabel="Back to Overview"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Notes and Attachment Section -->
-	<bean id="Pos-NoteAttachmentPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="KPMEUif-DocumentNotesSection"
-					p:disclosure.defaultOpen="true" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #parent.readOnly}"/>
-			</list>
-		</property>
-	</bean>
-
-	<!-- Ad Hoc Recipients Section -->
-	<bean id="Pos-AdHocPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-DocumentAdHocRecipientsSection"
-					p:disclosure.defaultOpen="true" p:readOnly="@{#dp.process eq '' or #dp.process eq null or #parent.readOnly}" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- Route Log Section -->
-	<bean id="Pos-RouteLogPage" parent="Uif-MaintenancePage">
-		<property name="items">
-			<list>
-				<bean parent="Uif-DocumentRouteLogSection"
-					p:disclosure.defaultOpen="true" />
-			</list>
-		</property>
-	</bean>
-
-	<!-- KPME Document View Header -->
-	<bean id="KPME-Uif-DocumentViewHeader" abstract="true" parent="Uif-ViewHeader">
-		<property name="rightGroup">
-			<bean parent="Uif-DocumentInfoGroup">
-				<property name="cssClasses">
-					<list merge="true">
-						<value>uif-docheader</value>
-					</list>
-				</property>
-			</bean>
-		</property>
-		<property name="lowerGroup">
-			<bean parent="Uif-OverviewSection" />
-		</property>
-	</bean>
-
-	<!-- KPME Document View Footer -->
-	<!--  To use this, we need to override the document page becuase it has its own footer with those buttons -->
-	<bean id="KPME-Uif-FooterBase" abstract="true" parent="Uif-FooterBase">
-		<property name="items">
-			<list>
-				<bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="performRouteReport" p:actionLabel="route report"
-              		  p:render="@{#actionFlags[#Constants.KUALI_ACTION_PERFORM_ROUTE_REPORT]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="sendAdHocRequests" p:actionLabel="send adhoc"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="route" p:actionLabel="submit" p:performClientSideValidation="true"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_ROUTE]}"/>
-		        <bean parent="Uif-SaveAction" p:ajaxSubmit="false" p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_SAVE]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="reload" p:actionLabel="reload"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_RELOAD]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="blanketApprove" p:actionLabel="blanket approve" p:performClientSideValidation="true"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_BLANKET_APPROVE]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="approve" p:actionLabel="approve"  p:performClientSideValidation="true"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_APPROVE]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="disapprove" p:actionLabel="disapprove"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_DISAPPROVE]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="fyi" p:actionLabel="fyi"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_FYI]}"/>
-		        <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="acknowledge" p:actionLabel="acknowledge"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_ACKNOWLEDGE]}"/>
-		        <bean parent="Uif-CancelAction" p:ajaxSubmit="false" p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_CANCEL]}"/>
-		        <bean parent="Uif-ActionLink" p:ajaxSubmit="false" p:methodToCall="copy" p:actionLabel="copy"
-		              p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_COPY]}"/>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="Uif-OverviewSection" parent="Uif-VerticalBoxSection"
-		p:readOnly="true">
-		<property name="items">
-			<list>
-				<bean parent="Uif-Message" p:messageText="[b]Position Overview[/b]" />
-				<bean parent="Uif-PositionOverviewSection" />
-			</list>
-		</property>
-	</bean>
-
-	<bean id="Uif-PositionOverviewSection" parent="Uif-GridGroup"
-		p:layoutManager.numberOfColumns="4"
-		p:layoutManager.applyDefaultCellWidths="true">
-		<property name="headerText" value="Position Overview" />
-		<property name="items">
-			<list>
-				<bean parent="Uif-InputField" p:propertyName="classificationTitle"/>
-				<bean parent="Uif-InputField" p:propertyName="process" p:refreshWhenChangedPropertyNames="#dp.process"/>
-				<bean parent="Uif-InputField" p:propertyName="primaryDepartment" />
-				<bean parent="Uif-InputField" p:propertyName="location" />
-				<bean parent="Uif-InputField" p:propertyName="positionType" />
-				<bean parent="Uif-InputField" p:propertyName="positionNumber" />
-			</list>
-		</property>
-	</bean>
+				    </property>
+				  </bean>
+			   </list>
+			  </property>
+		</bean>
+	    
+      </list>
+    </property>
+  </bean>
 
 </beans>

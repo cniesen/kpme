@@ -15,25 +15,25 @@
  */
 package org.kuali.kpme.core.document.calendar;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.document.calendar.CalendarDocumentContract;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.TKUtils;
-
 import java.io.Serializable;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.document.calendar.CalendarDocumentContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.TKUtils;
+
 public abstract class CalendarDocument implements Serializable, CalendarDocumentContract{
 	private static final long serialVersionUID = 6074564807962995821L;
 	protected CalendarDocumentHeader documentHeader;
 	protected List<Assignment> assignments = new LinkedList<Assignment>();
-	protected CalendarEntryContract calendarEntry = null;
+	protected CalendarEntry calendarEntry = null;
 	protected LocalDate asOfDate;
 	protected String calendarType;
 	
@@ -41,7 +41,7 @@ public abstract class CalendarDocument implements Serializable, CalendarDocument
 
 	public abstract List<Assignment> getAssignments();
 
-	public abstract CalendarEntryContract getCalendarEntry();
+	public abstract CalendarEntry getCalendarEntry();
 
 	public abstract LocalDate getAsOfDate();	
 	

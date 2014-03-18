@@ -22,14 +22,15 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -41,19 +42,19 @@ import com.gargoylesoftware.htmlunit.html.HtmlRadioButtonInput;
 import com.gargoylesoftware.htmlunit.html.HtmlSelect;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 
-//@FunctionalTest
-/**
+@FunctionalTest
 public class EarnCodeMaintenanceTest extends KPMEWebTestCase {
 	private static final DateTime TEST_DATE = new DateTime(2009, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 	private static final String EARN_CODE = "RGN";
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MM/dd/yy");
 	
-	private String hrEarnCodeId;
-
-    @Override
+	private static String hrEarnCodeId;
+	private static String timeBlockId;
+	
+	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		EarnCodeBo earnCode = new EarnCodeBo();
+		EarnCode earnCode = new EarnCode();
 		earnCode.setActive(true);
 		earnCode.setEarnCode(EARN_CODE);
 		earnCode.setEffectiveLocalDate(TEST_DATE.toLocalDate());
@@ -69,13 +70,12 @@ public class EarnCodeMaintenanceTest extends KPMEWebTestCase {
 		earnCode.setDescription("RGN Test");
 		earnCode.setOvtEarnCode(false);
 		earnCode.setInflateMinHours(BigDecimal.ZERO);
-		earnCode.setInflateFactor(BigDecimal.ZERO);
-        earnCode.setUserPrincipalId("admin");
+		earnCode.setInflateFactor(BigDecimal.ZERO);		
 
 		KRADServiceLocator.getBusinessObjectService().save(earnCode);	
 		hrEarnCodeId = earnCode.getHrEarnCodeId();
 		
-		TimeBlockBo timeBlock = new TimeBlockBo();
+		TimeBlock timeBlock = new TimeBlock();
 		timeBlock.setAmount(BigDecimal.ONE);
 		timeBlock.setAssignmentKey("somedesc");
 		timeBlock.setJobNumber(new Long(30));
@@ -94,15 +94,15 @@ public class EarnCodeMaintenanceTest extends KPMEWebTestCase {
 		timeBlock.setDocumentId("10039");
 
 		KRADServiceLocator.getBusinessObjectService().save(timeBlock);
-        String timeBlockId = timeBlock.getTkTimeBlockId();
+		timeBlockId = timeBlock.getTkTimeBlockId();
 	}
 
 	@Override
 	public void tearDown() throws Exception {
-		EarnCodeBo earnCodeObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(EarnCodeBo.class, hrEarnCodeId);
+		EarnCode earnCodeObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(EarnCode.class, hrEarnCodeId);
 		KRADServiceLocator.getBusinessObjectService().delete(earnCodeObj);
 /*		TimeBlock timeBlockObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(TimeBlock.class, timeBlockId);
-		KRADServiceLocator.getBusinessObjectService().delete(timeBlockObj);
+		KRADServiceLocator.getBusinessObjectService().delete(timeBlockObj);*/
 		super.tearDown();
 	}
 	
@@ -230,4 +230,3 @@ public class EarnCodeMaintenanceTest extends KPMEWebTestCase {
 	}
 	
 }
-*/

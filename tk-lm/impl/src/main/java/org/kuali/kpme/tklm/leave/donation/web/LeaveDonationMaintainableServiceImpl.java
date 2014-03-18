@@ -22,9 +22,8 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.donation.LeaveDonation;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
@@ -47,7 +46,7 @@ public class LeaveDonationMaintainableServiceImpl extends HrBusinessObjectMainta
 		LeaveDonation ld = (LeaveDonation) this.getBusinessObject();
 		List<LeaveBlock> lbList = new ArrayList<LeaveBlock>();
 		// donor leave block
-		LeaveBlockBo aLeaveBlock = new LeaveBlockBo();
+		LeaveBlock aLeaveBlock = new LeaveBlock();
 		aLeaveBlock.setPrincipalId(ld.getDonorsPrincipalID());
 		aLeaveBlock.setLeaveDate(ld.getEffectiveDate());
 		aLeaveBlock.setEarnCode(ld.getDonatedEarnCode());
@@ -58,11 +57,10 @@ public class LeaveDonationMaintainableServiceImpl extends HrBusinessObjectMainta
 		aLeaveBlock.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.DONATION_MAINT);
 		aLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 		aLeaveBlock.setBlockId(0L);
-
-		lbList.add(LeaveBlockBo.to(aLeaveBlock));
+		lbList.add(aLeaveBlock);
 		
 		// recipient leave block
-		aLeaveBlock = new LeaveBlockBo();
+		aLeaveBlock = new LeaveBlock();
 		aLeaveBlock.setPrincipalId(ld.getRecipientsPrincipalID());
 		aLeaveBlock.setLeaveDate(ld.getEffectiveDate());
 		aLeaveBlock.setEarnCode(ld.getRecipientsEarnCode());
@@ -73,7 +71,7 @@ public class LeaveDonationMaintainableServiceImpl extends HrBusinessObjectMainta
 		aLeaveBlock.setLeaveBlockType(LMConstants.LEAVE_BLOCK_TYPE.DONATION_MAINT);
 		aLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 		aLeaveBlock.setBlockId(0L);
-		lbList.add(LeaveBlockBo.to(aLeaveBlock));
+		lbList.add(aLeaveBlock);
 		
 		LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(lbList);
 	}

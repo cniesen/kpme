@@ -21,11 +21,12 @@
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="PayStep" parent="PayStep-parentBean" />
-	<bean id="PayStep-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+	<bean id="PayStep-parentBean" abstract="true" parent="BusinessObjectEntry">
 		<property name="dataObjectClass" value="org.kuali.kpme.core.paystep.PayStep" />
 		<property name="attributes">
-			<list merge="true">
+			<list>
 				<ref bean="PayStep-pmPayStepId" />
+				<ref bean="PayStep-effectiveDate" />
 				<ref bean="PayStep-payStep" />
 				<ref bean="PayStep-institution" />
 				<ref bean="PayStep-location" />
@@ -35,6 +36,8 @@
 				<ref bean="PayStep-compRate" />
 				<ref bean="PayStep-serviceAmount" />
 				<ref bean="PayStep-serviceUnit" />
+                <ref bean="PayStep-history"/>
+				<ref bean="PayStep-active" />
 			</list>
 		</property>
 		<property name="objectLabel" value="Pay Step" />
@@ -50,6 +53,19 @@
 		</property>
 		<property name="name" value="pmPayStepId" />
 		<property name="label" value="PayStep Id" />
+	</bean>
+
+	<bean id="PayStep-effectiveDate" parent="PayStep-effectiveDate-parentBean" />
+	<bean id="PayStep-effectiveDate-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="required" value="true" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
 	</bean>
 
 	<bean id="PayStep-payStep" parent="PayStep-payStep-parentBean" />
@@ -77,18 +93,39 @@
 	</bean>
 	
 	<bean id="PayStep-payGrade" parent="PayStep-payGrade-parentBean" />
-	<bean id="PayStep-payGrade-parentBean" abstract="true" parent="KpmeAttributeReference-payGrade">
+	<bean id="PayStep-payGrade-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="maxLength" value="10" />
  		<property name="required" value="true" />
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="15" />
+		</property>
+		<property name="name" value="payGrade" />
+		<property name="label" value="Pay Grade" />
+		<property name="description" value="Pay Grade" />
 	</bean>
 	
 	<bean id="PayStep-institution" parent="PayStep-institution-parentBean" />
-	<bean id="PayStep-institution-parentBean" abstract="true" parent="KpmeAttributeReference-institution">
+	<bean id="PayStep-institution-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Institution" />
  		<property name="required" value="true" />
+		<property name="maxLength" value="15" />
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="15" />
+		</property>
+		<property name="name" value="institution" />
+		<property name="label" value="Institution" />
 	</bean>
 	
 	<bean id="PayStep-location" parent="PayStep-location-parentBean" />
-	<bean id="PayStep-location-parentBean" abstract="true" parent="KpmeAttributeReference-location">
+	<bean id="PayStep-location-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Location" />
  		<property name="required" value="true" />
+		<property name="maxLength" value="15" />
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
 	</bean>
 	
 	<bean id="PayStep-stepNumber" parent="PayStep-stepNumber-parentBean" />
@@ -138,6 +175,28 @@
 		<property name="label" value="Service Unit" />
 	</bean>
 	
+	<!-- history -->
+    <bean id="PayStep-history" parent="PayStep-history-parentBean" />
+    <bean id="PayStep-history-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Show History" />
+        <property name="controlField">
+            <bean parent="Uif-HorizontalRadioControl" />
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder"/>
+        </property>
+        <property name="name" value="history" />
+        <property name="label" value="Show History" />
+    </bean>
+
+	<bean id="PayStep-active" parent="PayStep-active-parentBean" />
+	<bean id="PayStep-active-parentBean" abstract="true"
+		parent="AttributeReferenceDummy-activeIndicator">
+		<property name="required" value="true" />
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+	</bean>
 
 	<!-- Business Object Inquiry Definition -->
 	<bean id="PayStep-InquiryView" parent="Uif-InquiryView">
@@ -162,7 +221,6 @@
 							<bean parent="Uif-DataField" p:propertyName="serviceAmount" />
 							<bean parent="Uif-DataField" p:propertyName="serviceUnit" />
 							<bean parent="Uif-DataField" p:propertyName="active" />
-                            <bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
 						</list>
 					</property>
 					<property name="title" value="Pay Step Inquiry" />
@@ -174,7 +232,7 @@
   <!-- Maintenance View -->
 
   <bean id="PayStepMaintenanceDocument-PayStepMaintenance" parent="PayStepMaintenanceDocument-PayStepMaintenance-parentBean"/>
-  <bean id="PayStepMaintenanceDocument-PayStepMaintenance-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PayStepMaintenanceDocument-PayStepMaintenance-parentBean" abstract="true" parent="Uif-MaintenanceView">
   	<property name="headerText" value= "Pay Step Maintenance"/>
   	<property name="dataObjectClassName" value="org.kuali.kpme.core.paystep.PayStep"/>
     <property name="items">
@@ -186,25 +244,25 @@
 					<bean parent="Uif-InputField" p:propertyName="payStep" p:required="true"/>
 			        <bean parent="Uif-InputField" p:propertyName="institution" p:required="true">
 						<property name="quickfinder">
-				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
 				                  p:fieldConversions="institutionCode:institution"/>
 				        </property>
 					</bean>
 			        <bean parent="Uif-InputField" p:propertyName="location" p:required="true" >
 			        	<property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 						</property>
 			        </bean>
 					<bean parent="Uif-InputField" p:propertyName="salaryGroup" p:required="true">
 						<property name="quickfinder">
-				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroupBo"
+				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroup"
 				                  p:fieldConversions="hrSalGroup:salaryGroup"/>
 				        </property>
 					</bean>
 					<bean parent="Uif-InputField" p:propertyName="payGrade" p:required="true">
 						<property name="quickfinder">
-				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
+				            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGrade"
 				                  p:fieldConversions="payGrade:payGrade"/>
 				        </property>
 					</bean>
@@ -224,7 +282,7 @@
 						</property>
 					</bean>
 					<bean parent="Uif-InputField" p:propertyName="serviceUnit" p:defaultValue="N"/>
-			        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true" />
+			        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true" p:required="true"/>
 			    </list>
 	      	</property>
       	  </bean>
@@ -233,34 +291,34 @@
   </bean>
 	
   <!-- KRAD Lookup View Definition -->
-  <bean id="PayStep-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="PayStep-LookupView" parent="KPMEUif-LookupView">
     <property name="headerText" value="Pay Step Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.core.paystep.PayStep" />
+    <property name="viewHelperServiceClass" value="org.kuali.kpme.core.paystep.web.PayStepLookupableImpl" />
     <property name="criteriaFields">
       <list>
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
       	<bean parent="Uif-LookupCriteriaInputField" p:propertyName="payStep" />
 		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="institution">
 			<property name="quickfinder">
-	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
 	                  p:fieldConversions="institutionCode:institution"/>
 	        </property>
 		</bean>
 		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="location">
 			 <property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 			</property>
 		</bean>
 		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="salaryGroup">
 			<property name="quickfinder">
-	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroupBo"
+	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroup"
 	                  p:fieldConversions="hrSalGroup:salaryGroup"/>
 	        </property>
 		</bean>
 		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="payGrade">
 			<property name="quickfinder">
-	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
+	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGrade"
 	                  p:fieldConversions="payGrade:payGrade"/>
 	        </property>
 		</bean>

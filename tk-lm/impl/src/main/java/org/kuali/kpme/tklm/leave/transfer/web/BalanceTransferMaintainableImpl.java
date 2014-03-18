@@ -21,16 +21,15 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.rice.kew.api.document.DocumentStatus;
@@ -106,13 +105,13 @@ public class BalanceTransferMaintainableImpl extends
         	// this is a balance transfer on a system scheduled time off leave block
             if(StringUtils.isNotEmpty(balanceTransfer.getSstoId())) {
         		// put two accrual service generated leave blocks back, one accrued, one usage
-        		List<LeaveBlock> lbList = buildSstoLeaveBlockList(balanceTransfer);
+        		List<LeaveBlock> lbList = buildSstoLeaveBlockList(balanceTransfer);    			
     			LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(lbList);
         	}
             //When transfer document is disapproved, set all leave block's request statuses to disapproved.
             for(LeaveBlock lb : balanceTransfer.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
-                    //lb.setRequestStatus(HrConstants.REQUEST_STATUS.DISAPPROVED);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.DISAPPROVED);
                     LmServiceLocator.getLeaveBlockService().deleteLeaveBlock(lb.getLmLeaveBlockId(), routedByPrincipalId);
                 }
             }
@@ -122,9 +121,8 @@ public class BalanceTransferMaintainableImpl extends
             for(LeaveBlock lb : balanceTransfer.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
                 	//TODO: What happens when an approver edits the fields in the transfer doc before approving?
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
             List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(balanceTransfer.getLeaveCalendarDocumentId());
@@ -137,9 +135,8 @@ public class BalanceTransferMaintainableImpl extends
             		if(balanceTransfer.getForfeitedAmount() != null)
             			adjustment = adjustment.add(balanceTransfer.getForfeitedAmount().abs());
             		BigDecimal adjustedLeaveAmount = lb.getLeaveAmount().abs().subtract(adjustment);
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setLeaveAmount(adjustedLeaveAmount.negate());
-            		LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+            		lb.setLeaveAmount(adjustedLeaveAmount.negate());
+            		LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
             	}
             }
         } else if (DocumentStatus.CANCELED.equals(newDocumentStatus)) {
@@ -147,9 +144,8 @@ public class BalanceTransferMaintainableImpl extends
 
             for(LeaveBlock lb : balanceTransfer.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setRequestStatus(HrConstants.REQUEST_STATUS.DEFERRED);
-                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.DEFERRED);
+                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
         }
@@ -158,10 +154,9 @@ public class BalanceTransferMaintainableImpl extends
 	private List<LeaveBlock> buildSstoLeaveBlockList(BalanceTransfer bt) {
 		String leaveDocId = CollectionUtils.isNotEmpty(bt.getLeaveBlocks())? bt.getLeaveBlocks().get(0).getDocumentId() : "";
 		List<LeaveBlock> lbList = new ArrayList<LeaveBlock>();
-		AccrualCategoryContract fromAC = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(bt.getFromAccrualCategory(), bt.getEffectiveLocalDate());
-
-        //TODO switch to LeaveBlock.Builder
-		LeaveBlockBo accruedLeaveBlock = new LeaveBlockBo();
+		AccrualCategory fromAC = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(bt.getFromAccrualCategory(), bt.getEffectiveLocalDate());
+		
+		LeaveBlock accruedLeaveBlock = new LeaveBlock();
 		accruedLeaveBlock.setAccrualCategory(bt.getFromAccrualCategory());
 		accruedLeaveBlock.setLeaveDate(bt.getEffectiveDate());
 		accruedLeaveBlock.setPrincipalId(bt.getPrincipalId());
@@ -174,10 +169,9 @@ public class BalanceTransferMaintainableImpl extends
 		accruedLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 		accruedLeaveBlock.setDocumentId(leaveDocId);
 		accruedLeaveBlock.setPrincipalIdModified(HrContext.getPrincipalId());
-		lbList.add(LeaveBlockBo.to(accruedLeaveBlock));
-
-        //TODO switch to LeaveBlock.Builder
-		LeaveBlockBo usageLeaveBlock = new LeaveBlockBo();
+		lbList.add(accruedLeaveBlock);
+		
+		LeaveBlock usageLeaveBlock = new LeaveBlock();
 		usageLeaveBlock.setAccrualCategory(bt.getFromAccrualCategory());
 		usageLeaveBlock.setLeaveDate(bt.getEffectiveDate());
 		usageLeaveBlock.setPrincipalId(bt.getPrincipalId());
@@ -190,7 +184,7 @@ public class BalanceTransferMaintainableImpl extends
 		usageLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 		usageLeaveBlock.setDocumentId(leaveDocId);
 		usageLeaveBlock.setPrincipalIdModified(HrContext.getPrincipalId());
-		lbList.add(LeaveBlockBo.to(usageLeaveBlock));
+		lbList.add(usageLeaveBlock);
 		
 		return lbList;
 	}

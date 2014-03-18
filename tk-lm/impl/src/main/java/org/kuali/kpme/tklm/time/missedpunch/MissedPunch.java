@@ -15,22 +15,26 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.util.KpmeUtils;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.task.TaskBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchContract;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.identity.Person;
@@ -38,9 +42,6 @@ import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-
-import java.sql.Timestamp;
-import java.util.Date;
 
 public class MissedPunch extends PersistableBusinessObjectBase implements MissedPunchContract {
 
@@ -61,10 +62,10 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 	
 	private transient String principalName;
     private transient String personName;
-	private transient JobBo jobObj;
-	private transient WorkAreaBo workAreaObj;
-    private transient DepartmentBo departmentObj;
-	private transient TaskBo taskObj;
+	private transient Job jobObj;
+	private transient WorkArea workAreaObj;
+    private transient Department departmentObj;
+	private transient Task taskObj;
     private transient LocalDate localDate;
     private transient LocalTime localTime;
     private transient Person person;
@@ -99,7 +100,7 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 	}
 	
 	public String getAssignmentKey() {
-		return KpmeUtils.formatAssignmentKey(getJobNumber(), getWorkArea(), getTask());
+		return TKUtils.formatAssignmentKey(getJobNumber(), getWorkArea(), getTask());
 	}
 	
 	public void setAssignmentKey(String assignmentKey) {
@@ -111,7 +112,9 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 	}
 	
 	public String getAssignmentValue() {
-		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getActionFullDateTime().toLocalDate());
+		TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
+		LocalDate asOfDate = timesheetDocument != null ? timesheetDocument.getAsOfDate() : null;
+		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), asOfDate);
 	}
 	
     public Date getRelativeEffectiveDate() {
@@ -243,27 +246,27 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
 		this.personName = personName;
 	}
 
-	public JobBo getJobObj() {
+	public Job getJobObj() {
 		return jobObj;
 	}
 
-	public void setJobObj(JobBo jobObj) {
+	public void setJobObj(Job jobObj) {
 		this.jobObj = jobObj;
 	}
 
-	public WorkAreaBo getWorkAreaObj() {
+	public WorkArea getWorkAreaObj() {
 		return workAreaObj;
 	}
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+	public void setWorkAreaObj(WorkArea workAreaObj) {
 		this.workAreaObj = workAreaObj;
 	}
 
-	public TaskBo getTaskObj() {
+	public Task getTaskObj() {
 		return taskObj;
 	}
 
-	public void setTaskObj(TaskBo taskObj) {
+	public void setTaskObj(Task taskObj) {
 		this.taskObj = taskObj;
 	}
 	
@@ -307,11 +310,11 @@ public class MissedPunch extends PersistableBusinessObjectBase implements Missed
         return null;
     }
 
-    public DepartmentBo getDepartmentObj() {
+    public Department getDepartmentObj() {
         return departmentObj;
     }
 
-    public void setDepartmentOjb(DepartmentBo departmentObj) {
+    public void setDepartmentOjb(Department departmentObj) {
         this.departmentObj = departmentObj;
     }
 

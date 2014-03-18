@@ -15,21 +15,29 @@
  */
 package org.kuali.kpme.tklm.leave.block.web;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.rice.core.api.search.Range;
@@ -38,11 +46,6 @@ import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.uif.view.LookupView;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.web.form.LookupForm;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 	/**
@@ -109,13 +112,13 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 				}
 			}
 			if(invalid) {
-				return new ArrayList<LeaveBlockBo>();
+				return new ArrayList<LeaveBlock>();
 			}
 		}
 
 		//Could also simply use super.getSearchResults for an initial object list, then invoke LeaveBlockService with the relevant query params.
 		List<LeaveBlock> leaveBlockList = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForLookup(documentId, principalId, userPrincipalId, fromDate, toDate, leaveBlockType);
-		List<LeaveBlockBo> objectList = new ArrayList<LeaveBlockBo>();
+		List<LeaveBlock> objectList = new ArrayList<LeaveBlock>();
 		
 		for(LeaveBlock lBlock : leaveBlockList) {
 			LeaveCalendarDocumentHeader lcHeader = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(lBlock.getDocumentId());
@@ -129,37 +132,37 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 						if(searchCriteria.get(DOC_STATUS_ID).contains("P")) {
 							//pending statuses
 							if("I,S,R,E".contains(lcHeader.getDocumentStatus())) {
-								objectList.add(LeaveBlockBo.from(lBlock));
+								objectList.add(lBlock);
 							}
 						}
 						else if(searchCriteria.get(DOC_STATUS_ID).contains("S")) {
 							//successful statuses
 							if("P,F".contains(lcHeader.getDocumentStatus())) {
-								objectList.add(LeaveBlockBo.from(lBlock));
+								objectList.add(lBlock);
 							}
 						}
 						else if(searchCriteria.get(DOC_STATUS_ID).contains("U")) {
 							//unsuccessful statuses
 							if("X,D".contains(lcHeader.getDocumentStatus())) {
-								objectList.add(LeaveBlockBo.from(lBlock));
+								objectList.add(lBlock);
 							}
 						}
 					}
 					else if(searchCriteria.get(DOC_STATUS_ID).contains(lcHeader.getDocumentStatus())) {
 						//match the specific doc status
-						objectList.add(LeaveBlockBo.from(lBlock));
+						objectList.add(lBlock);
 					}
 				}
 				else {
 					//no status specified, add regardless of status
-					objectList.add(LeaveBlockBo.from(lBlock));
+					objectList.add(lBlock);
 				}
 					
 				
 			} else if(StringUtils.isBlank(searchCriteria.get(DOC_STATUS_ID))) {
 				//can't match doc status with a non existent header
 				//only add to list if no status was selected
-				objectList.add(LeaveBlockBo.from(lBlock));
+				objectList.add(lBlock);
 			}
 		}
 		
@@ -169,14 +172,14 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
         	Iterator<? extends BusinessObject> itr = objectList.iterator();
             DateTime date = LocalDate.now().toDateTimeAtStartOfDay();
         	while (itr.hasNext()) {
-				LeaveBlockBo lb = (LeaveBlockBo) itr.next();
+				LeaveBlock lb = (LeaveBlock) itr.next();
 				
 				Long workArea = lb.getWorkArea();
 				
-				JobContract job = HrServiceLocator.getJobService().getJob(lb.getPrincipalId(), lb.getJobNumber(), LocalDate.fromDateFields(lb.getLeaveDate()), false);
+				Job job = HrServiceLocator.getJobService().getJob(lb.getPrincipalId(), lb.getJobNumber(), LocalDate.fromDateFields(lb.getLeaveDate()), false);
 				String department = job != null ? job.getDept() : null;
 				
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, LocalDate.fromDateFields(lb.getLeaveDate()));
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(lb.getLeaveDate()));
 				String location = departmentObj != null ? departmentObj.getLocation() : null;
 				
 				boolean valid = false;
@@ -200,7 +203,7 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 				} else {
 					// check for affects pay
 					if(affectPay != null && !affectPay.isEmpty()) {
-						EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
+						EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(lb.getEarnCode(), lb.getLeaveLocalDate());
 						if(!(earnCodeObj != null && affectPay.equalsIgnoreCase(earnCodeObj.getAffectPay()))) {
 							itr.remove();
 							continue;
@@ -219,10 +222,10 @@ public class LeaveBlockLookupableHelperServiceImpl extends KPMELookupableImpl  {
 	protected String getActionUrlHref(LookupForm lookupForm, Object dataObject,
 			String methodToCall, List<String> pkNames) {
 		String actionUrlHref = super.getActionUrlHref(lookupForm, dataObject, methodToCall, pkNames);
-		LeaveBlockBo tb = null;
+		LeaveBlock tb = null;
 		String concreteBlockId = null;
-		if(dataObject instanceof LeaveBlockBo) {
-			tb = (LeaveBlockBo) dataObject;
+		if(dataObject instanceof LeaveBlock) {
+			tb = (LeaveBlock) dataObject;
 			concreteBlockId = tb.getLmLeaveBlockId();
 		}
 		if(concreteBlockId == null) {

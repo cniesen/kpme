@@ -19,9 +19,8 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -67,7 +66,7 @@ public class BalanceTransferValidationUtils {
 		}
 		
 		AccrualCategory toCat = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, effectiveDate);
-		PrincipalHRAttributes pha = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId,effectiveDate);
+		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId,effectiveDate);
 		
 		if(ObjectUtils.isNotNull(pha)) {
 			if(ObjectUtils.isNotNull(pha.getLeavePlan())) {
@@ -241,7 +240,7 @@ public class BalanceTransferValidationUtils {
 			return false;
 		}
 		// make sure the leave plan of from/to accrual categories are consistent with the employee's leave plan
-		PrincipalHRAttributes pha = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(bt.getPrincipalId(),bt.getEffectiveLocalDate());
+		PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(bt.getPrincipalId(),bt.getEffectiveLocalDate());
 		if(StringUtils.isNotEmpty(fromAC.getLeavePlan())){
 			if(!fromAC.getLeavePlan().equals(pha.getLeavePlan())) {
 				GlobalVariables.getMessageMap().putError("document.newMaintainableObject.fromAccrualCategory", "balanceTransfer.transferSSTO.wrongACLeavePlan", fromAC.getLeavePlan(), pha.getLeavePlan());

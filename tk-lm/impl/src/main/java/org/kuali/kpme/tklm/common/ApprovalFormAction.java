@@ -26,13 +26,12 @@ import org.apache.struts.action.ActionForm;
 import org.hsqldb.lib.StringUtil;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.kim.api.role.RoleService;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
@@ -68,7 +67,7 @@ public abstract class ApprovalFormAction extends KPMEAction {
 	        approvalForm.setPayCalendarGroups(calendarGroups);
 		}
 
-        List<WorkArea> workAreasWithoutRoles = HrServiceLocator.getWorkAreaService().getWorkAreasForList(new ArrayList<Long>(workAreas), currentDate);
+        List<WorkArea> workAreasWithoutRoles = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(new ArrayList<Long>(workAreas), currentDate);
 		if (CollectionUtils.isEmpty(approvalForm.getDepartments())) {
 			Set<String> departments = new TreeSet<String>();
 			
@@ -83,12 +82,12 @@ public abstract class ApprovalFormAction extends KPMEAction {
 		}
 
 
-        //have depts in approvalForm.getDepartmentsWithLocation
+        //have depts in approvalForm.getDepartments
         //have workareas too...
 
 		approvalForm.getWorkAreaDescr().clear();
     	//List<Long> workAreaIds = HrServiceLocator.getWorkAreaService().getWorkAreasForDepartment(approvalForm.getSelectedDept(), currentDate);
-        //List<WorkArea> workAreaObjs = HrServiceLocator.getWorkAreaService().getWorkAreasForList(workAreaIds, currentDate);
+        //List<WorkArea> workAreaObjs = HrServiceLocator.getWorkAreaService().getWorkAreasWithoutRoles(workAreaIds, currentDate);
         for (WorkArea workAreaObj : workAreasWithoutRoles) {
             //only want workareas in selected department
             if (StringUtils.equals(workAreaObj.getDept(), approvalForm.getSelectedDept())) {

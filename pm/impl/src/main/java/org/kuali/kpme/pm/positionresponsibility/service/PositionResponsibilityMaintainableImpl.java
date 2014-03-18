@@ -28,7 +28,7 @@ public class PositionResponsibilityMaintainableImpl extends HrBusinessObjectMain
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return (HrBusinessObject)PmServiceLocator.getPositionResponsibilityService().getPositionResponsibilityById(id);
+		return PmServiceLocator.getPositionResponsibilityService().getPositionResponsibilityById(id);
 	}
 
 

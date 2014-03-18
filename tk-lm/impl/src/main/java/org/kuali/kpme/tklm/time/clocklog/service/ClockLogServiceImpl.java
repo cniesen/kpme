@@ -15,33 +15,34 @@
  */
 package org.kuali.kpme.tklm.time.clocklog.service;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-import org.kuali.kpme.tklm.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
-import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.batch.EndPayPeriodJob;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 
 public class ClockLogServiceImpl implements ClockLogService {
 	
@@ -57,12 +58,12 @@ public class ClockLogServiceImpl implements ClockLogService {
     }
 
     @Override
-    public ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntryContract pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId) {
+    public ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId) {
         return processClockLog(clockDateTime, assignment, pe, ip, asOfDate, td, clockAction, runRules, principalId, HrContext.getPrincipalId());
     }
 
     @Override
-    public synchronized ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntryContract pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId, String userPrincipalId) {
+    public synchronized ClockLog processClockLog(DateTime clockDateTime, Assignment assignment,CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId, String userPrincipalId) {
         // process rules
         DateTime roundedClockDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockDateTime, pe.getBeginPeriodFullDateTime().toLocalDate());
 
@@ -102,7 +103,7 @@ public class ClockLogServiceImpl implements ClockLogService {
         return clockLog;
     }
 
-    private void processTimeBlock(ClockLog clockLog, Assignment currentAssignment, CalendarEntryContract pe, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
+    private void processTimeBlock(ClockLog clockLog, Assignment currentAssignment, CalendarEntry pe, TimesheetDocument td, String clockAction, String principalId, String userPrincipalId) {
 LOG.info("in ClockLogServiceImpl.processTimeBlock");    	
         ClockLog lastLog = null;
         DateTime lastClockDateTime = null;
@@ -132,12 +133,12 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock");
 	        List<TimeBlock> newTimeBlocks = td.getTimeBlocks();
 	        List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>(td.getTimeBlocks().size());
 	        for (TimeBlock tb : td.getTimeBlocks()) {
-	            referenceTimeBlocks.add(TimeBlock.Builder.create(tb).build());
+	            referenceTimeBlocks.add(tb.copy());
 	        }
 	
 	        // Add TimeBlocks after we store our reference object!
-	        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(td.getPrincipalId(), td.getCalendarEntry(), currentAssignment,
-                    currentAssignment.getJob().getPayTypeObj().getRegEarnCode(), td.getDocumentId(), beginDateTime, endDateTime,
+	        List<TimeBlock> aList = TkServiceLocator.getTimeBlockService().buildTimeBlocks(currentAssignment,
+                    currentAssignment.getJob().getPayTypeObj().getRegEarnCode(), td, beginDateTime, endDateTime,
                     BigDecimal.ZERO, BigDecimal.ZERO, true, false, userPrincipalId, beginClockLogId, endClockLogId);
 
 	        newTimeBlocks.addAll(aList);
@@ -156,7 +157,7 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock");
 	        TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.CLOCK_OUT, newTimeBlocks, leaveBlocks, pe, td, principalId);
 	
 	        //call persist method that only saves added/deleted/changed timeblocks
-	        TkServiceLocator.getTimeBlockService().saveOrUpdateTimeBlocks(referenceTimeBlocks, newTimeBlocks, userPrincipalId);
+	        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, userPrincipalId);
 	        
 LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the size of the time blocks is " + newTimeBlocks.size()); 
     	}
@@ -193,12 +194,12 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
         return clockLogDao.getLastClockLog(principalId, clockAction);
     }
 
-    @Override
-    public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntryContract calendarEntry) {
+    public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntry calendarEntry) {
         TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, calendarEntry.getBeginPeriodFullDateTime(), calendarEntry.getEndPeriodFullDateTime());
         if(tdh == null)
         	return null;
         return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, tdh.getDocumentId());
+        //return clockLogDao.getLastClockLog(principalId, jobNumber, workArea, task, calendarEntry);
     }
 
     @Override
@@ -216,16 +217,16 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
 		 if (CollectionUtils.isNotEmpty(timeBlocks)) {
 		     Set<String> aSet = new HashSet<String>();
 		     for(TimeBlock tb : timeBlocks) {
-		    	 if(tb.isClockLogCreated()) {
+		    	 if(tb.getClockLogCreated()) {
 		    		 if(StringUtils.isNotEmpty(tb.getClockLogBeginId())){
 		    			 ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(tb.getClockLogBeginId());
-		    			 if(cl != null && cl.isUnapprovedIP()) {
+		    			 if(cl == null || cl.isUnapprovedIP()) {
 		    				 aSet.add(buildUnapprovedIPWarning(cl));
 		    			 }
 		    		 }
 		    		 if(StringUtils.isNotEmpty(tb.getClockLogEndId())){
 		    			 ClockLog cl = TkServiceLocator.getClockLogService().getClockLog(tb.getClockLogEndId());
-		    			 if(cl != null && cl.isUnapprovedIP()) {
+		    			 if(cl == null || cl.isUnapprovedIP()) {
 		    				 aSet.add(buildUnapprovedIPWarning(cl));
 		    			 }
 		    		 }		

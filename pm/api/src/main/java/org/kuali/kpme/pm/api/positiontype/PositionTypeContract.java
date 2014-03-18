@@ -103,15 +103,4 @@ public interface PositionTypeContract extends HrBusinessObjectContract {
      */
 	public InstitutionContract getInstitutionObj();
 
-    /**
-     * Indicates if this Position Type is academic
-     *
-     * <p>
-     * academicFlag of a PositionType
-     * <p>
-     *
-     * @return academic for PositionType
-     */
-    public boolean isAcademicFlag();
-
 }

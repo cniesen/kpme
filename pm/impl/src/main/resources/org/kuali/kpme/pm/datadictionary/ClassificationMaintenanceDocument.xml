@@ -31,7 +31,7 @@
   
   <!--  Position Classification Maintenance View -->
   <bean id="Classification-MaintenanceView" parent="Classification-MaintenanceView-parentBean"/>
-  <bean id="Classification-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="Classification-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Classification Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.classification.Classification"/>
     <property name="items">
@@ -52,15 +52,17 @@
 		        <list>
 			        <bean parent="Uif-InputField" p:propertyName="institution" >
 				        <property name="quickfinder">
-				   			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+				   			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
 				        			 p:fieldConversions="institutionCode:institution"/>
 						</property>
+						<property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			        <bean parent="Uif-InputField" p:propertyName="location" >
 			        	<property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 						</property>
+						<property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 		         </list>
 	         </property>
@@ -76,12 +78,14 @@
 				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.pm.positionreportgroup.PositionReportGroup" 
 				        		 p:fieldConversions="positionReportGroup:positionReportGroup"/>
 				   		</property>
+				   		<property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			       	<bean parent="Uif-InputField" p:propertyName="positionType">
 						 <property name="quickfinder">
 				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.pm.positiontype.PositionType" 
 				        		 p:fieldConversions="positionType:positionType"/>
 				   		 </property>
+				   		 <property name="quickfinder.autoSearch" value="true"/>
 			        </bean>
 			        <bean parent="Uif-InputField" p:propertyName="poolEligible" />
 			        <bean parent="Uif-InputField" p:propertyName="tenureEligible" />
@@ -96,16 +100,11 @@
 		        <list>
 			       <bean parent="Uif-InputField" p:propertyName="salaryGroup">
 				       <property name="quickfinder">
-				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroupBo"
+				       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.salarygroup.SalaryGroup"
 				        		 p:fieldConversions="hrSalGroup:salaryGroup"/>
 				   	   </property>
+				   	   <property name="quickfinder.autoSearch" value="true"/>
 			       </bean>
-                   <bean parent="Uif-InputField" p:propertyName="payGrade">
-                       <property name="quickfinder">
-                           <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
-                                 p:fieldConversions="payGrade:payGrade"/>
-                       </property>
-                   </bean>
 			       <bean parent="Uif-InputField" p:propertyName="percentTime" p:exclusiveMin="0" p:inclusiveMax="100"
 			        	 p:constraintText="Must be a number between 0 and 100.">
 			        	<property name="validCharactersConstraint">
@@ -135,9 +134,10 @@
 					         </bean>
 				        </property>
 				        <property name="quickfinder">
-			       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlanBo"
+			       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlan"
 			        			 p:fieldConversions="leavePlan:leavePlan"/>
 			   		 	</property>
+			   		 	<property name="quickfinder.autoSearch" value="true"/>
 			       </bean>
 		         </list>
 	         </property>

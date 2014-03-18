@@ -15,11 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.rules.timecollection.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
@@ -27,11 +32,6 @@ import org.kuali.kpme.tklm.time.rules.timecollection.dao.TimeCollectionRuleDaoSe
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TimeCollectionRuleServiceImpl implements TimeCollectionRuleService {
 	private TimeCollectionRuleDaoService timeCollectRuleDao;
@@ -66,7 +66,7 @@ public class TimeCollectionRuleServiceImpl implements TimeCollectionRuleService 
         //TODO - performance  too many db calls in loop
     	for (TimeCollectionRule timeCollectionRuleObj : timeCollectionRuleObjs) {
         	String department = timeCollectionRuleObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, timeCollectionRuleObj.getEffectiveLocalDate());
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, timeCollectionRuleObj.getEffectiveLocalDate());
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	Map<String, String> permissionDetails = new HashMap<String, String>();
         	permissionDetails.put(KimConstants.AttributeConstants.DOCUMENT_TYPE_NAME, KRADServiceLocatorWeb.getDocumentDictionaryService().getMaintenanceDocumentTypeName(TimeCollectionRule.class));
