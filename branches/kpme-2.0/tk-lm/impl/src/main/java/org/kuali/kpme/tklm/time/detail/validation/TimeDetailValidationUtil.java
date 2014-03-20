@@ -190,6 +190,9 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
             startTimeS = "0:0";
             endTimeS = "0:0";
         }
+
+        if (acrossDays && !endTimeS.equals("0:00")) { endDateS = startDateS;}
+
         startTime = TKUtils.convertDateStringToDateTimeWithoutZone(startDateS, startTimeS).getMillis();
         endTime = TKUtils.convertDateStringToDateTimeWithoutZone(endDateS, endTimeS).getMillis();
 
