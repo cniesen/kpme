@@ -71,7 +71,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
         DateTime beginDt = beginDateTime.withZone(zone);
         DateTime endDt = beginDt.toLocalDate().toDateTime(endDateTime.withZone(zone).toLocalTime(), zone);
-        if (endDt.isBefore(beginDt)) endDt = endDt.plusDays(1);
+        if (endDt.isBefore(beginDt) || endDt.isEqual(beginDt.toDateMidnight())) endDt = endDt.plusDays(1);
     	
         List<Interval> dayInt = TKUtils.getDaySpanForCalendarEntry(timesheetDocument.getCalendarEntry());
         TimeBlock firstTimeBlock = new TimeBlock();
