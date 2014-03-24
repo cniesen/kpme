@@ -254,7 +254,7 @@ public class JobDaoOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
         List<Job> aList = new ArrayList<Job>();
         aList.addAll(jobList);
         for(Job aJob : aList) {
-        	List<Job> inactiveJobs = this.getInactiveLeaveJobs(aJob.getJobNumber(), aJob.getEffectiveLocalDate());
+        	List<Job> inactiveJobs = this.getInactiveLeaveJobs(aJob.getJobNumber(), aJob.getPrincipalId(), aJob.getEffectiveLocalDate());
         	if(!inactiveJobs.isEmpty()) {
         		jobList.remove(aJob);
         	}
@@ -264,12 +264,13 @@ public class JobDaoOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
     
     @Override
     @SuppressWarnings("unchecked")
-	public List<Job> getInactiveLeaveJobs(Long jobNumber, LocalDate asOfDate) {
+	public List<Job> getInactiveLeaveJobs(Long jobNumber, String principalId, LocalDate asOfDate) {
     	Criteria root = new Criteria();
         ImmutableList<String> fields = new ImmutableList.Builder<String>()
                 .add("jobNumber")
                 .build();
 
+        root.addEqualTo("principalId", principalId);
         root.addEqualTo("jobNumber", jobNumber);
         root.addEqualTo("eligibleForLeave", true);
         root.addEqualTo("active", false);
