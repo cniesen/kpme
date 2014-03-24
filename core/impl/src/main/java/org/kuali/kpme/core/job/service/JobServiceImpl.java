@@ -210,8 +210,8 @@ public class JobServiceImpl implements JobService {
     	return jobDao.getAllActiveLeaveJobs(principalId, asOfDate);
     }
     
-    public List<Job> getInactiveLeaveJobs(Long jobNumber, LocalDate endDate) {
-    	return jobDao.getInactiveLeaveJobs(jobNumber, endDate);
+    public List<Job> getInactiveLeaveJobs(Long jobNumber, String principalId, LocalDate endDate) {
+    	return jobDao.getInactiveLeaveJobs(jobNumber,principalId, endDate);
     }
     
     @Override
