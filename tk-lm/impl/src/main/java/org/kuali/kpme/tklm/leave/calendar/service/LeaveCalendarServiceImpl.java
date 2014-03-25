@@ -20,17 +20,16 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
-import org.kuali.kpme.core.api.job.Job;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.batch.BatchJobUtil;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.calendar.dao.LeaveCalendarDao;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -48,7 +47,6 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class LeaveCalendarServiceImpl implements LeaveCalendarService {
@@ -151,14 +149,12 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
     
     private void updateLeaveBlockDocumentIds(String principalId, LocalDate beginDate, LocalDate endDate, String documentId) {
         List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, beginDate, endDate);
-        List<LeaveBlock> lbToUpdate = new ArrayList<LeaveBlock>();
+        
         for (LeaveBlock leaveBlock : leaveBlocks) {
-            LeaveBlock.Builder builder = LeaveBlock.Builder.create(leaveBlock);
-            builder.setDocumentId(documentId);
-            lbToUpdate.add(builder.build());
+        	leaveBlock.setDocumentId(documentId);
         }
         
-        LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(lbToUpdate);
+        LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(leaveBlocks);
     }
     
     private void updatePlannedLeaveBlocks(String principalId, LocalDate beginDate, LocalDate endDate) {
@@ -221,8 +217,8 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
 			String principalId, CalendarEntry calendarEntry) {
 		LeaveCalendarDocument leaveCalendarDocument = new LeaveCalendarDocument(calendarEntry);
 		LeaveCalendarDocumentHeader lcdh = new LeaveCalendarDocumentHeader();
-		lcdh.setBeginDate(calendarEntry.getBeginPeriodFullDateTime().toDate());
-		lcdh.setEndDate(calendarEntry.getEndPeriodFullDateTime().toDate());
+		lcdh.setBeginDate(calendarEntry.getBeginPeriodDateTime());
+		lcdh.setEndDate(calendarEntry.getEndPeriodDateTime());
 		leaveCalendarDocument.setDocumentHeader(lcdh);
 		// Fetching assignments
         List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalId, calendarEntry);

@@ -15,23 +15,27 @@
  */
 package org.kuali.kpme.tklm.leave.service.permission;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.service.permission.HrPermissionServiceBase;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.permission.LMPermissionService;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.service.LeaveCalendarService;
 import org.kuali.kpme.tklm.leave.request.service.LeaveRequestDocumentService;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -46,11 +50,6 @@ import org.kuali.rice.kew.api.action.ValidActions;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.krad.util.KRADConstants;
-
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class LMPermissionServiceImpl extends HrPermissionServiceBase implements LMPermissionService {
 	
@@ -139,7 +138,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
     }
 
     @Override
-    public boolean canEditLeaveBlock(String principalId, LeaveBlockContract leaveBlock) {
+    public boolean canEditLeaveBlock(String principalId, LeaveBlock leaveBlock) {
         if (principalId != null) {
             CalendarBlockPermissions perms = HrServiceLocator.getHRPermissionService().getLeaveBlockPermissions(leaveBlock.getLmLeaveBlockId());
             Boolean canEdit = perms.isPrincipalCanEdit(principalId);
@@ -149,7 +148,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
             }
         	String documentId = leaveBlock.getDocumentId();
         	if (StringUtils.isBlank(documentId)) {
-        		TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(principalId, leaveBlock.getLeaveDateTime());
+        		TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(principalId, leaveBlock.getLeaveLocalDate().toDateTimeAtStartOfDay());
         		if (timesheetDocumentHeader != null) {
         			documentId = timesheetDocumentHeader.getDocumentId();
         		}
@@ -208,7 +207,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
     }
     
     @Override
-    public boolean userHasRolesToEditLeaveBlock(String principalId, LeaveBlockContract aLeaveBlock) {
+    public boolean userHasRolesToEditLeaveBlock(String principalId, LeaveBlock aLeaveBlock) {
     	// Location and sys admins along with approver,reviewer, payroll processors should have access to edit calendar
     	// department admins and view only should not have access to edit timesheets. view only roles are location view only and global view only
     	// location and sys admin roles should have priority unless it is their own calendar.
@@ -227,9 +226,9 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
         }
 	    
 	    // use job to find the department, then use the location from Department to get the location roles 
-	    JobContract aJob = HrServiceLocator.getJobService().getJob(aLeaveBlock.getPrincipalId(), aLeaveBlock.getJobNumber(), aLeaveBlock.getLeaveLocalDate());
+	    Job aJob = HrServiceLocator.getJobService().getJob(aLeaveBlock.getPrincipalId(), aLeaveBlock.getJobNumber(), aLeaveBlock.getLeaveLocalDate());
 	    if(aJob != null) {
-	    	Department aDept = HrServiceLocator.getDepartmentService().getDepartment(aJob.getDept(), aJob.getEffectiveLocalDate());
+	    	Department aDept = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(aJob.getDept(), aJob.getEffectiveLocalDate());
 	    	if(aDept != null) {
 	    		// LeaveLocationAdmin
 			    if(HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), aDept.getLocation(), LocalDate.now().toDateTimeAtStartOfDay()))
@@ -273,7 +272,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
     }
 
     @Override
-    public boolean canDeleteLeaveBlock(String principalId, LeaveBlockContract leaveBlock) {
+    public boolean canDeleteLeaveBlock(String principalId, LeaveBlock leaveBlock) {
         if (principalId != null) {
             CalendarBlockPermissions perms = HrServiceLocator.getHRPermissionService().getLeaveBlockPermissions(leaveBlock.getLmLeaveBlockId());
             Boolean canDelete = perms.isPrincipalCanDelete(principalId);
@@ -284,7 +283,7 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
         	String documentId = leaveBlock.getDocumentId();
         	if (StringUtils.isBlank(documentId)) {
                     String targetPrincipalId = HrContext.isTargetInUse() ? HrContext.getTargetPrincipalId() : principalId;
-                    TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(targetPrincipalId, leaveBlock.getLeaveDateTime().toLocalDate().toDateTimeAtStartOfDay());
+                    TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaderForDate(targetPrincipalId, leaveBlock.getLeaveLocalDate().toDateTimeAtStartOfDay());
 
                     if (timesheetDocumentHeader != null) {
                         documentId = timesheetDocumentHeader.getDocumentId();
@@ -315,24 +314,24 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
     }
     
     @Override
-	public boolean canBankOrTransferSSTOUsage(LeaveBlockContract lb) {
+	public boolean canBankOrTransferSSTOUsage(LeaveBlock lb) {
 		// if it's an accrual generated ssto usage leave block which can be banked or transferred, and on a current leave calendar,
 	    // it can be deleted so the accrualed amount can be banked
 	    return canBankSSTOUsage(lb) || canTransferSSTOUsage(lb);
 	}
     
     @Override
-	public boolean canBankSSTOUsage(LeaveBlockContract lb) {
- 	   if(lb.isAccrualGenerated()
+	public boolean canBankSSTOUsage(LeaveBlock lb) {
+ 	   if(lb.getAccrualGenerated() 
 			   && StringUtils.isNotEmpty(lb.getScheduleTimeOffId()) 
 			   && lb.getLeaveAmount().compareTo(BigDecimal.ZERO) < 0) {
 		   SystemScheduledTimeOff ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(lb.getScheduleTimeOffId());
 		   if(ssto != null && StringUtils.equals(ssto.getUnusedTime(), LMConstants.UNUSED_TIME.BANK)) {
 			   String viewPrincipal = HrContext.getTargetPrincipalId();
-               CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
+			   CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
 						.getCurrentCalendarDatesForLeaveCalendar(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
 			   if(ce != null) {
-				   if(!lb.getLeaveDateTime().isBefore(ce.getBeginPeriodFullDateTime()) && !lb.getLeaveDateTime().isAfter(ce.getEndPeriodFullDateTime())) {
+				   if(!lb.getLeaveDate().before(ce.getBeginPeriodDate()) && !lb.getLeaveDate().after(ce.getEndPeriodDate())) {
 					   return true;
 				   }
 			   }
@@ -343,17 +342,17 @@ public class LMPermissionServiceImpl extends HrPermissionServiceBase implements 
 	}
     
     @Override
-	public boolean canTransferSSTOUsage(LeaveBlockContract lb) {
-	   if(lb.isAccrualGenerated()
+	public boolean canTransferSSTOUsage(LeaveBlock lb) {
+	   if(lb.getAccrualGenerated() 
 			   && StringUtils.isNotEmpty(lb.getScheduleTimeOffId()) 
 			   && lb.getLeaveAmount().compareTo(BigDecimal.ZERO) < 0) {
 		   SystemScheduledTimeOff ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(lb.getScheduleTimeOffId());
 		   if(ssto != null && LMConstants.UNUSED_TIME.TRANSFER.equals(ssto.getUnusedTime())) {
 			   String viewPrincipal = HrContext.getTargetPrincipalId();
-               CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
+			   CalendarEntry ce = HrServiceLocator.getCalendarEntryService()
 						.getCurrentCalendarDatesForLeaveCalendar(viewPrincipal, new LocalDate().toDateTimeAtStartOfDay());
 			   if(ce != null) {
-				   if(!lb.getLeaveDateTime().isBefore(ce.getBeginPeriodFullDateTime()) && !lb.getLeaveDateTime().isAfter(ce.getEndPeriodFullDateTime())) {
+				   if(!lb.getLeaveDate().before(ce.getBeginPeriodDate()) && !lb.getLeaveDate().after(ce.getEndPeriodDate())) {
 					   return true;
 				   }
 			   }

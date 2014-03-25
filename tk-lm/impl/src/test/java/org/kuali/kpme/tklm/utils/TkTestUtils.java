@@ -15,29 +15,34 @@
  */
 package org.kuali.kpme.tklm.utils;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.joda.time.*;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Days;
+import org.joda.time.Duration;
+import org.joda.time.LocalDate;
 import org.junit.Assert;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockService;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.flsa.FlsaDay;
 import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timeblock.service.TimeBlockService;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.rice.kew.api.exception.WorkflowException;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 public class TkTestUtils {
 
@@ -46,7 +51,7 @@ public class TkTestUtils {
 	public static TimesheetDocument populateBlankTimesheetDocument(DateTime calDate, String principalId) {
 		try {
 			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId,
-							 HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId,
+							HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId,
                                     calDate));
 			for(TimeBlock timeBlock : timesheet.getTimeBlocks()){
 				TkServiceLocator.getTimeBlockService().deleteTimeBlock(timeBlock);
@@ -61,7 +66,7 @@ public class TkTestUtils {
 	public static TimesheetDocument populateTimesheetDocument(DateTime calDate, String principalId) {
 		try {
 			TimesheetDocument timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId,
-							 HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId,
+							HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId,
 									calDate));
 			for(TimeBlock timeBlock : timesheet.getTimeBlocks()){
 				TkServiceLocator.getTimeBlockService().deleteTimeBlock(timeBlock);
@@ -69,7 +74,7 @@ public class TkTestUtils {
 
 			//refetch clean document
 			timesheet = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId,
-					 HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, calDate));
+					HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, calDate));
 			List<TimeBlock> timeBlocks = new LinkedList<TimeBlock>();
 			for(int i = 0;i<5;i++){
 				TimeBlock timeBlock = createTimeBlock(timesheet, i+1, 10);
@@ -109,20 +114,20 @@ public class TkTestUtils {
 		for (int i=0; i<days; i++) {
 			DateTime ci = start.plusDays(i);
 			DateTime co = ci.plusHours(hours.intValue());
-			TimeBlockBo block = TkTestUtils.createDummyTimeBlock(ci, co, hours, earnCode, jobNumber, workArea);
+			TimeBlock block = TkTestUtils.createDummyTimeBlock(ci, co, hours, earnCode, jobNumber, workArea);
 			block.setTask(task);
-			blocks.add(TimeBlockBo.to(block));
+			blocks.add(block);
 		}
 
 		return blocks;
 	}
 
-	public static TimeBlockBo createDummyTimeBlock(DateTime clockIn, DateTime clockOut, BigDecimal hours, String earnCode) {
+	public static TimeBlock createDummyTimeBlock(DateTime clockIn, DateTime clockOut, BigDecimal hours, String earnCode) {
 		return TkTestUtils.createDummyTimeBlock(clockIn, clockOut, hours, earnCode, -1L, -1L);
 	}
 
-	public static TimeBlockBo createDummyTimeBlock(DateTime clockIn, DateTime clockOut, BigDecimal hours, String earnCode, Long jobNumber, Long workArea) {
-		TimeBlockBo block = new TimeBlockBo();
+	public static TimeBlock createDummyTimeBlock(DateTime clockIn, DateTime clockOut, BigDecimal hours, String earnCode, Long jobNumber, Long workArea) {
+		TimeBlock block = new TimeBlock();
 		block.setBeginDateTime(clockIn);
 		block.setEndDateTime(clockOut);
 		block.setHours(hours);
@@ -133,10 +138,10 @@ public class TkTestUtils {
 		block.setJobNumber(jobNumber);
 		block.setWorkArea(workArea);
 
-		TimeHourDetailBo thd = new TimeHourDetailBo();
+		TimeHourDetail thd = new TimeHourDetail();
 		thd.setHours(hours);
 		thd.setEarnCode(earnCode);
-		List<TimeHourDetailBo> timeHourDetails = new ArrayList<TimeHourDetailBo>();
+		List<TimeHourDetail> timeHourDetails = new ArrayList<TimeHourDetail>();
 		timeHourDetails.add(thd);
 		block.setTimeHourDetails(timeHourDetails);
 
@@ -147,7 +152,7 @@ public class TkTestUtils {
 		return createTimeBlock(timesheetDocument, dayInPeriod, numHours,"RGN");
 	}
 	public static TimeBlock createTimeBlock(TimesheetDocument timesheetDocument, int dayInPeriod, int numHours, String earnCode){
-		TimeBlockBo timeBlock = new TimeBlockBo();
+		TimeBlock timeBlock = new TimeBlock();
 		DateTime beginPeriodDateTime = timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime();
 		DateTime beginDateTime = beginPeriodDateTime.plusDays(dayInPeriod).withHourOfDay(8).withMinuteOfHour(0);
 		DateTime endDateTime = beginDateTime.plusHours(numHours);
@@ -163,7 +168,7 @@ public class TkTestUtils {
 		timeBlock.setTask(1L);
 		timeBlock.setHours((new BigDecimal(numHours)).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING));
 
-		return TimeBlockBo.to(timeBlock);
+		return timeBlock;
 	}
 
 	public static List<Job> getJobs(LocalDate calDate, String principalId){
@@ -253,15 +258,14 @@ public class TkTestUtils {
 			DateTime ci = start.plusDays(i);
 			DateTime co = ci.plusHours(hours.intValue());
 
-			blocks.addAll(service.buildTimeBlocks(timesheetDocument.getPrincipalId(), timesheetDocument.getCalendarEntry(),
-                    assignment, earnCode, timesheetDocument.getDocumentId(), ci, co, hours, amount,
+			blocks.addAll(service.buildTimeBlocks(assignment, earnCode, timesheetDocument, ci, co, hours, amount,
                     false, false, principalId, null, null));
 		}
 
 		return blocks;
 	}
 
-	public static Map<DateTime, BigDecimal> getDateToHoursMap(TimeBlockBo timeBlock, TimeHourDetailBo timeHourDetail) {
+	public static Map<DateTime, BigDecimal> getDateToHoursMap(TimeBlock timeBlock, TimeHourDetail timeHourDetail) {
 		Map<DateTime, BigDecimal> dateToHoursMap = new HashMap<DateTime, BigDecimal>();
 		DateTime beginTime = timeBlock.getBeginDateTime();
 		DateTime endTime = timeBlock.getEndDateTime();

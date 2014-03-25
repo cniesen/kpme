@@ -22,7 +22,7 @@
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
   <bean id="LeaveBlock" parent="LeaveBlock-parentBean" />
   <bean id="LeaveBlock-parentBean" abstract="true" parent="BusinessObjectEntry">
-    <property name="businessObjectClass" value="org.kuali.kpme.tklm.leave.block.LeaveBlockBo" />
+    <property name="businessObjectClass" value="org.kuali.kpme.tklm.leave.block.LeaveBlock" />
     <property name="titleAttribute" value="lmLeaveBlockId" />
     <property name="attributes" >
       <list>
@@ -97,19 +97,70 @@
   </bean>    
   
  <bean id="LeaveBlock-workArea" parent="LeaveBlock-workArea-parentBean"/>
-  <bean id="LeaveBlock-workArea-parentBean" abstract="true" parent="KpmeAttributeReference-workArea" />
-
+  <bean id="LeaveBlock-workArea-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Work Area"/>
+    <property name="maxLength" value="7"/>
+    <property name="validationPattern">
+ 		<bean parent="NumericValidationPattern"/>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="7"/>
+    </property>
+    <property name="name" value="workArea"/>
+    <property name="label" value="Work Area"/>
+  </bean>
+  
   <bean id="LeaveBlock-task" parent="LeaveBlock-task-parentBean"/>
-  <bean id="LeaveBlock-task-parentBean" abstract="true" parent="KpmeAttributeReference-task"/>
+  <bean id="LeaveBlock-task-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Task"/>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="7"/>
+    </property>
+    <property name="name" value="task"/>
+    <property name="label" value="Task"/>
+  </bean>
  
-  <bean id="LeaveBlock-jobNumber" parent="LeaveBlock-jobNumber-parentBean" />
-  <bean id="LeaveBlock-jobNumber-parentBean" abstract="true" parent="KpmeAttributeReference-jobNumber"/>
+<bean id="LeaveBlock-jobNumber" parent="LeaveBlock-jobNumber-parentBean" />
+  <bean id="LeaveBlock-jobNumber-parentBean" abstract="true" parent="AttributeDefinition">
+      <property name="forceUppercase" value="true" />
+      <property name="maxLength" value="7"/>
+       <property name="validationPattern">
+ 		 <bean parent="NumericValidationPattern"/>
+       </property>      
+      <property name="control" >
+      <bean parent="TextControlDefinition" p:size="10"/>
+      </property>
+    <property name="name" value="jobNumber" />
+    <property name="label" value="Job Number" />
+    <property name="description" value="jobNumber" />
+  </bean>
   
-  <bean id="LeaveBlock-earnCode" parent="LeaveBlock-earnCode-parentBean" />
-  <bean id="LeaveBlock-earnCode-parentBean" abstract="true" parent="KpmeAttributeReference-earnCode" />
+ <bean id="LeaveBlock-earnCode" parent="LeaveBlock-earnCode-parentBean" />
+
+  <bean id="LeaveBlock-earnCode-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="forceUppercase" value="true" />
+    <property name="maxLength" value="15" />
+    <property name="control" >
+      <bean parent="TextControlDefinition" p:size="15" />
+    </property>
+    <property name="name" value="earnCode" />
+    <property name="label" value="Earn Code" />
+    <property name="description" value="Earn Code" />
+  </bean>  
   
-  <bean id="LeaveBlock-timestamp" parent="LeaveBlock-timestamp-parentBean" />
-  <bean id="LeaveBlock-timestamp-parentBean" abstract="true" parent="KpmeAttributeReference-timestamp" />
+	<bean id="LeaveBlock-timestamp" parent="LeaveBlock-timestamp-parentBean" />
+	<bean id="LeaveBlock-timestamp-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Timestamp" />
+		<property name="maxLength" value="22" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="22" />
+        </property>
+		<property name="formatterClass"
+			value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+		<property name="name" value="timestamp" />
+		<property name="label" value="Time Stamp" />
+	</bean>  
 	
 <!-- 	<bean id="LeaveBlock-beginDate" parent="LeaveBlock-beginDate-parentBean" /> -->
 <!-- 	<bean id="LeaveBlock-beginDate-parentBean" abstract="true" parent="AttributeDefinition"> -->
@@ -127,14 +178,35 @@
 <!-- 	</bean>  -->
 	
 	<bean id="LeaveBlock-leaveDate" parent="LeaveBlock-leaveDate-parentBean" />
-	<bean id="LeaveBlock-leaveDate-parentBean" abstract="true" parent="KpmeAttributeReference-datePicker">
+	<bean id="LeaveBlock-leaveDate-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Leave Date" />
+		<property name="maxLength" value="10" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
 		<property name="name" value="leaveDate" />
 		<property name="label" value="Leave Date" />
 	</bean> 
 
   <bean id="LeaveBlock-principalId" parent="LeaveBlock-principalId-parentBean"/>
-  <bean id="LeaveBlock-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+  <bean id="LeaveBlock-principalId-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="shortLabel" value="Principal Id"/>
+    <property name="maxLength" value="40"/>
+    <property name="validationPattern">
+      <bean parent="AnyCharacterValidationPattern">
+      	<property name="allowWhitespace" value="false"/>
+      </bean>
+    </property>
+    <property name="control">
+      <bean parent="TextControlDefinition" p:size="40"/>
+    </property>
+    <property name="name" value="principalId"/>
+    <property name="label" value="Principal Id"/>
+  </bean>  
  
   <bean id="LeaveBlock-userPrincipalId" parent="LeaveBlock-userPrincipalId-parentBean"/>
   <bean id="LeaveBlock-userPrincipalId-parentBean" abstract="true" parent="AttributeDefinition">
@@ -192,11 +264,17 @@
     </bean>
        
     <bean id="LeaveBlock-accrualGenerated" parent="LeaveBlock-accrualGenerated-parentBean" />
-	<bean id="LeaveBlock-accrualGenerated-parentBean" abstract="true" parent="AttributeReference-genericBoolean"
-		p:shortLabel="Accrual Generated"
-		p:name="accrualGenerated"
-		p:label="Accrual Generated" />
-
+	<bean id="LeaveBlock-accrualGenerated-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Accrual Generated" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="accrualGenerated" />
+		<property name="label" value="Accrual Generated" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+	</bean>	
+	
 	 <bean id="LeaveBlock-accrualCategory" parent="LeaveBlock-accrualCategory-parentBean"/>
     <bean id="LeaveBlock-accrualCategory-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="forceUppercase" value="true"/>
@@ -235,8 +313,19 @@
 	</bean>
 	
 	<bean id="LeaveBlock-affectPay" parent="LeaveBlock-affectPay-parentBean" />
-	<bean id="LeaveBlock-affectPay-parentBean" abstract="true" parent="KpmeAttributeReference-booleanYesNo">
+	<bean id="LeaveBlock-affectPay-parentBean" abstract="true"
+		parent="AttributeDefinition">
 		<property name="shortLabel" value="Affect Pay" />
+		<property name="controlField">
+			<bean parent="Uif-HorizontalRadioControl"/>
+		</property>
+		<property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder"/>
+        </property>
+		<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder">
+			</bean>
+		</property>
 		<property name="name" value="affectPay" />
 		<property name="label" value="Affect Pay" />
 	</bean>
@@ -246,7 +335,7 @@
   <bean id="LeaveBlock-inquiryView" parent="LeaveBlock-inquiryView-parentBean" />
   <bean id="LeaveBlock-inquiryView-parentBean" abstract="true" parent="Uif-InquiryView">
   	<property name="headerText" value="Leave Block Inquiry"/>
-  	<property name="dataObjectClassName" value="org.kuali.kpme.tklm.leave.block.LeaveBlockBo"/>
+  	<property name="dataObjectClassName" value="org.kuali.kpme.tklm.leave.block.LeaveBlock"/>
   	<property name="singlePageView" value="true"/>
     <property name="items" >
       <list>
@@ -278,9 +367,9 @@
 
 <!-- KRAD Lookup View -->
 
-  <bean id="LeaveBlock-lookupView" parent="KPMEUif-ViewLinkLookupView">
+  <bean id="LeaveBlock-lookupView" parent="KPMEUif-LookupView">
   	<property name="headerText" value="Leave Block Lookup" />
-  	<property name="dataObjectClassName" value="org.kuali.kpme.tklm.leave.block.LeaveBlockBo"/>
+  	<property name="dataObjectClassName" value="org.kuali.kpme.tklm.leave.block.LeaveBlock"/>
   	<property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.leave.block.web.LeaveBlockLookupableHelperServiceImpl"/>
   	<property name="criteriaFields">
   		<list>

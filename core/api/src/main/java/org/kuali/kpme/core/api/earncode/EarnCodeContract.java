@@ -15,18 +15,18 @@
  */
 package org.kuali.kpme.core.api.earncode;
 
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
-
 import java.math.BigDecimal;
+
+import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 
 /**
  * <p>EarnCodeContract interface.</p>
  *
  */
-public interface EarnCodeContract extends KpmeEffectiveDataTransferObject {
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCode";
+public interface EarnCodeContract extends HrBusinessObjectContract {
+	
 	/**
 	 * The flag that indicates if the worked hours under an EarnCode should be counted as regular pay
 	 * Use this field to calculate the "Worked Hours in the Time Summary.
@@ -228,6 +228,17 @@ public interface EarnCodeContract extends KpmeEffectiveDataTransferObject {
 	 * @return description for EarnCode
 	 */
 	public String getDescription() ;
+	
+	/**
+	 * The history flag of an EarnCode
+	 * 
+	 * <p>
+	 * history flag of EarnCode
+	 * <p>
+	 * 
+	 * @return history for EarnCode
+	 */
+	public boolean isHistory();
 
 	/**
 	 * The Primary Key of an EarnCode entry saved in a database
@@ -293,7 +304,7 @@ public interface EarnCodeContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return Y for Yes, N for No
 	 */	
-    public boolean isOvtEarnCode() ;
+    public Boolean getOvtEarnCode() ;
 
     /**
 	 * 	The LeavePlan object associated with an EarnCode
@@ -304,15 +315,5 @@ public interface EarnCodeContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return leavePlanObj for EarnCode
 	 */	
-	//public LeavePlanContract getLeavePlanObj();
-	
-	/**
-	 * Indicates the record method time, hour or amount
-	 * 
-	 * <p>
-	 * recordmethod of an EarnCode
-	 * <p>
-	 * @return
-	 */
-	public String getEarnCodeType();
+	public LeavePlanContract getLeavePlanObj();
 }

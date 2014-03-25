@@ -23,8 +23,7 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.web.KPMEAction;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -38,7 +37,7 @@ public class CarryOverBatchJobAction extends KPMEAction {
     	DateTime scheduleDate = new DateTime();
     	
     	TkServiceLocator.getBatchJobService().scheduleLeaveCarryOverJobs(leavePlan, scheduleDate);
-    	cobjaf.setMessage("Carry over batch job ran sucessfully.");
+    	
     	return mapping.findForward("basic");
     }
 

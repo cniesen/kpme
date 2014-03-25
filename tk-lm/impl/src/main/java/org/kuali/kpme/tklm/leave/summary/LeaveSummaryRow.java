@@ -45,7 +45,8 @@ public class LeaveSummaryRow implements Serializable, Comparable<LeaveSummaryRow
 	private BigDecimal maxCarryOver;
     private SortedMap<String, BigDecimal> priorYearsTotalAccrued;
     private SortedMap<String, BigDecimal> priorYearsUsage;
-
+    private SortedMap<String, BigDecimal> yearlyCarryOver;  //key is year
+	
 	public String getAccrualCategory() {
 		return accrualCategory;
 	}

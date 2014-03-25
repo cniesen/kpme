@@ -16,20 +16,15 @@
 package org.kuali.kpme.pm.position.funding;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
-import org.kuali.kpme.core.kfs.coa.businessobject.Account;
+import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.pm.api.position.funding.PositionFundingContract;
-import org.kuali.kpme.pm.position.PositionDerived;
-import org.kuali.rice.krad.service.KRADServiceLocator;
 
-public class PositionFunding extends PositionDerived implements PositionFundingContract {
+public class PositionFunding extends HrBusinessObject implements PositionFundingContract {
 	private static final long serialVersionUID = 1L;
 	
 	private String pmPositionFunctionId;
-	
+	private String hrPositionId;
 	
 	private String chart;
 	private String org;
@@ -45,7 +40,23 @@ public class PositionFunding extends PositionDerived implements PositionFundingC
 	// indicates where the funding information comes from, it could be from maint document, Institution batch imports, etc..
 	// we use source on the maint document to determine which funding information is readonly
 	private String source;		
-			
+	
+
+	@Override
+	public String getId() {
+		return getPmPositionFunctionId();
+	}
+
+	@Override
+	public void setId(String id) {
+		setPmPositionFunctionId(id);
+	}
+
+	@Override
+	protected String getUniqueKey() {
+		return getPmPositionFunctionId() + "_" + getHrPositionId();
+	}
+	
 	public String getPmPositionFunctionId() {
 		return pmPositionFunctionId;
 	}
@@ -54,7 +65,13 @@ public class PositionFunding extends PositionDerived implements PositionFundingC
 		this.pmPositionFunctionId = pmPositionFunctionId;
 	}
 	
-	
+	public String getHrPositionId() {
+		return hrPositionId;
+	}
+
+	public void setHrPositionId(String hrPositionId) {
+		this.hrPositionId = hrPositionId;
+	}
 
 	public String getSource() {
 		return source;
@@ -65,15 +82,6 @@ public class PositionFunding extends PositionDerived implements PositionFundingC
 	}
 
 	public String getChart() {
-		Map<String, String> fields = new HashMap<String, String>();
-		fields.put("accountNumber", this.account);
-		fields.put("active", "true");
-		Account account = (Account) KRADServiceLocator.getBusinessObjectService().findByPrimaryKey(Account.class, fields);
-		if(account != null && !account.isClosed()) {
-			this.setChart(account.getChartOfAccountsCode());
-		} else {
-			this.setChart(null);
-		}
 		return chart;
 	}
 
@@ -153,31 +161,5 @@ public class PositionFunding extends PositionDerived implements PositionFundingC
 		this.priorityFlag = priorityFlag;
 	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (obj.getClass() != getClass())
-            return false;
-
-        PositionFunding rhs = (PositionFunding) obj;
-        return new EqualsBuilder()
-                .append(pmPositionFunctionId,rhs.getPmPositionFunctionId())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .append(chart, rhs.getChart())
-                .append(org, rhs.getOrg())
-                .append(account, rhs.getAccount())
-                .append(subAccount, rhs.getSubAccount())
-                .append(objectCode, rhs.getObjectCode())
-                .append(subObjectCode, rhs.getSubObjectCode())
-                .append(orgRefCode, rhs.getOrgRefCode())
-                .append(percent, rhs.getPercent())
-                .append(amount, rhs.getAmount())
-                .append(priorityFlag, rhs.isPriorityFlag())
-                .isEquals();
-
-    }
 	
 }

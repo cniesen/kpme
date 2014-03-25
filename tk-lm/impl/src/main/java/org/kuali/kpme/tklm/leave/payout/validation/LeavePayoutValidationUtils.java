@@ -19,19 +19,18 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryContract;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryRowContract;
 import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
+import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
 
@@ -70,7 +69,7 @@ public class LeavePayoutValidationUtils {
 			
 			AccrualCategory fromCat = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, effectiveDate);
 			EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(payoutEarnCode, effectiveDate);
-			PrincipalHRAttributesContract pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId,effectiveDate);
+			PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId,effectiveDate);
 			
 			if(ObjectUtils.isNotNull(pha)) {
 				if(ObjectUtils.isNotNull(pha.getLeavePlan())) {
@@ -82,7 +81,13 @@ public class LeavePayoutValidationUtils {
 								&& StringUtils.isNotEmpty(acr.getMaxBalFlag())
 								&& StringUtils.equals(acr.getMaxBalFlag(), "Y")) {
 							if(ObjectUtils.isNotNull(acr.getMaxPayoutEarnCode()) || StringUtils.equals(HrConstants.ACTION_AT_MAX_BALANCE.LOSE, acr.getActionAtMaxBalance())) {
-								isValid = validateForfeitedAmount(leavePayout.getForfeitedAmount());
+	/*							isValid &= validatePrincipal(pha,principalId);
+								isValid &= validateEffectiveDate(effectiveDate);
+								isValid &= validateAgainstLeavePlan(pha,fromCat,toCat,effectiveDate);
+								isValid &= validateTransferFromAccrualCategory(fromCat,principalId,effectiveDate,acr);
+								isValid &= validateTransferToAccrualCategory(toCat,principalId,effectiveDate,acr);
+	*/
+								isValid &= validateForfeitedAmount(leavePayout.getForfeitedAmount());
 								isValid &= validatePayoutAmount(leavePayout.getPayoutAmount(),fromCat, earnCode, principalId, effectiveDate, acr);
 							}
 							else {
@@ -135,8 +140,8 @@ public class LeavePayoutValidationUtils {
 			AccrualCategory fromCat, EarnCode earnCode, String principalId,
 			LocalDate effectiveDate, AccrualCategoryRule accrualRule) {
 
-		LeaveSummaryContract leaveSummary = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDateForAccrualCategory(principalId, effectiveDate, fromCat.getAccrualCategory());
-		LeaveSummaryRowContract row = leaveSummary.getLeaveSummaryRowForAccrualCtgy(fromCat.getAccrualCategory());
+		LeaveSummary leaveSummary = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDateForAccrualCategory(principalId, effectiveDate, fromCat.getAccrualCategory());
+		LeaveSummaryRow row = leaveSummary.getLeaveSummaryRowForAccrualCtgy(fromCat.getAccrualCategory());
 		BigDecimal balance = row.getAccruedBalance();
 		//transfer amount must be less than the max transfer amount defined in the accrual category rule.
 		//it cannot be negative.

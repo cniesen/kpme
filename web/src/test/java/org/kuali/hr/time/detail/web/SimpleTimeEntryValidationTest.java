@@ -15,8 +15,8 @@
  */
 package org.kuali.hr.time.detail.web;
 
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,10 +24,10 @@ import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.time.util.TimeDetailTestUtils;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.detail.web.TimeDetailActionFormBase;
@@ -35,7 +35,8 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.utils.TkTestConstants;
 
-import java.util.List;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @FunctionalTest
 public class SimpleTimeEntryValidationTest extends KPMEWebTestCase {
@@ -49,7 +50,7 @@ public class SimpleTimeEntryValidationTest extends KPMEWebTestCase {
     public void setUp() throws Exception {
         super.setUp();
 
-        CalendarEntry calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, CALENDAR_ENTRY_DATE);
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, CALENDAR_ENTRY_DATE);
         TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().openTimesheetDocument(USER_PRINCIPAL_ID, calendarEntry);
         documentId = timesheetDocument.getDocumentId();
     }
@@ -85,7 +86,7 @@ public class SimpleTimeEntryValidationTest extends KPMEWebTestCase {
 
         // Build an action form - we're using it as a POJO, it ties into the
         // existing TK validation setup
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(timesheetDocument,assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(timesheetDocument,assignment, earnCode, start, end, null, false, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
 
         // Check for errors
@@ -124,7 +125,7 @@ public class SimpleTimeEntryValidationTest extends KPMEWebTestCase {
 
         // Build an action form - we're using it as a POJO, it ties into the
         // existing TK validation setup
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(timesheetDocument, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(timesheetDocument, assignment, earnCode, start, end, null, false, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
 
         // Check for errors

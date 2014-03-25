@@ -15,15 +15,15 @@
  */
 package org.kuali.kpme.core.calendar;
 
-import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.CalendarParentContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.calendar.web.CalendarWeek;
-import org.kuali.kpme.core.service.HrServiceLocator;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.kuali.kpme.core.api.calendar.CalendarParentContract;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.web.CalendarWeek;
+import org.kuali.kpme.core.service.HrServiceLocator;
 
 public abstract class CalendarParent implements Serializable, CalendarParentContract {
 

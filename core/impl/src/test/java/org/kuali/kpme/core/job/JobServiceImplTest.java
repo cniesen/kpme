@@ -23,8 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.job.service.JobService;
+import org.kuali.kpme.core.job.service.JobService;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 

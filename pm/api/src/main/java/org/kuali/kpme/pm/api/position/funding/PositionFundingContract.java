@@ -15,14 +15,15 @@
  */
 package org.kuali.kpme.pm.api.position.funding;
 
-import org.kuali.kpme.pm.api.position.PositionDerivedContract;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+
 import java.math.BigDecimal;
 
 /**
  * <p>PositionFundingContract interface</p>
  *
  */
-public interface PositionFundingContract extends PositionDerivedContract {
+public interface PositionFundingContract extends HrBusinessObjectContract {
 
     /**
      * The primary key for a PositionFunding entry saved in the database

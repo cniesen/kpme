@@ -15,12 +15,18 @@
  */
 package org.kuali.kpme.tklm.leave.timeoff.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -29,12 +35,6 @@ import org.kuali.kpme.tklm.leave.timeoff.dao.SystemScheduledTimeOffDao;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class SystemScheduledTimeOffServiceImpl implements SystemScheduledTimeOffService {
 
@@ -68,7 +68,7 @@ public class SystemScheduledTimeOffServiceImpl implements SystemScheduledTimeOff
 	}	
 	@Override
 	public Assignment getAssignmentToApplyHolidays(TimesheetDocument timesheetDocument, LocalDate payEndDate) {
-		JobContract primaryJob = HrServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
+		Job primaryJob = HrServiceLocator.getJobService().getPrimaryJob(timesheetDocument.getPrincipalId(), payEndDate);
 		for(Assignment assign : timesheetDocument.getAssignments()){
 			if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
 				return assign;
@@ -78,18 +78,18 @@ public class SystemScheduledTimeOffServiceImpl implements SystemScheduledTimeOff
 	}
 
     @Override
-    public BigDecimal calculateSysSchTimeOffHours(JobContract job, BigDecimal sstoHours) {
+    public BigDecimal calculateSysSchTimeOffHours(Job job, BigDecimal sstoHours) {
         BigDecimal fte = job.getStandardHours().divide(new BigDecimal(40.0),HrConstants.BIG_DECIMAL_SCALE);
         return fte.multiply(sstoHours).setScale(HrConstants.BIG_DECIMAL_SCALE);
     }
 
     @Override
     public List<SystemScheduledTimeOff> getSystemScheduledTimeOffs(String userPrincipalId, LocalDate fromEffdt, LocalDate toEffdt, String earnCode, LocalDate fromAccruedDate, LocalDate toAccruedDate, 
-    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String premiumEarnCode, String active, String showHist) {
+    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String active, String showHist) {
     	List<SystemScheduledTimeOff> results = new ArrayList<SystemScheduledTimeOff>();
         
     	List<SystemScheduledTimeOff> systemScheduledTimeOffObjs = systemScheduledTimeOffDao.getSystemScheduledTimeOffs(fromEffdt, toEffdt, earnCode, fromAccruedDate, toAccruedDate, fromSchTimeOffDate, 
-        															toSchTimeOffDate, premiumEarnCode, active, showHist);
+        															toSchTimeOffDate, active, showHist);
     
     	for (SystemScheduledTimeOff systemScheduledTimeOffObj : systemScheduledTimeOffObjs) {
         	Map<String, String> roleQualification = new HashMap<String, String>();

@@ -15,22 +15,27 @@
  */
 package org.kuali.kpme.tklm.time.timesheet;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.job.Job;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timesheet.TimesheetDocumentContract;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.*;
 
 
 public class TimesheetDocument extends CalendarDocument implements TimesheetDocumentContract {
@@ -109,7 +114,7 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
 
 	public TimeSummary getTimeSummary() {
         if (timeSummary == null) {
-            timeSummary = (TimeSummary)TkServiceLocator.getTimeSummaryService().getTimeSummary(this);
+            timeSummary = TkServiceLocator.getTimeSummaryService().getTimeSummary(this);
         }
 		return timeSummary;
 	}

@@ -15,13 +15,13 @@
  */
 package org.kuali.kpme.core.api.institution;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 
 /**
  * <p>InstitutionContract interface.</p>
  *
  */
-public interface InstitutionContract extends KpmeEffectiveDataTransferObject {
+public interface InstitutionContract extends HrBusinessObjectContract {
 	
 	/**
 	 * Text that identifies this Institution

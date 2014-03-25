@@ -15,6 +15,7 @@
     limitations under the License.
 
 --%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <%@include file="/WEB-INF/jsp/TkTldHeader.jsp"%>
 <c:set var="Form" value="${ClockActionForm}" scope="request"/>
 
@@ -43,7 +44,7 @@
 
 <tk:tkHeader tabId="clock">
 
-    <script type="text/javascript" src="themes/kboot/scripts/kboot.2.3.5-r45274.min.js"></script>
+    <script type="text/javascript" src="themes/kboot/scripts/kboot.2.3.4.min.js"></script>
 
 
 	<html:form action="/Clock.do">

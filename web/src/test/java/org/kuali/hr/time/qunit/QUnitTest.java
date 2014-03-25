@@ -72,10 +72,10 @@ public class QUnitTest extends KPMEWebTestCase {
 	}
 
 	private void runTest(File file) throws Exception {
-		setWebClient(new WebClient(BrowserVersion.FIREFOX_24));
+		setWebClient(new WebClient(BrowserVersion.FIREFOX_10));
         WebClient client = getWebClient();
-		client.getOptions().setJavaScriptEnabled(true);
-		client.getOptions().setThrowExceptionOnScriptError(false);
+		client.setJavaScriptEnabled(true);
+		client.setThrowExceptionOnScriptError(false);
 		client.setAjaxController(new NicelyResynchronizingAjaxController());
 		client.waitForBackgroundJavaScript(1000);
 

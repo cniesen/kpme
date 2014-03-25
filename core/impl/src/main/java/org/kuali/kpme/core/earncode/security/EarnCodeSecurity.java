@@ -15,40 +15,38 @@
  */
 package org.kuali.kpme.core.earncode.security;
 
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.job.JobBo;
-import org.kuali.kpme.core.location.LocationBo;
-import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.location.Location;
+import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.core.util.HrConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecurityContract {
-
-	private static final String LOCATION = "location";
-	private static final String EARN_CODE = "earnCode";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String DEPT = "dept";
 
 	private static final long serialVersionUID = -4884673156883588639L;
 	
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCodeSecurity";
     public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
             .add(EarnCodeSecurity.CACHE_NAME)
-            .add(EarnCodeBo.CACHE_NAME)
+            .add(EarnCode.CACHE_NAME)
             .add(CalendarBlockPermissions.CACHE_NAME)
             .build();
 	//KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DEPT)
-            .add(HR_SAL_GROUP)
-            .add(EARN_CODE)
-            .add(LOCATION)
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("dept")
+            .add("hrSalGroup")
+            .add("earnCode")
+            .add("location")
             .build();
 
 	private String hrEarnCodeSecurityId;
@@ -61,24 +59,13 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
 	private String location;
 	private String earnCodeType;
 	
-	private SalaryGroupBo salaryGroupObj;
-	private DepartmentBo departmentObj;
-	private EarnCodeBo earnCodeObj;
-    private JobBo jobObj;
-    private LocationBo locationObj;
+	private SalaryGroup  salaryGroupObj;
+	private Department departmentObj;
+	private EarnCode earnCodeObj;
+    private Job jobObj;
+    private Location locationObj;
+    private String history;
 
-    
-    @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DEPT, this.getDept())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(EARN_CODE, this.getEarnCode())
-			.put(LOCATION, this.getLocation())
-			.build();
-	}
-    
-    
 	public String getHrEarnCodeSecurityId() {
 		return hrEarnCodeSecurityId;
 	}
@@ -95,19 +82,19 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
 		this.earnCodeType = earnCodeType;
 	}
 
-	public SalaryGroupBo getSalaryGroupObj() {
+	public SalaryGroup getSalaryGroupObj() {
 		return salaryGroupObj;
 	}
 
-	public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
+	public void setSalaryGroupObj(SalaryGroup salaryGroupObj) {
 		this.salaryGroupObj = salaryGroupObj;
 	}
 
-	public DepartmentBo getDepartmentObj() {
+	public Department getDepartmentObj() {
 		return departmentObj;
 	}
 
-	public void setDepartmentObj(DepartmentBo departmentObj) {
+	public void setDepartmentObj(Department departmentObj) {
 		this.departmentObj = departmentObj;
 	}
 	
@@ -135,11 +122,11 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
 		this.payrollProcessor = payrollProcessor;
 	}
 
-	public EarnCodeBo getEarnCodeObj() {
+	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;
 	}
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 	
@@ -167,19 +154,19 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
 		this.earnCode = earnCode;
 	}
 
-	public JobBo getJobObj() {
+	public Job getJobObj() {
 		return jobObj;
 	}
 	
-	public void setJobObj(JobBo jobObj) {
+	public void setJobObj(Job jobObj) {
 		this.jobObj = jobObj;
 	}
 	
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 	
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 	
@@ -194,6 +181,14 @@ public class EarnCodeSecurity extends HrBusinessObject implements EarnCodeSecuri
 	@Override
 	public String getUniqueKey() {
 		return dept + "_" + hrSalGroup + "_" + earnCode;
+	}
+	
+	public String getHistory() {
+		return history;
+	}
+	
+	public void setHistory(String history) {
+		this.history = history;
 	}
 	
 	@Override

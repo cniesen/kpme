@@ -15,68 +15,57 @@
  */
 package org.kuali.kpme.tklm.time.timesheet.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.permission.HRPermissionService;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.batch.BatchJobUtil;
-import org.kuali.kpme.core.calendar.CalendarBo;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.earncode.security.EarnCodeType;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.service.permission.HRPermissionService;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.common.WorkflowTagSupport;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
-import org.kuali.kpme.tklm.time.flsa.FlsaDay;
-import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.service.permission.TKPermissionService;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
-import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 public class TimesheetServiceImpl implements TimesheetService {
 
     private static final Logger LOG = Logger.getLogger(TimesheetServiceImpl.class);
-    private static final ModelObjectUtils.Transformer<TimeBlock, TimeBlock.Builder> toTimeBlockBuilder =
-            new ModelObjectUtils.Transformer<TimeBlock, TimeBlock.Builder>() {
-                public TimeBlock.Builder transform(TimeBlock input) {
-                    return TimeBlock.Builder.create(input);
-                };
-            };
+
     private HRPermissionService hrPermissionService;
 
     @Override
@@ -158,7 +147,7 @@ public class TimesheetServiceImpl implements TimesheetService {
             List<Assignment> activeAssignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(principalId, calendarDates);
             //HrServiceLocator.getAssignmentService().getAssignments(principalId, TKUtils.getTimelessDate(payCalendarDates.getEndPeriodDate()));
             if (activeAssignments.size() == 0) {
-                LOG.warn("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodFullDateTime());
+                LOG.warn("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
                 return null;
                 //throw new RuntimeException("No active assignments for " + principalId + " for " + calendarDates.getEndPeriodDate());
             }
@@ -188,28 +177,28 @@ public class TimesheetServiceImpl implements TimesheetService {
     }
 
     public void loadHolidaysOnTimesheet(TimesheetDocument timesheetDocument, String principalId, LocalDate beginDate, LocalDate endDate) {
-        PrincipalHRAttributesContract principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, beginDate);
+        PrincipalHRAttributes principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, beginDate);
         if (principalCalendar != null && StringUtils.isNotEmpty(principalCalendar.getLeavePlan())) {
         	List<SystemScheduledTimeOff> sstoList = LmServiceLocator.getSysSchTimeOffService()
         		.getSystemScheduledTimeOffForPayPeriod(principalCalendar.getLeavePlan(), beginDate, endDate);
-            Assignment sstoAssign = getAssignmentToApplyScheduledTimeOff(timesheetDocument.getPrincipalId(), timesheetDocument.getAssignments(), endDate);
+        	Assignment sstoAssign = getAssignmentToApplyScheduledTimeOff(timesheetDocument.getPrincipalId(), timesheetDocument.getAssignments(), endDate);
         	if (sstoAssign != null) {
         		for(SystemScheduledTimeOff ssto : sstoList) {
                   BigDecimal sstoCalcHours = LmServiceLocator.getSysSchTimeOffService().calculateSysSchTimeOffHours(sstoAssign.getJob(), ssto.getAmountofTime());
-                  TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().createTimeBlock(timesheetDocument.getPrincipalId(), timesheetDocument.getDocumentId(), ssto.getScheduledTimeOffLocalDate().toDateTimeAtStartOfDay(),
+                  TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().createTimeBlock(timesheetDocument, ssto.getScheduledTimeOffLocalDate().toDateTimeAtStartOfDay(),
                           ssto.getScheduledTimeOffLocalDate().toDateTimeAtStartOfDay(), sstoAssign, HrConstants.HOLIDAY_EARN_CODE, sstoCalcHours, BigDecimal.ZERO, false, false, HrContext.getPrincipalId());
                   timesheetDocument.getTimeBlocks().add(timeBlock);
               }
 	            //If system scheduled time off are loaded will need to save them to the database
 		        if (CollectionUtils.isNotEmpty(sstoList)) {
-		           TkServiceLocator.getTimeBlockService().saveOrUpdateTimeBlocks(Collections.<TimeBlock>emptyList(), timesheetDocument.getTimeBlocks(), HrContext.getPrincipalId());
+		           TkServiceLocator.getTimeBlockService().saveTimeBlocks(new LinkedList<TimeBlock>(), timesheetDocument.getTimeBlocks(), HrContext.getPrincipalId());
 		        }
         	}
         }
     }
 
     private Assignment getAssignmentToApplyScheduledTimeOff(String principalId, List<Assignment> assignments, LocalDate endDate) {
-		JobContract primaryJob = HrServiceLocator.getJobService().getPrimaryJob(principalId, endDate);
+		Job primaryJob = HrServiceLocator.getJobService().getPrimaryJob(principalId, endDate);
 		for(Assignment assign : assignments){
 			if(assign.getJobNumber().equals(primaryJob.getJobNumber())){
 				return assign;
@@ -227,7 +216,7 @@ public class TimesheetServiceImpl implements TimesheetService {
         String status = workflowDocument.getStatus().getCode();
         TimesheetDocumentHeader documentHeader = new TimesheetDocumentHeader(workflowDocument.getDocumentId(), principalId, payBeginDate.toDate(), payEndDate.toDate(), status);
 
-        documentHeader.setDocumentId(workflowDocument.getDocumentId());
+        documentHeader.setDocumentId(workflowDocument.getDocumentId().toString());
         documentHeader.setDocumentStatus("I");
 
         TkServiceLocator.getTimesheetDocumentHeaderService().saveOrUpdate(documentHeader);
@@ -278,7 +267,7 @@ public class TimesheetServiceImpl implements TimesheetService {
 
         if (tdh != null) {
             timesheetDocument = new TimesheetDocument(tdh);
-            CalendarEntry pce =  HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(tdh.getPrincipalId(), tdh.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
+            CalendarEntry pce = HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(tdh.getPrincipalId(), tdh.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
             loadTimesheetDocumentData(timesheetDocument, tdh.getPrincipalId(), pce);
 
             timesheetDocument.setCalendarEntry(pce);
@@ -313,10 +302,11 @@ public class TimesheetServiceImpl implements TimesheetService {
         TkServiceLocator.getTimesheetDocumentHeaderService().deleteTimesheetHeader(documentId);
     }
 
-    protected void resetWorkedHours(TimeBlock.Builder previousTimeBlock, TimeBlock.Builder timeBlock, LocalDate asOfDate) {
-    	EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), asOfDate);
+    public TimeBlock resetWorkedHours(TimeBlock previousTimeBlock, TimeBlock timeBlock, LocalDate asOfDate) {
+    	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), asOfDate);
+    	
         if (timeBlock.getBeginTime() != null && timeBlock.getEndTime() != null && StringUtils.equals(timeBlock.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
-            BigDecimal hours = TKUtils.getHoursBetween(timeBlock.getBeginTime().getMillisOfDay(), timeBlock.getEndTime().getMillisOfDay());
+            BigDecimal hours = TKUtils.getHoursBetween(timeBlock.getBeginTime().getTime(), timeBlock.getEndTime().getTime());
 
             //If earn code has an inflate min hours check if it is greater than zero
             //and compare if the hours specified is less than min hours awarded for this
@@ -326,26 +316,36 @@ public class TimesheetServiceImpl implements TimesheetService {
             			earnCodeObj.getInflateMinHours().compareTo(hours) > 0) {
                     //if previous timeblock has no gap then assume its one block if the same earn code and divide inflated hours accordingly
                     if(previousTimeBlock != null && StringUtils.equals(earnCodeObj.getEarnCode(),previousTimeBlock.getEarnCode()) &&
-                            (timeBlock.getBeginTime().getMillisOfDay() - previousTimeBlock.getEndTime().getMillisOfDay() == 0L)) {
-                        BigDecimal prevTimeBlockHours = TKUtils.getHoursBetween(previousTimeBlock.getBeginTime().getMillisOfDay(), previousTimeBlock.getEndTime().getMillisOfDay());
+                            (timeBlock.getBeginTime().getTime() - previousTimeBlock.getEndTime().getTime() == 0L)) {
+                        BigDecimal prevTimeBlockHours = TKUtils.getHoursBetween(previousTimeBlock.getBeginTime().getTime(), previousTimeBlock.getEndTime().getTime());
                         previousTimeBlock.setHours(prevTimeBlockHours);
+                        if(earnCodeObj.getInflateMinHours().compareTo(prevTimeBlockHours.add(hours,HrConstants.MATH_CONTEXT)) > 0) {
+                        	//hours = earnCodeObj.getInflateMinHours().subtract(prevTimeBlockHours,HrConstants.MATH_CONTEXT);
+                        }
                     }
                 }
             }
+            //If earn code has an inflate factor multiple hours specified by the factor
+/*            if (earnCodeObj.getInflateFactor() != null) {
+            	if ((earnCodeObj.getInflateFactor().compareTo(new BigDecimal(1.0)) != 0)
+            			&& (earnCodeObj.getInflateFactor().compareTo(BigDecimal.ZERO)!= 0) ) {
+            		hours = earnCodeObj.getInflateFactor().multiply(hours, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE);
+            	}
+            }*/
             
             timeBlock.setHours(hours);
         }
+        return timeBlock;
     }
 
     @Override
-    public List<TimeBlock> resetTimeBlock(List<TimeBlock> timeBlocks, LocalDate asOfDate) {
-        TimeBlock.Builder previous = null;
-        List<TimeBlock.Builder> builders = ModelObjectUtils.transform(timeBlocks, toTimeBlockBuilder);
-        for (TimeBlock.Builder tb : builders) {
+    public void resetTimeBlock(List<TimeBlock> timeBlocks, LocalDate asOfDate) {
+        TimeBlock previous = null;
+        for (TimeBlock tb : timeBlocks) {
             resetWorkedHours(previous, tb, asOfDate);
             previous = tb;
         }
-        return TkServiceLocator.getTimeBlockService().resetTimeHourDetail(timeBlocks);
+        TkServiceLocator.getTimeBlockService().resetTimeHourDetail(timeBlocks);
     }
 
 	@Override
@@ -364,8 +364,7 @@ public class TimesheetServiceImpl implements TimesheetService {
         }
         return true;
 	}
-
-    @Override
+	
     public List<EarnCode> getEarnCodesForTime(Assignment a, LocalDate asOfDate, boolean includeRegularEarnCode) {
         //getEarnCodesForTime and getEarnCodesForLeave have some overlapping logic, but they were separated so that they could follow their own distinct logic, so consolidation of logic is not desirable.
 
@@ -374,7 +373,7 @@ public class TimesheetServiceImpl implements TimesheetService {
         	return null;
 //        	throw new RuntimeException("No assignment parameter.");
         }
-        JobContract job = a.getJob();
+        Job job = a.getJob();
         if (job == null || job.getPayTypeObj() == null) {
         	LOG.error("Null job or null job pay type on assignment.");
         	return null;
@@ -408,7 +407,7 @@ public class TimesheetServiceImpl implements TimesheetService {
         String accrualCategory;
 
         //  first make a list of the accrual categories available to the user's Leave Plan (yes, leave plan), for later comparison.
-        PrincipalHRAttributesContract principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(job.getPrincipalId(), asOfDate);
+        PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(job.getPrincipalId(), asOfDate);
         boolean fmlaEligible = principalHRAttributes.isFmlaEligible();
         boolean workersCompEligible = principalHRAttributes.isWorkersCompEligible();
 
@@ -423,8 +422,8 @@ public class TimesheetServiceImpl implements TimesheetService {
         }
 
         //  get all earn codes by user security, then we'll filter on accrual category first as we process them.
-        List<? extends EarnCodeSecurityContract> decs = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
-        for (EarnCodeSecurityContract dec : decs) {
+        List<EarnCodeSecurity> decs = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
+        for (EarnCodeSecurity dec : decs) {
 
             boolean addEarnCode = HrServiceLocator.getEarnCodeService().addEarnCodeBasedOnEmployeeApproverSettings(dec, a, asOfDate);
             if (addEarnCode) {
@@ -439,7 +438,7 @@ public class TimesheetServiceImpl implements TimesheetService {
                     	// if user has a leave plan, we show earn codes with a matching leave plan and all earn codes without a leave plan
                     	// if user doe not have a leave plan, we show earn codes that don't have a leave plan
                     	if( (StringUtils.isNotBlank(leavePlan) && StringUtils.isBlank(ec.getLeavePlan()))
-                    			|| (StringUtils.isNotBlank(leavePlan) && StringUtils.isNotBlank(ec.getLeavePlan()) && StringUtils.equals(leavePlan, ec.getLeavePlan()))
+                    			|| (StringUtils.isNotBlank(leavePlan) && StringUtils.isNotBlank(ec.getLeavePlan()) && leavePlan.equals(ec.getLeavePlan()))
     							|| (StringUtils.isBlank(leavePlan) && StringUtils.isBlank(ec.getLeavePlan()))) {                    	
 	                        //  if the user's fmla flag is Yes, that means we are not restricting codes based on this flag, so any code is shown.
 	                        //    if the fmla flag on a code is yes they can see it.    (allow)
@@ -485,7 +484,7 @@ public class TimesheetServiceImpl implements TimesheetService {
     	return getEarnCodesForTime(a, asOfDate, false);
 	}
 
-    private boolean showEarnCodeIfHoliday(EarnCode earnCode, EarnCodeSecurityContract security) {
+    private boolean showEarnCodeIfHoliday(EarnCode earnCode, EarnCodeSecurity security) {
         if (earnCode.getEarnCode().equals(HrConstants.HOLIDAY_EARN_CODE)) {
             if (security.isApprover() || HrContext.isSystemAdmin()) {
                 return true;
@@ -508,181 +507,5 @@ public class TimesheetServiceImpl implements TimesheetService {
         for (TimeBlock tb : doc.getTimeBlocks()) {
             getHRPermissionService().updateTimeBlockPermissions(CalendarBlockPermissions.newInstance(tb.getTkTimeBlockId()));
         }
-    }
-
-
-
-
-    public boolean isTimesheetValid(TimesheetDocument td) {
-        boolean isTimeSheetValid = true;
-
-        if (WorkflowTagSupport.isTimesheetApprovalButtonsDisplaying(td.getDocumentId())) {
-            if ((validateHours(td) != null && !validateHours(td).isEmpty()) || (validateTimeBlock(td) != null && !validateTimeBlock(td).isEmpty())) {
-                    isTimeSheetValid = false ;
-                }
-        }
-        return isTimeSheetValid;
-    }
-
-    public List<String> validateTimeBlock(TimesheetDocument td) {
-        List<String> errors = new ArrayList<String>();
-        if (td != null) {
-
-            Map<String, String> earnCodeTypeMap = new HashMap<String, String>();
-            List<String> assignmentKeyList = new ArrayList<String>();
-
-
-            for (Assignment assignment : td.getAssignments()) {
-                assignmentKeyList.add(assignment.getAssignmentKey());
-            }
-
-            for (TimeBlock timeBlock : td.getTimeBlocks()) {
-                String earnCode = timeBlock.getEarnCode();
-                if (earnCodeTypeMap.containsKey(earnCode)) {
-                    continue;
-                } else {
-                    EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, td.getAsOfDate());
-                    if (earnCodeObj != null) {
-                        earnCodeTypeMap.put(earnCodeObj.getEarnCode(),earnCodeObj.getEarnCodeType());
-                    }
-                }
-            }
-
-            for (TimeBlock timeBlock : td.getTimeBlocks()) {
-                DateTime beginDate = timeBlock.getBeginDateTime();
-                String earnCodeType = earnCodeTypeMap.get(timeBlock.getEarnCode());
-                if (earnCodeType != null && HrConstants.EARN_CODE_TIME.equals(earnCodeType)) {
-                    String timeBlockDesc = "TimeBlock (" + timeBlock.getTkTimeBlockId() + ") on " + DateTimeFormat.forPattern("EEE MMM d").print(timeBlock.getBeginDateTime()) + " from " + timeBlock.getBeginTimeDisplayTimeOnlyString() + " - " + timeBlock.getEndTimeDisplayTimeOnlyString();
-                    for (TimeBlock compareTimeBlock : td.getTimeBlocks()) {
-                        if (compareTimeBlock.getTkTimeBlockId().equals(timeBlock.getTkTimeBlockId())) {
-                            continue;
-                        }
-                        String compareEarnCodeType = earnCodeTypeMap.get(compareTimeBlock.getEarnCode());
-                        if (compareEarnCodeType != null && HrConstants.EARN_CODE_TIME.equals(compareEarnCodeType)) {
-                            String compareTimeBlockDesc = "TimeBlock (" + compareTimeBlock.getTkTimeBlockId() + ") on " + DateTimeFormat.forPattern("EEE MMM d").print(compareTimeBlock.getBeginDateTime()) + " from " + compareTimeBlock.getBeginTimeDisplayTimeOnlyString() + " - " + compareTimeBlock.getEndTimeDisplayTimeOnlyString();
-                            Interval compareTimeBlockInterval = new Interval(compareTimeBlock.getBeginDateTime(), compareTimeBlock.getEndDateTime());
-                            if (compareTimeBlockInterval.contains(beginDate.getMillis())) {
-                                errors.add("Error : [" + timeBlockDesc + " overlaps with " + compareTimeBlockDesc + ".]" );
-                            }
-                        }
-                    }
-
-                    if (!assignmentKeyList.contains(timeBlock.getAssignmentKey())) {
-                        errors.add("Error: [" + timeBlockDesc + " contains an invalid assignment.]");
-                    }
-                }
-            }
-        }
-        return errors;
-    }
-
-    public List<String> validateHours(TimesheetDocument timesheetDocument) {
-        List<String> errors = new ArrayList<String>();
-
-        DateTimeZone userTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(timesheetDocument.getPrincipalId()));
-
-        if (userTimeZone == null) {
-            userTimeZone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
-        }
-        if (timesheetDocument != null && WorkflowTagSupport.isTimesheetApprovalButtonsDisplaying(timesheetDocument.getDocumentId())) {
-
-            String assignmentDesc = "";
-            for (Assignment assignment : timesheetDocument.getAssignments()) {
-                //get standard hours for job on assignment
-                BigDecimal standardHours = assignment.getJob().getStandardHours();
-                LocalDate jobStartDate = assignment.getJob().getEffectiveLocalDate();
-                //if standard hours is 0 no validation is needed.
-                if (standardHours.compareTo(new BigDecimal(0)) == 0) {
-                    continue;
-                }
-
-                //create a aggregate of timeblocks for current assignment in the loop
-                List<TimeBlock> assignmentTimeBlocks = new ArrayList<TimeBlock>();
-                for (TimeBlock timeBlock : timesheetDocument.getTimeBlocks()) {
-                    if (timeBlock.getAssignmentKey().equals(assignment.getAssignmentKey())) {
-                        assignmentTimeBlocks.add(timeBlock);
-                    }
-                }
-
-                TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(assignmentTimeBlocks, timesheetDocument.getCalendarEntry(), HrServiceLocator.getCalendarService().getCalendar(timesheetDocument.getCalendarEntry().getHrCalendarId()), true);
-
-                //create an aggregate of leaveblocks for current assignment in the loop
-                List<String> assigmentKeyList = new ArrayList<String>();
-                assigmentKeyList.add(assignment.getAssignmentKey());
-
-                List<LeaveBlock> leaveBlocks =  LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(timesheetDocument.getPrincipalId(),
-                        timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate(), timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate(), assigmentKeyList);
-                LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
-
-                //combine timeBlocks and leave blocks for selected assignment
-                tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
-
-                Map<String, BigDecimal> flsaWeekTotal =  getAssignmentHoursToFlsaWeekMap(tkTimeBlockAggregate, timesheetDocument.getPrincipalId(), assignment.getAssignmentKey(), jobStartDate, userTimeZone);
-
-                for (Map.Entry<String, BigDecimal> entry : flsaWeekTotal.entrySet()) {
-                    if (standardHours.compareTo(entry.getValue()) > 0) {
-                        errors.add("Error: [" + assignment.getAssignmentDescription() + " expected " + standardHours + " hours for " + entry.getKey() + " only " + entry.getValue() + " hours were entered.]");
-                    }
-                }
-            }
-
-        }
-        return errors;
-    }
-
-    private Map<String, BigDecimal> getAssignmentHoursToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, String assignmentKey, LocalDate jobStartDate, DateTimeZone userTimeZone) {
-
-        Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
-        List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(userTimeZone, principalId);
-
-
-        int weekCount = 1;
-        for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
-            boolean printWeek = true;
-            BigDecimal weekTotal = new BigDecimal(0.00);
-            for (FlsaWeek flsaWeekPart : flsaWeekParts) {
-
-                //if flsa week doesn't end during this pay period do not validate.
-                if (flsaWeekPart.equals(flsaWeekParts.get(flsaWeekParts.size() - 1))) {
-                    Integer lastFlsaDayOfWeek = flsaWeekPart.getFlsaDays().get(flsaWeekPart.getFlsaDays().size() - 1).getFlsaDate().getDayOfWeek();
-
-                    Integer flsaWeekEndDayOfWeek = TkConstants.FLSA_WEEK_END_DAY.get(tkTimeBlockAggregate.getPayCalendar().getFlsaBeginDay());
-
-                    if (lastFlsaDayOfWeek.compareTo(flsaWeekEndDayOfWeek) != 0) {
-                        printWeek = false;
-                        weekCount++;
-                        continue;
-                    }
-                }
-
-                //if flsa week starts before effective date of the job on the assignment do not validate.
-                if (flsaWeekPart.getFlsaDays().get(0).getFlsaDate().toLocalDate().isBefore(jobStartDate) ) {
-                    printWeek = false;
-                    weekCount++;
-                    continue;
-                }
-
-                for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
-
-                    for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-                        if (assignmentKey != null) {
-                            if (timeBlock.getAssignmentKey().compareTo(assignmentKey) == 0) {
-                                weekTotal = weekTotal.add(timeBlock.getHours(), HrConstants.MATH_CONTEXT);
-                            } else {
-                                weekTotal = weekTotal.add(new BigDecimal("0"), HrConstants.MATH_CONTEXT);
-                            }
-                        } else {
-                            weekTotal = weekTotal.add(timeBlock.getHours(), HrConstants.MATH_CONTEXT);
-                        }
-                    }
-                }
-            }
-
-            if (printWeek) {
-                hoursToFlsaWeekMap.put("Week " + weekCount++, weekTotal);
-            }
-        }
-
-        return hoursToFlsaWeekMap;
     }
 }

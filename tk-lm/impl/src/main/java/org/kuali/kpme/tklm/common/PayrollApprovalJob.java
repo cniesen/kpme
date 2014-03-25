@@ -15,19 +15,24 @@
  */
 package org.kuali.kpme.tklm.common;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.batch.BatchJobUtil;
-import org.kuali.kpme.core.calendar.CalendarBo;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -37,13 +42,21 @@ import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.actionitem.ActionItemActionListExtension;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.role.RoleMember;
-import org.quartz.*;
-
-import java.util.*;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 
 public class PayrollApprovalJob extends BatchJob {
 
@@ -58,13 +71,13 @@ public class PayrollApprovalJob extends BatchJob {
 			JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 			String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 	
-			CalendarEntry calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-            Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+			CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+			Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 			DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
 	    	DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
 	    	
 			List<RoleMember> roleMembers = new ArrayList<RoleMember>();
-			String subject = "";
+			String subject = new String();
 			List<Long> workAreas = new ArrayList<Long>();
 			
 			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {
@@ -76,7 +89,7 @@ public class PayrollApprovalJob extends BatchJob {
 						String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId);
 						
 						if(documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
-							PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
 							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
 								TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 								roleMembers = getRoleMembersInDepartment(timesheetDocument.getAssignments(), KPMENamespace.KPME_TK);
@@ -94,7 +107,7 @@ public class PayrollApprovalJob extends BatchJob {
 						String documentStatus = KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId);
 						// only approve documents in enroute status
 						if (documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
-							PrincipalHRAttributesContract phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
 							if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
 								LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 								roleMembers = getRoleMembersInDepartment(leaveCalendarDocument.getAssignments(), KPMENamespace.KPME_LM);

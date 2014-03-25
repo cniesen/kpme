@@ -19,8 +19,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.core.cache.CacheUtils;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.location.Location;
+import org.kuali.kpme.core.paygrade.PayGrade;
+import org.kuali.kpme.core.paytype.PayType;
+import org.kuali.kpme.core.position.PositionBase;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.salarygroup.SalaryGroup;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.krad.service.impl.ModuleServiceBase;
 
 
@@ -31,11 +48,11 @@ public class KpmeModuleService extends ModuleServiceBase {
         List<List<String>> retList = new ArrayList<List<String>>();
         List<String> keyList = new ArrayList<String>();
         try {
-            keyList.addAll((java.util.List<String>) businessObjectInterfaceClass.getDeclaredField("BUSINESS_KEYS").get(businessObjectInterfaceClass));
+            keyList.addAll((java.util.List<String>) businessObjectInterfaceClass.getDeclaredField("EQUAL_TO_FIELDS").get(businessObjectInterfaceClass));
         } catch (NoSuchFieldException e) {
-            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a BUSINESS_KEYS list");
+            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a EQUAL_TO_FIELDS list");
         } catch (IllegalAccessException e) {
-            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a BUSINESS_KEYS list");
+            LOG.warn(businessObjectInterfaceClass.getClass().getName() + " does not contain a EQUAL_TO_FIELDS list");
         }
 
         if (HrBusinessObject.class.isAssignableFrom(businessObjectInterfaceClass)) {

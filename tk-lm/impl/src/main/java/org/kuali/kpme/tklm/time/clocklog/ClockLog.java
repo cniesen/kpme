@@ -16,13 +16,14 @@
 package org.kuali.kpme.tklm.time.clocklog;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.task.TaskBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLogContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
@@ -32,14 +33,14 @@ public class ClockLog extends PersistableBusinessObjectBase implements ClockLogC
 
 	private static final long serialVersionUID = -6928657854016622568L;
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
 		            .add("task")
 		            .add("principalId")
 		            .add("workArea")
 		            .add("jobNumber")
 		            .build();
-
-    private String tkClockLogId;
+	
+	private String tkClockLogId;
 	private String documentId;
     private String principalId;
     private Long jobNumber;
@@ -56,8 +57,8 @@ public class ClockLog extends PersistableBusinessObjectBase implements ClockLogC
     private boolean clockedByMissedPunch;
 
     private transient Job job;
-    private transient WorkAreaBo workAreaObj;
-    private transient TaskBo taskObj;
+    private transient WorkArea workAreaObj;
+    private transient Task taskObj;
 
     private transient Person principal;
     
@@ -179,19 +180,19 @@ public class ClockLog extends PersistableBusinessObjectBase implements ClockLogC
 		this.job = job;
 	}
 
-	public WorkAreaBo getWorkAreaObj() {
+	public WorkArea getWorkAreaObj() {
 		return workAreaObj;
 	}
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+	public void setWorkAreaObj(WorkArea workAreaObj) {
 		this.workAreaObj = workAreaObj;
 	}
 
-	public TaskBo getTaskObj() {
+	public Task getTaskObj() {
 		return taskObj;
 	}
 
-	public void setTaskObj(TaskBo taskObj) {
+	public void setTaskObj(Task taskObj) {
 		this.taskObj = taskObj;
 	}
 

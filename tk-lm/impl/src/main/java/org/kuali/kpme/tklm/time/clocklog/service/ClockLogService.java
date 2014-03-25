@@ -15,17 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.clocklog.service;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.springframework.cache.annotation.CacheEvict;
-
-import java.util.List;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 
 public interface ClockLogService {
 	/**
@@ -71,7 +70,7 @@ public interface ClockLogService {
 	 * @param principalId
 	 * @return
 	 */
-	@CacheEvict(value={AssignmentBo.CACHE_NAME}, allEntries = true)
+	@CacheEvict(value={Assignment.CACHE_NAME}, allEntries = true)
     ClockLog processClockLog(DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId);
     
     /**
@@ -81,10 +80,8 @@ public interface ClockLogService {
      */
     public ClockLog getClockLog(String tkClockLogId);
 
-    @CacheEvict(value={AssignmentBo.CACHE_NAME}, allEntries = true)
     ClockLog processClockLog(DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, TimesheetDocument td, String clockAction, boolean runRules, String principalId, String userPrincipalId);
-
-    @CacheEvict(value={AssignmentBo.CACHE_NAME}, allEntries = true)
+    
     public void deleteClockLogsForDocumentId(String documentId);
     
     /**

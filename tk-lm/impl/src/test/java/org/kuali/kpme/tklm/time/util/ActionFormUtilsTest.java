@@ -24,13 +24,11 @@ import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
@@ -63,7 +61,7 @@ public class ActionFormUtilsTest extends TKLMIntegrationTestCase {
 	@Test
 	public void testGetLeaveBlocksJson() {
 		List<LeaveBlock> lbList = new ArrayList<LeaveBlock>();
-		LeaveBlockBo lb = new LeaveBlockBo();
+		LeaveBlock lb = new LeaveBlock();
 		lb.setAssignmentTitle("testAssignment");
 		lb.setAssignmentKey("0-123-0");
 		lb.setEarnCode("EarnCode");
@@ -71,7 +69,7 @@ public class ActionFormUtilsTest extends TKLMIntegrationTestCase {
 		lb.setLeaveAmount(new BigDecimal(3));
 		lb.setLeaveLocalDate(new DateTime(2012, 2, 20, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone()).toLocalDate());
 		lb.setAccrualGenerated(false);
-		lbList.add(LeaveBlockBo.to(lb));
+		lbList.add(lb);
 		
 		String jsonString = ActionFormUtils.getLeaveBlocksJson(lbList);
 		String expectedString = "[{\"title\":\"\",\"assignment\":\"0-123-0\",\"earnCode\":\"EarnCode\",\"lmLeaveBlockId\":\"1111\",\"leaveAmount\":\"3\",\"leaveDate\":\"02\\/20\\/2012\",\"id\":\"1111\",\"canTransfer\":false,\"startDate\":\"02\\/20\\/2012\",\"endDate\":\"02\\/20\\/2012\"}]";

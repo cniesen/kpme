@@ -19,14 +19,13 @@ import java.math.BigDecimal;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.salarygroup.SalaryGroup;
-import org.kuali.kpme.core.api.salarygroup.SalaryGroupContract;
+import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
-import org.kuali.kpme.pm.api.positiontype.PositionTypeContract;
 import org.kuali.kpme.pm.classification.Classification;
 import org.kuali.kpme.pm.classification.duty.ClassificationDuty;
+import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
+import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
@@ -47,7 +46,6 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 			valid &= this.validateReportingGroup(clss);
 			valid &= this.validatePositionType(clss);
 			valid &= this.validatePercentTime(clss);
-            valid &= this.validatePayGrade(clss);
 		}
 		return valid;
 	}
@@ -115,7 +113,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 	
 	private boolean validateReportingGroup(Classification clss) {
 		if(StringUtils.isNotBlank(clss.getPositionReportGroup())) {
-			PositionReportGroupContract aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(clss.getPositionReportGroup(), clss.getEffectiveLocalDate());
+			PositionReportGroup aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(clss.getPositionReportGroup(), clss.getEffectiveLocalDate());
 			String errorMes = "PositionReportGroup '" + clss.getPositionReportGroup() + "'";
 			if(aPrg == null) {
 				this.putFieldError("dataObject.positionReportGroup", "error.existence", errorMes);
@@ -143,7 +141,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 	}
 	
 	private boolean validatePositionType(Classification clss) {
-		PositionTypeContract aPType = PmServiceLocator.getPositionTypeService().getPositionType(clss.getPositionType(),  clss.getEffectiveLocalDate());
+		PositionType aPType = PmServiceLocator.getPositionTypeService().getPositionType(clss.getPositionType(),  clss.getEffectiveLocalDate());
 		String errorMes = "PositionType '" + clss.getPositionType() + "'";
 		if(aPType == null) {
 			this.putFieldError("dataObject.positionType", "error.existence", errorMes);
@@ -188,17 +186,5 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		}		
 		return true;
 	}
-
-    private boolean validatePayGrade(Classification clss) {
-        if (StringUtils.isNotEmpty(clss.getPayGrade()) && !ValidationUtils.validatePayGrade(clss.getPayGrade(), clss.getSalaryGroup(), clss.getEffectiveLocalDate())) {
-            String[] params = new String[2];
-            params[0] = clss.getPayGrade();
-            params[1] = clss.getSalaryGroup();
-            this.putFieldError("dataObject.payGrade", "salaryGroup.contains.payGrade", params);
-            return false;
-        } else {
-            return true;
-        }
-    }
 	
 }

@@ -15,24 +15,22 @@
  */
 package org.kuali.kpme.core.principal.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
-import org.kuali.kpme.core.api.principal.service.PrincipalHRAttributesService;
-import org.kuali.kpme.core.calendar.CalendarBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.principal.dao.PrincipalHRAttributesDao;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesService {
 	private PrincipalHRAttributesDao principalHRAttributesDao;
@@ -44,8 +42,8 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
 	public PrincipalHRAttributes getPrincipalCalendar(String principalId, LocalDate asOfDate){
 		PrincipalHRAttributes pc =  this.principalHRAttributesDao.getPrincipalCalendar(principalId, asOfDate);
 		if(pc != null) {
-			pc.setCalendar(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar())));
-			pc.setLeaveCalObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar())));
+			pc.setCalendar(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar()));
+			pc.setLeaveCalObj(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar()));
 		}
 		return pc;
 	}
@@ -122,10 +120,10 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
 
         //TODO - performance
     	for (PrincipalHRAttributes principalHRAttributeObj : principalHRAttributeObjs) {
-        	JobContract jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalHRAttributeObj.getPrincipalId(), principalHRAttributeObj.getEffectiveLocalDate());
+        	Job jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalHRAttributeObj.getPrincipalId(), principalHRAttributeObj.getEffectiveLocalDate());
     		
     		String department = jobObj != null ? jobObj.getDept() : null;
-        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartment(department, jobObj.getEffectiveLocalDate()) : null;
+        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, jobObj.getEffectiveLocalDate()) : null;
         	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();

@@ -20,24 +20,20 @@ import java.util.Date;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PrincipalHRAttributes extends HrBusinessObject implements PrincipalHRAttributesContract {
 
-	private static final String PRINCIPAL_ID = "principalId";
-	
 	private static final long serialVersionUID = 6843318899816055301L;
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("principalId")
             .build();
 	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
 
@@ -50,23 +46,17 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 	private boolean fmlaEligible;
 	private boolean workersCompEligible;
 	private String timezone;
+	private Boolean history;
 	// KPME-1268 Kagata added recordTime and recordLeave variables
 	// KPME-1676 
 //	private String recordTime;
 //	private String recordLeave;
 	
-	private transient CalendarBo calendar;
-	private transient CalendarBo leaveCalObj;
+	private transient Calendar calendar;
+	private transient Calendar leaveCalObj;
 	private transient Person person;
-	private transient LeavePlanBo leavePlanObj;
+	private transient LeavePlan leavePlanObj;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(PRINCIPAL_ID, this.getPrincipalId())
-				.build();
-	}
 
 	public String getPrincipalId() {
 		return principalId;
@@ -140,11 +130,11 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 		this.timezone = timezone;
 	}
 
-	public CalendarBo getCalendar() {
+	public Calendar getCalendar() {
 		return calendar;
 	}
 
-	public void setCalendar(CalendarBo calendar) {
+	public void setCalendar(Calendar calendar) {
 		this.calendar = calendar;
 	}
 
@@ -156,14 +146,11 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 		this.person = person;
 	}
 
-	public LeavePlanBo getLeavePlanObj() {
-        if (leavePlanObj == null) {
-            leavePlanObj = LeavePlanBo.from(HrServiceLocator.getLeavePlanService().getLeavePlan(leavePlan,getEffectiveLocalDate()));
-        }
+	public LeavePlan getLeavePlanObj() {
 		return leavePlanObj;
 	}
 
-	public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
+	public void setLeavePlanObj(LeavePlan leavePlanObj) {
 		this.leavePlanObj = leavePlanObj;
 	}
 
@@ -190,11 +177,11 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 		setHrPrincipalAttributeId(id);
 	}
 
-	public CalendarBo getLeaveCalObj() {
+	public Calendar getLeaveCalObj() {
 		return leaveCalObj;
 	}
 
-	public void setLeaveCalObj(CalendarBo leaveCalObj) {
+	public void setLeaveCalObj(Calendar leaveCalObj) {
 		this.leaveCalObj = leaveCalObj;
 	}
 
@@ -206,4 +193,11 @@ public class PrincipalHRAttributes extends HrBusinessObject implements Principal
 		this.hrPrincipalAttributeId = hrPrincipalAttributeId;
 	}
 
+	public Boolean getHistory() {
+		return history;
+	}
+
+	public void setHistory(Boolean history) {
+		this.history = history;
+	}
 }

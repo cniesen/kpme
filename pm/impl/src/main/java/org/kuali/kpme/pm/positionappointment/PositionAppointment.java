@@ -16,26 +16,13 @@
 package org.kuali.kpme.pm.positionappointment;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positionappointment.PositionAppointmentContract;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PositionAppointment extends HrBusinessObject implements PositionAppointmentContract {
 	
-	private static final String LOCATION = "location";
-	private static final String INSTITUTION = "institution";
-	private static final String POSITION_APPOINTMENT = "positionAppointment";
-
 	private static final long serialVersionUID = 1L;
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(POSITION_APPOINTMENT)
-            .add(INSTITUTION)
-            .add(LOCATION)
-            .build();
 	
 	private String pmPositionAppointmentId;
 	private String positionAppointment;
@@ -43,19 +30,9 @@ public class PositionAppointment extends HrBusinessObject implements PositionApp
 	private String institution;
 	private String location;
 	
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
+	private Location locationObj;
+	private Institution institutionObj;
 	private boolean history;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(POSITION_APPOINTMENT, this.getPositionAppointment())
-			.put(INSTITUTION, this.getInstitution())
-			.put(LOCATION, this.getLocation())
-			.build();
-	}
-	
 	
 	public boolean isHistory() {
 		return history;
@@ -117,28 +94,28 @@ public class PositionAppointment extends HrBusinessObject implements PositionApp
 	/**
 	 * @return the locationObj
 	 */
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
 	/**
 	 * @param locationObj the locationObj to set
 	 */
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
 	/**
 	 * @return the institutionObj
 	 */
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
 	/**
 	 * @param institutionObj the institutionObj to set
 	 */
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 

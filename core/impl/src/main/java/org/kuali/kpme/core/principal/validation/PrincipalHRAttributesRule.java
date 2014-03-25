@@ -18,14 +18,14 @@ package org.kuali.kpme.core.principal.validation;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 
 	private boolean validatePrincipalId(PrincipalHRAttributes principalHRAttr) {
-		if (StringUtils.isNotEmpty(principalHRAttr.getPrincipalId())
+		if (principalHRAttr.getPrincipalId() != null
 				&& !ValidationUtils.validatePrincipalId(principalHRAttr
 						.getPrincipalId())) {
 			this.putFieldError("principalId", "error.existence",
@@ -37,7 +37,7 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 	}
 	
 	private boolean validatePayCalendar(PrincipalHRAttributes principalHRAttr) {
-		if (StringUtils.isNotEmpty(principalHRAttr.getPayCalendar())
+		if (principalHRAttr.getPayCalendar() != null
 				&& !ValidationUtils.validateCalendarByType(principalHRAttr.getPayCalendar(), "Pay")) {
 			this.putFieldError("payCalendar", "error.existence",
 					"Pay Calendar '" + principalHRAttr.getPayCalendar() + "'");
@@ -48,7 +48,7 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 	}
 	
 	private boolean validateLeaveCalendar(PrincipalHRAttributes principalHRAttr) {
-		if (StringUtils.isNotEmpty(principalHRAttr.getLeaveCalendar())
+		if (principalHRAttr.getLeaveCalendar() != null
 				&& !ValidationUtils.validateCalendarByType(principalHRAttr.getLeaveCalendar(), "Leave")) {
 			this.putFieldError("leaveCalendar", "error.existence",
 					"Leave Calendar '" + principalHRAttr.getLeaveCalendar() + "'");
@@ -59,7 +59,7 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 	}
 
 	private boolean validateLeavePlan(PrincipalHRAttributes principalHRAttr) {
-        if (StringUtils.isNotEmpty(principalHRAttr.getLeavePlan())
+        if (principalHRAttr.getLeavePlan() != null
 				&& !ValidationUtils.validateLeavePlan(principalHRAttr.getLeavePlan(), null)) {
 			this.putFieldError("leavePlan", "error.existence",
 					"leavePlan '" + principalHRAttr.getLeavePlan() + "'");
@@ -119,7 +119,7 @@ public class PrincipalHRAttributesRule extends MaintenanceDocumentRuleBase {
 
 
 		LOG.debug("entering custom validation for Job");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		if (pbo instanceof PrincipalHRAttributes) {
 			PrincipalHRAttributes principalHRAttr = (PrincipalHRAttributes) pbo;
 			if (principalHRAttr != null) {

@@ -20,24 +20,21 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.*;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.block.CalendarBlockPermissions;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockService;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.block.dao.LeaveBlockDao;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import java.math.BigDecimal;
@@ -46,26 +43,11 @@ import java.util.*;
 public class LeaveBlockServiceImpl implements LeaveBlockService {
 
     private static final Logger LOG = Logger.getLogger(LeaveBlockServiceImpl.class);
-    private static final ModelObjectUtils.Transformer<LeaveBlockBo, LeaveBlock> toLeaveBlock =
-            new ModelObjectUtils.Transformer<LeaveBlockBo, LeaveBlock>() {
-                public LeaveBlock transform(LeaveBlockBo input) {
-                    return LeaveBlockBo.to(input);
-                };
-            };
-    private static final ModelObjectUtils.Transformer<LeaveBlock, LeaveBlockBo> toLeaveBlockBo =
-            new ModelObjectUtils.Transformer<LeaveBlock, LeaveBlockBo>() {
-                public LeaveBlockBo transform(LeaveBlock input) {
-                    return LeaveBlockBo.from(input);
-                };
-            };
+
     private LeaveBlockDao leaveBlockDao;
 
     @Override
     public LeaveBlock getLeaveBlock(String leaveBlockId) {
-        return LeaveBlockBo.to(getLeaveBlockBo(leaveBlockId));
-    }
-
-    protected LeaveBlockBo getLeaveBlockBo(String leaveBlockId) {
         return leaveBlockDao.getLeaveBlock(leaveBlockId);
     }
 
@@ -78,37 +60,31 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     }
 
     public List<LeaveBlock> getLeaveBlocksForDocumentId(String documentId) {
-        return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocksForDocumentId(documentId), toLeaveBlock);
+        return leaveBlockDao.getLeaveBlocksForDocumentId(documentId);
     }
 
 
     @Override
     public List<LeaveBlock> getLeaveBlocks(String principalId, LocalDate beginDate,
                                    LocalDate endDate) {
-        return ModelObjectUtils.transform(getLeaveBlockBos(principalId, beginDate, endDate), toLeaveBlock);
-    }
-
-    protected List<LeaveBlockBo> getLeaveBlockBos(String principalId, LocalDate beginDate,
-                                           LocalDate endDate) {
         return leaveBlockDao.getLeaveBlocks(principalId, beginDate, endDate);
     }
 
     @Override
     public List<LeaveBlock> getLeaveBlocksWithAccrualCategory(String principalId, LocalDate beginDate,
                                            LocalDate endDate, String accrualCategory) {
-        return ModelObjectUtils.transform(
-                leaveBlockDao.getLeaveBlocksWithAccrualCategory(principalId, beginDate, endDate, accrualCategory), toLeaveBlock);
+        return leaveBlockDao.getLeaveBlocksWithAccrualCategory(principalId, beginDate, endDate, accrualCategory);
     }
 
     @Override
     public List<LeaveBlock> getLeaveBlocksWithType(String principalId, LocalDate beginDate,
                                            LocalDate endDate, String leaveBlockType) {
-        return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocksWithType(principalId, beginDate, endDate, leaveBlockType), toLeaveBlock);
+        return leaveBlockDao.getLeaveBlocksWithType(principalId, beginDate, endDate, leaveBlockType);
     }
 
     @Override
     public List<LeaveBlock> getLeaveBlocksSinceCarryOver(String principalId, Map<String, LeaveBlock> carryOver, LocalDate endDate, boolean includeAllAccrualCategories) {
-        return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocksSinceCarryOver(principalId, carryOver, endDate, includeAllAccrualCategories), toLeaveBlock);
+        return leaveBlockDao.getLeaveBlocksSinceCarryOver(principalId, carryOver, endDate, includeAllAccrualCategories);
     }
 
     @Override
@@ -116,43 +92,33 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         if (StringUtils.isEmpty(principalId)) {
             return Collections.emptyMap();
         }
-        Map<String, LeaveBlock> carryOver = new HashMap<String, LeaveBlock>();
-        Map<String, LeaveBlockBo> fromDao = leaveBlockDao.getLastCarryOverBlocks(principalId, LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER, asOfDate);
-        for (Map.Entry<String, LeaveBlockBo> entry : fromDao.entrySet()) {
-            carryOver.put(entry.getKey(), LeaveBlockBo.to(entry.getValue()));
-        }
-        return carryOver;
+        return leaveBlockDao.getLastCarryOverBlocks(principalId, LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER, asOfDate);
     }
 
     @Override
     public List<LeaveBlock> saveLeaveBlocks(List<LeaveBlock> leaveBlocks) {
-        List<LeaveBlockBo> bos = ModelObjectUtils.transform(leaveBlocks, toLeaveBlockBo);
-    	return ModelObjectUtils.transform(saveLeaveBlockBos(bos), toLeaveBlock);
-    }
-
-    protected List<LeaveBlockBo> saveLeaveBlockBos(List<LeaveBlockBo> leaveBlocks) {
-        List<LeaveBlockBo> savedLeaveBlocks = new ArrayList<LeaveBlockBo>();
-
-        Collection<LeaveBlockBo> savedObjects = (Collection<LeaveBlockBo>) KRADServiceLocator.getBusinessObjectService().save(leaveBlocks);
-
-        List<LeaveBlockHistory> leaveBlockHistories = new ArrayList<LeaveBlockHistory>();
-        for (LeaveBlockBo leaveBlock : leaveBlocks) {
-            LeaveBlockHistory lbh = new LeaveBlockHistory(leaveBlock);
-            lbh.setAction(HrConstants.ACTION.ADD);
-            leaveBlockHistories.add(lbh);
+    	List<LeaveBlock> savedLeaveBlocks = new ArrayList<LeaveBlock>();
+    	
+    	Collection<LeaveBlock> savedObjects = (Collection<LeaveBlock>) KRADServiceLocator.getBusinessObjectService().save(leaveBlocks);
+    	
+    	List<LeaveBlockHistory> leaveBlockHistories = new ArrayList<LeaveBlockHistory>();
+        for (LeaveBlock leaveBlock : leaveBlocks) {
+        	LeaveBlockHistory lbh = new LeaveBlockHistory(leaveBlock);
+        	lbh.setAction(HrConstants.ACTION.ADD);
+        	leaveBlockHistories.add(lbh);
             HrServiceLocator.getHRPermissionService().updateLeaveBlockPermissions(CalendarBlockPermissions.newInstance(leaveBlock.getLmLeaveBlockId()));
         }
-
+        
         KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistories);
-
+        
         savedLeaveBlocks.addAll(savedObjects);
-
+        
         return savedLeaveBlocks;
     }
 
     @Override
     public void deleteLeaveBlock(String leaveBlockId, String principalId) {
-        LeaveBlockBo leaveBlock = getLeaveBlockBo(leaveBlockId);
+        LeaveBlock leaveBlock = getLeaveBlock(leaveBlockId);
         
 //        leaveBlock.setPrincipalIdModified(HrContext.getTargetPrincipalId());
 //        leaveBlock.setTimestamp(TKUtils.getCurrentTimestamp());
@@ -174,22 +140,21 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 
     @Override
     public LeaveBlock saveLeaveBlock(LeaveBlock leaveBlock, String principalId) {
-    	LeaveBlockBo savedLeaveBlock = null;
-        LeaveBlockBo existingLB = LeaveBlockBo.from(leaveBlock);
+    	LeaveBlock savedLeaveBlock = null;
     	// first delete and create new entry in the database
-    	KRADServiceLocator.getBusinessObjectService().delete(existingLB);
+    	KRADServiceLocator.getBusinessObjectService().delete(leaveBlock);
     	
     	// create new 
-        existingLB.setLmLeaveBlockId(null);
-        existingLB.setTimestamp(TKUtils.getCurrentTimestamp());
-        existingLB.setPrincipalIdModified(principalId);
-    	savedLeaveBlock = KRADServiceLocator.getBusinessObjectService().save(existingLB);
+        leaveBlock.setLmLeaveBlockId(null);
+    	leaveBlock.setTimestamp(TKUtils.getCurrentTimestamp());
+    	leaveBlock.setPrincipalIdModified(principalId);
+    	savedLeaveBlock = KRADServiceLocator.getBusinessObjectService().save(leaveBlock);
 
         // save history
-        LeaveBlockHistory lbh = new LeaveBlockHistory(existingLB);
+        LeaveBlockHistory lbh = new LeaveBlockHistory(leaveBlock);
         lbh.setAction(HrConstants.ACTION.MODIFIED);
         LmServiceLocator.getLeaveBlockHistoryService().saveLeaveBlockHistory(lbh);
-        return LeaveBlockBo.to(savedLeaveBlock);
+        return savedLeaveBlock;
     }
 
     @Override
@@ -216,7 +181,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         List<Interval> leaveBlockIntervals = TKUtils.createDaySpan(beginDate.toLocalDate().toDateTimeAtStartOfDay(), endDate.toLocalDate().toDateTimeAtStartOfDay().plusDays(1), TKUtils.getSystemDateTimeZone());
 
         // need to use beginDate and endDate of the calendar to find all leaveBlocks since LeaveCalendarDocument Id is not always available
-        List<LeaveBlockBo> currentLeaveBlocks = getLeaveBlockBos(principalId, calBeginDateTime.toLocalDate(), calEndDateTime.toLocalDate());
+        List<LeaveBlock> currentLeaveBlocks = getLeaveBlocks(principalId, calBeginDateTime.toLocalDate(), calEndDateTime.toLocalDate());
     
         // use the current calendar's begin and end date to figure out if this pay period has a leaveDocument
         LeaveCalendarDocumentHeader lcdh = LmServiceLocator.getLeaveCalendarDocumentHeaderService()
@@ -227,7 +192,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     	Interval firstDay = null;
     	DateTime currentDate = beginDate;
         
-    	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, endDate.toLocalDate());
+    	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(selectedEarnCode, endDate.toLocalDate()); 
         for (Interval leaveBlockInt : leaveBlockIntervals) {
             if (calendarInterval.contains(leaveBlockInt)) {
             	// KPME-1446 if "Include weekends" check box is checked, don't add Sat and Sun to the leaveblock list
@@ -253,7 +218,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
      	            	  requestStatus = HrConstants.REQUEST_STATUS.PLANNED;
      	               }
                     } else {
-                    	if (DateUtils.isSameDay(leaveBlockDate.toDate(), calendarEntry.getEndPeriodFullDateTime().toDate()) || leaveBlockDate.isAfter(calendarEntry.getEndPeriodFullDateTime())) {
+                    	if (DateUtils.isSameDay(leaveBlockDate.toDate(), calendarEntry.getEndPeriodDateTime()) || leaveBlockDate.isAfter(calendarEntry.getEndPeriodFullDateTime())) {
                     		requestStatus = HrConstants.REQUEST_STATUS.PLANNED;
                     	}
                     }
@@ -270,7 +235,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	                            }
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlockBo leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, leaveBlockInt.getStart(), endDate);
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, leaveBlockInt.getStart(), endDate);
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -290,7 +255,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 		                         }
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlockBo leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, endDate);
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, endDate);
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -306,7 +271,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 		                        }
                                 hours = negateHoursIfNecessary(leaveBlockType, hours);
 	                    		
-	                    		LeaveBlockBo leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, firstDay.getEnd());
+	                    		LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), selectedAssignment, requestStatus, leaveBlockType, currentDate, firstDay.getEnd());
 	                            
 			                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 			                        currentLeaveBlocks.add(leaveBlock);
@@ -320,7 +285,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
                             hours = applyInflateMinHoursAndFactor(earnCodeObj, hours);
                         }
                         hours = negateHoursIfNecessary(leaveBlockType, hours);
-		                LeaveBlockBo leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(),
+		                LeaveBlock leaveBlock = buildLeaveBlock(leaveBlockInt.getStart().toLocalDate(), docId, principalId, selectedEarnCode, hours, description, earnCodeObj.getAccrualCategory(), 
 		                		selectedAssignment, requestStatus, leaveBlockType, null, null);
 	                    if (!currentLeaveBlocks.contains(leaveBlock)) {
 	                        currentLeaveBlocks.add(leaveBlock);
@@ -329,7 +294,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
             	}
             }
         }
-        saveLeaveBlockBos(currentLeaveBlocks);
+        saveLeaveBlocks(currentLeaveBlocks);
     }
 
     private BigDecimal negateHoursIfNecessary(String leaveBlockType, BigDecimal hours) {
@@ -342,10 +307,10 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     }
     
     
-    public LeaveBlockBo buildLeaveBlock(LocalDate leaveDate, String docId, String principalId, String selectedEarnCode,
+    public LeaveBlock buildLeaveBlock(LocalDate leaveDate, String docId, String principalId, String selectedEarnCode, 
     		BigDecimal hours, String description, String accrualCategory, Assignment selectedAssignment, String requestStatus, String leaveBlockType, DateTime beginDateTime, DateTime endDateTime) {
     	
-    	LeaveBlockBo leaveBlock = new LeaveBlockBo.Builder(leaveDate, docId, principalId, selectedEarnCode, hours)
+    	LeaveBlock leaveBlock = new LeaveBlock.Builder(leaveDate, docId, principalId, selectedEarnCode, hours)
         .description(description)
         .principalIdModified(principalId)
         .timestamp(TKUtils.getCurrentTimestamp())
@@ -366,16 +331,15 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     // KPME-1447
     @Override
     public void updateLeaveBlock(LeaveBlock leaveBlock, String principalId) {
-        LeaveBlockBo leaveBlockBo = LeaveBlockBo.from(leaveBlock);
     	//verify that if leave block is usage, leave amount is negative
-        leaveBlockBo.setLeaveAmount(negateHoursIfNecessary(leaveBlock.getLeaveBlockType(), leaveBlock.getLeaveAmount()));
+        leaveBlock.setLeaveAmount(negateHoursIfNecessary(leaveBlock.getLeaveBlockType(), leaveBlock.getLeaveAmount()));
         // Make entry into LeaveBlockHistory table
-        LeaveBlockHistory leaveBlockHistory = new LeaveBlockHistory(leaveBlockBo);
+        LeaveBlockHistory leaveBlockHistory = new LeaveBlockHistory(leaveBlock);
         leaveBlockHistory.setPrincipalIdDeleted(principalId);
         leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(HrConstants.ACTION.MODIFIED);
 
-        KRADServiceLocator.getBusinessObjectService().save(leaveBlockBo);
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlock);
         
         // creating history
         KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistory); 
@@ -399,32 +363,34 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 
 	@Override
 	public List<LeaveBlock> getLeaveBlocks(String principalId, String leaveBlockType, String requestStatus, LocalDate currentDate) {
-		return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocks(principalId, leaveBlockType, requestStatus, currentDate), toLeaveBlock);
+		return leaveBlockDao.getLeaveBlocks(principalId, leaveBlockType, requestStatus, currentDate);
 	}
 
     @Override
     public List<LeaveBlock> getLeaveBlocks(String principalId, String leaveBlockType, String requestStatus, LocalDate beginDate, LocalDate endDate) {
-        return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocks(principalId, leaveBlockType, requestStatus, beginDate, endDate), toLeaveBlock);
+        return leaveBlockDao.getLeaveBlocks(principalId, leaveBlockType, requestStatus, beginDate, endDate);
     }
 
 	@Override
 	public List<LeaveBlock> getLeaveBlocksForDate(String principalId, LocalDate leaveDate) {
-		return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocksForDate(principalId, leaveDate), toLeaveBlock);
+		return leaveBlockDao.getLeaveBlocksForDate(principalId, leaveDate);
 	}
 
 	@Override
 	public List<LeaveBlock> getNotAccrualGeneratedLeaveBlocksForDate(String principalId, LocalDate leaveDate) {
-		return ModelObjectUtils.transform(leaveBlockDao.getNotAccrualGeneratedLeaveBlocksForDate(principalId, leaveDate), toLeaveBlock);
+		return leaveBlockDao.getNotAccrualGeneratedLeaveBlocksForDate(principalId, leaveDate);
 	}
 
 	public List<LeaveBlock> getLeaveBlocksForTimeCalendar(String principalId, LocalDate beginDate, LocalDate endDate, List<String> assignmentKeys) {
-		List<LeaveBlock> col = ModelObjectUtils.transform(leaveBlockDao.getCalendarLeaveBlocks(principalId, beginDate, endDate), toLeaveBlock);
-		return filterLeaveBlocksForTimeCalendar(col, assignmentKeys);
+		List<LeaveBlock> col = leaveBlockDao.getCalendarLeaveBlocks(principalId, beginDate, endDate);
+		List<LeaveBlock> leaveBlocks = filterLeaveBlocksForTimeCalendar(col, assignmentKeys);
+		return leaveBlocks;
 	}
 	
 	public List<LeaveBlock> getLeaveBlocksForLeaveCalendar(String principalId, LocalDate beginDate, LocalDate endDate, List<String> assignmentKeys) {
-        List<LeaveBlock> col = getLeaveBlocks(principalId, beginDate, endDate);
-		return filterLeaveBlocksForLeaveCalendar(col, assignmentKeys);
+		List<LeaveBlock> col = leaveBlockDao.getLeaveBlocks(principalId, beginDate, endDate);
+		List<LeaveBlock> leaveBlocks = filterLeaveBlocksForLeaveCalendar(col, assignmentKeys);
+		return leaveBlocks;
 	}
 	
 	public List<LeaveBlock> filterLeaveBlocksForTimeCalendar(List<LeaveBlock> lbs, List<String> assignmentKeys) {
@@ -453,8 +419,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     	}
     	return results;
     }
-
-    @Override
+	
 	public List<LeaveBlock> filterLeaveBlocksForLeaveCalendar(List<LeaveBlock> lbs, List<String> assignmentKeys) {
 		if(CollectionUtils.isEmpty(assignmentKeys)) {
 			return lbs;
@@ -484,20 +449,20 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     
     @Override
     public List<LeaveBlock> getAccrualGeneratedLeaveBlocks(String principalId, LocalDate beginDate, LocalDate endDate) {
-    	return ModelObjectUtils.transform(leaveBlockDao.getAccrualGeneratedLeaveBlocks(principalId, beginDate, endDate), toLeaveBlock);
+    	return leaveBlockDao.getAccrualGeneratedLeaveBlocks(principalId, beginDate, endDate);
     }
     
     @Override
     public List<LeaveBlock> getSSTOLeaveBlocks(String principalId, String sstoId, LocalDate accruledDate) {
-    	return ModelObjectUtils.transform(leaveBlockDao.getSSTOLeaveBlocks(principalId, sstoId, accruledDate), toLeaveBlock);
+    	return leaveBlockDao.getSSTOLeaveBlocks(principalId, sstoId, accruledDate);
     }
     
     @Override
     public List<LeaveBlock> getABELeaveBlocksSinceTime(String principalId, DateTime lastRanDateTime) {
-    	return ModelObjectUtils.transform(leaveBlockDao.getABELeaveBlocksSinceTime(principalId, lastRanDateTime), toLeaveBlock);
+    	return leaveBlockDao.getABELeaveBlocksSinceTime(principalId, lastRanDateTime);
     }
     
-    protected BigDecimal applyInflateMinHoursAndFactor(EarnCode earnCodeObj, BigDecimal blockHours) {
+    private BigDecimal applyInflateMinHoursAndFactor(EarnCode earnCodeObj, BigDecimal blockHours) {
     	if(earnCodeObj != null) {
 	    	//If earn code has an inflate min hours check if it is greater than zero
 	        //and compare if the hours specified is less than min hours awarded for this
@@ -523,14 +488,14 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 	public List<LeaveBlock> getTimeCalendarLeaveBlocksForTimeBlockLookup(
 			String documentId, String principalId, String userPrincipalId,
 			LocalDate fromDate, LocalDate toDate) {
-		return ModelObjectUtils.transform(leaveBlockDao.getTimeCalendarLeaveBlocksForTimeBlockLookup(documentId, principalId, userPrincipalId, fromDate, toDate), toLeaveBlock);
+		return leaveBlockDao.getTimeCalendarLeaveBlocksForTimeBlockLookup(documentId,principalId,userPrincipalId,fromDate,toDate);
 	}
 	
 	@Override
 	public List<LeaveBlock> getLeaveBlocksForLookup(
 			String documentId, String principalId, String userPrincipalId,
 			LocalDate fromDate, LocalDate toDate,String leaveBlockType) {
-		return ModelObjectUtils.transform(leaveBlockDao.getLeaveBlocksForLookup(documentId, principalId, userPrincipalId, fromDate, toDate, leaveBlockType), toLeaveBlock);
+		return leaveBlockDao.getLeaveBlocksForLookup(documentId,principalId,userPrincipalId,fromDate,toDate,leaveBlockType);
 	}
 	
 }

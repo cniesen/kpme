@@ -15,26 +15,26 @@
  */
 package org.kuali.kpme.tklm.time.timeblock.dao;
 
+import java.util.List;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-
-import java.util.List;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 
 public interface TimeBlockDao {
 
-	public void saveOrUpdate(TimeBlockBo timeBlock);
+	public void saveOrUpdate(TimeBlock timeBlock);
 
-	public void saveOrUpdate(List<TimeBlockBo> timeBlockList);
+	public void saveOrUpdate(List<TimeBlock> timeBlockList);
 
-	public void deleteTimeBlock(TimeBlockBo timeBlock);
+	public void deleteTimeBlock(TimeBlock timeBlock);
 
-	public TimeBlockBo getTimeBlock(String timeBlockId);
+	public TimeBlock getTimeBlock(String timeBlockId);
 	
-	public List<TimeBlockBo> getTimeBlocks(String documentId);
+	public List<TimeBlock> getTimeBlocks(String documentId);
 	
-	public List<TimeBlockBo> getTimeBlocksForAssignment(Assignment assign);
+	public List<TimeBlock> getTimeBlocksForAssignment(Assignment assign);
 	
 	public void deleteTimeBlocksAssociatedWithDocumentId(String documentId);
 	
@@ -43,21 +43,21 @@ public interface TimeBlockDao {
 	 * @param tkClockLogId
 	 * @return List<TimeBlock>	 * 
 	 */
-	public List<TimeBlockBo> getTimeBlocksForClockLogEndId(String tkClockLogId);
+	public List<TimeBlock> getTimeBlocksForClockLogEndId(String tkClockLogId);
 	/*
 	 * Get all the time blocks with the given Clock Log id as the clockLogBeginId
 	 * @param tkClockLogId
 	 * @return List<TimeBlock>	 * 
 	 */
-	public List<TimeBlockBo> getTimeBlocksForClockLogBeginId(String tkClockLogId);
+	public List<TimeBlock> getTimeBlocksForClockLogBeginId(String tkClockLogId);
 	
-	public List<TimeBlockBo> getLatestEndTimestampForEarnCode(String earnCode);
+	public List<TimeBlock> getLatestEndTimestampForEarnCode(String earnCode);
 
-    List<TimeBlockBo> getOvernightTimeBlocks(String clockLogEndId);
+    List<TimeBlock> getOvernightTimeBlocks(String clockLogEndId);
     
-    public List<TimeBlockBo> getTimeBlocksWithEarnCode(String earnCode, DateTime effDate);
+    public List<TimeBlock> getTimeBlocksWithEarnCode(String earnCode, DateTime effDate);
 
-	public List<TimeBlockBo> getTimeBlocksForLookup(String documentId,
+	public List<TimeBlock> getTimeBlocksForLookup(String documentId,
 			String principalId, String userPrincipalId, LocalDate fromDate,
 			LocalDate toDate);
 }

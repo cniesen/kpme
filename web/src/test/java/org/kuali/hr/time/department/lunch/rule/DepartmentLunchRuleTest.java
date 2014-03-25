@@ -16,7 +16,6 @@
 package org.kuali.hr.time.department.lunch.rule;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,12 +26,10 @@ import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.kpme.core.FunctionalTest;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -88,16 +85,13 @@ public class DepartmentLunchRuleTest extends KPMEWebTestCase {
 
 		TimesheetDocument doc = TkTestUtils.populateTimesheetDocument(JAN_AS_OF_DATE, "edna");
 
-        List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>(doc.getTimeBlocks());
 		for(TimeBlock tb : doc.getTimeBlocks()){
-            TimeBlock.Builder b = TimeBlock.Builder.create(tb);
-			b.setClockLogCreated(true);
-            timeBlocks.add(b.build());
+			tb.setClockLogCreated(true);
 		}
         //reset time block
         //TkServiceLocator.getTimesheetService().resetTimeBlock(doc.getTimeBlocks());
 		//TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, doc.getTimeBlocks(), doc.getCalendarEntry(), doc, "admin");
-		for(TimeBlock tb : timeBlocks) {
+		for(TimeBlock tb : doc.getTimeBlocks()) {
 			if(tb.getHours().compareTo(deptLunchRule.getShiftHours()) == 1) {
 				for(TimeHourDetail thd : tb.getTimeHourDetails()){
 					// 	this assumes the hours for the dummy timeblocks are always 10

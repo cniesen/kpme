@@ -17,15 +17,14 @@ package org.kuali.kpme.tklm.time.batch;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.batch.BatchJob;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -40,8 +39,8 @@ public class InitiateJob extends BatchJob {
 		String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 		String principalId = jobDataMap.getString("principalId");
 		
-		CalendarEntry calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
+		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+		Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 		
 		try {
 			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {

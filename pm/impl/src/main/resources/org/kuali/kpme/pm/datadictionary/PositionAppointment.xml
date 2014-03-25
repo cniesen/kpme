@@ -23,15 +23,18 @@
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<bean id="PositionAppointment" parent="PositionAppointment-parentBean"/>
- 	<bean id="PositionAppointment-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+ 	<bean id="PositionAppointment-parentBean" abstract="true" parent="BusinessObjectEntry">
 	    <property name="dataObjectClass" value="org.kuali.kpme.pm.positionappointment.PositionAppointment"/>
 	    <property name="attributes">
-	      <list merge="true">
+	      <list>
 	        <ref bean="PositionAppointment-pmPositionAppointmentId"/>
+	        <ref bean="PositionAppointment-effectiveDate"/>
 	        <ref bean="PositionAppointment-positionAppointment"/>
 	        <ref bean="PositionAppointment-description"/>
 	        <ref bean="PositionAppointment-institution"/>
 	        <ref bean="PositionAppointment-location"/>
+	        <ref bean="PositionAppointment-history"/>
+	        <ref bean="PositionAppointment-active"/>
 		 </list>
 	    </property>
 	    <property name="objectLabel" value="PositionAppointment"/>
@@ -40,7 +43,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionAppointment-pmPositionAppointmentId" parent="PositionAppointment-pmPositionAppointmentId-parentBean"/>
 	 <bean id="PositionAppointment-pmPositionAppointmentId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -52,9 +54,20 @@
 	    <property name="label" value="Position Assignment Id"/>
 	 </bean>   
 	 
+	<bean id="PositionAppointment-effectiveDate" parent="PositionAppointment-effectiveDate-parentBean" />
+	<bean id="PositionAppointment-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Effective Date" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
 	<bean id="PositionAppointment-positionAppointment" parent="PositionAppointment-positionAppointment-parentBean" />
 	<bean id="PositionAppointment-positionAppointment-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Pstn Assgt" />
 		<property name="controlField">
@@ -67,7 +80,6 @@
 
 	<bean id="PositionAppointment-description" parent="PositionAppointment-description-parentBean" />
 	<bean id="PositionAppointment-description-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100" />
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -78,16 +90,51 @@
 	</bean>
 	
 	<bean id="PositionAppointment-institution" parent="PositionAppointment-institution-parentBean" />
-	<bean id="PositionAppointment-institution-parentBean" abstract="true" parent="KpmeAttributeReference-institution">
+	<bean id="PositionAppointment-institution-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
-		<property name="containsWildcardData" value="true"/>
+		<property name="shortLabel" value="Institution" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="15" />
+		</property>
+		<property name="name" value="institution" />
+		<property name="label" value="Institution" />
 	</bean>
 	
 	<bean id="PositionAppointment-location" parent="PositionAppointment-location-parentBean" />
-	<bean id="PositionAppointment-location-parentBean" abstract="true" parent="KpmeAttributeReference-location">
+	<bean id="PositionAppointment-location-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
-		<property name="containsWildcardData" value="true"/>
+		<property name="shortLabel" value="Location" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
 	</bean>
+    <bean id="PositionAppointment-active" parent="PositionAppointment-active-parentBean"/>
+ 	<bean id="PositionAppointment-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
+   		<property name="name" value="active"/>
+  	</bean>
+  	
+  	<!-- history -->
+	<bean id="PositionAppointment-history" parent="PositionAppointment-history-parentBean" />
+	<bean id="PositionAppointment-history-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Show History" />
+		<property name="controlField">
+			<bean parent="Uif-HorizontalRadioControl"/>
+		</property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder"/>
+        </property>
+		<property name="name" value="history" />
+		<property name="label" value="Show History" />
+	</bean>  
 
 <!--*************************************************************************** 
 							Views
@@ -95,9 +142,10 @@
   	
   <!-- Position Appointment Lookup View -->
  
-  <bean id="PositionAppointment-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="PositionAppointment-LookupView" parent="KPMEUif-LookupView">
     <property name="headerText" value="Position Appointment Lookup" />
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionappointment.PositionAppointment" />
+    <property name="viewHelperServiceClass" value="org.kuali.kpme.pm.positionappointment.web.PositionAppointmentLookupableImpl" />
     <property name="criteriaFields">
       <list>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
@@ -105,13 +153,13 @@
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="description" />       
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="institution" >
         	<property name="quickfinder">
-	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+	            <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
 	                  p:fieldConversions="institutionCode:institution"/>
 	        </property>
 	    </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="location" >
         	<property name="quickfinder">
-				<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+				<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 						p:fieldConversions="location:location" />
 			</property>
 		</bean>
@@ -155,7 +203,6 @@
 			        <bean parent="Uif-DataField" p:propertyName="institution" />
 			        <bean parent="Uif-DataField" p:propertyName="location" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Appointment Inquiry"/>
@@ -166,7 +213,7 @@
   
 <!--  Position Appointment Maintenance View -->
   <bean id="PositionAppointment-MaintenanceView" parent="PositionAppointment-MaintenanceView-parentBean"/>
-  <bean id="PositionAppointment-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionAppointment-MaintenanceView-parentBean" abstract="true" parent="Uif-MaintenanceView">
     <property name="headerText" value="Position Appointment Maintenance"/>
     <property name="dataObjectClassName" value="org.kuali.kpme.pm.positionappointment.PositionAppointment"/>
     <property name="items">
@@ -179,13 +226,13 @@
 		        <bean parent="Uif-InputField" p:propertyName="description" />
 		        <bean parent="Uif-InputField" p:propertyName="institution" >
 			        <property name="quickfinder">
-		       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+		       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution" 
 		        			 p:fieldConversions="institutionCode:institution"/>
 		   			</property>
 		        </bean>
 		        <bean parent="Uif-InputField" p:propertyName="location" >
 		        	<property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 					</property>
 		        </bean>

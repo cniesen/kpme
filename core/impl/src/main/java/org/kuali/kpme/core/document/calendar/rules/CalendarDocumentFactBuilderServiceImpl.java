@@ -18,9 +18,9 @@ package org.kuali.kpme.core.document.calendar.rules;
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.department.Department;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
 import org.kuali.kpme.core.krms.KpmeKrmsFactBuilderServiceHelper;
 import org.kuali.kpme.core.service.HrServiceLocator;
@@ -34,7 +34,9 @@ import org.w3c.dom.Document;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -64,7 +66,7 @@ public class CalendarDocumentFactBuilderServiceImpl extends KpmeKrmsFactBuilderS
             for (Assignment a : document.getAssignments()) {
                 workAreas.add(String.valueOf(a.getWorkArea()));
                 depts.add(a.getDept());
-                Department department = HrServiceLocator.getDepartmentService().getDepartment(a.getDept(), asOfDate);
+                Department department = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(a.getDept(), asOfDate);
                 if (department != null
                         && department.isPayrollApproval()) {
                     factsBuilder.addFact(new Term("payrollProcessorApproval"), Boolean.TRUE);

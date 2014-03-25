@@ -15,17 +15,16 @@
  */
 package org.kuali.kpme.core.position.web;
 
-import java.util.Map;
-
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.position.PositionBaseBo;
+import org.kuali.kpme.core.position.PositionBase;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
 
-@SuppressWarnings("deprecation")
+import java.util.Map;
+
 public class PositionBaseInquirableImpl extends KualiInquirableImpl {
 
 	private static final long serialVersionUID = 6232629850941402875L;
@@ -33,18 +32,18 @@ public class PositionBaseInquirableImpl extends KualiInquirableImpl {
 	@Override
 	@SuppressWarnings("rawtypes")
 	public BusinessObject getBusinessObject(Map fieldValues) {
-		PositionBaseBo position = null;
+		PositionBase position = null;
 		
 		if (StringUtils.isNotBlank((String)fieldValues.get("hrPositionId"))) {
-            position = (PositionBaseBo) HrServiceLocator.getPositionService().getPosition((String) fieldValues.get("hrPositionId"));
+            position = HrServiceLocator.getPositionService().getPosition((String) fieldValues.get("hrPositionId"));
 
 		} else if(StringUtils.isNotBlank((String)fieldValues.get("positionNumber")) && StringUtils.isNotBlank((String)fieldValues.get("effectiveDate"))) {
 			String positionNumber = (String) fieldValues.get("positionNumber");
 			String effDate = (String) fieldValues.get("effectiveDate");
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
-		    position = (PositionBaseBo) HrServiceLocator.getPositionService().getPosition(positionNumber, effectiveDate);
+		    position = HrServiceLocator.getPositionService().getPosition(positionNumber, effectiveDate);
 		} else {
-			position = (PositionBaseBo) super.getBusinessObject(fieldValues);
+			position = (PositionBase) super.getBusinessObject(fieldValues);
 		}
 
 		return position;

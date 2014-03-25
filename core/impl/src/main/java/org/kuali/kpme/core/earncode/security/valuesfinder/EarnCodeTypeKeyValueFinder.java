@@ -24,15 +24,15 @@ import java.util.Map.Entry;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
-import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
-import org.kuali.rice.krad.uif.view.ViewModel;
-import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
+import org.kuali.rice.kns.util.KNSGlobalVariables;
+import org.kuali.rice.kns.web.struts.form.KualiMaintenanceForm;
+import org.kuali.rice.krad.keyvalues.KeyValuesBase;
 
-public class EarnCodeTypeKeyValueFinder extends UifKeyValuesFinderBase {
+public class EarnCodeTypeKeyValueFinder extends KeyValuesBase {
 
 	@Override
-	public List<KeyValue> getKeyValues(ViewModel model) {
-		
+	public List<KeyValue> getKeyValues() {
+				
 		List<KeyValue> delegationTypes = new ArrayList<KeyValue>();
 		List<KeyValue> delegationTypesForMaintDocs = new ArrayList<KeyValue>();
 
@@ -65,8 +65,8 @@ public class EarnCodeTypeKeyValueFinder extends UifKeyValuesFinderBase {
 			}
 			
 		});
-
-		return (model instanceof MaintenanceDocumentForm? delegationTypesForMaintDocs : delegationTypes);
+		
+		return (KNSGlobalVariables.getKualiForm() instanceof KualiMaintenanceForm) ? delegationTypesForMaintDocs : delegationTypes;
 	}
 
 }

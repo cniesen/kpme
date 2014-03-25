@@ -24,16 +24,13 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PayStep extends HrBusinessObject implements Comparable, PayStepContract {
 
-	private static final String PAY_STEP = "payStep";
-	
 	private static final Logger LOG = Logger.getLogger(PayStep.class);
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(PAY_STEP)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("payStep")
 		    .build();
 
 	private static final long serialVersionUID = 1L;
@@ -48,13 +45,7 @@ public class PayStep extends HrBusinessObject implements Comparable, PayStepCont
 	private BigDecimal compRate;
 	private int serviceAmount;
 	private String serviceUnit;
-
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(PAY_STEP, this.getPayStep())
-			.build();
-	}
+	private String history;
 	
 	@Override
 	public boolean isActive() {
@@ -199,5 +190,14 @@ public class PayStep extends HrBusinessObject implements Comparable, PayStepCont
 	public void setPmPayStepId(String pmPayStepId) {
 		this.pmPayStepId = pmPayStepId;
 	}
+
+	public String getHistory() {
+		return history;
+	}
+
+	public void setHistory(String history) {
+		this.history = history;
+	}
+
 
 }

@@ -15,15 +15,15 @@
  */
 package org.kuali.kpme.tklm.leave.timeoff.service;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.springframework.cache.annotation.Cacheable;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 public interface SystemScheduledTimeOffService {
     
@@ -40,7 +40,7 @@ public interface SystemScheduledTimeOffService {
 
 	public SystemScheduledTimeOff getSystemScheduledTimeOffByDate(String leavePlan, LocalDate startDate);
 
-    Assignment getAssignmentToApplyHolidays(
+	Assignment getAssignmentToApplyHolidays(
 			TimesheetDocument timesheetDocument, LocalDate payEndDate);
 
 	/**
@@ -49,12 +49,14 @@ public interface SystemScheduledTimeOffService {
 	 * @param sstoHours
 	 * @return
 	 */
-    public BigDecimal calculateSysSchTimeOffHours(JobContract job, BigDecimal sstoHours);
+    public BigDecimal calculateSysSchTimeOffHours(Job job, BigDecimal sstoHours);
 
     List<SystemScheduledTimeOff> getSystemScheduledTimeOffs(String userPrincipalId, LocalDate fromEffdt, LocalDate toEffdt, String earnCode, LocalDate fromAccruedDate, LocalDate toAccruedDate, 
-    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String premiumEarnCode, String active, String showHist);
+    		LocalDate fromSchTimeOffDate, LocalDate toSchTimeOffDate, String active, String showHist);
     /**
      * Get the list of all active system scheduled time off for the given leave plan and dates
+     * @param fromEffdt
+     * @param toEffdt
      * @param fromAccruedDate
      * @param toAccruedDate
      * @param leavePlan

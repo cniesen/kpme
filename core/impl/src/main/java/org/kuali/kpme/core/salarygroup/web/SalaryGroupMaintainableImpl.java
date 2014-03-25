@@ -17,7 +17,6 @@ package org.kuali.kpme.core.salarygroup.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
 public class SalaryGroupMaintainableImpl extends HrBusinessObjectMaintainableImpl {
@@ -29,7 +28,7 @@ public class SalaryGroupMaintainableImpl extends HrBusinessObjectMaintainableImp
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return SalaryGroupBo.from(HrServiceLocator.getSalaryGroupService().getSalaryGroup(id));
+		return HrServiceLocator.getSalaryGroupService().getSalaryGroup(id);
 	}
 
 }

@@ -19,61 +19,69 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
     <bean id="Department" parent="Department-parentBean" />
-    <bean id="Department-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
-        <property name="dataObjectClass" value="org.kuali.kpme.core.department.DepartmentBo" />
+    <bean id="Department-parentBean" abstract="true" parent="BusinessObjectEntry">
+        <property name="businessObjectClass" value="org.kuali.kpme.core.department.Department" />
         <property name="titleAttribute" value="dept" />
         <property name="objectLabel" value="Department" />
         <property name="attributes">
-            <list merge="true">
+            <list>
 		      	<ref bean="Department-hrDeptId" />
 		        <ref bean="Department-dept" />
 		        <ref bean="Department-description" />
 		        <ref bean="Department-location" />
-		        <ref bean="Department-institution"/>
 		        <ref bean="Department-chart" />
 		        <ref bean="Department-org" />
+		        <ref bean="Department-effectiveDate" />
 		        <ref bean="Department-payrollApproval" />
+		        <ref bean="Department-active" />
+		        <ref bean="Department-history" />
+		        <ref bean="Department-timestamp" />
+		        <ref bean="Department-relativeEffectiveDate" />
             </list>
         </property>
         <property name="relationships">
             <list>
                 <bean parent="RelationshipDefinition">
-                    <property name="objectAttributeName" value="chartObj" />
+                    <property name="objectAttributeName" value="locationObj" />
                     <property name="primitiveAttributes">
                         <list>
-                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="chart" p:targetName="chartOfAccountsCode" />
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="location" p:targetName="location" />
+                        </list>
+                    </property>
+                    <property name="supportAttributes">
+                        <list>
+                            <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate"
+                                  p:targetName="effectiveDate" />
                         </list>
                     </property>
                 </bean>
-
                 <bean parent="RelationshipDefinition">
-                    <property name="objectAttributeName" value="orgObj" />
-                    <property name="primitiveAttributes">
-                        <list>
-                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="org" p:targetName="organizationCode" />
-                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="chart" p:targetName="chartOfAccountsCode" />
-                        </list>
-                    </property>
-                </bean>
-            </list>
-        </property>
+                    <property name="objectAttributeName" value="chartObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="chart" p:targetName="chartOfAccountsCode" />
+						</list>
+					</property>
+				</bean>
+
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="orgObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="org" p:targetName="organizationCode" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="chart" p:targetName="chartOfAccountsCode" />
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
         <property name="collections">
             <list>
-		        <bean parent="CollectionDefinition">
-                    <property name="dataObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-                    <property name="name" value="roleMembers" />
-                    <property name="shortLabel" value="Role Members"/>
-                    <property name="label" value="Role Members"/>
-                </bean>
-                <bean parent="CollectionDefinition">
-                    <property name="dataObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-                    <property name="name" value="inactiveRoleMembers" />
-                    <property name="shortLabel" value="Inactive Role Members"/>
-                    <property name="label" value="Inactive Role Members"/>
-                </bean>
+		        <bean parent="CollectionDefinition" p:name="roleMembers" p:label="Role Members" p:shortLabel="Role Members" p:summary="Role Members" p:description="Role Members"  />
+		        <bean parent="CollectionDefinition" p:name="inactiveRoleMembers" p:label="Inactive Role Members" p:shortLabel="Inactive Role Members" p:summary="Inactive Role Members" p:description="Inactive Role Members" />
             </list>
         </property>
         <property name="inquiryDefinition">
@@ -92,28 +100,32 @@
         <property name="label" value="Department Id" />
    		<property name="shortLabel" value="Department Id" />
 		<property name="maxLength" value="60" />
-		<property name="validCharactersConstraint">
-			<bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>        
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
 		</property>
-		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="60" />
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="60" />
 		</property>
-        <property name="validationPattern">
+    </bean>
+
+    <bean id="Department-dept" parent="Department-dept-parentBean" />
+    <bean id="Department-dept-parentBean" abstract="true" parent="AttributeDefinition">
+	    <property name="name" value="dept" />
+        <property name="label" value="Department" />
+        <property name="shortLabel" value="Department" />
+	    <property name="forceUppercase" value="true" />
+	    <property name="maxLength" value="21" />
+	    <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern">
                 <property name="allowWhitespace" value="false" />
             </bean>
         </property>
-        <property name="control">
-            <bean parent="TextControlDefinition" p:size="60" />
-        </property>
+	    <property name="control">
+            <bean parent="TextControlDefinition" p:size="21" />
+	    </property>
     </bean>
-
-    <bean id="Department-dept" parent="Department-dept-parentBean" />
-    <bean id="Department-dept-parentBean" abstract="true" parent="KpmeAttributeReference-dept"/>
-
-
 
     <bean id="Department-description" parent="Department-description-parentBean" />
     <bean id="Department-description-parentBean" abstract="true" parent="AttributeDefinition">
@@ -122,31 +134,33 @@
         <property name="shortLabel" value="Description" />
 	    <property name="forceUppercase" value="false" />
 	    <property name="maxLength" value="75" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="true" />
-            </bean>
-        </property>
-	    <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="30" />
-	    </property>
-        <property name="validationPattern">
+	    <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern">
                 <property name="allowWhitespace" value="true" />
             </bean>
         </property>
-        <property name="control">
+	    <property name="control">
             <bean parent="TextControlDefinition" p:size="30" />
-        </property>
+	    </property>
     </bean>
   
     <bean id="Department-location" parent="Department-location-parentBean" />
-    <bean id="Department-location-parentBean" abstract="true" parent="KpmeAttributeReference-location"/>
-
-	<bean id="Department-institution" parent="Department-institution-parentBean" />
-	<bean id="Department-institution-parentBean" abstract="true" parent="KpmeAttributeReference-institution"/>
-
-	
+    <bean id="Department-location-parentBean" abstract="true" parent="AttributeDefinition">
+	    <property name="name" value="location" />
+        <property name="label" value="Location" />
+        <property name="shortLabel" value="Location" />
+	    <property name="forceUppercase" value="false" />
+	    <property name="maxLength" value="20" />
+	    <property name="control">
+            <bean parent="TextControlDefinition" p:size="20" />
+	    </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+    </bean>
+    
     <bean id="Department-chart" parent="Department-chart-parentBean" />
     <bean id="Department-chart-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="name" value="chart" />
@@ -154,14 +168,6 @@
         <property name="shortLabel" value="Chart" />
         <property name="forceUppercase" value="true" />
         <property name="maxLength" value="10" />
-        <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="10" />
-        </property>
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
         <property name="control">
             <bean parent="TextControlDefinition" p:size="10" />
         </property>
@@ -179,17 +185,9 @@
         <property name="shortLabel" value="Organization" />
 	 	<property name="forceUppercase" value="true" />
 	    <property name="maxLength" value="10" />
-	    <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="10" />
-	    </property>
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
-        <property name="control">
+	    <property name="control">
             <bean parent="TextControlDefinition" p:size="10" />
-        </property>
+	    </property>
         <property name="validationPattern">
             <bean parent="AnyCharacterValidationPattern">
                 <property name="allowWhitespace" value="false" />
@@ -197,91 +195,68 @@
         </property>
     </bean>
     
-
+    	<!-- effectiveDate -->
+    <bean id="Department-relativeEffectiveDate" parent="Department-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12"/>
+        </property>
+    </bean>
+    
+    <bean id="Department-effectiveDate" parent="Department-effectiveDate-parentBean" />
+    <bean id="Department-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+	    <property name="name" value="effectiveDate" />
+        <property name="label" value="Effective Date" />
+	    <property name="shortLabel" value="Effective Date" />
+	    <property name="maxLength" value="10" />
+	    <property name="validationPattern">
+	       <bean parent="DateValidationPattern" />
+	    </property>
+	    <property name="control">
+            <bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
+	    </property>
+	    <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+    </bean>
+    
     <bean id="Department-payrollApproval" parent="Department-payrollApproval-parentBean" />
-	<bean id="Department-payrollApproval-parentBean" abstract="true" parent="KpmeAttributeReference-genericCheckbox">
+	<bean id="Department-payrollApproval-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Payroll Approval" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
 		<property name="name" value="payrollApproval" />
 		<property name="label" value="Payroll Approval" />
 	</bean>
 
-    <!--***************************************************************************
-                                   Views
-        ***************************************************************************-->
-
-    <!-- Department Inquiry View -->
-    <bean id="Department-InquiryView" parent="Uif-InquiryView">
-        <property name="headerText" value="Department Inquiry" />
-        <property name="dataObjectClassName" value="org.kuali.kpme.core.department.DepartmentBo" />
-        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.department.web.DepartmentInquirableKradImpl" />
-        <property name="singlePageView" value="true" />
-        <property name="items">
-            <list>
-                <bean parent="Uif-Disclosure-GridSection">
-                    <property name="layoutManager.numberOfColumns" value="2"/>
-                    <property name="items">
-                        <list>
-                            <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
-                            <bean parent="Uif-DataField" p:propertyName="dept" />
-                            <bean parent="Uif-DataField" p:propertyName="description" />
-                            <bean parent="Uif-DataField" p:propertyName="location" />
-                            <bean parent="Uif-DataField" p:propertyName="institution" />
-                            <bean parent="Uif-DataField" p:propertyName="chart" />
-                            <bean parent="Uif-DataField" p:propertyName="org" />
-                            <bean parent="Uif-DataField" p:propertyName="payrollApproval" />
-                            <bean parent="Uif-DataField" p:propertyName="active" />
-                            <bean parent="Uif-DataField" p:propertyName="relativeEffectiveDate" />
-                            <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
-                        </list>
-                    </property>
-                    <property name="title" value="Department Inquiry"/>
-                </bean>
-                <bean parent="Department-roleMembersInquiry"/>
-                <bean parent="Department-inactiveRoleMembersInquiry"/>
-            </list>
+    <bean id="Department-active" parent="Department-active-parentBean" />
+    <bean id="Department-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator">
+        <property name="name" value="active" />
+        <property name="label" value="Active" />
+    </bean>
+    
+    <bean id="Department-history" parent="Department-history-parentBean" />
+    <bean id="Department-history-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="history" />
+        <property name="label" value="Show History" />
+        <property name="shortLabel" value="Show History" />
+        <property name="control">
+            <bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder" />
         </property>
     </bean>
 
-    <bean id="Department-roleMembersInquiry" parent="Uif-Disclosure-TableCollectionSection">
-        <property name="headerText" value="Role Members"/>
-        <property name="collectionObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-        <property name="propertyName" value="roleMembers"/>
-        <property name="layoutManager.richTable.render" value="false"/>
-        <property name="header"> <!-- Without this, active/inactive button shows up -->
-            <bean parent="Uif-SectionHeader" />
-        </property>
-        <property name="items">
-            <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId" />
-                <bean parent="Uif-InputField" p:propertyName="principalName"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
-                <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
-            </list>
-        </property>
-    </bean>
+	<bean id="Department-timestamp" parent="Department-timestamp-parentBean" />
+	<bean id="Department-timestamp-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="timestamp" />
+        <property name="label" value="Timestamp" />
+		<property name="shortLabel" value="Timestamp" />
+		<property name="maxLength" value="15" />
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+	</bean>
 
-    <bean id="Department-inactiveRoleMembersInquiry" parent="Uif-Disclosure-TableCollectionSection" p:disclosure.defaultOpen="false">
-        <property name="headerText" value="Inactive Role Members"/>
-        <property name="collectionObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-        <property name="propertyName" value="inactiveRoleMembers"/>
-        <property name="layoutManager.richTable.render" value="false"/>
-        <property name="showInactiveLines" value = "true"/>
-        <property name="header">
-            <bean parent="Uif-SectionHeader" />
-        </property>
-        <property name="items">
-            <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId" />
-                <bean parent="Uif-InputField" p:propertyName="principalName"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
-                <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
-            </list>
-        </property>
-    </bean>
+    <!-- Business Object Inquiry Definition -->
 
-    <!-- KNS Inquiry View -->
     <bean id="Department-inquiryDefinition" parent="Department-inquiryDefinition-parentBean" />
     <bean id="Department-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition" p:inquirableClass="org.kuali.kpme.core.department.web.DepartmentInquirableImpl">
         <property name="title" value="Department Inquiry" />
@@ -292,18 +267,16 @@
                     <property name="numberOfColumns" value="1" />
                     <property name="inquiryFields">
                         <list>
-                            <bean parent="FieldDefinition" p:attributeName="effectiveDate" />
-                            <bean parent="FieldDefinition" p:attributeName="dept" />
-                            <bean parent="FieldDefinition" p:attributeName="description" />
-                            <bean parent="FieldDefinition" p:attributeName="location" />
-                            <bean parent="FieldDefinition" p:attributeName="institution" />
-                            <bean parent="FieldDefinition" p:attributeName="chart" />
-                            <bean parent="FieldDefinition" p:attributeName="org" />
-                            <bean parent="FieldDefinition" p:attributeName="payrollApproval" />
-                            <bean parent="FieldDefinition" p:attributeName="active" />
-                            <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
-                                  p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
+							<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+							<bean parent="FieldDefinition" p:attributeName="dept" />
+							<bean parent="FieldDefinition" p:attributeName="description" />
+							<bean parent="FieldDefinition" p:attributeName="location" />
+							<bean parent="FieldDefinition" p:attributeName="chart" />
+							<bean parent="FieldDefinition" p:attributeName="org" />
+							<bean parent="FieldDefinition" p:attributeName="payrollApproval" />
+							<bean parent="FieldDefinition" p:attributeName="active" />
+	                <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+	                      p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
                         </list>
                     </property>
                 </bean>
@@ -313,7 +286,7 @@
                             <bean parent="InquiryCollectionDefinition" p:attributeName="roleMembers" p:businessObjectClass="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo">
                                 <property name="inquiryFields">
                                     <list>
-                                        <bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" />
+										<bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" />
                                         <bean parent="FieldDefinition" p:attributeName="principalId" />
                                         <bean parent="FieldDefinition" p:attributeName="principalName" />
                                         <bean parent="FieldDefinition" p:attributeName="roleName" />
@@ -330,7 +303,7 @@
                             <bean parent="InquiryCollectionDefinition" p:attributeName="inactiveRoleMembers" p:businessObjectClass="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo">
                                 <property name="inquiryFields">
                                     <list>
-                                        <bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" />
+										<bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" />
                                         <bean parent="FieldDefinition" p:attributeName="principalId" />
                                         <bean parent="FieldDefinition" p:attributeName="principalName" />
                                         <bean parent="FieldDefinition" p:attributeName="roleName" />
@@ -345,54 +318,8 @@
         </property>
     </bean>
 
-    <!-- Department Lookup View -->
-    <bean id="Department-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
-        <property name="headerText" value="Department Lookup" />
-        <property name="dataObjectClassName" value="org.kuali.kpme.core.department.DepartmentBo" />
+    <!-- Business Object Lookup Definition -->
 
-        <property name="criteriaFields">
-            <list>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate"
-                      p:ranged="true" />
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="dept" >
-                    <property name="inquiry">
-                        <bean parent="Uif-Inquiry" p:render="false"/>
-                    </property>
-                </bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="location" >
-                    <property name="quickfinder">
-                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
-                              p:fieldConversions="location:location"/>
-                    </property>
-                </bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="institution">
-                    <property name="quickfinder">
-                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
-                              p:fieldConversions="institutionCode:institution"/>
-                    </property>
-                </bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="description" />
-
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="payrollApproval" />
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N" />
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y" />
-            </list>
-        </property>
-
-        <property name="resultFields">
-            <list>
-                <bean parent="Uif-DataField" p:propertyName="dept" />
-                <bean parent="Uif-DataField" p:propertyName="location" />
-                <bean parent="Uif-DataField" p:propertyName="institution" />
-                <bean parent="Uif-DataField" p:propertyName="description" />
-                <bean parent="Uif-DataField" p:propertyName="timestamp" />
-                <bean parent="Uif-DataField" p:propertyName="payrollApproval" />
-                <bean parent="Uif-DataField" p:propertyName="active" />
-            </list>
-        </property>
-    </bean>
-
-    <!-- KNS Lookup View -->
     <bean id="Department-lookupDefinition" parent="Department-lookupDefinition-parentBean" />
     <bean id="Department-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
         <property name="title" value="Department Lookup" />
@@ -402,84 +329,62 @@
         </property>
         <property name="lookupFields">
             <list>
-                <bean parent="FieldDefinition" p:attributeName="dept" />
-                <bean parent="FieldDefinition" p:attributeName="location" />
-                <bean parent="FieldDefinition" p:attributeName="institution" />
-                <bean parent="FieldDefinition" p:attributeName="description" />
-                <bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N"/>
-                <bean parent="FieldDefinition" p:attributeName="payrollApproval" />
-                <bean parent="FieldDefinition" p:attributeName="active" />
-
+		        <bean parent="FieldDefinition" p:attributeName="dept" />
+		        <bean parent="FieldDefinition" p:attributeName="location" />
+		        <bean parent="FieldDefinition" p:attributeName="description" />
+		        <bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N"/>
+		        <bean parent="FieldDefinition" p:attributeName="payrollApproval" />
+		        <bean parent="FieldDefinition" p:attributeName="active" />
+                <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+                      p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
             </list>
         </property>
         <property name="resultFields">
             <list>
-                <bean parent="FieldDefinition" p:attributeName="dept" p:forceInquiry="true" />
-                <bean parent="FieldDefinition" p:attributeName="location" />
-                <bean parent="FieldDefinition" p:attributeName="institution" />
-                <bean parent="FieldDefinition" p:attributeName="description" />
-                <bean parent="FieldDefinition" p:attributeName="timestamp" />
-                <bean parent="FieldDefinition" p:attributeName="payrollApproval" />
-                <bean parent="FieldDefinition" p:attributeName="active" />
+		        <bean parent="FieldDefinition" p:attributeName="dept" p:forceInquiry="true" />
+		        <bean parent="FieldDefinition" p:attributeName="location" />
+		        <bean parent="FieldDefinition" p:attributeName="description" />
+		        <bean parent="FieldDefinition" p:attributeName="timestamp" />
+		        <bean parent="FieldDefinition" p:attributeName="payrollApproval" />
+		        <bean parent="FieldDefinition" p:attributeName="active" />
             </list>
         </property>
     </bean>
 
-    <bean id="Department-RoleMembers" parent="Uif-Disclosure-TableCollectionSection">
-        <property name="headerText" value="Role Members"/>
-        <property name="collectionObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-        <property name="propertyName" value="roleMembers"/>
-        <property name="layoutManager.richTable.render" value="false"/>
-        <property name="showInactiveLines" value = "true"/>
-        <property name="renderInactiveToggleButton" value="false"/>
-        <property name="addLinePlacement" value="BOTTOM" />
-        <property name="addLineActions">
-            <list>
-                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="addLine" p:actionLabel="add"/>
-            </list>
-        </property>
-        <property name="lineActions">
-            <list>
-                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" p:render="@{#line.objectId eq null}"/>
-            </list>
-        </property>
-        <property name="items">
-            <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId">
-                     <property name="quickfinder">
-                         <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
-                            p:fieldConversions="principalId:principalId"/>
-                     </property>
-                </bean>
-                <bean parent="Uif-InputField" p:propertyName="principalName" p:readOnly="true"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
-                <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
-            </list>
-        </property>
-    </bean>
+    <!--***************************************************************************
+							Views
+ ***************************************************************************-->
 
-    <bean id="Department-InactiveRoleMembers" parent="Uif-Disclosure-TableCollectionSection" p:disclosure.defaultOpen="false" >
-        <property name="headerText" value="Inactive Role Members"/>
-        <property name="collectionObjectClass" value="org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo"/>
-        <property name="propertyName" value="inactiveRoleMembers"/>
-        <property name="renderLineActions" value="false"/>
-        <property name="renderAddLine" value="false"/>
-        <property name="layoutManager.richTable.render" value="false"/>
-        <property name="showInactiveLines" value = "true"/>
-        <property name="header">
-            <bean parent="Uif-SectionHeader" />
-        </property>
-        <property name="items">
-            <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId" />
-                <bean parent="Uif-InputField" p:propertyName="principalName"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
-                <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
-            </list>
-        </property>
-    </bean>
+    <!-- KRAD Lookup View Definition -->
+ 
+  <bean id="Department-LookupView" parent="Uif-LookupView">
+    <property name="headerText" value="Department Lookup" />
+    <property name="dataObjectClassName" value="org.kuali.kpme.core.department.Department" />
 
+    <property name="criteriaFields">
+      <list>
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="dept" />
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="location" />
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="description" />
 
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="payrollApproval" />
+        <!--<bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" />-->
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y" />
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="relativeEffectiveDate"
+                     p:hidden="true" p:defaultValue=" "/>
+      </list>
+    </property>
+
+    <property name="resultFields">
+      <list>
+		<bean parent="Uif-DataField" p:propertyName="dept" />
+		<bean parent="Uif-DataField" p:propertyName="location" />
+		<bean parent="Uif-DataField" p:propertyName="description" />
+		<bean parent="Uif-DataField" p:propertyName="timestamp" />
+		<bean parent="Uif-DataField" p:propertyName="payrollApproval" />
+		<bean parent="Uif-DataField" p:propertyName="active" />
+      </list>
+    </property>
+  </bean>
+    
 </beans>

@@ -15,11 +15,11 @@
  */
 package org.kuali.kpme.core.api.calendar;
 
-import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.calendar.web.CalendarWeekContract;
-
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
+import org.kuali.kpme.core.api.calendar.web.CalendarWeekContract;
 
 /**
  * <p>CalendarParentContract interface</p>
@@ -58,7 +58,7 @@ public interface CalendarParentContract {
 	 * 
 	 * @return calendarEntry of CalendarParent
 	 */
-    public CalendarEntry getCalendarEntry();
+    public CalendarEntryContract getCalendarEntry();
   
     /**
 	 * The list of CalendarWeek objects the CalendarParent is associated with

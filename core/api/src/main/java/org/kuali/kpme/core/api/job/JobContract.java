@@ -15,20 +15,23 @@
  */
 package org.kuali.kpme.core.api.job;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.paytype.PayTypeContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
-import org.kuali.rice.core.api.util.type.KualiDecimal;
-
 import java.math.BigDecimal;
+
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.department.DepartmentContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+import org.kuali.kpme.core.api.paygrade.PayGradeContract;
+import org.kuali.kpme.core.api.paytype.PayTypeContract;
+import org.kuali.kpme.core.api.position.PositionBaseContract;
+import org.kuali.kpme.core.api.salarygroup.SalaryGroupContract;
+import org.kuali.rice.core.api.util.type.KualiDecimal;
+import org.kuali.rice.kim.api.identity.Person;
 
 /**
  * <p>JobContract interface.</p>
  *
  */
-public interface JobContract extends KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "Job";
+public interface JobContract extends HrBusinessObjectContract {
 	
 	/**
 	 * Indicates if Job is FLSA exempt or non-exempt. 
@@ -142,6 +145,17 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	public Long getJobNumber();
 	
 	/**
+	 * History flag for Job lookups 
+	 * 
+	 * <p>
+	 * history of Job
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public Boolean getHistory();
+	
+	/**
 	 * The location the job is associated with. 
 	 * 
 	 * <p>
@@ -216,7 +230,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return deptObj for Job
 	 */
-	//public DepartmentContract getDeptObj();
+	public DepartmentContract getDeptObj();
 
 	/**
 	 * The PayType object associated with the Job
@@ -230,6 +244,17 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	public PayTypeContract getPayTypeObj();
 
 	/**
+	 * The employee that holds this job
+	 * 
+	 * <p>
+	 * principal of a Job
+	 * <p>
+	 * 
+	 * @return principal for Job
+	 */
+	public Person getPrincipal();
+	
+	/**
 	 * Indicates if the Job is the primary job for the employee
 	 * 
 	 * <p>
@@ -238,7 +263,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return true if is primary, false if not
 	 */
-	public Boolean isPrimaryJob();
+	public Boolean getPrimaryIndicator();
 	
 	/**
 	 * The Location object associated with the Job
@@ -249,7 +274,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return locationObj for Job
 	 */
-	//public LocationContract getLocationObj();
+	public LocationContract getLocationObj();
 
 	/**
 	 * The PayGrade object associated with the Job
@@ -260,7 +285,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return payGradeObj for Job
 	 */
-	//public PayGradeContract getPayGradeObj();
+	public PayGradeContract getPayGradeObj();
 
 	/**
 	 * The SalaryGroup object associated with the Job
@@ -271,7 +296,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return salaryGroupObj for Job
 	 */
-	//public SalaryGroupContract getSalaryGroupObj();
+	public SalaryGroupContract getSalaryGroupObj();
 	
 	/**
 	 * Position associated with the job. 
@@ -293,7 +318,7 @@ public interface JobContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return positionObj for Job
 	 */
-	//public PositionBaseContract getPositionObj() ;
+	public PositionBaseContract getPositionObj() ;
 
 	/**
 	 * Combination of multiple string fields to identify the job. 

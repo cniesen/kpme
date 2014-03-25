@@ -17,7 +17,6 @@ package org.kuali.kpme.core.paygrade.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
 public class PayGradeMaintainableServiceImpl extends HrBusinessObjectMaintainableImpl {
@@ -30,6 +29,6 @@ public class PayGradeMaintainableServiceImpl extends HrBusinessObjectMaintainabl
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade(id));
+		return HrServiceLocator.getPayGradeService().getPayGrade(id);
 	}
 }

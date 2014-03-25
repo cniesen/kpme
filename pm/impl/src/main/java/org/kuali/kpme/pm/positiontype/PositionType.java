@@ -16,19 +16,16 @@
 package org.kuali.kpme.pm.positiontype;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positiontype.PositionTypeContract;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PositionType extends HrBusinessObject implements PositionTypeContract {
-	private static final String POSITION_TYPE = "positionType";
-
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(POSITION_TYPE)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		    .add("positionType")
 		    .build();
 
 	private static final long serialVersionUID = 1L;
@@ -38,18 +35,10 @@ public class PositionType extends HrBusinessObject implements PositionTypeContra
 	private String description;
 	private String institution;
 	private String location;
-    private boolean academicFlag;
 	
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
+	private Location locationObj;
+	private Institution institutionObj;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_TYPE, this.getPositionType())
-				.build();
-	}
-	
 	@Override
 	public String getId() {
 		return this.getPmPositionTypeId();
@@ -105,19 +94,19 @@ public class PositionType extends HrBusinessObject implements PositionTypeContra
 		this.location = location;
 	}
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 
@@ -125,11 +114,4 @@ public class PositionType extends HrBusinessObject implements PositionTypeContra
 		return serialVersionUID;
 	}
 
-    public boolean isAcademicFlag() {
-        return academicFlag;
-    }
-
-    public void setAcademicFlag(boolean academicFlag) {
-        this.academicFlag = academicFlag;
-    }
 }

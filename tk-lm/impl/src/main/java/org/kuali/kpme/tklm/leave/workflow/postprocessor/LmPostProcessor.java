@@ -15,22 +15,22 @@
  */
 package org.kuali.kpme.tklm.leave.workflow.postprocessor;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.framework.postprocessor.DocumentRouteStatusChange;
 import org.kuali.rice.kew.framework.postprocessor.ProcessDocReport;
 import org.kuali.rice.kew.postprocessor.DefaultPostProcessor;
-
-import java.util.List;
 
 public class LmPostProcessor extends DefaultPostProcessor {
 
@@ -68,9 +68,8 @@ public class LmPostProcessor extends DefaultPostProcessor {
 			
 			Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, endDate.toLocalDate(), true);
 			
-			
 			if (calendar != null) {
-				CalendarEntry calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntryByIdAndPeriodEndDate(calendar.getHrCalendarId(), endDate);
+				CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntryByIdAndPeriodEndDate(calendar.getHrCalendarId(), endDate);
 				
 				LmServiceLocator.getAccrualCategoryMaxCarryOverService().calculateMaxCarryOver(documentId, principalId, calendarEntry, endDate.toLocalDate());
 			}
@@ -80,9 +79,8 @@ public class LmPostProcessor extends DefaultPostProcessor {
 			List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, leaveCalendarDocumentHeader.getBeginDateTime().toLocalDate(), endDate.toLocalDate());
 			for(LeaveBlock lb : leaveBlocks) {
 				if(StringUtils.equals(lb.getLeaveBlockType(),LMConstants.LEAVE_BLOCK_TYPE.CARRY_OVER_ADJUSTMENT)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-					builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), builder.getUserPrincipalId());
+					lb.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, lb.getPrincipalIdModified());
 				}
 			}
 		}

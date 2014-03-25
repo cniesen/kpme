@@ -22,7 +22,7 @@
 
 	<bean id="BalanceTransfer" parent="BalanceTransfer-parentBean" />
 
-	<bean id="BalanceTransfer-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+	<bean id="BalanceTransfer-parentBean" abstract="true" parent="BusinessObjectEntry">
 		<property name="businessObjectClass"
 			value="org.kuali.kpme.tklm.leave.transfer.BalanceTransfer" />
  		<property name="inquiryDefinition">
@@ -33,7 +33,7 @@
 			<ref bean="BalanceTransfer-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
+			<list>
 				<ref bean="BalanceTransfer-balanceTransferId" />
 				<ref bean="BalanceTransfer-principalId" />
 				<ref bean="BalanceTransfer-transferAmount"/>
@@ -42,8 +42,10 @@
 				<ref bean="BalanceTransfer-toAccrualCategory" />
 				<ref bean="BalanceTransfer-forfeitedAmount"/>
 				<ref bean="BalanceTransfer-accrualCategoryRule"/>
+				<ref bean="BalanceTransfer-effectiveDate" />
 				<ref bean="BalanceTransfer-leaveCalendarDocumentId"/>
 				<ref bean="BalanceTransfer-sstoId"/>
+				<ref bean="BalanceTransfer-relativeEffectiveDate" />
 			</list>
 		</property>
 		<property name="relationships">
@@ -108,7 +110,22 @@
 	
 	<!-- principalId -->
 	<bean id="BalanceTransfer-principalId" parent="BalanceTransfer-principalId-parentBean" />
-	<bean id="BalanceTransfer-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+	<bean id="BalanceTransfer-principalId-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="PrincipalId" />
+		<property name="maxLength" value="40" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="20" />
+		</property>
+		<property name="required" value="true"/>
+		<property name="name" value="principalId" />
+		<property name="label" value="Principal Id" />
+	</bean>
 	
 	<!-- transferAmount -->
 	<bean id="BalanceTransfer-transferAmount" parent="BalanceTransfer-transferAmount-parentBean" />
@@ -222,7 +239,29 @@
 		<property name="label" value="Leave Calendar ID" />
 	</bean>
 	
-
+    <bean id="BalanceTransfer-relativeEffectiveDate" parent="BalanceTransfer-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12"/>
+        </property>
+    </bean>
+	
+	<!-- effectiveDate -->
+	<bean id="BalanceTransfer-effectiveDate" parent="BalanceTransfer-effectiveDate-parentBean" />
+	<bean id="BalanceTransfer-effectiveDate-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
 	<!-- system scheduled time off id -->
 	<bean id="BalanceTransfer-sstoId" parent="BalanceTransfer-sstoId-parentBean" />
 	<bean id="BalanceTransfer-sstoId-parentBean" abstract="true"
@@ -234,8 +273,9 @@
 		</property>
 		<property name="label" value="SSTO ID" />
 	</bean>
-
+	
 	<!--  Inquiry Definitions  -->
+
 	<bean id="BalanceTransfer-inquiryDefinition" parent="BalanceTransfer-inquiryDefinition-parentBean" />
 
 	<bean id="BalanceTransfer-inquiryDefinition-parentBean" abstract="true"
@@ -250,8 +290,7 @@
 							<bean parent="FieldDefinition" p:attributeName="balanceTransferId"/>
 							<bean parent="FieldDefinition" p:attributeName="principalId"/>
 							<bean parent="FieldDefinition" p:attributeName="fromAccrualCategory"/>
-							<bean parent="FieldDefinition" p:attributeName="toAccrualCategory"/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
+							<bean parent="FieldDefinition" p:attributeName="toAccrualCategory"/>						
 						</list>
 					</property>
 					<property name="title" value="Balance Transfer" />

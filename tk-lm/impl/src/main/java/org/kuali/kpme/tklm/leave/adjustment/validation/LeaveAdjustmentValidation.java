@@ -21,10 +21,9 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
@@ -120,7 +119,7 @@ public class LeaveAdjustmentValidation extends MaintenanceDocumentRuleBase{
 	private boolean validateFraction(String earnCode, BigDecimal amount, LocalDate asOfDate) {
 		boolean valid = true;
 		if (!ValidationUtils.validateEarnCodeFraction(earnCode, amount, asOfDate)) {
-			EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
+			EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
 			if(ec != null && ec.getFractionalTimeAllowed() != null) {
 				BigDecimal fracAllowed = new BigDecimal(ec.getFractionalTimeAllowed());
 				String[] parameters = new String[2];

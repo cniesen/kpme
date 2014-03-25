@@ -22,7 +22,7 @@
 
 	<bean id="LeavePayout" parent="LeavePayout-parentBean" />
 
-	<bean id="LeavePayout-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+	<bean id="LeavePayout-parentBean" abstract="true" parent="BusinessObjectEntry">
 		<property name="businessObjectClass"
 			value="org.kuali.kpme.tklm.leave.payout.LeavePayout" />
  		<property name="inquiryDefinition">
@@ -33,10 +33,12 @@
 			<ref bean="LeavePayout-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
+			<list>
 				<ref bean="LeavePayout-lmLeavePayoutId" />
 				<ref bean="LeavePayout-principalId" />
                 <ref bean="LeavePayout-earnCode" />
+                <ref bean="LeavePayout-effectiveDate" />
+                <ref bean="LeavePayout-relativeEffectiveDate" />
                 <ref bean="LeavePayout-fromAccrualCategory" />
 				<ref bean="LeavePayout-payoutAmount"/>
 				<ref bean="LeavePayout-forfeitedAmount"/>
@@ -106,11 +108,62 @@
 	
 	<!-- principalId -->
 	<bean id="LeavePayout-principalId" parent="LeavePayout-principalId-parentBean" />
-	<bean id="LeavePayout-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+	<bean id="LeavePayout-principalId-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="PrincipalId" />
+		<property name="maxLength" value="40" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="20" />
+		</property>
+		<property name="required" value="true"/>
+		<property name="name" value="principalId" />
+		<property name="label" value="Principal Id" />
+	</bean>
 
     <!-- EarnCode -->
     <bean id="LeavePayout-earnCode" parent="LeavePayout-earnCode-parentBean" />
-    <bean id="LeavePayout-earnCode-parentBean" abstract="true" parent="KpmeAttributeReference-earnCode"/>
+    <bean id="LeavePayout-earnCode-parentBean" abstract="true"
+        parent="AttributeDefinition">
+        <property name="shortLabel" value="Earn Code" />
+        <property name="maxLength" value="15" />
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="10" />
+        </property>
+        <property name="name" value="earnCode" />
+        <property name="label" value="Earn Code" />
+    </bean>
+
+    <!-- effectiveDate -->
+    <bean id="LeavePayout-relativeEffectiveDate" parent="LeavePayout-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12"/>
+        </property>
+    </bean>
+    <bean id="LeavePayout-effectiveDate" parent="LeavePayout-effectiveDate-parentBean" />
+    <bean id="LeavePayout-effectiveDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Effective Date" />
+        <property name="maxLength" value="12" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+        <property name="name" value="effectiveDate" />
+        <property name="label" value="Effective Date" />
+    </bean>
 
     <!-- fromAccrualCategory -->
     <bean id="LeavePayout-fromAccrualCategory" parent="LeavePayout-fromAccrualCategory-parentBean" />
@@ -190,7 +243,7 @@
 		</property>
 		<property name="label" value="Leave Calendar ID" />
 	</bean>
-
+	
 	<!--  Inquiry Definitions  -->
 
 	<bean id="LeavePayout-inquiryDefinition" parent="LeavePayout-inquiryDefinition-parentBean" />
@@ -210,7 +263,6 @@
                             <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
                                   p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
 							<bean parent="FieldDefinition" p:attributeName="fromAccrualCategory"/>
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
 						</list>
 					</property>
 					<property name="title" value="LeavePayout" />

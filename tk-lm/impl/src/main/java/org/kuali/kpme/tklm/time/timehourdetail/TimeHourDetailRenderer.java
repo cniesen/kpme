@@ -15,26 +15,23 @@
  */
 package org.kuali.kpme.tklm.time.timehourdetail;
 
+import java.util.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailRendererContract;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
     private TimeHourDetail timeHourDetail;
@@ -45,18 +42,18 @@ public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
 
         TimeBlock tb = TkServiceLocator.getTimeBlockService().getTimeBlock(timeHourDetail.getTkTimeBlockId());
         if(tb != null) {
-            List<? extends EarnCodeContract> overtimeEarnCodeObjs = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodes(LocalDate.now());
+            List<EarnCode> overtimeEarnCodeObjs = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodes(LocalDate.now());
             List<String> overtimeEarnCodeStrings = HrServiceLocator.getEarnCodeService().getOvertimeEarnCodesStrs(tb.getBeginDateTime().toLocalDate());
             List<String> eligibleOvertimeEarnCodeListStrings = new ArrayList<String>();
 
-            JobContract job = HrServiceLocator.getJobService().getJob(HrContext.getTargetPrincipalId(), tb.getJobNumber(), tb.getEndDateTime().toLocalDate());
+            Job job = HrServiceLocator.getJobService().getJob(HrContext.getTargetPrincipalId(), tb.getJobNumber(), tb.getEndDateTime().toLocalDate());
             if(job != null) {
-                for (EarnCodeContract earnCode : overtimeEarnCodeObjs) {
+                for (EarnCode earnCode : overtimeEarnCodeObjs) {
                     String employee = HrContext.isActiveEmployee() ? "Y" : null;
                     String approver = HrContext.isApprover() ? "Y" : null;
                     String payrollProcessor = HrContext.isPayrollProcessor() ? "Y" : null;
 
-                    List<? extends EarnCodeSecurityContract> securityList = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurityList(job.getDept(), job.getHrSalGroup(), earnCode.getEarnCode(), employee, approver, payrollProcessor, job.getLocation(),
+                    List<EarnCodeSecurity> securityList = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurityList(job.getDept(), job.getHrSalGroup(), earnCode.getEarnCode(), employee, approver, payrollProcessor, job.getLocation(),
                             "Y", tb.getEndDateTime().toLocalDate());
                     if(CollectionUtils.isNotEmpty(securityList)) {
                         eligibleOvertimeEarnCodeListStrings.add(earnCode.getEarnCode());
@@ -102,7 +99,7 @@ public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
 			if(timeBlock.getEarnCode().equals(HrConstants.HOLIDAY_EARN_CODE)) {
 				String documentId = timeBlock.getDocumentId();
 				TimesheetDocumentHeader docHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
-				PrincipalHRAttributesContract principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(docHeader.getPrincipalId(), timeBlock.getBeginDateTime().toLocalDate());
+				PrincipalHRAttributes principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(docHeader.getPrincipalId(), timeBlock.getBeginDateTime().toLocalDate());
 				
 				if(principalCalendar != null && StringUtils.isNotEmpty(principalCalendar.getLeavePlan())) {
 					holidayDesc = LmServiceLocator.getSysSchTimeOffService().getSSTODescriptionForDate(principalCalendar.getLeavePlan(), timeBlock.getBeginDateTime().toLocalDate());

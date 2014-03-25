@@ -15,17 +15,16 @@
  */
 package org.kuali.kpme.core.api.paytype;
 
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
+import org.kuali.kpme.core.api.institution.InstitutionContract;
+import org.kuali.kpme.core.api.location.LocationContract;
 
 /**
  * <p>PayTypeContract interface.</p>
  *
  */
-public interface PayTypeContract extends KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PayType";
+public interface PayTypeContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The EarnCode object which is used to record regular time by this PayType
@@ -94,6 +93,17 @@ public interface PayTypeContract extends KpmeEffectiveDataTransferObject {
 	public String getHrEarnCodeId();
 	
 	/**
+	 * History flag for PayType lookups 
+	 * 
+	 * <p>
+	 * history of PayType
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public String getHistory();
+	
+	/**
 	 * Indicates if the EarnCode associated with the PayType is an Overtime earn code
 	 * 
 	 * <p>
@@ -102,7 +112,7 @@ public interface PayTypeContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return true if is overtime, false if not
 	 */
-	public Boolean isOvtEarnCode();
+	public Boolean getOvtEarnCode();
 
 	/**
 	 * Name of the Institution object the PayType is associated with
@@ -124,7 +134,7 @@ public interface PayTypeContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return institutionObj for PayType
 	 */
-	//public InstitutionContract getInstitutionObj();
+	public InstitutionContract getInstitutionObj();
 	
 	/**
 	 * Indicates if the PayType's Position is FLSA exempt or non-exempt 
@@ -168,5 +178,5 @@ public interface PayTypeContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return locationObj for PayType
 	 */
-	//public LocationContract getLocationObj();
+	public LocationContract getLocationObj();
 }

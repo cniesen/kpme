@@ -18,9 +18,8 @@ package org.kuali.kpme.tklm.time.rules.lunch.department.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.springframework.cache.annotation.Cacheable;
 
 public interface DepartmentLunchRuleService {
@@ -64,7 +63,7 @@ public interface DepartmentLunchRuleService {
 	 * Apply department lunch rule to the list of timeblocks
 	 * @param timeblocks
 	 */
-	public List<TimeBlock> applyDepartmentLunchRule(List<TimeBlock> timeblocks);
+	public void applyDepartmentLunchRule(List<TimeBlock> timeblocks);
 	
 	/**
 	 * Fetch department lunch rule by id

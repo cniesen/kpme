@@ -71,7 +71,7 @@
   </bean>
   <bean id="Chart-active" parent="Chart-active-parentBean"/>
 
-  <bean id="Chart-active-parentBean" abstract="true" parent="KpmeAttributeReference-genericCheckbox">
+  <bean id="Chart-active-parentBean" abstract="true" parent="AttributeDefinition">
     <property name="name" value="active"/>
     <property name="label" value="Chart Active Indicator"/>
     <property name="shortLabel" value="ChartActive"/>
@@ -80,6 +80,9 @@
     <property name="maxLength" value="1"/>
     <property name="validationPattern">
       <bean parent="AnyCharacterValidationPattern"/>
+    </property>
+    <property name="control">
+      <bean parent="CheckboxControlDefinition"/>
     </property>
   </bean>
   
@@ -130,25 +133,4 @@
       </list>
     </property>
   </bean>
-
-
-    <!--KRAD Lookup-->
-    <bean id="Chart-LookupView" parent="Uif-LookupView">
-        <property name="headerText" value="Chart Lookup"/>
-        <property name="dataObjectClassName" value="org.kuali.kpme.core.kfs.coa.businessobject.Chart"/>
-        <property name="criteriaFields">
-            <list>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="chartOfAccountsCode"/>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="finChartOfAccountDescription"/>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active"/>
-            </list>
-        </property>
-        <property name="resultFields">
-            <list>
-                <bean parent="Uif-DataField" p:propertyName="chartOfAccountsCode"/>
-                <bean parent="Uif-DataField" p:propertyName="finChartOfAccountDescription"/>
-                <bean parent="Uif-DataField" p:propertyName="active"/>
-            </list>
-        </property>
-    </bean>
 </beans>

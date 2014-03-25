@@ -19,16 +19,16 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.LMConstants;
 import org.kuali.kpme.tklm.leave.adjustment.LeaveAdjustment;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 
@@ -48,7 +48,7 @@ public class LeaveAdjustmentMaintainableServiceImpl extends HrBusinessObjectMain
 		
 		// create leave block 
 		LeaveAdjustment la = (LeaveAdjustment) this.getBusinessObject();
-		LeaveBlockBo aLeaveBlock = new LeaveBlockBo();
+		LeaveBlock aLeaveBlock = new LeaveBlock();
 		aLeaveBlock.setPrincipalId(la.getPrincipalId());
 		aLeaveBlock.setLeaveDate(la.getEffectiveDate());
 		aLeaveBlock.setEarnCode(la.getEarnCode());
@@ -60,7 +60,7 @@ public class LeaveAdjustmentMaintainableServiceImpl extends HrBusinessObjectMain
 		aLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
 		aLeaveBlock.setBlockId(0L);
 		
-		LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), HrContext.getPrincipalId());
+		LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, HrContext.getPrincipalId());		
 	}
 	
 	@SuppressWarnings("rawtypes")
@@ -72,7 +72,7 @@ public class LeaveAdjustmentMaintainableServiceImpl extends HrBusinessObjectMain
 				&& fieldValues.containsKey("effectiveDate")
 				&& StringUtils.isNotEmpty(fieldValues.get("effectiveDate"))) {
 			LocalDate effDate = TKUtils.formatDateString(fieldValues.get("effectiveDate"));
-			PrincipalHRAttributesContract principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService()
+			PrincipalHRAttributes principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService()
 						.getPrincipalCalendar(fieldValues.get("principalId"), effDate);
 			String lpString = (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
 			fieldValues.put("leavePlan", lpString);

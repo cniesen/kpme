@@ -16,39 +16,28 @@
 package org.kuali.kpme.pm.pstncontracttype;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.pstncontracttype.PstnContractTypeContract;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PstnContractType extends HrBusinessObject implements PstnContractTypeContract {
-	
-	private static final String NAME = "name";
-
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(NAME)
-		    .build();
+		public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+			    .add("name")
+			    .build();
 
-	private static final long serialVersionUID = 1L;
-	
-	private String pmCntrctTypeId;		
-	private String name;
-	private String description;
-	private String institution;
-	private String location;
+		private static final long serialVersionUID = 1L;
 		
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(NAME, this.getName())
-			.build();
-	}
+		private String pmCntrctTypeId;		
+		private String name;
+		private String description;
+		private String institution;
+		private String location;
+		
+		private Location locationObj;
+		private Institution institutionObj;
 
 	@Override
 	public String getId() {
@@ -107,19 +96,19 @@ public class PstnContractType extends HrBusinessObject implements PstnContractTy
 		this.location = location;
 	}
 	
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 	

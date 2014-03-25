@@ -15,6 +15,9 @@
  */
 package org.kuali.kpme.tklm.time.timesummary.service;
 
+import java.math.BigDecimal;
+import java.util.*;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -26,22 +29,19 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroupContract;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
-import org.kuali.kpme.tklm.api.time.timesheet.TimesheetDocumentContract;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
@@ -49,6 +49,9 @@ import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
 import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.flsa.FlsaDay;
 import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesummary.AssignmentColumn;
 import org.kuali.kpme.tklm.time.timesummary.AssignmentRow;
 import org.kuali.kpme.tklm.time.timesummary.EarnCodeSection;
@@ -56,25 +59,12 @@ import org.kuali.kpme.tklm.time.timesummary.EarnGroupSection;
 import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
 public class TimeSummaryServiceImpl implements TimeSummaryService {
 	private static final String OTHER_EARN_GROUP = "Other";
 	private static final Logger LOG = Logger.getLogger(TimeSummaryServiceImpl.class);
 	
     @Override
-	public TimeSummary getTimeSummary(TimesheetDocumentContract timesheetDocument) {
+	public TimeSummary getTimeSummary(TimesheetDocument timesheetDocument) {
 		TimeSummary timeSummary = new TimeSummary();
 
 		if(timesheetDocument == null || timesheetDocument.getTimeBlocks() == null) {
@@ -94,9 +84,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
             tAssignmentKeys.add(assign.getAssignmentKey());
             regularEarnCodes.add(assign.getJob().getPayTypeObj().getRegEarnCode());
         }
-        List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
-        leaveBlocks.addAll(LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(timesheetDocument.getPrincipalId(),
-                timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate(), timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate(), tAssignmentKeys));
+        List<LeaveBlock> leaveBlocks =  LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(timesheetDocument.getPrincipalId(),
+                timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate(), timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate(), tAssignmentKeys);
         LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, timesheetDocument.getCalendarEntry());
         tkTimeBlockAggregate = TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
 
@@ -181,23 +170,23 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 	}
 	
     private List<LeaveSummaryRow> getMaxedLeaveRows(
-            CalendarEntry calendarEntry, String principalId) throws Exception {
+			CalendarEntry calendarEntry, String principalId) throws Exception {
     	List<LeaveSummaryRow> maxedLeaveRows = new ArrayList<LeaveSummaryRow>();
     	
     	if (LmServiceLocator.getLeaveApprovalService().isActiveAssignmentFoundOnJobFlsaStatus(principalId, HrConstants.FLSA_STATUS_NON_EXEMPT, true)) {
     		
-        	Map<String,Set<LeaveBlockContract>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry,principalId);
-        	Set<? extends LeaveBlockContract> onDemandTransfers = eligibilities.get(HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND);
+        	Map<String,Set<LeaveBlock>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry,principalId);
+        	Set<LeaveBlock> onDemandTransfers = eligibilities.get(HrConstants.MAX_BAL_ACTION_FREQ.ON_DEMAND);
 
-        	Interval calendarEntryInterval = new Interval(calendarEntry.getBeginPeriodFullDateTime(),calendarEntry.getEndPeriodFullDateTime());
+        	Interval calendarEntryInterval = new Interval(calendarEntry.getBeginPeriodDate().getTime(),calendarEntry.getEndPeriodDate().getTime());
         	
         	//use the current date if on the current calendar? yes -> no warning given until accrual is reached. If accrual occurs on last day of period or last day of service interval
         	//change, no warning given to the employee of balance limits being exceeded except on or after that day.
 
         	if(!onDemandTransfers.isEmpty()) {
-            	for(LeaveBlockContract lb : onDemandTransfers) {
+            	for(LeaveBlock lb : onDemandTransfers) {
             		LocalDate leaveDate = lb.getLeaveLocalDate();
-                	LeaveSummary summary = (LeaveSummary)LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(principalId, leaveDate.plusDays(1));
+                	LeaveSummary summary = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(principalId, leaveDate.plusDays(1));
                 	LeaveSummaryRow row = summary.getLeaveSummaryRowForAccrualCtgy(lb.getAccrualCategory());
             		if(row != null) {
             			//AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(row.getAccrualCategoryId());
@@ -207,7 +196,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
                     		//or if the infraction did not occur within this interval. ( if it occurred during the previous interval, 
                     		//the employee will have the option to take action in that interval up to & including the end date of that interval. )
 	            			row.setInfractingLeaveBlockId(lb.getAccrualCategoryRuleId());
-	            			AccrualCategoryRuleContract aRule = lb.getAccrualCategoryRule();
+	            			AccrualCategoryRule aRule = lb.getAccrualCategoryRule();
 	            			
 	            			if(StringUtils.equals(aRule.getActionAtMaxBalance(),HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER))
 	            				row.setTransferable(true);
@@ -219,9 +208,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 	            				if(StringUtils.equals(maxedRow.getAccrualCategoryId(),row.getAccrualCategoryId()))
 	            					exists = true;
 	            			}
-	            			if(!exists) {
+	            			if(!exists)
             					maxedLeaveRows.add(row);
-                            }
                     	}
             		}
             	}
@@ -282,7 +270,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 							if(earnCodeSection == null){
 								earnCodeSection = new EarnCodeSection();
 								earnCodeSection.setEarnCode(thd.getEarnCode());
-								EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(thd.getEarnCode(), asOfDate);
+								EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(thd.getEarnCode(), asOfDate);
 								earnCodeSection.setDescription(earnCodeObj != null ? earnCodeObj.getDescription() : null);
 				 	 	 	 	earnCodeSection.setIsAmountEarnCode(earnCodeObj != null ? HrConstants.EARN_CODE_AMOUNT.equalsIgnoreCase(earnCodeObj.getRecordMethod()) : false);
 								for(int i = 0;i<(numEntries-1);i++){
@@ -301,7 +289,16 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								if(assignment == null) {
 									assignment = HrServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, asOfDate);
 								}
+								//TODO push this up to the assignment fetch/fully populated instead of like this
 								if(assignment != null){
+									if(assignment.getJob() == null){
+										Job aJob = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(),assignment.getJobNumber(), assignment.getEffectiveLocalDate());
+										assignment.setJob(aJob);
+									}
+									if(assignment.getWorkAreaObj() == null){
+										WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
+										assignment.setWorkAreaObj(aWorkArea);
+									}
 									assignRow.setDescr(assignment.getAssignmentDescription());
 								}
 								assignRow.setEarnCodeSection(earnCodeSection);
@@ -337,7 +334,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 			List<EarnCodeSection> earnCodeToEarnCodeSections = earnCodeSections.get(key);
 			for(EarnCodeSection earnCodeSection : earnCodeToEarnCodeSections){
 				String earnCode = earnCodeSection.getEarnCode();
-				EarnCodeGroupContract earnGroupObj = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupSummaryForEarnCode(earnCode, asOfDate);
+				EarnCodeGroup earnGroupObj = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupSummaryForEarnCode(earnCode, asOfDate);
 				String earnGroup = null;
 				if(earnGroupObj == null){
 					earnGroup = OTHER_EARN_GROUP;
@@ -372,7 +369,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 	 * @param payCalEntry
 	 * @return
 	 */
-	protected List<String> getSummaryHeader(CalendarEntryBo payCalEntry){
+	protected List<String> getSummaryHeader(CalendarEntry payCalEntry){
 		List<String> summaryHeader = new ArrayList<String>();
 		int dayCount = 0;
 		DateTime beginDateTime = payCalEntry.getBeginPeriodFullDateTime();
@@ -427,9 +424,9 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
                 LocalDateTime ld = day.getFlsaDate();
                 int ldDay = ld.getDayOfWeek();
                 for (TimeBlock block : day.getAppliedTimeBlocks()) {
-                    EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(block.getEarnCode(), block.getEndDateTime().toLocalDate());
+                    EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(block.getEarnCode(), block.getEndDateTime().toLocalDate());
                     if (ec != null
-                            && (ec.isOvtEarnCode()
+                            && (ec.getOvtEarnCode()
                             || regularEarnCodes.contains(ec.getEarnCode()) || ec.getCountsAsRegularPay().equals("Y"))) {
                         totalForDay = totalForDay.add(block.getHours(), HrConstants.MATH_CONTEXT);
                         weeklyTotal = weeklyTotal.add(block.getHours(), HrConstants.MATH_CONTEXT);
@@ -646,9 +643,9 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
 				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
 					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-	                    EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDateTime().toLocalDate());
+	                    EarnCode ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDateTime().toLocalDate());
 	                    if (ec != null
-	                            && (ec.isOvtEarnCode()
+	                            && (ec.getOvtEarnCode()
 	                            || regularEarnCodes.contains(ec.getEarnCode()) || ec.getCountsAsRegularPay().equals("Y"))) {
 								if (workArea != null) {
 									if (timeBlock.getWorkArea().compareTo(workArea) == 0) {

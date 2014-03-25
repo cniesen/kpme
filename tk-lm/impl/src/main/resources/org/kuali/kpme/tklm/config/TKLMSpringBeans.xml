@@ -500,6 +500,11 @@
             <bean class="org.kuali.kpme.tklm.time.rules.timecollection.web.TimeCollectionRuleLookupableHelper"/>
         </property>
     </bean>
+    <bean id="clockLogLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+        <property name="lookupableHelperService">
+            <bean class="org.kuali.kpme.tklm.time.clocklog.web.ClockLogLookupableHelper"/>
+        </property>
+    </bean>
     <bean id="systemScheduledTimeOffLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.kpme.tklm.leave.timeoff.web.SystemScheduledTimeOffLookupableHelper"/>
@@ -554,19 +559,6 @@
         <property name="cronExpression" value="${kpme.batch.leaveCalendarDelinquency.cronExpression}" />
     </bean>
 
-    <!-- Leave Calendar Delinquency Job -->
-
-    <bean id="ClockedInEmployeeJob" class="org.kuali.kpme.tklm.time.batch.ClockedInEmployeeJob" scope="singleton">
-
-    </bean>
-
-    <bean id="ClockedInEmployeeJobBean" class="org.springframework.scheduling.quartz.JobDetailBean">
-        <property name="jobClass" value="org.kuali.kpme.tklm.time.batch.ClockedInEmployeeJob" />
-    </bean>
-    <bean id="ClockedInEmployeeJobTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
-        <property name="jobDetail" ref="ClockedInEmployeeJobBean" />
-        <property name="cronExpression" value="${kpme.batch.clockedInEmployee.cronExpression}" />
-    </bean>
 	<!-- TimeBlock Serializer Job -->
 
     <bean id="timeBlockSerializerJobBean" class="org.kuali.kpme.tklm.time.scheduler.TimeBlockSerializerJobBean" scope="singleton">
@@ -660,7 +652,6 @@
                 <ref bean="leaveCalendarDelinquencyTrigger" />
                 <ref bean="serializerTrigger" />
                 <ref bean="carryOverSchedulerTrigger" />
-                <ref bean="ClockedInEmployeeJobTrigger"/>
             </list>
         </property>
     </bean>

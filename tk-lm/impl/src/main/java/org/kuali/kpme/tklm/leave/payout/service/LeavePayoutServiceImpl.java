@@ -24,20 +24,26 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.payout.dao.LeavePayoutDao;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
@@ -216,14 +222,14 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 			LOG.error("did not supply a valid LeavePayout object.");
 			return null;
 		} else {
-			List<LeaveBlockBo> leaveBlocks = new ArrayList<LeaveBlockBo>();
+			List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
 			BigDecimal transferAmount = leavePayout.getPayoutAmount();
-			LeaveBlockBo aLeaveBlock = null;
+			LeaveBlock aLeaveBlock = null;
 			
 			if(ObjectUtils.isNotNull(transferAmount)) {
 				if(transferAmount.compareTo(BigDecimal.ZERO) > 0) {
 		
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					//Create a leave block that adds the adjusted transfer amount to the "transfer to" accrual category.
 					aLeaveBlock.setPrincipalId(leavePayout.getPrincipalId());
 					aLeaveBlock.setLeaveDate(leavePayout.getEffectiveDate());
@@ -241,12 +247,12 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 					//Want to store the newly created leave block id on this maintainable object
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-					LeaveBlock lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
 
-			    	leavePayout.setPayoutLeaveBlockId(lb.getLmLeaveBlockId());
+			    	leavePayout.setPayoutLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 					
 					//Create leave block that removes the correct transfer amount from the originating accrual category.
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					aLeaveBlock.setPrincipalId(leavePayout.getPrincipalId());
 					aLeaveBlock.setLeaveDate(leavePayout.getEffectiveDate());
 					aLeaveBlock.setEarnCode(leavePayout.getFromAccrualCategoryObj().getEarnCode());
@@ -263,9 +269,9 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 					//Want to store the newly created leave block id on this maintainable object.
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-					lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
 
-			    	leavePayout.setPayoutFromLeaveBlockId(lb.getLmLeaveBlockId());
+			    	leavePayout.setPayoutFromLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 				}
 			}
 			
@@ -274,7 +280,7 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 				//Any amount forfeited must come out of the originating accrual category in order to bring balance back to max.
 				if(forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
 					//for balance transfers with action = lose, transfer amount must be moved to forfeitedAmount
-					aLeaveBlock = new LeaveBlockBo();
+					aLeaveBlock = new LeaveBlock();
 					aLeaveBlock.setPrincipalId(leavePayout.getPrincipalId());
 					aLeaveBlock.setLeaveDate(leavePayout.getEffectiveDate());
 					aLeaveBlock.setEarnCode(leavePayout.getFromAccrualCategoryObj().getEarnCode());
@@ -291,9 +297,9 @@ public class LeavePayoutServiceImpl implements LeavePayoutService {
 					//Want to store the newly created leave block id on this maintainable object
 					//when the status of the maintenance document encapsulating this maintainable changes
 					//the id will be used to fetch and update the leave block statuses.
-					LeaveBlock lb = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(LeaveBlockBo.to(aLeaveBlock), GlobalVariables.getUserSession().getPrincipalId());
+					aLeaveBlock = LmServiceLocator.getLeaveBlockService().saveLeaveBlock(aLeaveBlock, GlobalVariables.getUserSession().getPrincipalId());
 
-			    	leavePayout.setForfeitedLeaveBlockId(lb.getLmLeaveBlockId());
+			    	leavePayout.setForfeitedLeaveBlockId(aLeaveBlock.getLmLeaveBlockId());
 				}
 			}
 			return leavePayout;

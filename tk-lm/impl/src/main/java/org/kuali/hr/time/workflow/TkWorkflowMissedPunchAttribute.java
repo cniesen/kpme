@@ -15,13 +15,17 @@
  */
 package org.kuali.hr.time.workflow;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -37,10 +41,6 @@ import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Deprecated
 public class TkWorkflowMissedPunchAttribute extends AbstractRoleAttribute {
@@ -71,7 +71,7 @@ public class TkWorkflowMissedPunchAttribute extends AbstractRoleAttribute {
 	        if (tsDocIdString != null && assignKey != null) {
 	            TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(tsDocIdString);
 	            if (tdoc != null) {
-                    Assignment assignment = tdoc.getAssignment(assignKey);
+	                Assignment assignment = tdoc.getAssignment(assignKey);
 	                if (assignment != null) {
 	            		List<RoleMember> roleMembers = new ArrayList<RoleMember>();
 	            		

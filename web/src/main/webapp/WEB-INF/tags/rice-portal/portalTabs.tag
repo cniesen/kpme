@@ -30,53 +30,53 @@
 		<c:if test='${selectedTab == "main"}'>
 			<li class="red">
 				<a class="red" href="portal.do?selectedTab=main"
-					title="Menu">Menu</a>
+					title="Main Menu">Main Menu</a>
 			</li>
 		</c:if>
 		<c:if test='${selectedTab != "main"}'>
 			<c:if test="${empty selectedTab}">
 				<li class="red">
 					<a class="red" href="portal.do?selectedTab=main"
-						title="Menu">Menu</a>
+						title="Main Menu">Main Menu</a>
 				</li>
 			</c:if>
 			<c:if test="${!empty selectedTab}">
 				<li class="green">
 					<a class="green" href="portal.do?selectedTab=main"
-						title="Menu">Menu</a>
+						title="Main Menu">Main Menu</a>
 				</li>
 			</c:if>
 		</c:if>
 		
         <%-- Maintenance --%>
         <c:if test="${systemAdmin || globalViewOnly || locationAdmin || locationViewOnly}">
-            <c:if test='${selectedTab == "kpmemaintenance"}'>
+            <c:if test='${selectedTab == "maintenance"}'>
                 <li class="red">
-                    <a class="red" href="portal.do?selectedTab=kpmemaintenance"
-                        title="Maintenance">KPME Maintenance</a>
+                    <a class="red" href="portal.do?selectedTab=maintenance"
+                        title="Maintenance">Maintenance</a>
                 </li>
             </c:if>
-            <c:if test='${selectedTab != "kpmemaintenance"}'>
+            <c:if test='${selectedTab != "maintenance"}'>
                 <li class="green">
                     <a class="green"
-                        href="portal.do?selectedTab=kpmemaintenance"
-                        title="KPME Maintenance">KPME Maintenance</a>
+                        href="portal.do?selectedTab=maintenance"
+                        title="Maintenance">Maintenance</a>
                 </li>
             </c:if>
         </c:if>
 
 		<%-- Administration --%>
-		<c:if test='${selectedTab == "riceadministration"}'>
+		<c:if test='${selectedTab == "administration"}'>
 			<li class="red">
-				<a class="red" href="portal.do?selectedTab=riceadministration"
-					title="Rice Administration">Rice Administration</a>
+				<a class="red" href="portal.do?selectedTab=administration"
+					title="Administration">Administration</a>
 			</li>
 		</c:if>
-		<c:if test='${selectedTab != "riceadministration"}'>
+		<c:if test='${selectedTab != "administration"}'>
 			<li class="green">
 				<a class="green"
-					href="portal.do?selectedTab=riceadministration"
-					title="Rice Administration">Rice Administration</a>
+					href="portal.do?selectedTab=administration"
+					title="Administration">Administration</a>
 			</li>
 		</c:if>
 

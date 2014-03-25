@@ -60,7 +60,6 @@ public class SystemScheduledTimeOffLookupableHelper extends KPMELookupableHelper
         String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
         String earnCode = fieldValues.get("earnCode");
-        String premiumEarnCode = fieldValues.get("premiumEarnCode");
         String fromAccruedDate = TKUtils.getFromDateString(fieldValues.get("accruedDate"));
         String toAccruedDate = TKUtils.getToDateString(fieldValues.get("accruedDate"));
         String fromSchTimeOffDate = TKUtils.getFromDateString(fieldValues.get("scheduledTimeOffDate"));
@@ -70,7 +69,7 @@ public class SystemScheduledTimeOffLookupableHelper extends KPMELookupableHelper
 
         return LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs(GlobalVariables.getUserSession().getPrincipalId(), TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), 
         		earnCode, TKUtils.formatDateString(fromAccruedDate), TKUtils.formatDateString(toAccruedDate), TKUtils.formatDateString(fromSchTimeOffDate), 
-        		TKUtils.formatDateString(toSchTimeOffDate), premiumEarnCode, active, showHist);
+        		TKUtils.formatDateString(toSchTimeOffDate), active, showHist);
     }
     
 }

@@ -17,19 +17,17 @@ package org.kuali.kpme.tklm.time.rules.overtime.weekly;
 
 import java.math.BigDecimal;
 
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
-
-import com.google.common.collect.ImmutableMap;
 
 public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleContract {
 
 	private static final long serialVersionUID = 5229797885418317405L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "WeeklyOvertimeRule";
+	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "WeeklyOvertimeRule";
 
 	private String tkWeeklyOvertimeRuleId;
 	private String maxHoursEarnGroup;
@@ -37,20 +35,14 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 	private String convertToEarnCode;
 	private BigDecimal step;
 	private BigDecimal maxHours;
-	private boolean ovtEarnCode;
+	private String userPrincipalId;
+	private Boolean ovtEarnCode;
 	
 	private Long tkWeeklyOvertimeRuleGroupId = 1L;
 	
 	private EarnCodeGroup maxHoursEarnGroupObj;
 	private EarnCodeGroup convertFromEarnGroupObj;
-	private EarnCodeBo convertToEarnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
+	private EarnCode convertToEarnCodeObj;
 	
 
 	public String getTkWeeklyOvertimeRuleId() {
@@ -101,11 +93,20 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 		this.maxHours = maxHours;
 	}
 
-	public boolean isOvtEarnCode() {
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
+	}
+	
+	
+	public Boolean getOvtEarnCode() {
 		return ovtEarnCode;
 	}
 
-	public void setOvtEarnCode(boolean ovtEarnCode) {
+	public void setOvtEarnCode(Boolean ovtEarnCode) {
 		this.ovtEarnCode = ovtEarnCode;
 	}
 
@@ -125,11 +126,11 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 		this.convertFromEarnGroupObj = convertFromEarnGroupObj;
 	}
 
-	public EarnCodeBo getConvertToEarnCodeObj() {
+	public EarnCode getConvertToEarnCodeObj() {
 		return convertToEarnCodeObj;
 	}
 
-	public void setConvertToEarnCodeObj(EarnCodeBo convertToEarnCodeObj) {
+	public void setConvertToEarnCodeObj(EarnCode convertToEarnCodeObj) {
 		this.convertToEarnCodeObj = convertToEarnCodeObj;
 	}
 

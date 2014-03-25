@@ -15,29 +15,45 @@
  */
 package org.kuali.kpme.core.util;
 
+import java.math.BigDecimal;
+import java.net.UnknownHostException;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.*;
-import org.kuali.kpme.core.api.KPMEConstants;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.util.KpmeUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.kuali.kpme.core.KPMEConstants;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.util.RiceKeyConstants;
+import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigDecimal;
-import java.net.UnknownHostException;
-import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class TKUtils {
 
@@ -97,10 +113,23 @@ public class TKUtils {
         return hrsReminder.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
     }
 
-
+    public static String formatAssignmentKey(Long jobNumber, Long workArea, Long task) {
+    	String assignmentKey = StringUtils.EMPTY;
+    	
+    	String jobNumberString = ObjectUtils.toString(jobNumber, "0");
+    	String workAreaString = ObjectUtils.toString(workArea, "0");
+    	String taskString = ObjectUtils.toString(task, "0");
+    	
+    	if (!jobNumberString.equals("0") || !workAreaString.equals("0") || !taskString.equals("0")) {
+    		assignmentKey = StringUtils.join(new String[] {jobNumberString, workAreaString, taskString}, HrConstants.ASSIGNMENT_KEY_DELIMITER);
+    	}
+    	
+    	return assignmentKey;
+    }
+    
     public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        String assignmentDescKey = KpmeUtils.formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
+        String assignmentDescKey = formatAssignmentKey(assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask());
         String assignmentDescValue = HrServiceLocator.getAssignmentService().getAssignmentDescription(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getWorkArea(), assignment.getTask(), assignment.getEffectiveLocalDate());
         assignmentDescriptions.put(assignmentDescKey, assignmentDescValue);
 
@@ -111,9 +140,9 @@ public class TKUtils {
     	StringBuilder builder = new StringBuilder();
     	
     	if (jobNumber != null && workArea != null && task != null) {
-        	JobContract jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
-        	WorkAreaContract workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
-        	TaskContract taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
+        	Job jobObj = HrServiceLocator.getJobService().getJob(principalId, jobNumber, asOfDate);
+        	WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate);
+        	Task taskObj = HrServiceLocator.getTaskService().getTask(task, asOfDate);
         	
         	String workAreaDescription = workAreaObj != null ? workAreaObj.getDescription() : StringUtils.EMPTY;
         	KualiDecimal compensationRate = jobObj != null ? jobObj.getCompRate() : KualiDecimal.ZERO;
@@ -579,19 +608,6 @@ public class TKUtils {
 		
 		return toTime;
 	}
-
-    public static Assignment getAssignmentWithKey(List<Assignment> assignments, AssignmentDescriptionKey assignmentDescriptionKey) {
-
-        for (Assignment assignment : assignments) {
-            if (assignment.getJobNumber().compareTo(assignmentDescriptionKey.getJobNumber()) == 0 &&
-                    assignment.getWorkArea().compareTo(assignmentDescriptionKey.getWorkArea()) == 0 &&
-                    assignment.getTask().compareTo(assignmentDescriptionKey.getTask()) == 0) {
-                return assignment;
-            }
-        }
-
-        return null;
-    }
 
 
 }

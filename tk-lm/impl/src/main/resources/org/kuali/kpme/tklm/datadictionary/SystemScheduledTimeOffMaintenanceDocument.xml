@@ -81,7 +81,6 @@
 				<bean parent="MaintainableFieldDefinition" p:name="transferConversionFactor" />
 				<bean parent="MaintainableFieldDefinition" p:name="premiumHoliday"
 					p:required="true" p:defaultValue="N" />
-				<bean parent="MaintainableFieldDefinition" p:name="premiumEarnCode" />
 				<bean parent="MaintainableFieldDefinition" p:name="active"
 					p:required="true" p:defaultValue="true"/>
 			</list>

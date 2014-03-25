@@ -16,21 +16,17 @@
 package org.kuali.kpme.pm.positionreportsubcat;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.institution.InstitutionBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.institution.Institution;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.pm.api.positionreportsubcat.PositionReportSubCategoryContract;
 import org.kuali.kpme.pm.positionreportcat.PositionReportCategory;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class PositionReportSubCategory extends HrBusinessObject implements PositionReportSubCategoryContract {
-	
-	private static final String POSITION_REPORT_SUB_CAT = "positionReportSubCat";
-
 	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		     .add(POSITION_REPORT_SUB_CAT)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+		     .add("positionReportSubCat")
 		     .build();
 
 	private static final long serialVersionUID = 1L;
@@ -42,16 +38,9 @@ public class PositionReportSubCategory extends HrBusinessObject implements Posit
 	private String institution;
 	private String location;
 	
-	private LocationBo locationObj;
-	private InstitutionBo institutionObj;
+	private Location locationObj;
+	private Institution institutionObj;
 	private PositionReportCategory prcObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_SUB_CAT, this.getPositionReportSubCat())
-				.build();
-	}
 	
 	@Override
 	public String getId() {
@@ -65,7 +54,7 @@ public class PositionReportSubCategory extends HrBusinessObject implements Posit
 
 	@Override
 	protected String getUniqueKey() {
-		return getPositionReportSubCat() + "_" + this.getPositionReportCat() + "_" + this.getPositionReportType();
+		return getPositionReportSubCat() +this.getPositionReportCat() + "_" + this.getPositionReportType();
 		
 	}
 
@@ -125,19 +114,19 @@ public class PositionReportSubCategory extends HrBusinessObject implements Posit
 		this.location = location;
 	}
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
-	public InstitutionBo getInstitutionObj() {
+	public Institution getInstitutionObj() {
 		return institutionObj;
 	}
 
-	public void setInstitutionObj(InstitutionBo institutionObj) {
+	public void setInstitutionObj(Institution institutionObj) {
 		this.institutionObj = institutionObj;
 	}
 

@@ -17,7 +17,6 @@ package org.kuali.kpme.core.leaveplan.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
 public class LeavePlanMaintainableServiceImpl extends HrBusinessObjectMaintainableImpl {
@@ -29,6 +28,6 @@ public class LeavePlanMaintainableServiceImpl extends HrBusinessObjectMaintainab
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return LeavePlanBo.from(HrServiceLocator.getLeavePlanService().getLeavePlan(id));
+		return HrServiceLocator.getLeavePlanService().getLeavePlan(id);
 	}
 }

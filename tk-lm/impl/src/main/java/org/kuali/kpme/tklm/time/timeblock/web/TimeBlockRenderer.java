@@ -15,22 +15,20 @@
  */
 package org.kuali.kpme.tklm.time.timeblock.web;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.web.TimeBlockRendererContract;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.api.time.timeblock.web.TimeBlockRendererContract;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
 
 /**
  * Render helper to handle timeblock and time hour details display
@@ -72,11 +70,11 @@ public class TimeBlockRenderer implements TimeBlockRendererContract {
     public String getTitle() {
         StringBuilder b = new StringBuilder();
 
-        WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(timeBlock.getWorkArea(), LocalDate.now());
+        WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(timeBlock.getWorkArea(), LocalDate.now());
         if(wa != null) {
         	b.append(wa.getDescription());
         }
-        TaskContract task = HrServiceLocator.getTaskService().getTask(timeBlock.getTask(), timeBlock.getBeginDateTime().toLocalDate());
+        Task task = HrServiceLocator.getTaskService().getTask(timeBlock.getTask(), timeBlock.getBeginDateTime().toLocalDate());
         if(task != null) {
         	// do not display task description if the task is the default one
         	// default task is created in getTask() of TaskService
@@ -124,17 +122,5 @@ public class TimeBlockRenderer implements TimeBlockRendererContract {
 
     public void setLunchLabelId(String lunchLabelId) {
         this.lunchLabelId = lunchLabelId;
-    }
-
-    public boolean isTimeBlockEditable() {
-        return TkServiceLocator.getTKPermissionService().canEditTimeBlock(HrContext.getPrincipalId(), timeBlock);
-    }
-
-    public boolean isDeletable() {
-        return TkServiceLocator.getTKPermissionService().canDeleteTimeBlock(HrContext.getPrincipalId(), timeBlock);
-    }
-
-    public boolean isOvertimeEditable() {
-        return TkServiceLocator.getTKPermissionService().canEditOvertimeEarnCode(HrContext.getPrincipalId(), timeBlock);
     }
 }

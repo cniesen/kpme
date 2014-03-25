@@ -19,26 +19,18 @@ import java.math.BigDecimal;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.tklm.api.time.rules.graceperiod.GracePeriodRuleContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-
-import com.google.common.collect.ImmutableMap;
+import org.kuali.kpme.tklm.common.TkConstants;
 
 public class GracePeriodRule extends HrBusinessObject implements GracePeriodRuleContract {
 
 	private static final long serialVersionUID = 2756221187837436165L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "GracePeriodRule";
+	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "GracePeriodRule";
 
 	private String tkGracePeriodRuleId;
 	private BigDecimal hourFactor;
+	private String userPrincipalId;
 	private boolean history; // KPME-2543
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 
 	public BigDecimal getHourFactor() {
 	    return hourFactor;
@@ -46,6 +38,14 @@ public class GracePeriodRule extends HrBusinessObject implements GracePeriodRule
 
 	public void setHourFactor(BigDecimal hourFactor) {
 	    this.hourFactor = hourFactor;
+	}
+
+	public String getUserPrincipalId() {
+	    return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+	    this.userPrincipalId = userPrincipalId;
 	}
 
 	public String getTkGracePeriodRuleId() {

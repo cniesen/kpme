@@ -15,10 +15,13 @@
  */
 package org.kuali.kpme.core.workarea.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.task.TaskContract;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberBo;
 import org.kuali.kpme.core.role.PositionRoleMemberBo;
@@ -26,18 +29,17 @@ import org.kuali.kpme.core.role.PrincipalRoleMemberBo;
 import org.kuali.kpme.core.role.workarea.WorkAreaPositionRoleMemberBo;
 import org.kuali.kpme.core.role.workarea.WorkAreaPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.task.TaskBo;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
+//import org.kuali.kpme.core.authorization.DepartmentalRule;
+//import org.kuali.kpme.tklm.common.AuthorizationValidationUtils;
+//import org.kuali.rice.krad.util.GlobalVariables;
 
 @SuppressWarnings("deprecation")
 public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase {
@@ -46,10 +48,10 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = true;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		
-		if (pbo instanceof WorkAreaBo) {
-			WorkAreaBo workArea = (WorkAreaBo) pbo;
+		if (pbo instanceof WorkArea) {
+			WorkArea workArea = (WorkArea) pbo;
 			
 			valid &= validateDefaultOvertimeEarnCode(workArea.getDefaultOvertimeEarnCode(), workArea.getEffectiveLocalDate());
 			
@@ -73,12 +75,12 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 	public boolean processCustomAddCollectionLineBusinessRules(MaintenanceDocument document, String collectionName, PersistableBusinessObject line) {
 		boolean valid = true;
 		
-		PersistableBusinessObject pboWorkArea = (PersistableBusinessObject)document.getDocumentDataObject();
+		PersistableBusinessObject pboWorkArea = document.getDocumentBusinessObject();
 		PersistableBusinessObject pboTask = line;
 		
-		if (pboWorkArea instanceof WorkAreaBo && pboTask instanceof TaskBo) {
-			WorkAreaBo workArea = (WorkAreaBo) pboWorkArea;
-			TaskBo task = (TaskBo) pboTask;
+		if (pboWorkArea instanceof WorkArea && pboTask instanceof Task) {
+			WorkArea workArea = (WorkArea) pboWorkArea;
+			Task task = (Task) pboTask;
 			
 			valid &= validateTask(task, workArea);
 			
@@ -104,7 +106,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		//TODO: Do we really need to use member type, id, role id? If there are duplicate role names listed in the drop downs, this is just going to cause confusion...
 		if(line instanceof WorkAreaPrincipalRoleMemberBo) {
 			WorkAreaPrincipalRoleMemberBo roleMember = (WorkAreaPrincipalRoleMemberBo) line;
-			WorkAreaBo location = (WorkAreaBo) document.getDocumentDataObject();
+			WorkArea location = (WorkArea) document.getDocumentBusinessObject();
 			List<WorkAreaPrincipalRoleMemberBo> existingRoleMembers = location.getPrincipalRoleMembers();
 			for(ListIterator<WorkAreaPrincipalRoleMemberBo> iter = existingRoleMembers.listIterator(); iter.hasNext(); ) {
 				int index = iter.nextIndex();
@@ -154,7 +156,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		//TODO: Do we really need to use member type, id, role id? If there are duplicate role names listed in the drop downs, this is just going to cause confusion...
 		if(line instanceof WorkAreaPositionRoleMemberBo) {
 			WorkAreaPositionRoleMemberBo roleMember = (WorkAreaPositionRoleMemberBo) line;
-			WorkAreaBo location = (WorkAreaBo) document.getDocumentDataObject();
+			WorkArea location = (WorkArea) document.getDocumentBusinessObject();
 			List<WorkAreaPositionRoleMemberBo> existingRoleMembers = location.getPositionRoleMembers();
 			for(ListIterator<WorkAreaPositionRoleMemberBo> iter = existingRoleMembers.listIterator(); iter.hasNext(); ) {
 				int index = iter.nextIndex();
@@ -207,7 +209,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 	protected boolean validateDefaultOvertimeEarnCode(String defaultOvertimeEarnCode, LocalDate asOfDate) {
 		boolean valid = true;
 		
-		if (defaultOvertimeEarnCode != null && !StringUtils.isEmpty(defaultOvertimeEarnCode)) {
+		if (defaultOvertimeEarnCode != null) {
 			if (!ValidationUtils.validateEarnCode(defaultOvertimeEarnCode, asOfDate)) {
 				this.putFieldError("defaultOvertimeEarnCode", "error.existence", "earnCode '" + defaultOvertimeEarnCode + "'");
 				valid = false;
@@ -288,7 +290,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 	
-	boolean validateActive(WorkAreaBo workArea) {
+	boolean validateActive(WorkArea workArea) {
 		boolean valid = true;
 		
 		if(!workArea.isActive()){
@@ -302,7 +304,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 			}
 		} else{
 			List<Long> inactiveTasks = new ArrayList<Long>();
-			for (TaskBo task : workArea.getTasks()) {
+			for (Task task : workArea.getTasks()) {
 				if(!task.isActive()){
 					inactiveTasks.add(task.getTask());
 				}
@@ -325,7 +327,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 	
-	boolean validateTask(TaskBo task, WorkAreaBo workArea) {
+	boolean validateTask(Task task, WorkArea workArea) {
 
 
 		boolean valid = true;
@@ -344,7 +346,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 
          //before commit check against tasks common to different work areas and assignments
          List<Long> inactiveTasks = new ArrayList<Long>();
-            for (TaskBo inactiveTask : workArea.getTasks()) {
+            for (Task inactiveTask : workArea.getTasks()) {
                 if(!inactiveTask.isActive()){
                     inactiveTasks.add(inactiveTask.getTask());
                 }
@@ -367,10 +369,10 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 
-	private Long getMaxTaskNumber(WorkAreaBo workArea) {
+	private Long getMaxTaskNumber(WorkArea workArea) {
 		Long task = new Long("100");
 		
-		TaskContract maxTask = HrServiceLocator.getTaskService().getMaxTask();
+		Task maxTask = HrServiceLocator.getTaskService().getMaxTask();
 		
 		if (maxTask != null) {
 			task = maxTask.getTask() + 1;

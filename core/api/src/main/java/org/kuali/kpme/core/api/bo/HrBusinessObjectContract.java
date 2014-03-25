@@ -17,17 +17,15 @@ package org.kuali.kpme.core.api.bo;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 /**
  * <p>HrBusinessObjectContract interface.</p>
  *
  */
-public interface HrBusinessObjectContract extends PersistableBusinessObject, KpmeEffectiveDataTransferObject {
+public interface HrBusinessObjectContract extends PersistableBusinessObject, Inactivatable{
 	
 	/**
 	 * The unique id defined by the object, could be a combination
@@ -84,33 +82,4 @@ public interface HrBusinessObjectContract extends PersistableBusinessObject, Kpm
 	 * @return timestamp of HrBusinessObject
 	 */
 	public Timestamp getTimestamp();
-	
-	
-	
-	/**
-	 * The map of key-vaue pairs that together form the business key criteria for this instance.
-	 * 
-	 * @return map of key-value pairs that comprise the business key
-	 */
-	public Map<String, Object> getBusinessKeyValuesMap();
-	
-	
-	
-	/**
-	 * Checks if all the business keys have values currently
-	 * @return
-	 */
-	public boolean areAllBusinessKeyValuesAvailable(); 
-	
-
-    /**
-     * The userPrincipalId of when this HrBusinessObject was last created/updated
-     *
-     * <p>
-     * userPrincipalId of HrBusinessObject
-     * <p>
-     *
-     * @return userPrincipalId of HrBusinessObject
-     */
-    public String getUserPrincipalId();
 }

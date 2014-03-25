@@ -15,20 +15,18 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.task.TaskBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.task.Task;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchDocumentContract;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
+
+import java.sql.Timestamp;
+import java.util.Date;
 
 public class MissedPunchDocument extends TransactionalDocumentBase implements MissedPunchDocumentContract {
 
@@ -38,10 +36,10 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
 	
 	private MissedPunch missedPunch = new MissedPunch();
 
-    private transient JobBo jobObj;
-    private transient WorkAreaBo workAreaObj;
-    private transient DepartmentBo departmentObj;
-    private transient TaskBo taskObj;
+    private transient Job jobObj;
+    private transient WorkArea workAreaObj;
+    private transient Department departmentObj;
+    private transient Task taskObj;
 	public String getTkMissedPunchId() {
 		return tkMissedPunchId;
 	}
@@ -104,29 +102,19 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
         return missedPunch.getRelativeEffectiveDate();
     }*/
 
-    public TaskBo getTaskObj() {
+    public Task getTaskObj() {
         return taskObj;
     }
 
-    public JobBo getJobObj() {
+    public Job getJobObj() {
         return jobObj;
     }
 
-    public WorkAreaBo getWorkAreaObj() {
+    public WorkArea getWorkAreaObj() {
         return workAreaObj;
     }
 
-    public DepartmentBo getDepartmentObj() {
+    public Department getDepartmentObj() {
         return departmentObj;
-    }
-    
-    @Override
-    public List<Assignment> getAssignments() {
-    	List<Assignment> assignments = new ArrayList<Assignment>();
-    	if( (getMissedPunch() != null) && (getMissedPunch().getActionFullDateTime() != null) ){
-    		assignments =  HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), 
-    													getMissedPunch().getActionFullDateTime().toLocalDate());
-    	}
-        return assignments; 
     }
 }

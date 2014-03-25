@@ -17,9 +17,8 @@ package org.kuali.kpme.pm.positionResponsibilityOption.service;
 
 import java.util.List;
 
-import org.kuali.kpme.pm.api.positionresponsibilityoption.service.PositionResponsibilityOptionService;
-import org.kuali.kpme.pm.positionResponsibilityOption.dao.PositionResponsibilityOptionDao;
 import org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption;
+import org.kuali.kpme.pm.positionResponsibilityOption.dao.PositionResponsibilityOptionDao;
 
 public class PositionResponsibilityOptionServiceImpl implements PositionResponsibilityOptionService {
 	

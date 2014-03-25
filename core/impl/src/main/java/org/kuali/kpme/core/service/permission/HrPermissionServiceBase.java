@@ -15,16 +15,27 @@
  */
 package org.kuali.kpme.core.service.permission;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.department.DepartmentService;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.api.workarea.service.WorkAreaService;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.department.service.DepartmentService;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.core.workarea.service.WorkAreaService;
 import org.kuali.rice.core.api.resourceloader.GlobalResourceLoader;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.KimConstants;
@@ -38,9 +49,6 @@ import org.kuali.rice.kim.api.type.KimType;
 import org.kuali.rice.kim.api.type.KimTypeInfoService;
 import org.kuali.rice.kim.framework.permission.PermissionTypeService;
 import org.kuali.rice.kns.kim.permission.PermissionTypeServiceBase;
-
-import javax.xml.namespace.QName;
-import java.util.*;
 
 @SuppressWarnings("deprecation")
 public abstract class HrPermissionServiceBase {
@@ -202,13 +210,13 @@ public abstract class HrPermissionServiceBase {
 	 * 
 	 * @return true if {@code principalId} is authorized to perform any permission templated by {@code permissionTemplateName} for the given document information, false otherwise.
 	 */
-    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, List<? extends AssignmentContract> assignments, DateTime asOfDate) {
+    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, List<Assignment> assignments, DateTime asOfDate) {
     	boolean isAuthorized = false;
         if (asOfDate == null) {
             asOfDate = DateTime.now();
         }
     	
-    	for (AssignmentContract assignment : assignments) {
+    	for (Assignment assignment : assignments) {
             if (isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, documentId, documentStatus, assignment, asOfDate)) {
             	isAuthorized = true;
             	break;
@@ -231,14 +239,14 @@ public abstract class HrPermissionServiceBase {
 	 * 
 	 * @return true if {@code principalId} is authorized to perform any permission templated by {@code permissionTemplateName} for the given document information, false otherwise.
 	 */
-    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, AssignmentContract assignment, DateTime asOfDate) {
+    protected boolean isAuthorizedByTemplate(String principalId, String namespaceCode, String permissionTemplateName, String documentTypeName, String documentId, DocumentStatus documentStatus, Assignment assignment, DateTime asOfDate) {
     	boolean isAuthorized = false;
     	
 		Long workArea = assignment.getWorkArea();
-    	WorkArea workAreaObj = getWorkAreaService().getWorkArea(workArea, asOfDate.toLocalDate());
+    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate.toLocalDate());
 
 		String department = workAreaObj != null ? workAreaObj.getDept() : null;
-    	Department departmentObj = getDepartmentService().getDepartment(department, asOfDate.toLocalDate());
+    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, asOfDate.toLocalDate());
     	
     	String location = departmentObj != null ? departmentObj.getLocation() : null;
     	

@@ -325,7 +325,7 @@ $(function () {
                             }
                         },
                         Cancel : function () {
-                            $("#dialog-form").find('.block-error').removeClass();
+                            $('.block-error').removeClass();
                             $(this).dialog("close");
 
                         }
@@ -817,10 +817,9 @@ $(function () {
             var fieldSections = [".clockInSection", ".clockOutSection", ".hourSection", ".amountSection", ".leaveAmountSection"];
             var leavePlan = this.getEarnCodeLeavePlan(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
             var eligibleForAccr = this.getEarnCodeEligibleForAccr(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
-            var accrualBalanceAction = this.getEarnCodeAccrualBalanceAction(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
+
 			// display leave block fields if the earn code has leave plan OR the earn code is NOT eligible for accrual
-            if((typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined') ||
-                (eligibleForAccr == "N" && accrualBalanceAction =="U") ) {  // for leave block earn codes
+            if((typeof leavePlan != 'undefined' && leavePlan != '' && leavePlan != null && leavePlan != 'undefined')) {  // for leave block earn codes
             	var earnCodeUnit = this.getEarnCodeUnit(EarnCodes.toJSON(), $("#selectedEarnCode option:selected").val());
  				if(typeof earnCodeUnit == 'undefined' || earnCodeUnit == '' || earnCodeUnit == null || earnCodeUnit == 'undefined') {
  					var checkFlag = earnCodeType;
@@ -1107,12 +1106,6 @@ $(function () {
                 return json["earnCode"] == earnCode
             });
             return _.first(matchedEarnCode).eligibleForAccrual;
-        },
-        getEarnCodeAccrualBalanceAction : function (earnCodeJson, earnCode) {
-            var matchedEarnCode = _.filter(earnCodeJson, function (json) {
-                return json["earnCode"] == earnCode
-            });
-            return _.first(matchedEarnCode).accrualBalanceAction;
         },
 
         checkLength : function (o, n, min, max) {

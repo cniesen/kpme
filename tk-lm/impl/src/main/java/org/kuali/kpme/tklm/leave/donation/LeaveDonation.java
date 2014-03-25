@@ -17,35 +17,26 @@ package org.kuali.kpme.tklm.leave.donation;
 
 import java.math.BigDecimal;
 
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.tklm.api.leave.donation.LeaveDonationContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class LeaveDonation extends HrBusinessObject implements LeaveDonationContract {
-	
-    private static final String AMOUNT_RECEIVED = "amountReceived";
-	private static final String RECIPIENTS_ACCRUAL_CATEGORY = "recipientsAccrualCategory";
-	private static final String RECIPIENTS_PRINCIPAL_ID = "recipientsPrincipalID";
-	private static final String AMOUNT_DONATED = "amountDonated";
-	private static final String DONATED_ACCRUAL_CATEGORY = "donatedAccrualCategory";
-	private static final String DONORS_PRINCIPAL_ID = "donorsPrincipalID";
-    
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "LeaveDonation";
+    public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "LeaveDonation";
     private static final long serialVersionUID = 1L;
     //KPME-2273/1965 Primary Business Keys List.	
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DONORS_PRINCIPAL_ID)
-            .add(DONATED_ACCRUAL_CATEGORY)
-            .add(AMOUNT_DONATED)
-            .add(RECIPIENTS_PRINCIPAL_ID)
-            .add(RECIPIENTS_ACCRUAL_CATEGORY)
-            .add(AMOUNT_RECEIVED)
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("donorsPrincipalID")
+            .add("donatedAccrualCategory")
+            .add("amountDonated")
+            .add("recipientsPrincipalID")
+            .add("recipientsAccrualCategory")
+            .add("amountReceived")
             .build();    
     
     private String lmLeaveDonationId;
@@ -57,30 +48,20 @@ public class LeaveDonation extends HrBusinessObject implements LeaveDonationCont
 	private String recipientsPrincipalID;
 	private String description;
 	
-	private transient AccrualCategoryBo accrualCategoryObj;
+	private Boolean history;
+	
+	private transient AccrualCategory accrualCategoryObj;
 	private transient Person personObj;
-	private transient EarnCodeBo earnCodeObj;
+	private transient EarnCode earnCodeObj;
 	
 	private String donatedEarnCode;
 	private String recipientsEarnCode;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DONORS_PRINCIPAL_ID, this.getDonorsPrincipalID())
-			.put(DONATED_ACCRUAL_CATEGORY, this.getDonatedAccrualCategory())
-			.put(AMOUNT_DONATED, this.getAmountDonated())
-			.put(RECIPIENTS_PRINCIPAL_ID, this.getRecipientsPrincipalID())
-			.put(RECIPIENTS_ACCRUAL_CATEGORY, this.getRecipientsAccrualCategory())
-			.put(AMOUNT_RECEIVED, this.getAmountReceived())
-			.build();
-	}
-	
-	public EarnCodeBo getEarnCodeObj() {
+	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;
 	}
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 
@@ -164,6 +145,14 @@ public class LeaveDonation extends HrBusinessObject implements LeaveDonationCont
 		this.description = description;
 	}
 
+	public Boolean getHistory() {
+		return history;
+	}
+
+	public void setHistory(Boolean history) {
+		this.history = history;
+	}
+
 	public Person getPersonObj() {
 		return personObj;
 	}
@@ -172,11 +161,11 @@ public class LeaveDonation extends HrBusinessObject implements LeaveDonationCont
 		this.personObj = personObj;
 	}
 
-	public AccrualCategoryBo getAccrualCategoryObj() {
+	public AccrualCategory getAccrualCategoryObj() {
 		return accrualCategoryObj;
 	}
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+	public void setAccrualCategoryObj(AccrualCategory accrualCategoryObj) {
 		this.accrualCategoryObj = accrualCategoryObj;
 	}
 

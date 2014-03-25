@@ -26,11 +26,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
@@ -78,11 +76,11 @@ public class TimeAction extends KPMEAction {
         if (HrContext.isSystemAdmin()) {
             return new ActionRedirect("/portal.do");
         }
-        PrincipalHRAttributesContract phra = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
+        PrincipalHRAttributes phra = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
         if (phra == null) {
             return new ActionRedirect("/PersonInfo.do");
         }
-        JobContract job = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
+        Job job = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
 
         if (job != null) {
             List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.now());

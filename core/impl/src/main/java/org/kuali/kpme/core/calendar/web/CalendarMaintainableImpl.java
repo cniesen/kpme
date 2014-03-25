@@ -15,14 +15,14 @@
  */
 package org.kuali.kpme.core.calendar.web;
 
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.kuali.kpme.core.cache.CacheUtils;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
-
-import java.util.Map;
 
 /**
  * Leverage this class to implement hooks when maintenance is done on a
@@ -58,10 +58,10 @@ public class CalendarMaintainableImpl extends KualiMaintainableImpl {
 	@Override
 	public void saveBusinessObject() {
 		super.saveBusinessObject();
-        CalendarBo calendar = (CalendarBo) this.getBusinessObject();
+		Calendar calendar = (Calendar) this.getBusinessObject();
 		LOG.info("Saved pay calendar: " + calendar.getHrCalendarId());
-        CacheUtils.flushCache(CalendarBo.CACHE_NAME);
-        CacheUtils.flushCache(CalendarEntryBo.CACHE_NAME);
+        CacheUtils.flushCache(Calendar.CACHE_NAME);
+        CacheUtils.flushCache(CalendarEntry.CACHE_NAME);
 	}
 
 }

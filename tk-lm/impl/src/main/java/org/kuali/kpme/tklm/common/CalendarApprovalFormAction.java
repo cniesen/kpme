@@ -15,23 +15,24 @@
  */
 package org.kuali.kpme.tklm.common;
 
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.util.TkContext;
 import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 	
@@ -49,7 +50,7 @@ public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 		if (calendarApprovalForm.getCalendarDocument() != null) {
 			calendarApprovalForm.setSelectedPayCalendarGroup(calendarApprovalForm.getCalendarDocument().getCalendarEntry().getCalendarName());
 			for (Assignment assignment : calendarApprovalForm.getCalendarDocument().getAssignments()) {
-				WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
+				WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
 				if (calendarApprovalForm.getDepartments().contains(workArea.getDept())) {
 					calendarApprovalForm.setSelectedDept(workArea.getDept());
 					break;
@@ -78,10 +79,7 @@ public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 	}
 
     protected List<CalendarEntry> getCalendarEntries(CalendarEntry currentCalendarEntry) {
-		List<CalendarEntry> contracts =  HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarId(currentCalendarEntry.getHrCalendarId());
-        List<CalendarEntry> cecs = new ArrayList<CalendarEntry>();
-        cecs.addAll(contracts);
-        return cecs;
+		return HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarId(currentCalendarEntry.getHrCalendarId());
 	}
 	
 	protected List<String> getSubListPrincipalIds(HttpServletRequest request, List<String> assignmentPrincipalIds) {

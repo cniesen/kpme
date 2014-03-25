@@ -16,32 +16,26 @@
 package org.kuali.kpme.tklm.leave.override;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class EmployeeOverride extends HrBusinessObject implements EmployeeOverrideContract {
 
-	private static final String OVERRIDE_TYPE = "overrideType";
-	private static final String ACCRUAL_CATEGORY = "accrualCategory";
-	private static final String LEAVE_PLAN = "leavePlan";
-	private static final String PRINCIPAL_ID = "principalId";
-	
 	private static final long serialVersionUID = 1L;
-    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "EmployeeOverride";
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
-            .add(LEAVE_PLAN)
-            .add(ACCRUAL_CATEGORY)
-            .add(OVERRIDE_TYPE)
+    public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "EmployeeOverride";
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("principalId")
+            .add("leavePlan")
+            .add("accrualCategory")
+            .add("overrideType")
             .build();
 	
 	private String lmEmployeeOverrideId;
@@ -50,22 +44,11 @@ public class EmployeeOverride extends HrBusinessObject implements EmployeeOverri
 	private String leavePlan;
 	private transient Person principal;
 	private transient PrincipalHRAttributes principalHRAttrObj;
-	private transient AccrualCategoryBo accrualCategoryObj;
+	private transient AccrualCategory accrualCategoryObj;
 	private String overrideType;
 	private Long overrideValue;
 	private String description;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-    		.put(PRINCIPAL_ID, this.getPrincipalId())
-			.put(LEAVE_PLAN, this.getLeavePlan())
-			.put(ACCRUAL_CATEGORY, this.getAccrualCategory())
-			.put(OVERRIDE_TYPE, this.getOverrideType())
-			.build();
-	}
-	
 	@Override
 	public String getId() {
 		return getLmEmployeeOverrideId();
@@ -117,11 +100,11 @@ public class EmployeeOverride extends HrBusinessObject implements EmployeeOverri
 		return (principal != null) ? principal.getName() : "";
 	}
 
-	public AccrualCategoryBo getAccrualCategoryObj() {
+	public AccrualCategory getAccrualCategoryObj() {
 		return accrualCategoryObj;
 	}
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+	public void setAccrualCategoryObj(AccrualCategory accrualCategoryObj) {
 		this.accrualCategoryObj = accrualCategoryObj;
 	}
 
@@ -154,7 +137,7 @@ public class EmployeeOverride extends HrBusinessObject implements EmployeeOverri
             return leavePlan;
         }
 		if (this.principalHRAttrObj == null && !StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = (PrincipalHRAttributes) HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
+			principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
 		}
         leavePlan = principalHRAttrObj == null ? null : principalHRAttrObj.getLeavePlan();
 		return leavePlan;

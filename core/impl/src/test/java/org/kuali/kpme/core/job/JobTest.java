@@ -27,10 +27,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
-import org.kuali.kpme.core.paytype.PayTypeBo;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -51,7 +50,7 @@ public class JobTest extends CoreUnitTestCase {
 
 	@Test
 	public void testInsertPayCalendar() throws Exception {
-        CalendarBo payCalendar = new CalendarBo();
+		Calendar payCalendar = new Calendar();
 		payCalendar.setHrCalendarId("1001");
 		payCalendar.setCalendarName(CALENDAR_GROUP);
 
@@ -66,7 +65,7 @@ public class JobTest extends CoreUnitTestCase {
 
 	@Test
 	public void testInsertPayCalendarDates() throws Exception {
-		CalendarEntryBo payCalendarDates = new CalendarEntryBo();
+		CalendarEntry payCalendarDates = new CalendarEntry();
 		payCalendarDates.setHrCalendarEntryId("1001");
 		payCalendarDates.setHrCalendarId("1001");
 
@@ -84,7 +83,7 @@ public class JobTest extends CoreUnitTestCase {
 
 	@Test
 	public void testInsertPayType() throws Exception {
-		PayTypeBo payType = new PayTypeBo();
+		PayType payType = new PayType();
 		payType.setHrPayTypeId("1001");
 		payType.setPayType("BW");
 		payType.setRegEarnCode("RGN");
@@ -95,9 +94,8 @@ public class JobTest extends CoreUnitTestCase {
 		payType.setInstitution("*");
 		payType.setFlsaStatus("NE");
 		payType.setPayFrequency("M");
-        payType.setUserPrincipalId("admin");
 
-		payType = (PayTypeBo) KRADServiceLocator.getBusinessObjectService().save(payType);
+		payType = (PayType) KRADServiceLocator.getBusinessObjectService().save(payType);
 		Assert.assertTrue(HrServiceLocator.getPayTypeService().getPayType(payType.getPayType(), payType.getEffectiveLocalDate()) != null);
 		KRADServiceLocator.getBusinessObjectService().delete(payType);
 	}

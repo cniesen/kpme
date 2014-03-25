@@ -15,35 +15,35 @@
  */
 package org.kuali.kpme.tklm.time.detail.validation;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.*;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.common.CalendarValidationUtil;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.detail.web.TimeDetailActionFormBase;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TimeDetailValidationUtil extends CalendarValidationUtil {
 
@@ -51,7 +51,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
     	// This validator could be shared between LeaveCalendarValidationUtil and TimeDetailValidationUtil
     	// if the common parameters required by both are moved to a shared parent of TimeDetailActionFormBase and LeaveCalendarForm.
     	List<String> errorMsgList = new ArrayList<String>();
-        CalendarEntry payCalendarEntry = tdaf.getCalendarEntry();
+    	CalendarEntry payCalendarEntry = tdaf.getCalendarEntry();
     	if(ObjectUtils.isNotNull(payCalendarEntry)) {
 			LeaveBlock lb = null;
 			if(StringUtils.isNotEmpty(tdaf.getLmLeaveBlockId())) {
@@ -59,7 +59,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
 			}
 			errorMsgList.addAll(CalendarValidationUtil.validateEarnCode(tdaf.getSelectedEarnCode(),tdaf.getStartDate(),tdaf.getEndDate()));
 			if(errorMsgList.isEmpty()) {
-				LeaveSummaryContract ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(HrContext.getTargetPrincipalId(), TKUtils.formatDateString(tdaf.getEndDate()));
+				LeaveSummary ls = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(HrContext.getTargetPrincipalId(), TKUtils.formatDateString(tdaf.getEndDate()));
 				
 				  BigDecimal leaveAmount = tdaf.getLeaveAmount();
                   if(leaveAmount == null) {
@@ -93,7 +93,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
     	if (StringUtils.isNotBlank(lcf.getSelectedEarnCode()) &&  lcf.getCalendarEntry() != null) {
     		//earn code is validate through the span of the leave entry, could the earn code's record method change between then and the leave period end date?
     		//Why not use endDateS to retrieve the earn code?
-            CalendarEntry calendarEntry = lcf.getCalendarEntry();
+    		CalendarEntry calendarEntry = lcf.getCalendarEntry();
     		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(lcf.getSelectedEarnCode(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
     		if(earnCode != null) {
     			if(earnCode.getRecordMethod().equalsIgnoreCase(HrConstants.EARN_CODE_TIME)) {
@@ -170,7 +170,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
             errors.add("No timesheet document found.");
         }
         if (errors.size() > 0) return errors;
-
+        
         CalendarEntry payCalEntry = timesheetDocument.getCalendarEntry();
         EarnCode earnCode = null;
         if (StringUtils.isNotBlank(selectedEarnCode)) {
@@ -406,12 +406,12 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
         for (TimeBlock timeBlock : timesheetDocument.getTimeBlocks()) {
             if (errors.size() == 0 && StringUtils.equals(timeBlock.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
             	// allow regular time blocks to be added with overlapping non-regular time blocks
-            	JobContract aJob = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), timeBlock.getBeginDateTime().toLocalDate());
+            	Job aJob = HrServiceLocator.getJobService().getJob(timeBlock.getPrincipalId(), timeBlock.getJobNumber(), new LocalDate(timeBlock.getBeginDate()));
             	if(aJob != null && aJob.getPayTypeObj() != null && isRegularEarnCode && !StringUtils.equals(aJob.getPayTypeObj().getRegEarnCode(),timeBlock.getEarnCode())) {
             		continue;
             	}
             	
-                Interval timeBlockInterval = new Interval(timeBlock.getBeginDateTime(), timeBlock.getEndDateTime());
+                Interval timeBlockInterval = new Interval(timeBlock.getBeginTimestamp().getTime(), timeBlock.getEndTimestamp().getTime());
                 for (Interval intv : dayInt) {
                 	// KPME-2720
                 	// timeblockInterval above seems to have the server timezone (America/New York), for example, if you log in as iadetail1 (America/chicago) 
@@ -509,7 +509,7 @@ public class TimeDetailValidationUtil extends CalendarValidationUtil {
      * @return
      */
     @Deprecated
-    public static List<String> validateInterval(CalendarEntryBo payCalEntry, Long startTime, Long endTime) {
+    public static List<String> validateInterval(CalendarEntry payCalEntry, Long startTime, Long endTime) {
         List<String> errors = new ArrayList<String>();
         LocalDateTime pcb_ldt = payCalEntry.getBeginPeriodLocalDateTime();
         LocalDateTime pce_ldt = payCalEntry.getEndPeriodLocalDateTime();

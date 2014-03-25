@@ -15,20 +15,22 @@
  */
 package org.kuali.kpme.core.kfs.sys.businessobject.defaultvalue;
 
-import org.apache.commons.lang.time.DateFormatUtils;
-import org.apache.commons.lang.time.DateUtils;
-import org.kuali.rice.core.api.CoreApiServiceLocator;
-import org.kuali.rice.krad.valuefinder.ValueFinder;
-
 import java.util.Calendar;
 import java.util.Date;
+
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.commons.lang.time.DateUtils;
+import org.kuali.rice.core.api.datetime.DateTimeService;
+import org.kuali.rice.core.impl.datetime.DateTimeServiceImpl;
+import org.kuali.rice.krad.valuefinder.ValueFinder;
 
 public class CurrentDateMMDDYYYYFinder implements ValueFinder {
 
     public String getValue() {
         // get the current date from the service
         // Date date = SpringContext.getBean(DateTimeService.class).getCurrentDate();
-        Date date = CoreApiServiceLocator.getDateTimeService().getCurrentDate();
+        DateTimeService dateTimeService = new DateTimeServiceImpl();
+        Date date = dateTimeService.getCurrentDate();
 
         // remove the time component
         date = DateUtils.truncate(date, Calendar.DAY_OF_MONTH);

@@ -21,18 +21,14 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.api.block.CalendarBlockContract;
-import org.kuali.kpme.core.api.mo.UserModified;
-import org.kuali.rice.core.api.mo.common.GloballyUnique;
 
 
 /**
  * <p>LeaveBlockContract interface</p>
  *
  */
-public interface LeaveBlockContract extends CalendarBlockContract, UserModified {
+public interface LeaveBlockContract extends CalendarBlockContract {
 
 	/**
 	 * The AccrualCategoryRuleId associated with the LeaveBlock
@@ -65,7 +61,7 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 * 
 	 * @return Y if accrual is generated, N if not
 	 */	
-	public Boolean isAccrualGenerated();
+	public Boolean getAccrualGenerated();
 
 	/**
 	 * TODO: Put a better comment
@@ -111,7 +107,7 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 * 
 	 * @return leaveDate for LeaveBlock
 	 */	
-	public DateTime getLeaveDateTime();
+	public Date getLeaveDate();
 	
 	/**
 	 * The leave date (LocalDate) associated with the LeaveBlock
@@ -156,6 +152,17 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 * @return value for requestStatus in REQUEST_STATUS_STRINGS map if found, "usage" if not found 
 	 */	
     public String getRequestStatusString();
+
+    /**
+	 * The list of LeaveBlockHistory objects associated with the LeaveBlock
+	 * 
+	 * <p>
+	 * leaveBlockHistories of a LeaveBlock
+	 * <p>
+	 * 
+	 * @return leaveBlockHistories for LeaveBlock
+	 */	
+	public List<? extends LeaveBlockHistoryContract> getLeaveBlockHistories();
 
 	/**
 	 * The reason associated with the LeaveBlock
@@ -221,7 +228,7 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 * 
 	 * @return Y if the principal has a permission to edit a leave block, N if not
 	 */
-    //public boolean isEditable();
+    public boolean isEditable();
 
     /**
 	 * Indicates if the principal has a permission to delete the leave block
@@ -231,7 +238,7 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 * 
 	 * @return Y if the principal has a permission to delete the leave block, N if not
 	 */
-    //public boolean isDeletable();
+    public boolean isDeletable();
     
     /**
 	 * The assignment key associated with the LeaveBlock
@@ -378,20 +385,4 @@ public interface LeaveBlockContract extends CalendarBlockContract, UserModified 
 	 */	
 	public String getEarnCode();
 
-    /**
-     * The AccrualCategoryRule associated with the LeaveBlock
-     *
-     * <p>
-     * accrualCategroyRule of a LeaveBlock
-     * <p>
-     *
-     * @return accrualCategroyRule for LeaveBlock
-     */
-    public AccrualCategoryRuleContract getAccrualCategoryRule();
-
-    public AccrualCategoryContract getAccrualCategoryObj();
-
-    public DateTime getCreateTime();
-
-    public String getAffectPay();
 }

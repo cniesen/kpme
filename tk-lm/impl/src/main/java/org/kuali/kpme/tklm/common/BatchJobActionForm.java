@@ -31,7 +31,6 @@ public class BatchJobActionForm extends KPMEForm {
     private String selectedBatchJob;
     private String hrPyCalendarEntryId;
     private String leavePlan;
-    private String message;
     
     static {
     	BATCH_JOB_NAMES.add(StringUtils.EMPTY);
@@ -43,7 +42,6 @@ public class BatchJobActionForm extends KPMEForm {
     	BATCH_JOB_NAMES.add(HrConstants.BATCH_JOB_NAMES.MISSED_PUNCH_APPROVAL);
     	BATCH_JOB_NAMES.add(HrConstants.BATCH_JOB_NAMES.PAYROLL_APPROVAL);
     	BATCH_JOB_NAMES.add(HrConstants.BATCH_JOB_NAMES.LEAVE_CALENDAR_DELINQUENCY);
-        BATCH_JOB_NAMES.add(HrConstants.BATCH_JOB_NAMES.CLOCKED_IN_EMPLOYEE);
     }
 
     public List<String> getBatchJobNames() {
@@ -73,15 +71,5 @@ public class BatchJobActionForm extends KPMEForm {
 	public void setLeavePlan(String leavePlan) {
 		this.leavePlan = leavePlan;
 	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	
 
 }

@@ -28,9 +28,26 @@
 		<property name="attributes">
 			<list>
 				<ref bean="PositionResponsibility-positionResponsibilityId" />
-                <ref bean="PositionResponsibility-positionResponsibilityOption" />
+				<ref bean="PositionResponsibility-effectiveDate" />
+				<ref bean="PositionResponsibility-institution" />
+				<ref bean="PositionResponsibility-location" />
+				<ref bean="PositionResponsibility-positionResponsibilityOption" />
 				<ref bean="PositionResponsibility-percentTime" />
+				<ref bean="PositionResponsibility-active" />
 				<ref bean="PositionDuty-hrPositionId"/>
+			</list>
+		</property>
+		<property name="relationships">
+			<list>
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="campusObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="location"
+								p:targetName="code" />
+						</list>
+					</property>
+				</bean>
 			</list>
 		</property>
 		<property name="objectLabel" value="Position Type" />
@@ -41,7 +58,6 @@
 		parent="PositionResponsibility-positionResponsibilityId-parentBean" />
 	<bean id="PositionResponsibility-positionResponsibilityId-parentBean"
 		abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="60" />
 		<property name="required" value="false" />
 		<property name="forceUppercase" value="false" />
 		<property name="shortLabel" value="id" />
@@ -52,11 +68,54 @@
 		<property name="label" value="Position Responsibility Id" />
 	</bean>
 
+	<bean id="PositionResponsibility-effectiveDate" parent="PositionResponsibility-effectiveDate-parentBean" />
+	<bean id="PositionResponsibility-effectiveDate-parentBean"
+		abstract="true" parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Effective Date" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" p:size="10" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+
+	<bean id="PositionResponsibility-institution" parent="PositionResponsibility-institution-parentBean" />
+	<bean id="PositionResponsibility-institution-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Institution" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="institution" />
+		<property name="label" value="Institution" />
+	</bean>
+
+	<bean id="PositionResponsibility-location" parent="PositionResponsibility-location-parentBean" />
+	<bean id="PositionResponsibility-location-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Location" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
+	</bean>
+
 	<!-- here comes the position responsibility option look up 
 	
-	<bean id="PositionResponsibility-positionresponsibilityoption"
-		parent="PositionResponsibility-positionresponsibilityoption-parentBean" />
-	<bean id="PositionResponsibility-positionresponsibilityoption-parentBean"
+	<bean id="PositionResponsibility-positionResponsibilityOption"
+		parent="PositionResponsibility-positionResponsibilityOption-parentBean" />
+	<bean id="PositionResponsibility-positionResponsibilityOption-parentBean"
 		abstract="true" parent="AttributeDefinition">
 		<property name="required" value="false" />
 		<property name="forceUppercase" value="false" />
@@ -67,13 +126,12 @@
     	<property name="optionsFinder">
       		<bean class="org.kuali.kpme.pm.util.PstnRspOptionKeyValueFinder"/>
     	</property>
-		<property name="name" value="positionresponsibilityoption" />
+		<property name="name" value="positionResponsibilityOption" />
 		<property name="label" value="Position Responsibility Option" />
 	</bean>
 	-->
 	<bean id="PositionResponsibility-positionResponsibilityOption" parent="PositionResponsibility-positionResponsibilityOption-parentBean" />
 	<bean id="PositionResponsibility-positionResponsibilityOption-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="20" />
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Responsibility Option" />
 		<property name="controlField">
@@ -109,9 +167,18 @@
 		<property name="label" value="Percent Time" />
 	</bean>
 
+
+
+
+	<bean id="PositionResponsibility-active" parent="PositionResponsibility-active-parentBean" />
+	<bean id="PositionResponsibility-active-parentBean" abstract="true"
+		parent="AttributeReferenceDummy-activeIndicator" p:label="Active?">
+		<property name="required" value="true" />
+		<property name="name" value="active" />
+	</bean>
+	
 	<bean id="PositionDuty-hrPositionId" parent="PositionDuty-hrPositionId-parentBean"/>
 	<bean id="PositionDuty-hrPositionId-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -120,7 +187,9 @@
 	    </property>
 	    <property name="name" value="hrPositionId"/>
 	    <property name="label" value="Position Id"/>
-	</bean>
+	</bean> 
+
+
 
 	<!-- Position Responsibility Lookup View 
 
@@ -141,7 +210,7 @@
 				</bean>
 				
 				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="campus" />
-				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionresponsibilityoption" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionResponsibilityOption" />
 				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="percentTime" />
 				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="active"
 					p:defaultValue="Y" />
@@ -152,7 +221,7 @@
 				<bean parent="Uif-InputField" p:propertyName="effectiveDate" />
 				<bean parent="Uif-InputField" p:propertyName="institution" />
 				<bean parent="Uif-InputField" p:propertyName="campus" />
-				<bean parent="Uif-InputField" p:propertyName="positionresponsibilityoption" />
+				<bean parent="Uif-InputField" p:propertyName="positionResponsibilityOption" />
 				<bean parent="Uif-InputField" p:propertyName="percentTime" />
 				<bean parent="Uif-InputField" p:propertyName="active" />
 			</list>
@@ -165,7 +234,7 @@
 	
 	<bean id="PositionResponsibility-MaintenanceView" parent="PositionResponsibility-MaintenanceView-parentBean" />
 	<bean id="PositionResponsibility-MaintenanceView-parentBean"
-		abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+		abstract="true" parent="Uif-MaintenanceView">
 		<property name="headerText" value="Position Responsibility Maintenance" />
 		<property name="dataObjectClassName"
 			value="org.kuali.hr.pm.positionresponsibility.PositionResponsibility" />
@@ -179,7 +248,7 @@
 							<bean parent="Uif-InputField" p:propertyName="institution">
 								<property name="quickfinder">
 									<bean parent="Uif-QuickFinderByScript"
-										p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+										p:dataObjectClassName="org.kuali.kpme.core.institution.Institution"
 										p:fieldConversions="institutionCode:institution" />
 								</property>
 							</bean>

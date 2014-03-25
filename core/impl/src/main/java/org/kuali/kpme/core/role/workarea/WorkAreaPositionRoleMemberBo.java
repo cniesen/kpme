@@ -25,7 +25,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.api.role.workarea.WorkAreaPositionRoleMemberBoContract;
-import org.kuali.kpme.core.position.PositionBaseBo;
+import org.kuali.kpme.core.position.PositionBase;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.role.PositionRoleMemberBo;
 import org.kuali.rice.core.api.membership.MemberType;
@@ -40,7 +40,7 @@ public class WorkAreaPositionRoleMemberBo extends PositionRoleMemberBo implement
 
 	private static final long serialVersionUID = -321921468708618676L;
 	private static final Logger LOG = Logger.getLogger(WorkAreaPositionRoleMemberBo.class);
-	private PositionBaseBo positionBaseObj;
+	private PositionBase positionBaseObj;
 	private String positionNumber;
 
 	public static WorkAreaPositionRoleMemberBo from(RoleMemberBo roleMemberBo, Map<String, String> attributes) {
@@ -244,11 +244,11 @@ public class WorkAreaPositionRoleMemberBo extends PositionRoleMemberBo implement
 		}
     }
 
-	public PositionBaseBo getPositionBaseObj() {
+	public PositionBase getPositionBaseObj() {
 		return positionBaseObj;
 	}
 
-	public void setPositionBaseObj(PositionBaseBo positionBaseObj) {
+	public void setPositionBaseObj(PositionBase positionBaseObj) {
 		this.positionBaseObj = positionBaseObj;
 	}
 

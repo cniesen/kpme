@@ -15,10 +15,10 @@
  */
 package org.kuali.kpme.tklm.api.leave.block;
 
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.tklm.api.leave.calendar.LeaveCalendarContract;
-
 import java.util.List;
+
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
+import org.kuali.kpme.tklm.api.leave.calendar.LeaveCalendarContract;
 
 
 /**
@@ -87,7 +87,7 @@ public interface LeaveBlockAggregateContract {
 	 * 
 	 * @return leaveCalendarEntry for LeaveBlockAggregate
 	 */	
-	public CalendarEntry getleaveCalendarEntry();
+	public CalendarEntryContract getleaveCalendarEntry(); 
 
 	/**
 	 * The LeaveCalendar object associated with the LeaveBlockAggregate

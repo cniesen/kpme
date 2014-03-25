@@ -25,14 +25,20 @@
 </c:if>
 <td class="content" valign="top">
     <admin:hrPayroll />
-    <admin:hrData />
+    <admin:timeKeeping />
+    <admin:leaveMaintenance />
+    <%-- applicable to 2.1 and greater releases <admin:positionManagement /> --%>
+    <admin:administrative />
 </td>
 <td class="content" valign="top">
-    <admin:positionManagement />
-    <admin:personManagement/>
+    <admin:inquiries />
+    <admin:changeTargetPerson />
+    <admin:calendarEntry />
+    <admin:initiateDocument />
+    <admin:deleteDocument />
 </td>
 <td class="content" valign="top">
-    <admin:financial />
-    <admin:workflow />
-    <admin:notification />
+    <admin:batchJob />
+    <admin:carryOverBatchJob />
+    <admin:calculateLeaveAccruals />
 </td>

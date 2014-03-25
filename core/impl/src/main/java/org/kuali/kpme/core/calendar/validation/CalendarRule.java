@@ -18,9 +18,9 @@ package org.kuali.kpme.core.calendar.validation;
 import java.sql.Time;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 
 public class CalendarRule extends MaintenanceDocumentRuleBase {
 	@Override
@@ -28,7 +28,7 @@ public class CalendarRule extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = true;
 
-        CalendarBo calendar = (CalendarBo) this.getNewDataObject();
+		Calendar calendar = (Calendar) this.getNewBo();
 		if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")){
 			valid = validateFLSABeginDay(calendar.getFlsaBeginDay());
 			valid = validateFLSABeginTime(calendar.getFlsaBeginTime());
@@ -39,7 +39,7 @@ public class CalendarRule extends MaintenanceDocumentRuleBase {
 	boolean validateFLSABeginDay(String flsaBeginDay) {
 		boolean valid = true;
 		if (StringUtils.isEmpty(flsaBeginDay)) {
-			this.putFieldError("dataObject.flsaBeginDay", "error.required",
+			this.putFieldError("flsaBeginDay", "error.required",
 					"FLSA Begin Day");
 			valid = false;
 		}
@@ -48,7 +48,7 @@ public class CalendarRule extends MaintenanceDocumentRuleBase {
 	boolean validateFLSABeginTime(Time flsaBeginTime) {
 		boolean valid = true;
 		if (flsaBeginTime == null) {
-			this.putFieldError("dataObject.flsaBeginTime", "error.required",
+			this.putFieldError("flsaBeginTime", "error.required",
 					"FLSA Begin Time");
 			valid = false;
 		}
