@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2005-2013 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" version="5.0">
+    <info>
+        <title>${project.name} ${project.version} Release Notes</title>
+        <edition>${project.version}</edition>
+        <pubdate>Released: ${docbook.build.timestamp}</pubdate>
+    </info>
+    <section xml:id="overview" xreflabel="Overview">
+        <title>Overview</title>
+        <para>Welcome to ${project.name} ${project.version}! </para>
+        <section>
+            <title>Release Highlights</title>
+            <para>This version of KPME is a patch release consisting of a rice dependency upgrade to fix potential
+                security issues.</para>
+            <para>
+                <itemizedlist>
+                    <title>Highlights of this release include:</title>
+                    <listitem>
+                        <para>Security fixes</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+        <section>
+            <title>Download</title>
+            <para>KPME ${project.version} can be downloaded from the Kuali website at <link xlink:show="new" xlink:href="http://www.kuali.org/download/kpme">http://www.kuali.org/download/kpme</link>.</para>
+            <para>There is a single zip file which contains both the source and binaries.  Please read the Installation Guide for
+                more details on setup of these downloads</para>
+            <para>Applications can also consume KPME from the maven site at <link
+                    xlink:href="http://search.maven.org/#search|ga|1|org.kuali.kpme"
+                    >http://search.maven.org/#search|ga|1|org.kuali.kpme</link>.</para>
+        </section>
+        <section>
+            <title>Documentation</title>
+            <para>API Documentation can be found at <link xlink:show="new" xlink:href="http://site.kuali.org/kpme/${project.version}/apidocs/index.html">http://site.kuali.org/kpme/${project.version}/apidocs/index.html</link></para>
+            <para>Formal documentation can be found at <link xlink:show="new"
+                                                             xlink:href="http://site.kuali.org/kpme/${project.version}/reference/html/index.html"
+                    >http://site.kuali.org/kpme/${project.version}/reference/html/index.html</link>.
+                This documentation is still in the process of review and update  which will continue
+                through subsequent releases, so please follow the notes in each document to report
+                any outdated information.</para>
+        </section>
+        <section>
+            <title>Impacting Changes</title>
+            <section>
+                <title>HR Roles to KIM migration</title>
+                <itemizedlist>
+                    <listitem>
+                        <para>Upgrade to rice 2.3.4 </para>
+                    </listitem>
+                    <listitem>
+                        <para>Rice has been upgraded for several security fixes.  This may have potentially impacting
+                        changes to any locally developed customizations.</para>
+                    </listitem>
+                </itemizedlist>
+            </section>
+        </section>
+        <section>
+            <title>Contact</title>
+            <para>If you encounter any difficulty, please don't hesitate to contact the KPME team on
+                our public collaboration mailing list at <email>kpme.tech.collab@kuali.org</email>.
+                Please indicate that you are using the ${project.version} version of KPME.</para>
+        </section>
+    </section>
+    <section xml:id="items_addressed_in_kpme">
+        <title>Items Addressed in KPME ${project.version}</title>
+
+
+        <section>
+            <title>Bug Fix</title>
+            <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>none</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+
+
+        <section>
+            <title>New Feature</title>
+            <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>none</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+
+
+        <section>
+            <title>Task</title>
+            <para>
+                <itemizedlist>
+                    <listitem>
+                        <para>none</para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+        </section>
+    </section>
+</article>
