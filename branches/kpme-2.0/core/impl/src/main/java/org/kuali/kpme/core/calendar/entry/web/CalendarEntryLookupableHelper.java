@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
@@ -30,7 +30,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class CalendarEntryLookupableHelper extends KPMELookupableHelper {
+public class CalendarEntryLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 6008647804840459542L;
 

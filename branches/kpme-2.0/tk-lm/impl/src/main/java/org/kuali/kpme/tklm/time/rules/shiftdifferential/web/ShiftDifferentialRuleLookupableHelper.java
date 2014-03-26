@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.rules.shiftdifferential.ShiftDifferentialRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -31,7 +31,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class ShiftDifferentialRuleLookupableHelper extends KPMELookupableHelper {
+public class ShiftDifferentialRuleLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = -7636153206208704542L;
 

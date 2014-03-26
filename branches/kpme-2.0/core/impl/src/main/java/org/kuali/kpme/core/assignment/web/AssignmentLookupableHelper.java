@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.kuali.kpme.core.assignment.Assignment;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
@@ -31,7 +31,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class AssignmentLookupableHelper extends KPMELookupableHelper {
+public class AssignmentLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 774015772672806415L;
 

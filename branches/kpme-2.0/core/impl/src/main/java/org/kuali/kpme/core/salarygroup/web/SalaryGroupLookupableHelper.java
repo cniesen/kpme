@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.krad.bo.BusinessObject;
 
-public class SalaryGroupLookupableHelper extends KPMELookupableHelper {
+public class SalaryGroupLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	@Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {

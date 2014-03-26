@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.leave.donation.LeaveDonation;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -30,7 +30,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class LeaveDonationLookupableHelper extends KPMELookupableHelper {
+public class LeaveDonationLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 4181583515349590532L;
 
