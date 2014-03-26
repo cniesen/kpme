@@ -27,7 +27,7 @@ import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
@@ -46,7 +46,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class LeavePayoutLookupableHelper extends KPMELookupableHelper {
+public class LeavePayoutLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = -2654300078605742618L;
 

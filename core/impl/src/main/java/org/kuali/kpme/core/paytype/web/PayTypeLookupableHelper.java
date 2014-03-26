@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
@@ -31,7 +31,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class PayTypeLookupableHelper extends KPMELookupableHelper {
+public class PayTypeLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 3694868213243393295L;
 

@@ -24,7 +24,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.earncode.security.EarnCodeType;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
@@ -39,7 +39,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class EarnCodeSecurityLookupableHelper extends KPMELookupableHelper {
+public class EarnCodeSecurityLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 696878785547265569L;
 

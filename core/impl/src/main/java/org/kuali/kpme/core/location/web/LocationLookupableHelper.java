@@ -23,7 +23,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.location.Location;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
@@ -34,7 +34,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class LocationLookupableHelper extends KPMELookupableHelper {
+public class LocationLookupableHelper extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 1285833127534968764L;
 

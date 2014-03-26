@@ -24,7 +24,7 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.bo.HrEffectiveDateActiveLookupableHelper;
 import org.kuali.kpme.core.institution.Institution;
 import org.kuali.kpme.core.job.Job;
-import org.kuali.kpme.core.lookup.KPMELookupableHelper;
+import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
