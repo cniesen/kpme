@@ -22,7 +22,7 @@ public class DepartmentAdminLookupableImpl extends KualiLookupableImpl {
             parameters.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, this.businessObjectClass.getName());
 
             url = UrlFactory.parameterizeUrl(KRADConstants.MAINTENANCE_ACTION, parameters);
-            url += "&returnLocation=" + ConfigContext.getCurrentContextConfig().getProperty("department.admin.url");
+            url += "&returnLocation=" + getReturnLocation();
             url = "<a title=\"Create a new record\" href=\"" + url + "\"><img src=\"images/tinybutton-createnew.gif\" alt=\"create new\" width=\"70\" height=\"15\"/></a>";
         }
 

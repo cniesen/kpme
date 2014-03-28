@@ -13,64 +13,56 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.core.assignment.web;
+package org.kuali.kpme.tklm.time.rules.lunch.sys.web;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
-import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.time.rules.lunch.sys.SystemLunchRule;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
-import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class AssignmentLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class SystemLunchRuleLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 774015772672806415L;
+	private static final long serialVersionUID = 6752606867867978501L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
-    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-    	List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		Assignment assignment = (Assignment) businessObject;
-        String tkAssignmentId = assignment.getTkAssignmentId();
-
+		SystemLunchRule systemLunchRule = (SystemLunchRule) businessObject;
+		String tkSystemLunchRuleId = systemLunchRule.getTkSystemLunchRuleId();
+		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("tkAssignmentId", tkAssignmentId);
+		params.put("tkSystemLunchRuleId", tkSystemLunchRuleId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
 		customActionUrls.add(viewUrl);
 		
-		//	Add copy link - KPME-3060
-		customActionUrls.add(getUrlData(assignment, KRADConstants.MAINTENANCE_COPY_METHOD_TO_CALL, pkNames));
-		
 		return customActionUrls;
-    }
+	}
 
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
         String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
-        String principalId = fieldValues.get("principalId");
-        String jobNumber = fieldValues.get("jobNumber");
-        String dept = fieldValues.get("dept");
-        String workArea = fieldValues.get("workArea");
         String active = fieldValues.get("active");
         String showHist = fieldValues.get("history");
 
-        return HrServiceLocator.getAssignmentService().searchAssignments(GlobalVariables.getUserSession().getPrincipalId(), TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), principalId, 
-        		jobNumber, dept, workArea, active, showHist);
+        return TkServiceLocator.getSystemLunchRuleService().getSystemLunchRules(TKUtils.formatDateString(fromEffdt),
+                TKUtils.formatDateString(toEffdt), active, showHist);
     }
-
+    
 }

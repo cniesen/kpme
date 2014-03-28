@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.core.paytype.web;
+package org.kuali.kpme.core.workarea.web;
 
 import java.util.List;
 import java.util.Map;
@@ -21,32 +21,33 @@ import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
-import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class PayTypeLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class WorkAreaLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 3694868213243393295L;
+	private static final long serialVersionUID = -817820785437555183L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
-		
-		PayType payTypeObj = (PayType) businessObject;
-		String hrPayTypeId = payTypeObj.getHrPayTypeId();
+
+		WorkArea workArea = (WorkArea) businessObject;
+		String tkWorkAreaId = workArea.getTkWorkAreaId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("hrPayTypeId", hrPayTypeId);
+		params.put("tkWorkAreaId", tkWorkAreaId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
@@ -54,27 +55,32 @@ public class PayTypeLookupableHelper extends KPMELookupableHelperServiceImpl {
 		
 		return customActionUrls;
 	}
-
-    @Override
-    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-        String payType = fieldValues.get("payType");
-        String regEarnCode = fieldValues.get("regEarnCode");
-        String descr = fieldValues.get("descr");
-        String location = fieldValues.get("location"); // KPME-2701
-        String institution = fieldValues.get("institution");
-        String flsaStatus = fieldValues.get("flsaStatus");
-        String payFrequency = fieldValues.get("payFrequency");
-        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
-        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
-        String active = fieldValues.get("active");
-        String showHist = fieldValues.get("history");
-
-        if (StringUtils.equals(payType, "%")) {
-            payType = "";
-        }
-        
-        return HrServiceLocator.getPayTypeService().getPayTypes(payType, regEarnCode, descr, location, institution, flsaStatus, payFrequency,
-        		TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist);
-    }
+	
+	@Override
+	protected void validateSearchParameterWildcardAndOperators(
+			String attributeName, String attributeValue) {
+		if (!StringUtils.equals(attributeValue, "%")) {
+			super.validateSearchParameterWildcardAndOperators(attributeName,
+					attributeValue);
+		}
+	}
+	
+	@Override
+	public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+		String dept = fieldValues.get("dept");
+		String workArea = fieldValues.get("workArea");
+		String description = fieldValues.get("description");
+		String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+		String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+		String active = fieldValues.get("active");
+		String showHist = fieldValues.get("history");
+		
+		if (StringUtils.contains(workArea, "%")) {
+			workArea = "";
+		}
+		
+		return HrServiceLocator.getWorkAreaService().getWorkAreas(GlobalVariables.getUserSession().getPrincipalId(), dept, workArea, description, TKUtils.formatDateString(fromEffdt), 
+				TKUtils.formatDateString(toEffdt), active, showHist);
+	}
 
 }

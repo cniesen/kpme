@@ -39,7 +39,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class EarnCodeSecurityLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class EarnCodeSecurityLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
 	private static final long serialVersionUID = 696878785547265569L;
 

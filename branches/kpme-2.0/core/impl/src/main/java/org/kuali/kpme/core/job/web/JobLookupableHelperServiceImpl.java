@@ -13,56 +13,69 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.core.calendar.entry.web;
+package org.kuali.kpme.core.job.web;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class CalendarEntryLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class JobLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 6008647804840459542L;
+	private static final long serialVersionUID = 3233495722838070429L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
-	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
-		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
+    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+    	List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		CalendarEntry calendarEntry = (CalendarEntry) businessObject;
-		String hrCalendarEntryId = calendarEntry.getHrCalendarEntryId();
+		Job job = (Job) businessObject;
+        String hrJobId = job.getHrJobId();
+		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("hrCalendarEntryId", hrCalendarEntryId);
+		
+		params.put("hrJobId", hrJobId);
+		
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
 		customActionUrls.add(viewUrl);
 		
+		//	Add copy link - KPME-3059
+		customActionUrls.add(getUrlData(job, KRADConstants.MAINTENANCE_COPY_METHOD_TO_CALL, pkNames));
+		
 		return customActionUrls;
-	}
+    }
 
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-        String calendarName = fieldValues.get("calendarName");
-        String calendarTypes = fieldValues.get("calendarTypes");
-        String fromBeginPeriodDateTime = TKUtils.getFromDateString(fieldValues.get("beginPeriodDateTime"));
-        String toBeginPeriodDateTime = TKUtils.getToDateString(fieldValues.get("beginPeriodDateTime"));
-        String fromEndPeriodDateTime = TKUtils.getFromDateString(fieldValues.get("endPeriodDateTime"));
-        String toEndPeriodDateTime = TKUtils.getToDateString(fieldValues.get("endPeriodDateTime"));
+        String principalId = fieldValues.get("principalId");
+        String firstName = fieldValues.get("firstName");
+        String lastName = fieldValues.get("lastName");
+        String jobNumber = fieldValues.get("jobNumber");
+        String dept = fieldValues.get("dept");
+        String positionNumber = fieldValues.get("positionNumber");
+        String hrPayType = fieldValues.get("hrPayType");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+        String active = fieldValues.get("active");
+        String showHist = fieldValues.get("history");
 
-        return  HrServiceLocator.getCalendarEntryService().getSearchResults(calendarName, calendarTypes, TKUtils.formatDateString(fromBeginPeriodDateTime),
-                TKUtils.formatDateString(toBeginPeriodDateTime), TKUtils.formatDateString(fromEndPeriodDateTime), TKUtils.formatDateString(toEndPeriodDateTime));
+        return HrServiceLocator.getJobService().getJobs(GlobalVariables.getUserSession().getPrincipalId(), principalId, firstName, lastName, jobNumber, dept, positionNumber, hrPayType, 
+        		TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist);
     }
+
 }

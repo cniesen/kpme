@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.tklm.time.rules.overtime.daily.web;
+package org.kuali.kpme.tklm.time.rules.timecollection.web;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -22,7 +24,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.time.rules.overtime.daily.DailyOvertimeRule;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
@@ -32,22 +34,24 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class DailyOvertimeRuleLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class TimeCollectionRuleLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 2720495398967391250L;
-
+	private static final long serialVersionUID = -1690980961895784168L;
+    
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		DailyOvertimeRule dailyOvertimeRule = (DailyOvertimeRule) businessObject;
-		String tkDailyOvertimeRuleId = dailyOvertimeRule.getTkDailyOvertimeRuleId();
+		TimeCollectionRule timeCollectionRule = (TimeCollectionRule) businessObject;
+		String tkTimeCollectionRuleId = timeCollectionRule.getTkTimeCollectionRuleId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("tkDailyOvertimeRuleId", tkDailyOvertimeRuleId);
+		
+		params.put("tkTimeCollectionRuleId", tkTimeCollectionRuleId);
+		
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
@@ -56,6 +60,30 @@ public class DailyOvertimeRuleLookupableHelper extends KPMELookupableHelperServi
 		return customActionUrls;
 	}
 
+	@Override
+	public List<? extends BusinessObject> getSearchResults( Map<String, String> fieldValues) {
+        String workArea = fieldValues.get("workArea");
+        String dept = fieldValues.get("dept");
+        String payType = fieldValues.get("payType");
+        String active = fieldValues.get("active");
+        String history = fieldValues.get("history");
+
+        String workAreaValue = null;
+        if (StringUtils.equals(workArea,"%") || StringUtils.equals(workArea,"*")){
+            workArea = "";
+        } else {
+        	if(workArea != null && StringUtils.isNotBlank(workArea)) {
+	        	BigDecimal value = TKUtils.cleanNumeric(workArea);
+	        	if(value != null) {
+	        		workAreaValue = value.toString(); 
+	        	} else {
+	        		return new ArrayList<TimeCollectionRule>();
+	        	}
+        	}
+        }
+        
+        return TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRules(GlobalVariables.getUserSession().getPrincipalId(), dept, workAreaValue, payType, active, history);
+	}
 
 	@Override
 	protected void validateSearchParameterWildcardAndOperators(
@@ -65,22 +93,4 @@ public class DailyOvertimeRuleLookupableHelper extends KPMELookupableHelperServi
 					attributeValue);
 		}
 	}
-
-    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-    	String dept = fieldValues.get("dept");
-    	String workArea = fieldValues.get("workArea");
-    	String location = fieldValues.get("location");
-    	String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
-        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
-        String active = fieldValues.get("active");
-        String showHist = fieldValues.get("history");
-
-        if (StringUtils.contains(workArea, "%")) {
-			workArea = "";
-		}
-
-        return TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRules(GlobalVariables.getUserSession().getPrincipalId(), dept, workArea, location, TKUtils.formatDateString(fromEffdt), 
-        		TKUtils.formatDateString(toEffdt), active, showHist);
-    }
-    
 }
