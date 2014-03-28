@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.tklm.leave.payout.web;
+package org.kuali.kpme.tklm.leave.transfer.web;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -34,8 +35,8 @@ import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
@@ -46,61 +47,61 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class LeavePayoutLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class BalanceTransferLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = -2654300078605742618L;
+	private static final long serialVersionUID = -6910172165048825489L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
-    public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
+	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		LeavePayout lp = (LeavePayout) businessObject;
-		String lmLeavePayoutId = lp.getLmLeavePayoutId();
+		BalanceTransfer bt = (BalanceTransfer) businessObject;
+		String balanceTransferId = bt.getBalanceTransferId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("lmLeavePayoutId", lmLeavePayoutId);
+		params.put("balanceTransferId", balanceTransferId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
 		customActionUrls.add(viewUrl);
 		
 		return customActionUrls;
-    }
+	}
 
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
         String principalId = fieldValues.get("principalId");
         String fromAccrualCategory = fieldValues.get("fromAccrualCategory");
-        String payoutAmount = fieldValues.get("payoutAmount");
-        String earnCode = fieldValues.get("earnCode");
+        String transferAmount = fieldValues.get("transferAmount");
+        String toAccrualCategory = fieldValues.get("toAccrualCategory");
+        String amountTransferred = fieldValues.get("amountTransferred");
         String forfeitedAmount = fieldValues.get("forfeitedAmount");
         String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
 
-        List<LeavePayout> payouts =  LmServiceLocator.getLeavePayoutService().getLeavePayouts(principalId, fromAccrualCategory, payoutAmount, earnCode, forfeitedAmount, 
-        									TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt));
-        payouts = filterByPrincipalId(payouts);
+        List<BalanceTransfer> transfers = LmServiceLocator.getBalanceTransferService().getBalanceTransfers(principalId, fromAccrualCategory, transferAmount, toAccrualCategory, 
+        		amountTransferred, forfeitedAmount, TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt));
         
-        return payouts;
+        transfers = filterByPrincipalId(transfers);
+        
+        return transfers;
     }
-    
-	private List<LeavePayout> filterByPrincipalId(
-			List<LeavePayout> payouts) {
-		if(!payouts.isEmpty()) {
-			Iterator<? extends BusinessObject> iter = payouts.iterator();
+
+	private List<BalanceTransfer> filterByPrincipalId(
+			List<BalanceTransfer> transfers) {
+        //TODO - performance
+		if(!transfers.isEmpty()) {
+			Iterator<? extends BusinessObject> iter = transfers.iterator();
 			while(iter.hasNext()) {
-				LeavePayout payout = (LeavePayout) iter.next();
-				LocalDate effectiveLocalDate = payout.getEffectiveLocalDate();
+				BalanceTransfer transfer = (BalanceTransfer) iter.next();
+				LocalDate effectiveLocalDate = transfer.getEffectiveLocalDate();
 				DateTime effectiveDate = effectiveLocalDate.toDateTimeAtStartOfDay();
-				String principalId = payout.getPrincipalId();
-				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(principalId, effectiveLocalDate);
+				List<Job> principalsJobs = HrServiceLocator.getJobService().getActiveLeaveJobs(transfer.getPrincipalId(), effectiveLocalDate);
 				String userPrincipalId = HrContext.getPrincipalId();
 				boolean canView = false;
-
-                //TODO - performance, get a job/dept map in 1 query
 				for(Job job : principalsJobs) {
 					
 					if(job.isEligibleForLeave()) {
@@ -108,14 +109,15 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelperServiceImpl
 						String department = job != null ? job.getDept() : null;
 						Department departmentObj = job != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, effectiveLocalDate) : null;
 						String location = departmentObj != null ? departmentObj.getLocation() : null;
-			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "View Leave Payout", department, effectiveDate)
-							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "View Leave Payout", location, effectiveDate)) {
+
+			        	if (LmServiceLocator.getLMPermissionService().isAuthorizedInDepartment(userPrincipalId, "View Balance Transfer", department, effectiveDate)
+							|| LmServiceLocator.getLMPermissionService().isAuthorizedInLocation(userPrincipalId, "View Balance Transfer", location, effectiveDate)) {
 								canView = true;
 								break;
 						}
 			        	else {
-			        		//do NOT block approvers, processors, delegates from approving the document.
-							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), effectiveLocalDate);
+			        		//do NOT block approvers, processors, delegates from viewing the object.
+							List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(transfer.getPrincipalId(), job.getJobNumber(), effectiveLocalDate);
 							for(Assignment assignment : assignments) {
 								if(HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
 										|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(userPrincipalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), assignment.getWorkArea(), new DateTime(effectiveDate))
@@ -132,11 +134,8 @@ public class LeavePayoutLookupableHelper extends KPMELookupableHelperServiceImpl
 					iter.remove();
 				}
 			}
-			
-
 		}
-
-		return payouts;
+		return transfers;
 	}
 
 }

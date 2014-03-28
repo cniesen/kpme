@@ -13,54 +13,62 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.core.calendar.web;
+package org.kuali.kpme.core.principal.web;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class CalendarLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class PrincipalHRAttributesLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 2324703412211619217L;
+	private static final long serialVersionUID = 6198072858175242923L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
-		
-		Calendar calendar = (Calendar) businessObject;
-		String hrCalendarId = calendar.getHrCalendarId();
+
+		PrincipalHRAttributes principalHRAttributes = (PrincipalHRAttributes) businessObject;
+		String hrPrincipalAttributeId = principalHRAttributes.getHrPrincipalAttributeId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("hrCalendarId", hrCalendarId);
+		params.put("hrPrincipalAttributeId", hrPrincipalAttributeId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
 		customActionUrls.add(viewUrl);
+
+		//	Add copy link - KPME-3058
+		customActionUrls.add(getUrlData(principalHRAttributes, KRADConstants.MAINTENANCE_COPY_METHOD_TO_CALL, pkNames));
 		
 		return customActionUrls;
 	}
 	
 	@Override
 	public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-		String calendarName = fieldValues.get("calendarName");
-		String calendarTypes = fieldValues.get("calendarTypes");
-        String flsaBeginDay = fieldValues.get("flsaBeginDay");
-        String flsaBeginTime = fieldValues.get("flsaBeginTime");
+		String principalId = fieldValues.get("principalId");
+        String leavePlan = fieldValues.get("leavePlan");
+	    String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+	    String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+	    String active = fieldValues.get("active");
+	    String showHist = fieldValues.get("history");
 
-        return HrServiceLocator.getCalendarService().getCalendars(calendarName, calendarTypes, flsaBeginDay, flsaBeginTime);
+	    return HrServiceLocator.getPrincipalHRAttributeService().getPrincipalHrAtributes(GlobalVariables.getUserSession().getPrincipalId(), principalId, leavePlan, TKUtils.formatDateString(fromEffdt),
+	    		TKUtils.formatDateString(toEffdt), active, showHist);
 	}
-
+	
 }

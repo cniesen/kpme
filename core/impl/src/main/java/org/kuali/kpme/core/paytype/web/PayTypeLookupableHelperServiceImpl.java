@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.tklm.time.rules.overtime.weekly.web;
+package org.kuali.kpme.core.paytype.web;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
-import org.kuali.kpme.tklm.time.rules.overtime.weekly.WeeklyOvertimeRule;
+import org.kuali.kpme.core.paytype.PayType;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
@@ -27,22 +31,22 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class WeeklyOvertimeRuleLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class PayTypeLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 7408152182449747106L;
-	
+	private static final long serialVersionUID = 3694868213243393295L;
+
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
-
-		WeeklyOvertimeRule weeklyOvertimeRule = (WeeklyOvertimeRule) businessObject;
-		String tkWeeklyOvertimeRuleId = weeklyOvertimeRule.getTkWeeklyOvertimeRuleId();
+		
+		PayType payTypeObj = (PayType) businessObject;
+		String hrPayTypeId = payTypeObj.getHrPayTypeId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("tkWeeklyOvertimeRuleId", tkWeeklyOvertimeRuleId);
+		params.put("hrPayTypeId", hrPayTypeId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
@@ -50,5 +54,27 @@ public class WeeklyOvertimeRuleLookupableHelper extends KPMELookupableHelperServ
 		
 		return customActionUrls;
 	}
+
+    @Override
+    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+        String payType = fieldValues.get("payType");
+        String regEarnCode = fieldValues.get("regEarnCode");
+        String descr = fieldValues.get("descr");
+        String location = fieldValues.get("location"); // KPME-2701
+        String institution = fieldValues.get("institution");
+        String flsaStatus = fieldValues.get("flsaStatus");
+        String payFrequency = fieldValues.get("payFrequency");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+        String active = fieldValues.get("active");
+        String showHist = fieldValues.get("history");
+
+        if (StringUtils.equals(payType, "%")) {
+            payType = "";
+        }
+        
+        return HrServiceLocator.getPayTypeService().getPayTypes(payType, regEarnCode, descr, location, institution, flsaStatus, payFrequency,
+        		TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist);
+    }
 
 }

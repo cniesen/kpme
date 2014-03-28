@@ -13,39 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.kuali.kpme.core.earncode.group.web;
+package org.kuali.kpme.tklm.leave.timeoff.web;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
-import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class EarnCodeGroupLookupableHelper extends KPMELookupableHelperServiceImpl {
+public class SystemScheduledTimeOffLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 
-	private static final long serialVersionUID = 4154366560525047293L;
+	private static final long serialVersionUID = -1285064132683716221L;
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
 
-		EarnCodeGroup earnCodeGroup = (EarnCodeGroup) businessObject;
-		String hrEarnCodeGroupId = earnCodeGroup.getHrEarnCodeGroupId();
+		SystemScheduledTimeOff systemScheduledTimeOff = (SystemScheduledTimeOff) businessObject;
+		String lmSystemScheduledTimeOffId = systemScheduledTimeOff.getLmSystemScheduledTimeOffId();
 		
 		Properties params = new Properties();
 		params.put(KRADConstants.BUSINESS_OBJECT_CLASS_ATTRIBUTE, getBusinessObjectClass().getName());
 		params.put(KRADConstants.DISPATCH_REQUEST_PARAMETER, KRADConstants.MAINTENANCE_NEW_METHOD_TO_CALL);
-		params.put("hrEarnCodeGroupId", hrEarnCodeGroupId);
+		params.put("lmSystemScheduledTimeOffId", lmSystemScheduledTimeOffId);
 		AnchorHtmlData viewUrl = new AnchorHtmlData(UrlFactory.parameterizeUrl(KRADConstants.INQUIRY_ACTION, params), "view");
 		viewUrl.setDisplayText("view");
 		viewUrl.setTarget(AnchorHtmlData.TARGET_BLANK);
@@ -53,18 +54,22 @@ public class EarnCodeGroupLookupableHelper extends KPMELookupableHelperServiceIm
 		
 		return customActionUrls;
 	}
-	
+
     @Override
     public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
-        String earnCodeGroup = fieldValues.get("earnCodeGroup");
-        String descr = fieldValues.get("descr");
         String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
         String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+        String earnCode = fieldValues.get("earnCode");
+        String fromAccruedDate = TKUtils.getFromDateString(fieldValues.get("accruedDate"));
+        String toAccruedDate = TKUtils.getToDateString(fieldValues.get("accruedDate"));
+        String fromSchTimeOffDate = TKUtils.getFromDateString(fieldValues.get("scheduledTimeOffDate"));
+        String toSchTimeOffDate = TKUtils.getToDateString(fieldValues.get("scheduledTimeOffDate"));
         String active = fieldValues.get("active");
         String showHist = fieldValues.get("history");
 
-        return HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroups(earnCodeGroup, descr, TKUtils.formatDateString(fromEffdt),
-                TKUtils.formatDateString(toEffdt), active, showHist);
+        return LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs(GlobalVariables.getUserSession().getPrincipalId(), TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), 
+        		earnCode, TKUtils.formatDateString(fromAccruedDate), TKUtils.formatDateString(toAccruedDate), TKUtils.formatDateString(fromSchTimeOffDate), 
+        		TKUtils.formatDateString(toSchTimeOffDate), active, showHist);
     }
-	
+    
 }

@@ -446,68 +446,87 @@
     </bean>
     
     
-    
  	<!-- TK-LM Lookupable Bean Definitions -->
-    <bean id="balanceTransferLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
-    	<property name="lookupableHelperService">
-    		<bean class="org.kuali.kpme.tklm.leave.transfer.web.BalanceTransferLookupableHelper"/>
-    	</property>    
-    </bean>
-    <bean id="leavePayoutLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+ 	<bean id="balanceTransferRuleLookupableHelperService" class="org.kuali.kpme.tklm.leave.transfer.web.BalanceTransferLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="balanceTransferLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.leave.payout.web.LeavePayoutLookupableHelper"/>
+            <ref bean="balanceTransferRuleLookupableHelperService" />
+        </property>
+    </bean> 
+    
+    <bean id="leavePayoutLookupableHelperService" class="org.kuali.kpme.tklm.leave.payout.web.LeavePayoutLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="leavePayoutLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService">
+            <ref bean="leavePayoutLookupableHelperService" />
         </property>
     </bean>
-    <bean id="systemLunchRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    
+    <bean id="systemLunchRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.lunch.sys.web.SystemLunchRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="systemLunchRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.lunch.sys.web.SystemLunchRuleLookupableHelper"/>
+            <ref bean="systemLunchRuleLookupableHelperService" />
         </property>
     </bean>
-	<bean id="dailyOvertimeRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+	
+	<bean id="dailyOvertimeRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.overtime.daily.web.DailyOvertimeRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="dailyOvertimeRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.overtime.daily.web.DailyOvertimeRuleLookupableHelper"/>
+            <ref bean="dailyOvertimeRuleLookupableHelperService" />
         </property>
     </bean>
-    <bean id="clockLocationRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+        
+    <bean id="clockLocationRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.clocklocation.web.ClockLocationRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="clockLocationRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.clocklocation.web.ClockLocationRuleLookupableHelper"/>
+            <ref bean="clockLocationRuleLookupableHelperService" />
+        </property>
+    </bean> 
+        
+    <bean id="departmentLunchRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.lunch.department.web.DepartmentLunchRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="departmentLunchRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
+        <property name="lookupableHelperService">
+            <ref bean="departmentLunchRuleLookupableHelperService" />
         </property>
     </bean>
-    <bean id="departmentLunchRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    
+    <bean id="gracePeriodRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.graceperiod.web.GracePeriodRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="gracePeriodRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.lunch.department.web.DepartmentLunchRuleLookupableHelper"/>
+            <ref bean="gracePeriodRuleLookupableHelperService" />
         </property>
     </bean>
-    <bean id="gracePeriodRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    
+    <bean id="shiftDifferentialRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.shiftdifferential.web.ShiftDifferentialRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="shiftDifferentialRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.graceperiod.web.GracePeriodRuleLookupableHelper"/>
-        </property>
-    </bean>
-    <bean id="shiftDifferentialRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
-        <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.shiftdifferential.web.ShiftDifferentialRuleLookupableHelper"/>
+            <ref bean="shiftDifferentialRuleLookupableHelperService" />
         </property>
     </bean>
 
-    <bean id="weeklyOvertimeRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+	<bean id="weeklyOvertimeRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.overtime.weekly.web.WeeklyOvertimeRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="weeklyOvertimeRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.overtime.weekly.web.WeeklyOvertimeRuleLookupableHelper"/>
+            <ref bean="weeklyOvertimeRuleLookupableHelperService" />
         </property>
     </bean>
-
-    <bean id="timeCollectionRuleLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+	
+	<bean id="timeCollectionRuleLookupableHelperService" class="org.kuali.kpme.tklm.time.rules.timecollection.web.TimeCollectionRuleLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="timeCollectionRuleLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.time.rules.timecollection.web.TimeCollectionRuleLookupableHelper"/>
+            <ref bean="timeCollectionRuleLookupableHelperService" />
         </property>
     </bean>
+    
     <!-- <bean id="clockLogLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.kpme.tklm.time.clocklog.web.ClockLogLookupableHelper"/>
         </property>
     </bean> -->
-    <bean id="systemScheduledTimeOffLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    
+    <bean id="systemScheduledTimeOffLookupableHelperService" class="org.kuali.kpme.tklm.leave.timeoff.web.SystemScheduledTimeOffLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="systemScheduledTimeOffLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.leave.timeoff.web.SystemScheduledTimeOffLookupableHelper"/>
+            <ref bean="systemScheduledTimeOffLookupableHelperService" />
         </property>
     </bean>
     
@@ -516,11 +535,14 @@
             <bean class="org.kuali.kpme.tklm.leave.donation.web.LeaveDonationLookupableHelper"/>
         </property>
     </bean>  
-    <bean id="leaveAdjustmentLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+    
+    <bean id="leaveAdjustmentLookupableHelperService" class="org.kuali.kpme.tklm.leave.adjustment.web.LeaveAdjustmentLookupableHelperServiceImpl" scope="prototype"/>
+    <bean id="leaveAdjustmentLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">
-            <bean class="org.kuali.kpme.tklm.leave.adjustment.web.LeaveAdjustmentLookupableHelper"/>
+            <ref bean="leaveAdjustmentLookupableHelperService" />
         </property>
-    </bean> 
+    </bean>
+
     <bean id="employeeOverrideLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.kpme.tklm.leave.override.web.EmployeeOverrideLookupableHelper"/>
