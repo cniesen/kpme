@@ -234,7 +234,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 
-	boolean validateRoleMembers(List<? extends PrincipalRoleMemberBo> principalRoleMembers, List<? extends PositionRoleMemberBo> positionRoleMembers, LocalDate effectiveDate, String principalPrefix, String positionPrefix) {
+	protected boolean validateRoleMembers(List<? extends PrincipalRoleMemberBo> principalRoleMembers, List<? extends PositionRoleMemberBo> positionRoleMembers, LocalDate effectiveDate, String principalPrefix, String positionPrefix) {
 		boolean valid = true;
 		
 		boolean activeRoleMember = false;
@@ -262,8 +262,8 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 
 		return valid;
 	}
-	
-	boolean validateRoleMember(KPMERoleMemberBo roleMember, LocalDate effectiveDate, String prefix, int index) {
+
+    protected boolean validateRoleMember(KPMERoleMemberBo roleMember, LocalDate effectiveDate, String prefix, int index) {
 		boolean valid = true;
 		
 		Role role = KimApiServiceLocator.getRoleService().getRole(roleMember.getRoleId());
@@ -290,7 +290,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 	
-	boolean validateActive(WorkArea workArea) {
+	protected boolean validateActive(WorkArea workArea) {
 		boolean valid = true;
 		
 		if(!workArea.isActive()){
@@ -327,7 +327,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 	
-	boolean validateTask(Task task, WorkArea workArea) {
+	protected boolean validateTask(Task task, WorkArea workArea) {
 
 
 		boolean valid = true;
@@ -369,7 +369,7 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 		return valid;
 	}
 
-	private Long getMaxTaskNumber(WorkArea workArea) {
+	protected Long getMaxTaskNumber(WorkArea workArea) {
 		Long task = new Long("100");
 		
 		Task maxTask = HrServiceLocator.getTaskService().getMaxTask();
