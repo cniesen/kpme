@@ -121,7 +121,14 @@ public class TimesheetServiceImpl implements TimesheetService {
            	 	builder.setText("Approved via Supervisor Approval batch job");
            	 	KewApiServiceLocator.getNoteService().createNote(builder.build());
             	
-            	wd.superUserBlanketApprove("Batch job approving timesheet.");
+            	wd.superUserBlanketApprove("Supervisor Batch job approving timesheet.");
+            } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.PAYROLL_JOB_APPROVE)) {
+            	Note.Builder builder = Note.Builder.create(rhid, principalId);
+           	 	builder.setCreateDate(new DateTime());
+           	 	builder.setText("Approved via Payroll Processor Approval batch job");
+           	 	KewApiServiceLocator.getNoteService().createNote(builder.build());
+            	
+            	wd.superUserBlanketApprove("Payroll Processor Batch job approving timesheet.");
             } else if (StringUtils.equals(action, HrConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
                 if (HrServiceLocator.getHRPermissionService().canSuperUserAdministerCalendarDocument(GlobalVariables.getUserSession().getPrincipalId(), timesheetDocument) 
                 		&& !HrServiceLocator.getHRPermissionService().canApproveCalendarDocument(GlobalVariables.getUserSession().getPrincipalId(), timesheetDocument)) {
