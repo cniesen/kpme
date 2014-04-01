@@ -325,7 +325,9 @@ public class ClockAction extends TimesheetAction {
             if (StringUtils.equals(((ClockActionForm) form).getDocumentId(),previousTimeDoc.getDocumentId())) {
                 DateTime currentCalendarEntryBeginDate = ((ClockActionForm) form).getTimesheetDocument().getCalendarEntry().getBeginPeriodFullDateTime();
                 TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(pId,currentCalendarEntryBeginDate);
-                previousTimeDoc =  TkServiceLocator.getTimesheetService().getTimesheetDocument(prevTdh.getDocumentId());
+                if (prevTdh != null) {
+                    previousTimeDoc =  TkServiceLocator.getTimesheetService().getTimesheetDocument(prevTdh.getDocumentId());
+                }
             }
 
         	if(previousTimeDoc != null) {
