@@ -317,8 +317,17 @@ public class ClockAction extends TimesheetAction {
                inAction = TkConstants.CLOCK_IN;
                outAction = TkConstants.CLOCK_OUT;
             }     
-        	
+
         	TimesheetDocument previousTimeDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(previousClockLog.getDocumentId());
+
+            //uses a different method to get previous timesheet if missed punch was used to create a clock log
+            // on the previous timesheet
+            if (StringUtils.equals(((ClockActionForm) form).getDocumentId(),previousTimeDoc.getDocumentId())) {
+                DateTime currentCalendarEntryBeginDate = ((ClockActionForm) form).getTimesheetDocument().getCalendarEntry().getBeginPeriodFullDateTime();
+                TimesheetDocumentHeader prevTdh = TkServiceLocator.getTimesheetDocumentHeaderService().getPreviousDocumentHeader(pId,currentCalendarEntryBeginDate);
+                previousTimeDoc =  TkServiceLocator.getTimesheetService().getTimesheetDocument(prevTdh.getDocumentId());
+            }
+
         	if(previousTimeDoc != null) {
 	        	CalendarEntry previousCalEntry = previousTimeDoc.getCalendarEntry();
 	        	DateTime previousEndPeriodDateTime = previousCalEntry.getEndPeriodFullDateTime();
