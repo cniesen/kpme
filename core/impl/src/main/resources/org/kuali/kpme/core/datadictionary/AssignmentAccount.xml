@@ -33,6 +33,7 @@
 		</property>
 		<property name="attributes">
 			<list>
+                <ref bean="AssignmentAccount-tkAssignAcctId" />
 				<ref bean="AssignmentAccount-finCoaCd" />
 				<ref bean="AssignmentAccount-accountNbr" />
 				<ref bean="AssignmentAccount-subAcctNbr" />
@@ -118,6 +119,18 @@
 			</list>
 		</property>
 	</bean>
+
+
+    <bean id="AssignmentAccount-tkAssignAcctId" parent="AssignmentAccount-tkAssignAcctId-parentBean"/>
+    <bean id="AssignmentAccount-tkAssignAcctId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Assign Acct Id" />
+        <property name="maxLength" value="60" />
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="60" />
+        </property>
+        <property name="name" value="tkAssignAcctId" />
+        <property name="label" value="Assign Acct Id" />
+    </bean>
 
 	<!-- Attribute Definitions -->
 	<bean id="AssignmentAccount-finCoaCd" parent="AssignmentAccount-finCoaCd-parentBean" />
