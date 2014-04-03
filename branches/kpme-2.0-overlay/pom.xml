@@ -1,0 +1,158 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.kuali.kpme</groupId>
+  <artifactId>kpme-overlay</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>Example KPME Overlay</name>
+  <url>http://${kuali.site.hostname}/kpme/${project.version}</url>
+    <properties>
+        <kpme.version>2.0.2</kpme.version>
+        <rice.version>2.3.4</rice.version>
+        <build.version>${project.name} :: ${project.version} :: ${maven.build.timestamp}</build.version>
+    </properties>
+    <dependencies>
+	
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-web</artifactId>
+            <version>${kpme.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-web</artifactId>
+            <version>${kpme.version}</version>
+            <type>jar</type>
+            <classifier>classes</classifier>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-core-api</artifactId>
+            <version>${kpme.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-core-impl</artifactId>
+            <version>${kpme.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-tk-lm-api</artifactId>
+            <version>${kpme.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.kuali.kpme</groupId>
+            <artifactId>kpme-tk-lm-impl</artifactId>
+            <version>${kpme.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kuali.rice</groupId>
+            <artifactId>rice-krad-app-framework</artifactId>
+            <version>${rice.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.kuali.rice</groupId>
+            <artifactId>rice-ksb-web</artifactId>
+            <version>${rice.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jasig.cas.client</groupId>
+            <artifactId>cas-client-core</artifactId>
+            <version>3.2.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/kpme-version.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>**/kpme-version.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <attachClasses>true</attachClasses>
+                    <webResources>
+                        <webResource>
+                            <directory>src/main/webapp/WEB-INF</directory>
+                            <includes>
+                                <include>web.xml</include>
+                            </includes>
+                            <targetPath>WEB-INF</targetPath>
+                            <filtering>true</filtering>
+                        </webResource>
+                    </webResources>
+                    <overlays>
+                        <overlay>
+                            <groupId>org.kuali.kpme</groupId>
+                            <artifactId>kpme-web</artifactId>
+                            <excludes>
+                                <exclude>WEB-INF/lib/servlet-api*.jar</exclude>
+                            </excludes>
+                        </overlay>
+                    </overlays>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <repositories>
+        <repository>
+            <id>kuali.nexus</id>
+            <name>Nexus Repository Manager</name>
+            <url>http://nexus.kuali.org/content/groups/public</url>
+            <releases>
+                    <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                    <enabled>true</enabled>
+            </snapshots>
+        </repository>
+</repositories>
+
+</project>

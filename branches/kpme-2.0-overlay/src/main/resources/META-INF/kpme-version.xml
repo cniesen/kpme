@@ -1,0 +1,4 @@
+<config>
+    <param name="version">${build.version}</param>
+    <param name="kpme.version">${project.version}</param>
+</config>
