@@ -29,6 +29,7 @@ import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.batch.BatchJobUtil;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.earncode.security.EarnCodeType;
@@ -116,18 +117,18 @@ public class TimesheetServiceImpl implements TimesheetService {
                     wd.approve("Approving timesheet.");
                 }
             } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
+            	// supervisor approval job should take approve action but not finalize the document if there's payroll processor set up for this doc
             	Note.Builder builder = Note.Builder.create(rhid, principalId);
            	 	builder.setCreateDate(new DateTime());
            	 	builder.setText("Approved via Supervisor Approval batch job");
            	 	KewApiServiceLocator.getNoteService().createNote(builder.build());
-            	
-            	wd.superUserBlanketApprove("Supervisor Batch job approving timesheet.");
+           	 	// supervisor approval job should take approve action not super user approval
+           	 	wd.approve("Supervisor Batch job approving timesheet.");
             } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.PAYROLL_JOB_APPROVE)) {
             	Note.Builder builder = Note.Builder.create(rhid, principalId);
            	 	builder.setCreateDate(new DateTime());
            	 	builder.setText("Approved via Payroll Processor Approval batch job");
            	 	KewApiServiceLocator.getNoteService().createNote(builder.build());
-            	
             	wd.superUserBlanketApprove("Payroll Processor Batch job approving timesheet.");
             } else if (StringUtils.equals(action, HrConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
                 if (HrServiceLocator.getHRPermissionService().canSuperUserAdministerCalendarDocument(GlobalVariables.getUserSession().getPrincipalId(), timesheetDocument) 
