@@ -42,9 +42,8 @@ public class EmployeeApprovalJob extends BatchJob {
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-
+		String batchUserPrincipalId = getBatchUserPrincipalId();
 		String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
-//		String documentId = jobDataMap.getString("documentId");
 
 		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
 		Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
@@ -66,7 +65,7 @@ public class EmployeeApprovalJob extends BatchJob {
 							String principalId = timesheetDocument.getPrincipalId();
 							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
 							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {		
-								TkServiceLocator.getTimesheetService().routeTimesheet(principalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
+								TkServiceLocator.getTimesheetService().routeTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
 				            }
 						}
 	        		}
@@ -81,8 +80,8 @@ public class EmployeeApprovalJob extends BatchJob {
 					if (TkConstants.EMPLOYEE_APPROVAL_DOC_STATUS.contains(KEWServiceLocator.getRouteHeaderService().getDocumentStatus(docId))) {
 						String principalId = leaveCalendarDocument.getPrincipalId();
 						PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
-						if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
-							LmServiceLocator.getLeaveCalendarService().routeLeaveCalendar(principalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
+						if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {
+							LmServiceLocator.getLeaveCalendarService().routeLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
 						}
 					}
 				}

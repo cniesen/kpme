@@ -59,13 +59,15 @@ public class SupervisorApprovalJob extends BatchJob {
 			JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
 	
 			String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
-//			String documentId = jobDataMap.getString("documentId");
 	
 			CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
 			Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 			DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
 	    	DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
 	    	
+	    	// used to flag if any document has be routed by this batch job. If true, 
+			// we need to reschedule this job since the newly routed documents are not approved by this job, we need a new job to approve them
+	    	boolean needToReschedule = false;
 			if (StringUtils.equals(calendar.getCalendarTypes(), "Pay")) {	
 				List<TimesheetDocumentHeader> timesheetDocumentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeaders(beginDate, endDate);
 		        for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
@@ -89,6 +91,14 @@ public class SupervisorApprovalJob extends BatchJob {
 								
 								TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
+		        		} else if(documentStatus.equals(DocumentStatus.INITIATED.getCode()) || documentStatus.equals(DocumentStatus.SAVED.getCode())) {
+		        			// if there are documents still not submitted by the time supervisor approval batch job runs, we need to route the document, then reschedule the supervisor job
+		        			String principalId = timesheetDocument.getPrincipalId();
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
+							if(phraRecord != null && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {		
+								TkServiceLocator.getTimesheetService().routeTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
+								needToReschedule = true;
+				            }
 		        		}
 		        	}
 		        }
@@ -104,11 +114,23 @@ public class SupervisorApprovalJob extends BatchJob {
 							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getLeaveCalendar()) && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
 								LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 							}
+						} else if(documentStatus.equals(DocumentStatus.INITIATED.getCode()) || documentStatus.equals(DocumentStatus.SAVED.getCode())) {
+							String principalId = leaveCalendarDocument.getPrincipalId();
+							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
+							if(phraRecord != null && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
+								LmServiceLocator.getLeaveCalendarService().routeLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE);
+								needToReschedule = true;
+							}
 						}
 					}
 		        }
 	    	
 			}
+			
+			if(needToReschedule) {
+				rescheduleJob(context);
+			}
+			
         } else {
         	String principalName = getBatchUserPrincipalName();
         	LOG.error("Could not run batch jobs due to missing batch user " + principalName);
