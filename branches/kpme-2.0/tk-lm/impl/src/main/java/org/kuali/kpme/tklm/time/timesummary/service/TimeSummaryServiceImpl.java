@@ -295,7 +295,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 								Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, asOfDate);
 								// some assignment may not be effective at the beginning of the pay period, use the end date of the period to find it
 								if(assignment == null) {
-									assignment = HrServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, asOfDate);
+									assignment = HrServiceLocator.getAssignmentService().getAssignment(timeBlock.getPrincipalId(), assignmentKey, docEndDate);
 								}
 								//TODO push this up to the assignment fetch/fully populated instead of like this
 								if(assignment != null){
