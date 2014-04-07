@@ -251,84 +251,86 @@
 	<!-- KRAD Lookup View -->
 	
 	<bean id="ClockLog-LookupView" parent="KPMEUif-LookupView">
-        <property name="headerText" value="Clock Log Lookup" />
-        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
-        <property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.time.clocklog.web.ClockLogLookupableImpl" />
-        <!-- <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" /> -->
-        <property name="criteriaFields">
-            <list>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="documentId" />
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId">
-  					<property name="quickfinder">
-  						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
-  								p:fieldConversions="principalId:principalId"/>
-  					</property>
-  					<property name="inquiry">
-  						<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
-  							p:inquiryParameters="principalId:principalId"/>
-  					</property>
-	  			</bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea" >
-                	<property name="quickfinder">
-  						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkArea"
-  								p:fieldConversions="workArea:workArea"/>
-  					</property>
-  				</bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="task" >
-                	<property name="quickfinder">
-  						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.Task"
-  								p:fieldConversions="task:task"/>
-  					</property>
-  				</bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="ipAddress" />
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="clockTimestamp" />
-            </list>
-        </property>
-        <property name="resultFields">
-            <list>
-                <bean parent="Uif-DataField" p:propertyName="documentId" />
-                <bean parent="Uif-DataField" p:propertyName="principalId">
-              		 <property name="inquiry">
-  						<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
-  							p:inquiryParameters="principalId:principalId"/>
-  					 </property>
-                </bean>
-                <bean parent="Uif-DataField" p:propertyName="workArea" />
-                <bean parent="Uif-DataField" p:propertyName="task" />
-                <bean parent="Uif-DataField" p:propertyName="ipAddress" />
-                <bean parent="Uif-DataField" p:propertyName="clockTimestamp" />
-            </list>
-        </property>
-    </bean>
+		<property name="headerText" value="Clock Log Lookup" />
+		<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
+		<property name="viewHelperServiceClass"
+			value="org.kuali.kpme.tklm.time.clocklog.web.ClockLogLookupableImpl" />
+		<property name="criteriaFields">
+			<list>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="documentId" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId">
+					<property name="quickfinder">
+						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+							p:fieldConversions="principalId:principalId" />
+					</property>
+					<property name="inquiry">
+						<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+							p:inquiryParameters="principalId:principalId" />
+					</property>
+				</bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea">
+					<property name="quickfinder">
+						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkArea"
+							p:fieldConversions="workArea:workArea" />
+					</property>
+				</bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="task">
+					<property name="quickfinder">
+						<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.Task"
+							p:fieldConversions="task:task" />
+					</property>
+				</bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="ipAddress" />
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="clockTimestamp" p:ranged="true" />
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean parent="Uif-DataField" p:propertyName="documentId" />
+				<bean parent="Uif-DataField" p:propertyName="principalId" />
+				<bean parent="Uif-DataField" p:propertyName="workArea" />
+				<bean parent="Uif-DataField" p:propertyName="task" />
+				<bean parent="Uif-DataField" p:propertyName="ipAddress" />
+				<bean parent="Uif-DataField" p:propertyName="clockAction" />
+				<bean parent="Uif-DataField" p:propertyName="jobNumber" />
+				<bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
+				<bean parent="Uif-DataField" p:propertyName="clockTimestamp" />
+				<bean parent="Uif-DataField" p:propertyName="clockTimestampTimezone" />
+				<bean parent="Uif-DataField" p:propertyName="timestamp" />
+				<bean parent="Uif-DataField" p:propertyName="clockedByMissedPunch" />
+			</list>	
+		</property>
+	</bean>
    
     <!--KRAD Clock Log Inquiry View-->
-    
-    <bean id="ClockLog-InquiryView" parent="Uif-InquiryView">
-        <property name="headerText" value="Clock Log Inquiry"/>
-        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog"/>
-        <property name="singlePageView" value="true"/>
-        <property name="items">
+
+	<bean id="ClockLog-InquiryView" parent="Uif-InquiryView">
+		<property name="headerText" value="Clock Log Inquiry" />
+		<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
+		<property name="singlePageView" value="true" />
+		<property name="items">
 			<list>
 				<bean parent="Uif-Disclosure-GridSection">
 					<property name="layoutManager.numberOfColumns" value="2" />
 					<property name="items">
-          				<list>      
-            				<bean parent="Uif-DataField" p:propertyName="documentId" />
-            				<bean parent="Uif-DataField" p:propertyName="principalId" />
-            				<bean parent="Uif-DataField" p:propertyName="workArea" />
-            				<bean parent="Uif-DataField" p:propertyName="ipAddress" />
-            				<bean parent="Uif-DataField" p:propertyName="clockAction" />
-            				<bean parent="Uif-DataField" p:propertyName="jobNumber" />
-            				<bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
-            				<bean parent="Uif-DataField" p:propertyName="timestamp" />
-            				<bean parent="Uif-DataField" p:propertyName="clockedByMissedPunch" />
-          				</list>   				
-        			</property>
-        			<property name="title" value="Clock Log" />
-        		</bean>
-        	</list>
-        </property>
-        <property name="title" value="Clock Log Inquiry"/>
-    </bean>
+						<list>
+							<bean parent="Uif-DataField" p:propertyName="principalId" />
+							<bean parent="Uif-DataField" p:propertyName="workArea" />
+							<bean parent="Uif-DataField" p:propertyName="task" />
+							<bean parent="Uif-DataField" p:propertyName="clockTimestamp" />
+							<bean parent="Uif-DataField" p:propertyName="clockTimestampTimezone" />
+							<bean parent="Uif-DataField" p:propertyName="clockAction" />
+							<bean parent="Uif-DataField" p:propertyName="ipAddress" />
+							<bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
+							<bean parent="Uif-DataField" p:propertyName="timestamp" />
+							<bean parent="Uif-DataField" p:propertyName="clockedByMissedPunch" />
+						</list>
+					</property>
+					<property name="title" value="Clock Log" />
+				</bean>
+			</list>
+		</property>
+		<property name="title" value="Clock Log Inquiry" />
+	</bean>
 	
 </beans>
