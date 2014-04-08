@@ -277,7 +277,7 @@ public class ClockAction extends TimesheetAction {
         }
         
         LocalDate beginDate = LocalDate.now();
-   	 	DateTime clockBeginDateTime = new DateTime(beginDate.toDateTimeAtCurrentTime());
+   	 	DateTime clockTimeWithGraceRule = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(beginDate.toDateTimeAtCurrentTime()), beginDate);
         // validate if there's any overlapping with existing time blocks
         if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.CLOCK_IN) || StringUtils.equals(caf.getCurrentClockAction(), TkConstants.LUNCH_IN)) {
              Set<String> regularEarnCodes = new HashSet<String>();
@@ -291,7 +291,7 @@ public class ClockAction extends TimesheetAction {
 	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, caf.getTimesheetDocument().getAsOfDate());
 	        	 if(earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
 	        		 Interval clockInterval = new Interval(new DateTime(tb.getBeginTimestamp().getTime()), new DateTime(tb.getEndTimestamp().getTime()));
-	        		 if((isRegularEarnCode || regularEarnCodes.contains(earnCodeObj.getEarnCode())) && clockInterval.contains(clockBeginDateTime.getMillis())) {
+	        		 if((isRegularEarnCode || regularEarnCodes.contains(earnCodeObj.getEarnCode())) && clockInterval.contains(clockTimeWithGraceRule.getMillis())) {
 	        			 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 	        			 return mapping.findForward("basic");
 	        		 }
@@ -441,7 +441,7 @@ public class ClockAction extends TimesheetAction {
 	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(),earnCode);
 	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
 	        	 if(isRegularEarnCode && earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
-	            	 if(clockInterval.contains(tb.getBeginDateTime().getMillis()) || clockInterval.contains(tb.getEndDateTime().getMillis())) {
+	            	 if(clockInterval.overlaps(new Interval(tb.getBeginDateTime(), tb.getEndDateTime()))) {
 	            		 return false;
 	            	 }
 	        	 }
