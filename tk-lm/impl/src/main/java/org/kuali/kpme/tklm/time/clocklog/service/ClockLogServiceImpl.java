@@ -126,9 +126,9 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock");
         DateTime beginDateTime = lastClockDateTime;
         DateTime endDateTime = clockLog.getClockDateTime();
 
-        // KPME-2680 : chk if hours is not zero then and then create TimeBlock
-    	BigDecimal hours = TKUtils.getHoursBetween(beginDateTime.getMillis(), endDateTime.getMillis());
-    	if(hours.compareTo(BigDecimal.ZERO) > 0) {
+//        // KPME-2680 : chk if hours is not zero then and then create TimeBlock
+//    	BigDecimal hours = TKUtils.getHoursBetween(beginDateTime.getMillis(), endDateTime.getMillis());
+//    	if(hours.compareTo(BigDecimal.ZERO) > 0) {
 	        // New Time Blocks, pointer reference
 	        List<TimeBlock> newTimeBlocks = td.getTimeBlocks();
 	        List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>(td.getTimeBlocks().size());
@@ -161,7 +161,7 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock");
 	        
 LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the size of the time blocks is " + newTimeBlocks.size()); 
     	}
-    }
+//    }
 
     private ClockLog buildClockLog(DateTime clockDateTime, Timestamp originalTimestamp, Assignment assignment, TimesheetDocument timesheetDocument, String clockAction, String ip, String userPrincipalId) {
         ClockLog clockLog = new ClockLog();
