@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.block.CalendarBlock;
 import org.kuali.kpme.core.block.dao.CalendarBlockDao;
 
@@ -43,6 +44,11 @@ public class CalendarBlockServiceImpl implements CalendarBlockService {
 	@Override
 	public DateTime getLatestEndTimestampForEarnCode(String earnCode, String calendarBlockType) {
 		return calendarBlockDao.getLatestEndTimestampForEarnCode(earnCode, calendarBlockType);
+	}
+
+	@Override
+	public DateTime getLatestEndTimestampForAssignment(Assignment assignment,String calendarBlockType) {
+		return calendarBlockDao.getLatestEndTimestampForAssignment(assignment,calendarBlockType);
 	}
 	
 }
