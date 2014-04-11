@@ -168,4 +168,13 @@ public interface AssignmentService {
 	public List<Assignment> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
 
     public String getAssignmentDescription(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate);
+
+    @Cacheable(value= Assignment.CACHE_NAME, key="'principalId=' + #p0 + '|' + 'beginDate=' + #p1 + '|' + 'endDate=' + #p2")
+    public Map<LocalDate, List<Assignment>> getAssignmentHistoryBetweenDays(String principalId, LocalDate beginDate, LocalDate endDate);
+
+    public List<Assignment> filterAssignmentListForUser(String userPrincipalId, List<Assignment> assignments);
+
+    public List<Assignment> getRecentAssignments(String principalId);
+
+    public List<Assignment> getRecentAssignments(String principalId, LocalDate startDate, LocalDate endDate);
 }

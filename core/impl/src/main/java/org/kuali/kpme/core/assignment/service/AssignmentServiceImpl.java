@@ -21,6 +21,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.assignment.Assignment;
@@ -30,14 +32,17 @@ import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
 import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.role.RoleService;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class AssignmentServiceImpl implements AssignmentService {
@@ -373,6 +378,141 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
 
         return builder.toString();
+    }
+
+    @Override
+    public Map<LocalDate, List<Assignment>> getAssignmentHistoryBetweenDays(String principalId, LocalDate beginDate, LocalDate endDate) {
+        return getAssignmentHistoryBetweenDaysInternal(principalId, beginDate, endDate, HrConstants.FLSA_STATUS_NON_EXEMPT, false);
+    }
+
+    @Override
+    public List<Assignment> filterAssignmentListForUser(String userPrincipalId, List<Assignment> assignments) {
+        List<Assignment> filteredAssignments = new ArrayList<Assignment>();
+        //TkUserRoles roles = TkUserRoles.getUserRoles(TKContext.getPrincipalId());
+        //boolean systemAdmin = HrContext.isSystemAdmin();
+        boolean systemAdmin = HrServiceLocator.getKPMEGroupService().isMemberOfSystemAdministratorGroup(userPrincipalId, LocalDate.now().toDateTimeAtStartOfDay());
+        List<String> roleIds = new ArrayList<String>();
+        RoleService roleService = KimApiServiceLocator.getRoleService();
+        roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName()));
+        roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName()));
+        roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName()));
+        roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName()));
+        roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName()));
+        List<Long> reportingWorkAreas = HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRoles(userPrincipalId, roleIds, LocalDate.now().toDateTimeAtStartOfDay(), true);
+        for (Assignment assignment : assignments) {
+            //if the user is not the same as the timesheet and does not have approver access for the assignment
+            //do not add to the display
+            if (!StringUtils.equals(userPrincipalId, assignment.getPrincipalId())) {
+                if (!systemAdmin && !reportingWorkAreas.contains(assignment.getWorkArea())) {
+                    continue;
+                }
+            }
+            filteredAssignments.add(assignment);
+        }
+        return filteredAssignments;
+    }
+
+    protected Map<LocalDate, List<Assignment>> getAssignmentHistoryBetweenDaysInternal(String principalId, LocalDate beginDate, LocalDate endDate, String flsaStatus, boolean checkLeaveEligible) {
+        Map<LocalDate, List<Assignment>> history = new HashMap<LocalDate, List<Assignment>>();
+        //get active assignments for period begin date
+        List<Assignment> beginAssignments = getAssignments(principalId, beginDate);
+        //might as well set the first day, since we have it already
+        history.put(beginDate, filterAssignments(new ArrayList<Assignment>(beginAssignments), flsaStatus, checkLeaveEligible));
+        if(beginDate.equals(endDate)) {
+            return history;
+        }
+        //get all assignment activity between start and end dates
+        List<Assignment> assignmentChanges = assignmentDao.findAssignmentsHistoryForPeriod(principalId, beginDate, endDate);
+        //let's put this in a map for easier access!!!
+        Map<LocalDate, List<Assignment>> assignmentChangeMap = new HashMap<LocalDate, List<Assignment>>();
+        for (Assignment change : assignmentChanges) {
+            LocalDate key = change.getEffectiveLocalDate();
+            if (assignmentChangeMap.containsKey(key)) {
+                assignmentChangeMap.get(key).add(change);
+            } else {
+                List<Assignment> changeList = new ArrayList<Assignment>();
+                changeList.add(change);
+                assignmentChangeMap.put(key, changeList);
+            }
+        }
+        //we now have a list, in order of the active at the start, and all changes between... now lets try to map it out per day....
+        List<LocalDate> localDates = new ArrayList<LocalDate>();
+        int days = Days.daysBetween(beginDate, endDate).getDays()+1;
+        for (int i=0; i < days; i++) {
+            LocalDate d = beginDate.withFieldAdded(DurationFieldType.days(), i);
+            localDates.add(d);
+        }
+        LocalDate previousDay = beginDate;
+        for (LocalDate ldate : localDates) {
+            if (!ldate.equals(beginDate)) {
+                List<Assignment> previousAssignments = history.get(previousDay);
+                List<Assignment> todaysAssignments = new ArrayList<Assignment>(previousAssignments);
+                if (assignmentChangeMap.containsKey(ldate)) {
+                    //what changed??? Figure it out and filter
+                    for (Assignment a : assignmentChangeMap.get(ldate)) {
+                        if (!a.isActive()) {
+                            // try to remove from list
+                            Iterator<Assignment> iter = todaysAssignments.iterator();
+                            while (iter.hasNext()) {
+                                Assignment iterAssign = iter.next();
+                                if (iterAssign.getAssignmentKey().equals(a.getAssignmentKey())) {
+                                    iter.remove();
+                                }
+                            }
+                        } else {
+                            //if it already exists, remove before adding new
+                            ListIterator<Assignment> iter = todaysAssignments.listIterator();
+                            boolean replaced = false;
+                            while (iter.hasNext()) {
+                                Assignment iterAssign = iter.next();
+                                if (iterAssign.getAssignmentKey().equals(a.getAssignmentKey())) {
+                                    iter.set(a);
+                                    replaced = true;
+                                }
+                            }
+                            //add to list if not already replaced
+                            if (!replaced) {
+                                todaysAssignments.add(a);
+                            }
+                        }
+                    }
+                    todaysAssignments = filterAssignments(todaysAssignments, flsaStatus, checkLeaveEligible);
+                }
+                history.put(ldate, todaysAssignments);
+                previousDay = ldate;
+            }
+        }
+        return history;
+    }
+
+    @Override
+    public List<Assignment> getRecentAssignments(String principalId) {
+        //if no dates are specified uses date range of now and now minus limit set in config
+        Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
+        LocalDate startDate = LocalDate.now().minusDays(limit);
+        LocalDate endDate = LocalDate.now();
+
+        return getRecentAssignments(principalId,startDate,endDate);
+    }
+
+    @Override
+    public List<Assignment> getRecentAssignments(String principalId, LocalDate startDate, LocalDate endDate) {
+        Set<Assignment> assignmentSet = new HashSet<Assignment>();
+        List<Assignment> assignmentList = new ArrayList<Assignment>();
+
+        Map<LocalDate, List<Assignment>> assignmentMap = HrServiceLocator.getAssignmentService().getAssignmentHistoryBetweenDays(principalId, startDate, endDate);
+
+        //loop through every entry in the map, and add unique assignments to the set of recent active assignments
+        for (Map.Entry<LocalDate, List<Assignment>> entry : assignmentMap.entrySet()) {
+            for (Assignment assignment : entry.getValue()) {
+                assignmentSet.add(assignment);
+            }
+        }
+
+        //convert set to a list
+        assignmentList.addAll(assignmentSet);
+
+        return assignmentList;
     }
 
 }

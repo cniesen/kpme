@@ -86,4 +86,8 @@ public interface AssignmentDao {
     public List<String> getPrincipalIds(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
     
     public List<Assignment> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
+
+    public List<Assignment> findAssignmentsHistoryForPeriod(String principalId, LocalDate startDate, LocalDate endDate);
+
 }
+

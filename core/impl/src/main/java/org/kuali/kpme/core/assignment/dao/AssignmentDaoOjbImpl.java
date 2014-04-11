@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.core.assignment.dao;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -386,6 +387,28 @@ public class AssignmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Ass
         }
         
         return results;
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public List<Assignment> findAssignmentsHistoryForPeriod(String principalId, LocalDate startDate, LocalDate endDate) {
+        List<Assignment> assignments = new ArrayList<Assignment>();
+        Criteria root = new Criteria();
+        Date start = new java.sql.Date(startDate.toDate().getTime());
+        Date end = new java.sql.Date(endDate.toDate().getTime());
+        root.addGreaterOrEqualThan("effectiveDate", start);
+        root.addLessThan("effectiveDate", end);
+        root.addEqualTo("principalId", principalId);
+        ReportQueryByCriteria query = QueryFactory.newReportQuery(Assignment.class, root);
+        query.addOrderByAscending("effectiveDate");
+        query.addOrderByAscending("timestamp");
+        //query.setAttributes(new String[] {"/*+ no_query_transformation */ A0.tk_assignment_id", "principalId", "jobNumber", "effectiveDate",
+        //        "workArea", "task", "active", "timestamp"});
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        if (c != null) {
+            assignments.addAll(c);
+        }
+        return assignments;
     }
 
 }
