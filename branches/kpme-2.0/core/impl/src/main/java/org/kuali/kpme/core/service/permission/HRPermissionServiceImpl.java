@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.core.service.permission;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,7 +117,21 @@ public class HRPermissionServiceImpl extends HrPermissionServiceBase implements 
     	if (calendarDocument != null) {
     		String documentTypeName = calendarDocument.getCalendarType();
         	DocumentStatus documentStatus = DocumentStatus.fromCode(calendarDocument.getDocumentHeader().getDocumentStatus());
-    		List<Assignment> assignments = calendarDocument.getAssignments();
+            List<Assignment> assignments = new ArrayList<Assignment>();
+            if (permissionTemplateName.equals(KimConstants.PermissionTemplateNames.EDIT_DOCUMENT)
+                    || permissionTemplateName.equals(KimConstants.PermissionTemplateNames.ROUTE_DOCUMENT)) {
+                //only allows routing/editing of timesheets with active assignments in the pay period
+                LocalDate startDate = calendarDocument.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+                LocalDate endDate = calendarDocument.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
+                List<Assignment> assignmentsActiveInCalendarEntry= HrServiceLocator.getAssignmentService().getRecentAssignments(calendarDocument.getPrincipalId(),startDate,endDate);
+                for (Assignment assignment : calendarDocument.getAssignments()) {
+                    if (assignmentsActiveInCalendarEntry.contains(assignment)) {
+                        assignments.add(assignment);
+                    }
+                }
+            } else {
+                assignments.addAll(calendarDocument.getAssignments());
+            }
         	
         	isAuthorizedByTemplate = isAuthorizedByTemplate(principalId, namespaceCode, permissionTemplateName, documentTypeName, calendarDocument.getDocumentId(), documentStatus, assignments, calendarDocument.getCalendarEntry().getEndPeriodFullDateTime());
     	}

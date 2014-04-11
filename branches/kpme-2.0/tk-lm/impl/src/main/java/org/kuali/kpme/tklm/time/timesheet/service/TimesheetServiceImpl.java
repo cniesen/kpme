@@ -16,9 +16,7 @@
 package org.kuali.kpme.tklm.time.timesheet.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -285,7 +283,8 @@ public class TimesheetServiceImpl implements TimesheetService {
     }
 
     protected void loadTimesheetDocumentData(TimesheetDocument tdoc, String principalId, CalendarEntry payCalEntry) {
-    	tdoc.setAssignments(HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForTimeCalendar(principalId, payCalEntry));
+
+        tdoc.setAssignments(HrServiceLocator.getAssignmentService().getRecentAssignments(principalId));
     	if (payCalEntry != null) {
     		tdoc.setJobs(HrServiceLocator.getJobService().getJobs(principalId, payCalEntry.getEndPeriodFullDateTime().toLocalDate()));
     	}
