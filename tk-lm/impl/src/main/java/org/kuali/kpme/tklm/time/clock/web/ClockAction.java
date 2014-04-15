@@ -111,7 +111,12 @@ public class ClockAction extends TimesheetAction {
 		        if (targetPrincipalId != null) {
 		            clockActionForm.setPrincipalId(targetPrincipalId);
 		        }
-		        clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptions(true));
+		        
+		        if (StringUtils.equals(GlobalVariables.getUserSession().getPrincipalId(), HrContext.getTargetPrincipalId())) {
+		        	clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptions(true));
+		        } else {
+		        	clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptionsOfApprovals(true));
+		        }
 		        
 		        if (clockActionForm.getEditTimeBlockId() != null) {
 		            clockActionForm.setCurrentTimeBlock(TkServiceLocator.getTimeBlockService().getTimeBlock(clockActionForm.getEditTimeBlockId()));
