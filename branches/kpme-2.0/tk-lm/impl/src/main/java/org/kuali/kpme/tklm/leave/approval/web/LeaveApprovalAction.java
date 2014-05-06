@@ -274,7 +274,7 @@ public class LeaveApprovalAction extends CalendarApprovalFormAction {
             List<ApprovalLeaveSummaryRow> sublist = new ArrayList<ApprovalLeaveSummaryRow>();
             sublist.addAll(approvalRows.subList(beginIndex, endIndex));
 			leaveApprovalActionForm.setLeaveApprovalRows(sublist);
-			leaveApprovalActionForm.setResultSize(sublist.size());
+			leaveApprovalActionForm.setResultSize(approvalRows.size());
 		    
 		    Map<String, String> userColorMap = new HashMap<String, String>();
 	        Set<String> randomColors = new HashSet<String>();

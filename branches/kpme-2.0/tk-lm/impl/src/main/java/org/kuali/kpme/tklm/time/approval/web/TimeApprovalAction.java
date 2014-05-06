@@ -235,7 +235,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 			timeApprovalActionForm.setResultSize(0);
 			timeApprovalActionForm.setOutputString(null);
 		} else {
-		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(timeApprovalActionForm, getSubListPrincipalIds(request, principalIds), docIdSearchTerm);
+		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(timeApprovalActionForm, principalIds, docIdSearchTerm);
 		    timeApprovalActionForm.setOutputString(!CollectionUtils.isEmpty(approvalRows) ? approvalRows.get(0).getOutputString() : null);
 		    final String sortField = getSortField(request);
 		    if (StringUtils.isEmpty(sortField) || StringUtils.equals(sortField, "name")) {
@@ -285,7 +285,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
             List<ApprovalTimeSummaryRow> sublist = new ArrayList<ApprovalTimeSummaryRow>();
             sublist.addAll(approvalRows.subList(beginIndex, endIndex));
 		    timeApprovalActionForm.setApprovalRows(sublist);
-		    timeApprovalActionForm.setResultSize(sublist.size());
+		    timeApprovalActionForm.setResultSize(approvalRows.size());
 		}		
 	}
 	

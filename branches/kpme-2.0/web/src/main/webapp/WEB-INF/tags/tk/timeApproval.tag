@@ -6,6 +6,7 @@
 <br/>
 <table width="100%"><tr>
 <div id="time-approval">
+	<%-- The pagesize of the display table needs to be the same as HrConstant.PAGE_SIZE --%>
 	<display:table name="${Form.approvalRows}" requestURI="TimeApproval.do" excludedParams="*"
 	               pagesize="20" id="row"
 	               class="approvals-table" partialList="true" size="${Form.resultSize}" sort="external" defaultsort="0">
