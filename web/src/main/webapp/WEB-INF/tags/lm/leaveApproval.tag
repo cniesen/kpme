@@ -5,6 +5,7 @@
 <br/>
 <table width="100%"><tr>
 <div id="leave-approval">
+	<%-- The pagesize of the display table needs to be the same as HrConstant.PAGE_SIZE --%>
 	<display:table name="${Form.leaveApprovalRows}" requestURI="LeaveApproval.do" excludedParams="*"
 	               pagesize="20" id="row"
 	               class="approvals-table"
