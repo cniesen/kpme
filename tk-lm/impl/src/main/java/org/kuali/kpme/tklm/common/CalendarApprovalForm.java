@@ -21,9 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 
 public abstract class CalendarApprovalForm extends ApprovalForm {
 	
@@ -189,6 +191,15 @@ public abstract class CalendarApprovalForm extends ApprovalForm {
 
     public void setResultSize(Integer resultSize) {
         this.resultSize = resultSize;
+    }
+    
+    public int getPageSize() {
+    	String parameterValue = ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.approval.page.size");
+    	Integer limit = 10;
+    	if(StringUtils.isNotBlank(parameterValue)) {
+    		limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.approval.page.size"));
+    	}
+    	return limit;
     }
 
 }
