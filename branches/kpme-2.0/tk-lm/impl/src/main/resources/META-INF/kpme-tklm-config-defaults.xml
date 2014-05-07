@@ -44,6 +44,8 @@
             APPROVE: Approve all leave blocks on the initiated planning calendar.
     -->
     <param name="kpme.lm.leaveCalendar.initiate.leaveRequest.action">DELETE</param>
-
+    
+    <!-- Number of records to display on each page on time/leave approval -->
+	<param name="kpme.tklm.approval.page.size">10</param>
 
 </config>
