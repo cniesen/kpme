@@ -1,0 +1,11 @@
+# Global Definitions
+institution_definitions:
+  <<: *global_definition_defaults
+  khr-sys-user: admin
+
+  # Per feature definitions
+  project_code:
+    <<: *project_code_defaults
+    chart-code: XY
+
+
