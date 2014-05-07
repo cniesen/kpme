@@ -1,0 +1,10 @@
+# Global Definitions
+global_definition_defaults: &global_definition_defaults
+  khr-sys-user: admin
+
+# Per feature definitions
+
+project_code_defaults: &project_code_defaults
+  work-area-in: inapprover1
+  work-area-ia: iaapprover1
+
