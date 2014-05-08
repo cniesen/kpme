@@ -307,6 +307,8 @@
 	<bean id="ClockLog-InquiryView" parent="Uif-InquiryView">
 		<property name="headerText" value="Clock Log Inquiry" />
 		<property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.ClockLog" />
+		<property name="viewHelperServiceClass"
+			value="org.kuali.kpme.tklm.time.clocklog.web.ClockLogKradInquirableImpl" />
 		<property name="singlePageView" value="true" />
 		<property name="items">
 			<list>

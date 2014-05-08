@@ -38,6 +38,7 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.batch.EndPayPeriodJob;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -205,7 +206,11 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
 
     @Override
     public ClockLog getClockLog(String tkClockLogId) {
-        return clockLogDao.getClockLog(tkClockLogId);
+       ClockLog aClockLog = clockLogDao.getClockLog(tkClockLogId);
+       if(aClockLog != null) {
+    	   aClockLog.setClockedByMissedPunch(TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch(tkClockLogId));
+       }
+       return aClockLog;
     }
     
     @Override
@@ -243,6 +248,15 @@ LOG.info("in ClockLogServiceImpl.processTimeBlock, after saving time blocks, the
 		String warning = "Warning: Action '" + TkConstants.CLOCK_ACTION_STRINGS.get(cl.getClockAction()) + "' taken at " 
 			+ cl.getClockTimestamp() + " was from an unapproved IP address - " + cl.getIpAddress();
 		return warning;
+	}
+
+	@Override
+	public boolean isClockLogCreatedByMissedPunch(String clockLogId) {
+		MissedPunch missedPunch = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(clockLogId);
+		if (missedPunch != null) {
+			return true;
+		}
+		return false;
 	}
 
 }

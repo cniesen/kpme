@@ -37,16 +37,16 @@ public class ClockLogInquirableImpl extends KualiInquirableImpl {
 		ClockLog clocklog = null;
 		
 		if(StringUtils.isNotBlank((String)fieldValues.get("tkClockLogId"))) {
-		clocklog = TkServiceLocator.getClockLogService().getClockLog((String)fieldValues.get("tkClockLogId"));
-		MissedPunch missedPunch = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId((String)fieldValues.get("tkClockLogId"));
-		if (missedPunch != null) {
-			clocklog.setClockedByMissedPunch(true);
-        	}
+			clocklog = TkServiceLocator.getClockLogService().getClockLog((String)fieldValues.get("tkClockLogId"));
+			if(clocklog != null) {
+				clocklog.setClockedByMissedPunch(TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch(clocklog.getTkClockLogId()));
+			}
 		}
 		
 
 		return clocklog;
 	}
+		
 	
 
 

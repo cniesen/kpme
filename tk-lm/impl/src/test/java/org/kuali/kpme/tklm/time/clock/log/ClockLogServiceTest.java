@@ -44,4 +44,13 @@ public class ClockLogServiceTest extends TKLMIntegrationTestCase {
 				warning.equals("Warning: Action 'Clock Out' taken at 2012-03-01 08:08:08.0 was from an unapproved IP address - TEST"));
 		
 	}
+	
+	@Test
+	public void testIsClockLogCreatedByMissedPunch() throws Exception {
+		boolean isMissedPunch = TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch("5000");
+		Assert.assertTrue("Clock Log 5000 is created by Missed Punch", isMissedPunch);
+		
+		isMissedPunch = TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch("5001");
+		Assert.assertFalse("Clock Log 5001 is NOT created by Missed Punch", isMissedPunch);
+	}
 }
