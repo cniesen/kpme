@@ -285,7 +285,18 @@ public class ClockAction extends TimesheetAction {
    	 	DateTime clockTimeWithGraceRule = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(beginDate.toDateTimeAtCurrentTime()), beginDate);
         // validate if there's any overlapping with existing time blocks
         if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.CLOCK_IN) || StringUtils.equals(caf.getCurrentClockAction(), TkConstants.LUNCH_IN)) {
-             Set<String> regularEarnCodes = new HashSet<String>();
+            ClockLog lastLog = null;
+            if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.LUNCH_IN)) {
+                lastLog = TkServiceLocator.getClockLogService().getLastClockLog(pId, TkConstants.LUNCH_OUT);
+            } else if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.CLOCK_IN)) {
+                lastLog = TkServiceLocator.getClockLogService().getLastClockLog(pId);
+            }
+            if (lastLog != null) {
+                if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(clockTimeWithGraceRule.withMillisOfSecond(0))) {
+                    clockTimeWithGraceRule = clockTimeWithGraceRule.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                }
+            }
+            Set<String> regularEarnCodes = new HashSet<String>();
              for(Assignment assign : caf.getTimesheetDocument().getAssignments()) {
                  regularEarnCodes.add(assign.getJob().getPayTypeObj().getRegEarnCode());
              }
@@ -375,7 +386,10 @@ public class ClockAction extends TimesheetAction {
 	        			// validation with previous calendar entry
 	        			// the datetime for the new clock log that's about to be created with grace period rule applied
 	        			DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(outLogDateTime, previousCalEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
+	        			if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
+                        boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
    		            		 return mapping.findForward("basic");
@@ -384,7 +398,10 @@ public class ClockAction extends TimesheetAction {
 	        			// validation with the next calendar entry
 		   	             // the datetime for the new clock log that's about to be created with grace period rule applied
 	        			endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(currentDateTime, nextCalendarEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime,assignment);
+                        if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
+                        validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
   		            		 return mapping.findForward("basic");
@@ -419,7 +436,9 @@ public class ClockAction extends TimesheetAction {
 	                if (lastLog != null) {
 		   	            // the datetime for the new clock log that's about to be created with grace period rule applied
 		   	         	DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(), caf.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate());
-		   	         	
+                        if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
 		   	         	boolean validation = this.validateOverlapping(caf.getTimesheetDocument().getAsOfDate(), caf.getTimesheetDocument().getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
