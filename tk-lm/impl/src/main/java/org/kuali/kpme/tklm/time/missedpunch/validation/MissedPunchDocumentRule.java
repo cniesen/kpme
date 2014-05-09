@@ -177,13 +177,13 @@ public class MissedPunchDocumentRule extends TransactionalDocumentRuleBase {
 	        }
 	        
 	    	ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(missedPunch.getPrincipalId());
+	    	DateTime boundaryMin = DateTime.now().minusDays(1);
 	        if (lastClockLog != null) {
                 if( (StringUtils.isNotEmpty(missedPunch.getTkClockLogId()) && !missedPunch.getTkClockLogId().equals(lastClockLog.getTkClockLogId()))
 	        			|| StringUtils.isEmpty(missedPunch.getTkClockLogId()) ) {
 	        			
 		        	DateTime clockLogDateTime = lastClockLog.getClockDateTime();
 			        DateTime boundaryMax = clockLogDateTime.plusDays(1);
-                    DateTime boundaryMin = DateTime.now().minusDays(1);
 			        if ((!StringUtils.equals(lastClockLog.getClockAction(), TkConstants.CLOCK_OUT) && actionDateTime.isAfter(boundaryMax)) 
 			        		|| actionDateTime.isBefore(clockLogDateTime)) {
 			        	GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.invalid.datetime");
@@ -194,6 +194,14 @@ public class MissedPunchDocumentRule extends TransactionalDocumentRuleBase {
                         GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.past24hour.date");
                         valid = false;
                     }
+	        	}
+	        } else { // if there's no previous clock log, it means the user is clocking in for the first time.
+	        	if(!StringUtils.equals(missedPunch.getClockAction(), TkConstants.CLOCK_IN)) {
+	        		GlobalVariables.getMessageMap().putError("document.clockAction", "clock.mp.invalid.action", missedPunch.getClockAction());
+                    valid = false;
+	        	} else if (actionDateTime.isBefore(boundaryMin)) {
+	        		GlobalVariables.getMessageMap().putError("document.actionTime", "clock.mp.past24hour.date");
+                    valid = false; 
 	        	}
 	        }
         }
