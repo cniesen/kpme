@@ -355,16 +355,14 @@ public class ClockAction extends TimesheetAction {
         	if(previousTimeDoc != null) {
 	        	CalendarEntry previousCalEntry = previousTimeDoc.getCalendarEntry();
 	        	DateTime previousEndPeriodDateTime = previousCalEntry.getEndPeriodFullDateTime();
+        		// use the user's time zone and the system time zone to figure out the system time of endPeriodDatTime in the user's timezone
+                DateTimeZone userTimezone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(pId));
+        		DateTimeZone systemTimeZone = TKUtils.getSystemDateTimeZone();
+        		// time to use to create the out clock log
+                DateTime outLogDateTime = TKUtils.convertTimeForDifferentTimeZone(previousEndPeriodDateTime, systemTimeZone, userTimezone);
+	        	
 	        	// if current time is after the end time of previous calendar entry, it means the clock action covers two calendar entries
-	        	if(currentDateTime.isAfter(previousEndPeriodDateTime.getMillis())) {
-	        		
-	        		// create co, ci and co clock logs and assign the last co clock log to the form
-	        		// use the user's time zone and the system time zone to figure out the system time of endPeriodDatTime in the user's timezone
-	                DateTimeZone userTimezone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(pId));
-	        		DateTimeZone systemTimeZone = TKUtils.getSystemDateTimeZone();
-	        		// time to use to create the out clock log
-	                DateTime outLogDateTime = TKUtils.convertTimeForDifferentTimeZone(previousEndPeriodDateTime, systemTimeZone, userTimezone);
-	        	        
+            	if(currentDateTime.isAfter(outLogDateTime.getMillis())) {	        	        
 	                CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(previousCalEntry.getHrCalendarId(), previousCalEntry);
 	                DateTime beginNextPeriodDateTime = nextCalendarEntry.getBeginPeriodFullDateTime();
 	                // time to use to create the CI clock log
@@ -407,7 +405,7 @@ public class ClockAction extends TimesheetAction {
   		            		 return mapping.findForward("basic");
 	        			}
 		            } 
-	                
+	        		// create co, ci and co clock logs and assign the last co clock log to the form
 	                // clock out employee at the end of the previous pay period
 	                ClockLog outLog = TkServiceLocator.getClockLogService().processClockLog(outLogDateTime, assignment, previousCalEntry, ip,
 	                		previousEndPeriodDateTime.toLocalDate(), previousTimeDoc, outAction, true, pId);
@@ -444,7 +442,13 @@ public class ClockAction extends TimesheetAction {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 			            		 return mapping.findForward("basic");
 	        			}
-	                } 
+	                }
+	                // create clock log using previous time document, ie the same time document as the last clock log
+	                ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new DateTime(), assignment, caf.getCalendarEntry(), ip,
+	                		beginDate, previousTimeDoc, caf.getCurrentClockAction(), true, pId);
+
+	                caf.setClockLog(clockLog);  
+	                return mapping.findForward("basic"); 	                
 	        	}
     		}
     	} 
