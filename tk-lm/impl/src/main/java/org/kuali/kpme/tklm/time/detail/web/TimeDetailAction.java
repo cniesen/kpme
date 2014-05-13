@@ -633,6 +633,7 @@ public class TimeDetailAction extends TimesheetAction {
         	} else {
         		existingTimeBlock = tb;
         		existingTimeBlock.copy(timeBlockToUpdate);
+        		existingTimeBlock.setOvertimePref(null);
         		finalNewTimeBlocks.add(existingTimeBlock);
         	}
         }
