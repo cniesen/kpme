@@ -174,8 +174,7 @@ $(document).ready(function () {
         text:false
     });
 
-    // display warning and notes
-    //$(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide'});
+    // display warning, notes and missed punch
 //    $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
 //        offset: [0, 120],
 //        effect : "slide"
@@ -184,19 +183,33 @@ $(document).ready(function () {
     var tooltip = $(".approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
         events: {
           def:     ",",
-          tooltip: "click,mouseleave"
+          tooltip: "click,mouseover,mouseleave"
         },
        offset: [0,120],
        effect: 'slide'
-    }).dynamic({ bottom: { direction: 'down', bounce: true } });
+    });
 
     tooltip.click(function() {
         var tip = $(this).data("tooltip");
-        if (tip.isShown(true))
+        if (tip.isShown(true)){
             tip.hide();
-        else
+        }
+        else{
             tip.show();
+        }
     });
+    
+    tooltip.mouseover(function() {
+        var tip = $(this).data("tooltip");
+        tip.show();
+    });
+    
+    tooltip.mouseleave(function() {
+        var tip = $(this).data("tooltip");
+//        tip.hide();
+    });
+    
+    
     
 
 //    $('span[id^=showDetailButton]').click(function (e) {
