@@ -174,7 +174,8 @@ $(document).ready(function () {
         text:false
     });
 
-    // display warning, notes and missed punch
+    // display warning and notes
+    //$(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide'});
 //    $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
 //        offset: [0, 120],
 //        effect : "slide"
@@ -183,7 +184,7 @@ $(document).ready(function () {
     var tooltip = $(".approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
         events: {
           def:     ",",
-          tooltip: "click,mouseover,mouseleave"
+          tooltip: "click,mouseleave"
         },
        offset: [0,120],
        effect: 'slide'
@@ -191,25 +192,11 @@ $(document).ready(function () {
 
     tooltip.click(function() {
         var tip = $(this).data("tooltip");
-        if (tip.isShown(true)){
+        if (tip.isShown(true))
             tip.hide();
-        }
-        else{
+        else
             tip.show();
-        }
     });
-    
-    tooltip.mouseover(function() {
-        var tip = $(this).data("tooltip");
-        tip.show();
-    });
-    
-    tooltip.mouseleave(function() {
-        var tip = $(this).data("tooltip");
-//        tip.hide();
-    });
-    
-    
     
 
 //    $('span[id^=showDetailButton]').click(function (e) {
