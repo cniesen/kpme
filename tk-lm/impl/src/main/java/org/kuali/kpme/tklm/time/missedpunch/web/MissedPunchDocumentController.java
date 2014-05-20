@@ -114,7 +114,7 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
 		MissedPunchDocument missedPunchDocument = (MissedPunchDocument) missedPunchForm.getDocument();
 		
 	    if (StringUtils.isEmpty(missedPunchDocument.getDocumentHeader().getDocumentDescription())) {
-	    	missedPunchDocument.getDocumentHeader().setDocumentDescription("Missed Punch: " + missedPunchForm.getMissedPunch().getPrincipalId());
+            missedPunchDocument.getDocumentHeader().setDocumentDescription(missedPunchForm.getMissedPunch().getPersonName()+" ("+missedPunchForm.getMissedPunch().getPrincipalId() +")");
 	    }
 	    
 	    missedPunchDocument.setTkMissedPunchId(missedPunchForm.getMissedPunch().getTkMissedPunchId());
