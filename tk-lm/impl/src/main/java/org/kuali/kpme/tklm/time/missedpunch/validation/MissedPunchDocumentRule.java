@@ -57,13 +57,26 @@ public class MissedPunchDocumentRule extends TransactionalDocumentRuleBase {
         DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(document.getDocumentNumber());
         
         if (DocumentStatus.INITIATED.equals(documentStatus) || DocumentStatus.SAVED.equals(documentStatus)) {
-        	valid &= validateTimesheet(missedPunch);
-        	valid &= validateClockAction(missedPunch);
-        	valid &= validateClockTime(missedPunch);
-        	valid &= validateOverLappingTimeBlocks(missedPunch, missedPunch.getTimesheetDocumentId());
-            valid &= validateTimeSheetInitiated(missedPunch);
+        	valid = runValidation(missedPunch);
         }
 	    
+        return valid;
+	}
+	/**
+	 * Runs all the customized validatoin on the given missed punch
+	 * 
+	 * @param missedPunch The Missed Punch to check
+	 * 
+	 * @return true if the all validation passes, false otherwise
+	 * 
+	 */
+	public boolean runValidation(MissedPunch aMissedPunch) {
+		boolean valid = true;
+		valid &= validateTimesheet(aMissedPunch);
+    	valid &= validateClockAction(aMissedPunch);
+    	valid &= validateClockTime(aMissedPunch);
+    	valid &= validateOverLappingTimeBlocks(aMissedPunch, aMissedPunch.getTimesheetDocumentId());
+        valid &= validateTimeSheetInitiated(aMissedPunch);
         return valid;
 	}
 	

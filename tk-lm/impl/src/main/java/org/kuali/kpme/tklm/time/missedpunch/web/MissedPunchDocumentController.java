@@ -31,6 +31,7 @@ import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
+import org.kuali.kpme.tklm.time.missedpunch.validation.MissedPunchDocumentRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.core.api.config.property.ConfigContext;
@@ -123,30 +124,34 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
     @RequestMapping(params = "methodToCall=submit")
     public ModelAndView submit(@ModelAttribute("KualiForm") DocumentFormBase form, BindingResult result, HttpServletRequest request, HttpServletResponse response) throws Exception {
         MissedPunchForm missedPunchForm = (MissedPunchForm) form;
-
+        MissedPunch aMissedPunch = missedPunchForm.getMissedPunch();
         DictionaryValidationResult validationResults = KRADServiceLocatorWeb.getDictionaryValidationService().validate(((MissedPunchForm) form).getMissedPunch());
         if (validationResults.getNumberOfErrors() == 0) {
-
-            try {
-                createDocument(missedPunchForm);
-                save(missedPunchForm, result, request, response);
-
-                if (StringUtils.isNotBlank(missedPunchForm.getMissedPunch().getNote())) {
-                    Document doc = missedPunchForm.getDocument();
-                    Note note = new Note();
-                    note.setNoteText(missedPunchForm.getMissedPunch().getNote());
-                    note.setAuthorUniversalIdentifier(HrContext.getPrincipalId());
-                    note.setNotePostedTimestampToCurrent();
-                    doc.setNotes(Collections.<Note>singletonList(note));
-                }
-                ModelAndView modelAndView = route(missedPunchForm, result, request, response);
-                missedPunchForm.setMissedPunchSubmitted(true);
-
-                return modelAndView;
-
-            } catch (ValidationException exception) {
-                //ignore
-            }
+        	
+        	// call customized validation on the missed punch before creating document
+        	boolean validFlag = new MissedPunchDocumentRule().runValidation(aMissedPunch);
+        	if(validFlag) {
+	            try {
+	                createDocument(missedPunchForm);
+	                save(missedPunchForm, result, request, response);
+	
+	                if (StringUtils.isNotBlank(missedPunchForm.getMissedPunch().getNote())) {
+	                    Document doc = missedPunchForm.getDocument();
+	                    Note note = new Note();
+	                    note.setNoteText(missedPunchForm.getMissedPunch().getNote());
+	                    note.setAuthorUniversalIdentifier(HrContext.getPrincipalId());
+	                    note.setNotePostedTimestampToCurrent();
+	                    doc.setNotes(Collections.<Note>singletonList(note));
+	                }
+	                ModelAndView modelAndView = route(missedPunchForm, result, request, response);
+	                missedPunchForm.setMissedPunchSubmitted(true);
+	
+	                return modelAndView;
+	
+	            } catch (ValidationException exception) {
+	                //ignore
+	            }
+        	}
         }
         return getUIFModelAndView(form);
     }
