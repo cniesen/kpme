@@ -357,15 +357,38 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 	public List<List<FlsaWeek>> getFlsaWeeks(DateTimeZone zone, String principalId) {
 		List<List<FlsaWeek>> flsaWeeks = new ArrayList<List<FlsaWeek>>();
 		
-		List<FlsaWeek> currentWeeks = getFlsaWeeks(zone, 0, false);
+		List<FlsaWeek> currentWeeks = getFlsaWeeks(zone, this.getPayCalendar().getFlsaBeginDayConstant(), false);
+//		List<FlsaWeek> currentWeeks = getFlsaWeeks(zone, 0, false);
 		
 		for (ListIterator<FlsaWeek> weekIterator = currentWeeks.listIterator(); weekIterator.hasNext(); ) {
 			List<FlsaWeek> flsaWeek = new ArrayList<FlsaWeek>();
 			
 			int index = weekIterator.nextIndex();
 			FlsaWeek currentWeek = weekIterator.next();
+			int weekStartDay = currentWeek.getFlsaDays().get(0).getFlsaDate().getDayOfWeek();
+			int flsaStartDay = this.getPayCalendar().getFlsaBeginDayConstant();
+			// flsa week starts on Sunday
+			boolean sundayFlsaStartFlag = flsaStartDay == DateTimeConstants.SUNDAY;
 			
-			if (index == 0 && !currentWeek.isFirstWeekFull()) {
+			boolean calendarStartsAfterFlsa = false;
+			boolean calendarStartsBeforeFlsa = false;
+			boolean calendarStartSameAsFlsa = false;
+			// for the first week, we need to figure out if we need to pull flsa data from previous calendar
+			if(index == 0) {
+				if(sundayFlsaStartFlag && weekStartDay < DateTimeConstants.SUNDAY) {
+					calendarStartsAfterFlsa = true;
+				}else if (!sundayFlsaStartFlag && weekStartDay == DateTimeConstants.SUNDAY) {
+					calendarStartsAfterFlsa = false;
+				} else if (!sundayFlsaStartFlag && weekStartDay != DateTimeConstants.SUNDAY && weekStartDay > flsaStartDay) {
+					calendarStartsAfterFlsa = true;
+				} else if(weekStartDay == flsaStartDay) {
+					calendarStartsAfterFlsa = false;
+				}
+				calendarStartSameAsFlsa = weekStartDay == flsaStartDay;
+				calendarStartsBeforeFlsa = !calendarStartSameAsFlsa && !calendarStartsAfterFlsa;
+			}
+			
+			if (index == 0 && (!currentWeek.isFirstWeekFull() || calendarStartsBeforeFlsa || calendarStartSameAsFlsa)) {
 				CalendarEntry previousCalendarEntry = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(payCalendar.getHrCalendarId(), payCalendarEntry);
 				if (previousCalendarEntry != null) {
 					TimesheetDocumentHeader timesheetDocumentHeader = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, previousCalendarEntry.getBeginPeriodFullDateTime(), previousCalendarEntry.getEndPeriodFullDateTime());
@@ -382,10 +405,28 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 							TkTimeBlockAggregate previousAggregate = new TkTimeBlockAggregate(timeBlocks, leaveBlocks, previousCalendarEntry, payCalendar, true);
 							List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone, 0, false);
 							if (CollectionUtils.isNotEmpty(previousWeek)) {
-								flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
+								if(calendarStartSameAsFlsa) {
+									flsaWeeks.add(new ArrayList<FlsaWeek>());
+								} else if (calendarStartsAfterFlsa) {
+									List<FlsaWeek> newFlsaWeekList = new ArrayList<FlsaWeek>();
+									newFlsaWeekList.add(previousWeek.get(previousWeek.size() - 1));
+									flsaWeeks.add(newFlsaWeekList);
+								} else {
+									flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
+								}
+							} else {
+								flsaWeeks.add(new ArrayList<FlsaWeek>());
 							}
+						} else if(calendarStartSameAsFlsa) {
+							flsaWeeks.add(new ArrayList<FlsaWeek>());
 						}
+					 } else if(calendarStartSameAsFlsa) {
+						// add an empty week if the previous entry is null
+						 	flsaWeeks.add(new ArrayList<FlsaWeek>());
 					 }
+				} else if(calendarStartSameAsFlsa){
+					// add an empty week if the previous calendar entry is null
+					flsaWeeks.add(new ArrayList<FlsaWeek>());
 				}
 			}
 			
