@@ -407,7 +407,9 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 							List<FlsaWeek> previousWeek = previousAggregate.getFlsaWeeks(zone, 0, false);
 							if (CollectionUtils.isNotEmpty(previousWeek)) {
 								if(calendarStartSameAsFlsa) {
-									flsaWeeks.add(new ArrayList<FlsaWeek>());
+									if(!sundayFlsaStartFlag) {
+										flsaWeeks.add(new ArrayList<FlsaWeek>());
+									}
 								} else if (calendarStartsAfterFlsa) {
 									if(sundayFlsaStartFlag) {
 										flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
@@ -419,7 +421,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 									} else {
 										flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
 									}
-								} else {
+								}else {
 									flsaWeek.add(previousWeek.get(previousWeek.size() - 1));
 								}
 							} else {
