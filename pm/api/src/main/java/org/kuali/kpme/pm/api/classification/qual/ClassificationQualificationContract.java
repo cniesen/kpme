@@ -15,13 +15,13 @@
  */
 package org.kuali.kpme.pm.api.classification.qual;
 
-import org.kuali.kpme.pm.api.classification.ClassificationDerivedContract;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 /**
  * <p>ClassificationQualificationContract interface</p>
  *
  */
-public interface ClassificationQualificationContract extends ClassificationDerivedContract {
+public interface ClassificationQualificationContract extends PersistableBusinessObject {
 
 	/**
 	 * The QualificationType associated with the ClassificationQualification
@@ -55,6 +55,17 @@ public interface ClassificationQualificationContract extends ClassificationDeriv
 	 * @return qualificationValue for ClassificationQualification
 	 */
 	public String getQualificationValue();
+
+	/**
+	 * The Id of the Position Class associated with the ClassificationQualification
+	 * 
+	 * <p>
+	 * pmPositionClassId of a ClassificationQualification
+	 * <p>
+	 * 
+	 * @return pmPositionClassId for ClassificationQualification
+	 */
+	public String getPmPositionClassId();
 
 	/**
 	 * The the display order associated with the ClassificationQualification

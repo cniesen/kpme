@@ -15,21 +15,20 @@
  */
 package org.kuali.kpme.core.earncode.validation;
 
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class EarnCodeEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class EarnCodeEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
-        EarnCodeBo earnCode = (EarnCodeBo) pbo;
-        EarnCodeContract lastEarnCode = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode.getEarnCode(), TKUtils.END_OF_TIME);
+        EarnCode earnCode = (EarnCode) pbo;
+        EarnCode lastEarnCode = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode.getEarnCode(), TKUtils.END_OF_TIME);
         if (lastEarnCode != null && lastEarnCode.getEffectiveLocalDate() != null && earnCode.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastEarnCode.getEffectiveLocalDate().isAfter(earnCode.getEffectiveLocalDate());
         }

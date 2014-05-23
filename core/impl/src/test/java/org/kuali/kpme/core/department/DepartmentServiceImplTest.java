@@ -15,26 +15,24 @@
  */
 package org.kuali.kpme.core.department;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.service.HrServiceLocator;
-
-import java.util.List;
 
 @IntegrationTest
 public class DepartmentServiceImplTest extends CoreUnitTestCase {
 	
 	@Test
 	public void testSearchDepartments() throws Exception {
-		// This method is not used anywhere in the code, so comment it out for now
-		//List<Department> allResults = HrServiceLocator.getDepartmentService().getDepartments("admin", null, null, null, "Y", "N", "");
-		//Assert.assertEquals("Search returned the correct number of results.", 11, allResults.size());
+		List<Department> allResults = HrServiceLocator.getDepartmentService().getDepartments("admin", null, null, null, "Y", "N", "");
+		Assert.assertEquals("Search returned the wrong number of results.", 11, allResults.size());
 		
-		//List<Department> restrictedResults = HrServiceLocator.getDepartmentService().getDepartments("testuser6", null, null, null, "Y", "N", "");
-		//Assert.assertEquals("Search returned the wrong number of results.", 1, restrictedResults.size());
+		List<Department> restrictedResults = HrServiceLocator.getDepartmentService().getDepartments("testuser6", null, null, null, "Y", "N", "");
+		Assert.assertEquals("Search returned the wrong number of results.", 1, restrictedResults.size());
 	}
 
 }

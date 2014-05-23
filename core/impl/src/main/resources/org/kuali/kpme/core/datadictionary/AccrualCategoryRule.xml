@@ -23,16 +23,16 @@
 	<bean id="AccrualCategoryRule" parent="AccrualCategoryRule-parentBean" />
 
 	<bean id="AccrualCategoryRule-parentBean" abstract="true"
-		parent="KPMEHrBusinessObjectParent">
+		parent="BusinessObjectEntry">
 		<property name="businessObjectClass"
-			value="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo" />
+			value="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule" />
 		<property name="titleAttribute" value="id" />
 		<property name="objectLabel" value="Accrual Category Rule" />
 		<property name="lookupDefinition">
 			<ref bean="AccrualCategoryRule-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
+			<list>
 				<ref bean="AccrualCategoryRule-serviceUnitOfTime" />
 				<ref bean="AccrualCategoryRule-start" />
 				<ref bean="AccrualCategoryRule-end" />
@@ -48,6 +48,7 @@
 				<ref bean="AccrualCategoryRule-maxPayoutEarnCode" />
 				<ref bean="AccrualCategoryRule-maxUsage" />
 				<ref bean="AccrualCategoryRule-maxCarryOver" />
+				<ref bean="AccrualCategoryRule-active" />
 			</list>
 		</property>
 		<property name="relationships">
@@ -303,6 +304,17 @@
 		</property>
 		<property name="name" value="maxCarryOver" />
 		<property name="label" value="Max Carry Over" />
+	</bean>
+
+	<bean id="AccrualCategoryRule-active" parent="AccrualCategoryRule-active-parentBean" />
+	<bean id="AccrualCategoryRule-active-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
 	</bean>
 
 	<!--  Inquiry Definitions  -->

@@ -23,9 +23,9 @@
 	<bean id="PositionFunding" parent="PositionFunding-parentBean" />
 	<bean id="PositionFunding-parentBean" abstract="true"
 		parent="BusinessObjectEntry">
-		<property name="dataObjectClass" value="org.kuali.kpme.pm.position.funding.PositionFundingBo" />
+		<property name="dataObjectClass" value="org.kuali.kpme.pm.position.funding.PositionFunding" />
 		<property name="attributes">
-			<list merge="true">
+			<list>
 				<ref bean="PositionFunding-pmPositionFunctionId" />
 				<ref bean="PositionFunding-hrPositionId"/>
 				<ref bean="PositionFunding-chart" />
@@ -38,7 +38,9 @@
 				<ref bean="PositionFunding-percent" />
 				<ref bean="PositionFunding-amount" />
 				<ref bean="PositionFunding-priorityFlag" />
-
+				<ref bean="PositionFunding-effectiveDate" />
+				<ref bean="PositionFunding-active" />
+				
 			</list>
 		</property>
 		<property name="objectLabel" value="Position Funding" />
@@ -72,13 +74,11 @@
 	<bean id="PositionFunding-chart" parent="PositionFunding-chart-parentBean" />
 	<bean id="PositionFunding-chart-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Chart" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="2" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="chart" />
 		<property name="label" value="Chart" />
@@ -87,13 +87,11 @@
 	<bean id="PositionFunding-org" parent="PositionFunding-org-parentBean" />
 	<bean id="PositionFunding-org-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Org" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="org" />
 		<property name="label" value="Org" />
@@ -103,13 +101,11 @@
 	<bean id="PositionFunding-account-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Account" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="10" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="account" />
 		<property name="label" value="Account" />
@@ -118,13 +114,11 @@
 	<bean id="PositionFunding-subAccount" parent="PositionFunding-subAccount-parentBean" />
 	<bean id="PositionFunding-subAccount-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="SubAccount" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="5" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="subAccount" />
 		<property name="label" value="Sub Account" />
@@ -134,13 +128,11 @@
 	<bean id="PositionFunding-objectCode-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Obj Code" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="5" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="objectCode" />
 		<property name="label" value="Object Code" />
@@ -149,13 +141,11 @@
 	<bean id="PositionFunding-subObjectCode" parent="PositionFunding-subObjectCode-parentBean" />
 	<bean id="PositionFunding-subObjectCode-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="SubObj Code" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="3" />
+			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
 		<property name="name" value="subObjectCode" />
 		<property name="label" value="Sub Object Code" />
@@ -164,11 +154,9 @@
 	<bean id="PositionFunding-orgRefCode" parent="PositionFunding-orgRefCode-parentBean" />
 	<bean id="PositionFunding-orgRefCode-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="OrgRef Code" />
-        <property name="validCharactersConstraint">
-            <bean parent="AnyCharacterPatternConstraint">
-                <property name="allowWhitespace" value="false" />
-            </bean>
-        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern" />
+		</property>
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="20" />
 		</property>
@@ -223,6 +211,25 @@
 	<bean id="PositionFunding-priorityFlag-parentBean" abstract="true" 
 		parent="AttributeReferenceDummy-activeIndicator" p:label="Priority?">
 		<property name="name" value="priorityFlag" />
+	</bean>
+
+	<bean id="PositionFunding-effectiveDate" parent="PositionFunding-effectiveDate-parentBean" />
+	<bean id="PositionFunding-effectiveDate-parentBean"
+		abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" p:size="10" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>	
+
+	<bean id="PositionFunding-active" parent="PositionFunding-active-parentBean" />
+	<bean id="PositionFunding-active-parentBean" abstract="true"
+		parent="AttributeReferenceDummy-activeIndicator" p:label="Active?">
+		<property name="required" value="true" />
+		<property name="name" value="active" />
 	</bean>
 
 </beans>

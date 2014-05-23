@@ -15,29 +15,29 @@
  */
 package org.kuali.kpme.tklm.leave.transfer.validation;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
-import org.kuali.kpme.tklm.api.leave.timeoff.SystemScheduledTimeOffContract;
+import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
 import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.math.BigDecimal;
 
 public class BalanceTransferValidationUtils {
 
 	public static boolean validateTransfer(BalanceTransfer balanceTransfer) {
 		boolean isValid = true;
 		if(StringUtils.isNotEmpty(balanceTransfer.getSstoId())) {
-			return validateSstoTranser(balanceTransfer);
+			return isValid && validateSstoTranser(balanceTransfer) ;
 		}
 		String principalId = balanceTransfer.getPrincipalId();
 		LocalDate effectiveDate = balanceTransfer.getEffectiveLocalDate();
@@ -47,7 +47,7 @@ public class BalanceTransferValidationUtils {
 		
 		if(!ValidationUtils.validateAccrualCategory(fromAccrualCategory, effectiveDate)) {
 			GlobalVariables.getMessageMap().putError("balanceTransfer.fromAccrualCategory", "balanceTransfer.accrualcategory.exists");
-			isValid = false;
+			isValid &= false;
 		}
 		
 		if(!ValidationUtils.validateAccrualCategory(toAccrualCategory, effectiveDate)) {
@@ -187,7 +187,7 @@ public class BalanceTransferValidationUtils {
 		}
 		
 		//use override if one exists.
-        EmployeeOverrideContract maxTransferAmountOverride = LmServiceLocator.getEmployeeOverrideService().getEmployeeOverride(principalId, fromCat.getLeavePlan(), fromCat.getAccrualCategory(), "MTA", effectiveDate);
+		EmployeeOverride maxTransferAmountOverride = LmServiceLocator.getEmployeeOverrideService().getEmployeeOverride(principalId, fromCat.getLeavePlan(), fromCat.getAccrualCategory(), "MTA", effectiveDate);
 		if(ObjectUtils.isNotNull(maxTransferAmountOverride))
 			adjustedMaxTransferAmount = new BigDecimal(maxTransferAmountOverride.getOverrideValue());
 				
@@ -214,7 +214,7 @@ public class BalanceTransferValidationUtils {
 	
 	public static boolean validateSstoTranser(BalanceTransfer bt) {
 		// make sure from accrual category is consistent with the ssto's
-		SystemScheduledTimeOffContract ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(bt.getSstoId());
+		SystemScheduledTimeOff ssto = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOff(bt.getSstoId());
 		if(ssto == null) {
 			GlobalVariables.getMessageMap().putError("document.newMaintainableObject.fromAccrualCategory", "balanceTransfer.transferSSTO.sstoDoesNotExis", bt.getSstoId());
 			return false;

@@ -23,16 +23,18 @@
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<bean id="PositionQualifierType" parent="PositionQualifierType-parentBean"/>
- 	<bean id="PositionQualifierType-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
-	    <property name="dataObjectClass" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo"/>
+ 	<bean id="PositionQualifierType-parentBean" abstract="true" parent="BusinessObjectEntry">
+	    <property name="dataObjectClass" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType"/>
 	    <property name="attributes">
-	      <list merge="true">
+	      <list>
 	        <ref bean="PositionQualifierType-pmPstnQlfrTypeId"/>
+	        <ref bean="PositionQualifierType-effectiveDate"/>
 	        <ref bean="PositionQualifierType-code"/>
 	        <ref bean="PositionQualifierType-type"/>
 	        <ref bean="PositionQualifierType-descr"/>
 	        <ref bean="PositionQualifierType-typeValue"/>
 	        <ref bean="PositionQualifierType-selectValues"/>	
+	        <ref bean="PositionQualifierType-active"/>
 		 </list>
 	    </property>
 <!-- 	    <property name="collections"> -->
@@ -46,7 +48,6 @@
 <!-- Attribute Definitions -->  
 	 <bean id="PositionQualifierType-pmPstnQlfrTypeId" parent="PositionQualifierType-pmPstnQlfrTypeId-parentBean"/>
 	 <bean id="PositionQualifierType-pmPstnQlfrTypeId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60"/>
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
@@ -58,13 +59,24 @@
 	    <property name="label" value="Position Qualifier Type Id"/>
 	 </bean>   
 	 
+	<bean id="PositionQualifierType-effectiveDate" parent="PositionQualifierType-effectiveDate-parentBean" />
+	<bean id="PositionQualifierType-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Effective Date" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
 	<bean id="PositionQualifierType-code" parent="PositionQualifierType-code-parentBean" />
 	<bean id="PositionQualifierType-code-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50"/>
 		<property name="required" value="true" />
 		<property name="shortLabel" value="Code" />
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="50" />
+			<bean parent="Uif-TextControl" p:size="40" />
 		</property>
 		<property name="name" value="code" />
 		<property name="label" value="Code" />
@@ -73,10 +85,9 @@
 
 	<bean id="PositionQualifierType-type" parent="PositionQualifierType-type-parentBean" />
 	<bean id="PositionQualifierType-type-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="50"/>
 		<property name="required" value="yes" />
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="50" />
+			<bean parent="Uif-TextControl" p:size="40" />
 		</property>
 		<property name="name" value="type" />
 		<property name="label" value="Type" />
@@ -85,7 +96,6 @@
 
 	<bean id="PositionQualifierType-descr" parent="PositionQualifierType-descr-parentBean" />
 	<bean id="PositionQualifierType-descr-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100"/>
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -111,7 +121,6 @@
 
 	<bean id="PositionQualifierType-selectValues" parent="PositionQualifierType-selectValues-parentBean" />
 	<bean id="PositionQualifierType-selectValues-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100"/>
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -121,6 +130,13 @@
 		<property name="description" value="Select Values" />
 	</bean>
 
+    <bean id="PositionQualifierType-active" parent="PositionQualifierType-active-parentBean"/>
+ 	<bean id="PositionQualifierType-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
+   		<property name="name" value="active"/>
+  	</bean> 
+
+  	
+  	 
 
 <!--*************************************************************************** 
 							Views
@@ -128,25 +144,26 @@
   	
   <!-- Position Qualifier Type Lookup View -->
  
-  <bean id="PositionQualifierType-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="PositionQualifierType-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Qualifier Type Lookup" />
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo" />
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType" />
+    <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />  <!--KPME-2699-->
     <property name="criteriaFields">
-      <list merge="true">       
+      <list>
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="code" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="type" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="descr" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="typeValue" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="selectValues" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N" />
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="true"/>
       </list>
     </property>
     <property name="resultFields">
       <list>
      	<bean parent="Uif-DataField" p:propertyName="code">
         	<property name="inquiry">
-      			 <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo" 
+      			 <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType" 
        			 	p:inquiryParameters="pmPstnQlfrTypeId:pmPstnQlfrTypeId"/>
   			</property>
         </bean>
@@ -163,7 +180,7 @@
  <!-- Position Qualifier Type Inquiry View -->
   <bean id="PositionQualifierType-InquiryView" parent="Uif-InquiryView">
     <property name="headerText" value="Position Qualifier Type Inquiry"/>
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo"/>
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType"/>
     <property name="singlePageView" value="true"/>
     <property name="items">
       <list>
@@ -178,7 +195,6 @@
 			       	<bean parent="Uif-DataField" p:propertyName="typeValue" />
 			       	<bean parent="Uif-DataField" p:propertyName="selectValues" />
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Qualifier Type Inquiry"/>
@@ -189,9 +205,9 @@
   
 <!--  Position Qualifier Type Maintenance View -->
   <bean id="PositionQualifierType-MaintenanceView" parent="PositionQualifierType-MaintenanceView-parentBean"/>
-  <bean id="PositionQualifierType-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionQualifierType-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Qualifier Type Maintenance"/>
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo"/>
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType"/>
     <property name="items">
       <list merge="true">
         <bean parent="Uif-MaintenanceGridSection">
@@ -232,7 +248,7 @@
 <!--    				</bean> -->
 		         	
 			         	 <bean parent="Uif-InputField" p:propertyName="selectValues"
-			         	 		p:constraintText="Required if Type Value is Select.  Comma delimited list of qualification values." >
+			         	 		p:constraintText="Comma delimited list of qualification values." >
 <!-- 			         	 		 p:disabled="@{#typeValue eq 'S'}"> -->
 <!-- 						       	<bean parent="Uif-QuickFinder" p:dataObjectClassName="org.kuali.kpme.pm.pstnqlfctnvl.PositionQualificationValue"  -->
 <!-- 						       		p:fieldConversions="vlName:selectValues"/> -->
@@ -245,21 +261,20 @@
 								          <bean parent="WhenConstraint">
 								              <property name="values">
 								                  <list>
-								                      <value>Select</value>
+								                      <value>S</value>
 								                  </list>
 								              </property>
 								              <property name="constraint">
 								                  <bean parent="RequiredConstraint" />
 								              </property>
+<!-- 								              <property name="disabled"> -->
+<!-- 								              	<value>false</value> -->
+<!-- 								              </property> -->
 								          </bean>
 							         	 </list>
 							         </property>
 						         </bean>
 					        </property>
-					        <property name="control">
-								<bean parent="Uif-TextControl"
-									p:disabled="@{document.newMaintainableObject.dataObject.typeValue eq 'Text' or document.newMaintainableObject.dataObject.typeValue eq 'Number'}" />
-							</property>
 				        </bean>
 		       
 		        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true"/>

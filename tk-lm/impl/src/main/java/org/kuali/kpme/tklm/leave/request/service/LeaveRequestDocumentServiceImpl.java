@@ -16,25 +16,32 @@
 package org.kuali.kpme.tklm.leave.request.service;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.request.LeaveRequestActionValue;
 import org.kuali.kpme.tklm.leave.request.dao.LeaveRequestDocumentDao;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveRequestDocument;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.WorkflowDocument;
-import org.kuali.rice.kew.api.action.*;
+import org.kuali.rice.kew.api.action.ActionTaken;
+import org.kuali.rice.kew.api.action.ActionType;
+import org.kuali.rice.kew.api.action.DocumentActionParameters;
+import org.kuali.rice.kew.api.action.ValidActions;
+import org.kuali.rice.kew.api.action.WorkflowDocumentActionsService;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
@@ -43,11 +50,6 @@ import org.kuali.rice.krad.bo.DocumentHeader;
 import org.kuali.rice.krad.exception.UnknownDocumentIdException;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class LeaveRequestDocumentServiceImpl implements LeaveRequestDocumentService {
     private static final Logger LOG = Logger.getLogger(LeaveRequestDocumentServiceImpl.class);
@@ -246,20 +248,21 @@ public class LeaveRequestDocumentServiceImpl implements LeaveRequestDocumentServ
         List<String> salGroups = new ArrayList<String>();
         CalendarEntry ce = getCalendarEntry(leaveBlock);
         if (ce != null) {
-            List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAllAssignmentsByCalEntryForLeaveCalendar(leaveBlock.getPrincipalId(), ce);
+            List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(leaveBlock.getPrincipalId(), ce);
 
             for(Assignment assign: assignments){
                 if(!workAreas.contains(assign.getWorkArea())){
                     workAreas.add(assign.getWorkArea());
                 }
                 Job job = HrServiceLocator.getJobService().getJob(assign.getPrincipalId(), assign.getJobNumber(), leaveBlock.getLeaveLocalDate());
+
                 if(!salGroups.contains(job.getHrSalGroup())){
                     salGroups.add(job.getHrSalGroup());
                 }
             }
         }
         for(Long workArea : workAreas){
-            WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkArea(workArea, leaveBlock.getLeaveLocalDate());
+            WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, leaveBlock.getLeaveLocalDate());
             if(deptToListOfWorkAreas.containsKey(workAreaObj.getDept())){
                 List<Long> deptWorkAreas = deptToListOfWorkAreas.get(workAreaObj.getDept());
                 deptWorkAreas.add(workArea);
@@ -285,14 +288,14 @@ public class LeaveRequestDocumentServiceImpl implements LeaveRequestDocumentServ
             sb.append("<SALGROUP value=\""+salGroup+"\"/>");
         }
 
-        sb.append("<PAYENDDATE value=\""+leaveBlock.getLeaveLocalDate()+"\"/>");
+        sb.append("<PAYENDDATE value=\""+leaveBlock.getLeaveDate()+"\"/>");
         sb.append("</").append(className).append("></applicationContent></documentContext>");
 
         return sb.toString();
     }
 
     private CalendarEntry getCalendarEntry(LeaveBlock leaveBlock) {
-        return  HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveBlock.getCalendarId());
+        return HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveBlock.getCalendarId());
     }
     
     public List<String> getApproverIdList(String documentId) {

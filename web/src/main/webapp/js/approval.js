@@ -176,20 +176,19 @@ $(document).ready(function () {
 
     // display warning and notes
     //$(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({ effect:'slide'});
-    /*$(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
-        offset: [0, 120],
-        effect : "slide"
-    });*/
+//    $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
+//        offset: [0, 120],
+//        effect : "slide"
+//    });
     
-    // display warning and notes
-    var tooltip = $(" .approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
+    var tooltip = $(".approvals-warning, .approvals-note, .approvals-missedpunch").tooltip({
         events: {
           def:     ",",
           tooltip: "click,mouseleave"
         },
        offset: [0,120],
        effect: 'slide'
-    }).dynamic({ bottom: { direction: 'down', bounce: true } });
+    });
 
     tooltip.click(function() {
         var tip = $(this).data("tooltip");
@@ -198,6 +197,7 @@ $(document).ready(function () {
         else
             tip.show();
     });
+    
 
 //    $('span[id^=showDetailButton]').click(function (e) {
 //

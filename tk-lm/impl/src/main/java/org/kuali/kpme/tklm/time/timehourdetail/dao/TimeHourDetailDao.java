@@ -17,20 +17,20 @@ package org.kuali.kpme.tklm.time.timehourdetail.dao;
 
 import java.util.List;
 
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 
 
 public interface TimeHourDetailDao{
 
-	public TimeHourDetailBo getTimeHourDetail(String timeHourDetailId);
+	public TimeHourDetail getTimeHourDetail(String timeHourDetailId);
 
-	public void saveOrUpdate(List<TimeHourDetailBo> timeHourDetails);
+	public void saveOrUpdate(List<TimeHourDetail> timeHourDetails);
 
-	public void saveOrUpdate(TimeHourDetailBo timeHourDetail);
+	public void saveOrUpdate(TimeHourDetail timeHourDetail);
 
     public void remove(String timeBlockId);
     
-    public List<TimeHourDetailBo> getTimeHourDetailsForTimeBlock(String timeBlockId);
+    public List<TimeHourDetail> getTimeHourDetailsForTimeBlock(String timeBlockId);
 
     void removeById(String timeHourDetailId);
 }

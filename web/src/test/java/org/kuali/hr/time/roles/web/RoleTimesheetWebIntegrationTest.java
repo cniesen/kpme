@@ -15,10 +15,11 @@
  */
 package org.kuali.hr.time.roles.web;
 
-import com.gargoylesoftware.htmlunit.html.DomElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.apache.commons.collections.CollectionUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -26,26 +27,27 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kuali.hr.time.util.TimeDetailTestUtils;
 import org.kuali.hr.time.workflow.TimesheetWebTestBase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.detail.web.TimeDetailActionFormBase;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.rice.krad.util.GlobalVariables;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.DomElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 /**
  * See: https://wiki.kuali.org/display/KPME/Role+Security+Grid
@@ -79,7 +81,7 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
         String userId = "fred";
         DateTimeZone dateTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(userId));
         
-        CalendarEntry pcd =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(userId, asOfDate);
+        CalendarEntry pcd = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(userId, asOfDate);
         Assert.assertNotNull("No PayCalendarDates", pcd);
         fredsDocument = TkServiceLocator.getTimesheetService().openTimesheetDocument(userId, pcd);
         String tdocId = fredsDocument.getDocumentId();
@@ -106,7 +108,7 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
         final DateTime start = new DateTime(2011, 3, 2, 8, 0, 0, 0, dateTimeZone);
         final DateTime end = new DateTime(2011, 3, 2, 13, 0, 0, 0, dateTimeZone);
 
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
 
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
@@ -135,7 +137,7 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
                     put("startNoTz", start.toString("yyyy-MM-dd'T'HH:mm:ss"));
                     put("endNoTz", end.toString("yyyy-MM-dd'T'HH:mm:ss"));
                     put("title", "SDR1 Work Area");
-                    put("assignment", "IU-BL_30_30_30");
+                    put("assignment", "30_30_30");
                 }}
         ));
 
@@ -186,26 +188,16 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
 
         Assert.assertEquals("There should be one existing time block.", 1, fredsDocument.getTimeBlocks().size());
 
-
-        String targetedTimesheetUrl = getTargetedTimesheetDocumentUrl(tdocId,"fred");
-        HrContext.setTargetPrincipalId("fred");
-        page = getWebClient().getPage(targetedTimesheetUrl);
-        Assert.assertNotNull(page);
-
-        DateTimeZone dateTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone("fred"));
+        DateTimeZone dateTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(userId));
         final DateTime start = new DateTime(2011, 3, 2, 13, 0, 0, 0, dateTimeZone);
         final DateTime end = new DateTime(2011, 3, 2, 18, 0, 0, 0, dateTimeZone);
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true);
 
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
-
-        if (CollectionUtils.isNotEmpty(errors)) {
-            for (String error : errors) {
-                LOG.error(error);
-            }
-        }
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
-
+        String targetedTimesheetUrl = getTargetedTimesheetDocumentUrl(tdocId,"fred");
+        page = getWebClient().getPage(targetedTimesheetUrl);
+        Assert.assertNotNull(page);
         String submitDetailsUrl = BASE_DETAIL_URL + tdocId;
         //The following page does not contain timeBlockString data after KPME-2959.
         page = TimeDetailTestUtils.submitTimeDetails(getWebClient(), submitDetailsUrl, tdaf);
@@ -229,7 +221,7 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
                     put("startNoTz", start.toString("yyyy-MM-dd'T'HH:mm:ss"));
                     put("endNoTz", end.toString("yyyy-MM-dd'T'HH:mm:ss"));
                     put("title", "SDR1 Work Area");
-                    put("assignment", "IU-BL_30_30_30");
+                    put("assignment", "30_30_30");
                 }}
         ));
     }
@@ -250,18 +242,12 @@ public class RoleTimesheetWebIntegrationTest extends TimesheetWebTestBase {
         EarnCode earnCode = earnCodes.get(0);
 
         Assert.assertEquals("There should be one existing time block.", 1, fredsDocument.getTimeBlocks().size());
-        HrContext.setTargetPrincipalId("fred");
-        DateTimeZone dateTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone("fred"));
+
+        DateTimeZone dateTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(userId));
         DateTime start = new DateTime(2011, 3, 4, 8, 0, 0, 0, dateTimeZone);
         DateTime end = new DateTime(2011, 3, 4, 13, 0, 0, 0, dateTimeZone);
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(fredsDocument, assignment, earnCode, start, end, null, false, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
-        if (CollectionUtils.isNotEmpty(errors)) {
-            for (String error : errors) {
-                LOG.error(error);
-            }
-        }
-        KPMERole[] roleNames = KPMERole.values();
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
         page = TimeDetailTestUtils.submitTimeDetails(getWebClient(), userId, getTimesheetDocumentUrl(tdocId), tdaf);
         Assert.assertNotNull(page);

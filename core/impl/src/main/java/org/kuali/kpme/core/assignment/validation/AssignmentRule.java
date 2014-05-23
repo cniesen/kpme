@@ -15,117 +15,114 @@
  */
 package org.kuali.kpme.core.assignment.validation;
 
+import java.sql.Timestamp;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.paytype.PayType;
-import org.kuali.kpme.core.api.task.Task;
-import org.kuali.kpme.core.api.task.TaskContract;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.account.AssignmentAccount;
+import org.kuali.kpme.core.block.CalendarBlock;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.kfs.coa.businessobject.Account;
+import org.kuali.kpme.core.kfs.coa.businessobject.ObjectCode;
+import org.kuali.kpme.core.kfs.coa.businessobject.SubObjectCode;
+import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.task.Task;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.springframework.web.servlet.mvc.LastModified;
 
 @SuppressWarnings("deprecation")
 public class AssignmentRule extends MaintenanceDocumentRuleBase {
 
-	protected boolean validateWorkArea(AssignmentBo assignment) {
+	protected boolean validateWorkArea(Assignment assignment) {
 		boolean valid = true;
 		if (assignment.getWorkArea() != null) {
 			if (!ValidationUtils.validateWorkArea(assignment.getWorkArea(),
 					assignment.getEffectiveLocalDate())) {
-				this.putFieldError("dataObject.workArea", "error.existence", "workArea '"
+				this.putFieldError("workArea", "error.existence", "workArea '"
 						+ assignment.getWorkArea() + "'");
 				valid = false;
 			} else {
 				int count = HrServiceLocator.getWorkAreaService().getWorkAreaCount(assignment.getDept(), assignment.getWorkArea());
 				valid = (count > 0);
 				if (!valid) {
-					this.putFieldError("dataObject.workArea", "dept.workarea.invalid.sync");
+					this.putFieldError("workArea", "dept.workarea.invalid.sync");
 				}
 			}
 		}
 		return valid;
 	}
 	
-	protected boolean validateTask(AssignmentBo assignment) {
-		boolean valid = false;
+	protected boolean validateTask(Assignment assignment) {
+		boolean valid = true;
 		//task by default is zero so if non zero validate against existing taskss
 		if (assignment.getTask() != null && !assignment.getTask().equals(0L)) {
-//			TaskContract task = HrServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveLocalDate());
-			String workarea = "";
-			if(assignment.getWorkArea() != null) {
-				workarea = assignment.getWorkArea().toString();
-			}
-			List<Task> tasks = HrServiceLocator.getTaskService().getTasks(assignment.getTask().toString(), null, workarea, null, assignment.getEffectiveLocalDate());
-			for(Task task : tasks) {
-				if(workarea.equals(task.getWorkArea().toString())) {
-					valid = true;
-					return valid;
+			Task task = HrServiceLocator.getTaskService().getTask(assignment.getTask(), assignment.getEffectiveLocalDate());
+			if(task != null) {
+				if(task.getWorkArea() == null || !task.getWorkArea().equals(assignment.getWorkArea())) {
+					this.putFieldError("task", "task.workarea.invalid.sync");
+					valid = false;
 				}
-			}
-		} else {
-			valid = true;
-			return valid;
+			} 
 		}
-		this.putFieldError("dataObject.task", "task.workarea.invalid.sync");
 		return valid;
 	}
 
-	protected boolean validateDepartment(AssignmentBo assignment) {
+	protected boolean validateDepartment(Assignment assignment) {
 		boolean valid = true;
 		if (assignment.getDept() != null) {
 				int count = HrServiceLocator.getJobService().getJobCount(null, assignment.getJobNumber(), assignment.getDept());
 				valid = (count > 0);
 				if (!valid) {
-					this.putFieldError("dataObject.dept", "dept.jobnumber.invalid.sync");
+					this.putFieldError("dept", "dept.jobnumber.invalid.sync");
 				}
 			 
 		}
 		return valid;
 	}
 
-	protected boolean validateJob(AssignmentBo assignment) {
+	protected boolean validateJob(Assignment assignment) {
 		boolean valid = false;
 		LOG.debug("Validating job: " + assignment.getPrincipalId() +" Job number: "+assignment.getJobNumber());
-		JobContract job = HrServiceLocator.getJobService().getJob(
+		Job job = HrServiceLocator.getJobService().getJob(
 				assignment.getPrincipalId(), assignment.getJobNumber(),
 				assignment.getEffectiveLocalDate(), false);
+		// Job job =
+		// KNSServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Job.class,
+		// assignment.getJob().getHrJobId());
 		if (job != null) {
 			valid = true;
 
 			LOG.debug("found job.");
 		} else {
-			this.putFieldError("dataObject.jobNumber", "error.existence", "jobNumber '"
+			this.putFieldError("jobNumber", "error.existence", "jobNumber '"
 					+ assignment.getJobNumber() + "'");
 		}
 		return valid;
 	}
 
-	protected boolean validatePercentagePerEarnCode(AssignmentBo assignment) {
+	protected boolean validatePercentagePerEarnCode(Assignment assignment) {
 		boolean valid = true;
 		LOG.debug("Validating PercentagePerEarnCode: ");
-		List<AssignmentAccountBo> assignmentAccounts = assignment
+		List<AssignmentAccount> assignmentAccounts = assignment
 				.getAssignmentAccounts();
 		Set<String> invalidEarnCodes = null;
 		if (assignmentAccounts != null && assignment.isActive()) {
 			Map<String, Integer> earnCodePercent = new HashMap<String, Integer>();
-			for (AssignmentAccountBo account : assignmentAccounts) {
+			for (AssignmentAccount account : assignmentAccounts) {
 				if (account.getPercent() != null && account.isActive()) {
 					int percent = 0;
 					if (earnCodePercent.containsKey(account.getEarnCode())) {
@@ -149,9 +146,9 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			}
 			if (!valid) {
 				int index = 0;
-				for (AssignmentAccountBo account : assignmentAccounts) {
+				for (AssignmentAccount account : assignmentAccounts) {
 					if (invalidEarnCodes.contains(account.getEarnCode())) {
-						this.putFieldError("dataObject.assignmentAccounts[" + index
+						this.putFieldError("assignmentAccounts[" + index
 								+ "].percent", "error.percentage.earncode");
 					}
 					index++;
@@ -161,10 +158,10 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	protected boolean validateEarnCode(AssignmentAccountBo assignmentAccount, LocalDate assignmentEffectiveDate) {
+	protected boolean validateEarnCode(AssignmentAccount assignmentAccount, LocalDate assignmentEffectiveDate) {
 		boolean valid = false;
 		LOG.debug("Validating EarnCode: " + assignmentAccount.getEarnCode());
-		EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(
+		EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(
 				assignmentAccount.getEarnCode(), assignmentEffectiveDate);
 		if (earnCode != null) {
 
@@ -177,12 +174,12 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 	
-	protected boolean validateRegPayEarnCode(AssignmentBo assignment) {
+	protected boolean validateRegPayEarnCode(Assignment assignment) {
 		boolean valid = false;
 		LOG.debug("Validating Regular pay EarnCodes: " + assignment.getAssignmentAccounts().size());
-		for(AssignmentAccountBo assignmentAccount : assignment.getAssignmentAccounts()){
+		for(AssignmentAccount assignmentAccount : assignment.getAssignmentAccounts()){
 			if(assignment.getJobNumber()!=null && assignment.getPrincipalId()!=null){
-				JobContract job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
+				Job job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
 				if(job !=null){
 					PayType payType = HrServiceLocator.getPayTypeService().getPayType(job.getHrPayType(), assignment.getEffectiveLocalDate());
 					if(StringUtils.equals(assignmentAccount.getEarnCode(), payType.getRegEarnCode())){
@@ -194,26 +191,26 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			}
 		}
 		if(!valid) {
-			this.putFieldError("dataObject.assignmentAccounts", "earncode.regular.pay.required");
+			this.putFieldError("assignmentAccounts", "earncode.regular.pay.required");
 		}
 		return valid;
 	}
 	
 	// KPME-2780 This is to validate accounts in the collection 
-	protected boolean validateAccounts(AssignmentBo assignment) {
+	protected boolean validateAccounts(Assignment assignment) {
 		boolean valid = false;
 		LOG.debug("Validating Accounts: " + assignment.getAssignmentAccounts().size());
-		for(AssignmentAccountBo assignmentAccount : assignment.getAssignmentAccounts()){
+		for(AssignmentAccount assignmentAccount : assignment.getAssignmentAccounts()){
 			valid = ValidationUtils.validateAccount(assignmentAccount.getFinCoaCd(), assignmentAccount.getAccountNbr());
 			if(!valid) {
-				this.putFieldError("dataObject.assignmentAccounts", "error.existence", "Account Number '" + assignmentAccount.getAccountNbr() + "'");
+				this.putFieldError("assignmentAccounts", "error.existence", "Account Number '" + assignmentAccount.getAccountNbr() + "'");
 				break;
 			}
 		}
 		return valid;
 	}
 
-	protected boolean validateAccount(AssignmentAccountBo assignmentAccount) {
+	protected boolean validateAccount(AssignmentAccount assignmentAccount) {
 		boolean valid = false;
 		LOG.debug("Validating Account: " + assignmentAccount.getAccountNbr());
 		valid = ValidationUtils.validateAccount(assignmentAccount.getFinCoaCd(),assignmentAccount.getAccountNbr());
@@ -224,7 +221,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	private boolean validateSubAccount(AssignmentAccountBo assignmentAccount) {
+	private boolean validateSubAccount(AssignmentAccount assignmentAccount) {
 		boolean valid = false;
 		LOG.debug("Validating Sub-Account: " + assignmentAccount.getSubAcctNbr());
 		valid = ValidationUtils.validateSubAccount(assignmentAccount.getSubAcctNbr(),assignmentAccount.getAccountNbr(), assignmentAccount.getFinCoaCd());
@@ -235,7 +232,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	protected boolean validateObjectCode(AssignmentAccountBo assignmentAccount, LocalDate assignmentEffectiveDate) {
+	protected boolean validateObjectCode(AssignmentAccount assignmentAccount, LocalDate assignmentEffectiveDate) {
 		boolean valid = false;
 		LOG.debug("Validating ObjectCode: "
 				+ assignmentAccount.getFinObjectCd());
@@ -249,7 +246,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	protected boolean validateSubObjectCode(AssignmentAccountBo assignmentAccount, LocalDate assignmentEffectiveDate) {
+	protected boolean validateSubObjectCode(AssignmentAccount assignmentAccount, LocalDate assignmentEffectiveDate) {
 		boolean valid = false;
 		LOG.debug("Validating SubObjectCode: "
 				+ assignmentAccount.getFinSubObjCd());
@@ -269,7 +266,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 	
-	protected boolean validateHasAccounts(AssignmentBo assign){
+	protected boolean validateHasAccounts(Assignment assign){
 		if(assign.getAssignmentAccounts().isEmpty()){
 			this.putGlobalError("error.assign.must.have.one.or.more.account");
 			return false;
@@ -277,18 +274,18 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return true;
 	}
 	
-	protected boolean validateOnePrimaryAssignment(AssignmentBo assignment, AssignmentBo oldAssignment) {
+	protected boolean validateOnePrimaryAssignment(Assignment assignment, Assignment oldAssignment) {
 		if (assignment.isPrimaryAssign()) {
 			//do not block editing of previous primary assignment
 			if(oldAssignment!=null && oldAssignment.isPrimaryAssign()){
 				return true;
 			}
-			JobContract job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
+			Job job = HrServiceLocator.getJobService().getJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate(), false);
 			if(job != null && job.isEligibleForLeave()) {
 				List<Assignment> assignList = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(assignment.getPrincipalId(), assignment.getJobNumber(), assignment.getEffectiveLocalDate());
 				for(Assignment anAssignment : assignList) {
 					if(anAssignment != null && anAssignment.isPrimaryAssign()) {
-						this.putFieldError("dataObject.primaryAssign", "error.primary.assignment.exists.for.leaveJob", assignment.getJobNumber().toString());
+						this.putFieldError("primaryAssign", "error.primary.assignment.exists.for.leaveJob", assignment.getJobNumber().toString());
 						return false;
 					}
 				}
@@ -297,26 +294,25 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		return true;
 	}
 	
-	protected boolean validateActiveFlag(AssignmentBo assign){
-        Assignment assignment = AssignmentBo.to(assign);
-		DateTime latestTimeEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assignment,"Time");
+	protected boolean validateActiveFlag(Assignment assign){
+		DateTime latestTimeEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assign,"Time");
 		
 		if(latestTimeEndTimestamp != null) {
-			LocalDate assignmentEffectiveDate = assign.getEffectiveLocalDate();
+			LocalDate assignmentEffectiveDate = LocalDate.fromDateFields(assign.getEffectiveDate());
 			LocalDate latestTimeEndTimestampLocalDate = latestTimeEndTimestamp.toLocalDate();
 			 
-			if ( !assign.isActive() && !assignmentEffectiveDate.isAfter(latestTimeEndTimestampLocalDate) ){
+			if ( !assign.isActive() && assignmentEffectiveDate.isBefore(latestTimeEndTimestampLocalDate) ){
 				this.putFieldError("active", "error.assignment.timeblock.existence", latestTimeEndTimestampLocalDate.toString());
 				return false;
 			}
 		}
 		
-		DateTime latestLeaveEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assignment,"Leave");
+		DateTime latestLeaveEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assign,"Leave");
 		if(latestLeaveEndTimestamp!=null) {
-			LocalDate assignmentEffectiveDate = assign.getEffectiveLocalDate();
+			LocalDate assignmentEffectiveDate = LocalDate.fromDateFields(assign.getEffectiveDate());
 			LocalDate latestLeaveEndTimestampLocalDate = latestLeaveEndTimestamp.toLocalDate();
 			 
-			if ( !assign.isActive() && !assignmentEffectiveDate.isAfter(latestLeaveEndTimestampLocalDate) ){
+			if ( !assign.isActive() && assignmentEffectiveDate.isBefore(latestLeaveEndTimestampLocalDate) ){
 				this.putFieldError("active", "error.assignment.leaveblock.existence", latestLeaveEndTimestampLocalDate.toString());
 				return false;
 			}
@@ -334,9 +330,9 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Assignment");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
-		if (pbo instanceof AssignmentBo) {
-			AssignmentBo assignment = (AssignmentBo) pbo;
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		if (pbo instanceof Assignment) {
+			Assignment assignment = (Assignment) pbo;
 			if (assignment != null) {
 				valid = true;
 				valid &= this.validateWorkArea(assignment);
@@ -348,17 +344,11 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 				valid &= this.validateActiveFlag(assignment);
 				if(!assignment.getAssignmentAccounts().isEmpty()) {
 					valid &= this.validateRegPayEarnCode(assignment);
-//					valid &= this.validateAccounts(assignment); // KPME-2780
-					// Validate Assignment Accounts
-					for (ListIterator<? extends AssignmentAccountBo> iterator =  assignment.getAssignmentAccounts().listIterator() ; iterator.hasNext();){
-						int index = iterator.nextIndex();
-						AssignmentAccountBo assignmentAccountBo = iterator.next();
-						valid &= this.validateAssignmentAccount(assignmentAccountBo, assignment, index);
-					}
+					valid &= this.validateAccounts(assignment); // KPME-2780
 				}
 				// only allow one primary assignment for the leave eligible job
 				if(assignment.isPrimaryAssign()) {
-					AssignmentBo oldAssignment = (AssignmentBo) this.getOldDataObject();
+					Assignment oldAssignment = (Assignment) this.getOldBo();
 					valid &= this.validateOnePrimaryAssignment(assignment, oldAssignment);
 				}
 			}
@@ -373,19 +363,19 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 			PersistableBusinessObject line) {
 		boolean valid = false;
 		LOG.debug("entering custom add assignment account business rules");
-		PersistableBusinessObject assignmentPbo = (PersistableBusinessObject) this.getNewDataObject();
+		PersistableBusinessObject assignmentPbo = (PersistableBusinessObject) this.getNewBo();
 		PersistableBusinessObject pbo = line;
-		if (pbo instanceof AssignmentAccountBo) {
-			AssignmentAccountBo assignmentAccount = (AssignmentAccountBo) pbo;
+		if (pbo instanceof AssignmentAccount) {
+			AssignmentAccount assignmentAccount = (AssignmentAccount) pbo;
 			if (assignmentAccount != null) {
-				if(assignmentPbo instanceof AssignmentBo) {
-					AssignmentBo assignment = (AssignmentBo) assignmentPbo;
+				if(assignmentPbo instanceof Assignment) {
+					Assignment assignment = (Assignment) assignmentPbo;
 					valid = true;
 					valid &= this.validateEarnCode(assignmentAccount, assignment.getEffectiveLocalDate());
 					valid &= this.validateAccount(assignmentAccount);
 					valid &= this.validateObjectCode(assignmentAccount, assignment.getEffectiveLocalDate());
 					valid &= this.validateSubObjectCode(assignmentAccount, assignment.getEffectiveLocalDate());
-					if(assignmentAccount.getSubAcctNbr() != null && !assignmentAccount.getSubAcctNbr().isEmpty()) {
+					if(assignmentAccount.getSubAcctNbr() != null) {
 						valid &= this.validateSubAccount(assignmentAccount);
 					}
 				}
@@ -393,52 +383,5 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 		}
 		return valid;
 	}
-	
-	
-	private boolean validateAssignmentAccount(AssignmentAccountBo assignmentAccount, AssignmentBo assignmentObj, int index) {
-		boolean isValid = true;
-		String prefix = "assignmentAccounts";
-		String propertyNamePrefix = prefix + "[" + index + "].";
-		if(StringUtils.isNotEmpty(assignmentAccount.getEarnCode())) {
-			boolean valid = ValidationUtils.validateEarnCode(assignmentAccount.getEarnCode(), assignmentObj.getEffectiveLocalDate());
-			if(!valid) {
-				this.putFieldError(propertyNamePrefix + "earnCode","error.existence", "earn code '"+ assignmentAccount.getEarnCode() + "'");
-				isValid = false;
-			}
-		}
-		if(StringUtils.isNotEmpty(assignmentAccount.getAccountNbr())) {
-			boolean valid = ValidationUtils.validateAccount(assignmentAccount.getFinCoaCd(),assignmentAccount.getAccountNbr());
-			if(!valid) {
-				this.putFieldError(propertyNamePrefix + "accountNbr","error.existence", "Account Number '"+ assignmentAccount.getAccountNbr() + "'");
-				isValid = false;
-			}
-		}
-		if(StringUtils.isNotEmpty(assignmentAccount.getFinObjectCd())) {
-			boolean valid = ValidationUtils.validateObjectCode(assignmentAccount.getFinObjectCd(),assignmentAccount.getFinCoaCd(),null);
-			if (!valid) {
-				this.putFieldError(propertyNamePrefix + "finObjectCd","error.existence", "Object Code '"+ assignmentAccount.getFinObjectCd() + "'");
-				isValid = false;
-			}			
-		}
-		if (StringUtils.isNotEmpty(assignmentAccount.getFinSubObjCd())) {
-			boolean valid = ValidationUtils.validateSubObjectCode(String.valueOf(assignmentObj.getEffectiveLocalDate().getYear()),assignmentAccount.getFinCoaCd(),
-					assignmentAccount.getAccountNbr(), assignmentAccount.getFinObjectCd(), assignmentAccount.getFinSubObjCd());
-			if (!valid) {
-				this.putFieldError(propertyNamePrefix + "finSubObjCd","error.existence", "SubObject Code '"+ assignmentAccount.getFinSubObjCd() + "'");
-				isValid = false;
-			}
-		} 
-		if(assignmentAccount.getSubAcctNbr() != null && StringUtils.isNotEmpty(assignmentAccount.getSubAcctNbr())) {
-			boolean valid = ValidationUtils.validateSubAccount(assignmentAccount.getSubAcctNbr(),assignmentAccount.getAccountNbr(), assignmentAccount.getFinCoaCd());
-			if (!valid) {
-				this.putFieldError(propertyNamePrefix + "subAcctNbr", "error.existence", "Sub-Account Number '"+ assignmentAccount.getSubAcctNbr() + "'");
-				isValid = false;
-			}
-		}
-		
-		return isValid;
-	}
-    
 
-	
 }

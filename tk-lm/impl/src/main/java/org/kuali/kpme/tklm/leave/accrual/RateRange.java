@@ -15,18 +15,18 @@
  */
 package org.kuali.kpme.tklm.leave.accrual;
 
-import org.joda.time.Interval;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.tklm.api.leave.accrual.RateRangeContract;
-import org.kuali.kpme.tklm.api.leave.timeoff.SystemScheduledTimeOffContract;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.Interval;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.tklm.api.leave.accrual.RateRangeContract;
+import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
 
 public class RateRange implements RateRangeContract {
 	private Interval range;
@@ -38,7 +38,7 @@ public class RateRange implements RateRangeContract {
 	private LeavePlan leavePlan;
 	private List<AccrualCategory> acList = new ArrayList<AccrualCategory>();
 	private List<AccrualCategoryRule> acRuleList = new ArrayList<AccrualCategoryRule>();
-	private SystemScheduledTimeOffContract sysScheTimeOff;
+	private SystemScheduledTimeOff sysScheTimeOff;
 	private String leaveCalendarDocumentId;
 	private String primaryLeaveAssignmentId;
 	
@@ -107,10 +107,10 @@ public class RateRange implements RateRangeContract {
 		this.acRuleList = acRuleList;
 	}
 	
-	public SystemScheduledTimeOffContract getSysScheTimeOff() {
+	public SystemScheduledTimeOff getSysScheTimeOff() {
 		return sysScheTimeOff;
 	}
-	public void setSysScheTimeOff(SystemScheduledTimeOffContract sysScheTimeOff) {
+	public void setSysScheTimeOff(SystemScheduledTimeOff sysScheTimeOff) {
 		this.sysScheTimeOff = sysScheTimeOff;
 	}
 	public String getLeaveCalendarDocumentId() {

@@ -24,26 +24,26 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
-import org.kuali.kpme.pm.position.PositionBo;
+import org.kuali.kpme.pm.position.Position;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements PositionDao {
 
 	@Override
-	public PositionBo getPosition(String id) {
+	public Position getPosition(String id) {
 		 Criteria crit = new Criteria();
         crit.addEqualTo("hrPositionId", id);
 
-        Query query = QueryFactory.newQuery(PositionBo.class, crit);
-        return (PositionBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(Position.class, crit);
+        return (Position) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public List<PositionBo> getPositions(String positionNum, String description, String grpKeyCode, String classificationTitle, String positionType, String poolEligible, String positionStatus,
+	public List<Position> getPositions(String positionNum, String description, String workingPositionTitle, String campus,
+            String institution, String classificationTitle, String positionType, String poolEligible,
 			LocalDate fromEffdt, LocalDate toEffdt, String active,
 			String showHistory) {
-		List<PositionBo> results = new ArrayList<PositionBo>();
+		List<Position> results = new ArrayList<Position>();
 	        
     	Criteria root = new Criteria();
 
@@ -56,8 +56,16 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
             root.addLike("UPPER(description)", description.toUpperCase());
         }
 
-        if (StringUtils.isNotBlank(grpKeyCode)) {
-            root.addLike("UPPER(`GRP_KEY_CD`)", grpKeyCode.toUpperCase());
+        if (StringUtils.isNotBlank(workingPositionTitle)) {
+            root.addLike("UPPER(workingPositionTitle)", workingPositionTitle.toUpperCase());
+        }
+
+        if (StringUtils.isNotBlank(campus)) {
+            root.addLike("UPPER(campus)", campus.toUpperCase());
+        }
+
+        if (StringUtils.isNotBlank(institution)) {
+            root.addLike("UPPER(institution)", institution.toUpperCase());
         }
 
         if (StringUtils.isNotBlank(classificationTitle)) {
@@ -70,12 +78,8 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
 
         if (StringUtils.isNotBlank(poolEligible)) {
             root.addEqualTo("poolEligible", poolEligible);
-        }
 
-        if (StringUtils.isNotBlank(positionStatus)) {
-            root.addLike("UPPER(`pstn_status`)", positionStatus.toUpperCase());
         }
-
         Criteria effectiveDateFilter = new Criteria();
         if (fromEffdt != null) {
             effectiveDateFilter.addGreaterOrEqualThan("effectiveDate", fromEffdt.toDate());
@@ -99,12 +103,11 @@ public class PositionDaoObjImpl extends PlatformAwareDaoBaseOjb implements Posit
         }
 
         if (StringUtils.equals(showHistory, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(PositionBo.class, effectiveDateFilter, PositionBo.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionBo.class, PositionBo.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(Position.class, effectiveDateFilter, Position.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(Position.class, Position.EQUAL_TO_FIELDS, false));
         }
-
-
-        Query query = QueryFactory.newQuery(PositionBo.class, root);
+        
+        Query query = QueryFactory.newQuery(Position.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
 
         return results;

@@ -15,14 +15,14 @@
  */
 package org.kuali.kpme.tklm.time.rules.timecollection.authorization;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentAuthorizerBase;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
-
-import java.util.Map;
 
 @SuppressWarnings("deprecation")
 public class TimeCollectionRuleAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
@@ -34,19 +34,17 @@ public class TimeCollectionRuleAuthorizer extends KPMEMaintenanceDocumentAuthori
 
 		String department = StringUtils.EMPTY;
 		String location = StringUtils.EMPTY;
-		String groupKeyCode = StringUtils.EMPTY;
 		
 		if (dataObject instanceof TimeCollectionRule) {
 			TimeCollectionRule timeCollectionRuleObj = (TimeCollectionRule) dataObject;
 			
 			if (timeCollectionRuleObj != null) {
-				department = timeCollectionRuleObj.getDept(); 
-				groupKeyCode = timeCollectionRuleObj.getGroupKeyCode();
+				department = timeCollectionRuleObj.getDept();
 				
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, timeCollectionRuleObj.getEffectiveLocalDate());
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, timeCollectionRuleObj.getEffectiveLocalDate());
 			
 				if (departmentObj != null) {
-					location = departmentObj.getGroupKey().getLocationId();
+					location = departmentObj.getLocation();
 				}
 			}
 		}

@@ -16,13 +16,12 @@
 package org.kuali.kpme.pm.api.pstnqlfrtype;
 
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 
 /**
  * <p>PstnQlfrTypeContract interface</p>
  *
  */
-public interface PstnQlfrTypeContract extends KpmeEffectiveDataTransferObject {
+public interface PstnQlfrTypeContract extends HrBusinessObjectContract {
 
 	/**
 	 * The primary key for a PstnQlfrType entry saved in the database

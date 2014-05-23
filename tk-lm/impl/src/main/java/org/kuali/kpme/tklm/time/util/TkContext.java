@@ -17,11 +17,10 @@ package org.kuali.kpme.tklm.time.util;
 
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -91,7 +90,7 @@ public class TkContext {
     	for (Assignment assignment : assignments) {
     		TimeCollectionRule tcr = null;
     		if(assignment.getJob() != null)
-    			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+    			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
             if (tcr == null || tcr.isClockUserFl()) {
             	isSynchronous = true;
             	break;
@@ -109,7 +108,7 @@ public class TkContext {
     	for (Assignment assignment : assignments) {
     		TimeCollectionRule tcr = null;
     		if(assignment.getJob() != null)
-    			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+    			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
             if (tcr == null || tcr.isClockUserFl()) {
             	isSynchronous = true;
             	break;

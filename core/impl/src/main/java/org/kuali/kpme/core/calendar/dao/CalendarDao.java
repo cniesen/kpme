@@ -17,20 +17,22 @@ package org.kuali.kpme.core.calendar.dao;
 
 import java.util.List;
 
-import org.kuali.kpme.core.calendar.CalendarBo;
+import org.joda.time.DateTime;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 
 public interface CalendarDao {
 
-	public void saveOrUpdate(CalendarBo calendarDates);
+	public void saveOrUpdate(Calendar calendarDates);
 
-	public void saveOrUpdate(List<CalendarBo> calendarDatesList);
+	public void saveOrUpdate(List<Calendar> calendarDatesList);
 
-	public CalendarBo getCalendar(String hrPyCalendarId);
+	public Calendar getCalendar(String hrPyCalendarId);
 	
-	public CalendarBo getCalendarByName(String calendarName);
+	public Calendar getCalendarByName(String calendarName);
 	
-	public CalendarBo getCalendarByGroup(String pyCalendarGroup);
+	public Calendar getCalendarByGroup(String pyCalendarGroup);
 
-    public List<CalendarBo> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime);
+    public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime);
 
 }

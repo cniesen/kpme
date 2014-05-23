@@ -18,9 +18,8 @@ package org.kuali.kpme.tklm.time.rules.lunch.department.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.springframework.cache.annotation.Cacheable;
 
 public interface DepartmentLunchRuleService {
@@ -38,9 +37,8 @@ public interface DepartmentLunchRuleService {
                     "+ '|' + 'workArea=' + #p1" +
                     "+ '|' + 'principalId=' + #p2" +
                     "+ '|' + 'jobNumber=' + #p3" +
-                    "+ '|' + 'groupKeyCode=' + #p4" +
-                    "+ '|' + 'asOfDate=' + #p5")
-	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, String groupKeyCode, LocalDate asOfDate);
+                    "+ '|' + 'asOfDate=' + #p4")
+	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, LocalDate asOfDate);
 	
     /**
      * Fetch department lunch rule based on criteria passed in, using literals for wildcards.  Will not go through logic to
@@ -58,15 +56,14 @@ public interface DepartmentLunchRuleService {
 					"+ '|' + 'workArea=' + #p1" +
 					"+ '|' + 'principalId=' + #p2" +
 					"+ '|' + 'jobNumber=' + #p3" +
-					"+ '|' + 'groupKeyCode=' + #p4" +
-					"+ '|' + 'asOfDate=' + #p5")
-	public DeptLunchRule getDepartmentLunchRuleNoWildCards(String dept, Long workArea, String principalId, Long jobNumber, String groupKeyCode, LocalDate asOfDate);
+					"+ '|' + 'asOfDate=' + #p4")
+	public DeptLunchRule getDepartmentLunchRuleNoWildCards(String dept, Long workArea, String principalId, Long jobNumber, LocalDate asOfDate);
 	 	
     /**
 	 * Apply department lunch rule to the list of timeblocks
 	 * @param timeblocks
 	 */
-	public List<TimeBlock> applyDepartmentLunchRule(List<TimeBlock> timeblocks);
+	public void applyDepartmentLunchRule(List<TimeBlock> timeblocks);
 	
 	/**
 	 * Fetch department lunch rule by id
@@ -75,6 +72,7 @@ public interface DepartmentLunchRuleService {
 	 */
     @Cacheable(value= DeptLunchRule.CACHE_NAME, key="'tkDeptLunchRuleId=' + #p0")
 	public DeptLunchRule getDepartmentLunchRule(String tkDeptLunchRuleId);
-    
-    public List<? extends HrBusinessObjectContract> getDepartmentLunchRules(String userPrincipalId, List <DeptLunchRule> deptLunchRules);
+
+    List<DeptLunchRule> getDepartmentLunchRules(String userPrincipalId, String dept, String workArea, String principalId, String jobNumber, 
+    											LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory);
 }

@@ -15,20 +15,19 @@
  */
 package org.kuali.kpme.core.earncode.group.validation;
 
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroup;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class EarnCodeGroupEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class EarnCodeGroupEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
-        EarnCodeGroupBo earnCodeGroup = (EarnCodeGroupBo) pbo;
+        EarnCodeGroup earnCodeGroup = (EarnCodeGroup) pbo;
         EarnCodeGroup lastEarnCodeGroup = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(earnCodeGroup.getEarnCodeGroup(), TKUtils.END_OF_TIME);
         if (lastEarnCodeGroup != null && lastEarnCodeGroup.getEffectiveLocalDate() != null && earnCodeGroup.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastEarnCodeGroup.getEffectiveLocalDate().isAfter(earnCodeGroup.getEffectiveLocalDate());

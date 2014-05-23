@@ -16,15 +16,14 @@
 package org.kuali.kpme.tklm.time.clock.web;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -40,31 +39,32 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesheet.web.TimesheetAction;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.krad.exception.AuthorizationException;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.springframework.cache.annotation.CacheEvict;
 
 public class ClockAction extends TimesheetAction {
 
@@ -113,34 +113,11 @@ public class ClockAction extends TimesheetAction {
 		        }
 		        
 		        if (StringUtils.equals(GlobalVariables.getUserSession().getPrincipalId(), HrContext.getTargetPrincipalId())) {
-		        	clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptions(true, LocalDate.now()));
+		        	clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptions(true));
 		        } else {
 		        	clockActionForm.setAssignmentDescriptions(timesheetDocument.getAssignmentDescriptionsOfApprovals(true));
 		        }
 		        
-		        String ipAddress = TKUtils.getIPAddressFromRequest(request);
-		        Map<String, String> assignmentMap = timesheetDocument.getAssignmentDescriptions(true, LocalDate.now());
-		        String principalId = HrContext.getPrincipalId();
-		        
-		        if(targetPrincipalId.equals(principalId)){
-		        	Map<String, String> assignmentDescriptionMap = new TreeMap<String, String>();
-
-		        	DateTime currentDateTime = new DateTime();
-		        	for (Map.Entry<String, String> entry : assignmentMap.entrySet()) {
-		        		Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(entry.getKey()), LocalDate.now());
-		        		String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
-		        		if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
-		        			boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInValidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ipAddress, currentDateTime.toLocalDate());
-		        			if(!isInValid){
-		        				assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
-		        			}
-		        		}
-		        	}
-		        	clockActionForm.setAssignmentDescriptions(assignmentDescriptionMap);
-		        }else{
-		        	clockActionForm.setAssignmentDescriptions(assignmentMap);
-		        }
-                
 		        if (clockActionForm.getEditTimeBlockId() != null) {
 		            clockActionForm.setCurrentTimeBlock(TkServiceLocator.getTimeBlockService().getTimeBlock(clockActionForm.getEditTimeBlockId()));
 		        }
@@ -172,9 +149,9 @@ public class ClockAction extends TimesheetAction {
 		                clockActionForm.setCurrentClockAction(TkConstants.CLOCK_OUT);
 		            }
 		            // if the current clock action is clock out, displays only the clocked-in assignment
-		            String selectedAssignment = new AssignmentDescriptionKey(lastClockLog.getGroupKeyCode(), lastClockLog.getJobNumber(), lastClockLog.getWorkArea(), lastClockLog.getTask()).toAssignmentKeyString();
+		            String selectedAssignment = new AssignmentDescriptionKey(lastClockLog.getJobNumber(), lastClockLog.getWorkArea(), lastClockLog.getTask()).toAssignmentKeyString();
 		            clockActionForm.setSelectedAssignment(selectedAssignment);
-		            Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(selectedAssignment), LocalDate.now());
+		            Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(selectedAssignment));
 		            Map<String, String> assignmentDesc = HrServiceLocator.getAssignmentService().getAssignmentDescriptions(assignment);
 		            clockActionForm.setAssignmentDescriptions(assignmentDesc);
 		        }
@@ -206,7 +183,7 @@ public class ClockAction extends TimesheetAction {
 		        		if (assignment != null) {
 		        			Long workArea = assignment.getWorkArea();
                             String dept = assignment.getJob().getDept();
-		        			/*String principalId = HrContext.getPrincipalId();*/
+		        			String principalId = HrContext.getPrincipalId();
 		        			DateTime startOfToday = LocalDate.now().toDateTimeAtStartOfDay();
                             isApproverOrReviewerForCurrentAssignment =
                                     HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea, startOfToday)
@@ -234,9 +211,9 @@ public class ClockAction extends TimesheetAction {
 		
 		            // Check for presence of department lunch rule.
 		            Map<String, Boolean> assignmentDeptLunchRuleMap = new HashMap<String, Boolean>();
-		            for (Assignment a : timesheetDocument.getAssignmentMap().get(LocalDate.now())) {
+		            for (Assignment a : timesheetDocument.getAssignments()) {
 	                    String key = AssignmentDescriptionKey.getAssignmentKeyString(a);
-	                    DeptLunchRule deptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(a.getDept(), a.getWorkArea(), clockActionForm.getPrincipalId(), a.getJobNumber(), a.getGroupKeyCode(), LocalDate.now());
+	                    DeptLunchRule deptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRule(a.getDept(), a.getWorkArea(), clockActionForm.getPrincipalId(), a.getJobNumber(), LocalDate.now());
 	                    assignmentDeptLunchRuleMap.put(key, deptLunchRule != null);
 	                }
 		            clockActionForm.setAssignmentLunchMap(assignmentDeptLunchRuleMap);
@@ -255,7 +232,7 @@ public class ClockAction extends TimesheetAction {
     	TimesheetDocument timesheetDocument = caf.getTimesheetDocument();
         if (timesheetDocument != null) {
             int eligibleAssignmentCount = 0;
-            for (Assignment a : timesheetDocument.getAssignmentMap().get(LocalDate.now())) {
+            for (Assignment a : timesheetDocument.getAssignments()) {
                 WorkArea aWorkArea = HrServiceLocator.getWorkAreaService().getWorkArea(a.getWorkArea(), timesheetDocument.getDocEndDate());
                 if(aWorkArea != null && aWorkArea.isHrsDistributionF()) {
                     eligibleAssignmentCount++;
@@ -272,7 +249,7 @@ public class ClockAction extends TimesheetAction {
     
     public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         ClockActionForm caf = (ClockActionForm) form;
-        DateTime currentDateTime = new DateTime();
+
         // TODO: Validate that clock action is valid for this user
         // TODO: this needs to be integrated with the error tag
         if (StringUtils.isBlank(caf.getSelectedAssignment())) {
@@ -286,18 +263,7 @@ public class ClockAction extends TimesheetAction {
             return mapping.findForward("basic");
         }
         String ip = TKUtils.getIPAddressFromRequest(request);
-
-        Assignment assignment = caf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(caf.getSelectedAssignment()), LocalDate.now());
-        
-        // check if User takes action from Valid location.
-        String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
-        if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
-	        boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInValidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ip, currentDateTime.toLocalDate());
-	        if(isInValid){
-	        	caf.setErrorMessage("Could not take the action as Action taken from  "+ ip + ",  is not a valid IP address.");
-	            return mapping.findForward("basic");
-	        }
-        }
+        Assignment assignment = caf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(caf.getSelectedAssignment()));
         
         List<Assignment> lstAssingmentAsOfToday = HrServiceLocator.getAssignmentService().getAssignments(pId, LocalDate.now());
         boolean foundValidAssignment = false;
@@ -316,24 +282,31 @@ public class ClockAction extends TimesheetAction {
         }
         
         LocalDate beginDate = LocalDate.now();
-        DateTime clockTimeWithGraceRule = new DateTime(beginDate.toDateTimeAtCurrentTime());
-        String gpRuleConfig = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.KPME_GRACE_PERIOD_RULE_CONFIG);
-        if(gpRuleConfig!=null && StringUtils.equals(gpRuleConfig, TkConstants.GRACE_PERIOD_RULE_CONFIG.CLOCK_ENTRY)){
-   	 		clockTimeWithGraceRule = TkServiceLocator.getGracePeriodService().processGracePeriodRule(clockTimeWithGraceRule, beginDate);
-        }
+   	 	DateTime clockTimeWithGraceRule = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(beginDate.toDateTimeAtCurrentTime()), beginDate);
         // validate if there's any overlapping with existing time blocks
         if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.CLOCK_IN) || StringUtils.equals(caf.getCurrentClockAction(), TkConstants.LUNCH_IN)) {
-             Set<String> regularEarnCodes = new HashSet<String>();
-             for(Assignment assign : caf.getTimesheetDocument().getAllAssignments()) {
+            ClockLog lastLog = null;
+            if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.LUNCH_IN)) {
+                lastLog = TkServiceLocator.getClockLogService().getLastClockLog(pId, TkConstants.LUNCH_OUT);
+            } else if (StringUtils.equals(caf.getCurrentClockAction(), TkConstants.CLOCK_IN)) {
+                lastLog = TkServiceLocator.getClockLogService().getLastClockLog(pId);
+            }
+            if (lastLog != null) {
+                if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(clockTimeWithGraceRule.withMillisOfSecond(0))) {
+                    clockTimeWithGraceRule = clockTimeWithGraceRule.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                }
+            }
+            Set<String> regularEarnCodes = new HashSet<String>();
+             for(Assignment assign : caf.getTimesheetDocument().getAssignments()) {
                  regularEarnCodes.add(assign.getJob().getPayTypeObj().getRegEarnCode());
              }
         	 List<TimeBlock> tbList = caf.getTimesheetDocument().getTimeBlocks();
 	         for(TimeBlock tb : tbList) {
 	        	 String earnCode = tb.getEarnCode();
-	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(), earnCode);
-	        	 EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, caf.getTimesheetDocument().getAsOfDate());
+	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(),earnCode);
+	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, caf.getTimesheetDocument().getAsOfDate());
 	        	 if(earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
-	        		 Interval clockInterval = new Interval(tb.getBeginDateTime(), tb.getEndDateTime());
+	        		 Interval clockInterval = new Interval(new DateTime(tb.getBeginTimestamp().getTime()), new DateTime(tb.getEndTimestamp().getTime()));
 	        		 if((isRegularEarnCode || regularEarnCodes.contains(earnCodeObj.getEarnCode())) && clockInterval.contains(clockTimeWithGraceRule.getMillis())) {
 	        			 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 	        			 return mapping.findForward("basic");
@@ -342,7 +315,7 @@ public class ClockAction extends TimesheetAction {
 	         }
         }
         
-        
+        DateTime currentDateTime = new DateTime();
         // for clock out and lunch out actions, check if the current time and last clock log time is on two different calendar entries,
         // if they are, we need to clock out the employee at the endDatTime (in employee's time zone) of the last calendar entry,
         // and clock employee back in at the beginDateTime (in employee's time zone) of the new calendar entry
@@ -380,18 +353,16 @@ public class ClockAction extends TimesheetAction {
             }
 
         	if(previousTimeDoc != null) {
-                CalendarEntry previousCalEntry = previousTimeDoc.getCalendarEntry();
+	        	CalendarEntry previousCalEntry = previousTimeDoc.getCalendarEntry();
 	        	DateTime previousEndPeriodDateTime = previousCalEntry.getEndPeriodFullDateTime();
+        		// use the user's time zone and the system time zone to figure out the system time of endPeriodDatTime in the user's timezone
+                DateTimeZone userTimezone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(pId));
+        		DateTimeZone systemTimeZone = TKUtils.getSystemDateTimeZone();
+        		// time to use to create the out clock log
+                DateTime outLogDateTime = TKUtils.convertTimeForDifferentTimeZone(previousEndPeriodDateTime, systemTimeZone, userTimezone);
+	        	
 	        	// if current time is after the end time of previous calendar entry, it means the clock action covers two calendar entries
-	        	if(currentDateTime.isAfter(previousEndPeriodDateTime.getMillis())) {
-	        		
-	        		// create co, ci and co clock logs and assign the last co clock log to the form
-	        		// use the user's time zone and the system time zone to figure out the system time of endPeriodDatTime in the user's timezone
-	                DateTimeZone userTimezone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(pId));
-	        		DateTimeZone systemTimeZone = TKUtils.getSystemDateTimeZone();
-	        		// time to use to create the out clock log
-	                DateTime outLogDateTime = TKUtils.convertTimeForDifferentTimeZone(previousEndPeriodDateTime, systemTimeZone, userTimezone);
-	        	        
+            	if(currentDateTime.isAfter(outLogDateTime.getMillis())) {	        	        
 	                CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(previousCalEntry.getHrCalendarId(), previousCalEntry);
 	                DateTime beginNextPeriodDateTime = nextCalendarEntry.getBeginPeriodFullDateTime();
 	                // time to use to create the CI clock log
@@ -412,11 +383,11 @@ public class ClockAction extends TimesheetAction {
 	        		if (lastLog != null) {
 	        			// validation with previous calendar entry
 	        			// the datetime for the new clock log that's about to be created with grace period rule applied
-	        			DateTime endDateTime = new DateTime(outLogDateTime.getMillis());
-	        			if(gpRuleConfig!=null && StringUtils.equals(gpRuleConfig, TkConstants.GRACE_PERIOD_RULE_CONFIG.CLOCK_ENTRY)){
-	        				endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(outLogDateTime, previousCalEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			}
-	        			boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
+	        			DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(outLogDateTime, previousCalEntry.getBeginPeriodFullDateTime().toLocalDate());
+	        			if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
+                        boolean validation = this.validateOverlapping(previousTimeDoc.getAsOfDate(), previousTimeDoc.getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
    		            		 return mapping.findForward("basic");
@@ -424,33 +395,37 @@ public class ClockAction extends TimesheetAction {
 	        			
 	        			// validation with the next calendar entry
 		   	             // the datetime for the new clock log that's about to be created with grace period rule applied
-	        			endDateTime = currentDateTime;
-	        			if(gpRuleConfig!=null && StringUtils.equals(gpRuleConfig, TkConstants.GRACE_PERIOD_RULE_CONFIG.CLOCK_ENTRY)){
-	        				endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(currentDateTime, nextCalendarEntry.getBeginPeriodFullDateTime().toLocalDate());
-	        			}
-	        			validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime,assignment);
+	        			endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(currentDateTime, nextCalendarEntry.getBeginPeriodFullDateTime().toLocalDate());
+                        if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
+                        validation = this.validateOverlapping(nextTimeDoc.getAsOfDate(), nextTimeDoc.getTimeBlocks(), inLogDateTime, endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
   		            		 return mapping.findForward("basic");
 	        			}
 		            } 
-	                
+	        		// create co, ci and co clock logs and assign the last co clock log to the form
 	                // clock out employee at the end of the previous pay period
-	                ClockLog outLog = TkServiceLocator.getClockLogService().processClockLog(pId, previousTimeDoc.getDocumentId(), outLogDateTime, assignment, previousCalEntry, ip,
-	                		previousEndPeriodDateTime.toLocalDate(), outAction, true);
+	                ClockLog outLog = TkServiceLocator.getClockLogService().processClockLog(outLogDateTime, assignment, previousCalEntry, ip,
+	                		previousEndPeriodDateTime.toLocalDate(), previousTimeDoc, outAction, true, pId);
 	                
 	                // clock in employee at the begin of the next pay period
-	                ClockLog inLog = TkServiceLocator.getClockLogService().processClockLog(pId, nextTimeDoc.getDocumentId(), inLogDateTime, assignment, nextCalendarEntry, ip,
-	                		beginNextPeriodDateTime.toLocalDate(), inAction, true);
+	                ClockLog inLog = TkServiceLocator.getClockLogService().processClockLog(inLogDateTime, assignment, nextCalendarEntry, ip,
+	                		beginNextPeriodDateTime.toLocalDate(), nextTimeDoc, inAction, true, pId);
 	                
 	                // finally clock out employee at current time
-	                ClockLog finalOutLog = TkServiceLocator.getClockLogService().processClockLog(pId, nextTimeDoc.getDocumentId(), currentDateTime, assignment, nextCalendarEntry, ip,
-	                		currentDateTime.toLocalDate(), caf.getCurrentClockAction(), true);
+	                ClockLog finalOutLog = TkServiceLocator.getClockLogService().processClockLog(currentDateTime, assignment, nextCalendarEntry, ip,
+	                		currentDateTime.toLocalDate(), nextTimeDoc, caf.getCurrentClockAction(), true, pId);
 	                
 	                // add 5 seconds to clock out log's timestamp so it will be found as the latest clock action
-                    ClockLog.Builder clBuilder = ClockLog.Builder.create(finalOutLog);
-                    clBuilder.setCreateTime(finalOutLog.getCreateTime().plusSeconds(5));
-	                finalOutLog = TkServiceLocator.getClockLogService().saveClockLog(clBuilder.build());
+	                Timestamp ts= finalOutLog.getTimestamp();
+	                java.util.Calendar cal = java.util.Calendar.getInstance();
+	                cal.setTimeInMillis(ts.getTime());
+	                cal.add(java.util.Calendar.SECOND, 5);
+	                Timestamp later = new Timestamp(cal.getTime().getTime());
+	                finalOutLog.setTimestamp(later);
+	                TkServiceLocator.getClockLogService().saveClockLog(finalOutLog);
 	                
 	                caf.setClockLog(finalOutLog);  
 	                return mapping.findForward("basic");
@@ -458,22 +433,28 @@ public class ClockAction extends TimesheetAction {
 	            } else {	// covers the scenario that user clocks out on the same calendar entry
 	                if (lastLog != null) {
 		   	            // the datetime for the new clock log that's about to be created with grace period rule applied
-	                	DateTime endDateTime  = new DateTime();
-	                	if(gpRuleConfig!=null && gpRuleConfig.equals("CLOCK")){
-	                		endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(endDateTime, caf.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate());
-	                	}
+		   	         	DateTime endDateTime = TkServiceLocator.getGracePeriodService().processGracePeriodRule(new DateTime(), caf.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate());
+                        if (lastLog.getClockDateTime().withMillisOfSecond(0).equals(endDateTime.withMillisOfSecond(0))) {
+                            endDateTime = endDateTime.withMillisOfSecond(lastLog.getClockDateTime().getMillisOfSecond() + 1);
+                        }
 		   	         	boolean validation = this.validateOverlapping(caf.getTimesheetDocument().getAsOfDate(), caf.getTimesheetDocument().getTimeBlocks(), lastLog.getClockDateTime(), endDateTime,assignment);
 	        			if(!validation) {
 	        				 caf.setErrorMessage(TIME_BLOCK_OVERLAP_ERROR);
 			            		 return mapping.findForward("basic");
 	        			}
-	                } 
+	                }
+	                // create clock log using previous time document, ie the same time document as the last clock log
+	                ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new DateTime(), assignment, caf.getCalendarEntry(), ip,
+	                		beginDate, previousTimeDoc, caf.getCurrentClockAction(), true, pId);
+
+	                caf.setClockLog(clockLog);  
+	                return mapping.findForward("basic"); 	                
 	        	}
     		}
     	} 
         // create clock log 
-        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(pId, caf.getTimesheetDocument().getDocumentId(), new DateTime(), assignment, caf.getCalendarEntry(), ip,
-        		beginDate, caf.getCurrentClockAction(), true);
+        ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(new DateTime(), assignment, caf.getCalendarEntry(), ip,
+        		beginDate, caf.getTimesheetDocument(), caf.getCurrentClockAction(), true, pId);
 
         caf.setClockLog(clockLog);  
         return mapping.findForward("basic"); 
@@ -486,7 +467,7 @@ public class ClockAction extends TimesheetAction {
 	    	for(TimeBlock tb : tbList) {
 	        	 String earnCode = tb.getEarnCode();
 	        	 boolean isRegularEarnCode = StringUtils.equals(assignment.getJob().getPayTypeObj().getRegEarnCode(),earnCode);
-	        	 EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
+	        	 EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, asOfDate);
 	        	 if(isRegularEarnCode && earnCodeObj != null && HrConstants.EARN_CODE_TIME.equals(earnCodeObj.getEarnCodeType())) {
 	            	 if(clockInterval.overlaps(new Interval(tb.getBeginDateTime(), tb.getEndDateTime()))) {
 	            		 return false;
@@ -522,10 +503,10 @@ public class ClockAction extends TimesheetAction {
         List<TimeBlock> newTimeBlocks = caf.getTimesheetDocument().getTimeBlocks();
         List<TimeBlock> referenceTimeBlocks = new ArrayList<TimeBlock>(caf.getTimesheetDocument().getTimeBlocks().size());
         for (TimeBlock tb : caf.getTimesheetDocument().getTimeBlocks()) {
-            referenceTimeBlocks.add(TimeBlock.Builder.create(tb).build());
+            referenceTimeBlocks.add(tb.copy());
         }
         //call persist method that only saves added/deleted/changed timeblocks
-        TkServiceLocator.getTimeBlockService().saveOrUpdateTimeBlocks(referenceTimeBlocks, newTimeBlocks, HrContext.getPrincipalId());
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(referenceTimeBlocks, newTimeBlocks, HrContext.getPrincipalId());
 
         ActionForward forward = mapping.findForward("et");
 
@@ -560,11 +541,11 @@ public class ClockAction extends TimesheetAction {
 			String assignString = assignments[i];
 			Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(assignString);
 			
-			TimeBlock tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc.getPrincipalId(), tsDoc.getDocumentId(), beginDateTime, endDateTime, assignment, earnCode, hours,BigDecimal.ZERO, false, false, HrContext.getPrincipalId());
+			TimeBlock tb = TkServiceLocator.getTimeBlockService().createTimeBlock(tsDoc, beginDateTime, endDateTime, assignment, earnCode, hours,BigDecimal.ZERO, false, false, HrContext.getPrincipalId());
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
-		TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTbList, Collections.<LeaveBlock>emptyList(), tsDoc.getCalendarEntry(), tsDoc, tsDoc.getPrincipalId());
+		TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTbList, new ArrayList<LeaveBlock>(), tsDoc.getCalendarEntry(), tsDoc, tsDoc.getPrincipalId());
 		TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
 		TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
 		TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
@@ -627,8 +608,8 @@ public class ClockAction extends TimesheetAction {
 		    		continue;
 		    	}
 		    	DateTimeZone dateTimeZone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
-		    	DateTime timeBlockBeginTimestamp = new DateTime(timeBlock.getBeginDateTime(), dateTimeZone).withZone(TKUtils.getSystemDateTimeZone());
-		    	DateTime timeBlockEndTimestamp = new DateTime(timeBlock.getEndDateTime(), dateTimeZone).withZone(TKUtils.getSystemDateTimeZone());
+		    	DateTime timeBlockBeginTimestamp = new DateTime(timeBlock.getBeginTimestamp().getTime(), dateTimeZone).withZone(TKUtils.getSystemDateTimeZone());
+		    	DateTime timeBlockEndTimestamp = new DateTime(timeBlock.getEndTimestamp().getTime(), dateTimeZone).withZone(TKUtils.getSystemDateTimeZone());
 		    	Interval timeBlockInterval = new Interval(timeBlockBeginTimestamp, timeBlockEndTimestamp);
 			    if (timeBlockInterval.overlaps(addedTimeblockInterval)) {
 			        errorMsgList.add("The time block you are trying to add for entry " + index + " overlaps with an existing time block.");
@@ -658,17 +639,18 @@ public class ClockAction extends TimesheetAction {
  	}
 	
 	 private Boolean isPrincipalAnyProcessorInWorkArea(String principalId, Long tbWorkArea, LocalDate asOfDate) {
-	    Boolean flag = false;
-	    Set<Long> workAreas = new HashSet<Long>();
-	    workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), LocalDate.now().toDateTimeAtStartOfDay(), true));
-	    workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(),  KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), LocalDate.now().toDateTimeAtStartOfDay(), true));
-
-        List<WorkArea> workAreaList = HrServiceLocator.getWorkAreaService().getWorkAreasForList(new ArrayList<Long>(workAreas), asOfDate);
-        for (WorkArea wa : workAreaList) {
-            if (wa.getWorkArea().compareTo(tbWorkArea) == 0) {
-                return true;
-            }
-        }
-        return false;
-     }
+	    	Boolean flag = false;
+	        Set<Long> workAreas = new HashSet<Long>();
+	    	workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), LocalDate.now().toDateTimeAtStartOfDay(), true));
+	        workAreas.addAll(HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRole(principalId, KPMENamespace.KPME_HR.getNamespaceCode(),  KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), LocalDate.now().toDateTimeAtStartOfDay(), true));
+	        for (Long wa : workAreas) {
+	            WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(wa, asOfDate);
+	            if (workArea!= null && tbWorkArea.compareTo(wa)==0) {
+	                flag = true;
+	                break;
+	            }
+	        }
+	        return flag;
+	    }
+    
 }

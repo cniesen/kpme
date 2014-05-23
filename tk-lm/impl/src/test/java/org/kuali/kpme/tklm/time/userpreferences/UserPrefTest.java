@@ -25,7 +25,7 @@ import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.user.pref.UserPreferences;
 
 @IntegrationTest
@@ -38,11 +38,11 @@ public class UserPrefTest extends TKLMIntegrationTestCase{
 	
 	@Test
 	public void testTimeZoneTranslate() throws Exception{
-		TimeBlockBo tb = new TimeBlockBo();
+		TimeBlock tb = new TimeBlock();
 		tb.setBeginDateTime(new DateTime());
 		tb.setEndDateTime(new DateTime());
 		
-		List<TimeBlockBo> tbs = new ArrayList<TimeBlockBo>();
+		List<TimeBlock> tbs = new ArrayList<TimeBlock>();
 		tbs.add(tb);
 		
 		//HrServiceLocator.getTimezoneService().translateForTimezone(tbs, DateTimeZone.forID("America/Indianapolis"));

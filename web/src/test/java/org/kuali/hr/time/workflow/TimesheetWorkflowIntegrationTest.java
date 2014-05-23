@@ -15,9 +15,11 @@
  */
 package org.kuali.hr.time.workflow;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -28,11 +30,10 @@ import org.kuali.hr.TestAutoLoginFilter;
 import org.kuali.hr.time.util.TimeDetailTestUtils;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
@@ -41,10 +42,9 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @FunctionalTest
 public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
@@ -83,14 +83,14 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
      */
     public void testTimesheetSubmissionIntegration() throws Exception {
         DateTime asOfDate = new DateTime(2011, 3, 1, 12, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-        CalendarEntry pcd =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, asOfDate);
+        CalendarEntry pcd = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, asOfDate);
         Assert.assertNotNull("No PayCalendarDates", pcd);
         TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument(USER_PRINCIPAL_ID, pcd);
         String tdocId = tdoc.getDocumentId();
         HtmlPage page = loginAndGetTimeDetailsHtmlPage(getWebClient(), "admin", tdocId, true);
 
         // 1. Obtain User Data
-        Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(HrContext.getPrincipalId(), AssignmentDescriptionKey.get("IU-IN_30_30_30"), JAN_AS_OF_DATE.toLocalDate());
+        Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(HrContext.getPrincipalId(), AssignmentDescriptionKey.get("30_30_30"), JAN_AS_OF_DATE.toLocalDate());
         EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode("RGN", JAN_AS_OF_DATE.toLocalDate());
 
         // 2. Set Timeblock Start and End time
@@ -103,7 +103,7 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
 
         // Build an action form - we're using it as a POJO, it ties into the
         // existing TK validation setup
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, true, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, true, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
         // Check for errors
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
@@ -137,7 +137,7 @@ public class TimesheetWorkflowIntegrationTest extends TimesheetWebTestBase {
                     put("startNoTz", "2011-03-02T08:00:00");
                     put("endNoTz", "2011-03-02T16:00:00");
                     put("title", "SDR1 Work Area");
-                    put("assignment", "IU-IN_30_30_30");
+                    put("assignment", "30_30_30");
                 }}
         ));
 

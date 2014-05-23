@@ -15,10 +15,10 @@
  */
 package org.kuali.kpme.pm.positionreportgroup.service;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroup;
-import org.kuali.kpme.pm.api.positionreportgroup.service.PositionReportGroupService;
-import org.kuali.kpme.pm.positionreportgroup.PositionReportGroupBo;
+import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
 import org.kuali.kpme.pm.positionreportgroup.dao.PositionReportGroupDao;
 
 public class PositionReportGroupServiceImpl implements PositionReportGroupService {
@@ -26,23 +26,28 @@ public class PositionReportGroupServiceImpl implements PositionReportGroupServic
 	private PositionReportGroupDao positionReportGroupDao;
 	
 	@Override
-	public PositionReportGroup getPositionReportGroupById(String pmPositionReportGroupId) {
-		return PositionReportGroupBo.to(positionReportGroupDao.getPositionReportGroupById(pmPositionReportGroupId));
+	public PositionReportGroup getPositionReportGroupById(
+			String pmPositionReportGroupId) {
+		return positionReportGroupDao.getPositionReportGroupById(pmPositionReportGroupId);
 	}
-	
+
 	@Override
-	public PositionReportGroup getPositionReportGroup(String positionReportGroup, LocalDate asOfDate) {
-		return PositionReportGroupBo.to(positionReportGroupDao.getPositionReportGroup(positionReportGroup, asOfDate));
+	public List<PositionReportGroup> getPositionReportGroupList(String positionReportGroup, String institution, String location, LocalDate asOfDate) {
+		return positionReportGroupDao.getPositionReportGroupList(positionReportGroup, institution, location, asOfDate);
 	}
-	
+
 	public PositionReportGroupDao getPositionReportGroupDao() {
 		return positionReportGroupDao;
 	}
 
-	public void setPositionReportGroupDao(PositionReportGroupDao positionReportGroupDao) {
+	public void setPositionReportGroupDao(
+			PositionReportGroupDao positionReportGroupDao) {
 		this.positionReportGroupDao = positionReportGroupDao;
 	}
 
-	
+	@Override
+	public PositionReportGroup getPositionReportGroup(String positionReportGroup, LocalDate asOfDate) {
+		return positionReportGroupDao.getPositionReportGroup(positionReportGroup, asOfDate);
+	}
 
 }

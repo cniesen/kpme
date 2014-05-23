@@ -15,11 +15,10 @@
  */
 package org.kuali.kpme.core.assignment.dao;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-
 import java.util.List;
-import java.util.Map;
+
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.assignment.Assignment;
 
 public interface AssignmentDao {
 
@@ -31,23 +30,23 @@ public interface AssignmentDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public List<AssignmentBo> findAssignments(String principalId, LocalDate asOfDate);
+	public List<Assignment> findAssignments(String principalId, LocalDate asOfDate);
 	/**
 	 * Save or update the given assignment
 	 * @param assignment
 	 */
-	public void saveOrUpdate(AssignmentBo assignment);
+	public void saveOrUpdate(Assignment assignment);
 	/**
 	 * Save of update the given list of assignments
 	 * @param assignments
 	 */
-	public void saveOrUpdate(List<AssignmentBo> assignments);
+	public void saveOrUpdate(List<Assignment> assignments);
 
 	/**
 	 * Delete an assignment
 	 * @param assignment
 	 */
-	public void delete(AssignmentBo assignment);
+	public void delete(Assignment assignment);
 
 	/**
 	 * Get list of active assignments in a given work area as of a particular date
@@ -55,17 +54,17 @@ public interface AssignmentDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate asOfDate);
+	public List<Assignment> getActiveAssignmentsInWorkArea(Long workArea, LocalDate asOfDate);
 
-    public List<AssignmentBo> getActiveAssignmentsInWorkAreas(List<Long> workAreas, LocalDate asOfDate);
+    public List<Assignment> getActiveAssignmentsInWorkAreas(List<Long> workAreas, LocalDate asOfDate);
 
-	public AssignmentBo getAssignment(String tkAssignmentId);
+	public Assignment getAssignment(String tkAssignmentId);
 
-    public AssignmentBo getAssignmentForTargetPrincipal(String groupKeyCode, Long job, Long workArea, Long task, LocalDate asOfDate);
+    public Assignment getAssignmentForTargetPrincipal(Long job, Long workArea, Long task, LocalDate asOfDate);
 
-	public List<AssignmentBo> getActiveAssignments(LocalDate asOfDate);
+	public List<Assignment> getActiveAssignments(LocalDate asOfDate);
 	
-	public AssignmentBo getAssignment(String principalId, String groupKeyCode, Long jobNumber, Long workArea, Long task, LocalDate asOfDate);
+	public Assignment getAssignment(String principalId, Long jobNumber, Long workArea, Long task, LocalDate asOfDate);
 	
 	/**
 	 * KPME-1129
@@ -75,20 +74,20 @@ public interface AssignmentDao {
 	 * @param asOfDate
 	 * @return
 	 */
-	public List<AssignmentBo> getActiveAssignmentsForJob(String principalId, Long jobNumber, LocalDate asOfDate);
+	public List<Assignment> getActiveAssignmentsForJob(String principalId, Long jobNumber, LocalDate asOfDate);
 
-    List<AssignmentBo> findAssignmentsWithinPeriod(String principalId, LocalDate startDate, LocalDate endDate);
+    List<Assignment> findAssignmentsWithinPeriod(String principalId, LocalDate startDate, LocalDate endDate);
 
-   List<AssignmentBo> searchAssignments(Map<String, String> searchCriteria);
-
-    public AssignmentBo getMaxTimestampAssignment(String principalId);
+    List<Assignment> searchAssignments(LocalDate fromEffdt, LocalDate toEffdt, String principalId, String jobNumber,
+                                    String dept, String workArea, String active, String showHistory);
+    
+    public Assignment getMaxTimestampAssignment(String principalId);
     
     public List<String> getPrincipalIds(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
     
-    public List<AssignmentBo> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
+    public List<Assignment> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
 
-    public List<AssignmentBo> findAssignmentsHistoryForPeriod(String principalId, LocalDate startDate, LocalDate endDate);
+    public List<Assignment> findAssignmentsHistoryForPeriod(String principalId, LocalDate startDate, LocalDate endDate);
 
-    public List<AssignmentBo> findAssignmentsWithinPeriod(String principalId, LocalDate startDate, LocalDate endDate, boolean requireActive);
 }
 

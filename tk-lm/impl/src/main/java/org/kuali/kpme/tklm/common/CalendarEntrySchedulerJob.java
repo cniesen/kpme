@@ -15,17 +15,17 @@
  */
 package org.kuali.kpme.tklm.common;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
 import org.springframework.scheduling.quartz.QuartzJobBean;
-
-import java.util.List;
 
 public class CalendarEntrySchedulerJob extends QuartzJobBean {
 
@@ -41,19 +41,19 @@ public class CalendarEntrySchedulerJob extends QuartzJobBean {
 
         try {
 	        for (CalendarEntry calendarEntry : calendarEntries) {
-	            if (calendarEntry.getEndPeriodFullDateTime() != null) {
+	            if (calendarEntry.getEndPeriodDateTime() != null) {
 	            	getBatchJobService().scheduleEndReportingPeriodJobs(calendarEntry);
 	            }
 	        	
-	            if (calendarEntry.getBatchInitiateFullDateTime() != null) {
+	            if (calendarEntry.getBatchInitiateDateTime() != null) {
 	            	getBatchJobService().scheduleInitiateJobs(calendarEntry);
 	            }
 	            
-	            if (calendarEntry.getBatchEndPayPeriodFullDateTime() != null) {
+	            if (calendarEntry.getBatchEndPayPeriodDateTime() != null) {
 	            	getBatchJobService().scheduleEndPayPeriodJobs(calendarEntry);
 	            }
 	            
-	            if (calendarEntry.getBatchEmployeeApprovalFullDateTime() != null) {
+	            if (calendarEntry.getBatchEmployeeApprovalDateTime() != null) {
 	            	getBatchJobService().scheduleEmployeeApprovalJobs(calendarEntry);
 	            }
 	            
@@ -61,11 +61,11 @@ public class CalendarEntrySchedulerJob extends QuartzJobBean {
 //	            	getBatchJobService().scheduleMissedPunchApprovalJobs(calendarEntry);
 //	            }
 	            
-	            if (calendarEntry.getBatchSupervisorApprovalFullDateTime() != null) {
+	            if (calendarEntry.getBatchSupervisorApprovalDateTime() != null) {
 	            	getBatchJobService().scheduleSupervisorApprovalJobs(calendarEntry);
 	            }
 	            
-	            if (calendarEntry.getBatchPayrollApprovalFullDateTime() != null) {
+	            if (calendarEntry.getBatchPayrollApprovalDateTime() != null) {
 	            	getBatchJobService().schedulePayrollApprovalJobs(calendarEntry);
 	            }
 	        }

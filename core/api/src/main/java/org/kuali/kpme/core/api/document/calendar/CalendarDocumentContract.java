@@ -15,12 +15,11 @@
  */
 package org.kuali.kpme.core.api.document.calendar;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-
 import java.util.List;
-import java.util.Map;
+
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.assignment.AssignmentContract;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 
 /**
  * <p>CalendarDocumentContract interface</p>
@@ -48,9 +47,7 @@ public interface CalendarDocumentContract {
 	 * 
 	 * @return assignments of CalendarDocument
 	 */
-    Map<LocalDate, List<Assignment>> getAssignmentMap();
-
-    List<Assignment> getAllAssignments();
+    List<? extends AssignmentContract> getAssignments();
 
     /**
 	 * The CalendarEntry object the CalendarDocument is associated with
@@ -61,7 +58,7 @@ public interface CalendarDocumentContract {
 	 * 
 	 * @return calendarEntry of CalendarDocument
 	 */
-    CalendarEntry getCalendarEntry();
+    CalendarEntryContract getCalendarEntry();
 
     /**
 	 * The beginning date of the calendar entry the CalendarDocument is associated with

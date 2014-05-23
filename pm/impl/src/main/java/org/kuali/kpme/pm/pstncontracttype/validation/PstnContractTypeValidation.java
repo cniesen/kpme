@@ -15,22 +15,48 @@
  */
 package org.kuali.kpme.pm.pstncontracttype.validation;
 
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.pm.pstncontracttype.PstnContractTypeBo;
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.pstncontracttype.PstnContractType;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
-public class PstnContractTypeValidation extends HrKeyedBusinessObjectValidation {
+@SuppressWarnings("deprecation")
+public class PstnContractTypeValidation extends MaintenanceDocumentRuleBase  {
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for PstnContractType");
-		PstnContractTypeBo pstnContractType = (PstnContractTypeBo) this.getNewDataObject();
+		PstnContractType pstnContractType = (PstnContractType) this.getNewDataObject();
 		
 		if (pstnContractType != null) {
 			valid = true;
-			valid &= this.validateGroupKeyCode(pstnContractType);
+			valid &= this.validateInstitution(pstnContractType);
+			valid &= this.validateLocation(pstnContractType);
 		}
 		return valid;
 	}
 	
+	private boolean validateInstitution(PstnContractType pstnContractType) {
+		if (StringUtils.isNotEmpty(pstnContractType.getInstitution())
+				&& !ValidationUtils.validateInstitution(pstnContractType.getInstitution(), pstnContractType.getEffectiveLocalDate())) {
+			this.putFieldError("institution", "error.existence", "Institution '"
+					+ pstnContractType.getInstitution() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validateLocation(PstnContractType pstnContractType) {
+		if (StringUtils.isNotEmpty(pstnContractType.getLocation())
+				&& !ValidationUtils.validateLocation(pstnContractType.getLocation(), pstnContractType.getEffectiveLocalDate())) {
+			this.putFieldError("location", "error.existence", "Location '"
+					+ pstnContractType.getLocation() + "'");
+			return false;
+		} else {
+			return true;
+			
+		}
+	}
 }

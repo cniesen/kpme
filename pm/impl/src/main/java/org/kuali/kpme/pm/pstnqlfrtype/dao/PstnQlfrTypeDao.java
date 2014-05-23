@@ -17,14 +17,11 @@ package org.kuali.kpme.pm.pstnqlfrtype.dao;
 
 import java.util.List;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo;
+import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType;
 
 public interface PstnQlfrTypeDao {
 
-	public PstnQlfrTypeBo getPstnQlfrTypeById(String pmPstnQlfrTypeId);
+	public PstnQlfrType getPstnQlfrTypeById(String pmPstnQlfrTypeId);
 	
-	public PstnQlfrTypeBo getPstnQlfrTypeByType(String pmPstnQlfrType);
-	
-	public List<PstnQlfrTypeBo> getAllActivePstnQlfrTypes(LocalDate asOfDate);
+	public List<PstnQlfrType> getAllActivePstnQlfrTypes();
 }

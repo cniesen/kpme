@@ -19,24 +19,18 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.leave.transfer.BalanceTransferContract;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import com.google.common.collect.ImmutableMap;
 
 public class BalanceTransfer extends HrBusinessObject implements Assignable, BalanceTransferContract {
 
@@ -60,13 +54,6 @@ public class BalanceTransfer extends HrBusinessObject implements Assignable, Bal
 	private String sstoId;
 	
 	private transient Person principal;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 	
 	public String getPrincipalId() {
 		return principalId;
@@ -147,12 +134,12 @@ public class BalanceTransfer extends HrBusinessObject implements Assignable, Bal
 		this.principal = principal;
 	}
 
-	public AccrualCategoryBo getCreditedAccrualCategory() {
-		return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, getEffectiveLocalDate()));
+	public AccrualCategory getCreditedAccrualCategory() {
+		return HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, getEffectiveLocalDate());
 	}
 
-	public AccrualCategoryBo getDebitedAccrualCategory() {
-		return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
+	public AccrualCategory getDebitedAccrualCategory() {
+		return HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate());
 	}
 
 	public String getLeaveCalendarDocumentId() {
@@ -176,7 +163,7 @@ public class BalanceTransfer extends HrBusinessObject implements Assignable, Bal
 	 */
 	public BalanceTransfer adjust(BigDecimal transferAmount) {
 		BigDecimal difference = this.transferAmount.subtract(transferAmount);
-		AccrualCategoryRuleContract aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(accrualCategoryRule);
+		AccrualCategoryRule aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(accrualCategoryRule);
 		//technically if there is forfeiture, then the transfer amount has already been maximized
 		//via BalanceTransferService::initializeTransfer(...)
 		//i.o.w. transfer amount cannot be increased.

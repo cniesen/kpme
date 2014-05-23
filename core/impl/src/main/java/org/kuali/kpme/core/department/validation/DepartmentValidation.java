@@ -20,32 +20,32 @@ import java.util.ListIterator;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.core.department.DepartmentBo;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
 import org.kuali.kpme.core.kfs.coa.businessobject.Organization;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 @SuppressWarnings("deprecation")
-public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
+public class DepartmentValidation extends MaintenanceDocumentRuleBase {
 
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = true;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
 		
-		if (pbo instanceof DepartmentBo) {
-			DepartmentBo department = (DepartmentBo) pbo;
+		if (pbo instanceof Department) {
+			Department department = (Department) pbo;
 			if(StringUtils.isBlank(department.getHrDeptId())) {
 				// do not need to validate existing department when editing an existing department 
 				valid &= validateDepartment(department);
@@ -54,22 +54,18 @@ public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
 			valid &= validateOrg(department.getOrg());
 			valid &= validateChartAndOrg(department.getChart(), department.getOrg());
 			valid &= validateRolePresent(department.getRoleMembers(), department.getEffectiveLocalDate(), department.isPayrollApproval());
-			valid &= this.validateGroupKeyCode(department);
 		}
 
 		return valid;
 	}
 	
-	protected boolean validateDepartment(DepartmentBo department) {
+	protected boolean validateDepartment(Department department) {
 		boolean valid = true;
-
-		if (StringUtils.isNotBlank(department.getDept()) && 
-				department.getEffectiveDate() != null && 
-				StringUtils.isNotBlank(department.getGroupKeyCode())) {
-			List<Department> depts = HrServiceLocator.getDepartmentService().getDepartments(department.getDept(), department.getGroupKeyCode());
+		
+		if (StringUtils.isNotBlank(department.getDept()) && department.getEffectiveDate() != null) {
+			List<Department> depts = HrServiceLocator.getDepartmentService().getDepartments(department.getDept());
 			if (depts != null && depts.size() > 0) {
-				 String[] params = new String[] {department.getDept(), department.getGroupKeyCode()};
-				 this.putFieldError("dept", "error.department.duplicate.exists", params);
+				 this.putFieldError("dept", "error.department.duplicate.exists", department.getDept());
 				 valid = false;
 			}
 		}
@@ -80,7 +76,7 @@ public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
 	protected boolean validateChart(String chart) {
 		boolean valid = true;
 		
-		if (StringUtils.isNotEmpty(chart)) {
+		if (chart != null) {
 			Chart chartObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Chart.class, chart);
 
 			if (chartObj == null) {
@@ -95,7 +91,7 @@ public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
 	protected boolean validateOrg(String organization) {
 		boolean valid = true;
 		
-		if (StringUtils.isNotEmpty(organization)) {
+		if (organization != null) {
 			Organization organizationObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Organization.class, organization);
 
 			if (organizationObj == null) {
@@ -110,7 +106,7 @@ public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
 	boolean validateChartAndOrg(String chart, String organization) {
 		boolean valid = true;
 		
-		if (StringUtils.isNotEmpty(chart) && StringUtils.isNotEmpty(organization)) {
+		if (chart != null && organization != null) {
 			Chart chartObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Chart.class, chart);
 			Organization organizationObj = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(Organization.class, organization);
 			if (chartObj != null && organizationObj != null) {
@@ -183,7 +179,7 @@ public class DepartmentValidation extends HrKeyedBusinessObjectValidation {
 		//TODO: Do we really need to use member type, id, role id? If there are duplicate role names listed in the drop downs, this is just going to cause confusion...
 		if(line instanceof DepartmentPrincipalRoleMemberBo) {
 			DepartmentPrincipalRoleMemberBo roleMember = (DepartmentPrincipalRoleMemberBo) line;
-			DepartmentBo location = (DepartmentBo) document.getNewMaintainableObject().getDataObject();
+			Department location = (Department) document.getDocumentBusinessObject();
 			List<DepartmentPrincipalRoleMemberBo> existingRoleMembers = location.getRoleMembers();
 			for(ListIterator<DepartmentPrincipalRoleMemberBo> iter = existingRoleMembers.listIterator(); iter.hasNext(); ) {
 				int index = iter.nextIndex();

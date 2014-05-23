@@ -51,7 +51,7 @@
         <loadData tableName="KRIM_ROLE_MBR_ATTR_DATA_T" file="src/test/config/db/staging/krim_role_mbr_attr_data_t.csv" />
         <loadData tableName="KRLC_CMP_T" file="src/test/config/db/staging/krlc_cmp_t.csv" />
     </changeSet>
-
+    
     <changeSet id="3" author="kbtaylor" context="kpme-client-staging">
         <loadData tableName="CA_CHART_T" file="src/test/config/db/staging/ca_chart_t.csv" />
         <loadData tableName="CA_ACCOUNT_T" file="src/test/config/db/staging/ca_account_t.csv">
@@ -72,9 +72,6 @@
             <column name="BATCH_END_PAY_PERIOD_DATE" header="BATCH_END_PAY_PERIOD_DATE" type="DATETIME" />
             <column name="BATCH_EMPLOYEE_APPROVAL_DATE" header="BATCH_EMPLOYEE_APPROVAL_DATE" type="DATETIME" />
             <column name="BATCH_SUPERVISOR_APPROVAL_DATE" header="BATCH_SUPERVISOR_APPROVAL_DATE" type="DATETIME" />
-        </loadData>
-        <loadData tableName="HR_GRP_KEY_T" file="src/test/config/db/staging/hr_grp_key_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
         </loadData>
         <loadData tableName="HR_DEPT_T" file="src/test/config/db/staging/hr_dept_t.csv">
             <column name="EFFDT" header="EFFDT" type="DATE" />
@@ -165,7 +162,7 @@
         <loadData tableName="PM_PSTN_CL_T" file="src/test/config/db/staging/pm_pstn_cl_t.csv">
             <column name="EFFDT" header="EFFDT" type="DATE" />
         </loadData>
-        <loadData tableName="HR_DEPT_AFFL_T" file="src/test/config/db/staging/hr_dept_affl_t.csv">
+        <loadData tableName="PM_PSTN_DEPT_AFFL_T" file="src/test/config/db/staging/pm_pstn_dept_affl_t.csv">
             <column name="EFFDT" header="EFFDT" type="DATE" />
         </loadData>
         <loadData tableName="PM_PSTN_FLG_T" file="src/test/config/db/staging/pm_pstn_flg_t.csv">
@@ -192,26 +189,5 @@
         <loadData tableName="PM_PSTN_TYP_T" file="src/test/config/db/staging/pm_pstn_typ_t.csv">
             <column name="EFFDT" header="EFFDT" type="DATE" />
         </loadData>
-    </changeSet>
-    
-    <changeSet id="8" author="yingzhou" context="kpme-client-staging">
-        <loadData tableName="PM_PSTN_CL_QLFCTN_T" file="src/test/config/db/staging/pm_pstn_cl_qlfctn_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>
-        <loadData tableName="PM_PSTN_CL_FLAG_T" file="src/test/config/db/staging/pm_pstn_cl_flag_t.csv">
-         	<column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>
-        <loadData tableName="PM_PSTN_CL_DUTY_T" file="src/test/config/db/staging/pm_pstn_cl_duty_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>
-        <loadData tableName="PM_PSTN_CNTRCT_TYP_T" file="src/test/config/db/staging/pm_pstn_cntrct_typ_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>
-        <loadData tableName="PSTN_RPS_OPT_T" file="src/test/config/db/staging/pstn_rps_opt_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>  
-        <loadData tableName="PM_PSTN_DEPT_T" file="src/test/config/db/staging/pm_pstn_dept_t.csv">
-            <column name="EFFDT" header="EFFDT" type="DATE" />
-        </loadData>        
     </changeSet>
 </databaseChangeLog>

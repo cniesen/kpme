@@ -16,13 +16,13 @@
 package org.kuali.kpme.pm.api.flag;
 
 
-import java.util.List;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 /**
  * <p>FlagContract interface</p>
  *
  */
-public interface FlagContract {
+public interface FlagContract extends PersistableBusinessObject {
 	
 	/**
 	 * The ID for the Flag object which Classification Flag and pstnFlag extend
@@ -55,7 +55,6 @@ public interface FlagContract {
 	 * 
 	 * @return names for Flag
 	 */
-	//public String getNames(); // KPME-2360/2958
-	public List<String> getNames();
+	public String getNames();
 
 }

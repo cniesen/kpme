@@ -15,23 +15,22 @@
  */
 package org.kuali.kpme.tklm.leave.calendar;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.document.calendar.CalendarDocument;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.calendar.LeaveCalendarDocumentContract;
-import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.assignment.Assignable;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.tklm.api.leave.calendar.LeaveCalendarDocumentContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 
 public class LeaveCalendarDocument extends CalendarDocument implements Assignable, LeaveCalendarDocumentContract {
 	private static final long serialVersionUID = -5029062030186479210L;
 
-    private LeaveCalendarDocumentHeader documentHeader;
+
 	/**
 	 * This static member is needed by document search, to trigger the correct calendar document
 	 * opening when clicking on a doc id link in the search results.
@@ -42,17 +41,18 @@ public class LeaveCalendarDocument extends CalendarDocument implements Assignabl
 	List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
 
 	public LeaveCalendarDocument(CalendarEntry calendarEntry) {
-		setCalendarEntry(calendarEntry);
+		this.calendarEntry = calendarEntry;
 	}
 
-	public LeaveCalendarDocument(LeaveCalendarDocumentHeader documentHeader) {
-        this.documentHeader = documentHeader;
-		setCalendarType(LEAVE_CALENDAR_DOCUMENT_TYPE);
+	public LeaveCalendarDocument(
+			LeaveCalendarDocumentHeader documentHeader) {
+		this.documentHeader = documentHeader;
+		this.calendarType = LEAVE_CALENDAR_DOCUMENT_TYPE;
 	}
 
     @Override
 	public LeaveCalendarDocumentHeader getDocumentHeader() {
-		return documentHeader;
+		return (LeaveCalendarDocumentHeader) documentHeader;
 	}
 
 	public void setDocumentHeader(
@@ -68,21 +68,43 @@ public class LeaveCalendarDocument extends CalendarDocument implements Assignabl
 		this.leaveBlocks = leaveBlocks;
 	}
 
-
-
     @Override
+	public CalendarEntry getCalendarEntry() {
+		return calendarEntry;
+	}
+
+	public void setCalendarEntry(CalendarEntry calendarEntry) {
+		this.calendarEntry = calendarEntry;
+	}
+
 	public String getPrincipalId() {
-        return  getDocumentHeader() == null ? null : getDocumentHeader().getPrincipalId();
+		return getDocumentHeader().getPrincipalId();
 	}
 
-    @Override
 	public String getDocumentId() {
-        return getDocumentHeader() == null ? null : getDocumentHeader().getDocumentId();
+		if (getDocumentHeader() != null) {
+			return getDocumentHeader().getDocumentId();
+		} else {
+			return null;
+		}
 	}
 
     @Override
-    public List<Assignment> getAssignments() {
-        return getAllAssignments();
+	public List<Assignment> getAssignments() {
+		return assignments;
+	}
+
+	public void setAssignments(List<Assignment> assignments) {
+		this.assignments = assignments;
+	}
+
+    @Override
+    public LocalDate getAsOfDate(){
+        return getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
     }
+	
+    public LocalDate getDocEndDate(){
+		return getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
+	}
 	
 }

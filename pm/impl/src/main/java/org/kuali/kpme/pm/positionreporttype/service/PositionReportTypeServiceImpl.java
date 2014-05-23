@@ -18,11 +18,8 @@ package org.kuali.kpme.pm.positionreporttype.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.positionreporttype.PositionReportType;
-import org.kuali.kpme.pm.api.positionreporttype.service.PositionReportTypeService;
-import org.kuali.kpme.pm.positionreporttype.PositionReportTypeBo;
+import org.kuali.kpme.pm.positionreporttype.PositionReportType;
 import org.kuali.kpme.pm.positionreporttype.dao.PositionReportTypeDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PositionReportTypeServiceImpl implements PositionReportTypeService {
 	
@@ -39,33 +36,33 @@ public class PositionReportTypeServiceImpl implements PositionReportTypeService 
 	
 	@Override
 	public PositionReportType getPositionReportTypeById(String pmPositionReportTypeId) {
-		return PositionReportTypeBo.to(positionReportTypeDao.getPositionReportTypeById(pmPositionReportTypeId));
+		return positionReportTypeDao.getPositionReportTypeById(pmPositionReportTypeId);
 	}
 
 	@Override
-	public List<PositionReportType> getPositionReportTypeList(String positionReportType, LocalDate asOfDate) {
-		return ModelObjectUtils.transform(positionReportTypeDao.getPositionReportTypeList(positionReportType, asOfDate),PositionReportTypeBo.toImmutable);
+	public List<PositionReportType> getPositionReportTypeList(String positionReportType, String institution, String location, LocalDate asOfDate) {
+		return positionReportTypeDao.getPositionReportTypeList(positionReportType, institution, location, asOfDate);
 	}
 	
 	@Override
 	public List<PositionReportType> getPositionReportTypeListByType(String positionReportType) {
-		return ModelObjectUtils.transform(positionReportTypeDao.getPositionReportTypeListByType(positionReportType),PositionReportTypeBo.toImmutable);
+		return positionReportTypeDao.getPositionReportTypeListByType(positionReportType);
 	}
 	
-//	@Override
-//	public List<PositionReportType> getPrtListWithInstitutionCodeAndDate(String institutionCode, LocalDate asOfDate) {
-//		return ModelObjectUtils.transform(positionReportTypeDao.getPrtListWithInstitutionCodeAndDate(institutionCode, asOfDate),PositionReportTypeBo.toImmutable);
-//	}
-//
-//	@Override
-//	public List<PositionReportType> getPrtListWithLocationAndDate(String location,LocalDate asOfDate) {
-//		return ModelObjectUtils.transform(positionReportTypeDao.getPrtListWithLocationAndDate(location, asOfDate),PositionReportTypeBo.toImmutable);
-//	}
+	@Override
+	public List<PositionReportType> getPrtListWithInstitutionCodeAndDate(String institutionCode, LocalDate asOfDate) {
+		return positionReportTypeDao.getPrtListWithInstitutionCodeAndDate(institutionCode, asOfDate);
+	}
+
+	@Override
+	public List<PositionReportType> getPrtListWithLocationAndDate(String location,LocalDate asOfDate) {
+		return positionReportTypeDao.getPrtListWithLocationAndDate(location, asOfDate);
+	}
 
 	@Override
 	public PositionReportType getPositionReportType(
 			String positionReportType, LocalDate asOfDate) {
-		return PositionReportTypeBo.to(positionReportTypeDao.getPositionReportType(positionReportType, asOfDate));
+		return positionReportTypeDao.getPositionReportType(positionReportType, asOfDate);
 	}
 
 }

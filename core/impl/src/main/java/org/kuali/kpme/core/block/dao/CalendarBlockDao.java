@@ -20,7 +20,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.block.CalendarBlock;
 
 public interface CalendarBlockDao {

@@ -17,47 +17,25 @@ package org.kuali.kpme.pm.pstnqlfrtype.service;
 
 import java.util.List;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.pstnqlfrtype.PstnQlfrType;
-import org.kuali.kpme.pm.api.pstnqlfrtype.service.PstnQlfrTypeService;
-import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo;
+import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType;
 import org.kuali.kpme.pm.pstnqlfrtype.dao.PstnQlfrTypeDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PstnQlfrTypeServiceImpl implements PstnQlfrTypeService {
 
 	private PstnQlfrTypeDao pstnQlfrTypeDao;
-
-	protected List<PstnQlfrType> convertToImmutable(List<PstnQlfrTypeBo> bos) {
-		return ModelObjectUtils.transform(bos, PstnQlfrTypeBo.toImmutable);
-	}
-
 	@Override
 	public PstnQlfrType getPstnQlfrTypeById(String pmPstnQlfrTypeId) {
-		return PstnQlfrTypeBo.to(pstnQlfrTypeDao
-				.getPstnQlfrTypeById(pmPstnQlfrTypeId));
-
+		return pstnQlfrTypeDao.getPstnQlfrTypeById(pmPstnQlfrTypeId);
 	}
-
-	@Override
-	public PstnQlfrType getPstnQlfrTypeByType(String pmPstnQlfrType) {
-		return PstnQlfrTypeBo.to(pstnQlfrTypeDao
-				.getPstnQlfrTypeByType(pmPstnQlfrType));
-
-	}
-
 	public PstnQlfrTypeDao getPstnQlfrTypeDao() {
 		return pstnQlfrTypeDao;
 	}
-
 	public void setPstnQlfrTypeDao(PstnQlfrTypeDao pstnQlfrTypeDao) {
 		this.pstnQlfrTypeDao = pstnQlfrTypeDao;
 	}
-
 	@Override
-	public List<PstnQlfrType> getAllActivePstnQlfrTypes(LocalDate asOfDate) {
-		List<PstnQlfrTypeBo> bos = pstnQlfrTypeDao.getAllActivePstnQlfrTypes(asOfDate);
-		return convertToImmutable(bos);
+	public List<PstnQlfrType> getAllActivePstnQlfrTypes() {
+		return pstnQlfrTypeDao.getAllActivePstnQlfrTypes();
 	}
 
 }

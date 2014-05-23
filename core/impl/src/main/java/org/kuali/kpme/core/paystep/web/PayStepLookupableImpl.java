@@ -29,12 +29,14 @@ public class PayStepLookupableImpl extends KPMELookupableImpl {
     @Override
     public List<?> getSearchResults(LookupForm form, Map<String, String> searchCriteria, boolean unbounded) {
         String payStep = searchCriteria.get("payStep");
+        String institution = searchCriteria.get("institution");
+        String location = searchCriteria.get("location");
         String salaryGroup = searchCriteria.get("salaryGroup");
         String payGrade = searchCriteria.get("payGrade");
         String active = searchCriteria.get("active");
         String history = searchCriteria.get("history");
 
-        return HrServiceLocator.getPayStepService().getPaySteps(payStep, salaryGroup, payGrade, history, active);
+        return HrServiceLocator.getPayStepService().getPaySteps(payStep, institution, location, salaryGroup, payGrade, history, active);
     }
     
 }

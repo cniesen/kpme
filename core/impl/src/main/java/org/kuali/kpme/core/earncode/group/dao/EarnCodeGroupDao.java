@@ -18,16 +18,16 @@ package org.kuali.kpme.core.earncode.group.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
 
 public interface EarnCodeGroupDao {
-	public EarnCodeGroupBo getEarnCodeGroup(String earnCodeGroup, LocalDate asOfDate);
-	public EarnCodeGroupBo getEarnCodeGroupForEarnCode(String earnCode, LocalDate asOfDate);
-	public List<EarnCodeGroupBo> getEarnCodeGroupsForEarnCode(String earnCode, LocalDate asOfDate); // KPME-2529
-	public EarnCodeGroupBo getEarnCodeGroupSummaryForEarnCode(String earnCode, LocalDate asOfDate);
-	public EarnCodeGroupBo getEarnCodeGroup(String hrEarnGroupId);
+	public EarnCodeGroup getEarnCodeGroup(String earnCodeGroup, LocalDate asOfDate);
+	public EarnCodeGroup getEarnCodeGroupForEarnCode(String earnCode, LocalDate asOfDate);
+	public List<EarnCodeGroup> getEarnCodeGroupsForEarnCode(String earnCode, LocalDate asOfDate); // KPME-2529
+	public EarnCodeGroup getEarnCodeGroupSummaryForEarnCode(String earnCode, LocalDate asOfDate);
+	public EarnCodeGroup getEarnCodeGroup(String hrEarnGroupId);
 	public int getEarnCodeGroupCount(String earnGroup);
 	public int getNewerEarnCodeGroupCount(String earnGroup, LocalDate effdt);
-	public List<EarnCodeBo> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist);
+	public List<EarnCode> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist);
 }

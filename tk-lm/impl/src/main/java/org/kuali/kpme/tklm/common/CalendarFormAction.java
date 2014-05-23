@@ -15,32 +15,21 @@
  */
 package org.kuali.kpme.tklm.common;
 
-import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.*;
+
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.web.KPMEAction;
+import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 
 public abstract class CalendarFormAction extends KPMEAction {
-    protected static final ModelObjectUtils.Transformer<TimeBlock, TimeBlock.Builder> toTimeBlockBuilder =
-            new ModelObjectUtils.Transformer<TimeBlock, TimeBlock.Builder>() {
-                public TimeBlock.Builder transform(TimeBlock input) {
-                    return TimeBlock.Builder.create(input);
-                };
-            };
-    protected static final ModelObjectUtils.Transformer<LeaveBlock, LeaveBlock.Builder> toLeaveBlockBuilder =
-            new ModelObjectUtils.Transformer<LeaveBlock, LeaveBlock.Builder>() {
-                public LeaveBlock.Builder transform(LeaveBlock input) {
-                    return LeaveBlock.Builder.create(input);
-                };
-            };
-
-
+	
     protected void setCalendarFields(HttpServletRequest request, CalendarForm calendarForm) {
 		Set<String> calendarYears = new TreeSet<String>(Collections.reverseOrder());
 		List<CalendarEntry> calendarEntries = getCalendarEntries(calendarForm.getCalendarEntry());

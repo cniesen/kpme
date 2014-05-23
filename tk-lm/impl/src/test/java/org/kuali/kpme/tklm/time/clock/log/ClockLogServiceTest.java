@@ -22,9 +22,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 
 @IntegrationTest
 public class ClockLogServiceTest extends TKLMIntegrationTestCase {
@@ -32,17 +31,26 @@ public class ClockLogServiceTest extends TKLMIntegrationTestCase {
 	@Test
 	public void testGetUnapprovedIPWarning() throws Exception {
 		List<TimeBlock> tbLists = new ArrayList<TimeBlock>();
-		TimeBlockBo timeBlock = new TimeBlockBo();
+		TimeBlock timeBlock = new TimeBlock();
         timeBlock.setUserPrincipalId("testUser");
         timeBlock.setClockLogCreated(true);
         timeBlock.setClockLogEndId("5000");
-        tbLists.add(TimeBlockBo.to(timeBlock));
+        tbLists.add(timeBlock);		
 		
 		List<String> warningList = TkServiceLocator.getClockLogService().getUnapprovedIPWarning(tbLists);
 		Assert.assertTrue("There should be 1 warning message ", warningList.size()== 1);
 		String warning = warningList.get(0);
-		Assert.assertTrue("Warning message should be 'Warning: Action 'Clock Out' taken at 03/01/2012 08:08:08.000 was from an unapproved IP address - TEST', not " + warning,
-				warning.equals("Warning: Action 'Clock Out' taken at 03/01/2012 08:08:08.000 was from an unapproved IP address - TEST"));
+		Assert.assertTrue("Warning message should be 'Warning: Action 'Clock Out' taken at 2012-03-01 08:08:08.0 was from an unapproved IP address - TEST', not " + warning, 
+				warning.equals("Warning: Action 'Clock Out' taken at 2012-03-01 08:08:08.0 was from an unapproved IP address - TEST"));
 		
+	}
+	
+	@Test
+	public void testIsClockLogCreatedByMissedPunch() throws Exception {
+		boolean isMissedPunch = TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch("5000");
+		Assert.assertTrue("Clock Log 5000 is created by Missed Punch", isMissedPunch);
+		
+		isMissedPunch = TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch("5001");
+		Assert.assertFalse("Clock Log 5001 is NOT created by Missed Punch", isMissedPunch);
 	}
 }

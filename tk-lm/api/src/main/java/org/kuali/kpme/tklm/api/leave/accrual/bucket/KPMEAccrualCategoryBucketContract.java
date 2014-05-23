@@ -15,11 +15,12 @@
  */
 package org.kuali.kpme.tklm.api.leave.accrual.bucket;
 
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntryContract;
 
 /**
  * <p>KPMEAccrualCategoryBucketContract interface</p>
@@ -70,7 +71,7 @@ public interface KPMEAccrualCategoryBucketContract {
 	 * 
 	 * @return viewingCalendarEntry for KPMEAccrualCategoryBucketContract
 	 */
-	public CalendarEntry getLeaveCalendarDocument();
+	public CalendarEntryContract getLeaveCalendarDocument();
 
 	/**
 	 * The baseBalanceList the KPMEAccrualCategoryBucketContract is associated with

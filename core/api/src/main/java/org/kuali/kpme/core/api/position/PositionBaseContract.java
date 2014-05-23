@@ -15,16 +15,13 @@
  */
 package org.kuali.kpme.core.api.position;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 
 /**
  * <p>PositionBaseContract interface.</p>
  *
  */
-public interface PositionBaseContract extends KpmeEffectiveKeyedDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PositionBase";
+public interface PositionBaseContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The Primary Key of a PositionBase entry saved in a database
@@ -58,4 +55,15 @@ public interface PositionBaseContract extends KpmeEffectiveKeyedDataTransferObje
 	 * @return description for PositionBase
 	 */
 	public String getDescription();
+
+	 /**
+	 * History flag for PositionBase lookups 
+	 * 
+	 * <p>
+	 * history of PositionBase
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public String getHistory();
 }

@@ -38,7 +38,19 @@
 	<!-- Attribute Definitions -->
 	
     <bean id="KPMERoleMemberBo-effectiveDate" parent="KPMERoleMemberBo-effectiveDate-parentBean" />
-    <bean id="KPMERoleMemberBo-effectiveDate-parentBean" abstract="true"  parent="KpmeAttributeReference-effectiveDate" />
+    <bean id="KPMERoleMemberBo-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="effectiveDate" />
+        <property name="label" value="Effective Date" />
+        <property name="shortLabel" value="Effective Date" />
+        <property name="maxLength" value="10" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+    </bean>
     
     <bean id="KPMERoleMemberBo-roleName" parent="KPMERoleMemberBo-roleName-parentBean" />
     <bean id="KPMERoleMemberBo-roleName-parentBean" abstract="true" parent="AttributeDefinition">
@@ -55,12 +67,23 @@
     </bean>
 
     <bean id="KPMERoleMemberBo-expirationDate" parent="KPMERoleMemberBo-expirationDate-parentBean" />
-    <bean id="KPMERoleMemberBo-expirationDate-parentBean" abstract="true" parent="KpmeAttributeReference-datePicker">
+    <bean id="KPMERoleMemberBo-expirationDate-parentBean" abstract="true" parent="AttributeDefinition">
         <property name="name" value="expirationDate" />
         <property name="label" value="Expiration Date" />
         <property name="shortLabel" value="Expiration Date" />
+        <property name="maxLength" value="10" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="10" p:datePicker="true" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
     </bean>
 
     <bean id="KPMERoleMemberBo-active" parent="KPMERoleMemberBo-active-parentBean" />
-    <bean id="KPMERoleMemberBo-active-parentBean" abstract="true" parent="KpmeAttributeReference-active"/>
+    <bean id="KPMERoleMemberBo-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator">
+        <property name="name" value="active" />
+        <property name="label" value="Active?" />
+    </bean>
 </beans>

@@ -15,18 +15,14 @@
  */
 package org.kuali.kpme.tklm.time.rules.lunch.department.web;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.lookup.KPMELookupableHelperServiceImpl;
-import org.kuali.kpme.core.lookup.KpmeHrBusinessObjectLookupableHelper;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
-import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kns.lookup.HtmlData;
 import org.kuali.rice.kns.lookup.HtmlData.AnchorHtmlData;
@@ -36,7 +32,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.UrlFactory;
 
 @SuppressWarnings("deprecation")
-public class DepartmentLunchRuleLookupableHelperServiceImpl extends KpmeHrBusinessObjectLookupableHelper {
+public class DepartmentLunchRuleLookupableHelperServiceImpl extends KPMELookupableHelperServiceImpl {
 	
 	private static final long serialVersionUID = -6171434403261481651L;
     
@@ -70,22 +66,30 @@ public class DepartmentLunchRuleLookupableHelperServiceImpl extends KpmeHrBusine
 	}
 
     @Override
-    public List<? extends HrBusinessObjectContract> getSearchResults(Map<String, String> fieldValues) {
-    	
-    	List<? extends HrBusinessObjectContract> temp = new ArrayList<HrBusinessObjectContract>();
-		temp = super.getSearchResults(fieldValues);
-		
-		if (temp != null){
-			List<DeptLunchRule> results = new ArrayList<DeptLunchRule>();
-			for (int i = 0; i < temp.size(); i++) {
-				DeptLunchRule deptLunchRule = (DeptLunchRule)temp.get(i);
-				results.add(deptLunchRule);
-			}
-			
-			return TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRules(GlobalVariables.getUserSession().getPrincipalId(), results);
-		} else {
-			return temp;
-		}
-    	
+    public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
+        String principalId = fieldValues.get("principalId");
+        String jobNumber = fieldValues.get("jobNumber");
+        String dept = fieldValues.get("dept");
+        String workArea = fieldValues.get("workArea");
+        String active = fieldValues.get("active");
+        String history = fieldValues.get("history");
+        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
+        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
+
+        if (StringUtils.equals(workArea,"%") || StringUtils.equals(workArea,"*")){
+            workArea = "";
+        }
+        
+        if (StringUtils.equals(jobNumber,"%") || StringUtils.equals(jobNumber,"*")){
+        	jobNumber = "";
+        }
+        
+        //KPME-2688
+        if (StringUtils.equals(dept,"%") || StringUtils.equals(dept,"*")){
+        	dept = "";
+        }
+        
+        return TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRules(GlobalVariables.getUserSession().getPrincipalId(), dept,
+                workArea, principalId, jobNumber, TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, history);
     }
 }

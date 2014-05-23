@@ -15,17 +15,27 @@
  */
 package org.kuali.kpme.core.service.permission;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.xml.namespace.QName;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentContract;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.department.DepartmentService;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.api.workarea.service.WorkAreaService;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.department.service.DepartmentService;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.core.workarea.service.WorkAreaService;
 import org.kuali.rice.core.api.resourceloader.GlobalResourceLoader;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kim.api.KimConstants;
@@ -39,9 +49,6 @@ import org.kuali.rice.kim.api.type.KimType;
 import org.kuali.rice.kim.api.type.KimTypeInfoService;
 import org.kuali.rice.kim.framework.permission.PermissionTypeService;
 import org.kuali.rice.kns.kim.permission.PermissionTypeServiceBase;
-
-import javax.xml.namespace.QName;
-import java.util.*;
 
 @SuppressWarnings("deprecation")
 public abstract class HrPermissionServiceBase {
@@ -236,16 +243,12 @@ public abstract class HrPermissionServiceBase {
     	boolean isAuthorized = false;
     	
 		Long workArea = assignment.getWorkArea();
-        WorkArea workAreaObj = assignment.getWorkAreaObj();
-    	if (workAreaObj == null) {
-            getWorkAreaService().getWorkArea(workArea, asOfDate.toLocalDate());
-        }
+    	WorkArea workAreaObj = getWorkAreaService().getWorkAreaWithoutRoles(workArea, asOfDate.toLocalDate());
 
 		String department = workAreaObj != null ? workAreaObj.getDept() : null;
-		String groupKeyCode = workAreaObj != null ? workAreaObj.getGroupKeyCode() : null;
-    	Department departmentObj = getDepartmentService().getDepartment(department, groupKeyCode, asOfDate.toLocalDate());
+    	Department departmentObj = getDepartmentService().getDepartmentWithoutRoles(department, asOfDate.toLocalDate());
     	
-    	String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+    	String location = departmentObj != null ? departmentObj.getLocation() : null;
     	
         if (isAuthorizedByTemplateInDepartment(principalId, namespaceCode, permissionTemplateName, department, documentTypeName, documentId, documentStatus, asOfDate)
             	|| 

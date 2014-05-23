@@ -17,11 +17,13 @@ package org.kuali.kpme.pm.api.position;
 
 import java.math.BigDecimal;
 
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
+
 /**
  * <p>PositionDutyContract interface</p>
  *
  */
-public interface PositionDutyContract extends PositionDerivedContract {
+public interface PositionDutyContract extends PersistableBusinessObject {
 
     /**
      * The primary key for a PositionDuty entry saved in the database
@@ -66,5 +68,16 @@ public interface PositionDutyContract extends PositionDerivedContract {
      * @return percentage for PositionDuty
      */
 	public BigDecimal getPercentage();
+
+    /**
+     * The HR position id associated with the PositionDuty
+     *
+     * <p>
+     * hrPositionId of a PositionDuty.
+     * <p>
+     *
+     * @return hrPositionId for PositionDuty
+     */
+	public String getHrPositionId();
 	
 }

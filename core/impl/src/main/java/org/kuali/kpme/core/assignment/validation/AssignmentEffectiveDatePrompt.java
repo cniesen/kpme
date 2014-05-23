@@ -15,21 +15,20 @@
  */
 package org.kuali.kpme.core.assignment.validation;
 
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class AssignmentEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class AssignmentEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
-        AssignmentBo assignment = (AssignmentBo) pbo;
+        Assignment assignment = (Assignment) pbo;
         AssignmentDescriptionKey key = new AssignmentDescriptionKey(assignment);
         Assignment lastAssignment = HrServiceLocator.getAssignmentService().getAssignment(assignment.getPrincipalId(), key, TKUtils.END_OF_TIME);
         if (lastAssignment != null && lastAssignment.getEffectiveLocalDate() != null && assignment.getEffectiveLocalDate() != null) {

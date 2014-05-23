@@ -18,19 +18,19 @@ package org.kuali.kpme.tklm.time.rules.clocklocation.validation;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
 import org.kuali.kpme.tklm.time.rules.clocklocation.ClockLocationRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class ClockLocationRuleEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class ClockLocationRuleEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
 		boolean futureEffectiveDateExists = false;
         ClockLocationRule clr = (ClockLocationRule) pbo;
         if(clr.getEffectiveLocalDate() != null) {
-	        List<ClockLocationRule> lastClr = TkServiceLocator.getClockLocationRuleService().getNewerVersionClockLocationRule(clr.getGroupKeyCode(), clr.getDept(), clr.getWorkArea(), clr.getPrincipalId(), clr.getJobNumber(), clr.getEffectiveLocalDate());
+	        List<ClockLocationRule> lastClr = TkServiceLocator.getClockLocationRuleService().getNewerVersionClockLocationRule(clr.getDept(), clr.getWorkArea(), clr.getPrincipalId(), clr.getJobNumber(), clr.getEffectiveLocalDate());
 	   		futureEffectiveDateExists = CollectionUtils.isNotEmpty(lastClr);
         }
    		return futureEffectiveDateExists;

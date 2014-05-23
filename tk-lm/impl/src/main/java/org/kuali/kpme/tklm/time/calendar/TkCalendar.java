@@ -15,28 +15,29 @@
  */
 package org.kuali.kpme.tklm.time.calendar;
 
-import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.calendar.CalendarParent;
-import org.kuali.kpme.core.calendar.web.CalendarDay;
-import org.kuali.kpme.core.calendar.web.CalendarWeek;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.calendar.TkCalendarContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockRenderer;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timeblock.web.TimeBlockRenderer;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
-import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.kuali.kpme.core.calendar.CalendarParent;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.web.CalendarDay;
+import org.kuali.kpme.core.calendar.web.CalendarWeek;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.tklm.api.time.calendar.TkCalendarContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockRenderer;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timeblock.web.TimeBlockRenderer;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
+import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 
 public class TkCalendar extends CalendarParent implements TkCalendarContract {
 
@@ -83,9 +84,7 @@ public class TkCalendar extends CalendarParent implements TkCalendarContract {
 	                 
 	               //Set missed punch flag
 	                 for(TimeBlock tb : dayBlocks){
-	                   	TimeBlockBo timeBlockBo = TimeBlockBo.from(tb);
-	                   	timeBlockBo.assignClockedByMissedPunch();
-	                   	tb = TimeBlockBo.to(timeBlockBo);
+	                   	tb.assignClockedByMissedPunch();
 	         	 	 }
 	                    
 	                 day.setTimeblocks(dayBlocks);

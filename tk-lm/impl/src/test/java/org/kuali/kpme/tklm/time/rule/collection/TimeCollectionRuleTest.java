@@ -32,19 +32,19 @@ public class TimeCollectionRuleTest extends TKLMIntegrationTestCase{
 	public void testTimeCollectionRuleFetch() throws Exception{
 		loadData();
 		TimeCollectionRule timeCollection = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule("TEST-DEPT",
-												1234L, "%", "IU-BL", LocalDate.now());
+												1234L, "%", LocalDate.now());
 		Assert.assertTrue("Time collection rule present" , timeCollection!=null);
 
 		timeCollection = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule("TEST-ME",
-				1234L, "%", "IU-BL", LocalDate.now());
+				1234L, "%", LocalDate.now());
 		Assert.assertTrue("Time collection rule present" , timeCollection!=null);
 
 		timeCollection = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule("TEST-DEPT",
-				234L, "%", "IU-BL", LocalDate.now());
+				234L, "%", LocalDate.now());
 		Assert.assertTrue("Time collection rule present" , timeCollection!=null);
 
 		timeCollection = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule("TEST-ME",
-				234L, "%", "IU-BL", LocalDate.now());
+				234L, "%", LocalDate.now());
 		Assert.assertTrue("Time collection rule present" , timeCollection!=null);
 	}
 
@@ -57,8 +57,6 @@ public class TimeCollectionRuleTest extends TKLMIntegrationTestCase{
 		timeCollectionRule.setActive(true);
 		timeCollectionRule.setPayType("%");
 		timeCollectionRule.setTimestamp(TKUtils.getCurrentTimestamp());
-        timeCollectionRule.setUserPrincipalId("admin");
-        timeCollectionRule.setGroupKeyCode("IU-BL");
 		KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule);
 
 		TimeCollectionRule timeCollectionRule2 = new TimeCollectionRule();
@@ -68,8 +66,6 @@ public class TimeCollectionRuleTest extends TKLMIntegrationTestCase{
 		timeCollectionRule2.setActive(true);
 		timeCollectionRule2.setPayType("%");
 		timeCollectionRule2.setTimestamp(TKUtils.getCurrentTimestamp());
-        timeCollectionRule2.setUserPrincipalId("admin");
-        timeCollectionRule2.setGroupKeyCode("IU-BL");
 		KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule2);
 	}
 }

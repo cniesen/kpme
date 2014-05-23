@@ -40,8 +40,6 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import org.kuali.rice.krad.UserSession;
-import org.kuali.rice.krad.util.GlobalVariables;
 
 @Ignore
 public class TimesheetWebTestBase extends KPMEWebTestCase {
@@ -88,7 +86,6 @@ public class TimesheetWebTestBase extends KPMEWebTestCase {
         webClient.getPage(new URL(TkTestConstants.Urls.LOG_OUT_URL));
         webClient.closeAllWindows();
         HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(webClient, getTimesheetDocumentUrl(tdocId));
-        GlobalVariables.setUserSession(new UserSession(person.getPrincipalName()));
         TestAutoLoginFilter.OVERRIDE_ID = "";
         Assert.assertNotNull(page);
         HtmlUnitUtil.createTempFile(page, "Login-"+principalId);

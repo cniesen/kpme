@@ -17,24 +17,16 @@ package org.kuali.kpme.pm.position.funding.service;
 
 import java.util.List;
 
-import org.kuali.kpme.pm.api.position.funding.PositionFunding;
-import org.kuali.kpme.pm.api.position.funding.service.PositionFundingService;
-import org.kuali.kpme.pm.position.funding.PositionFundingBo;
+import org.kuali.kpme.pm.position.funding.PositionFunding;
 import org.kuali.kpme.pm.position.funding.dao.PositionFundingDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PositionFundingServiceImpl implements  PositionFundingService {
 
 	private PositionFundingDao positionFundingDao;
 	
-	protected List<PositionFunding> convertToImmutable(List<PositionFundingBo> bos) {
-		return ModelObjectUtils.transform(bos, PositionFundingBo.toImmutable);
-	}
-	
 	@Override
 	public List<PositionFunding> getFundingListForPosition(String hrPositionId) {
-		List<PositionFundingBo> bos =  positionFundingDao.getFundingListForPosition(hrPositionId);
-		return convertToImmutable(bos);
+		return positionFundingDao.getFundingListForPosition(hrPositionId);
 	}
 
 	public PositionFundingDao getPositionFundingDao() {

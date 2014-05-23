@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.earncode.security.EarnCodeSecurityBo;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -36,9 +36,9 @@ import org.kuali.rice.krad.service.KRADServiceLocator;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
-//@FunctionalTest
-//public class EarnCodeSecurityMaintenanceTest extends KPMEWebTestCase{
-	/*private static final DateTime TEST_DATE_OLD = new DateTime(2009, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
+@FunctionalTest
+public class EarnCodeSecurityMaintenanceTest extends KPMEWebTestCase{
+	private static final DateTime TEST_DATE_OLD = new DateTime(2009, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 	private static final DateTime TEST_DATE_NEW = new DateTime(2010, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 	private static final String EARN_CODE = "RGN";
 	private static final String DEPT = "TEST-DEPT";
@@ -74,7 +74,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
         String testDept = "testDept";
         String testSalGroup = "testSalGroup";
         String testEarnCode = "testEarnCode";
-        String testLocation = "testLocation";
 
 
 		HtmlPage deptEarnCodeLookup = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), HrTestConstants.Urls.EARN_CODE_SECURITY_MAINT_URL);
@@ -94,9 +93,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
         HtmlInput inputForEarnCode = HtmlUnitUtil.getInputContainingText(maintPage, "document.newMaintainableObject.earnCode");
         inputForEarnCode.setValueAttribute(testEarnCode);
-        
-        HtmlInput inputForLocation = HtmlUnitUtil.getInputContainingText(maintPage, "document.newMaintainableObject.location");
-        inputForLocation.setValueAttribute(testLocation);
 
         HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(maintPage, "submit");
@@ -106,7 +102,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
         Assert.assertTrue("Maintenance Page contains test deptErrormessage",
 				resultantPageAfterEdit.asText().contains(
 						"The specified department '"
-								+ testDept.toUpperCase()
+								+ testDept
 								+ "' does not exist."));
 		
 		Assert.assertTrue("Maintenance Page contains test SalGroupErrormessage",
@@ -118,7 +114,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 		Assert.assertTrue("Maintenance Page contains test Earncode",
 				resultantPageAfterEdit.asText().contains(
 						"The specified Earncode '"
-								+ testEarnCode.toUpperCase()
+								+ testEarnCode
 								+ "' does not exist."));
 				
 		
@@ -160,7 +156,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 		deptEarnCode.setEffectiveLocalDate(TEST_DATE_OLD.toLocalDate());
 		deptEarnCode.setLocation("BL");
 		deptEarnCode.setEarnCodeType("T");
-        deptEarnCode.setUserPrincipalId("admin");
 		deptEarnCode = KRADServiceLocator.getBusinessObjectService().save(deptEarnCode);
 		hrDeptEarnCodeId = deptEarnCode.getHrEarnCodeSecurityId();
 	}
@@ -175,7 +170,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 		deptEarnCode.setEffectiveLocalDate(TEST_DATE_NEW.toLocalDate());
 		deptEarnCode.setLocation("test");
 		deptEarnCode.setEarnCodeType("T");
-        deptEarnCode.setUserPrincipalId("admin");
         deptEarnCode = KRADServiceLocator.getBusinessObjectService().save(deptEarnCode);
 		dupTkDeptEarnCodeId = deptEarnCode.getHrEarnCodeSecurityId();
 	}
@@ -196,5 +190,5 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 	public void setUp() throws Exception {
 		super.setUp();
 		this.createNewEarnCodeSecurity();		
-	}*/
-//}
+	}
+}

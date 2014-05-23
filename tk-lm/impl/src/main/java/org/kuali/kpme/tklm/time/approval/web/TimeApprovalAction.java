@@ -15,9 +15,20 @@
  */
 package org.kuali.kpme.tklm.time.approval.web;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
@@ -25,28 +36,24 @@ import org.apache.struts.action.ActionRedirect;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.hsqldb.lib.StringUtil;
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.common.CalendarApprovalFormAction;
 import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.springframework.util.CollectionUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class TimeApprovalAction extends CalendarApprovalFormAction {
 	
@@ -58,7 +65,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         String documentId = timeApprovalActionForm.getDocumentId();
         
         setSearchFields(timeApprovalActionForm);
-
+        
         CalendarEntry calendarEntry = null;
         if (StringUtils.isNotBlank(documentId)) {
         	TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
@@ -68,26 +75,26 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 				timeApprovalActionForm.setCalendarDocument(timesheetDocument);
 			}
         } else if (StringUtils.isNotBlank(timeApprovalActionForm.getHrCalendarEntryId())) {
-        	calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(timeApprovalActionForm.getHrCalendarEntryId());
+        	calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(timeApprovalActionForm.getHrCalendarEntryId());
         } else if (StringUtils.isNotBlank(timeApprovalActionForm.getSelectedPayPeriod())) {
-        	calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(timeApprovalActionForm.getSelectedPayPeriod());
+        	calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(timeApprovalActionForm.getSelectedPayPeriod());
         } else {
-            Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
+        	Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
             if (calendar != null) {
-                calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
+                calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
             }
         }
 
         if (calendarEntry != null) {
         	timeApprovalActionForm.setHrCalendarEntryId(calendarEntry.getHrCalendarEntryId());
         	timeApprovalActionForm.setCalendarEntry(calendarEntry);
-        	timeApprovalActionForm.setBeginCalendarEntryDate(calendarEntry.getBeginPeriodFullDateTime().toDate());
-        	timeApprovalActionForm.setEndCalendarEntryDate(calendarEntry.getEndPeriodFullDateTime().minusMillis(-1).toDate());
+        	timeApprovalActionForm.setBeginCalendarEntryDate(calendarEntry.getBeginPeriodDateTime());
+        	timeApprovalActionForm.setEndCalendarEntryDate(DateUtils.addMilliseconds(calendarEntry.getEndPeriodDateTime(), -1));
 		
-			CalendarEntry prevCalendarEntry =  HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+			CalendarEntry prevCalendarEntry = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
 			timeApprovalActionForm.setPrevHrCalendarEntryId(prevCalendarEntry != null ? prevCalendarEntry.getHrCalendarEntryId() : null);
 			
-			CalendarEntry nextCalendarEntry =  HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+			CalendarEntry nextCalendarEntry = HrServiceLocator.getCalendarEntryService().getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
 			timeApprovalActionForm.setNextHrCalendarEntryId(nextCalendarEntry != null ? nextCalendarEntry.getHrCalendarEntryId() : null);
 			
 	        setCalendarFields(timeApprovalActionForm);
@@ -116,9 +123,10 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 		            docIdSearchTerm = timeApprovalActionForm.getSearchTerm();
 			}
 				
+			
 	        setApprovalTables(timeApprovalActionForm, request, pidList, docIdSearchTerm);
         }
-        setMessages(timeApprovalActionForm);
+
         return actionForward;
 	}
 	
@@ -130,10 +138,10 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 	public ActionForward selectNewPayCalendar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		TimeApprovalActionForm timeApprovalActionForm = (TimeApprovalActionForm) form;
 		CalendarEntry calendarEntry = null;
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
+		Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
         
 		if (calendar != null) {
-            calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
+            calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
         }
         
         if (calendarEntry != null) {
@@ -150,6 +158,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 	
 	public ActionForward selectNewDept(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		TimeApprovalActionForm timeApprovalActionForm = (TimeApprovalActionForm) form;
+		
 		setApprovalTables(timeApprovalActionForm, request, getPrincipalIds(timeApprovalActionForm), "");
     	
 		return mapping.findForward("basic");
@@ -157,6 +166,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 	
 	public ActionForward selectNewWorkArea(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		TimeApprovalActionForm timeApprovalActionForm = (TimeApprovalActionForm) form;
+
 		setApprovalTables(timeApprovalActionForm, request, getPrincipalIds(timeApprovalActionForm), "");
     	
 		return mapping.findForward("basic");
@@ -213,8 +223,8 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 
         //allows all employees with active assignments in the limit set in the config to be viewable by approver
         Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
-        LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate().minusDays(limit);
-        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+        LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
+        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate().minusDays(limit);
 
         return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);      
 	}
@@ -225,7 +235,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 			timeApprovalActionForm.setResultSize(0);
 			timeApprovalActionForm.setOutputString(null);
 		} else {
-		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(timeApprovalActionForm, getSubListPrincipalIds(request, principalIds), docIdSearchTerm);
+		    List<ApprovalTimeSummaryRow> approvalRows = getApprovalRows(timeApprovalActionForm, principalIds, docIdSearchTerm);
 		    timeApprovalActionForm.setOutputString(!CollectionUtils.isEmpty(approvalRows) ? approvalRows.get(0).getOutputString() : null);
 		    final String sortField = getSortField(request);
 		    if (StringUtils.isEmpty(sortField) || StringUtils.equals(sortField, "name")) {
@@ -267,26 +277,33 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 		    }
 		    
 		    String page = request.getParameter((new ParamEncoder(HrConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-		    Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*HrConstants.PAGE_SIZE;
-		    Integer endIndex = beginIndex + HrConstants.PAGE_SIZE > approvalRows.size() ? approvalRows.size() : beginIndex + HrConstants.PAGE_SIZE;
+		    Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1) * timeApprovalActionForm.getPageSize();
+		    Integer endIndex = beginIndex + timeApprovalActionForm.getPageSize() > approvalRows.size() ? approvalRows.size() : beginIndex + timeApprovalActionForm.getPageSize();
 		    for (ApprovalTimeSummaryRow approvalTimeSummaryRow : approvalRows) {
  	 	 	 	approvalTimeSummaryRow.setMissedPunchList(getMissedPunches(approvalTimeSummaryRow.getDocumentId()));
 		    }
             List<ApprovalTimeSummaryRow> sublist = new ArrayList<ApprovalTimeSummaryRow>();
             sublist.addAll(approvalRows.subList(beginIndex, endIndex));
 		    timeApprovalActionForm.setApprovalRows(sublist);
-		    timeApprovalActionForm.setResultSize(sublist.size());
+		    timeApprovalActionForm.setResultSize(approvalRows.size());
 		}		
 	}
 	
 	private List<MissedPunch> getMissedPunches(String documentId) {
-		return TkServiceLocator.getMissedPunchService().getMissedPunchByTimesheetDocumentId(documentId);
+		List<MissedPunch> missedPunchList = new ArrayList<MissedPunch>();
+		List<MissedPunchDocument> mpDoc = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(documentId);
+		if(mpDoc!=null){
+			for (MissedPunchDocument mpd : mpDoc) {
+				missedPunchList.add(mpd.getMissedPunch());
+			}
+		}
+		return missedPunchList;
 	}
 	
-	protected List<ApprovalTimeSummaryRow> getApprovalRows(TimeApprovalActionForm timeApprovalActionForm, List<String> assignmentPrincipalIds, String docIdSearchTerm) {
-    	return (List<ApprovalTimeSummaryRow>)TkServiceLocator.getTimeApproveService().getApprovalSummaryRows(timeApprovalActionForm.getSelectedPayCalendarGroup(), assignmentPrincipalIds, timeApprovalActionForm.getPayCalendarLabels(), timeApprovalActionForm.getCalendarEntry(), docIdSearchTerm);
+    protected List<ApprovalTimeSummaryRow> getApprovalRows(TimeApprovalActionForm timeApprovalActionForm, List<String> assignmentPrincipalIds, String docIdSearchTerm) {
+    	return TkServiceLocator.getTimeApproveService().getApprovalSummaryRows(timeApprovalActionForm.getSelectedPayCalendarGroup(), assignmentPrincipalIds, timeApprovalActionForm.getPayCalendarLabels(), timeApprovalActionForm.getCalendarEntry(), docIdSearchTerm);
     }
-
+	
     public ActionForward approve(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
         TimeApprovalActionForm taaf = (TimeApprovalActionForm) form;
         List<ApprovalTimeSummaryRow> lstApprovalRows = taaf.getApprovalRows();
@@ -295,12 +312,10 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
             if (ar.isApprovable() && StringUtils.equals(ar.getSelected(), "on")) {
                 String documentNumber = ar.getDocumentId();
                 TimesheetDocument tDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentNumber);
-                if (tDoc != null) {
-                    if(TkServiceLocator.getTimesheetService().isTimesheetValid(tDoc)) {
-                        TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getPrincipalId(), tDoc);
-                    } else {
-                        errorList.add( "Timesheet " + tDoc.getDocumentId() + " could not be approved as it contains errors, see time detail for more info");
-                    }
+                if (!isOverlapTimeBlocks(tDoc)) {
+                	TkServiceLocator.getTimesheetService().approveTimesheet(HrContext.getTargetPrincipalId(), tDoc);
+                } else {
+                	errorList.add("Timesheet "+tDoc.getDocumentId()+ " could not be approved as it contains overlapping time blocks");
                 }
             }
         }
@@ -313,17 +328,51 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         
         return redirect;
     }
-
-    protected void setMessages(TimeApprovalActionForm taaf) {
-        List<ApprovalTimeSummaryRow> lstApprovalRows = taaf.getApprovalRows();
-        List<String> errorList = new ArrayList<String>();
-        for (ApprovalTimeSummaryRow ar : lstApprovalRows) {
-            String documentNumber = ar.getDocumentId();
-            TimesheetDocument tDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentNumber);
-            if (tDoc != null && !TkServiceLocator.getTimesheetService().isTimesheetValid(tDoc)) {
-                    errorList.add("Timesheet " + tDoc.getDocumentId() + " could not be approved as it contains errors, see time detail for more info");
-            }
+    
+    private boolean isOverlapTimeBlocks(TimesheetDocument tDoc) {
+    	boolean isOverLap = false;
+        Map<String, String> earnCodeTypeMap = new HashMap<String, String>();
+    	List<TimeBlock> timeBlocks = tDoc.getTimeBlocks();
+        for(TimeBlock tb1 : timeBlocks) {
+        	String earnCode = tb1.getEarnCode();
+        	String earnCodeType = null;
+        	if(earnCodeTypeMap.containsKey(earnCode)) {
+        		earnCodeType = earnCodeTypeMap.get(earnCode);
+        	} else {
+       	 		EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, tDoc.getAsOfDate());
+       	 		if(earnCodeObj != null) {
+       	 			earnCodeType = earnCodeObj.getEarnCodeType();
+       	 		}
+        	}
+       	 	if(earnCodeType != null && HrConstants.EARN_CODE_TIME.equals(earnCodeType)) {
+            	DateTime beginDate = tb1.getBeginDateTime();
+            	for(TimeBlock tb2 : timeBlocks){
+            		if(!tb1.getTkTimeBlockId().equals(tb2.getTkTimeBlockId())) {
+	            		earnCode = tb2.getEarnCode();
+	            		earnCodeType = null;
+	            		if(earnCodeTypeMap.containsKey(earnCode)) {
+	                		earnCodeType = earnCodeTypeMap.get(earnCode);
+	                	} else {
+	   	        	 		EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, tDoc.getAsOfDate());
+	   	        	 		if(earnCodeObj != null) {
+	   	        	 			earnCodeType = earnCodeObj.getEarnCodeType();
+	   	        	 		}
+	                	}
+	            		if(earnCodeType != null && HrConstants.EARN_CODE_TIME.equals(earnCodeType)) {
+	                		Interval blockInterval = new Interval(tb2.getBeginDateTime(), tb2.getEndDateTime());
+	                		if(blockInterval.contains(beginDate.getMillis())) {
+	   	        			    isOverLap= true;	
+	   	        			    break;
+	                		}
+	            		}
+	            	}
+            	}
+            	if(isOverLap){
+            		break;
+            	}
+       	 	}
         }
-        taaf.setErrorMessageList(errorList);
+        return isOverLap;
     }
+	
 }

@@ -18,11 +18,8 @@ package org.kuali.kpme.pm.positionappointment.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.positionappointment.PositionAppointment;
-import org.kuali.kpme.pm.api.positionappointment.service.PositionAppointmentService;
-import org.kuali.kpme.pm.positionappointment.PositionAppointmentBo;
+import org.kuali.kpme.pm.positionappointment.PositionAppointment;
 import org.kuali.kpme.pm.positionappointment.dao.PositionAppointmentDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PositionAppointmentServiceImpl  implements PositionAppointmentService {
 
@@ -30,16 +27,12 @@ public class PositionAppointmentServiceImpl  implements PositionAppointmentServi
 	
 
 	public PositionAppointment getPositionAppointmentById(String pmPositionAppointmentId) {
-		return PositionAppointmentBo.to(positionAppointmentDao.getPositionAppointmentById(pmPositionAppointmentId));
+		return positionAppointmentDao.getPositionAppointmentById(pmPositionAppointmentId);
 	}
 
 
-	public List<PositionAppointment> getPositionAppointmentList(String positionAppointment, String description, String groupKeyCode, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-		return ModelObjectUtils.transform(positionAppointmentDao.getPositionAppointmentList(positionAppointment, description, groupKeyCode, fromEffdt, toEffdt, active, showHistory),PositionAppointmentBo.toImmutable);
-	}
-	
-	public List<PositionAppointment> getPositionAppointmentList(String positionAppointment, String groupKeyCode, LocalDate asOfDate) {
-		return ModelObjectUtils.transform(positionAppointmentDao.getPositionAppointmentList(positionAppointment, groupKeyCode, asOfDate), PositionAppointmentBo.toImmutable);
+	public List<PositionAppointment> getPositionAppointmentList(String positionAppointment, String description, String institution, String location, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
+		return positionAppointmentDao.getPositionAppointmentList(positionAppointment, description, institution, location, fromEffdt, toEffdt, active, showHistory);
 	}
 
 	public PositionAppointmentDao getPositionAppointmentDao() {

@@ -18,9 +18,8 @@ package org.kuali.kpme.tklm.time.rules.clocklocation.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.clocklocation.ClockLocationRule;
-import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.springframework.cache.annotation.Cacheable;
 
 public interface ClockLocationRuleService {
@@ -39,14 +38,14 @@ public interface ClockLocationRuleService {
                     "+ '|' + 'principalId=' + #p2" +
                     "+ '|' + 'jobNumber=' + #p3" +
                     "+ '|' + 'asOfDate=' + #p4")
-	public List<ClockLocationRule> getClockLocationRule(String groupKeyCode, String dept, Long workArea,
+	public List<ClockLocationRule> getClockLocationRule(String dept, Long workArea,
 			String principalId, Long jobNumber, LocalDate asOfDate);
 	/**
 	 * Process clock location rule based on clock log passed in
 	 * @param clockLog
 	 * @param asOfDate
 	 */
-	public void processClockLocationRule(ClockLogBo clockLog, LocalDate asOfDate);
+	public void processClockLocationRule(ClockLog clockLog, LocalDate asOfDate);
 	
 	/**
 	 * 
@@ -63,7 +62,7 @@ public interface ClockLocationRuleService {
                     "+ '|' + 'principalId=' + #p2" +
                     "+ '|' + 'jobNumber=' + #p3" +
                     "+ '|' + 'asOfDate=' + #p4")
-	public List<ClockLocationRule> getNewerVersionClockLocationRule(String groupKeyCode, String dept, Long workArea, String principalId, 
+	public List<ClockLocationRule> getNewerVersionClockLocationRule(String dept, Long workArea, String principalId, 
 			Long jobNumber, LocalDate asOfDate);
 	/**
 	 * 
@@ -80,7 +79,6 @@ public interface ClockLocationRuleService {
 	 */
 	public void populateIPAddressesForCLR(ClockLocationRule clr);
 
-    public boolean isInValidIPClockLocation(String groupKeyCode, String dept, Long workArea,String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate);
-    
-    public List<ClockLocationRule> getClockLocationRules(String userPrincipalId, List <ClockLocationRule> clockLocationRuleObjs);
+    List<ClockLocationRule> getClockLocationRules(String userPrincipalId, LocalDate fromEffdt, LocalDate toEffdt, String principalId, String jobNumber,
+                                                  String dept, String workArea, String active, String showHistory);
 }

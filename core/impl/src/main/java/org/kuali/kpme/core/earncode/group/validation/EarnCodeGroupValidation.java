@@ -23,12 +23,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
@@ -36,14 +36,14 @@ public class EarnCodeGroupValidation  extends MaintenanceDocumentRuleBase{
 
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
-		EarnCodeGroupBo earnGroup = (EarnCodeGroupBo)this.getNewDataObject();
+		EarnCodeGroup earnGroup = (EarnCodeGroup)this.getNewBo();
 		Set<String> earnCodes = new HashSet<String>();
 		int index = 0;
 		if(earnGroup.getEarnCodeGroups().size() < 1){
 			this.putGlobalError("earncode.required");
 			return false;
 		}
-		for(EarnCodeGroupDefinitionBo earnGroupDef : earnGroup.getEarnCodeGroups()){
+		for(EarnCodeGroupDefinition earnGroupDef : earnGroup.getEarnCodeGroups()){
 			if(earnCodes.contains(earnGroupDef.getEarnCode())){
 				this.putFieldError("earnCodeGroups["+index+"].earnCode", "earngroup.duplicate.earncode",earnGroupDef.getEarnCode());
 
@@ -65,23 +65,23 @@ public class EarnCodeGroupValidation  extends MaintenanceDocumentRuleBase{
 		return true;
 	}
 
-    protected void validateEarnCode(String earnCode, int index, EarnCodeGroupBo editedEarnGroup) {
+    protected void validateEarnCode(String earnCode, int index, EarnCodeGroup editedEarnGroup) {
     	BusinessObjectService businessObjectService = KRADServiceLocator.getBusinessObjectService();
     	Map<String,Object> criteria = new HashMap<String,Object>();
 		criteria.put("showSummary", "Y");
 		criteria.put("active", "Y");
-    	Collection aCol = businessObjectService.findMatching(EarnCodeGroupBo.class, criteria);
-		Iterator<EarnCodeGroupBo> itr = aCol.iterator();
+    	Collection aCol = businessObjectService.findMatching(EarnCodeGroup.class, criteria);
+		Iterator<EarnCodeGroup> itr = aCol.iterator();
 		while (itr.hasNext()) {
-			EarnCodeGroupBo earnGroup = itr.next();
+			EarnCodeGroup earnGroup = itr.next();
 			if(!earnGroup.getHrEarnCodeGroupId().equals(editedEarnGroup.getHrEarnCodeGroupId())) {
 				criteria = new HashMap<String,Object>();
 				criteria.put("hrEarnCodeGroupId", earnGroup.getHrEarnCodeGroupId());
 
-				Collection earnGroupDefs = businessObjectService.findMatching(EarnCodeGroupDefinitionBo.class, criteria);
-				Iterator<EarnCodeGroupDefinitionBo> iterator = earnGroupDefs.iterator();
+				Collection earnGroupDefs = businessObjectService.findMatching(EarnCodeGroupDefinition.class, criteria);
+				Iterator<EarnCodeGroupDefinition> iterator = earnGroupDefs.iterator();
 				while (iterator.hasNext()) {
-					EarnCodeGroupDefinitionBo def = iterator.next();
+					EarnCodeGroupDefinition def = iterator.next();
 					if(StringUtils.equals(earnCode, def.getEarnCode().toUpperCase())) {
 						String[] parameters = new String[2];
 						parameters[0] = earnCode;

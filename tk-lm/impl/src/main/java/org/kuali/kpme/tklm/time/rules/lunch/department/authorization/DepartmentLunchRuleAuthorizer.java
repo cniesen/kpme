@@ -15,14 +15,14 @@
  */
 package org.kuali.kpme.tklm.time.rules.lunch.department.authorization;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentAuthorizerBase;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
-
-import java.util.Map;
 
 @SuppressWarnings("deprecation")
 public class DepartmentLunchRuleAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
@@ -34,19 +34,17 @@ public class DepartmentLunchRuleAuthorizer extends KPMEMaintenanceDocumentAuthor
 
 		String department = StringUtils.EMPTY;
 		String location = StringUtils.EMPTY;
-		String groupKeyCode = StringUtils.EMPTY;
 		
 		if (dataObject instanceof DeptLunchRule) {
 			DeptLunchRule departmentLunchRuleObj = (DeptLunchRule) dataObject;
 			
 			if (departmentLunchRuleObj != null) {
-				department = departmentLunchRuleObj.getDept(); 
-				groupKeyCode = departmentLunchRuleObj.getGroupKeyCode();
+				department = departmentLunchRuleObj.getDept();
 				
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, departmentLunchRuleObj.getEffectiveLocalDate());
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, departmentLunchRuleObj.getEffectiveLocalDate());
 			
 				if (departmentObj != null) {
-					location = departmentObj.getGroupKey().getLocationId();
+					location = departmentObj.getLocation();
 				}
 			}
 		}

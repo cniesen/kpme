@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.location.Location;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
 @IntegrationTest

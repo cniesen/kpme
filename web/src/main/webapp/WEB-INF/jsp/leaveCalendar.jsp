@@ -19,9 +19,6 @@
 <c:set var="Form" value="${LeaveCalendarForm}" scope="request"/>
 
 <tk:tkHeader tabId="leaveCalendar" nocache="true">
-   
- 	<script type="text/javascript" src="themes/kboot/scripts/kboot.2.3.6.min.js"></script>
- 	
     <html:form action="/LeaveCalendar.do" method="POST">
         <html:hidden property="reloadValue" value="" styleId="reloadValue"/>
         <html:hidden property="documentId" value="${Form.documentId}" styleId="documentId"/>
@@ -39,7 +36,6 @@
         <script src="${ConfigProperties.js.dir}/tk.ui.js"></script>
         <script src="${ConfigProperties.js.dir}/common.calendar.backbone.js"></script>
         <script src="${ConfigProperties.js.dir}/tk.leaveCalendar.backbone.js"></script>
-        
         <script type="text/javascript">
             jQuery(document).ready(function()
             {
@@ -60,8 +56,6 @@
         
             <tk:calendar cal="${Form.leaveCalendar}" docId="${Form.documentId}" calType="leaveCalendar"/>
             
-            <a href="#" onClick="javascript: showLightboxUrl(extractUrlBase() + '/kpme/leaveBlock?&methodToCall=start&viewId=leaveUsageView', {minHeight: 300, maxWidth: 600, closeBtn: false})" >Copy Leave Usage to External Calendar</a>
-           
             <%-- if this leave calendar does not have a leave calendar document, then do not show routing sections --%>
             <c:if test="${not empty Form.documentId}">
             	<%-- render the calendar buttons --%>
@@ -107,9 +101,7 @@
                      <tr>
                         <td><label for="selectedAssignment">Assignment:</label></td>
                         <td>
-                            <div id="assignment-section">
-                                <tk:assignment assignments="${Form.assignmentDescriptions}"/>
-                            </div>
+                            <tk:assignment assignments="${Form.assignmentDescriptions}"/>
                         </td>
                     </tr>
                     <tr>
@@ -183,26 +175,11 @@
             </div>
         </html:form>
     </div>
-
 </div>
 
 <%-- Earn code template --%>
 <script type="text/template" id="earnCode-template">
-    <@ if (earnCode == "") { @>
-    <option value="<@= earnCode @>"><@= desc @></option>
-    <@ } else { @>
     <option value="<@= earnCode @>"><@= earnCode + " : " + desc @></option>
-    <@ } @>
-</script>
-
-<%-- Overtime template --%>
-<script type="text/template" id="overtime-template">
-    <option value="<@= earnCode @>"><@= earnCode + " : " + desc @></option>
-</script>
-
-<%-- Assignment template --%>
-<script type="text/template" id="assignment-template">
-    <option value="<@= assignment @>"><@= desc @></option>
 </script>
 
 <div id="lm-transfer-dialog" title="Balance Transfer" style="display:none;">

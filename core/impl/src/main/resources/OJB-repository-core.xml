@@ -36,7 +36,7 @@
 
     <!-- Accrual Category -->
     <!-- Business Keys - [accrualCategory] -->
-    <class-descriptor class="org.kuali.kpme.core.accrualcategory.AccrualCategoryBo" table="LM_ACCRUAL_CATEGORY_T">
+    <class-descriptor class="org.kuali.kpme.core.accrualcategory.AccrualCategory" table="LM_ACCRUAL_CATEGORY_T">
         <field-descriptor name="lmAccrualCategoryId"  column="LM_ACCRUAL_CATEGORY_ID" jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="LM_ACCRUAL_CATEGORY_S" />
         <field-descriptor name="accrualCategory"      column="ACCRUAL_CATEGORY"       jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="leavePlan"            column="LEAVE_PLAN"             jdbc-type="VARCHAR"     length="15" nullable="false" />
@@ -54,15 +54,14 @@
         <field-descriptor name="hasRules"             column="HAS_RULES"              jdbc-type="VARCHAR"     length="1" nullable="false" />    
         <field-descriptor name="objectId"             column="OBJ_ID"                 jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"        column="VER_NBR"                jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"      column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
-
-        <collection-descriptor name="accrualCategoryRules" element-class-ref="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false">
+        
+        <collection-descriptor name="accrualCategoryRules" element-class-ref="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object" proxy="false">
             <inverse-foreignkey field-ref="lmAccrualCategoryId" />
         </collection-descriptor>
     </class-descriptor>
 
     <!-- Accrual Category Rules -->
-    <class-descriptor class="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo" table="LM_ACCRUAL_CATEGORY_RULES_T">
+    <class-descriptor class="org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule" table="LM_ACCRUAL_CATEGORY_RULES_T">
         <field-descriptor name="lmAccrualCategoryRuleId"                column="LM_ACCRUAL_CATEGORY_RULES_ID"   jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="LM_ACCRUAL_CATEGORY_RULES_S" />
         <field-descriptor name="serviceUnitOfTime"                      column="SERVICE_UNIT_OF_TIME"           jdbc-type="VARCHAR"     length="15" />
         <field-descriptor name="start"                                  column="START_ACC"                      jdbc-type="BIGINT"      length="5" nullable="false" />
@@ -84,15 +83,13 @@
         <field-descriptor name="active"                                 column="ACTIVE"                         jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="objectId"                               column="OBJ_ID"                         jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"                          column="VER_NBR"                        jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"                        column="USER_PRINCIPAL_ID"              jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Assignment -->
     <!-- Business Keys - [principalId : jobNumber : workArea : task : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.assignment.AssignmentBo" table="TK_ASSIGNMENT_T">
+    <class-descriptor class="org.kuali.kpme.core.assignment.Assignment" table="TK_ASSIGNMENT_T">
         <field-descriptor name="tkAssignmentId" column="TK_ASSIGNMENT_ID"   jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="TK_ASSIGNMENT_S" />
         <field-descriptor name="principalId"    column="PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false" primarykey="false" />
-        <field-descriptor name="groupKeyCode"  column="GRP_KEY_CD"        jdbc-type="VARCHAR"     length="30" nullable="false" primaryKey="false" />
         <field-descriptor name="jobNumber"      column="JOB_NUMBER"         jdbc-type="BIGINT"      nullable="false" primarykey="false" />
         <field-descriptor name="effectiveDate"  column="EFFDT"              jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="workArea"       column="WORK_AREA"          jdbc-type="BIGINT"      nullable="false" primarykey="false" />
@@ -102,16 +99,15 @@
         <field-descriptor name="objectId"       column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"          jdbc-type="TIMESTAMP"   nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
-
-        <collection-descriptor name="assignmentAccounts" element-class-ref="org.kuali.kpme.core.assignment.account.AssignmentAccountBo" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
+        
+        <collection-descriptor name="assignmentAccounts" element-class-ref="org.kuali.kpme.core.assignment.account.AssignmentAccount" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-update="object" auto-delete="object">
             <inverse-foreignkey field-ref="tkAssignmentId" />
         </collection-descriptor>
     </class-descriptor>
 
     <!-- Leave Plan -->
     <!-- Business Keys - [leavePlan : effectiveDate : timestamp ] -->
-    <class-descriptor class="org.kuali.kpme.core.leaveplan.LeavePlanBo" table="LM_LEAVE_PLAN_T">
+    <class-descriptor class="org.kuali.kpme.core.leaveplan.LeavePlan" table="LM_LEAVE_PLAN_T">
         <field-descriptor name="lmLeavePlanId"      column="LM_LEAVE_PLAN_ID"   jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="LM_LEAVE_PLAN_S" />
         <field-descriptor name="leavePlan"          column="LEAVE_PLAN"         jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="calendarYearStart"  column="CAL_YEAR_START"     jdbc-type="VARCHAR"     length="5"  nullable="false" />
@@ -120,67 +116,31 @@
         <field-descriptor name="effectiveDate"      column="EFFDT"              jdbc-type="DATE"        nullable="true" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"          column="TIMESTAMP"          jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"             column="ACTIVE"             jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
- 		<field-descriptor name="batchPriorYearCarryOverStartDate"
-                                                    column="BATCH_CARRY_OVER_START_DATE"   jdbc-type="VARCHAR"     length="5" />
- 		<field-descriptor name="batchPriorYearCarryOverStartTime"
-                                                    column="BATCH_CARRY_OVER_START_TIME"   jdbc-type="TIME" />
+ 		<field-descriptor name="batchPriorYearCarryOverStartDate"    column="BATCH_CARRY_OVER_START_DATE"   jdbc-type="VARCHAR"     length="5" />
+ 		<field-descriptor name="batchPriorYearCarryOverStartTime"    column="BATCH_CARRY_OVER_START_TIME"   jdbc-type="TIME" />
         <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  dbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     
         <!-- Department -->
-    <!-- Business Keys - [dept : groupKeyCode: effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.department.DepartmentBo" table="HR_DEPT_T">
+    <!-- Business Keys - [dept : effectiveDate : timestamp] -->
+    <class-descriptor class="org.kuali.kpme.core.department.Department" table="HR_DEPT_T">
         <field-descriptor name="hrDeptId"       	column="HR_DEPT_ID"  	jdbc-type="VARCHAR"    length="60" nullable="false" primarykey="true"  autoincrement="true" sequence-name="HR_DEPT_S" />
         <field-descriptor name="dept"          		column="DEPT"        	jdbc-type="VARCHAR"    length="21" nullable="false" primarykey="false" />
         <field-descriptor name="description"    	column="DESCRIPTION" 	jdbc-type="VARCHAR"    length="30" nullable="false" primarykey="false" />
         <field-descriptor name="org"            	column="ORG"         	jdbc-type="VARCHAR"    length="10" nullable="false" primarykey="false" />
         <field-descriptor name="chart"          	column="CHART"       	jdbc-type="VARCHAR"    length="10" nullable="false" primarykey="false" />
+        <field-descriptor name="location"       	column="LOCATION"    	jdbc-type="VARCHAR"    length="20" nullable="fales" primarykey="false" />
         <field-descriptor name="payrollApproval"    column="PYRLL_APPRVL"   jdbc-type="VARCHAR"    length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="effectiveDate"  	column="EFFDT"       	jdbc-type="DATE"       nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"      	column="TIMESTAMP"   	jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"         	column="ACTIVE"      	jdbc-type="VARCHAR"    length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
-        <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="groupKeyCode"  		column="GRP_KEY_CD"         jdbc-type="VARCHAR"     length="30" nullable="false" primaryKey="false" />
     </class-descriptor>
-
-    <class-descriptor class="org.kuali.kpme.core.groupkey.HrGroupKeyBo" table="HR_GRP_KEY_T">
-        <field-descriptor name="id"       	        column="ID"  	        jdbc-type="VARCHAR"    length="60" nullable="false" primarykey="true"  autoincrement="true" sequence-name="HR_GRP_KEY_S" />
-        <field-descriptor name="groupKeyCode" 		column="GRP_KEY_CD"   	jdbc-type="VARCHAR"    length="30" nullable="false" primarykey="false" />
-        <field-descriptor name="description"    	column="DESCR"       	jdbc-type="VARCHAR"    length="255" primarykey="false" />
-        <field-descriptor name="campusCode"         column="CAMPUS_CD"     	jdbc-type="VARCHAR"    length="10"  primarykey="false" />
-        <field-descriptor name="locationId"       	column="LOCATION"    	jdbc-type="VARCHAR"    length="20"  primarykey="false" />
-        <field-descriptor name="institutionCode"   	column="INSTITUTION"	jdbc-type="VARCHAR"    length="15"  nullable="false" primarykey="false" />
-        <field-descriptor name="effectiveDate"  	column="EFFDT"       	jdbc-type="DATE"       nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
-        <field-descriptor name="timestamp"      	column="TIMESTAMP"   	jdbc-type="TIMESTAMP"  nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="active"         	column="ACTIVE"      	jdbc-type="VARCHAR"    length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR" length="40" nullable="false" />
-        <field-descriptor name="objectId"           column="OBJ_ID"         jdbc-type="VARCHAR"     index="true" />
-    </class-descriptor>
-
-
-    <!-- Department Affliation-->
-    <!-- Business Keys - [DeptAfflType : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliationBo" table="HR_DEPT_AFFL_T">
-        <field-descriptor name="hrDeptAfflId"           column="HR_DEPT_AFFL_ID"  	jdbc-type="VARCHAR"     length="60" 	  primarykey="true" autoincrement="true" sequence-name="HR_DEPT_AFFL_S" />
-        <field-descriptor name="deptAfflType"           column="DEPT_AFFL_TYP"		jdbc-type="VARCHAR"     length="60" 	  nullable="false" />
-        <field-descriptor name="active"                 column="ACTIVE"                 jdbc-type="VARCHAR"     length="1" 		  nullable="false"  conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
-        <field-descriptor name="primaryIndicator"       column="PRIMARY_INDICATOR"      jdbc-type="VARCHAR"     length="1" 		  nullable="false"  conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion"/>
-        <field-descriptor name="effectiveDate"          column="EFFDT"    		        jdbc-type="DATE"        nullable="true"	  conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
-        <field-descriptor name="timestamp"              column="TIMESTAMP"              jdbc-type="TIMESTAMP"   nullable="false"  conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="objectId"               column="OBJ_ID"          	    jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"          column="VER_NBR"                jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
-    </class-descriptor>
-
+    
     <!--  Added for Work Area Table -->
-    <class-descriptor class="org.kuali.kpme.core.workarea.WorkAreaBo" table="TK_WORK_AREA_T">
+    <class-descriptor class="org.kuali.kpme.core.workarea.WorkArea" table="TK_WORK_AREA_T">
         <field-descriptor name="tkWorkAreaId"               column="TK_WORK_AREA_ID"            jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="TK_WORK_AREA_S" />
         <field-descriptor name="workArea"                   column="WORK_AREA"                  jdbc-type="BIGINT"      autoincrement="true" sequence-name="TK_WORK_AREA_KEY_S" primarykey="false" />
-        <field-descriptor name="groupKeyCode"  		        column="GRP_KEY_CD"         jdbc-type="VARCHAR"     length="30" nullable="false" primaryKey="false" />
         <field-descriptor name="effectiveDate"              column="EFFDT"                      jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="active"                     column="ACTIVE"                     jdbc-type="VARCHAR"     length="1" nullable="false"    conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="description"                column="DESCR"                      jdbc-type="VARCHAR"     length="30" nullable="false" primarykey="false" />
@@ -197,7 +157,7 @@
 
     <!--  Job -->
     <!-- Business Keys - [principalId : jobNumber : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.job.JobBo" table="HR_JOB_T">
+    <class-descriptor class="org.kuali.kpme.core.job.Job" table="HR_JOB_T">
         <field-descriptor name="hrJobId"            column="HR_JOB_ID"          jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_JOB_S" />
         <field-descriptor name="principalId"        column="PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false"  />
         <field-descriptor name="jobNumber"          column="JOB_NUMBER"         jdbc-type="BIGINT"      nullable="false" />
@@ -207,10 +167,7 @@
         <field-descriptor name="timestamp"          column="TIMESTAMP"          jdbc-type="TIMESTAMP"   nullable="false" primarykey="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="groupKeyCode"  		column="GRP_KEY_CD"         jdbc-type="VARCHAR"     length="30" nullable="false" primaryKey="false" />
-        <!-- 
         <field-descriptor name="location"           column="LOCATION"           jdbc-type="VARCHAR"     nullable="false" length="20" />
-        -->
         <field-descriptor name="standardHours"      column="STD_HOURS"          jdbc-type="NUMERIC"     nullable="false" length="27" />
         <field-descriptor name="compRate"           column="COMP_RATE"          jdbc-type="NUMERIC"     nullable="false" length="27" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbKualiDecimalFieldConversion"/>
         <field-descriptor name="hrPayType"          column="HR_PAYTYPE"         jdbc-type="VARCHAR"     length="5" nullable="false" primaryKey="false" />
@@ -220,11 +177,10 @@
         <field-descriptor name="primaryIndicator"   column="PRIMARY_INDICATOR"  jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="active"             column="ACTIVE"             jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="flsaStatus"         column="FLSA_STATUS"        jdbc-type="VARCHAR"     nullable="true" length="15" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- EarnCode -->
     <!-- Business Keys - [earnCode : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.earncode.EarnCodeBo" table="HR_EARN_CODE_T">
+    <class-descriptor class="org.kuali.kpme.core.earncode.EarnCode" table="HR_EARN_CODE_T">
         <field-descriptor name="hrEarnCodeId"                   column="HR_EARN_CODE_ID"            jdbc-type="VARCHAR"     length="60"  primarykey="true" autoincrement="true" sequence-name="HR_EARN_CODE_S" />
         <field-descriptor name="earnCode"                       column="EARN_CODE"                  jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="active"                         column="ACTIVE"                     jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
@@ -252,12 +208,11 @@
         <field-descriptor name="countsAsRegularPay"             column="COUNT_AS_REG_PAY"           jdbc-type="VARCHAR"     length="5" nullable="false" />
         <field-descriptor name="objectId"                       column="OBJ_ID"                     jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"                  column="VER_NBR"                    jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"                column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Earn Code Group-->
     <!-- Business Keys - [earnCodeGroup : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.earncode.group.EarnCodeGroupBo" table="HR_EARN_CODE_GROUP_T">
+    <class-descriptor class="org.kuali.kpme.core.earncode.group.EarnCodeGroup" table="HR_EARN_CODE_GROUP_T">
         <field-descriptor name="hrEarnCodeGroupId"  column="HR_EARN_CODE_GROUP_ID"  jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_EARN_CODE_GROUP_S" />
         <field-descriptor name="earnCodeGroup"      column="EARN_CODE_GROUP"        jdbc-type="VARCHAR"     length="10" nullable="false" primarykey="false" />
         <field-descriptor name="active"             column="ACTIVE"                 jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
@@ -268,14 +223,13 @@
         <field-descriptor name="timestamp"          column="TIMESTAMP"              jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"       column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"      jdbc-type="VARCHAR"     length="40" nullable="false" />
 
-        <collection-descriptor name="earnCodeGroups" element-class-ref="org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-delete="object" auto-update="object" proxy="false">
+        <collection-descriptor name="earnCodeGroups" element-class-ref="org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition" collection-class="org.apache.ojb.broker.util.collections.ManageableArrayList" auto-retrieve="true" auto-delete="object" auto-update="object" proxy="false">
             <inverse-foreignkey field-ref="hrEarnCodeGroupId" />
         </collection-descriptor>
     </class-descriptor>
 
-    <class-descriptor class="org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo" table="HR_EARN_CODE_GROUP_DEF_T">
+    <class-descriptor class="org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition" table="HR_EARN_CODE_GROUP_DEF_T">
         <field-descriptor name="hrEarnCodeGroupDefId"   column="HR_EARN_CODE_GROUP_DEF_ID"  jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="HR_EARN_CODE_GROUP_DEF_S" />
         <field-descriptor name="earnCode"               column="EARN_CODE"                  jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
         <field-descriptor name="hrEarnCodeGroupId"      column="HR_EARN_CODE_GROUP_ID"      jdbc-type="VARCHAR" length="60" nullable="false" primarykey="false" />
@@ -285,7 +239,7 @@
 
     <!-- Task -->
     <!-- Business Keys - [task : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.task.TaskBo" table="TK_TASK_T">
+    <class-descriptor class="org.kuali.kpme.core.task.Task" table="TK_TASK_T">
         <field-descriptor name="tkTaskId"                   column="TK_TASK_ID"         jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="TK_TASK_S" />
         <field-descriptor name="task"                       column="TASK"               jdbc-type="BIGINT" />
         <field-descriptor name="workArea"                   column="WORK_AREA"          jdbc-type="BIGINT" />
@@ -300,7 +254,7 @@
 
     <!-- SalGroup -->
     <!-- Business Keys - [hrSalGroup : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.salarygroup.SalaryGroupBo" table="HR_SAL_GROUP_T">
+    <class-descriptor class="org.kuali.kpme.core.salarygroup.SalaryGroup" table="HR_SAL_GROUP_T">
         <field-descriptor name="hrSalGroupId"   column="HR_SAL_GROUP_ID"    jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_SAL_GROUP_S" />
         <field-descriptor name="hrSalGroup"     column="HR_SAL_GROUP"       jdbc-type="VARCHAR"     length="10" nullable="false" />
         <field-descriptor name="descr"          column="DESCR"              jdbc-type="VARCHAR"     length="30" nullable="false" />
@@ -316,17 +270,17 @@
         <field-descriptor name="benefitsEligible"        column="BNFT_ELIG"           	 jdbc-type="VARCHAR"     length="1" 		nullable="false" />
         <field-descriptor name="leaveEligible"          column="LV_ELIG"           		 jdbc-type="VARCHAR"     length="1" 		nullable="false" />
         <field-descriptor name="leavePlan"    			column="LV_PLN"			 		jdbc-type="VARCHAR"     length="15" 		nullable="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- PayType -->
-    <!-- Business Keys - [payType : groupKeyCode: effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.paytype.PayTypeBo" table="HR_PAYTYPE_T">
+    <!-- Business Keys - [payType : effectiveDate : timestamp] -->
+    <class-descriptor class="org.kuali.kpme.core.paytype.PayType" table="HR_PAYTYPE_T">
         <field-descriptor name="hrPayTypeId"    column="HR_PAYTYPE_ID"  jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_PAYTYPE_S" />
         <field-descriptor name="payType"        column="PAYTYPE"        jdbc-type="VARCHAR"     length="5" nullable="false" primarykey="false" />
         <field-descriptor name="descr"          column="DESCR"          jdbc-type="VARCHAR"     length="90" />
         <field-descriptor name="regEarnCode"    column="REG_ERN_CODE"   jdbc-type="VARCHAR"     length="15" nullable="false" />
-		<field-descriptor name="groupKeyCode"  			column="GRP_KEY_CD"        		 jdbc-type="VARCHAR"     length="30" 		nullable="false" primaryKey="false" />
+        <field-descriptor name="location"       column="LOCATION"		jdbc-type="VARCHAR"     length="15" nullable="false" />
+        <field-descriptor name="institution"    column="INSTITUTION"	jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="flsaStatus"     column="FLSA_STATUS"    jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="payFrequency"   column="PAY_FREQUENCY"  jdbc-type="VARCHAR"     length="15" nullable="false" />
         <field-descriptor name="effectiveDate"  column="EFFDT"          jdbc-type="DATE"        nullable="true" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
@@ -334,11 +288,10 @@
         <field-descriptor name="objectId"       column="OBJ_ID"         jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  column="VER_NBR"        jdbc-type="BIGINT"      locking="true" />
         <field-descriptor name="active"         column="ACTIVE"         jdbc-type="VARCHAR"     length="1" nullable="false"    conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- Assignment Account -->
-    <class-descriptor class="org.kuali.kpme.core.assignment.account.AssignmentAccountBo" table="TK_ASSIGN_ACCT_T">
+    <class-descriptor class="org.kuali.kpme.core.assignment.account.AssignmentAccount" table="TK_ASSIGN_ACCT_T">
         <field-descriptor name="tkAssignAcctId" column="TK_ASSIGN_ACCT_ID"  jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="TK_ASSIGN_ACCT_S" />
         <field-descriptor name="finCoaCd"       column="FIN_COA_CD"         jdbc-type="VARCHAR" length="2" />
         <field-descriptor name="accountNbr"     column="ACCOUNT_NBR"        jdbc-type="VARCHAR" length="7" />
@@ -353,14 +306,12 @@
         <field-descriptor name="versionNumber"  column="VER_NBR"            jdbc-type="BIGINT"  locking="true" />
         <field-descriptor name="earnCode"       column="EARN_CODE"          jdbc-type="VARCHAR" length="15" nullable="false" primarykey="false" />
         <field-descriptor name="active"         column="ACTIVE"             jdbc-type="VARCHAR" length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- Earn Code Security -->
-    <!-- Business Keys - [location : hrSalGroup : dept : earnCode : effectiveDate : timestamp : groupKeyCode] -->
-    <class-descriptor class="org.kuali.kpme.core.earncode.security.EarnCodeSecurityBo" table="HR_EARN_CODE_SECURITY_T">
+    <!-- Business Keys - [location : hrSalGroup : dept : earnCode : effectiveDate : timestamp] -->
+    <class-descriptor class="org.kuali.kpme.core.earncode.security.EarnCodeSecurity" table="HR_EARN_CODE_SECURITY_T">
         <field-descriptor name="hrEarnCodeSecurityId"   column="HR_EARN_CODE_SECURITY_ID"   jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_EARN_CODE_SECURITY_S" />
         <field-descriptor name="dept"                   column="DEPT"                       jdbc-type="VARCHAR"     length="21" />
-        <field-descriptor name="groupKeyCode"  		    column="GRP_KEY_CD"                 jdbc-type="VARCHAR"     length="30" nullable="false" primaryKey="false" />
         <field-descriptor name="hrSalGroup"             column="HR_SAL_GROUP"               jdbc-type="VARCHAR"     length="10" />
         <field-descriptor name="earnCode"               column="EARN_CODE"                  jdbc-type="VARCHAR"     length="15" />
         <field-descriptor name="earnCodeType"           column="EARN_CODE_TYPE"             jdbc-type="VARCHAR"     length="1" nullable="false" />
@@ -373,11 +324,10 @@
         <field-descriptor name="effectiveDate"          column="EFFDT"                      jdbc-type="DATE"        nullable="true" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"              column="TIMESTAMP"                  jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"                 column="ACTIVE"                     jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     <!-- PrincipalHRAttributes -->
     <!-- Business Keys - [principalId : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.principal.PrincipalHRAttributesBo" table="HR_PRINCIPAL_ATTRIBUTES_T">
+    <class-descriptor class="org.kuali.kpme.core.principal.PrincipalHRAttributes" table="HR_PRINCIPAL_ATTRIBUTES_T">
         <field-descriptor name="hrPrincipalAttributeId" column="HR_PRINCIPAL_ATTRIBUTE_ID"  jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_PRINCIPAL_ATTRIBUTE_S" />
         <field-descriptor name="principalId"            column="PRINCIPAL_ID"               jdbc-type="VARCHAR"     length="40" nullable="false" primarykey="false" />
         <field-descriptor name="leaveCalendar"          column="LEAVE_CALENDAR"             jdbc-type="VARCHAR"     length="15" />
@@ -392,12 +342,11 @@
         <field-descriptor name="workersCompEligible"    column="workers_eligible"           jdbc-type="VARCHAR"     length="1" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="objectId"               column="OBJ_ID" jdbc-type="VARCHAR" index="true" />
         <field-descriptor name="versionNumber"          column="VER_NBR" jdbc-type="BIGINT" locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"          jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
     
     <!--  Calendar Entry -->
     <!-- Business Keys - [calendarName  : beginPeriodDateTime : endPeriodDateTime] -->
-    <class-descriptor class="org.kuali.kpme.core.calendar.entry.CalendarEntryBo" table="HR_CALENDAR_ENTRIES_T">
+    <class-descriptor class="org.kuali.kpme.core.calendar.entry.CalendarEntry" table="HR_CALENDAR_ENTRIES_T">
         <field-descriptor name="hrCalendarEntryId"                column="HR_CALENDAR_ENTRY_ID"           jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_CALENDAR_ENTRIES_S" />/>
         <field-descriptor name="hrCalendarId"                       column="HR_CALENDAR_ID"                 jdbc-type="VARCHAR"     length="60" />
         <field-descriptor name="calendarName"                       column="CALENDAR_NAME"                  jdbc-type="VARCHAR"     length="30" nullable="true"/>
@@ -408,30 +357,26 @@
         <field-descriptor name="batchEmployeeApprovalDateTime"      column="BATCH_EMPLOYEE_APPROVAL_DATE"   jdbc-type="TIMESTAMP"   conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="batchSupervisorApprovalDateTime"    column="BATCH_SUPERVISOR_APPROVAL_DATE" jdbc-type="TIMESTAMP"   conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="batchPayrollApprovalDateTime"    	column="BATCH_PAYROLL_APPROVAL_DATE" 	jdbc-type="TIMESTAMP"   conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
-        <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
     </class-descriptor>
 
     <!--  Calendar -->
     <!-- Business Keys - [calendarName  : calendarTypes] -->
-    <class-descriptor class="org.kuali.kpme.core.calendar.CalendarBo" table="HR_CALENDAR_T">
+    <class-descriptor class="org.kuali.kpme.core.calendar.Calendar" table="HR_CALENDAR_T">
         <field-descriptor name="hrCalendarId"           column="HR_CALENDAR_ID"         jdbc-type="VARCHAR" length="60" primarykey="true" autoincrement="true" sequence-name="HR_CALENDAR_S" />
         <field-descriptor name="calendarName"           column="CALENDAR_NAME"          jdbc-type="VARCHAR" length="15" nullable="true" primarykey="false" />
         <field-descriptor name="calendarDescriptions"   column="CALENDAR_DESCRIPTIONS"  jdbc-type="VARCHAR" length="50" nullable="true" primarykey="false" />
         <field-descriptor name="flsaBeginDay"           column="FLSA_BEGIN_DAY"         jdbc-type="VARCHAR" length="9" />
         <field-descriptor name="flsaBeginTime"          column="FLSA_BEGIN_TIME"        jdbc-type="TIME" />
         <field-descriptor name="calendarTypes"          column="CALENDAR_TYPES"         jdbc-type="VARCHAR" length="9" />
-        <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
-
-        <!--<collection-descriptor name="calendarEntries" element-class-ref="org.kuali.kpme.core.calendar.entry.CalendarEntryBo" auto-retrieve="true" auto-update="object" auto-delete="object">
+        
+        <collection-descriptor name="calendarEntries" element-class-ref="org.kuali.kpme.core.calendar.entry.CalendarEntry" auto-retrieve="true" auto-update="object" auto-delete="object">
             <inverse-foreignkey field-ref="hrCalendarId" />
-        </collection-descriptor>-->
+        </collection-descriptor>
     </class-descriptor>
     
         <!--  Location -->
     <!-- Business Keys - [location : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.location.LocationBo" table="HR_LOCATION_T">
+    <class-descriptor class="org.kuali.kpme.core.location.Location" table="HR_LOCATION_T">
         <field-descriptor name="hrLocationId"       column="HR_LOCATION_ID"     jdbc-type="VARCHAR"     length="60" nullable="false" autoincrement="true" primarykey="true" sequence-name="HR_LOCATION_S" />
         <field-descriptor name="location"           column="LOCATION"           jdbc-type="VARCHAR"     length="20" />
         <field-descriptor name="timezone"           column="TIMEZONE"           jdbc-type="VARCHAR"     length="10" />
@@ -446,10 +391,12 @@
 
     <!--  PayGrade -->
     <!-- Business Keys - [payGrade : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.paygrade.PayGradeBo" table="HR_PAY_GRADE_T">
+    <class-descriptor class="org.kuali.kpme.core.paygrade.PayGrade" table="HR_PAY_GRADE_T">
         <field-descriptor name="hrPayGradeId"       column="HR_PAY_GRADE_ID"    jdbc-type="VARCHAR"     length="60" nullable="false" autoincrement="true" primarykey="true" sequence-name="HR_PAY_GRADE_S" />
         <field-descriptor name="payGrade"           column="PAY_GRADE"          jdbc-type="VARCHAR"     length="20" />
         <field-descriptor name="salGroup"           column="SAL_GROUP"          jdbc-type="VARCHAR"     length="20" />
+        <field-descriptor name="institution"        column="INSTITUTION"        jdbc-type="VARCHAR"     length="15" />
+        <field-descriptor name="location"           column="LOCATION"           jdbc-type="VARCHAR"     length="15"/>
         <field-descriptor name="minRate"            column="MIN_RATE"           jdbc-type="DECIMAL"  />
         <field-descriptor name="maxRate"            column="MAX_RATE"           jdbc-type="DECIMAL"  />
         <field-descriptor name="midPointRate"       column="MID_POINT_RATE"     jdbc-type="DECIMAL"  />
@@ -460,13 +407,11 @@
         <field-descriptor name="timestamp"          column="TIMESTAMP"          jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="active"             column="ACTIVE"             jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
-        <field-descriptor name="objectId"           column="OBJ_ID"             jdbc-type="VARCHAR"     index="true" />
-        <field-descriptor name="versionNumber"      column="VER_NBR"            jdbc-type="BIGINT"      locking="true" />
     </class-descriptor>
 
     <!--  Position -->
     <!-- Business Keys - [positionNumber : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.position.PositionBaseBo" table="HR_POSITION_T">
+    <class-descriptor class="org.kuali.kpme.core.position.PositionBase" table="HR_POSITION_T">
         <field-descriptor name="hrPositionId"   column="HR_POSITION_ID" jdbc-type="VARCHAR"     length="60" primarykey="true" autoincrement="true" sequence-name="HR_POSITION_ID_S" />
         <field-descriptor name="positionNumber" column="POSITION_NBR"   jdbc-type="VARCHAR"     length="20" autoincrement="true" sequence-name="HR_POSITION_S" />
         <field-descriptor name="description"    column="DESCRIPTION"    jdbc-type="VARCHAR"     length="30" nullable="false" primarykey="false" />
@@ -475,13 +420,11 @@
         <field-descriptor name="active"         column="ACTIVE"         jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="effectiveDate"  column="EFFDT"          jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
         <field-descriptor name="timestamp"      column="TIMESTAMP"      jdbc-type="TIMESTAMP"   nullable="false" conversion="org.kuali.kpme.core.TimestampConverter" />
-        <field-descriptor name="userPrincipalId"  column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
-        <field-descriptor name="groupKeyCode"  	column="GRP_KEY_CD"     jdbc-type="VARCHAR"     length="30"        nullable="false" />
     </class-descriptor>
 
     <!-- Institution -->
     <!-- Business Keys - [institutionCode : effectiveDate : timestamp] -->
-    <class-descriptor class="org.kuali.kpme.core.institution.InstitutionBo" table="PM_INSTITUTION_T">
+    <class-descriptor class="org.kuali.kpme.core.institution.Institution" table="PM_INSTITUTION_T">
         <field-descriptor name="pmInstitutionId"      	column="PM_INSTITUTION_ID"  jdbc-type="VARCHAR"     length="60" 		primarykey="true" autoincrement="true" sequence-name="PM_INSTITUTION_S" />
         <field-descriptor name="institutionCode"        column="INSTITUTION_CODE"   jdbc-type="VARCHAR"     length="15" 		nullable="false" />
         <field-descriptor name="description"  			column="DESCRIPTION"     	jdbc-type="VARCHAR"     length="50"  		nullable="true" />
@@ -490,16 +433,17 @@
         <field-descriptor name="timestamp"				column="TIMESTAMP"			jdbc-type="TIMESTAMP"	nullable="false"	conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"       		column="OBJ_ID"         	jdbc-type="VARCHAR"     index="true" />
         <field-descriptor name="versionNumber"  		column="VER_NBR"        	jdbc-type="BIGINT"      locking="true" />
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
     <!-- PayStep -->
     <!-- Business Keys - [payStep : effectiveDate : timestamp] -->
-	<class-descriptor class="org.kuali.kpme.core.paystep.PayStepBo" table="PM_PAY_STEP_T">
+	<class-descriptor class="org.kuali.kpme.core.paystep.PayStep" table="PM_PAY_STEP_T">
 		<field-descriptor name="pmPayStepId"    		column="PM_PAY_STEP_ID"			 jdbc-type="VARCHAR"     length="60" 		primarykey="true" autoincrement="true" sequence-name="PM_PAY_STEP_S"  />
         <field-descriptor name="payStep"    			column="PAY_STEP"				 jdbc-type="VARCHAR"     length="10"		nullable="false" />
+        <field-descriptor name="institution"    		column="INSTITUTION"			 jdbc-type="VARCHAR"     length="15" 		nullable="false" />
+        <field-descriptor name="location"    				column="LOCATION"					 jdbc-type="VARCHAR"     length="15" 		nullable="false" />
         <field-descriptor name="salaryGroup"    		column="SALARY_GROUP"			 jdbc-type="VARCHAR"     length="10"		nullable="false" />
-        <field-descriptor name="payGrade"    			column="PAY_GRADE"				 jdbc-type="VARCHAR"     length="20" 		nullable="false" />
+        <field-descriptor name="payGrade"    			column="PAY_GRADE"				 jdbc-type="VARCHAR"     length="10" 		nullable="false" />
         <field-descriptor name="stepNumber"   			column="STEP_NUM"				 jdbc-type="TINYINT"	 />
         <field-descriptor name="compRate"    			column="COMP_RATE"				 jdbc-type="DECIMAL"     />
         <field-descriptor name="serviceUnit"    		column="SERVICE_UNIT"			 jdbc-type="VARCHAR"     length="5"  		/>
@@ -509,7 +453,6 @@
         <field-descriptor name="timestamp"              column="TIMESTAMP"             	 jdbc-type="TIMESTAMP"   nullable="false"	conversion="org.kuali.kpme.core.TimestampConverter" />
         <field-descriptor name="objectId"               column="OBJ_ID"                	 jdbc-type="VARCHAR"     index="true" 		/>
         <field-descriptor name="versionNumber"          column="VER_NBR"               	 jdbc-type="BIGINT"      locking="true" 	/>
-        <field-descriptor name="userPrincipalId"        column="USER_PRINCIPAL_ID"       jdbc-type="VARCHAR"     length="40" nullable="false" />
     </class-descriptor>
 
 	<!-- Chart of Account -->	

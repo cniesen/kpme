@@ -21,8 +21,7 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.pm.api.positionreportsubcat.PositionReportSubCategoryContract;
-import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategoryBo;
+import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategory;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.kpme.pm.utils.PmTestConstants;
 
@@ -33,12 +32,8 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 @FunctionalTest
 public class PositionReportSubCatMaintTest extends KPMEWebTestCase {
-
 	@Test
 	public void testRequiredFields() throws Exception {
-        //KPME-3086: converted Position Report Sub Category to KRAD which broke these tests,
-        //need TODO: rewrite this code once KRAD web tests are developed
-        /*
 	  	String baseUrl = PmTestConstants.Urls.POSITION_REPORT_SUB_CAT_MAINT_NEW_URL;
 	  	HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), baseUrl);
 	  	Assert.assertNotNull(page);
@@ -68,7 +63,7 @@ public class PositionReportSubCatMaintTest extends KPMEWebTestCase {
 	@Test
 	public void testAddNew() throws Exception {
 		String prscString = "testPRSC";
-		PositionReportSubCategoryContract prsc = PmServiceLocator.getPositionReportSubCatService().getPositionReportSubCatById("1000");
+		PositionReportSubCategory prsc = PmServiceLocator.getPositionReportSubCatService().getPositionReportSubCatById("1000");
 		Assert.assertTrue("There should NOT be Position Report Sub Category with name " + prscString, prsc == null);
 		
 	  	String baseUrl = PmTestConstants.Urls.POSITION_REPORT_SUB_CAT_MAINT_NEW_URL;
@@ -104,7 +99,6 @@ public class PositionReportSubCatMaintTest extends KPMEWebTestCase {
 	  			page.asText().contains("The specified Instituion 'nonExistInst' does not exist."));
 	  	Assert.assertFalse("page text should NOT contain:\n" + "The specified Location 'nonCam' does not exist.", 
 	  			page.asText().contains("The specified Location 'nonCam' does not exist."));
-	*/
+	
 	}
-
 }

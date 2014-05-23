@@ -15,14 +15,17 @@
  */
 package org.kuali.kpme.pm.api.positiontype;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+
+import org.kuali.kpme.core.api.institution.InstitutionContract;
 
 /**
  * <p>PositionTypeContract interface</p>
  *
  */
-public interface PositionTypeContract extends KpmeEffectiveDataTransferObject {
-	
+public interface PositionTypeContract extends HrBusinessObjectContract {
+
     /**
      * The primary key for a PositionType entry saved in the database
      *
@@ -87,7 +90,7 @@ public interface PositionTypeContract extends KpmeEffectiveDataTransferObject {
      *
      * @return locationObj for PositionType
      */
-	//public LocationContract getLocationObj();
+	public LocationContract getLocationObj();
 
     /**
      * The Institution object associated with the PositionType
@@ -98,17 +101,6 @@ public interface PositionTypeContract extends KpmeEffectiveDataTransferObject {
      *
      * @return institutionObj for PositionType
      */
-	//public InstitutionContract getInstitutionObj();
-
-    /**
-     * Indicates if this Position Type is academic
-     *
-     * <p>
-     * academicFlag of a PositionType
-     * <p>
-     *
-     * @return academic for PositionType
-     */
-    public boolean isAcademicFlag();
+	public InstitutionContract getInstitutionObj();
 
 }

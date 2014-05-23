@@ -15,25 +15,25 @@
  */
 package org.kuali.kpme.tklm.leave.accrual.bucket;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.AccruedLeaveBalanceContract;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
 import org.kuali.kpme.tklm.leave.accrual.bucket.exception.MaxCarryoverException;
 import org.kuali.kpme.tklm.leave.accrual.bucket.exception.MaximumBalanceException;
 import org.kuali.kpme.tklm.leave.accrual.bucket.exception.NegativeBalanceException;
 import org.kuali.kpme.tklm.leave.accrual.bucket.exception.UsageLimitException;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 
 public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBalanceContract {
 
@@ -42,7 +42,7 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 	private YearToDateUsageLeaveBalance ytdUsage;
 	private CarryOverLeaveBalance carryOver;
 
-	public AccruedLeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributesBo principalCalendar) {
+	public AccruedLeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributes principalCalendar) {
 		super(accrualCategory, principalCalendar);
 		//bad, add asOfDate to constructor
 		asOfDate = LocalDate.now();
@@ -59,7 +59,7 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 		//TODO: Is the leave block within the previous calendar year ( carryover ), a current calendar year ( could be planned/future usage ), or 
 		// a future calendar year ( is planned/future if usage; no balance action if accrual. )
 		//DateTime prevRolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), asOfDate);
-		if(leaveBlock.getLeaveLocalDate().compareTo(asOfDate) <= 0) {
+		if(leaveBlock.getLeaveDate().compareTo(asOfDate.toDate()) <= 0) {
 			
 			try {
 				ytdUsage.add(leaveBlock);
@@ -75,7 +75,7 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 				e.printStackTrace();
 			}
 			
-			EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), leaveBlock.getLeaveLocalDate());
+			EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), LocalDate.fromDateFields(leaveBlock.getLeaveDate()));
 			if(earnCode != null) {
 				if(earnCode.getAccrualBalanceAction().equals(HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)){
 		
@@ -110,8 +110,8 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 							BigDecimal maxBalance = accrualRule.getMaxBalance();
 							BigDecimal fteSum = HrServiceLocator.getJobService().getFteSumForAllActiveLeaveEligibleJobs(leaveBlock.getPrincipalId(), leaveBlock.getLeaveLocalDate());
 							maxBalance = maxBalance.multiply(fteSum).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-
-                            EmployeeOverrideContract employeeOverride = getEmployeeOverride(leaveBlock, "MB");
+							
+							EmployeeOverride employeeOverride = getEmployeeOverride(leaveBlock, "MB");
 							if(employeeOverride != null)
 								maxBalance = new BigDecimal(employeeOverride.getOverrideValue());
 							
@@ -150,7 +150,7 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 	@Override
 	public void remove(LeaveBlock leaveBlock) throws MaximumBalanceException, NegativeBalanceException {
 
-		if(leaveBlock.getLeaveLocalDate().compareTo(asOfDate) <= 0) {
+		if(leaveBlock.getLeaveDate().compareTo(asOfDate.toDate()) <= 0) {
 		
 			try {
 				ytdUsage.remove(leaveBlock);
@@ -167,7 +167,7 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 			}
 			
 			AccrualCategoryRule accrualRule = getAccrualCategoryRuleForDate(leaveBlock.getLeaveLocalDate());
-			EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), leaveBlock.getLeaveLocalDate());
+			EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), LocalDate.fromDateFields(leaveBlock.getLeaveDate()));
 			if(earnCode != null) {
 				if(earnCode.getAccrualBalanceAction().equals(HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)){
 					//validate and add to / subtract from balances
@@ -180,8 +180,8 @@ public class AccruedLeaveBalance extends LeaveBalance implements AccruedLeaveBal
 							BigDecimal maxBalance = accrualRule.getMaxBalance();
 							BigDecimal fteSum = HrServiceLocator.getJobService().getFteSumForAllActiveLeaveEligibleJobs(leaveBlock.getPrincipalId(), leaveBlock.getLeaveLocalDate());
 							maxBalance = maxBalance.multiply(fteSum).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-
-                            EmployeeOverrideContract employeeOverride = getEmployeeOverride(leaveBlock, "MB");
+							
+							EmployeeOverride employeeOverride = getEmployeeOverride(leaveBlock, "MB");
 							if(employeeOverride != null)
 								maxBalance = new BigDecimal(employeeOverride.getOverrideValue());
 							

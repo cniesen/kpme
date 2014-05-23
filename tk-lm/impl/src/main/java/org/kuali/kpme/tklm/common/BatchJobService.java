@@ -15,28 +15,13 @@
  */
 package org.kuali.kpme.tklm.common;
 
-import java.util.Date;
-import java.util.List;
-
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
-import org.kuali.kpme.tklm.time.batch.BatchJobStatus;
-import org.quartz.JobDetail;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.quartz.SchedulerException;
 
 public interface BatchJobService {
     
-    public static final String PENDING_JOB_STATUS_CODE = "Pending";
-    public static final String SCHEDULED_JOB_STATUS_CODE = "Scheduled";
-    public static final String RUNNING_JOB_STATUS_CODE = "Running";
-    public static final String SUCCEEDED_JOB_STATUS_CODE = "Succeeded";
-    public static final String FAILED_JOB_STATUS_CODE = "Failed";
-    public static final String CANCELLED_JOB_STATUS_CODE = "Cancelled";
-    
-    public static final String SCHEDULED_GROUP = "scheduled";
-	
     void scheduleInitiateJobs(CalendarEntry calendarEntry) throws SchedulerException;
     
     void scheduleInitiateJobs(CalendarEntry calendarEntry, DateTime scheduleDate) throws SchedulerException;
@@ -72,16 +57,5 @@ public interface BatchJobService {
 	void scheduleLeaveCalendarDelinquencyJobs(CalendarEntry calendarEntry) throws SchedulerException;
 	
 	void scheduleLeaveCalendarDelinquencyJobs(CalendarEntry calendarEntry, DateTime scheduleDate) throws SchedulerException;
-
-    void scheduleClockedInEmployeeJob(DateTime scheduleDate) throws SchedulerException;
     
-    List<BatchJobStatus> getJobs(String jobNm, String jobStatus, String hrCalendarEntryId, Date startDate, Date endDate) throws SchedulerException;
-    
-    public void updateStatus(JobDetail jobDetail, String jobStatus);
-
-    public String getStatus(JobDetail jobDetail);
-    
-    public List<String> getJobStatuses();
-    
-    public boolean isJobRunning(String jobName);
 }

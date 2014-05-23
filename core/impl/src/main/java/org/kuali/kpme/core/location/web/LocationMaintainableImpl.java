@@ -23,22 +23,21 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.location.Location;
-import org.kuali.kpme.core.api.location.LocationContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.role.location.LocationPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.service.HrServiceLocatorInternal;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.role.Role;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.Maintainable;
+import org.kuali.rice.kns.web.ui.Section;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
@@ -49,44 +48,48 @@ public class LocationMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return HrServiceLocatorInternal.getLocationInternalService().getLocationWithRoleData(id);
+		return HrServiceLocator.getLocationService().getLocation(id);
+	}
+	
+	@Override
+	@SuppressWarnings("rawtypes")
+	public List getSections(MaintenanceDocument document, Maintainable oldMaintainable) {
+		List sections = super.getSections(document, oldMaintainable);
+		
+		for (Object obj : sections) {
+			Section sec = (Section) obj;
+			if (sec.getSectionId().equals("inactiveRoleMembers")) {
+            	sec.setHidden(!document.isOldBusinessObjectInDocument());
+            }
+		}
+		
+		return sections;
 	}
 	
     @Override
     public void processAfterEdit(MaintenanceDocument document, Map<String, String[]> parameters) {
-        LocationBo oldMaintainableObject = (LocationBo) document.getOldMaintainableObject().getDataObject();
-        LocationBo newMaintainableObject = (LocationBo) document.getNewMaintainableObject().getDataObject();
+        Location oldMaintainableObject = (Location) document.getOldMaintainableObject().getBusinessObject();
+        Location newMaintainableObject = (Location) document.getNewMaintainableObject().getBusinessObject();
         
-        LocationBo oldLocation = oldMaintainableObject;
+        Location oldLocation = oldMaintainableObject;
         if(StringUtils.isNotBlank(oldMaintainableObject.getHrLocationId())) {
-        	oldLocation = HrServiceLocatorInternal.getLocationInternalService().getLocationWithRoleData(oldMaintainableObject.getHrLocationId());
+        	oldLocation = HrServiceLocator.getLocationService().getLocation(oldMaintainableObject.getHrLocationId());
         } else {
-        	oldLocation = HrServiceLocatorInternal.getLocationInternalService().getLocationWithRoleData(oldMaintainableObject.getLocation(), oldMaintainableObject.getEffectiveLocalDate());
+        	oldLocation = HrServiceLocator.getLocationService().getLocation(oldMaintainableObject.getLocation(), oldMaintainableObject.getEffectiveLocalDate());
         }
-
-        //KPME-3312: reinitiate all collection lists so old and new collections are unique
-        List<LocationPrincipalRoleMemberBo> oldRoleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
-        oldRoleMembers.addAll(oldLocation.getRoleMembers());
-        oldMaintainableObject.setRoleMembers(oldRoleMembers);
-
-        List<LocationPrincipalRoleMemberBo> oldInactiveRoleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
-        oldInactiveRoleMembers.addAll(oldLocation.getInactiveRoleMembers());
-        oldMaintainableObject.setInactiveRoleMembers(oldInactiveRoleMembers);        
         
-        LocationBo newLocation = newMaintainableObject;
+        oldMaintainableObject.setRoleMembers(oldLocation.getRoleMembers());
+        oldMaintainableObject.setInactiveRoleMembers(oldLocation.getInactiveRoleMembers());        
+        
+        Location newLocation = newMaintainableObject;
         if(StringUtils.isNotBlank(newMaintainableObject.getHrLocationId())) {
-        	newLocation = HrServiceLocatorInternal.getLocationInternalService().getLocationWithRoleData(newMaintainableObject.getHrLocationId());
+        	newLocation = HrServiceLocator.getLocationService().getLocation(newMaintainableObject.getHrLocationId());
         } else {
-        	newLocation = HrServiceLocatorInternal.getLocationInternalService().getLocationWithRoleData(newMaintainableObject.getLocation(), newMaintainableObject.getEffectiveLocalDate());
+        	newLocation = HrServiceLocator.getLocationService().getLocation(newMaintainableObject.getLocation(), newMaintainableObject.getEffectiveLocalDate());
         }
-
-        List<LocationPrincipalRoleMemberBo> newRoleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
-        newRoleMembers.addAll(newLocation.getRoleMembers());
-        newMaintainableObject.setRoleMembers(newRoleMembers);
-
-        List<LocationPrincipalRoleMemberBo> newInactiveRoleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
-        newInactiveRoleMembers.addAll(newLocation.getInactiveRoleMembers());
-        newMaintainableObject.setInactiveRoleMembers(newInactiveRoleMembers);
+        
+        newMaintainableObject.setRoleMembers(newLocation.getRoleMembers());
+        newMaintainableObject.setInactiveRoleMembers(newLocation.getInactiveRoleMembers());
 
         List<Location> locationList = HrServiceLocator.getLocationService().getNewerVersionLocation(newLocation.getLocation(), newLocation.getEffectiveLocalDate());
         if (locationList.size() > 0) {
@@ -99,7 +102,7 @@ public class LocationMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
 	protected void setNewCollectionLineDefaultValues(String collectionName, PersistableBusinessObject addLine) {
-    	LocationBo location = (LocationBo) this.getBusinessObject();
+    	Location location = (Location) this.getBusinessObject();
     	
     	if (location.getEffectiveDate() != null) {
 	    	if (addLine instanceof RoleMemberBo) {
@@ -132,7 +135,7 @@ public class LocationMaintainableImpl extends HrBusinessObjectMaintainableImpl {
 
     @Override
 	public void customSaveLogic(HrBusinessObject hrObj) {
-		LocationBo location = (LocationBo) hrObj;
+		Location location = (Location) hrObj;
 		
 		List<LocationPrincipalRoleMemberBo> newInactiveRoleMembers = createInactiveRoleMembers(location.getRoleMembers());
 		List<LocationPrincipalRoleMemberBo> roleList = new ArrayList<LocationPrincipalRoleMemberBo> ();
@@ -202,4 +205,12 @@ public class LocationMaintainableImpl extends HrBusinessObjectMaintainableImpl {
         return inactiveRoleMembers;
     }
         
+    @Override
+    public Map<String, String> populateNewCollectionLines(Map<String, String> fieldValues,
+			MaintenanceDocument maintenanceDocument, String methodToCall) {
+    	if(fieldValues.containsKey("roleMembers.roleName") && StringUtils.isEmpty(fieldValues.get("roleMembers.roleName"))) {
+    		fieldValues.put("roleMembers.roleName", null);
+    	}
+    	return super.populateNewCollectionLines(fieldValues, maintenanceDocument, methodToCall);
+    }   
 }

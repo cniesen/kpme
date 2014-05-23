@@ -15,44 +15,34 @@
  */
 package org.kuali.kpme.core.accrualcategory.service;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.accrualcategory.dao.AccrualCategoryDao;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryService;
 import org.kuali.kpme.core.api.accrualcategory.AccrualEarnInterval;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-
-import java.util.List;
+import org.kuali.kpme.core.util.HrConstants;
 
 public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 
 	@SuppressWarnings("unused")
 	private static final Logger LOG = Logger.getLogger(AccrualCategoryServiceImpl.class);
 	private AccrualCategoryDao accrualCategoryDao;
-    private static final ModelObjectUtils.Transformer<AccrualCategoryBo, AccrualCategory> toAccrualCategory =
-            new ModelObjectUtils.Transformer<AccrualCategoryBo, AccrualCategory>() {
-                public AccrualCategory transform(AccrualCategoryBo input) {
-                    return AccrualCategoryBo.to(input);
-                };
-            };
+	public AccrualCategoryServiceImpl() {
+	}
 
 	public AccrualCategory getAccrualCategory(String accrualCategory, LocalDate asOfDate) {
-		return AccrualCategoryBo.to(accrualCategoryDao.getAccrualCategory(accrualCategory, asOfDate));
+		return accrualCategoryDao.getAccrualCategory(accrualCategory, asOfDate);
 	}
 
 	@Override
-	public AccrualCategory saveOrUpdate(AccrualCategory accrualCategory) {
-        if (accrualCategory == null) {
-            return null;
-        }
-        return AccrualCategoryBo.to(KRADServiceLocator.getBusinessObjectService().save(AccrualCategoryBo.from(accrualCategory)));
+	public void saveOrUpdate(AccrualCategory accrualCategory) {
+		accrualCategoryDao.saveOrUpdate(accrualCategory);
 	}
 
 	public AccrualCategoryDao getAccrualCategoryDao() {
@@ -65,17 +55,17 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 
 	@Override
 	public AccrualCategory getAccrualCategory(String lmAccrualCategoryId) {
-		return AccrualCategoryBo.to(accrualCategoryDao.getAccrualCategory(lmAccrualCategoryId));
+		return accrualCategoryDao.getAccrualCategory(lmAccrualCategoryId);
 	}
 
 	@Override
 	public List <AccrualCategory> getActiveAccrualCategories(LocalDate asOfDate){
-		return ModelObjectUtils.transform(accrualCategoryDao.getActiveAccrualCategories(asOfDate), toAccrualCategory);
+		return accrualCategoryDao.getActiveAccrualCategories(asOfDate);
 	}
 
     @Override
     public List<AccrualCategory> getAccrualCategories(String accrualCategory, String accrualCatDescr, String leavePlan, String accrualEarnInterval, String unitOfTime, String minPercentWorked, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-        return ModelObjectUtils.transform(accrualCategoryDao.getAccrualCategories(accrualCategory, accrualCatDescr, leavePlan, accrualEarnInterval, unitOfTime, minPercentWorked, fromEffdt, toEffdt, active, showHistory), toAccrualCategory);
+        return accrualCategoryDao.getAccrualCategories(accrualCategory, accrualCatDescr, leavePlan, accrualEarnInterval, unitOfTime, minPercentWorked, fromEffdt, toEffdt, active, showHistory);
     }
    
 
@@ -84,28 +74,32 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 		if(principalHRAttributes == null){
 			LOG.error("Cannot find principal hr attributes for "+principalId);
 			return;
+//			throw new RuntimeException("Cannot find principal hr attributes for "+principalId);
 		}
 		//Grab the service date
 		LocalDate serviceDate = principalHRAttributes.getServiceLocalDate();
 		if(serviceDate == null){
 			LOG.error("Cannot find service date on principal hr attribute for "+principalId);
 			return;
+//			throw new RuntimeException("Cannot find service date on principal hr attribute for "+principalId);
 		}
 		
 		String leavePlanStr = principalHRAttributes.getLeavePlan();
 		if(StringUtils.isBlank(leavePlanStr)){
 			LOG.error("Cannot find leave plan for "+principalId);
 			return;
+//			throw new RuntimeException("Cannot find leave plan for "+principalId);
 		}
-		LeavePlanContract leavePlan = HrServiceLocator.getLeavePlanService().getLeavePlan(leavePlanStr, asOfDate);
+		LeavePlan leavePlan = HrServiceLocator.getLeavePlanService().getLeavePlan(leavePlanStr, asOfDate);
 		if(leavePlan == null){
 			LOG.error("Cannot find leave plan object for leave plan " + leavePlanStr);
 			return;
+//			throw new RuntimeException("Cannot find leave plan object for leave plan " + leavePlanStr);
 		}
 
 		//Grab all the accrual categories for leave plan
-		List<AccrualCategoryBo> accrualCategories = accrualCategoryDao.getActiveAccrualCategories(leavePlanStr, asOfDate);
-		for(AccrualCategoryBo accrualCat : accrualCategories){
+		List<AccrualCategory> accrualCategories = accrualCategoryDao.getActiveAccrualCategories(leavePlanStr, asOfDate); 
+		for(AccrualCategory accrualCat : accrualCategories){
 			//if no rules continue
 			if(StringUtils.equals(accrualCat.getAccrualEarnInterval(), AccrualEarnInterval.NO_ACCRUAL.getCode())
 					|| accrualCat.getAccrualCategoryRules().isEmpty()){
@@ -114,21 +108,23 @@ public class AccrualCategoryServiceImpl implements AccrualCategoryService {
 			String serviceUnitOfTime = accrualCat.getUnitOfTime();
 			accrualCat.getAccrualEarnInterval();
 			
+			
+			
 		}
 	}	
 
-	public List<AccrualCategory> getActiveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(accrualCategoryDao.getActiveAccrualCategories(leavePlan, asOfDate), toAccrualCategory);
+	public List <AccrualCategory> getActiveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
+    	return accrualCategoryDao.getActiveAccrualCategories(leavePlan, asOfDate);
     }
     
 	 @Override
-    public List<AccrualCategory> getActiveLeaveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(accrualCategoryDao.getActiveLeaveAccrualCategoriesForLeavePlan(leavePlan, asOfDate), toAccrualCategory);
+    public List <AccrualCategory> getActiveLeaveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
+    	return accrualCategoryDao.getActiveLeaveAccrualCategoriesForLeavePlan(leavePlan, asOfDate);
     }
     
     @Override
-    public List<AccrualCategory> getInActiveLeaveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(accrualCategoryDao.getInActiveLeaveAccrualCategoriesForLeavePlan(leavePlan, asOfDate), toAccrualCategory);
+    public List <AccrualCategory> getInActiveLeaveAccrualCategoriesForLeavePlan(String leavePlan, LocalDate asOfDate) {
+    	return accrualCategoryDao.getInActiveLeaveAccrualCategoriesForLeavePlan(leavePlan, asOfDate);
     }
 
 }

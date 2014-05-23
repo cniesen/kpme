@@ -15,63 +15,108 @@
  */
 package org.kuali.kpme.pm.pstnrptgrpsubcat.validation;
 
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
-import org.kuali.kpme.pm.api.positionreportsubcat.PositionReportSubCategoryContract;
-import org.kuali.kpme.pm.pstnrptgrpsubcat.PositionReportGroupSubCategoryBo;
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
+import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategory;
+import org.kuali.kpme.pm.pstnrptgrpsubcat.PositionReportGroupSubCategory;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
-public class PstnRptGrpSubCatValidation extends HrKeyedBusinessObjectValidation {
+public class PstnRptGrpSubCatValidation extends MaintenanceDocumentRuleBase {
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Report Group Sub Category");
-		PositionReportGroupSubCategoryBo prgsc = (PositionReportGroupSubCategoryBo) this.getNewDataObject();
+		PositionReportGroupSubCategory prgsc = (PositionReportGroupSubCategory) this.getNewDataObject();
 		
 		if (prgsc != null) {
 			valid = true;
 			valid &= this.validatePstnRptSubCat(prgsc);
+			valid &= this.validateInstitution(prgsc);
+			valid &= this.validateLocation(prgsc);
 			valid &= this.validatePstnRptGroup(prgsc);
 			
 		}
 		return valid;
 	}
 	
-	private boolean validatePstnRptSubCat(PositionReportGroupSubCategoryBo prgsc) {
+	private boolean validatePstnRptSubCat(PositionReportGroupSubCategory prgsc) {
 		// validatePositionReportSubCat handles wild card for Institution and Location
-		PositionReportSubCategoryContract aPrsc = PmServiceLocator.getPositionReportSubCatService().getActivePositionReportSubCat(prgsc.getPositionReportSubCat(), prgsc.getEffectiveLocalDate());
+		PositionReportSubCategory aPrsc = PmServiceLocator.getPositionReportSubCatService().getPositionReportSubCat(prgsc.getPositionReportSubCat(), prgsc.getEffectiveLocalDate());
 		String errorMes = "PositionReportSubCategory '" + prgsc.getPositionReportSubCat() + "'";
 		if(aPrsc == null) {
 			this.putFieldError("dataObject.positionReportSubCat", "error.existence", errorMes);
 			return false;
-		} 
-//		else if(!StringUtils.equals(aPrsc.getGroupKeyCode(), prgsc.getGroupKeyCode())) {
-//			String[] params = new String[3];
-//			params[0] = prgsc.getGroupKeyCode();
-//			params[1] = aPrsc.getGroupKeyCode();
-//			params[2] = errorMes;
-//			this.putFieldError("dataObject.groupKeyCode", "groupKeyCode.inconsistent", params);
-//			return false;
-//		}
+		} else {
+			if(!ValidationUtils.wildCardMatch(aPrsc.getInstitution(), prgsc.getInstitution())) {
+				String[] params = new String[3];
+				params[0] = prgsc.getInstitution();
+				params[1] = aPrsc.getInstitution();
+				params[2] = errorMes;
+				this.putFieldError("dataObject.institution", "institution.inconsistent", params);
+				return false;
+			}
+			if(!ValidationUtils.wildCardMatch(aPrsc.getLocation(), prgsc.getLocation())) {
+				String[] params = new String[3];
+				params[0] = prgsc.getLocation();
+				params[1] = aPrsc.getLocation();
+				params[2] = errorMes;
+				this.putFieldError("dataObject.location", "location.inconsistent", params);
+				return false;
+			}
+		}
 		return true;
 	}
 	
-	private boolean validatePstnRptGroup(PositionReportGroupSubCategoryBo prgsc) {
-		PositionReportGroupContract aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(prgsc.getPositionReportGroup(), prgsc.getEffectiveLocalDate());
+	private boolean validateInstitution(PositionReportGroupSubCategory prgsc) {
+		if (StringUtils.isNotEmpty(prgsc.getInstitution())
+				&& !ValidationUtils.validateInstitution(prgsc.getInstitution(), prgsc.getEffectiveLocalDate())) {
+			this.putFieldError("dataObject.institution", "error.existence", "Instituion '"
+					+ prgsc.getInstitution() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validateLocation(PositionReportGroupSubCategory prgsc) {
+		if (StringUtils.isNotEmpty(prgsc.getLocation())
+				&& !ValidationUtils.validateLocation(prgsc.getLocation(), prgsc.getEffectiveLocalDate())) {
+			this.putFieldError("dataObject.location", "error.existence", "Location '"
+					+ prgsc.getLocation() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validatePstnRptGroup(PositionReportGroupSubCategory prgsc) {
+		PositionReportGroup aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(prgsc.getPositionReportGroup(), prgsc.getEffectiveLocalDate());
 		String errorMes = "PositionReportGroup '" + prgsc.getPositionReportGroup() + "'";
 		if(aPrg == null) {
 			this.putFieldError("dataObject.positionReportGroup", "error.existence", errorMes);
 			return false;
+		} else {
+			if(!ValidationUtils.wildCardMatch(aPrg.getInstitution(), prgsc.getInstitution())) {
+				String[] params = new String[3];
+				params[0] = prgsc.getInstitution();
+				params[1] = aPrg.getInstitution();
+				params[2] = errorMes;
+				this.putFieldError("dataObject.institution", "institution.inconsistent", params);
+				return false;
+			}
+			if(!ValidationUtils.wildCardMatch(aPrg.getLocation(), prgsc.getLocation())) {
+				String[] params = new String[3];
+				params[0] = prgsc.getLocation();
+				params[1] = aPrg.getLocation();
+				params[2] = errorMes;
+				this.putFieldError("dataObject.location", "location.inconsistent", params);
+				return false;
+			}
 		} 
-//		else if(!StringUtils.equals(aPrg.getGroupKeyCode(), prgsc.getGroupKeyCode())) {
-//			String[] params = new String[3];
-//			params[0] = aPrg.getGroupKeyCode();
-//			params[1] = aPrg.getGroupKeyCode();
-//			params[2] = errorMes;
-//			this.putFieldError("dataObject.groupKeyCode", "groupKeyCode.inconsistent", params);
-//			return false;
-//		}		
+		
 		return true;
 		
 	}

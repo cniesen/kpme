@@ -20,16 +20,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.job.Job;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.batch.BatchJobUtil;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.calendar.dao.LeaveCalendarDao;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -40,6 +41,7 @@ import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
+import org.kuali.rice.kew.api.action.ActionRequest;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
@@ -47,9 +49,7 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LeaveCalendarServiceImpl implements LeaveCalendarService {
 	
@@ -59,7 +59,7 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
 
     @Override
     public LeaveCalendarDocument getLeaveCalendarDocument(String documentId) {
-        LeaveCalendarDocument lcd;
+        LeaveCalendarDocument lcd = null;
         LeaveCalendarDocumentHeader lcdh = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(documentId);
 
         if (lcdh != null) {
@@ -75,7 +75,7 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
         lcd.setLeaveBlocks(leaveBlocks);
 
         // Fetching assignments
-        Map<LocalDate, List<Assignment>> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(lcdh.getPrincipalId(), lcd.getCalendarEntry());
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(lcdh.getPrincipalId(), lcd.getCalendarEntry());
         lcd.setAssignments(assignments);
         
         return lcd;
@@ -124,8 +124,8 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
     }
     
     protected LeaveCalendarDocument initiateWorkflowDocument(String principalId, DateTime payBeginDate, DateTime payEndDate, CalendarEntry calendarEntry, String documentType, String title) throws WorkflowException {
-        LeaveCalendarDocument leaveCalendarDocument;
-        WorkflowDocument workflowDocument;
+        LeaveCalendarDocument leaveCalendarDocument = null;
+        WorkflowDocument workflowDocument = null;
 
         workflowDocument =  WorkflowDocumentFactory.createDocument(principalId, documentType, title);
 
@@ -151,14 +151,12 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
     
     private void updateLeaveBlockDocumentIds(String principalId, LocalDate beginDate, LocalDate endDate, String documentId) {
         List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, beginDate, endDate);
-        List<LeaveBlock> lbToUpdate = new ArrayList<LeaveBlock>();
+        
         for (LeaveBlock leaveBlock : leaveBlocks) {
-            LeaveBlock.Builder builder = LeaveBlock.Builder.create(leaveBlock);
-            builder.setDocumentId(documentId);
-            lbToUpdate.add(builder.build());
+        	leaveBlock.setDocumentId(documentId);
         }
         
-        LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(lbToUpdate);
+        LmServiceLocator.getLeaveBlockService().saveLeaveBlocks(leaveBlocks);
     }
     
     private void updatePlannedLeaveBlocks(String principalId, LocalDate beginDate, LocalDate endDate) {
@@ -204,7 +202,7 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
     protected void loadLeaveCalendarDocumentData(LeaveCalendarDocument ldoc, String principalId, CalendarEntry calEntry) {
         List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForDocumentId(ldoc.getDocumentId());
         ldoc.setLeaveBlocks(leaveBlocks);
-        Map<LocalDate, List<Assignment>> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalId, calEntry);
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalId, calEntry);
         ldoc.setAssignments(assignments);
     }
 
@@ -221,11 +219,11 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
 			String principalId, CalendarEntry calendarEntry) {
 		LeaveCalendarDocument leaveCalendarDocument = new LeaveCalendarDocument(calendarEntry);
 		LeaveCalendarDocumentHeader lcdh = new LeaveCalendarDocumentHeader();
-		lcdh.setBeginDate(calendarEntry.getBeginPeriodFullDateTime().toDate());
-		lcdh.setEndDate(calendarEntry.getEndPeriodFullDateTime().toDate());
+		lcdh.setBeginDate(calendarEntry.getBeginPeriodDateTime());
+		lcdh.setEndDate(calendarEntry.getEndPeriodDateTime());
 		leaveCalendarDocument.setDocumentHeader(lcdh);
 		// Fetching assignments
-        Map<LocalDate, List<Assignment>> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalId, calendarEntry);
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalId, calendarEntry);
         leaveCalendarDocument.setAssignments(assignments);
 		return leaveCalendarDocument;
 	}
@@ -281,11 +279,12 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
     }
 
     protected void leaveCalendarDocumentAction(String action, String principalId, LeaveCalendarDocument leaveCalendarDocument) {
-        WorkflowDocument wd;
+        WorkflowDocument wd = null;
         if (leaveCalendarDocument != null) {
             String rhid = leaveCalendarDocument.getDocumentId();
             wd = WorkflowDocumentFactory.loadDocument(principalId, rhid);
-
+            List<ActionRequest> actionRequests = KewApiServiceLocator.getWorkflowDocumentService().getPendingActionRequests(rhid);
+            
             if (StringUtils.equals(action, HrConstants.DOCUMENT_ACTIONS.ROUTE)) {
                 wd.route("Routing for Approval");
             } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_ROUTE)) {
@@ -303,12 +302,38 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
                     wd.approve("Approving timesheet.");
                 }
             } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE)) {
-            	 Note.Builder builder = Note.Builder.create(rhid, principalId);
-            	 builder.setCreateDate(new DateTime());
-            	 builder.setText("Approved via Supervisor Approval batch job");
-            	 KewApiServiceLocator.getNoteService().createNote(builder.build());
-            	
-            	wd.superUserBlanketApprove("Batch job approving leave calendar");
+            	 boolean approverFlag = false;
+                 for (ActionRequest ar : actionRequests) {
+                 	if(StringUtils.equals(ar.getQualifiedRoleNameLabel(), KPMERole.APPROVER.getRoleName())) {
+                 		approverFlag = true;
+                 		break;
+                 	}
+                 }
+                 // if there's still action requested to be taken by approver, then approve the document with this SupervisorApproval batch job
+                 // otherwise, don't take any actions
+                 if(approverFlag) {
+ 	            	// supervisor approval job should take approve action but not finalize the document if there's payroll processor set up for this doc
+                	Note.Builder builder = Note.Builder.create(rhid, principalId);
+                	builder.setCreateDate(new DateTime());
+                	builder.setText("Approved via Supervisor Approval batch job");
+                	KewApiServiceLocator.getNoteService().createNote(builder.build());
+ 	           	 	wd.approve("Supervisor Batch job approving leave calendar on behalf of approvers.");
+                 }
+            } else if (StringUtils.equals(action, HrConstants.BATCH_JOB_ACTIONS.PAYROLL_JOB_APPROVE)) {
+            	boolean payrollProcessorFlag = false;
+                for (ActionRequest ar : actionRequests) {
+                	if(StringUtils.equals(ar.getQualifiedRoleNameLabel(), KPMERole.PAYROLL_PROCESSOR.getRoleName())) {
+                		payrollProcessorFlag = true;
+                 		break;
+                 	}
+                 }
+                 if(payrollProcessorFlag) {
+	            	Note.Builder builder = Note.Builder.create(rhid, principalId);
+	           	 	builder.setCreateDate(new DateTime());
+	           	 	builder.setText("Approved via Payroll Processor Approval batch job");
+	           	 	KewApiServiceLocator.getNoteService().createNote(builder.build());
+	            	wd.approve("Payroll Processor Batch job approving leave calendar on behalf of approvers.");
+                 }
             } else if (StringUtils.equals(action, HrConstants.DOCUMENT_ACTIONS.DISAPPROVE)) {
                 if (HrServiceLocator.getHRPermissionService().canSuperUserAdministerCalendarDocument(GlobalVariables.getUserSession().getPrincipalId(), leaveCalendarDocument) 
                 		&& !HrServiceLocator.getHRPermissionService().canApproveCalendarDocument(GlobalVariables.getUserSession().getPrincipalId(), leaveCalendarDocument)) {

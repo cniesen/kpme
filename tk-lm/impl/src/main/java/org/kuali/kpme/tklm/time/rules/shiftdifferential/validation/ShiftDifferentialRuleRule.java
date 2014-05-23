@@ -16,12 +16,9 @@
 package org.kuali.kpme.tklm.time.rules.shiftdifferential.validation;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDate;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
 import org.kuali.kpme.tklm.time.rules.shiftdifferential.ShiftDifferentialRule;
-import org.kuali.kpme.tklm.time.rules.shiftdifferential.ruletype.ShiftDifferentialRuleType;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
@@ -76,9 +73,9 @@ public class ShiftDifferentialRuleRule extends MaintenanceDocumentRuleBase {
 		if (shiftDifferentialRule.getPayGrade() != null
 				&& !StringUtils.equals(shiftDifferentialRule.getPayGrade(),
 						HrConstants.WILDCARD_CHARACTER)
-				&& !ValidationUtils.validatePayGrade(shiftDifferentialRule.getPayGrade(), 
-						shiftDifferentialRule.getHrSalGroup(),
-						shiftDifferentialRule.getEffectiveLocalDate())) {
+				&& !ValidationUtils.validatePayGrade(shiftDifferentialRule
+						.getPayGrade(), shiftDifferentialRule.getHrSalGroup(), shiftDifferentialRule
+						.getEffectiveLocalDate())) {
 			this.putFieldError("payGrade", "error.existence", "pay grade '"
 					+ shiftDifferentialRule.getPayGrade() + "'");
 			return false;
@@ -88,9 +85,8 @@ public class ShiftDifferentialRuleRule extends MaintenanceDocumentRuleBase {
 	}
 	
 	boolean validateLocationWithSalaryGroup(ShiftDifferentialRule shiftDifferentialRule) {
-		//TODO: re-enable this when sal group is fixed for list of group keys
-        return true;
-		/*if (shiftDifferentialRule.getLocation() != null
+		
+		if (shiftDifferentialRule.getLocation() != null
 				&& !StringUtils.equals(shiftDifferentialRule.getLocation(),
 						HrConstants.WILDCARD_CHARACTER)
 				&& !StringUtils.equals(shiftDifferentialRule.getHrSalGroup(),
@@ -103,7 +99,7 @@ public class ShiftDifferentialRuleRule extends MaintenanceDocumentRuleBase {
 			return false;
 		} else {
 			return true;
-		}*/
+		}
 	}
 	
 	boolean validateDays(ShiftDifferentialRule shiftDifferentialRule) {
@@ -122,22 +118,6 @@ public class ShiftDifferentialRuleRule extends MaintenanceDocumentRuleBase {
 			return false;
 		}
 	}
-	
-	public boolean validateShiftDiffRuleType(String ruleTypeName, LocalDate asOfDate){
-		boolean valid = true;
-		if(StringUtils.isNotEmpty(ruleTypeName)) {
-			if(asOfDate != null) {
-				ShiftDifferentialRuleType shiftDifferentialRuleType = TkServiceLocator.getShiftDifferentialRuleTypeService().getActiveShiftDifferentialRuleType(ruleTypeName, asOfDate);
-				if(shiftDifferentialRuleType == null) {
-					this.putFieldError("ruleType", "error.existence", "Rule Type '"
-							+ ruleTypeName + "'");
-					valid = false;
-				}
-			}
-		}
-		return valid;
-	}
-
 
 	/**
 	 * It looks like the method that calls this class doesn't actually care
@@ -161,7 +141,6 @@ public class ShiftDifferentialRuleRule extends MaintenanceDocumentRuleBase {
 				valid &= this.validateEarnCode(shiftDifferentialRule);
 				valid &= this.validateLocationWithSalaryGroup(shiftDifferentialRule);  // KPME-2635
 				valid &= this.validateDays(shiftDifferentialRule);  // KPME-2635
-				valid &= this.validateShiftDiffRuleType(shiftDifferentialRule.getRuleType(), shiftDifferentialRule.getEffectiveLocalDate());
 			}
 		}
 

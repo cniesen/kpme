@@ -21,7 +21,7 @@ import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class TimeHourDetailDaoOjbImpl extends PlatformAwareDaoBaseOjb implements TimeHourDetailDao {
@@ -29,41 +29,41 @@ public class TimeHourDetailDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
     private static final Logger LOG = Logger.getLogger(TimeHourDetailDaoOjbImpl.class);
 
     @Override
-    public void saveOrUpdate(TimeHourDetailBo timeHourDetail) {
+    public void saveOrUpdate(TimeHourDetail timeHourDetail) {
         this.getPersistenceBrokerTemplate().store(timeHourDetail);
     }
 
     @Override
-    public void saveOrUpdate(List<TimeHourDetailBo> timeHourDetails) {
+    public void saveOrUpdate(List<TimeHourDetail> timeHourDetails) {
         if (timeHourDetails != null) {
-            for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
+            for (TimeHourDetail timeHourDetail : timeHourDetails) {
                 this.getPersistenceBrokerTemplate().store(timeHourDetail);
             }
         }
     }
 
     @Override
-    public TimeHourDetailBo getTimeHourDetail(String timeHourDetailId) {
+    public TimeHourDetail getTimeHourDetail(String timeHourDetailId) {
         Criteria currentRecordCriteria = new Criteria();
         currentRecordCriteria.addEqualTo("tkTimeHourDetailId", timeHourDetailId);
 
-        return (TimeHourDetailBo) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(TimeHourDetailBo.class, currentRecordCriteria));
+        return (TimeHourDetail) this.getPersistenceBrokerTemplate().getObjectByQuery(QueryFactory.newQuery(TimeHourDetail.class, currentRecordCriteria));
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<TimeHourDetailBo> getTimeHourDetailsForTimeBlock(String timeBlockId) {
+    public List<TimeHourDetail> getTimeHourDetailsForTimeBlock(String timeBlockId) {
         Criteria currentRecordCriteria = new Criteria();
         currentRecordCriteria.addEqualTo("tkTimeBlockId", timeBlockId);
-        Query query = QueryFactory.newQuery(TimeHourDetailBo.class, currentRecordCriteria);
-        return (List<TimeHourDetailBo>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+        Query query = QueryFactory.newQuery(TimeHourDetail.class, currentRecordCriteria);
+        return (List<TimeHourDetail>) this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
     }
 
     public void remove(String timeBlockId) {
         Criteria removalCriteria = new Criteria();
         removalCriteria.addEqualTo("tkTimeBlockId", timeBlockId);
 
-        this.getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(TimeHourDetailBo.class, removalCriteria));
+        this.getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(TimeHourDetail.class, removalCriteria));
     }
 
     @Override
@@ -71,6 +71,6 @@ public class TimeHourDetailDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
         Criteria removalCriteria = new Criteria();
         removalCriteria.addEqualTo("tkTimeHourDetailId", timeHourDetailId);
 
-        this.getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(TimeHourDetailBo.class, removalCriteria));
+        this.getPersistenceBrokerTemplate().deleteByQuery(QueryFactory.newQuery(TimeHourDetail.class, removalCriteria));
     }
 }

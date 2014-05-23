@@ -19,9 +19,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.kuali.hr.kpme.tklm.time.rules.validation.TkKeyedBusinessObjectValidation;
-import org.kuali.kpme.core.api.KPMEConstants;
-import org.kuali.kpme.core.api.authorization.DepartmentalRule;
+import org.kuali.kpme.core.KPMEConstants;
+import org.kuali.kpme.core.authorization.DepartmentalRule;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
@@ -32,7 +31,7 @@ import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class ClockLocationRuleRule extends TkKeyedBusinessObjectValidation {
+public class ClockLocationRuleRule extends MaintenanceDocumentRuleBase {
 
 	private static Logger LOG = Logger.getLogger(ClockLocationRuleRule.class);
 
@@ -93,8 +92,8 @@ public class ClockLocationRuleRule extends TkKeyedBusinessObjectValidation {
 	protected boolean validateDepartment(ClockLocationRule clr) {
         boolean ret = false;
 
-        if (!StringUtils.isEmpty(clr.getDept()) && !StringUtils.isEmpty(clr.getGroupKeyCode())) {
-    		if (!ValidationUtils.validateDepartment(clr.getDept(), clr.getGroupKeyCode(), clr.getEffectiveLocalDate())) {
+        if (!StringUtils.isEmpty(clr.getDept())) {
+    		if (!ValidationUtils.validateDepartment(clr.getDept(), clr.getEffectiveLocalDate())) {
 			    this.putFieldError("dept", "error.existence", "department '" + clr.getDept() + "'");
             } else if (!AuthorizationValidationUtils.hasAccessToWrite(clr)) {
                 this.putFieldError("dept", "error.department.permissions", clr.getDept());
@@ -140,10 +139,10 @@ public class ClockLocationRuleRule extends TkKeyedBusinessObjectValidation {
      *
      * @return true if wild card setup is correct, false otherwise.
      */
-    boolean validateWildcards(ClockLocationRule clr) {
+    boolean validateWildcards(DepartmentalRule clr) {
         boolean valid = true;
 
-        if (!AuthorizationValidationUtils.validateWorkAreaDeptWildcarding(clr)) {
+        if (!ValidationUtils.validateWorkAreaDeptWildcarding(clr)) {
             // add error when work area defined, department is wild carded.
             this.putFieldError("dept", "error.wc.wadef", "department '" + clr.getDept() + "'");
             valid = false;
@@ -174,7 +173,6 @@ public class ClockLocationRuleRule extends TkKeyedBusinessObjectValidation {
 		boolean valid = false;
 
 		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
-		
 		if (pbo instanceof ClockLocationRule) {
 			ClockLocationRule clr = (ClockLocationRule) pbo;
             valid = this.validateDepartment(clr);
@@ -183,7 +181,6 @@ public class ClockLocationRuleRule extends TkKeyedBusinessObjectValidation {
             valid &= this.validatePrincipalId(clr);
             valid &= this.validateJobNumber(clr);
             valid &= this.validateIpAddresses(clr.getIpAddresses());
-            valid &= this.validateGroupKeyCode(clr);
 		}
 
 		return valid;

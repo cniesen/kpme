@@ -18,25 +18,23 @@ package org.kuali.kpme.tklm.leave.approval.web;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.tklm.api.leave.approval.ApprovalLeaveSummaryRowContract;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryContract;
+import org.kuali.kpme.tklm.api.leave.approval.web.ApprovalLeaveSummaryRowContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kew.api.KewApiConstants;
-import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.api.note.Note;
 import org.kuali.rice.kew.doctype.SecuritySession;
@@ -45,7 +43,7 @@ import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
-public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSummaryRowContract {
+public class ApprovalLeaveSummaryRow implements Comparable<ApprovalLeaveSummaryRow>, Serializable, ApprovalLeaveSummaryRowContract {
 
 	private static final long serialVersionUID = -1573234630744940098L;
 	private String name;
@@ -63,18 +61,18 @@ public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSumma
 	private List<LeaveBlock> leaveBlockList = new ArrayList<LeaveBlock>();
 	private Map<Integer, String> weeklyDistribution = new LinkedHashMap<Integer, String>();
 	private Map<String, String> weekDates = new LinkedHashMap<String, String>();
-	private Map<LocalDateTime, Map<String, BigDecimal>> earnCodeLeaveHours = new LinkedHashMap<LocalDateTime, Map<String, BigDecimal>>();
-	private Map<String, Set<LocalDateTime>> weekDateList = new LinkedHashMap<String, Set<LocalDateTime>>();
+	private Map<Date, Map<String, BigDecimal>> earnCodeLeaveHours = new LinkedHashMap<Date, Map<String, BigDecimal>>();
+	private Map<String, Set<Date>> weekDateList = new LinkedHashMap<String, Set<Date>>();
 	private Boolean exemptEmployee;
 	private String color;
 	private Map<String,List<Map<String, Object>>> detailMap = new LinkedHashMap<String, List<Map<String,Object>>>();
-	private LeaveSummaryContract leaveSummary;
+	private LeaveSummary leaveSummary;
 	
-    public LeaveSummaryContract getLeaveSummary() {
+    public LeaveSummary getLeaveSummary() {
 		return leaveSummary;
 	}
 
-	public void setLeaveSummary(LeaveSummaryContract leaveSummary) {
+	public void setLeaveSummary(LeaveSummary leaveSummary) {
 		this.leaveSummary = leaveSummary;
 	}
 
@@ -93,9 +91,10 @@ public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSumma
     			String approverPrincipalId = HrContext.getPrincipalId();
 
     			if (!StringUtils.equals(leaveCalendarPrincipalId, approverPrincipalId) && LmServiceLocator.getLeaveCalendarService().isReadyToApprove(leaveCalendarDocument)) {
-    				boolean authorized = KewApiServiceLocator.getWorkflowDocumentActionsService().isUserInRouteLog(getDocumentId(), approverPrincipalId, false);
+    				DocumentRouteHeaderValue routeHeader = TkServiceLocator.getTimeApproveService().getRouteHeader(getDocumentId());
+    				boolean authorized = KEWServiceLocator.getDocumentSecurityService().routeLogAuthorized(approverPrincipalId, routeHeader, new SecuritySession(approverPrincipalId));
     				if (authorized) {
-                        List<String> approverPrincipalIds = KewApiServiceLocator.getWorkflowDocumentService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, getDocumentId());
+    					List<String> approverPrincipalIds = KEWServiceLocator.getActionRequestService().getPrincipalIdsWithPendingActionRequestByActionRequestedAndDocId(KewApiConstants.ACTION_REQUEST_APPROVE_REQ, getDocumentId());
     					if (approverPrincipalIds.contains(approverPrincipalId)) {
     						isApprovable = true;
     					}
@@ -108,7 +107,7 @@ public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSumma
     }
 	
 	 
-	public int compareTo(ApprovalLeaveSummaryRowContract row) {
+	public int compareTo(ApprovalLeaveSummaryRow row) {
         return name.compareToIgnoreCase(row.getName());
     }
 
@@ -195,11 +194,11 @@ public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSumma
 		this.approvalStatus = approvalStatus;
 	}
 
-	public Map<LocalDateTime, Map<String, BigDecimal>> getEarnCodeLeaveHours() {
+	public Map<Date, Map<String, BigDecimal>> getEarnCodeLeaveHours() {
 		return earnCodeLeaveHours;
 	}
 
-	public void setEarnCodeLeaveHours(Map<LocalDateTime, Map<String, BigDecimal>> earnCodeLeaveHours) {
+	public void setEarnCodeLeaveHours(Map<Date, Map<String, BigDecimal>> earnCodeLeaveHours) {
 		this.earnCodeLeaveHours = earnCodeLeaveHours;
 	}
 
@@ -274,12 +273,12 @@ public class ApprovalLeaveSummaryRow implements Serializable, ApprovalLeaveSumma
     }
 
 
-	public Map<String, Set<LocalDateTime>> getWeekDateList() {
+	public Map<String, Set<Date>> getWeekDateList() {
 		return weekDateList;
 	}
 
 
-	public void setWeekDateList(Map<String, Set<LocalDateTime>> weekDateList) {
+	public void setWeekDateList(Map<String, Set<Date>> weekDateList) {
 		this.weekDateList = weekDateList;
 	}
 

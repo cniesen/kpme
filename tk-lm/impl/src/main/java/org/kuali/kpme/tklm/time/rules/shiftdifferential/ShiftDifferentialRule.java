@@ -18,58 +18,39 @@ package org.kuali.kpme.tklm.time.rules.shiftdifferential;
 import java.math.BigDecimal;
 import java.sql.Time;
 
-import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.core.location.LocationBo;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
-import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.location.Location;
+import org.kuali.kpme.core.paygrade.PayGrade;
+import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.tklm.api.time.rules.shiftdifferential.ShiftDifferentialRuleContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
-import org.kuali.kpme.tklm.time.rules.shiftdifferential.ruletype.ShiftDifferentialRuleType;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 
 public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRuleContract {
 
-	private static final String SATURDAY = "saturday";
-	private static final String FRIDAY = "friday";
-	private static final String THURSDAY = "thursday";
-	private static final String WEDNESDAY = "wednesday";
-	private static final String TUESDAY = "tuesday";
-	private static final String MONDAY = "monday";
-	private static final String SUNDAY = "sunday";
-	private static final String END_TIME = "endTime";
-	private static final String BEGIN_TIME = "beginTime";
-	private static final String PY_CALENDAR_GROUP = "pyCalendarGroup";
-	private static final String EARN_CODE = "earnCode";
-	private static final String PAY_GRADE = "payGrade";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String LOCATION = "location";
-
 	private static final long serialVersionUID = -3990672795815968915L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ShiftDifferentialRule";
+	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "ShiftDifferentialRule";
 	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(LOCATION)
-            .add(HR_SAL_GROUP)
-            .add(PAY_GRADE)
-            .add(EARN_CODE)
-            .add(PY_CALENDAR_GROUP)
-            .add(BEGIN_TIME)
-            .add(END_TIME)
-            .add(SUNDAY)
-            .add(MONDAY)
-            .add(TUESDAY)
-            .add(WEDNESDAY)
-            .add(THURSDAY)
-            .add(FRIDAY)
-            .add(SATURDAY)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("location")
+            .add("hrSalGroup")
+            .add("payGrade")
+            .add("earnCode")
+            .add("pyCalendarGroup")
+            .add("beginTime")
+            .add("endTime")
+            .add("sunday")
+            .add("monday")
+            .add("tuesday")
+            .add("wednesday")
+            .add("thursday")
+            .add("friday")
+            .add("saturday")
             .build();
 	
 	private String tkShiftDiffRuleId;
@@ -90,7 +71,7 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 	private String fromEarnGroup;
 	private String pyCalendarGroup;
 	private BigDecimal maxGap; // Gap is in HOURS
-	private String ruleType;
+	private String userPrincipalId;
 
 	private String hrSalGroupId;
 	private String hrLocationId;
@@ -98,34 +79,12 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 	
 	private boolean history;
 	
-	private EarnCodeBo earnCodeObj;
-	private SalaryGroupBo salaryGroupObj;
-    private EarnCodeGroupBo fromEarnGroupObj;
-    private CalendarBo payCalendar;
-    private LocationBo locationObj;
-    private PayGradeBo payGradeObj;
-    private ShiftDifferentialRuleType ruleTypeObj;
-    
-    @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(LOCATION, this.getLocation())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(LOCATION, this.getLocation())
-			.put(PAY_GRADE, this.getPayGrade())
-            .put(EARN_CODE, this.getEarnCode())
-            .put(PY_CALENDAR_GROUP, this.getPyCalendarGroup())
-            .put(BEGIN_TIME, this.getBeginTime())
-            .put(END_TIME, this.getEndTime())
-            .put(SUNDAY, this.isSunday())
-            .put(MONDAY, this.isMonday())
-            .put(TUESDAY, this.isTuesday())
-            .put(WEDNESDAY, this.isWednesday())
-            .put(THURSDAY, this.isThursday())
-            .put(FRIDAY, this.isFriday())
-            .put(SATURDAY, this.isSaturday())
-			.build();
-	}
+	private EarnCode earnCodeObj;
+	private SalaryGroup salaryGroupObj;
+    private EarnCodeGroup fromEarnGroupObj;
+    private Calendar payCalendar;
+    private Location locationObj;
+    private PayGrade payGradeObj;
     
 	public String getTkShiftDiffRuleId() {
 		return tkShiftDiffRuleId;
@@ -180,6 +139,14 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
      */
 	public void setMaxGap(BigDecimal maxGap) {
 		this.maxGap = maxGap;
+	}
+
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
 	}
 
 	public String getHrSalGroup() {
@@ -278,51 +245,51 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 		this.saturday = saturday;
 	}
 
-	public EarnCodeBo getEarnCodeObj() {
+	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;
 	}
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 
-	public SalaryGroupBo getSalaryGroupObj() {
+	public SalaryGroup getSalaryGroupObj() {
 		return salaryGroupObj;
 	}
 
-	public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
+	public void setSalaryGroupObj(SalaryGroup salaryGroupObj) {
 		this.salaryGroupObj = salaryGroupObj;
 	}
 
-    public EarnCodeGroupBo getFromEarnGroupObj() {
+    public EarnCodeGroup getFromEarnGroupObj() {
         return fromEarnGroupObj;
     }
 
-    public void setFromEarnGroupObj(EarnCodeGroupBo fromEarnGroupObj) {
+    public void setFromEarnGroupObj(EarnCodeGroup fromEarnGroupObj) {
         this.fromEarnGroupObj = fromEarnGroupObj;
     }
 
-    public CalendarBo getPayCalendar() {
+    public Calendar getPayCalendar() {
         return payCalendar;
     }
 
-    public void setPayCalendar(CalendarBo payCalendar) {
+    public void setPayCalendar(Calendar payCalendar) {
         this.payCalendar = payCalendar;
     }
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
-	public PayGradeBo getPayGradeObj() {
+	public PayGrade getPayGradeObj() {
 		return payGradeObj;
 	}
 
-	public void setPayGradeObj(PayGradeBo payGradeObj) {
+	public void setPayGradeObj(PayGrade payGradeObj) {
 		this.payGradeObj = payGradeObj;
 	}
 
@@ -350,18 +317,6 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 		this.hrPayGradeId = hrPayGradeId;
 	}
 
-	public ShiftDifferentialRuleType getRuleTypeObj() {
-        if (ruleTypeObj == null
-                && StringUtils.isNotEmpty(ruleType)) {
-            ruleTypeObj = TkServiceLocator.getShiftDifferentialRuleTypeService().getActiveShiftDifferentialRuleType(getRuleType(), getEffectiveLocalDate());
-        }
-		return ruleTypeObj;
-	}
-
-	public void setRuleTypeObj(ShiftDifferentialRuleType ruleTypeObj) {
-		this.ruleTypeObj = ruleTypeObj;
-	}
-
 	@Override
 	public String getUniqueKey() {
 		return location + "_" + hrSalGroup + "_" + payGrade + "_" + earnCode;
@@ -383,14 +338,6 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
 
 	public void setHistory(boolean history) {
 		this.history = history;
-	}
-	
-	public String getRuleType() {
-		return ruleType;
-	}
-
-	public void setRuleType(String ruleType) {
-		this.ruleType = ruleType;
 	}
 
 	/* (non-Javadoc)

@@ -22,42 +22,67 @@
                            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 	
 	<bean id="PositionType" parent="PositionType-parentBean"/>
- 	<bean id="PositionType-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
-	    <property name="dataObjectClass" value="org.kuali.kpme.pm.positiontype.PositionTypeBo"/>
+ 	<bean id="PositionType-parentBean" abstract="true" parent="BusinessObjectEntry">
+	    <property name="dataObjectClass" value="org.kuali.kpme.pm.positiontype.PositionType"/>
 	    <property name="attributes">
-	      <list merge="true">
+	      <list>
 	        <ref bean="PositionType-pmPositionTypeId"/>
+	        <ref bean="PositionType-effectiveDate"/>	        
 	        <ref bean="PositionType-positionType"/>
 	        <ref bean="PositionType-description"/>
 	        <ref bean="PositionType-institution"/>
 	        <ref bean="PositionType-location"/>
-            <ref bean="PositionType-academicFlag"/>
+	        <ref bean="PositionType-active"/>
 	      </list>
 	    </property>
+	   <property name="relationships">
+			<list>		
+				<bean parent="RelationshipDefinition">
+					<property name="objectAttributeName" value="institutionObj" />
+					<property name="primitiveAttributes">
+						<list>
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="institution"
+								p:targetName="institutionCode" />
+						</list>
+					</property>
+				</bean>	
+			</list>
+		</property>
 	    <property name="objectLabel" value="Position Type"/>
   	</bean>
 
 <!-- Attribute Definitions -->  
 	 <bean id="PositionType-pmPositionTypeId" parent="PositionType-pmPositionTypeId-parentBean"/>
 	 <bean id="PositionType-pmPositionTypeId-parentBean" abstract="true" parent="AttributeDefinition">
-	 	<property name="maxLength" value="60" />
 	    <property name="required" value="false" />
 	    <property name="forceUppercase" value="false"/>
 	    <property name="shortLabel" value="id"/>
 	    <property name="controlField">
-	      <bean parent="Uif-TextControl" p:size="60"/>
+	      <bean parent="Uif-TextControl" p:size="10"/>
 	    </property>
 	    <property name="name" value="pmPositionTypeId"/>
 	    <property name="label" value="Position Type Id"/>
 	 </bean>   
 	 
+	<bean id="PositionType-effectiveDate" parent="PositionType-effectiveDate-parentBean" />
+	<bean id="PositionType-effectiveDate-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="required" value="true" />
+		<property name="shortLabel" value="Effective Date" />
+		<property name="controlField">
+			<bean parent="Uif-DateControl" p:size="10" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+
 	<bean id="PositionType-positionType" parent="PositionType-positionType-parentBean" />
 	<bean id="PositionType-positionType-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
-		<property name="maxLength" value="50"/>
+		<property name="maxLength" value="10"/>
 		<property name="shortLabel" value="Position Type" />
 		<property name="controlField">
-			<bean parent="Uif-TextControl" p:size="50" />
+			<bean parent="Uif-TextControl" p:size="10" />
 		</property>
 		<property name="name" value="positionType" />
 		<property name="label" value="PositionType" />
@@ -66,7 +91,6 @@
 
 	<bean id="PositionType-description" parent="PositionType-description-parentBean" />
 	<bean id="PositionType-description-parentBean" abstract="true" parent="AttributeDefinition">
-		<property name="maxLength" value="100" />
 		<property name="required" value="false" />
 		<property name="controlField">
 			<bean parent="Uif-TextControl" p:size="100" />
@@ -77,48 +101,66 @@
 	</bean>
 	
 	<bean id="PositionType-institution" parent="PositionType-institution-parentBean" />
-	<bean id="PositionType-institution-parentBean" abstract="true" parent="KpmeAttributeReference-institution">
+	<bean id="PositionType-institution-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
+		<property name="shortLabel" value="Institution" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="institution" />
+		<property name="label" value="Institution" />
 	</bean>
 	
 	<bean id="PositionType-location" parent="PositionType-location-parentBean" />
-	<bean id="PositionType-location-parentBean" abstract="true" parent="KpmeAttributeReference-location">
+	<bean id="PositionType-location-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="required" value="true" />
+		<property name="shortLabel" value="Location" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern"/>
+		</property>
+		<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="10" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
 	</bean>
-
-    <bean id="PositionType-academicFlag" parent="PositionType-academicFlag-parentBean" />
-    <bean id="PositionType-academicFlag-parentBean" abstract="true" parent="KpmeAttributeReference-genericCheckbox">
-        <property name="shortLabel" value="Academic" />
-        <property name="name" value="academicFlag" />
-        <property name="label" value="Academic" />
-    </bean>
 	
-<!--***************************************************************************
+    <bean id="PositionType-active" parent="PositionType-active-parentBean"/>
+ 	<bean id="PositionType-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator"  p:label="Active?">
+ 		<property name="required" value="true" />
+   		<property name="name" value="active"/>
+  	</bean>  
+
+<!--*************************************************************************** 
 							Views
  ***************************************************************************-->  	
   	
   <!-- Position Type Lookup View -->
  
-  <bean id="PositionType-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+  <bean id="PositionType-LookupView" parent="Uif-LookupView">
     <property name="headerText" value="Position Type Lookup" />
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionTypeBo" />
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionType" />
+    <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />  <!--KPME-2699-->
     <property name="criteriaFields">
-      <list merge="true">
+      <list>
+        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="positionType" />       
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="institution">
 	         <property name="quickfinder">
-	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+	       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution" 
 	        		 p:fieldConversions="institutionCode:institution"/>
 	   		 </property>
         </bean>
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="location" >
         	<property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 			</property>
         </bean>
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="academicFlag"/>
-        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N" />
         <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
       </list>
     </property>
@@ -127,7 +169,7 @@
         <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
         <bean parent="Uif-DataField" p:propertyName="positionType" >
         	<property name="inquiry">
-	       		<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.pm.positiontype.PositionTypeBo" 
+	       		<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.pm.positiontype.PositionType" 
 	        	p:inquiryParameters="pmPositionTypeId:pmPositionTypeId"/>
     		</property>
         </bean>
@@ -135,7 +177,6 @@
         <bean parent="Uif-DataField" p:propertyName="location" >
         	
         </bean>
-        <bean parent="Uif-DataField" p:propertyName="academicFlag"/>
         <bean parent="Uif-DataField" p:propertyName="active"/>
       </list>
     </property>
@@ -144,7 +185,7 @@
  <!-- Position Type Inquiry View -->
   <bean id="PositionType-InquiryView" parent="Uif-InquiryView">
     <property name="headerText" value="Position Type Inquiry"/>
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionTypeBo"/>
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionType"/>
     <property name="singlePageView" value="true"/>
     <property name="items">
       <list>
@@ -157,9 +198,7 @@
 			        <bean parent="Uif-DataField" p:propertyName="description" />
 			        <bean parent="Uif-DataField" p:propertyName="institution" />
 			        <bean parent="Uif-DataField" p:propertyName="location" />
-                    <bean parent="Uif-DataField" p:propertyName="academicFlag"/>
 			        <bean parent="Uif-DataField" p:propertyName="active"/>
-                    <bean parent="Uif-DataField" p:propertyName="userPrincipalId"/>
 	        	</list>
 	     	 </property>
 	     	 <property name="title" value="Position Type Inquiry"/>
@@ -170,9 +209,9 @@
   
 <!--  Position Type Maintenance View -->
   <bean id="PositionType-MaintenanceView" parent="PositionType-MaintenanceView-parentBean"/>
-  <bean id="PositionType-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+  <bean id="PositionType-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
     <property name="headerText" value="Position Type Maintenance"/>
-    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionTypeBo"/>
+    <property name="dataObjectClassName" value="org.kuali.kpme.pm.positiontype.PositionType"/>
     <property name="items">
       <list merge="true">
         <bean parent="Uif-MaintenanceGridSection">
@@ -183,17 +222,16 @@
 		        <bean parent="Uif-InputField" p:propertyName="description" />
 		        <bean parent="Uif-InputField" p:propertyName="institution" >
 			        <property name="quickfinder">
-		       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo"
+		       			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.Institution" 
 		        			 p:fieldConversions="institutionCode:institution"/>
 		   			</property>
 		        </bean>
 		        <bean parent="Uif-InputField" p:propertyName="location" >
 		        	<property name="quickfinder">
-							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo"
+							<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.Location"
 								p:fieldConversions="location:location" />
 					</property>
 		        </bean>
-                <bean parent="Uif-InputField" p:propertyName="academicFlag"/>
 		        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true"/>
             </list>
           </property>

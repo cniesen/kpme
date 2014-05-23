@@ -30,9 +30,9 @@ import org.kuali.hr.time.util.TimeDetailTestUtils;
 import org.kuali.hr.time.workflow.TimesheetWebTestBase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.earncode.EarnCode;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.HrTestConstants;
@@ -67,9 +67,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
         Long jobNumber = 30L;
         Long workArea = 30L;
         Long task = 30L;
-        DailyOvertimeRule rule = createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-        		//"IN", // 05/08 remove location because adding groupkeycode to DailyOvertimeRule // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-        		"BW", "TEST-DEPT", workArea, task, new BigDecimal(8), new BigDecimal("9.00"), null);
+        DailyOvertimeRule rule = createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea, task, new BigDecimal(8), new BigDecimal("9.00"), null);
         String tdocId = KPME788_789(
                new ArrayList<Map<String, Object>>() {{
                     add(new HashMap<String, Object>() {{
@@ -82,7 +80,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
                     put("startNoTz", "2011-03-02T08:00:00");
                     put("endNoTz", "2011-03-02T13:00:00");
                     put("title", "SDR1 Work Area");
-                    put("assignment", "IU-BL_30_30_30");
+                    put("assignment", "30_30_30");
                 }},
                 new ArrayList<Map<String, Object>>() {{
                     add(new HashMap<String, Object>() {{
@@ -95,14 +93,12 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
                     put("startNoTz", "2011-03-02T13:10:00");
                     put("endNoTz", "2011-03-02T18:10:00");
                     put("title", "SDR1 Work Area");
-                    put("assignment", "IU-BL_30_30_30");
+                    put("assignment", "30_30_30");
                 }}
         );
         deleteTimesheet(tdocId);
 
-        createDailyOvertimeRule("IN-IU", "REG", "OVT", 
-        		//"IN", // 05/08 remove location because adding groupkeycode to DailyOvertimeRule  // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-        		"BW", "TEST-DEPT", workArea, task, new BigDecimal(8), new BigDecimal("10.00"), null);
+        createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea, task, new BigDecimal(8), new BigDecimal("10.00"), null);
         tdocId = KPME788_789(
                 new ArrayList<Map<String, Object>>() {{
                      add(new HashMap<String, Object>() {{
@@ -115,7 +111,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
                      put("startNoTz", "2011-03-02T08:00:00");
                      put("endNoTz", "2011-03-02T13:00:00");
                      put("title", "SDR1 Work Area");
-                     put("assignment", "IU-BL_30_30_30");
+                     put("assignment", "30_30_30");
                  }},
                  new ArrayList<Map<String, Object>>() {{
                      add(new HashMap<String, Object>() {{
@@ -130,7 +126,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
                      put("startNoTz", "2011-03-02T13:10:00");
                      put("endNoTz", "2011-03-02T18:10:00");
                      put("title", "SDR1 Work Area");
-                     put("assignment", "IU-BL_30_30_30");
+                     put("assignment", "30_30_30");
                  }}
         );
         deleteTimesheet(tdocId);
@@ -146,7 +142,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
 
     public String KPME788_789(ArrayList<Map<String, Object>> tb1ThdItems, HashMap<String, Object> tb1Items, ArrayList<Map<String, Object>> tb2ThdItems, HashMap<String, Object> tb2Items) throws Exception {
         DateTime asOfDate = new DateTime(2011, 3, 1, 12, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-        CalendarEntry pcd =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, asOfDate);
+        CalendarEntry pcd = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(USER_PRINCIPAL_ID, asOfDate);
         Assert.assertNotNull("No PayCalendarDates", pcd);
 
         TimesheetDocument tdoc = TkServiceLocator.getTimesheetService().openTimesheetDocument(USER_PRINCIPAL_ID, pcd);
@@ -168,7 +164,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
         // OVT - 0 Hrs Expected
         DateTime start = new DateTime(2011, 3, 2, 8, 0, 0, 0, TKUtils.getSystemDateTimeZone());
         DateTime end = new DateTime(2011, 3, 2, 13, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        TimeDetailActionFormBase tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, false, null, true);
         List<String> errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
         page = TimeDetailTestUtils.submitTimeDetails(getWebClient(), getTimesheetDocumentUrl(tdocId), tdaf);
@@ -176,7 +172,7 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
 
         start = new DateTime(2011, 3, 2, 13, 10, 0, 0, TKUtils.getSystemDateTimeZone());
         end = new DateTime(2011, 3, 2, 18, 10, 0, 0, TKUtils.getSystemDateTimeZone());
-        tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, false, null, true, null, null, null, null, null, null);
+        tdaf = TimeDetailTestUtils.buildDetailActionForm(tdoc, assignment, earnCode, start, end, null, false, null, true);
         errors = TimeDetailTestUtils.setTimeBlockFormDetails(form, tdaf);
         Assert.assertEquals("There should be no errors in this time detail submission", 0, errors.size());
         page = TimeDetailTestUtils.submitTimeDetails(getWebClient(), getTimesheetDocumentUrl(tdocId), tdaf);
@@ -195,16 +191,12 @@ public class DOTIntegrationConfluenceTests extends TimesheetWebTestBase {
         return tdocId;
     }
 
-    private DailyOvertimeRule createDailyOvertimeRule(String groupKeyCode, String fromEarnGroup, String earnCode, 
-    		//String location, 
-    		String paytype, String dept, Long workArea, Long task, BigDecimal minHours, BigDecimal maxGap, String overtimePref) {
+    private DailyOvertimeRule createDailyOvertimeRule(String fromEarnGroup, String earnCode, String location, String paytype, String dept, Long workArea, Long task, BigDecimal minHours, BigDecimal maxGap, String overtimePref) {
         DailyOvertimeRule rule = new DailyOvertimeRule();
-        
-        rule.setGroupKeyCode("IU-IN");
         rule.setEffectiveLocalDate(JAN_AS_OF_DATE.toLocalDate());
         rule.setFromEarnGroup(fromEarnGroup);
         rule.setEarnCode(earnCode);
-        //rule.setLocation(location);
+        rule.setLocation(location);
         rule.setPaytype(paytype);
         rule.setDept(dept);
         rule.setWorkArea(workArea);

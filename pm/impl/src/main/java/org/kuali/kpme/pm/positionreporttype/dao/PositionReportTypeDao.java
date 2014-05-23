@@ -18,19 +18,19 @@ package org.kuali.kpme.pm.positionreporttype.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.positionreporttype.PositionReportTypeBo;
+import org.kuali.kpme.pm.positionreporttype.PositionReportType;
 
 public interface PositionReportTypeDao {
 	
-	public PositionReportTypeBo getPositionReportTypeById(String pmPositionReportTypeId);
+	public PositionReportType getPositionReportTypeById(String pmPositionReportTypeId);
 	
-	public List<PositionReportTypeBo> getPositionReportTypeList(String positionReportType,  LocalDate asOfDate);
+	public List<PositionReportType> getPositionReportTypeList(String positionReportType, String institution, String location, LocalDate asOfDate);
 	
-	public List<PositionReportTypeBo> getPositionReportTypeListByType(String positionReportType);
+	public List<PositionReportType> getPositionReportTypeListByType(String positionReportType);
 	
-//	public List<PositionReportTypeBo> getPrtListWithInstitutionCodeAndDate(String institutionCode, LocalDate asOfDate);
+	public List<PositionReportType> getPrtListWithInstitutionCodeAndDate(String institutionCode, LocalDate asOfDate);
 
-//	public List<PositionReportTypeBo> getPrtListWithLocationAndDate(String location, LocalDate asOfDate);
+	public List<PositionReportType> getPrtListWithLocationAndDate(String location, LocalDate asOfDate);
 	
-	public PositionReportTypeBo getPositionReportType(String positionReportType, LocalDate asOfDate);
+	public PositionReportType getPositionReportType(String positionReportType, LocalDate asOfDate);
 }

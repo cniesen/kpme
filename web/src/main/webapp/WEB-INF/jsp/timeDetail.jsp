@@ -58,10 +58,8 @@
                 Workarea Id: ${timeBlock.workArea}<br/>
                 Task Id: ${timeBlock.task}<br/>
                 Earn Code: ${timeBlock.earnCode}<br/>
-                <%--Begin Time: <fmt:formatDate type="both" dateStyle="full" value="${timeBlock.beginTimeDisplayDate}"/><br/>
-                End Time: <fmt:formatDate type="both" dateStyle="full" value="${timeBlock.endTimeDisplayDate}"/><br/>--%>
-                Begin Time: <joda:format style="FM" value="${timeBlock.beginTimeDisplay}"/><br/>
-                End Time: <joda:format style="FM" value="${timeBlock.endTimeDisplay}"/><br/>
+                Begin Time: <fmt:formatDate type="both" dateStyle="full" value="${timeBlock.beginTimeDisplayDate}"/><br/>
+                End Time: <fmt:formatDate type="both" dateStyle="full" value="${timeBlock.endTimeDisplayDate}"/><br/>
                 Hours: ${timeBlock.hours}<br/>
                 Amount: ${timeBlock.amount}<br/>
                 <br/>
@@ -117,12 +115,7 @@
                     <tr>
                         <td><label for="selectedAssignment">Assignment:</label></td>
                         <td>
-                            <div id="assignment-section">
-                                <%--<tk:assignment assignments="${Form.assignmentDescriptions}"/>--%>
-                                <select id="selectedAssignment" name="selectedAssignment">
-                                    <option value="" selected="selected">-- select an assignment --</option>
-                                </select>
-                            </div>
+                            <tk:assignment assignments="${Form.assignmentDescriptions}"/>
                         </td>
                     </tr>
                     <tr>
@@ -210,11 +203,6 @@
 <%-- Overtime template --%>
 <script type="text/template" id="overtime-template">
     <option value="<@= earnCode @>"><@= earnCode + " : " + desc @></option>
-</script>
-
-<%-- Assignment template --%>
-<script type="text/template" id="assignment-template">
-    <option value="<@= assignment @>"><@= desc @></option>
 </script>
 
 <div id="lm-transfer-dialog" title="Balance Transfer" style="display:none;">

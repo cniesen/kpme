@@ -15,26 +15,22 @@
  */
 package org.kuali.kpme.core.principal.service;
 
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.core.api.principal.service.PrincipalHRAttributesService;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
-import org.kuali.kpme.core.principal.dao.PrincipalHRAttributesDao;
-import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.kim.api.KimConstants;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.principal.dao.PrincipalHRAttributesDao;
+import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.rice.kim.api.KimConstants;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesService {
 	private PrincipalHRAttributesDao principalHRAttributesDao;
@@ -44,28 +40,20 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
 	}
 	
 	public PrincipalHRAttributes getPrincipalCalendar(String principalId, LocalDate asOfDate){
-		PrincipalHRAttributesBo pc =  this.principalHRAttributesDao.getPrincipalCalendar(principalId, asOfDate);
-        if (pc == null) {
-            return null;
-        }
-        PrincipalHRAttributes.Builder builder = PrincipalHRAttributes.Builder.create(pc);
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar());
-        Calendar leaveCalendar = HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar());
-	    if (calendar != null) {
-            builder.setCalendar(Calendar.Builder.create(calendar));
-        }
-        if (leaveCalendar != null) {
-            builder.setLeaveCalObj(Calendar.Builder.create(leaveCalendar));
-        }
-		return builder.build();
+		PrincipalHRAttributes pc =  this.principalHRAttributesDao.getPrincipalCalendar(principalId, asOfDate);
+		if(pc != null) {
+			pc.setCalendar(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar()));
+			pc.setLeaveCalObj(HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar()));
+		}
+		return pc;
 	}
 	
     public List<PrincipalHRAttributes> getActiveEmployeesForPayCalendar(String payCalendarName, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(principalHRAttributesDao.getActiveEmployeesForPayCalendar(payCalendarName, asOfDate), PrincipalHRAttributesBo.toImmutable);
+    	return principalHRAttributesDao.getActiveEmployeesForPayCalendar(payCalendarName, asOfDate);
     }
     
     public List<PrincipalHRAttributes> getActiveEmployeesForLeaveCalendar(String leaveCalendarName, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(principalHRAttributesDao.getActiveEmployeesForLeaveCalendar(leaveCalendarName, asOfDate), PrincipalHRAttributesBo.toImmutable);
+    	return principalHRAttributesDao.getActiveEmployeesForLeaveCalendar(leaveCalendarName, asOfDate);
     }
 	
     public List<String> getActiveEmployeesIdForLeaveCalendarAndIdList(String leaveCalendarName, List<String> pidList, LocalDate asOfDate) {
@@ -82,56 +70,63 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
      */
     @Override
     public List<PrincipalHRAttributes> getActiveEmployeesForLeavePlan(String leavePlan, LocalDate asOfDate) {
-        return ModelObjectUtils.transform(principalHRAttributesDao.getActiveEmployeesForLeavePlan(leavePlan, asOfDate), PrincipalHRAttributesBo.toImmutable);
-    }
+        List<PrincipalHRAttributes> principals = principalHRAttributesDao.getActiveEmployeesForLeavePlan(leavePlan, asOfDate);
 
+        return principals;
+    }
+    
+//    @Override
+//	public PrincipalHRAttributes getPrincipalHRAttributes(String principalId) {
+//		return this.principalHRAttributesDao.getPrincipalHRAttributes(principalId);
+//	}
+    
     @Override
     public PrincipalHRAttributes getInactivePrincipalHRAttributes(String principalId, LocalDate asOfDate) {
-    	return PrincipalHRAttributesBo.to(this.principalHRAttributesDao.getInactivePrincipalHRAttributes(principalId, asOfDate));
+    	return this.principalHRAttributesDao.getInactivePrincipalHRAttributes(principalId, asOfDate);
     }
     
     @Override
     public PrincipalHRAttributes getPrincipalHRAttributes(String hrPrincipalAttributeId) {
-    	return PrincipalHRAttributesBo.to(this.principalHRAttributesDao.getPrincipalHRAttributes(hrPrincipalAttributeId));
+    	return this.principalHRAttributesDao.getPrincipalHRAttributes(hrPrincipalAttributeId);
     }
     
     @Override
     public List<PrincipalHRAttributes> getAllActivePrincipalHrAttributesForPrincipalId(String principalId, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(this.principalHRAttributesDao.getAllActivePrincipalHrAttributesForPrincipalId(principalId, asOfDate), PrincipalHRAttributesBo.toImmutable);
+    	return this.principalHRAttributesDao.getAllActivePrincipalHrAttributesForPrincipalId(principalId, asOfDate);
     }
     @Override
     public PrincipalHRAttributes getMaxTimeStampPrincipalHRAttributes(String principalId) {
-    	return PrincipalHRAttributesBo.to(principalHRAttributesDao.getMaxTimeStampPrincipalHRAttributes(principalId));
+    	return principalHRAttributesDao.getMaxTimeStampPrincipalHRAttributes(principalId);
     }
     
     @Override
     public List<PrincipalHRAttributes> getAllInActivePrincipalHrAttributesForPrincipalId(String principalId, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(this.principalHRAttributesDao.getAllInActivePrincipalHrAttributesForPrincipalId(principalId, asOfDate), PrincipalHRAttributesBo.toImmutable);
+    	return this.principalHRAttributesDao.getAllInActivePrincipalHrAttributesForPrincipalId(principalId, asOfDate);
     }
     @Override
     public List<PrincipalHRAttributes> getActivePrincipalHrAttributesForRange(String principalId, LocalDate startDate, LocalDate endDate) {
-    	return ModelObjectUtils.transform(this.principalHRAttributesDao.getActivePrincipalHrAttributesForRange(principalId, startDate, endDate), PrincipalHRAttributesBo.toImmutable);
+    	return this.principalHRAttributesDao.getActivePrincipalHrAttributesForRange(principalId, startDate, endDate);
     }
     @Override
     public List<PrincipalHRAttributes> getInactivePrincipalHRAttributesForRange(String principalId, LocalDate startDate, LocalDate endDate) {
-    	return ModelObjectUtils.transform(this.principalHRAttributesDao.getInactivePrincipalHRAttributesForRange(principalId, startDate, endDate), PrincipalHRAttributesBo.toImmutable);
+    	return this.principalHRAttributesDao.getInactivePrincipalHRAttributesForRange(principalId, startDate, endDate);
     }
     @Override
     public List<PrincipalHRAttributes> getPrincipalHrAtributes(String userPrincipalId, String principalId,
                                                                String leavePlan, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-    	List<PrincipalHRAttributesBo> results = new ArrayList<>();
+    	List<PrincipalHRAttributes> results = new ArrayList<PrincipalHRAttributes>();
     	
-    	List<PrincipalHRAttributesBo> principalHRAttributeObjs = principalHRAttributesDao.getPrincipalHrAtributes(principalId, leavePlan, fromEffdt, toEffdt, active, showHistory);
+    	List<PrincipalHRAttributes> principalHRAttributeObjs = principalHRAttributesDao.getPrincipalHrAtributes(principalId, leavePlan, fromEffdt, toEffdt, active, showHistory);
 
         //TODO - performance
-    	for (PrincipalHRAttributesBo principalHRAttributeObj : principalHRAttributeObjs) {
-        	JobContract jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalHRAttributeObj.getPrincipalId(), principalHRAttributeObj.getEffectiveLocalDate());
+    	for (PrincipalHRAttributes principalHRAttributeObj : principalHRAttributeObjs) {
+        	Job jobObj = HrServiceLocator.getJobService().getPrimaryJob(principalHRAttributeObj.getPrincipalId(), principalHRAttributeObj.getEffectiveLocalDate());
     		
     		String department = jobObj != null ? jobObj.getDept() : null;
-        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartment(department, jobObj.getGroupKeyCode(), jobObj.getEffectiveLocalDate()) : null;
-        	String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+        	Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, jobObj.getEffectiveLocalDate()) : null;
+        	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
-        	Map<String, String> roleQualification = new HashMap<>();
+        	Map<String, String> roleQualification = new HashMap<String, String>();
         	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, principalHRAttributeObj.getPrincipalId());
         	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
         	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
@@ -144,7 +139,7 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
         	}
     	}
     	
-    	return ModelObjectUtils.transform(results, PrincipalHRAttributesBo.toImmutable);
+    	return results;
     }
 
     @Override

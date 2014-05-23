@@ -15,25 +15,22 @@
  */
 package org.kuali.kpme.core.calendar.entry.service;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntryPeriodType;
-import org.kuali.kpme.core.api.calendar.entry.service.CalendarEntryService;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.calendar.Calendar;
 import org.kuali.kpme.core.calendar.dao.CalendarDao;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.entry.CalendarEntryPeriodType;
 import org.kuali.kpme.core.calendar.entry.dao.CalendarEntryDao;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.util.List;
 
 public class CalendarEntryServiceImpl implements CalendarEntryService {
 
@@ -50,47 +47,47 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
 
     public CalendarEntry getCalendarEntry(String hrCalendarEntryId) {
 
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntry(hrCalendarEntryId));
+        return calendarEntryDao.getCalendarEntry(hrCalendarEntryId);
     }
 
     @Override
     public CalendarEntry getCalendarEntryByIdAndPeriodEndDate(String hrCalendarId, DateTime endPeriodDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntryByIdAndPeriodEndDate(hrCalendarId, endPeriodDate));
+        return calendarEntryDao.getCalendarEntryByIdAndPeriodEndDate(hrCalendarId, endPeriodDate);
     }
 
     @Override
     public CalendarEntry getCalendarEntryByCalendarIdAndDateRange(
             String hrCalendarId, DateTime beginDate, DateTime endDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntryByCalendarIdAndDateRange(hrCalendarId, beginDate, endDate));
+        return calendarEntryDao.getCalendarEntryByCalendarIdAndDateRange(hrCalendarId, beginDate, endDate);
     }
 
     @Override
     public CalendarEntry getCurrentCalendarEntryByCalendarId(
             String hrCalendarId, DateTime currentDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCurrentCalendarEntryByCalendarId(hrCalendarId, currentDate));
+        return calendarEntryDao.getCurrentCalendarEntryByCalendarId(hrCalendarId, currentDate);
     }
 
     @Override
     public CalendarEntry getPreviousCalendarEntryByCalendarId(String hrCalendarId, CalendarEntry pce) {
-        return CalendarEntryBo.to(calendarEntryDao.getPreviousCalendarEntryByCalendarId(hrCalendarId, pce));
+        return calendarEntryDao.getPreviousCalendarEntryByCalendarId(hrCalendarId, pce);
     }
 
     @Override
     public CalendarEntry getNextCalendarEntryByCalendarId(String hrCalendarId, CalendarEntry pce) {
-        return CalendarEntryBo.to(calendarEntryDao.getNextCalendarEntryByCalendarId(hrCalendarId, pce));
+        return calendarEntryDao.getNextCalendarEntryByCalendarId(hrCalendarId, pce);
     }
 
     @Override
     public List<CalendarEntry> getCurrentCalendarEntriesNeedsScheduled(int thresholdDays, DateTime asOfDate) {
-        return toImmutable(calendarEntryDao.getCurrentCalendarEntryNeedsScheduled(thresholdDays, asOfDate));
+        return calendarEntryDao.getCurrentCalendarEntryNeedsScheduled(thresholdDays, asOfDate);
     }
 
     @Override
     public CalendarEntry createNextCalendarEntry(CalendarEntry calendarEntry, CalendarEntryPeriodType type) {
-        CalendarEntryBo newEntry = new CalendarEntryBo();
+        CalendarEntry newEntry = new CalendarEntry();
         newEntry.setCalendarName(calendarEntry.getCalendarName());
         newEntry.setHrCalendarId(calendarEntry.getHrCalendarId());
-        //newEntry.setCalendarObj((Calendar)calendarEntry.getCalendarObj());
+        newEntry.setCalendarObj(calendarEntry.getCalendarObj());
         
         if (type == null) {
             type = CalendarEntryPeriodType.BI_WEEKLY;
@@ -159,22 +156,22 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
 
     @Override
     public List<CalendarEntry> getFutureCalendarEntries(String hrCalendarId, DateTime currentDate, int numberOfEntries) {
-        return toImmutable(calendarEntryDao.getFutureCalendarEntries(hrCalendarId, currentDate, numberOfEntries));
+        return calendarEntryDao.getFutureCalendarEntries(hrCalendarId, currentDate, numberOfEntries);
     }
     
     @Override
     public List<CalendarEntry> getCalendarEntriesEndingBetweenBeginAndEndDate(String hrCalendarId, DateTime beginDate, DateTime endDate) {
-        return toImmutable(calendarEntryDao.getCalendarEntriesEndingBetweenBeginAndEndDate(hrCalendarId, beginDate, endDate));
+        return calendarEntryDao.getCalendarEntriesEndingBetweenBeginAndEndDate(hrCalendarId, beginDate, endDate);
     }
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarId(String hrCalendarId) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarId(hrCalendarId));
+    	return calendarEntryDao.getAllCalendarEntriesForCalendarId(hrCalendarId);
     }
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarIdAndYear(String hrCalendarId, String year) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarIdAndYear(hrCalendarId, year));
+    	return calendarEntryDao.getAllCalendarEntriesForCalendarIdAndYear(hrCalendarId, year);
     }
     
     @Override
@@ -185,7 +182,7 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
 						principalId, LocalDate.now());
 		if (principalHRAttributes != null
 				&& principalHRAttributes.getLeavePlan() != null) {
-			LeavePlanContract lp = HrServiceLocator.getLeavePlanService()
+			LeavePlan lp = HrServiceLocator.getLeavePlanService()
 					.getLeavePlan(principalHRAttributes.getLeavePlan(),
 							LocalDate.now());
 			if (lp != null && lp.getPlanningMonths() != null) {
@@ -209,7 +206,7 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarIdUpToCutOffTime(String hrCalendarId, DateTime cutOffTime) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarIdUpToCutOffTime(hrCalendarId, cutOffTime));
+    	return calendarEntryDao.getAllCalendarEntriesForCalendarIdUpToCutOffTime(hrCalendarId, cutOffTime);
     }
     
     //******** kpme-2396 ********
@@ -219,6 +216,9 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, currentDate.toLocalDate(), false);
         if(calendar != null) {
 		    pcd = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), currentDate);
+		    if(pcd != null) {
+		    	pcd.setCalendarObj(calendar);
+		    }
         }
 		return pcd;
 	}
@@ -229,6 +229,9 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, beginDate.toLocalDate(), endDate.toLocalDate(), false);
         if(calendar != null) {
             pcd = HrServiceLocator.getCalendarEntryService().getCalendarEntryByCalendarIdAndDateRange(calendar.getHrCalendarId(), beginDate, endDate);
+            if(pcd != null) {
+                pcd.setCalendarObj(calendar);
+            }
         }
         return pcd;
     }
@@ -236,7 +239,7 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
     @Override
     public CalendarEntry getCalendarDatesByPayEndDate(String principalId, DateTime payEndDate, String calendarType) {
         PrincipalHRAttributes principalCalendar = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, payEndDate.toLocalDate());
-
+        
         Calendar calendar = null;
         if(ObjectUtils.isNull(principalCalendar)) {
         	return null;
@@ -250,7 +253,13 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         if (calendar == null) {
         	return null;
         }
-        return HrServiceLocator.getCalendarEntryService().getCalendarEntryByIdAndPeriodEndDate(calendar.getHrCalendarId(), payEndDate);
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntryByIdAndPeriodEndDate(calendar.getHrCalendarId(), payEndDate);
+        
+        if(ObjectUtils.isNotNull(calendarEntry)) {
+        	calendarEntry.setCalendarObj(calendar);
+        }
+        
+        return calendarEntry;
     }
     
     @Override
@@ -259,6 +268,9 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, beginDate.toLocalDate(), endDate.toLocalDate(), true);
         if(calendar != null) {
             pcd = HrServiceLocator.getCalendarEntryService().getCalendarEntryByCalendarIdAndDateRange(calendar.getHrCalendarId(), beginDate, endDate);
+            if(pcd != null) {
+                pcd.setCalendarObj(calendar);
+            }
         }
         return pcd;
     }
@@ -270,17 +282,16 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByPrincipalIdAndDate(principalId, currentDate.toLocalDate(), true);
         if(calendar != null) {
 		    pcd = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), currentDate);
+		    if(pcd != null) {
+		    	pcd.setCalendarObj(calendar);
+		    }
         }
 		return pcd;
 	}
 
     @Override
     public List<CalendarEntry> getSearchResults(String calendarName, String calendarTypes, LocalDate fromBeginDate, LocalDate toBeginDate, LocalDate fromendDate, LocalDate toEndDate) {
-        return toImmutable(calendarEntryDao.getSearchResults(calendarName, calendarTypes, fromBeginDate, toBeginDate, fromendDate, toEndDate));
-    }
-
-    private List<CalendarEntry> toImmutable(List<CalendarEntryBo> bos) {
-        return ModelObjectUtils.transform(bos, CalendarEntryBo.toCalendarEntry);
+        return calendarEntryDao.getSearchResults(calendarName, calendarTypes, fromBeginDate, toBeginDate, fromendDate, toEndDate);
     }
 
 

@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/TkTldHeader.jsp" %>
 
 <%@ attribute name="day" required="true" type="org.kuali.kpme.core.calendar.web.CalendarDay" %>
+
 <%-- display time blocks for the day --%>
 <c:forEach var="block" items="${day.blockRenderers}" varStatus="status">
     <c:if test="${block.timeBlock.earnCode ne HrConstants.LUNCH_EARN_CODE}">
@@ -15,19 +16,13 @@
 
  		<c:set var="editableClass" value="event-title-false"/>
         <c:set var="timeBlockDivId" value="doNotShow_${block.timeBlock.tkTimeBlockId}" />
-        <c:if test="${Form.docEditable && block.timeBlockEditable}">
+        <c:if test="${Form.docEditable && block.timeBlock.timeBlockEditable}">
         	<c:set var="editableClass" value="event-title-true"/>
             <c:set var="timeBlockDivId" value=""/>
         </c:if>
 
-        <c:forEach var="action" items="${Form.actionMessages}">
-            <c:if test="${fn:containsIgnoreCase(action,block.timeBlock.tkTimeBlockId)}">
-                <c:set var="error" value="block-error"/>
-            </c:if>
-        </c:forEach>
-
-        <div id="${timeBlockDivId}" class="approvals-table event ${last} ${block.assignmentClass} ${error}">
-            <div id="timeblock_${block.timeBlock.tkTimeBlockId}"
+        <div id="${timeBlockDivId}" class="approvals-table event ${last} ${block.assignmentClass}">
+            <div id="timeblock_${block.timeBlock.tkTimeBlockId}" 
             	 class="${editableClass}">
             	 <c:if test="${block.timeBlock.clockedByMissedPunch}">
  	 	 	 	 	<!-- <div class="missed-punch-marker">
@@ -71,14 +66,15 @@
 						</table>
 					</div>
 				</c:if>
-                <c:if test="${Form.docEditable && block.timeBlockEditable && block.deletable}">
+                <c:if test="${Form.docEditable && block.timeBlock.timeBlockEditable && block.timeBlock.deleteable}">
                     <div><img id="timeblockDelete_${block.timeBlock.tkTimeBlockId}"
                               class='event-delete'
                               src='images/delete.png'/>
                     </div>
                 </c:if>
+
                 <c:choose>
-                    <c:when test="${block.timeBlockEditable}">
+                    <c:when test="${block.timeBlock.timeBlockEditable}">
                         <div id="show_${block.timeBlock.tkTimeBlockId}">${block.title}</div>
                     </c:when>
                     <c:otherwise>
@@ -97,7 +93,7 @@
                                     <c:when test="${thdr.hours ne ''}">
                                         <c:set var="title" value="${thdr.title}"/>
                                         <c:choose>
-                                            <c:when test="${thdr.overtimeEarnCode && Form.docEditable && block.overtimeEditable && !(thdr.title eq 'DOT')}">
+                                            <c:when test="${thdr.overtimeEarnCode && Form.docEditable && block.timeBlock.overtimeEditable && !(thdr.title eq 'DOT')}">
                                                 <c:set var="title"
                                                        value="<span id='overtime_${block.timeBlock.tkTimeBlockId}' class='overtime'>${thdr.title}</span>"/>
                                             </c:when>
@@ -114,19 +110,7 @@
                                                 - ${thdr.hours} hours</a></div>
                                         </c:if>
                                         <c:if test="${thdr.title ne HrConstants.HOLIDAY_EARN_CODE}">
-                                        
-                                         <c:choose>
-                                           <c:when test="${thdr.overtimeEarnCode}">
-                                                <fmt:parseNumber var="ovtHours" type="number" value="${thdr.hours}" />
-                                                <c:if test="${ovtHours > 0}">
-                                                	${title} - ${thdr.hours} hours
-                                                </c:if>
-                                           </c:when>
-                                           <c:otherwise>
                                             ${title} - ${thdr.hours} hours
-                                           </c:otherwise>
-                                         </c:choose>  
-                                         
                                         </c:if>
                                     </c:when>
                                     <c:otherwise>
@@ -147,7 +131,7 @@
                 </c:if>
             </div>
             <div class="lunch">
-                <c:if test="${block.lunchLabel ne '' and block.deletable}">
+                <c:if test="${block.lunchLabel ne '' and block.timeBlock.deleteable}">
                     <div><img id="lunchDelete_${block.lunchLabelId}"
                               class='event-delete'
                               src='images/delete.png'/>
@@ -164,7 +148,7 @@
 <c:forEach var="block" items="${day.leaveBlockRenderers}" varStatus="status">
     <div class="event ${block.assignmentClass}">
 		<c:set var="editableClass" value="event-title-false"/>
-	    <c:if test="${Form.docEditable && block.editable}">
+	    <c:if test="${Form.docEditable && block.leaveBlock.editable}">
 	        <c:set var="editableClass" value="event-title-true"/>
 	    </c:if>	
 	    <div id="leaveblock_${block.leaveBlockId}" class="${editableClass}">
@@ -175,7 +159,7 @@
 	            </div>
 	        </c:if>
 			<c:choose>
-                <c:when test="${block.editable}">
+                <c:when test="${block.leaveBlock.editable}">
                     <div id="leaveShow_${block.leaveBlockId}">${block.assignmentTitle}</div>
                 </c:when>
                 <c:otherwise>

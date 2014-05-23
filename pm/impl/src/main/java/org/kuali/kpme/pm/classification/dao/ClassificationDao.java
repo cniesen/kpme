@@ -15,8 +15,8 @@
  */
 package org.kuali.kpme.pm.classification.dao;
 
-import org.kuali.kpme.pm.classification.ClassificationBo;
+import org.kuali.kpme.pm.classification.Classification;
 
 public interface ClassificationDao {
-    public ClassificationBo getClassificationById(String pmClassificationId);
+    public Classification getClassificationById(String pmClassificationId);
 }

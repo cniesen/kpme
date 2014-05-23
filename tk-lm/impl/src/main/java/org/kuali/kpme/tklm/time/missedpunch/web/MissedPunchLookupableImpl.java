@@ -15,22 +15,32 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch.web;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.search.Range;
 import org.kuali.rice.core.api.search.SearchExpressionUtils;
@@ -44,10 +54,6 @@ import org.kuali.rice.krad.util.ObjectUtils;
 import org.kuali.rice.krad.util.UrlFactory;
 import org.kuali.rice.krad.web.form.LookupForm;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 
 	private static final long serialVersionUID = 6521192698205632171L;
@@ -56,7 +62,7 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 	
 	@Override
 	public List<?> getSearchResults(LookupForm form, Map<String, String> searchCriteria, boolean unbounded) {
-		List<MissedPunchBo> results = new ArrayList<MissedPunchBo>();
+		List<MissedPunch> results = new ArrayList<MissedPunch>();
 		
 		LocalDate fromDate = null;
 		LocalDate toDate = null;
@@ -96,7 +102,7 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 				}
 			}
 			if(invalid) {
-				return new ArrayList<TimeBlockBo>();
+				return new ArrayList<TimeBlock>();
 			}
 		}
 		searchCriteria.remove("actionDate");
@@ -106,7 +112,7 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 			GlobalVariables.getMessageMap().getInfoMessagesForProperty("LookupResultMessages").clear();
 		}
 		for (Object searchResult : searchResults) {
-			MissedPunchBo missedPunch = (MissedPunchBo) searchResult;
+			MissedPunch missedPunch = (MissedPunch) searchResult;
 			results.add(missedPunch);
 		}
 		
@@ -139,8 +145,8 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 	
 	
 	
-	private List<MissedPunchBo> filterByActionTime(List<MissedPunchBo> results,	String actionTimeString) throws ParseException {
-		List<MissedPunchBo> resultList = new LinkedList<MissedPunchBo>();
+	private List<MissedPunch> filterByActionTime(List<MissedPunch> results,	String actionTimeString) throws ParseException {
+		List<MissedPunch> resultList = new LinkedList<MissedPunch>();
 
 		SimpleDateFormat sdf = new SimpleDateFormat("h:mm a");
 		Date actionDateTime = null;
@@ -151,7 +157,7 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 			throw e;
 		}
 
-		for(MissedPunchBo mp : results) {
+		for(MissedPunch mp : results) {
 			String mpActionTime = mp.getActionTime();
 			Date mpActionTimeDate = sdf.parse(mpActionTime);
 			boolean added = actionDateTime.compareTo(mpActionTimeDate) == 0 ? resultList.add(mp) : false;
@@ -161,10 +167,10 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 
 
 
-	private List<MissedPunchBo> filterByActionDateRange(List<MissedPunchBo> results, LocalDate fromDate, LocalDate toDate) {
+	private List<MissedPunch> filterByActionDateRange(List<MissedPunch> results, LocalDate fromDate, LocalDate toDate) {
 		
-		List<MissedPunchBo> filteredResults = new LinkedList<MissedPunchBo>();
-		for(MissedPunchBo mp : results) {
+		List<MissedPunch> filteredResults = new LinkedList<MissedPunch>();
+		for(MissedPunch mp : results) {
 			boolean added;
 			if(fromDate != null && toDate != null) {
 				Interval actionInterval = new Interval(fromDate.toDate().getTime(),toDate.toDate().getTime());
@@ -186,16 +192,16 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 
 
 
-	private List<MissedPunchBo> filterByPrincipalId(List<MissedPunchBo> missedPunches, String principalId) {
-		List<MissedPunchBo> results = new ArrayList<MissedPunchBo>();
+	private List<MissedPunch> filterByPrincipalId(List<MissedPunch> missedPunches, String principalId) {
+		List<MissedPunch> results = new ArrayList<MissedPunch>();
 
         //TODO - performance  too many db calls in loop
-		for (MissedPunchBo missedPunch : missedPunches) {
-			JobContract jobObj = HrServiceLocator.getJobService().getJob(missedPunch.getPrincipalId(), missedPunch.getJobNumber(), LocalDate.fromDateFields(missedPunch.getActionDate()));
+		for (MissedPunch missedPunch : missedPunches) {
+			Job jobObj = HrServiceLocator.getJobService().getJob(missedPunch.getPrincipalId(), missedPunch.getJobNumber(), LocalDate.fromDateFields(missedPunch.getActionDate()));
 			String department = jobObj != null ? jobObj.getDept() : null;
-			String groupKeyCode = jobObj != null ? jobObj.getGroupKeyCode() : null;
-			Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, LocalDate.fromDateFields(missedPunch.getActionDate())) : null;
-			String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+			
+			Department departmentObj = jobObj != null ? HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(missedPunch.getActionDate())) : null;
+			String location = departmentObj != null ? departmentObj.getLocation() : null;
 			
 			Map<String, String> roleQualification = new HashMap<String, String>();
         	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, GlobalVariables.getUserSession().getPrincipalId());
@@ -236,8 +242,8 @@ public class MissedPunchLookupableImpl extends KPMELookupableImpl {
 		} else {
 			Properties urlParameters = new Properties();
 
-	        MissedPunchBo mp = (MissedPunchBo) dataObject;
-	        MissedPunchDocument mpDoc = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentByMissedPunchId(mp.getTkMissedPunchId());
+	        MissedPunch mp = (MissedPunch) dataObject;
+	        MissedPunchDocument mpDoc = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentByMissedPunchId(mp.getTkMissedPunchId());
 
 	        urlParameters.setProperty("command", "displayDocSearchView");
 	        

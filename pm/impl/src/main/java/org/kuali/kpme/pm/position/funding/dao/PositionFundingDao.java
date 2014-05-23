@@ -17,9 +17,9 @@ package org.kuali.kpme.pm.position.funding.dao;
 
 import java.util.List;
 
-import org.kuali.kpme.pm.position.funding.PositionFundingBo;
+import org.kuali.kpme.pm.position.funding.PositionFunding;
 
 public interface PositionFundingDao {
-	public List<PositionFundingBo> getFundingListForPosition(String hrPositionId);
+	public List<PositionFunding> getFundingListForPosition(String hrPositionId);
 
 }

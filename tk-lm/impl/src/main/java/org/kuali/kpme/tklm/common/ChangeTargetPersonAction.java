@@ -26,14 +26,12 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -49,8 +47,9 @@ public class ChangeTargetPersonAction extends KPMEAction {
 	
     public ActionForward changeTargetPerson(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ActionForward forward = mapping.findForward("basic");
+    	
     	ChangeTargetPersonForm changeTargetPersonForm = (ChangeTargetPersonForm) form;
-    	changeTargetPersonForm.setMessage(null);
+
         if (StringUtils.isNotBlank(changeTargetPersonForm.getPrincipalName())) {
         	Principal targetPerson = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(changeTargetPersonForm.getPrincipalName());
         	
@@ -80,18 +79,7 @@ public class ChangeTargetPersonAction extends KPMEAction {
 	                LOG.warn("Non-Admin user attempting to change target person.");
 	                return mapping.findForward("unauthorized");
 	            }
-	        } else {
-	        	if(changeTargetPersonForm.getFromAction() != null && !changeTargetPersonForm.getFromAction().isEmpty()) {
-	        		forward = new ActionRedirect(changeTargetPersonForm.getFromAction());
-	        		changeTargetPersonForm.setMessage("Could not locate a person for this principal name.");
-	        		
-	        	}
 	        }
-        } else {
-        	if(changeTargetPersonForm.getFromAction() != null && !changeTargetPersonForm.getFromAction().isEmpty()) {
-        		forward = new ActionRedirect(changeTargetPersonForm.getFromAction());
-        		changeTargetPersonForm.setMessage("Please provide principal name.");
-        	}
         }
 
         return forward;
@@ -139,9 +127,9 @@ public class ChangeTargetPersonAction extends KPMEAction {
         
         for (Job job : jobs) {
         	String department = job != null ? job.getDept() : null;
-        	String groupKeyCode = job != null ? job.getGroupKeyCode() : null;
-			Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, LocalDate.now());
-			String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+			
+			Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
+			String location = departmentObj != null ? departmentObj.getLocation() : null;
 
             if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_VIEW_ONLY.getRoleName(), department, LocalDate.now().toDateTimeAtStartOfDay())
             		|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_VIEW_ONLY.getRoleName(), department, LocalDate.now().toDateTimeAtStartOfDay())
@@ -169,9 +157,9 @@ public class ChangeTargetPersonAction extends KPMEAction {
         
         for (Job job : jobs) {
 			String department = job != null ? job.getDept() : null;
-			String groupKeyCode = job != null ? job.getGroupKeyCode() : null;
-			Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, LocalDate.now());
-			String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+			
+			Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
+			String location = departmentObj != null ? departmentObj.getLocation() : null;
 			
         	if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, LocalDate.now().toDateTimeAtStartOfDay())
         			|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, LocalDate.now().toDateTimeAtStartOfDay())

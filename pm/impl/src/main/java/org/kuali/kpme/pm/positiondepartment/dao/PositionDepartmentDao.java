@@ -15,10 +15,10 @@
  */
 package org.kuali.kpme.pm.positiondepartment.dao;
 
-import org.kuali.kpme.pm.positiondepartment.PositionDepartmentBo;
+import org.kuali.kpme.pm.positiondepartment.PositionDepartment;
 
 public interface PositionDepartmentDao {
 	
-	public PositionDepartmentBo getPositionDepartmentById(String pmPositionDeptId);
+	public PositionDepartment getPositionDepartmentById(String pmPositionDeptId);
 	
 }

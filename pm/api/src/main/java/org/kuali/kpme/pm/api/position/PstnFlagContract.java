@@ -21,8 +21,17 @@ import org.kuali.kpme.pm.api.flag.FlagContract;
  * <p>PstnFlagContract interface</p>
  *
  */
-public interface PstnFlagContract extends PositionDerivedContract, FlagContract {
+public interface PstnFlagContract extends FlagContract {
 	
-	 // Currently this empty interface is a placeholder for future additions (all of the current contract is expressed in the FlagContract interface). 
+	/**
+	 * The HR position id associated with the PstnFlag
+	 * 
+	 * <p>
+	 * hrPositionId of a PstnFlag.
+	 * <p>
+	 * 
+	 * @return hrPositionId for PstnFlag
+	 */
+	public String getHrPositionId();
 
 }

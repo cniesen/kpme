@@ -34,33 +34,16 @@ package org.kuali.kpme.core.paygrade.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.paygrade.PayGrade;
-import org.kuali.kpme.core.api.paygrade.service.PayGradeService;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
+import org.kuali.kpme.core.paygrade.PayGrade;
 import org.kuali.kpme.core.paygrade.dao.PayGradeDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PayGradeServiceImpl implements PayGradeService {
 
 	private PayGradeDao payGradeDao;
-    private static final ModelObjectUtils.Transformer<PayGradeBo, PayGrade> toPayGrade =
-            new ModelObjectUtils.Transformer<PayGradeBo, PayGrade>() {
-                public PayGrade transform(PayGradeBo input) {
-                    return PayGradeBo.to(input);
-                };
-            };
 	@Override
 	public PayGrade getPayGrade(String payGrade, String salGroup, LocalDate asOfDate) {
-		return PayGradeBo.to(getPayGradeBo(payGrade, salGroup, asOfDate));
+		return payGradeDao.getPayGrade(payGrade, salGroup, asOfDate);
 	}
-
-    protected PayGradeBo getPayGradeBo(String hrPayGradeId) {
-        return payGradeDao.getPayGrade(hrPayGradeId);
-    }
-
-    protected PayGradeBo getPayGradeBo(String payGrade, String salGroup, LocalDate asOfDate) {
-        return payGradeDao.getPayGrade(payGrade, salGroup, asOfDate);
-    }
  
 	public void setPayGradeDao(PayGradeDao payGradeDao) {
 		this.payGradeDao = payGradeDao;
@@ -68,7 +51,7 @@ public class PayGradeServiceImpl implements PayGradeService {
 
 	@Override
 	public PayGrade getPayGrade(String hrPayGradeId) {
-		return PayGradeBo.to(getPayGradeBo(hrPayGradeId));
+		return payGradeDao.getPayGrade(hrPayGradeId);
 	}
 	@Override
 	public int getPayGradeCount(String payGrade) {
@@ -77,7 +60,7 @@ public class PayGradeServiceImpl implements PayGradeService {
 
     @Override
     public List<PayGrade> getPayGrades(String payGrade, String payGradeDescr, String salGroup, String active, String showHistory) {
-        return ModelObjectUtils.transform(payGradeDao.getPayGrades(payGrade, payGradeDescr, salGroup, active, showHistory), toPayGrade);
+        return payGradeDao.getPayGrades(payGrade, payGradeDescr, salGroup, active, showHistory);
     }
 
 }

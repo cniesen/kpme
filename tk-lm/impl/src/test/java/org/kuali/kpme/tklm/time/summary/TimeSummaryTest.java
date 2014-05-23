@@ -23,8 +23,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
 
 @IntegrationTest
@@ -35,11 +35,11 @@ public class TimeSummaryTest extends TKLMIntegrationTestCase {
 		DateTime beginTime = new DateTime(2010, 1, 2, 1, 0, 0, 0);
 		DateTime endTime = new DateTime(2010, 1, 4, 2, 0, 0, 0);
 		
-		TimeBlockBo timeBlock = new TimeBlockBo();
+		TimeBlock timeBlock = new TimeBlock();
 		timeBlock.setBeginDateTime(beginTime);
 		timeBlock.setEndDateTime(endTime);
 		
-		TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
+		TimeHourDetail timeHourDetail = new TimeHourDetail();
 		
 		Map<DateTime, BigDecimal> timeToHrs = TkTestUtils.getDateToHoursMap(timeBlock, timeHourDetail);
 		Assert.assertTrue(timeToHrs!=null);

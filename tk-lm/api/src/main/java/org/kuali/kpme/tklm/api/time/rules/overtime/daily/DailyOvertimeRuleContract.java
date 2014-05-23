@@ -25,13 +25,12 @@ import org.kuali.kpme.core.api.paytype.PayTypeContract;
 import org.kuali.kpme.core.api.task.TaskContract;
 import org.kuali.kpme.core.api.workarea.WorkAreaContract;
 import org.kuali.kpme.tklm.api.time.rules.TkRuleContract;
-import org.kuali.kpme.tklm.api.time.rules.TkRuleKeyedContract;
 
 /**
  * <p>DailyOvertimeRuleContract interface</p>
  *
  */
-public interface DailyOvertimeRuleContract extends TkRuleKeyedContract { //TkRuleContract
+public interface DailyOvertimeRuleContract extends TkRuleContract {
 	
 	/**
 	 * The primary key of a DailyOvertimeRule entry saved in a database
@@ -244,7 +243,7 @@ public interface DailyOvertimeRuleContract extends TkRuleKeyedContract { //TkRul
 	 * 
 	 * @return Y if used for overtime, N if not
 	 */	
-	public boolean isOvtEarnCode();	
+	public Boolean getOvtEarnCode();	
 
 	/**
 	 * The id of the WorkArea object associated wtih the DailyOvertimeRule

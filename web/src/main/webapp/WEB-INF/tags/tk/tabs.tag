@@ -16,11 +16,8 @@
 
 <div id="tab-section">
     <li id="help" class="ui-state-default ui-corner-top"><a href="Help.do">Help</a></li>
-    <c:if test="${systemAdmin}">
-        <li id="adminActions" class="ui-state-default ui-corner-top"><a href="AdminActions.do">Admin Actions</a></li>
-    </c:if>
     <c:if test="${systemAdmin || locationAdmin || departmentAdmin || globalViewOnly || locationViewOnly || departmentViewOnly}">
-        <li id="departmentAdmin" class="ui-state-default ui-corner-top"><a href="DepartmentAdmin.do">Time & Leave Admin</a></li>
+        <li id="departmentAdmin" class="ui-state-default ui-corner-top"><a href="DepartmentAdmin.do">Department Admin</a></li>
     </c:if>
     <li id="personInfo" class="ui-state-default ui-corner-top"><a href="PersonInfo.do">Person Info</a></li>
     <c:if test="${approver || reviewer || payrollProcessor}">

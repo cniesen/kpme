@@ -15,14 +15,18 @@
  */
 package org.kuali.hr.time.workflow;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kew.api.identity.Id;
@@ -33,10 +37,6 @@ import org.kuali.rice.kew.routeheader.DocumentContent;
 import org.kuali.rice.kew.rule.AbstractRoleAttribute;
 import org.kuali.rice.kew.rule.ResolvedQualifiedRole;
 import org.kuali.rice.kim.api.role.RoleMember;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Deprecated
 public class TkWorkflowLeaveCalendarAttribute extends AbstractRoleAttribute {
@@ -52,7 +52,8 @@ public class TkWorkflowLeaveCalendarAttribute extends AbstractRoleAttribute {
 		LeaveCalendarDocument leaveDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(routeHeaderId);
 
 		if (leaveDocument != null) {
-			for (Assignment assignment : leaveDocument.getAllAssignments()) {
+			List<Assignment> assignments = leaveDocument.getAssignments();
+			for (Assignment assignment : assignments) {
 				String roleStr = roleName + "_" + assignment.getWorkArea();
 				if (!roles.contains(roleStr)) {
 					roles.add(roleStr);
@@ -87,7 +88,7 @@ public class TkWorkflowLeaveCalendarAttribute extends AbstractRoleAttribute {
 		LeaveCalendarDocument leaveCalendarDocument = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(routeHeaderId);
 		WorkArea workArea = null;
 		if (leaveCalendarDocument != null) {
-			workArea = HrServiceLocator.getWorkAreaService().getWorkArea(workAreaNumber, leaveCalendarDocument.getAsOfDate());
+			workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workAreaNumber, leaveCalendarDocument.getAsOfDate());
 		}
 
 		List<RoleMember> roleMembers = new ArrayList<RoleMember>();

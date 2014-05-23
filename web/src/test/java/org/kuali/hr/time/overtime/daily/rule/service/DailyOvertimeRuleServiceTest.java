@@ -21,18 +21,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.rules.overtime.daily.DailyOvertimeRule;
 import org.kuali.kpme.tklm.time.rules.overtime.daily.service.DailyOvertimeRuleService;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
@@ -43,24 +42,21 @@ public class DailyOvertimeRuleServiceTest extends KPMEWebTestCase {
 	public static final String USER_PRINCIPAL_ID = "admin";
 	private DateTime JAN_AS_OF_DATE = new DateTime(2010, 1, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
 
-	private void createDailyOvertimeRule(String groupKeyCode, String fromEarnGroup, String earnCode, 
-			//String location, 
-			String paytype, String dept, Long workArea, Long task, BigDecimal minHours, BigDecimal maxGap, String overtimePref) {
+
+	private void createDailyOvertimeRule(String fromEarnGroup, String earnCode, String location, String paytype, String dept, Long workArea, Long task, BigDecimal minHours, BigDecimal maxGap, String overtimePref) {
 		DailyOvertimeRuleService service = TkServiceLocator.getDailyOvertimeRuleService();
 		DailyOvertimeRule rule = new DailyOvertimeRule();
-		
-		rule.setGroupKeyCode("IU-IN");
+
 		rule.setEffectiveLocalDate(JAN_AS_OF_DATE.toLocalDate());
 		rule.setFromEarnGroup(fromEarnGroup);
 		rule.setEarnCode(earnCode);
-		//rule.setLocation(location);
+		rule.setLocation(location);
 		rule.setPaytype(paytype);
 		rule.setDept(dept);
 		rule.setWorkArea(workArea);
 		rule.setMaxGap(maxGap);
 		rule.setMinHours(minHours);
 		rule.setActive(true);
-        rule.setUserPrincipalId("admin");
 
 		service.saveOrUpdate(rule);
 	}
@@ -72,19 +68,15 @@ public class DailyOvertimeRuleServiceTest extends KPMEWebTestCase {
 		Long jobNumber = 30L;
 		Long workArea = 30L;
 		Long task = 30L;
-		createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-				//"IN", // 05/08 remove location because adding groupkeycode to DailyOvertimeRule // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT", workArea,
+		createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea,
 				task, new BigDecimal(8), new BigDecimal("0.10"), null);
 		// Create Time Blocks (2 days, 2 blocks on each day, 15 minute gap between blocks, 4 hours first block, 5 the next.
 		// Should end up with 2 hours total OVT.
-        DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
 		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-        DateTime tbStart = new DateTime(2010, 3, 29, 14, 0, 0, 0, zone);
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
-		CalendarEntry payCalendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates("admin", start);
-		blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
-		blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
+		CalendarEntry payCalendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates("admin", start);
+		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
+		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
 		TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(blocks, payCalendarEntry);
 
 		// Verify pre-Rule Run
@@ -106,20 +98,16 @@ public class DailyOvertimeRuleServiceTest extends KPMEWebTestCase {
 		Long jobNumber = 30L;
 		Long workArea = 30L;
 		Long task = 30L;
-		createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-				//"IN", // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT", workArea,
+		createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea,
 				task, new BigDecimal(8), new BigDecimal("15.0"), null);
 
 		// Create Time Blocks (2 days, 2 blocks on each day, 15 minute gap between blocks, 4 hours first block, 5 the next.
 		// Should end up with 2 hours total OVT.
-        DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
 		DateTime start = new DateTime(2010, 3, 29, 14, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-        DateTime tbStart = new DateTime(2010, 3, 29, 14, 0, 0, 0, zone);
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
-		CalendarEntry payCalendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates("admin", start);
-		blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
-		blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
+		CalendarEntry payCalendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates("admin", start);
+		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start, 2, new BigDecimal("4"), "REG", jobNumber, workArea, task));
+		blocks.addAll(TkTestUtils.createUniformTimeBlocks(start.plusHours(4).plusMinutes(15), 2, new BigDecimal("5"), "REG", jobNumber, workArea, task));
 		TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(blocks, payCalendarEntry);
 
 		// Verify pre-Rule Run
@@ -138,29 +126,22 @@ public class DailyOvertimeRuleServiceTest extends KPMEWebTestCase {
 	public void testRuleCreationAndRetrieval() throws Exception {
 		Long workArea = 0L;
 		Long task = 30L;
-		createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-				//"IN", // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT", workArea,
+		createDailyOvertimeRule("REG", "OVT", "SD1", "BW", "TEST-DEPT", workArea,
 				task, new BigDecimal(8), new BigDecimal("0.25"), null);
-		DailyOvertimeRule rule = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRule("IU-IN", // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT", workArea, JAN_AS_OF_DATE.toLocalDate());
+		DailyOvertimeRule rule = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRule("SD1", "BW", "TEST-DEPT", workArea, JAN_AS_OF_DATE.toLocalDate());
 		Assert.assertNotNull("Rule not created.", rule);
 	}
 	
 	@Test
 	public void testSearchDailyOvertimeRules() throws Exception {
-		createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-				//"IN", // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT", 30L, 30L, new BigDecimal(8), new BigDecimal("0.10"), null);
-		createDailyOvertimeRule("IU-IN", "REG", "OVT", 
-				//"IN", // changed from "SD1" to "IN" for changes of adding groupKeyCode to Job
-				"BW", "TEST-DEPT5", 5555L, 30L, new BigDecimal(8), new BigDecimal("0.10"), null);
+		createDailyOvertimeRule("REG", "OVT", "SD1", "BL", "TEST-DEPT", 30L, 30L, new BigDecimal(8), new BigDecimal("0.10"), null);
+		createDailyOvertimeRule("REG", "OVT", "SD1", "BL", "TEST-DEPT5", 5555L, 30L, new BigDecimal(8), new BigDecimal("0.10"), null);
 		
-		//List<DailyOvertimeRule> allResults = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRules("IU-IN", "admin", null, null, null, null, "Y", "N");
-		//Assert.assertEquals("Search returned the wrong number of results.", 2, allResults.size());
+		List<DailyOvertimeRule> allResults = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRules("admin", null, null, null, null, null, "Y", "N");
+		Assert.assertEquals("Search returned the wrong number of results.", 2, allResults.size());
 		
-		//List<DailyOvertimeRule> restrictedResults = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRules("IU-IN", "fran", null, null, null, null, "Y", "N");
-		//Assert.assertEquals("Search returned the wrong number of results.", 0, restrictedResults.size());
+		List<DailyOvertimeRule> restrictedResults = TkServiceLocator.getDailyOvertimeRuleService().getDailyOvertimeRules("fran", null, null, null, null, null, "Y", "N");
+		Assert.assertEquals("Search returned the wrong number of results.", 0, restrictedResults.size());
 	}
 
 }

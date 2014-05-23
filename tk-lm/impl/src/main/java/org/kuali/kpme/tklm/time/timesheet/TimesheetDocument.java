@@ -15,27 +15,30 @@
  */
 package org.kuali.kpme.tklm.time.timesheet;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.document.calendar.CalendarDocument;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timesheet.TimesheetDocumentContract;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.*;
 
 
 public class TimesheetDocument extends CalendarDocument implements TimesheetDocumentContract {
@@ -51,21 +54,30 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
 
 	private List<Job> jobs = new LinkedList<Job>();
 	private List<TimeBlock> timeBlocks = new LinkedList<TimeBlock>();
+	private TimeSummary timeSummary = new TimeSummary();
 	private Map<Long, Job> jobNumberToJobMap = new HashMap<Long,Job>();
-    private TimesheetDocumentHeader documentHeader;
 
 	public TimesheetDocument(TimesheetDocumentHeader documentHeader) {
 		this.documentHeader = documentHeader;
-		setCalendarType(TIMESHEET_DOCUMENT_TYPE);
+		this.calendarType = TIMESHEET_DOCUMENT_TYPE;
 	}
 
 	@Override
 	public TimesheetDocumentHeader getDocumentHeader() {
-		return documentHeader;
+		return (TimesheetDocumentHeader) documentHeader;
 	}
 
 	public void setDocumentHeader(TimesheetDocumentHeader documentHeader) {
 		this.documentHeader = documentHeader;
+	}
+
+    @Override
+	public List<Assignment> getAssignments() {
+		return assignments;
+	}
+
+	public void setAssignments(List<Assignment> assignments) {
+		this.assignments = assignments;
 	}
 
 	public List<Job> getJobs() {
@@ -90,24 +102,45 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
 		this.timeBlocks = timeBlocks;
 	}
 
-	public TimeSummary getTimeSummary() {
-        return (TimeSummary)TkServiceLocator.getTimeSummaryService().getTimeSummary(getPrincipalId(), getTimeBlocks(), getCalendarEntry(), getAssignmentMap());
+    @Override
+	public CalendarEntry getCalendarEntry() {
+		return calendarEntry;
 	}
 
-    @Override
+	public void setCalendarEntry(CalendarEntry calendarEntry) {
+		this.calendarEntry = calendarEntry;
+	}
+
+	public void setTimeSummary(TimeSummary timeSummary) {
+		this.timeSummary = timeSummary;
+	}
+
+	public TimeSummary getTimeSummary() {
+        if (timeSummary == null) {
+            timeSummary = TkServiceLocator.getTimeSummaryService().getTimeSummary(this);
+        }
+		return timeSummary;
+	}
+
 	public String getPrincipalId(){
-		return getDocumentHeader() == null ? null : getDocumentHeader().getPrincipalId();
+		return getDocumentHeader().getPrincipalId();
 	}
 
 	public Job getJob(Long jobNumber){
 		return jobNumberToJobMap.get(jobNumber);
 	}
 
-
-
     @Override
+	public LocalDate getAsOfDate(){
+		return getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+	}
+    
+    public LocalDate getDocEndDate(){
+		return getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
+	}
+
 	public String getDocumentId(){
-		return getDocumentHeader() == null ? null : getDocumentHeader().getDocumentId();
+		return this.getDocumentHeader().getDocumentId();
 	}
 
     public Map<String, List<LocalDate>> getEarnCodeMap() {
@@ -124,24 +157,21 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
         return earnCodeMap;
     }
 	
-    public Map<String, String> getAssignmentDescriptions(boolean clockOnlyAssignments, LocalDate date) {
+    public Map<String, String> getAssignmentDescriptions(boolean clockOnlyAssignments) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        List<Assignment> dayAssignments = getAssignmentMap().get(date);
-        if (CollectionUtils.isNotEmpty(dayAssignments)) {
-            for (Assignment assignment : dayAssignments) {
-                String principalId = GlobalVariables.getUserSession().getPrincipalId();
+        
+        for (Assignment assignment : assignments) {
+        	String principalId = GlobalVariables.getUserSession().getPrincipalId();
 
-                if (HrServiceLocator.getHRPermissionService().canViewCalendarDocumentAssignment(principalId, this, assignment)) {
-                    TimeCollectionRule tcr = null;
-                    if (assignment.getJob() != null) {
-                        tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
-                    }
-                    boolean isSynchronous = tcr == null || tcr.isClockUserFl();
-                    if (!clockOnlyAssignments || isSynchronous) {
-                        assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
-                    }
+        	if (HrServiceLocator.getHRPermissionService().canViewCalendarDocumentAssignment(principalId, this, assignment)) {
+        		TimeCollectionRule tcr = null;
+        		if(assignment.getJob() != null)
+        			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
+        		boolean isSynchronous = tcr == null || tcr.isClockUserFl();
+                if (!clockOnlyAssignments || isSynchronous) {
+                    assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
                 }
-            }
+        	}
         }
         
         return assignmentDescriptions;
@@ -149,18 +179,18 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
     
     public Map<String, String> getAssignmentDescriptionsOfApprovals(boolean clockOnlyAssignments) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        List<Assignment> allAssignments = getAllAssignments();
-        for (Assignment assignment : allAssignments) {
+        
+        for (Assignment assignment : assignments) {
         	String principalId = GlobalVariables.getUserSession().getPrincipalId();
 
         	if (HrServiceLocator.getHRPermissionService().canViewCalendarDocumentAssignment(principalId, this, assignment)) {
         		TimeCollectionRule tcr = null;
         		if(assignment.getJob() != null)
-        			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+        			tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
         		boolean isSynchronous = tcr == null || tcr.isClockUserFl();
                 if (!clockOnlyAssignments || isSynchronous) {
     				Long workArea = assignment.getWorkArea();
-                    String dept = assignment.getJob() == null ? StringUtils.EMPTY : assignment.getJob().getDept();
+                    String dept = assignment.getJob().getDept();
         			DateTime startOfToday = LocalDate.now().toDateTimeAtStartOfDay();
                     boolean isApproverOrReviewerForCurrentAssignment =
                             HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea, startOfToday)
@@ -172,7 +202,7 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
                     	assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
                     }
                 }
-            }
+        	}
         }
         
         return assignmentDescriptions;

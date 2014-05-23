@@ -15,33 +15,6 @@
  */
 package org.kuali.kpme.core.earncode.service;
 
-import com.google.common.collect.Ordering;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.earncode.EarnCode;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
-import org.kuali.kpme.core.api.earncode.service.EarnCodeService;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.core.api.workarea.WorkArea;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.earncode.dao.EarnCodeDao;
-import org.kuali.kpme.core.earncode.security.EarnCodeType;
-import org.kuali.kpme.core.role.KPMERole;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.HrContext;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.kim.api.role.RoleService;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.util.GlobalVariables;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -52,28 +25,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.dao.EarnCodeDao;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
+import org.kuali.kpme.core.earncode.security.EarnCodeType;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.rice.kim.api.role.RoleService;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.util.GlobalVariables;
+
+import com.google.common.collect.Ordering;
+
 public class EarnCodeServiceImpl implements EarnCodeService {
 
 	private EarnCodeDao earnCodeDao;
-    private static final ModelObjectUtils.Transformer<EarnCodeBo, EarnCode> toEarnCode =
-            new ModelObjectUtils.Transformer<EarnCodeBo, EarnCode>() {
-                public EarnCode transform(EarnCodeBo input) {
-                    return EarnCodeBo.to(input);
-                };
-            };
 	private static final Logger LOG = Logger.getLogger(EarnCodeServiceImpl.class);
 
 	public void setEarnCodeDao(EarnCodeDao earnCodeDao) {
 		this.earnCodeDao = earnCodeDao;
 	}
 
-    @Override
-    public List<EarnCode> getEarnCodesForLeave(Assignment a, LocalDate asOfDate, boolean isLeavePlanningCalendar) {
-        return ModelObjectUtils.transform(getEarnCodeBosForLeave(a, asOfDate, isLeavePlanningCalendar), toEarnCode);
-    }
-
 	//Move to LeaveCalendarDocumentService
-    protected List<EarnCodeBo> getEarnCodeBosForLeave(Assignment a, LocalDate asOfDate, boolean isLeavePlanningCalendar) {
+    public List<EarnCode> getEarnCodesForLeave(Assignment a, LocalDate asOfDate, boolean isLeavePlanningCalendar) {
         //getEarnCodesForTime and getEarnCodesForLeave have some overlapping logic, but they were separated so that they could follow their own distinct logic, so consolidation of logic is not desirable.
 
         if (a == null){
@@ -82,14 +69,14 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 //        	throw new RuntimeException("No assignment parameter.");
         }
         
-        JobContract job = a.getJob();
+        Job job = a.getJob();
         if (job == null || job.getPayTypeObj() == null) { 
 //        	throw new RuntimeException("Null job or null job pay type on assignment.");
         	LOG.error("Null job or null job pay type on assignment.");
         	return null;
         }
 
-        List<EarnCodeBo> earnCodes = new LinkedList<EarnCodeBo>();
+        List<EarnCode> earnCodes = new LinkedList<EarnCode>();
         String earnTypeCode = EarnCodeType.LEAVE.getCode();
         // skip getting the regular earn code for Leave Calendar
 
@@ -103,7 +90,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
         String leavePlan = principalHRAttributes.getLeavePlan();
         if (leavePlan != null) {
-            for (AccrualCategoryContract accrualCategories : HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(leavePlan, asOfDate)) {
+            for (AccrualCategory accrualCategories : HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(leavePlan, asOfDate)) {
                 accrualCategory = accrualCategories.getAccrualCategory();
                 if(accrualCategory != null) {
                     listAccrualCategories.add(accrualCategory);
@@ -112,17 +99,15 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         }
 
         //  get all earn codes by user security, then we'll filter on accrual category first as we process them.
-        List<? extends EarnCodeSecurityContract> decs = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getGroupKey().getLocationId(), asOfDate, job.getGroupKey().getGroupKeyCode());
-        //List<? extends EarnCodeSecurityContract> decs = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
-
-        for (EarnCodeSecurityContract dec : decs) {
+        List<EarnCodeSecurity> decs = HrServiceLocator.getEarnCodeSecurityService().getEarnCodeSecurities(job.getDept(), job.getHrSalGroup(), job.getLocation(), asOfDate);
+        for (EarnCodeSecurity dec : decs) {
 
             boolean addEarnCode = addEarnCodeBasedOnEmployeeApproverSettings(dec, a, asOfDate);
             if (addEarnCode) {
 
                 //  allow types Leave AND Both
                 if (earnTypeCode.equals(dec.getEarnCodeType()) || EarnCodeType.BOTH.getCode().equals(dec.getEarnCodeType())) {
-                    EarnCodeBo ec = getEarnCodeBo(dec.getEarnCode(), asOfDate);
+                    EarnCode ec = getEarnCode(dec.getEarnCode(), asOfDate);
 
                     //  make sure we got something back from the earn code dao
                     if (ec != null) {
@@ -173,7 +158,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
         return earnCodes;
     }
 
-    public boolean addEarnCodeBasedOnEmployeeApproverSettings(EarnCodeSecurityContract security, Assignment a, LocalDate asOfDate) {
+    public boolean addEarnCodeBasedOnEmployeeApproverSettings(EarnCodeSecurity security, Assignment a, LocalDate asOfDate) {
         boolean addEarnCode = false;
         if (security.isEmployee() &&
                 (StringUtils.equals(HrContext.getTargetPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
@@ -191,9 +176,9 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName()));
             List<Long> workAreas = HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
-            List<WorkArea> workAreaList = HrServiceLocator.getWorkAreaService().getWorkAreasForList(workAreas, asOfDate);
-            for (WorkArea workArea : workAreaList) {
-                if (a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
+            for (Long wa : workAreas) {
+                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(wa, asOfDate);
+                if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
                     addEarnCode = true;
                     break;
                 }
@@ -209,9 +194,9 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName()));
             List<Long> workAreas = HrServiceLocator.getKPMERoleService().getWorkAreasForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
-            List<WorkArea> workAreaList = HrServiceLocator.getWorkAreaService().getWorkAreasForList(workAreas, asOfDate);
-            for (WorkArea workArea : workAreaList) {
-                if (a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
+            for (Long wa : workAreas) {
+                WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(wa, asOfDate);
+                if (workArea!= null && a.getWorkArea().compareTo(workArea.getWorkArea())==0) {
                     addEarnCode = true;
                     break;
                 }
@@ -225,11 +210,10 @@ public class EarnCodeServiceImpl implements EarnCodeService {
             roleIds.add(roleService.getRoleIdByNamespaceCodeAndName(KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName()));
             List<String> depts = HrServiceLocator.getKPMERoleService().getDepartmentsForPrincipalInRoles(principalId, roleIds, asOfDate.toDateTimeAtStartOfDay(), true);
 
-
             for (String dept : depts) {
-               Department department = HrServiceLocator.getDepartmentService().getDepartment(dept, a.getGroupKeyCode(), asOfDate);
+                Department department = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(dept, asOfDate);
                 if (department!= null && a.getDept().equalsIgnoreCase(department.getDept())) {
-                   addEarnCode = true;
+                    addEarnCode = true;
                     break;
                 }
             }
@@ -240,43 +224,35 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
     @Override
     public List<EarnCode> getEarnCodesForPrincipal(String principalId, LocalDate asOfDate, boolean isLeavePlanningCalendar) {
-        Set<EarnCodeBo> earnCodes = new HashSet<EarnCodeBo>();
+        List<EarnCode> earnCodes = new LinkedList<EarnCode>();
         List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, asOfDate);
         for (Assignment assignment : assignments) {
-            List<EarnCodeBo> assignmentEarnCodes = getEarnCodeBosForLeave(assignment, asOfDate, isLeavePlanningCalendar);
+            List<EarnCode> assignmentEarnCodes = getEarnCodesForLeave(assignment, asOfDate, isLeavePlanningCalendar);
             //  the following list processing does work as hoped, comparing the objects' data, rather than their references to memory structures.
+            earnCodes.removeAll(assignmentEarnCodes); //ensures no overlap during the addAll
             earnCodes.addAll(assignmentEarnCodes);
         }
 
-        return ModelObjectUtils.transform(new ArrayList<EarnCodeBo>(earnCodes), toEarnCode);
+        return earnCodes;
     }
 
-    @Override
     public EarnCode getEarnCode(String earnCode, LocalDate asOfDate) {
-		return EarnCodeBo.to(getEarnCodeBo(earnCode, asOfDate));
+		return earnCodeDao.getEarnCode(earnCode, asOfDate);
 	}
-
-    protected EarnCodeBo getEarnCodeBo(String earnCode, LocalDate asOfDate) {
-        return earnCodeDao.getEarnCode(earnCode, asOfDate);
-    }
 
     @Override
     public String getEarnCodeType(String earnCode, LocalDate asOfDate) {
-        EarnCodeBo earnCodeObj = getEarnCodeBo(earnCode, asOfDate);
+        EarnCode earnCodeObj = getEarnCode(earnCode, asOfDate);
         return earnCodeObj != null ? earnCodeObj.getEarnCodeType() : "";       
     }
 
 	@Override
 	public EarnCode getEarnCodeById(String earnCodeId) {
-		return EarnCodeBo.to(getEarnCodeBoById(earnCodeId));
+		return earnCodeDao.getEarnCodeById(earnCodeId);
 	}
 
-    public EarnCodeBo getEarnCodeBoById(String earnCodeId) {
-        return earnCodeDao.getEarnCodeById(earnCodeId);
-    }
-
 	public List<EarnCode> getOvertimeEarnCodes(LocalDate asOfDate){
-		return ModelObjectUtils.transform(earnCodeDao.getOvertimeEarnCodes(asOfDate), toEarnCode);
+		return earnCodeDao.getOvertimeEarnCodes(asOfDate);
 	}
 
 	public List<String> getOvertimeEarnCodesStrs(LocalDate asOfDate){
@@ -301,7 +277,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 	}
 
 	@Override
-	public BigDecimal roundHrsWithEarnCode(BigDecimal hours, EarnCodeContract earnCode) {
+	public BigDecimal roundHrsWithEarnCode(BigDecimal hours, EarnCode earnCode) {
 		String roundOption = HrConstants.ROUND_OPTION_MAP.get(earnCode.getRoundingOption());
 		BigDecimal fractScale = new BigDecimal(earnCode.getFractionalTimeAllowed());
 		if(roundOption == null) {
@@ -324,7 +300,7 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 	}
 
     public List<EarnCode> getEarnCodes(String earnCode, String ovtEarnCode, String descr, String leavePlan, String accrualCategory, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist) {
-        return ModelObjectUtils.transform(earnCodeDao.getEarnCodes(earnCode, ovtEarnCode, descr, leavePlan, accrualCategory, fromEffdt, toEffdt, active, showHist), toEarnCode);
+        return earnCodeDao.getEarnCodes(earnCode, ovtEarnCode, descr, leavePlan, accrualCategory, fromEffdt, toEffdt, active, showHist);
     }
 
     @Override
@@ -351,17 +327,9 @@ public class EarnCodeServiceImpl implements EarnCodeService {
 
         Map<String, String> earnCodesForDisplay = new LinkedHashMap<String, String>();
         for (EarnCode earnCode : ordering.sortedCopy(earnCodes)) {
-            earnCodesForDisplay.put(getEarnCodeKeyForDisplay(earnCode), getEarnCodeValueForDisplay(earnCode));
+            earnCodesForDisplay.put(earnCode.getEarnCodeKeyForDisplay(), earnCode.getEarnCodeValueForDisplay());
         }
         return earnCodesForDisplay;
-    }
-
-    protected String getEarnCodeKeyForDisplay(EarnCode earnCode) {
-        return earnCode.getHrEarnCodeId();
-    }
-
-    protected String getEarnCodeValueForDisplay(EarnCode earnCode) {
-        return earnCode.getEarnCode() + " : " + earnCode.getDescription();
     }
 
 }

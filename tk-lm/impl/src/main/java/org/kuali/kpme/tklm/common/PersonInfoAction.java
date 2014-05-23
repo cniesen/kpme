@@ -15,19 +15,32 @@
  */
 package org.kuali.kpme.tklm.common;
 
-import org.apache.commons.lang.ObjectUtils;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.api.accrualcategory.AccrualEarnInterval;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -38,18 +51,6 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class PersonInfoAction extends KPMEAction {
     private IdentityService identityService;
@@ -77,8 +78,8 @@ public class PersonInfoAction extends KPMEAction {
 		
 		//KPME-1441
 		PrincipalHRAttributes principalHRAttributes = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(personForm.getPrincipalId(), LocalDate.now());
-		if ( principalHRAttributes != null && principalHRAttributes.getServiceLocalDate() != null ){
-			personForm.setServiceDate(principalHRAttributes.getServiceLocalDate().toString());
+		if ( principalHRAttributes != null && principalHRAttributes.getServiceDate() != null ){
+			personForm.setServiceDate(principalHRAttributes.getServiceDate().toString());
 		} else {
 			personForm.setServiceDate("");
 		}

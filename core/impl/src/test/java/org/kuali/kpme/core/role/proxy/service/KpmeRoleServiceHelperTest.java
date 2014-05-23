@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;

@@ -30,6 +30,14 @@
  */
 package org.kuali.kpme.tklm.leave.payout.web;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -37,16 +45,13 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.web.KPMEAction;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.payout.validation.LeavePayoutValidationUtils;
@@ -59,13 +64,6 @@ import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 public class LeavePayoutAction extends KPMEAction {
 	
@@ -91,7 +89,7 @@ public class LeavePayoutAction extends KPMEAction {
 			String documentId = leavePayout.getLeaveCalendarDocumentId();
 			TimesheetDocumentHeader tsdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(documentId);
 			LeaveCalendarDocumentHeader lcdh = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(documentId);
-            CalendarEntry calendarEntry = null;
+			CalendarEntry calendarEntry = null;
 			String strutsActionForward = "";
 			String methodToCall = "approveLeaveCalendar";
 			if(ObjectUtils.isNull(tsdh) && ObjectUtils.isNull(lcdh)) {
@@ -233,7 +231,7 @@ public class LeavePayoutAction extends KPMEAction {
 					TimesheetDocument tsd = null;
 					LeaveCalendarDocument lcd = null;
 					String principalId = null;
-					CalendarEntryBo calendarEntry = null;
+					CalendarEntry calendarEntry = null;
 
 					if(isTimesheet) {
 						tsd = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
@@ -260,9 +258,8 @@ public class LeavePayoutAction extends KPMEAction {
 							leavePayout = LmServiceLocator.getLeavePayoutService().payout(leavePayout);
 							// May need to update to save the business object to KPME's tables for record keeping.
 							LeaveBlock forfeitedLeaveBlock = LmServiceLocator.getLeaveBlockService().getLeaveBlock(leavePayout.getForfeitedLeaveBlockId());
-                            LeaveBlock.Builder builder = LeaveBlock.Builder.create(forfeitedLeaveBlock);
-                            builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-							LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), principalId);
+							forfeitedLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+							LmServiceLocator.getLeaveBlockService().updateLeaveBlock(forfeitedLeaveBlock, principalId);
 							return mapping.findForward("closeLeavePayoutDoc");
 						}
 						else {
@@ -305,15 +302,15 @@ public class LeavePayoutAction extends KPMEAction {
 		GlobalVariables.getMessageMap().putWarning("document.newMaintainableObj.transferAmount","leavePayout.transferAmount.adjust");
 		LeavePayoutForm btf = (LeavePayoutForm) form;
 
-		List<LeaveBlockBo> eligiblePayouts = (List<LeaveBlockBo>) request.getSession().getAttribute("eligibilities");
+		List<LeaveBlock> eligiblePayouts = (List<LeaveBlock>) request.getSession().getAttribute("eligibilities");
 		if(!eligiblePayouts.isEmpty()) {
 			
 			Collections.sort(eligiblePayouts, new Comparator() {
 
                 @Override
                 public int compare(Object o1, Object o2) {
-                    LeaveBlockBo l1 = (LeaveBlockBo) o1;
-                    LeaveBlockBo l2 = (LeaveBlockBo) o2;
+                    LeaveBlock l1 = (LeaveBlock) o1;
+                    LeaveBlock l2 = (LeaveBlock) o2;
                     return l1.getLeaveDate().compareTo(l2.getLeaveDate());
                 }
 
@@ -326,9 +323,9 @@ public class LeavePayoutAction extends KPMEAction {
 			LeaveCalendarDocument lcd = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(leaveCalendarDocumentId);
 			
 			String principalId = lcd == null ? null : lcd.getPrincipalId();
-			LeaveBlockBo leaveBlock = eligiblePayouts.get(0);
+			LeaveBlock leaveBlock = eligiblePayouts.get(0);
 			LocalDate effectiveDate = leaveBlock.getLeaveLocalDate();
-            AccrualCategoryRuleContract accrualRule = leaveBlock.getAccrualCategoryRule();
+            AccrualCategoryRule accrualRule = leaveBlock.getAccrualCategoryRule();
 			if(accrualRule != null) {
 				AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualRule.getLmAccrualCategoryId());
 				BigDecimal accruedBalance = LmServiceLocator.getAccrualService().getAccruedBalanceForPrincipal(principalId, accrualCategory, effectiveDate);
@@ -346,9 +343,8 @@ public class LeavePayoutAction extends KPMEAction {
 					// May need to update to save the business object to KPME's tables for record keeping.
 					LeaveBlock forfeitedLeaveBlock = LmServiceLocator.getLeaveBlockService().getLeaveBlock(leavePayout.getForfeitedLeaveBlockId());
 					KRADServiceLocator.getBusinessObjectService().save(leavePayout);
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(forfeitedLeaveBlock);
-					builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), principalId);
+					forfeitedLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+					LmServiceLocator.getLeaveBlockService().updateLeaveBlock(forfeitedLeaveBlock, principalId);
 					
 					if(ObjectUtils.isNotNull(leaveCalendarDocumentId)) {
 						if(StringUtils.equals(accrualRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.LEAVE_APPROVE) ||
@@ -399,15 +395,15 @@ public class LeavePayoutAction extends KPMEAction {
 		GlobalVariables.getMessageMap().putWarning("document.newMaintainableObj.transferAmount","leavePayout.transferAmount.adjust");
 		LeavePayoutForm btf = (LeavePayoutForm) form;
 
-		List<LeaveBlockBo> eligiblePayouts = (List<LeaveBlockBo>) request.getSession().getAttribute("eligibilities");
+		List<LeaveBlock> eligiblePayouts = (List<LeaveBlock>) request.getSession().getAttribute("eligibilities");
 		if(!eligiblePayouts.isEmpty()) {
 			
 			Collections.sort(eligiblePayouts, new Comparator() {
 				
 				@Override
 				public int compare(Object o1, Object o2) {
-					LeaveBlockBo l1 = (LeaveBlockBo) o1;
-					LeaveBlockBo l2 = (LeaveBlockBo) o2;
+					LeaveBlock l1 = (LeaveBlock) o1;
+					LeaveBlock l2 = (LeaveBlock) o2;
 					return l1.getLeaveDate().compareTo(l2.getLeaveDate());
 				}
 				
@@ -420,10 +416,10 @@ public class LeavePayoutAction extends KPMEAction {
 			TimesheetDocument tsd = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
 			String principalId = tsd == null ? null : tsd.getPrincipalId();
 			
-			LeaveBlockBo leaveBlock = eligiblePayouts.get(0);
+			LeaveBlock leaveBlock = eligiblePayouts.get(0);
 			LocalDate effectiveDate = leaveBlock.getLeaveLocalDate();
 			String accrualCategoryRuleId = leaveBlock.getAccrualCategoryRuleId();
-            AccrualCategoryRuleContract accrualRule = leaveBlock.getAccrualCategoryRule();
+            AccrualCategoryRule accrualRule = leaveBlock.getAccrualCategoryRule();
 			if(accrualRule != null) {
 				AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualRule.getLmAccrualCategoryId());
 				BigDecimal accruedBalance = LmServiceLocator.getAccrualService().getAccruedBalanceForPrincipal(principalId, accrualCategory, effectiveDate);
@@ -441,9 +437,8 @@ public class LeavePayoutAction extends KPMEAction {
 	
 						// May need to update to save the business object to KPME's tables for record keeping.
 						LeaveBlock forfeitedLeaveBlock = LmServiceLocator.getLeaveBlockService().getLeaveBlock(leavePayout.getForfeitedLeaveBlockId());
-                        LeaveBlock.Builder builder = LeaveBlock.Builder.create(forfeitedLeaveBlock);
-                        builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-						LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), principalId);
+						forfeitedLeaveBlock.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+						LmServiceLocator.getLeaveBlockService().updateLeaveBlock(forfeitedLeaveBlock, principalId);
 
 						if(ObjectUtils.isNotNull(timesheetDocumentId)) {
 							if(StringUtils.equals(accrualRule.getMaxBalanceActionFrequency(),HrConstants.MAX_BAL_ACTION_FREQ.LEAVE_APPROVE) ||

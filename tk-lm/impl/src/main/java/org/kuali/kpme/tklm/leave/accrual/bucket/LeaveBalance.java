@@ -15,29 +15,29 @@
  */
 package org.kuali.kpme.tklm.leave.accrual.bucket;
 
+import java.math.BigDecimal;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.KPMEBalanceException;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.LeaveBalanceContract;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-
-import java.math.BigDecimal;
 
 public abstract class LeaveBalance implements LeaveBalanceContract {
 
 	protected AccrualCategory accrualCategory;
-	protected PrincipalHRAttributesBo principalCalendar;
+	protected PrincipalHRAttributes principalCalendar;
 	protected LocalDate asOfDate;
 	protected LocalDate calendarPeriodBeginDate;
 	protected LocalDate calendarPeriodEndDate;
 	protected BigDecimal balance;
 	
-	protected LeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributesBo principalCalendar) {
+	protected LeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributes principalCalendar) {
 		this.accrualCategory = accrualCategory;
 		this.principalCalendar = principalCalendar;
 		asOfDate = LocalDate.now();
@@ -88,8 +88,8 @@ public abstract class LeaveBalance implements LeaveBalanceContract {
 		return HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRuleForDate(accrualCategory, leaveLocalDate, principalCalendar.getServiceLocalDate());
 	}
 
-	protected EmployeeOverrideContract getEmployeeOverride(LeaveBlock leaveBlock, String overrideType) {
-        EmployeeOverrideContract eo = null;
+	protected EmployeeOverride getEmployeeOverride(LeaveBlock leaveBlock, String overrideType) {
+		EmployeeOverride eo = null;
 		eo = LmServiceLocator.getEmployeeOverrideService().getEmployeeOverride(principalCalendar.getPrincipalId(),
 				principalCalendar.getLeavePlan(), accrualCategory.getAccrualCategory(), overrideType, leaveBlock.getLeaveLocalDate());
 		return eo;

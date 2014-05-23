@@ -17,8 +17,8 @@ package org.kuali.kpme.tklm.time.clocklog.dao;
 
 import java.util.List;
 
-import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 
 public interface ClockLogDao {
 
@@ -26,25 +26,25 @@ public interface ClockLogDao {
 	 * Save or update ClockLog passed in
 	 * @param clockLog
 	 */
-    public void saveOrUpdate(ClockLogBo clockLog);
+    public void saveOrUpdate(ClockLog clockLog);
     /**
      * Save or update List of ClockLogs passed in
      * @param clockLogList
      */
-    public void saveOrUpdate(List<ClockLogBo> clockLogList);
+    public void saveOrUpdate(List<ClockLog> clockLogList);
     /**
      * Get last ClockLog for a given principalId
      * @param principalId
      * @return
      */
-    public ClockLogBo getLastClockLog(String principalId);
+    public ClockLog getLastClockLog(String principalId);
     /**
      * Get last ClockLog for a given principalId and clockAction
      * @param principalId
      * @param clockAction
      * @return
      */
-	public ClockLogBo getLastClockLog(String principalId, String clockAction);
+	public ClockLog getLastClockLog(String principalId, String clockAction);
 	
 	/**
 	 * Returns the last clock log for this user's assignment in a certain period
@@ -55,16 +55,16 @@ public interface ClockLogDao {
 	 * @param calendarEntry
 	 * @return
 	 */
-	public ClockLogBo getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntryBo payCalendarEntry);
+	public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, CalendarEntry payCalendarEntry);
 	
 	/**
 	 * Fetch clock log by id
 	 * @param tkClockLogId
 	 * @return
 	 */
-	public ClockLogBo getClockLog(String tkClockLogId);
+	public ClockLog getClockLog(String tkClockLogId);
 	
 	public void deleteClockLogsForDocumentId(String documentId);
 
-    public ClockLogBo getLastClockLog(String principalId, String jobNumber, String workArea, String task, String timesheetId);
+    public ClockLog getLastClockLog(String principalId, String jobNumber, String workArea, String task, String timesheetId);
 }

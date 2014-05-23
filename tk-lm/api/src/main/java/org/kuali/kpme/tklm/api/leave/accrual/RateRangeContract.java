@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.joda.time.Interval;
 import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
@@ -141,7 +140,7 @@ public interface RateRangeContract {
 	 * 
 	 * @return accrualCategoryRules for RateRange
 	 */
-	public List<AccrualCategoryRule> getAcRuleList();
+	public List<? extends AccrualCategoryRuleContract> getAcRuleList();
 
 	/**
 	 * The SystemScheduledTimeOff object associated with the RateRange
@@ -164,16 +163,5 @@ public interface RateRangeContract {
 	 * @return leaveCalendarDocumentId for RateRange
 	 */
 	public String getLeaveCalendarDocumentId();
-
-    /**
-     * The primary leave assignment id associated with the RateRange
-     *
-     * <p>
-     * primaryLeaveAssignmentId of a RateRange, which will be assigned to leave blocks created at this rate range
-     * <p>
-     *
-     * @return primaryLeaveAssignmentId for RateRange
-     */
-    public String getPrimaryLeaveAssignmentId();
 	
 }

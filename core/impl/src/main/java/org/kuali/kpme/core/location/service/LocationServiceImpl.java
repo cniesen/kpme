@@ -24,19 +24,14 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.location.Location;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.location.service.LocationService;
-import org.kuali.kpme.core.api.paytype.PayType;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.core.location.dao.LocationDao;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
-import org.kuali.kpme.core.paytype.PayTypeBo;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.role.location.LocationPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
@@ -45,46 +40,74 @@ import org.kuali.rice.kim.impl.role.RoleMemberBo;
 public class LocationServiceImpl implements LocationService {
 
 	private LocationDao locationDao;
-
-    private static final ModelObjectUtils.Transformer<LocationBo, Location> toLocation =
-            new ModelObjectUtils.Transformer<LocationBo, Location>() {
-                public Location transform(LocationBo input) {
-                    return LocationBo.to(input);
-                };
-            };
-
+	
+	public LocationDao getLocationDao() {
+		return locationDao;
+	}
+	
+	public void setLocationDao(LocationDao locationDao) {
+		this.locationDao = locationDao;
+	}
 	
 	@Override
 	public Location getLocation(String hrLocationId) {
-		return LocationBo.to(getLocationBo(hrLocationId));
+		Location locationObj = locationDao.getLocation(hrLocationId);
+		
+		if (locationObj != null) {
+			populateLocationRoleMembers(locationObj, locationObj.getEffectiveLocalDate());
+		}
+		
+		return locationObj;
 	}
-
-    protected LocationBo getLocationBo(String hrLocationId) {
-        return locationDao.getLocation(hrLocationId);
-    }
 	
 	@Override
 	public int getLocationCount(String location,  LocalDate asOfDate) {
 		return locationDao.getLocationCount(location, asOfDate);
 	}
-
-    @Override
+	
 	public Location getLocation(String location, LocalDate asOfDate) {
-		return LocationBo.to(getLocationBo(location, asOfDate));
+		Location locationObj = locationDao.getLocation(location, asOfDate);
+		
+		if (locationObj != null) {
+			populateLocationRoleMembers(locationObj, asOfDate);
+		}
+		
+		return locationObj;
 	}
 
-    protected LocationBo getLocationBo(String location, LocalDate asOfDate) {
-        return locationDao.getLocation(location, asOfDate);
+    @Override
+    public List<Location> getLocations(String location) {
+        return locationDao.getLocations(location);
     }
 
+    private void populateLocationRoleMembers(Location location, LocalDate asOfDate) {
+    	if (location != null && asOfDate != null    			
+    			&& CollectionUtils.isEmpty(location.getRoleMembers()) && CollectionUtils.isEmpty(location.getInactiveRoleMembers())) {
+    		Set<RoleMember> roleMembers = new HashSet<RoleMember>();
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInLocation(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_VIEW_ONLY.getRoleName(), location.getLocation(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInLocation(KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), location.getLocation(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInLocation(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_VIEW_ONLY.getRoleName(), location.getLocation(), asOfDate.toDateTimeAtStartOfDay(), false));
+	    	roleMembers.addAll(HrServiceLocator.getKPMERoleService().getRoleMembersInLocation(KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), location.getLocation(), asOfDate.toDateTimeAtStartOfDay(), false));
+	
+	    	for (RoleMember roleMember : roleMembers) {
+	    		RoleMemberBo roleMemberBo = RoleMemberBo.from(roleMember);
+	    		
+	    		if (roleMemberBo.isActive()) {
+	    			location.addRoleMember(LocationPrincipalRoleMemberBo.from(roleMemberBo, roleMember.getAttributes()));
+	    		} else {
+	    			location.addInactiveRoleMember(LocationPrincipalRoleMemberBo.from(roleMemberBo, roleMember.getAttributes()));
+	    		}
+	    	}
+    	}
+    }
 
     @Override
     public List<Location> searchLocations(String userPrincipalId, String location, String locationDescr, String active, String showHistory) {
-    	List<LocationBo> results = new ArrayList<LocationBo>();
+    	List<Location> results = new ArrayList<Location>();
     	
-    	List<LocationBo> locationObjs = locationDao.searchLocations(location, locationDescr, active, showHistory);
+    	List<Location> locationObjs = locationDao.searchLocations(location, locationDescr, active, showHistory);
     
-    	for (LocationBo locationObj : locationObjs) {
+    	for (Location locationObj : locationObjs) {
         	Map<String, String> roleQualification = new HashMap<String, String>();
         	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
         	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), locationObj.getLocation());
@@ -97,15 +120,11 @@ public class LocationServiceImpl implements LocationService {
         	}
     	}
     	
-    	return ModelObjectUtils.transform(results, toLocation);
+    	return results;
     }
 
     @Override
     public List<Location> getNewerVersionLocation(String location, LocalDate asOfDate) {
-        return ModelObjectUtils.transform(locationDao.getNewerVersionLocation(location, asOfDate), toLocation);
-    }
-
-    public void setLocationDao(LocationDao locationDao) {
-        this.locationDao = locationDao;
+        return locationDao.getNewerVersionLocation(location, asOfDate);
     }
 }

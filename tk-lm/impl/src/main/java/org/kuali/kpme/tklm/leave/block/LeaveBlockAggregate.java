@@ -15,20 +15,18 @@
  */
 package org.kuali.kpme.tklm.leave.block;
 
-import org.joda.time.DateTime;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockAggregateContract;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.leave.calendar.LeaveCalendar;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.api.leave.block.LeaveBlockAggregateContract;
+import org.kuali.kpme.tklm.leave.calendar.LeaveCalendar;
 
 public class LeaveBlockAggregate implements LeaveBlockAggregateContract {
 	public List<List<LeaveBlock>> dayLeaveBlockList = new ArrayList<List<LeaveBlock>>();
@@ -39,7 +37,7 @@ public class LeaveBlockAggregate implements LeaveBlockAggregateContract {
     /**
      * Provides the option to refer to the time zone adjusted time for the current
      * user.
-     * @param leaveBlocks
+     * @param LeaveBlocks
      * @param leaveCalendarEntry
      * @param leaveCalendar
      */
@@ -79,7 +77,7 @@ public class LeaveBlockAggregate implements LeaveBlockAggregateContract {
     /**
      *  build leaveBlockAggregate with given leaveBlocks, calendarEntry and dayIntervals
      *  dayIntervals with full week span is for Time Calendar
-     * @param leaveBlocks
+     * @param LeaveBlocks
      * @param leaveCalendarEntry
      * @param dayIntervals
      */ 
@@ -116,11 +114,11 @@ public class LeaveBlockAggregate implements LeaveBlockAggregateContract {
 			lstLeaveBlocks.addAll(leaveBlocks);
 		}
 
-		Collections.sort(lstLeaveBlocks, new Comparator<LeaveBlockContract>() { // Sort the Leave Blocks
-			public int compare(LeaveBlockContract tb1, LeaveBlockContract tb2) {
+		Collections.sort(lstLeaveBlocks, new Comparator<LeaveBlock>() { // Sort the Leave Blocks
+			public int compare(LeaveBlock tb1, LeaveBlock tb2) {
 				if (tb1 != null && tb2 != null) {
-                    if (tb1.getCreateTime() != null && tb2.getCreateTime() != null) {
-					    return tb1.getCreateTime().compareTo(tb2.getCreateTime());
+                    if (tb1.getTimestamp() != null && tb2.getTimestamp() != null) {
+					    return tb1.getTimestamp().compareTo(tb2.getTimestamp());
                     }
                 }
 				return 0;
@@ -155,7 +153,7 @@ public class LeaveBlockAggregate implements LeaveBlockAggregateContract {
             Collections.sort(dList, new Comparator<LeaveBlock>() { // Sort the Leave Blocks
                 public int compare(LeaveBlock tb1, LeaveBlock tb2) {
                     if (tb1 != null && tb2 != null)
-                        return tb1.getCreateTime().compareTo(tb2.getCreateTime());
+                        return tb1.getTimestamp().compareTo(tb2.getTimestamp());
                     return 0;
                 }
             });

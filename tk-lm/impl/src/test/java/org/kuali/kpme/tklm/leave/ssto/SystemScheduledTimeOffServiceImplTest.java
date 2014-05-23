@@ -21,7 +21,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.api.leave.timeoff.SystemScheduledTimeOffContract;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff;
 
@@ -30,10 +29,10 @@ public class SystemScheduledTimeOffServiceImplTest extends TKLMIntegrationTestCa
 	
 	@Test
 	public void testSearchSystemScheduledTimeOffs() throws Exception {
-		List<? extends SystemScheduledTimeOffContract> allResults = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs("admin", null, null, null, null, null, null, null,null, "Y", "N");
+		List<SystemScheduledTimeOff> allResults = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs("admin", null, null, null, null, null, null, null, "Y", "N");
 		Assert.assertEquals("Search returned the wrong number of results.", 2, allResults.size());
 		
-		List<? extends SystemScheduledTimeOffContract> restrictedResults = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs("testuser6", null, null, null, null, null, null, null, null, "Y", "N");
+		List<SystemScheduledTimeOff> restrictedResults = LmServiceLocator.getSysSchTimeOffService().getSystemScheduledTimeOffs("testuser6", null, null, null, null, null, null, null, "Y", "N");
 		Assert.assertEquals("Search returned the wrong number of results.", 0, restrictedResults.size());
 	}
 

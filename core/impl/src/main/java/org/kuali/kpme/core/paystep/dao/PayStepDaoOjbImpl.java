@@ -22,7 +22,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.kuali.kpme.core.paystep.PayStepBo;
+import org.kuali.kpme.core.paystep.PayStep;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -32,20 +32,20 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 
 	
 	@Override
-	public PayStepBo getPayStepById(String payStepId) {
+	public PayStep getPayStepById(String payStepId) {
 		Criteria crit = new Criteria();
         crit.addEqualTo("pmPayStepId", payStepId);
 
-        Query query = QueryFactory.newQuery(PayStepBo.class, crit);
-        return (PayStepBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(PayStep.class, crit);
+        return (PayStep) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<PayStepBo> getPaySteps(String payStep, 
-			String salaryGroup, String payGrade, String history, String active) {
-		List<PayStepBo> results = new ArrayList<PayStepBo>();
+	public List<PayStep> getPaySteps(String payStep, String institution,
+			String location, String salaryGroup, String payGrade, String history, String active) {
+		List<PayStep> results = new ArrayList<PayStep>();
 
 		Criteria crit = new Criteria();
 		
@@ -53,6 +53,12 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 		// Also, changed addEqualTo to addLike
 		if(StringUtils.isNotBlank(payStep))
 			crit.addLike("UPPER(payStep)", payStep.toUpperCase());
+		if(StringUtils.isNotBlank(institution)
+				&& !StringUtils.equals(institution, HrConstants.WILDCARD_CHARACTER))
+			crit.addLike("UPPER(institution)", institution.toUpperCase());
+		if(StringUtils.isNotBlank(location)
+				&& !StringUtils.equals(location, HrConstants.WILDCARD_CHARACTER))
+			crit.addLike("UPPER(location)", location.toUpperCase());
 		if(StringUtils.isNotBlank(salaryGroup))
 			crit.addLike("UPPER(salaryGroup)", salaryGroup.toUpperCase());
 		if(StringUtils.isNotBlank(payGrade))
@@ -68,11 +74,11 @@ public class PayStepDaoOjbImpl extends PlatformAwareDaoBaseOjb implements
 		crit.addAndCriteria(activeFilter);
 		
         if (StringUtils.equals(history, "N")) {
-            crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayStepBo.class, PayStepBo.BUSINESS_KEYS, false));
-            crit.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayStepBo.class, PayStepBo.BUSINESS_KEYS, false));
+            crit.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithoutFilter(PayStep.class, PayStep.EQUAL_TO_FIELDS, false));
+            crit.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PayStep.class, PayStep.EQUAL_TO_FIELDS, false));
         }
 		
-		Query query = QueryFactory.newQuery(PayStepBo.class, crit);
+		Query query = QueryFactory.newQuery(PayStep.class, crit);
 		
 		results.addAll(this.getPersistenceBrokerTemplate().getCollectionByQuery(query));
 		

@@ -26,49 +26,47 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.positiontype.PositionTypeBo;
+import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class PositionTypeDaoObjImpl extends PlatformAwareDaoBaseOjb implements PositionTypeDao {
 
 	@Override
-	public PositionTypeBo getPositionTypeById(
+	public PositionType getPositionTypeById(
 			String pmPositionTypeId) {
 		Criteria crit = new Criteria();
         crit.addEqualTo("pmPositionTypeId", pmPositionTypeId);
 
-        Query query = QueryFactory.newQuery(PositionTypeBo.class, crit);
-        return (PositionTypeBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(PositionType.class, crit);
+        return (PositionType) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 	}
 
 	@Override
-	public List<PositionTypeBo> getPositionTypeList(String positionType, String institution, String location, LocalDate asOfDate) {
-		List<PositionTypeBo> prgList = new ArrayList<PositionTypeBo>();
+	public List<PositionType> getPositionTypeList(String positionType, String institution, String location, LocalDate asOfDate) {
+		List<PositionType> prgList = new ArrayList<PositionType>();
 		Criteria root = new Criteria();
 
 		if(StringUtils.isNotEmpty(positionType)
 				&& !ValidationUtils.isWildCard(positionType)) {
 			root.addEqualTo("positionType", positionType);  
 		}
-		
 		if(StringUtils.isNotEmpty(institution) 
 				&& !ValidationUtils.isWildCard(institution)) {
 			root.addEqualTo("institution", institution); 
 		}
-		
 		if(StringUtils.isNotEmpty(location) 
 				&& !ValidationUtils.isWildCard(location)) {
 			root.addEqualTo("location", location); 
 		}
         
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionTypeBo.class, asOfDate, PositionTypeBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionTypeBo.class, PositionTypeBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionType.class, asOfDate, PositionType.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionType.class, PositionType.EQUAL_TO_FIELDS, false));
         
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
         root.addAndCriteria(activeFilter);
 
-        Query query = QueryFactory.newQuery(PositionTypeBo.class, root);
+        Query query = QueryFactory.newQuery(PositionType.class, root);
         
         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
 		if(!c.isEmpty())
@@ -78,18 +76,18 @@ public class PositionTypeDaoObjImpl extends PlatformAwareDaoBaseOjb implements P
 	}
 
 	@Override
-	public PositionTypeBo getPositionType(String positionType, LocalDate asOfDate) {
+	public PositionType getPositionType(String positionType, LocalDate asOfDate) {
 		Criteria root = new Criteria();
         root.addEqualTo("positionType", positionType);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionTypeBo.class, asOfDate, PositionTypeBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionTypeBo.class, PositionTypeBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PositionType.class, asOfDate, PositionType.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PositionType.class, PositionType.EQUAL_TO_FIELDS, false));
         
         Criteria activeFilter = new Criteria();
         activeFilter.addEqualTo("active", true);
         root.addAndCriteria(activeFilter);
         
-        Query query = QueryFactory.newQuery(PositionTypeBo.class, root);
-        return (PositionTypeBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(PositionType.class, root);
+        return (PositionType) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 	}
 
 }

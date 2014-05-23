@@ -18,13 +18,12 @@ package org.kuali.kpme.pm.positionreportsubcat.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategoryBo;
+import org.kuali.kpme.pm.positionreportsubcat.PositionReportSubCategory;
 
 public interface PositionReportSubCatDao {
-	public PositionReportSubCategoryBo getPositionReportSubCatById(String pmPositionReportSubCatId);
+	public PositionReportSubCategory getPositionReportSubCatById(String pmPositionReportSubCatId);
 	
-	public List<PositionReportSubCategoryBo> getPositionReportSubCat(String pstnRptSubCat, LocalDate asOfDate);
+	public List<PositionReportSubCategory> getPositionReportSubCat(String pstnRptSubCat, String institution, String location, LocalDate asOfDate);
 	
-	public PositionReportSubCategoryBo getActivePositionReportSubCat(String pstnRptSubCat, LocalDate asOfDate);
-
+	public PositionReportSubCategory getPositionReportSubCat(String pstnRptSubCat, LocalDate asOfDate);
 }

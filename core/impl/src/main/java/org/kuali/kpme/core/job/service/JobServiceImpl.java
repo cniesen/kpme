@@ -16,29 +16,25 @@
 package org.kuali.kpme.core.job.service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.job.service.JobService;
-import org.kuali.kpme.core.api.paytype.PayType;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.job.dao.JobDao;
-import org.kuali.kpme.core.paytype.PayTypeBo;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.paytype.PayType;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocator;
 
 /**
  * Represents an implementation of {@link JobService}.
@@ -47,36 +43,15 @@ public class JobServiceImpl implements JobService {
 
 	private static final Logger LOG = Logger.getLogger(JobServiceImpl.class);
     private JobDao jobDao;
-    private static final ModelObjectUtils.Transformer<JobBo, Job> toJob =
-            new ModelObjectUtils.Transformer<JobBo, Job>() {
-                public Job transform(JobBo input) {
-                    return JobBo.to(input);
-                };
-            };
-    private static final ModelObjectUtils.Transformer<Job, JobBo> toJobBo =
-            new ModelObjectUtils.Transformer<Job, JobBo>() {
-                public JobBo transform(Job input) {
-                    return JobBo.from(input);
-                };
-            };
+
     @Override
-    public Job saveOrUpdate(Job job) {
-        if (job == null) {
-            return null;
-        }
-        JobBo bo = KRADServiceLocator.getBusinessObjectService().save(JobBo.from(job));
-        return JobBo.to(bo);
+    public void saveOrUpdate(Job job) {
+        jobDao.saveOrUpdate(job);
     }
 
     @Override
-    public List<Job> saveOrUpdate(List<Job> jobList) {
-        if (CollectionUtils.isEmpty(jobList)) {
-            return Collections.emptyList();
-        }
-        List<JobBo> bos = ModelObjectUtils.transform(jobList, toJobBo);
-        bos = (List<JobBo>)KRADServiceLocator.getBusinessObjectService().save(bos);
-        return toImmutable(bos);
-
+    public void saveOrUpdate(List<Job> jobList) {
+        jobDao.saveOrUpdate(jobList);
     }
 
     public void setJobDao(JobDao jobDao) {
@@ -85,15 +60,15 @@ public class JobServiceImpl implements JobService {
 
     @Override
     public List<Job> getJobs(String principalId, LocalDate asOfDate) {
-        List<JobBo> jobs = jobDao.getJobs(principalId, asOfDate);
+        List<Job> jobs = jobDao.getJobs(principalId, asOfDate);
 
-        for (JobBo job : jobs) {
+        for (Job job : jobs) {
             PayType payType = HrServiceLocator.getPayTypeService().getPayType(
                     job.getHrPayType(), asOfDate);
-            job.setPayTypeObj(PayTypeBo.from(payType));
+            job.setPayTypeObj(payType);
         }
 
-        return toImmutable(jobs);
+        return jobs;
     }
 
     @Override
@@ -102,13 +77,13 @@ public class JobServiceImpl implements JobService {
     }
 
     public Job getPrimaryJob(String principalId, LocalDate payPeriodEndDate) {
-        return JobBo.to(jobDao.getPrimaryJob(principalId, payPeriodEndDate));
+        return jobDao.getPrimaryJob(principalId, payPeriodEndDate);
     }
 
     @Override
     public Job getJob(String principalId, Long jobNumber, LocalDate asOfDate,
                       boolean chkDetails) {
-        JobBo job = jobDao.getJob(principalId, jobNumber, asOfDate);
+        Job job = jobDao.getJob(principalId, jobNumber, asOfDate);
         if (job == null && chkDetails) {
             return null;
             //throw new RuntimeException("No job for principal : " + principalId
@@ -121,8 +96,8 @@ public class JobServiceImpl implements JobService {
             	LOG.warn("No pay type for this job!");
                 return null;
             }
-            PayTypeBo payType = PayTypeBo.from(HrServiceLocator.getPayTypeService().getPayType(
-                    hrPayType, asOfDate));
+            PayType payType = HrServiceLocator.getPayTypeService().getPayType(
+                    hrPayType, asOfDate);
             if (payType == null) {
 //                throw new RuntimeException("No paytypes defined for this job!");
             	LOG.warn("No paytypes defined for this job!");
@@ -131,31 +106,31 @@ public class JobServiceImpl implements JobService {
             	job.setPayTypeObj(payType);
             }
         }
-        return JobBo.to(job);
+        return job;
     }
 
     @Override
     public List<Job> getActiveJobsForPayType(String hrPayType, LocalDate asOfDate) {
-        return toImmutable(jobDao.getActiveJobsForPayType(hrPayType, asOfDate));
+        return jobDao.getActiveJobsForPayType(hrPayType, asOfDate);
     }
 
     @Override
     public Job getJob(String hrJobId) {
-        return JobBo.to(jobDao.getJob(hrJobId));
+        return jobDao.getJob(hrJobId);
     }
 
     @Override
     public Job getMaxJob(String principalId) {
-        return JobBo.to(jobDao.getMaxJob(principalId));
+        return jobDao.getMaxJob(principalId);
     }
 
     @Override
     public List<Job> getJobs(String userPrincipalId, String principalId, String firstName, String lastName, String jobNumber,
                              String dept, String positionNbr, String payType,
                              LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
-    	List<JobBo> results = new ArrayList<JobBo>();
+    	List<Job> results = new ArrayList<Job>();
     	
-    	List<JobBo> jobObjs = new ArrayList<JobBo>();
+    	List<Job> jobObjs = new ArrayList<Job>();
     	
         if (StringUtils.isNotEmpty(firstName) || StringUtils.isNotEmpty(lastName)) {
             Map<String, String> fields = new HashMap<String, String>();
@@ -164,17 +139,17 @@ public class JobServiceImpl implements JobService {
             List<Person> people = KimApiServiceLocator.getPersonService().findPeople(fields);
 
             for (Person p : people) {
-                List<JobBo> jobsForPerson = jobDao.getJobs(p.getPrincipalId(), jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory);
+                List<Job> jobsForPerson = jobDao.getJobs(p.getPrincipalId(), jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory);
                 jobObjs.addAll(jobsForPerson);
             }
         } else {
         	jobObjs.addAll(jobDao.getJobs(principalId, jobNumber, dept, positionNbr, payType, fromEffdt, toEffdt, active, showHistory));
         }
         
-    	for (JobBo jobObj : jobObjs) {
+    	for (Job jobObj : jobObjs) {
         	String department = jobObj.getDept();
-        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, jobObj.getGroupKeyCode(), jobObj.getEffectiveLocalDate());
-        	String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, jobObj.getEffectiveLocalDate());
+        	String location = departmentObj != null ? departmentObj.getLocation() : null;
         	
         	Map<String, String> roleQualification = new HashMap<String, String>();
         	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
@@ -189,7 +164,7 @@ public class JobServiceImpl implements JobService {
         	}
     	}
     	
-    	return toImmutable(results);
+    	return results;
     }
     
     public int getJobCount(String principalId, Long jobNumber, String dept) {
@@ -198,13 +173,13 @@ public class JobServiceImpl implements JobService {
     
     @Override
     public List<Job> getActiveLeaveJobs(String principalId, LocalDate asOfDate) {
-    	return toImmutable(jobDao.getActiveLeaveJobs(principalId, asOfDate));
+    	return jobDao.getActiveLeaveJobs(principalId, asOfDate);
     }
     
     @Override
-    public BigDecimal getFteSumForJobs(List<? extends JobContract> jobs) {
+    public BigDecimal getFteSumForJobs(List<Job> jobs) {
     	BigDecimal fteSum = new BigDecimal(0);
-    	for(JobContract aJob : jobs) {
+    	for(Job aJob : jobs) {
     		fteSum = fteSum.add(aJob.getFte());
     	}
     	return fteSum;
@@ -214,17 +189,17 @@ public class JobServiceImpl implements JobService {
 	@Override
 	public BigDecimal getFteSumForAllActiveLeaveEligibleJobs(String principalId, LocalDate asOfDate) {
 		BigDecimal fteSum = new BigDecimal(0);
-		List<JobBo> lmEligibleJobs = jobDao.getActiveLeaveJobs(principalId, asOfDate);
-		for(JobBo job : lmEligibleJobs) {
+		List<Job> lmEligibleJobs = jobDao.getActiveLeaveJobs(principalId, asOfDate);
+		for(Job job : lmEligibleJobs) {
 			fteSum = fteSum.add(job.getFte());
 		}
 		return fteSum;
 	}
     
     @Override
-    public BigDecimal getStandardHoursSumForJobs(List<? extends JobContract> jobs) {
+    public BigDecimal getStandardHoursSumForJobs(List<Job> jobs) {
     	BigDecimal hoursSum = new BigDecimal(0);
-    	for(JobContract aJob : jobs) {
+    	for(Job aJob : jobs) {
     		hoursSum = hoursSum.add(aJob.getStandardHours());
     	}
     	return hoursSum;
@@ -232,30 +207,26 @@ public class JobServiceImpl implements JobService {
    
     @Override
     public List<Job> getAllActiveLeaveJobs(String principalId, LocalDate asOfDate) {
-    	return toImmutable(jobDao.getAllActiveLeaveJobs(principalId, asOfDate));
+    	return jobDao.getAllActiveLeaveJobs(principalId, asOfDate);
     }
     
     public List<Job> getInactiveLeaveJobs(Long jobNumber, String principalId, LocalDate endDate) {
-    	return toImmutable(jobDao.getInactiveLeaveJobs(jobNumber, principalId, endDate));
+    	return jobDao.getInactiveLeaveJobs(jobNumber,principalId, endDate);
     }
     
     @Override
     public List<Job> getAllInActiveLeaveJobsInRange(String principalId, LocalDate endDate) {
-    	return toImmutable(jobDao.getAllInActiveLeaveJobsInRange(principalId, endDate));
+    	return jobDao.getAllInActiveLeaveJobsInRange(principalId, endDate);
     }
     
     @Override
     public Job getMaxTimestampJob(String principalId) {
-    	return JobBo.to(jobDao.getMaxTimestampJob(principalId));
+    	return jobDao.getMaxTimestampJob(principalId);
     }
     
     @Override
     public List<String> getPrincipalIdsInPosition(String positionNumber, LocalDate asOfDate) {
         return jobDao.getPrincipalIdsInPosition(positionNumber, asOfDate);
-    }
-
-    protected List<Job> toImmutable(List<JobBo> bos) {
-        return ModelObjectUtils.transform(bos, toJob);
     }
     
 }

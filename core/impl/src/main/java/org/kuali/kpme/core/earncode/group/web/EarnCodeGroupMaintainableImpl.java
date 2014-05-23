@@ -16,14 +16,16 @@
 package org.kuali.kpme.core.earncode.group.web;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
@@ -36,11 +38,11 @@ public class EarnCodeGroupMaintainableImpl extends HrBusinessObjectMaintainableI
 	@Override
     public void addNewLineToCollection(String collectionName) {
         if (collectionName.equals("earnCodeGroups")) {
-        	EarnCodeGroupDefinitionBo definition = (EarnCodeGroupDefinitionBo)newCollectionLines.get(collectionName );
+        	EarnCodeGroupDefinition definition = (EarnCodeGroupDefinition)newCollectionLines.get(collectionName );
             if ( definition != null ) {
-            	EarnCodeGroupBo earnGroup = (EarnCodeGroupBo)this.getBusinessObject();
+            	EarnCodeGroup earnGroup = (EarnCodeGroup)this.getBusinessObject();
             	Set<String> earnCodes = new HashSet<String>();
-            	for(EarnCodeGroupDefinitionBo earnGroupDef : earnGroup.getEarnCodeGroups()){
+            	for(EarnCodeGroupDefinition earnGroupDef : earnGroup.getEarnCodeGroups()){
             		earnCodes.add(earnGroupDef.getEarnCode());
             	}
             	if(earnCodes.contains(definition.getEarnCode())){
@@ -58,25 +60,25 @@ public class EarnCodeGroupMaintainableImpl extends HrBusinessObjectMaintainableI
        super.addNewLineToCollection(collectionName);
     }
 	
-//	@Override
-//    public void processAfterEdit( MaintenanceDocument document, Map<String,String[]> parameters ) {
-//		EarnCodeGroup earnGroup = (EarnCodeGroup)this.getBusinessObject();
-//		int count = HrServiceLocator.getEarnCodeGroupService().getNewerEarnCodeGroupCount(earnGroup.getEarnCodeGroup(), earnGroup.getEffectiveLocalDate());
-//		if(count > 0) {
-//			GlobalVariables.getMessageMap().putWarningWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE + "effectiveDate", 
-//					"earngroup.effectiveDate.newr.exists");
-//		}
-//	}
+	@Override
+    public void processAfterEdit( MaintenanceDocument document, Map<String,String[]> parameters ) {
+		EarnCodeGroup earnGroup = (EarnCodeGroup)this.getBusinessObject();
+		int count = HrServiceLocator.getEarnCodeGroupService().getNewerEarnCodeGroupCount(earnGroup.getEarnCodeGroup(), earnGroup.getEffectiveLocalDate());
+		if(count > 0) {
+			GlobalVariables.getMessageMap().putWarningWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE + "effectiveDate", 
+					"earngroup.effectiveDate.newr.exists");
+		}
+	}
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return EarnCodeGroupBo.from(HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(id));
+		return HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup(id);
 	} 
 
     @Override
     public void customSaveLogic(HrBusinessObject hrObj){
-        EarnCodeGroupBo ecg = (EarnCodeGroupBo)hrObj;
-        for (EarnCodeGroupDefinitionBo definition : ecg.getEarnCodeGroups()) {
+        EarnCodeGroup ecg = (EarnCodeGroup)hrObj;
+        for (EarnCodeGroupDefinition definition : ecg.getEarnCodeGroups()) {
             definition.setHrEarnCodeGroupDefId(null);
             definition.setHrEarnCodeGroupId(ecg.getHrEarnCodeGroupId());
         }

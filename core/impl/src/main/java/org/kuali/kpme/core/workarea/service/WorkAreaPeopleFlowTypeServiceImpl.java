@@ -18,7 +18,6 @@ package org.kuali.kpme.core.workarea.service;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.rice.core.api.exception.RiceRuntimeException;
@@ -37,10 +36,7 @@ import javax.jws.WebParam;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkAreaPeopleFlowTypeServiceImpl extends DataDictionaryPeopleFlowTypeServiceImpl {
     private static final Logger LOG = Logger.getLogger(WorkAreaPeopleFlowTypeServiceImpl.class);
@@ -67,8 +63,8 @@ public class WorkAreaPeopleFlowTypeServiceImpl extends DataDictionaryPeopleFlowT
                     MaintenanceDocument md =  (MaintenanceDocument)doc;
                     if (md.getNewMaintainableObject().getDataObject() instanceof Assignable) {
                         Assignable assignable = (Assignable)(md.getNewMaintainableObject().getDataObject());
-                        List<Assignment> assignments = assignable.getAssignments();
-                        for (Assignment ac : assignments) {
+                        List<? extends AssignmentContract> assignments = assignable.getAssignments();
+                        for (AssignmentContract ac : assignments) {
                             workAreaQualifiers.add(
                                     Collections.singletonMap(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), String.valueOf(ac.getWorkArea()))
                             );

@@ -24,26 +24,17 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroup;
-import org.kuali.kpme.core.api.earncode.group.service.EarnCodeGroupService;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
 import org.kuali.kpme.core.earncode.group.dao.EarnCodeGroupDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     private EarnCodeGroupDao earnCodeGroupDao;
 
     @Override
     public EarnCodeGroup getEarnCodeGroup(String earnCodeGroup, LocalDate asOfDate) {
-        EarnCodeGroupBo ecg = earnCodeGroupDao.getEarnCodeGroup(earnCodeGroup, asOfDate);
-        if (ecg == null) {
-            return null;
-        }
-        EarnCodeGroup.Builder builder = EarnCodeGroup.Builder.create(ecg);
-		return builder.build();
+        return earnCodeGroupDao.getEarnCodeGroup(earnCodeGroup, asOfDate);
     }
 
     public EarnCodeGroupDao getEarnCodeGroupDao() {
@@ -56,35 +47,25 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
 
     @Override
     public EarnCodeGroup getEarnCodeGroupSummaryForEarnCode(String earnCode, LocalDate asOfDate) {
-        EarnCodeGroupBo ecg = earnCodeGroupDao.getEarnCodeGroupSummaryForEarnCode(earnCode, asOfDate);
-        if (ecg == null) {
-            return null;
-        }
-        EarnCodeGroup.Builder builder = EarnCodeGroup.Builder.create(ecg);
-		return builder.build();
+        return earnCodeGroupDao.getEarnCodeGroupSummaryForEarnCode(earnCode, asOfDate);
     }
 
     @Override
     public EarnCodeGroup getEarnCodeGroupForEarnCode(String earnCode, LocalDate asOfDate) {
-        EarnCodeGroupBo ecg = earnCodeGroupDao.getEarnCodeGroupForEarnCode(earnCode, asOfDate);
-        if (ecg == null) {
-            return null;
-        }
-        EarnCodeGroup.Builder builder = EarnCodeGroup.Builder.create(ecg);
-		return builder.build();
+        return earnCodeGroupDao.getEarnCodeGroupForEarnCode(earnCode, asOfDate);
     }
     
     // KPME-2529
     @Override
     public List<EarnCodeGroup> getEarnCodeGroupsForEarnCode(String earnCode, LocalDate asOfDate) {
-    	return ModelObjectUtils.transform(earnCodeGroupDao.getEarnCodeGroupsForEarnCode(earnCode, asOfDate),EarnCodeGroupBo.toImmutable);
+    	return earnCodeGroupDao.getEarnCodeGroupsForEarnCode(earnCode, asOfDate);
     }
 
     public Set<String> getEarnCodeListForEarnCodeGroup(String earnCodeGroup, LocalDate asOfDate) {
         Set<String> earnCodes = new HashSet<String>();
-        EarnCodeGroupBo earnGroupObj = earnCodeGroupDao.getEarnCodeGroup(earnCodeGroup, asOfDate);
+        EarnCodeGroup earnGroupObj = earnCodeGroupDao.getEarnCodeGroup(earnCodeGroup, asOfDate);
         if ( earnGroupObj != null ) {
-            for (EarnCodeGroupDefinitionBo earnGroupDef : earnGroupObj.getEarnCodeGroups()) {
+            for (EarnCodeGroupDefinition earnGroupDef : earnGroupObj.getEarnCodeGroups()) {
                 if (!earnCodes.contains(earnGroupDef.getEarnCode())) {
                     earnCodes.add(earnGroupDef.getEarnCode());
                 }
@@ -95,12 +76,7 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
 
     @Override
     public EarnCodeGroup getEarnCodeGroup(String hrEarnCodeGroupId) {
-        EarnCodeGroupBo ecg = earnCodeGroupDao.getEarnCodeGroup(hrEarnCodeGroupId);
-        if (ecg == null) {
-            return null;
-        }
-        EarnCodeGroup.Builder builder = EarnCodeGroup.Builder.create(ecg);
-		return builder.build();
+        return earnCodeGroupDao.getEarnCodeGroup(hrEarnCodeGroupId);
     }
     
     @Override
@@ -129,7 +105,7 @@ public class EarnCodeGroupServiceImpl implements EarnCodeGroupService {
     }
     
     @Override
-    public List<? extends EarnCodeContract> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist) {
+    public List<EarnCode> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist) {
     	return earnCodeGroupDao.getEarnCodeGroups(earnCodeGroup, descr, fromEffdt, toEffdt, active, showHist);
     }
 }

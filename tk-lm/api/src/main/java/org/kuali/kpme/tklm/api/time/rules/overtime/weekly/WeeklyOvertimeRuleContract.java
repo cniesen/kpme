@@ -115,7 +115,7 @@ public interface WeeklyOvertimeRuleContract extends TkRuleContract {
 	 * 
 	 * @return Y if used for over time, N if not
 	 */	
-	public boolean isOvtEarnCode();	
+	public Boolean getOvtEarnCode();	
 
 	/**
 	 * The EarnCodeGroup object defined to represent the earn codes which count towards the calculation of overtime

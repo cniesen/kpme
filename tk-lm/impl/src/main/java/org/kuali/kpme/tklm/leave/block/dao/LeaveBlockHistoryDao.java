@@ -18,6 +18,7 @@ package org.kuali.kpme.tklm.leave.block.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 
 public interface LeaveBlockHistoryDao {

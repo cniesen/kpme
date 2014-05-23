@@ -15,17 +15,26 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch.web;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
+import org.kuali.kpme.tklm.time.missedpunch.validation.MissedPunchDocumentRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kew.api.exception.WorkflowException;
 import org.kuali.rice.krad.bo.Note;
 import org.kuali.rice.krad.datadictionary.validation.result.DictionaryValidationResult;
@@ -36,24 +45,23 @@ import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.service.SequenceAccessorService;
 import org.kuali.rice.krad.uif.UifConstants;
+import org.kuali.rice.krad.uif.UifParameters;
+import org.kuali.rice.krad.uif.UifConstants.WorkflowAction;
 import org.kuali.rice.krad.uif.component.Component;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.widget.Disclosure;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.web.controller.DocumentControllerBase;
 import org.kuali.rice.krad.web.controller.TransactionalDocumentControllerBase;
 import org.kuali.rice.krad.web.form.DocumentFormBase;
+import org.kuali.rice.krad.web.form.HistoryFlow;
 import org.kuali.rice.krad.web.form.UifFormBase;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
 
 @Controller
 @RequestMapping("/missedPunch")
@@ -71,8 +79,8 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
     public ModelAndView start(@ModelAttribute("KualiForm") UifFormBase form, BindingResult result, HttpServletRequest request, HttpServletResponse response) {
     	
     	MissedPunchForm missedPunchForm = (MissedPunchForm) form;
-    	MissedPunchBo missedPunch = missedPunchForm.getMissedPunch();
-    	missedPunchForm.setIpAddress(TKUtils.getIPAddressFromRequest(request));
+    	MissedPunch missedPunch = missedPunchForm.getMissedPunch();
+    	
         TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(missedPunch.getTimesheetDocumentId());
         if (timesheetDocument != null) {
         	missedPunch.setPrincipalId(timesheetDocument.getPrincipalId());
@@ -106,40 +114,44 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
 		MissedPunchDocument missedPunchDocument = (MissedPunchDocument) missedPunchForm.getDocument();
 		
 	    if (StringUtils.isEmpty(missedPunchDocument.getDocumentHeader().getDocumentDescription())) {
-	    	missedPunchDocument.getDocumentHeader().setDocumentDescription("Missed Punch: " + missedPunchForm.getMissedPunch().getPrincipalId());
+            missedPunchDocument.getDocumentHeader().setDocumentDescription(missedPunchForm.getMissedPunch().getPersonName()+" ("+missedPunchForm.getMissedPunch().getPrincipalId() +")");
 	    }
 	    
 	    missedPunchDocument.setTkMissedPunchId(missedPunchForm.getMissedPunch().getTkMissedPunchId());
 	    missedPunchDocument.setMissedPunch(missedPunchForm.getMissedPunch());
     }
-	
+
     @RequestMapping(params = "methodToCall=submit")
     public ModelAndView submit(@ModelAttribute("KualiForm") DocumentFormBase form, BindingResult result, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		MissedPunchForm missedPunchForm = (MissedPunchForm) form;
-
+        MissedPunchForm missedPunchForm = (MissedPunchForm) form;
+        MissedPunch aMissedPunch = missedPunchForm.getMissedPunch();
         DictionaryValidationResult validationResults = KRADServiceLocatorWeb.getDictionaryValidationService().validate(((MissedPunchForm) form).getMissedPunch());
-    	if (validationResults.getNumberOfErrors() == 0) {
-
-            try {
-                createDocument(missedPunchForm);
-                save(missedPunchForm, result, request, response);
-
-                if (StringUtils.isNotBlank(missedPunchForm.getMissedPunch().getNote())) {
-                    Document doc = missedPunchForm.getDocument();
-                    Note note = new Note();
-                    note.setNoteText(missedPunchForm.getMissedPunch().getNote());
-                    note.setAuthorUniversalIdentifier(HrContext.getPrincipalId());
-                    note.setNotePostedTimestampToCurrent();
-                    doc.setNotes(Collections.<Note>singletonList(note));
-                }
-                ModelAndView modelAndView = route(missedPunchForm, result, request, response);
-                missedPunchForm.setMissedPunchSubmitted(true);
-
-                return modelAndView;
-
-            } catch (ValidationException exception) {
-                //ignore
-            }
+        if (validationResults.getNumberOfErrors() == 0) {
+        	
+        	// call customized validation on the missed punch before creating document
+        	boolean validFlag = new MissedPunchDocumentRule().runValidation(aMissedPunch);
+        	if(validFlag) {
+	            try {
+	                createDocument(missedPunchForm);
+	                save(missedPunchForm, result, request, response);
+	
+	                if (StringUtils.isNotBlank(missedPunchForm.getMissedPunch().getNote())) {
+	                    Document doc = missedPunchForm.getDocument();
+	                    Note note = new Note();
+	                    note.setNoteText(missedPunchForm.getMissedPunch().getNote());
+	                    note.setAuthorUniversalIdentifier(HrContext.getPrincipalId());
+	                    note.setNotePostedTimestampToCurrent();
+	                    doc.setNotes(Collections.<Note>singletonList(note));
+	                }
+	                ModelAndView modelAndView = route(missedPunchForm, result, request, response);
+	                missedPunchForm.setMissedPunchSubmitted(true);
+	
+	                return modelAndView;
+	
+	            } catch (ValidationException exception) {
+	                //ignore
+	            }
+        	}
         }
         return getUIFModelAndView(form);
     }
@@ -150,8 +162,8 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
 
 		MissedPunchForm missedPunchForm = (MissedPunchForm) form;
 		MissedPunchDocument missedPunchDocument = (MissedPunchDocument) missedPunchForm.getDocument();
-		MissedPunchBo missedPunch = (MissedPunchBo) missedPunchDocument.getMissedPunch();
-		missedPunch = MissedPunchBo.from(TkServiceLocator.getMissedPunchService().addClockLog(MissedPunchBo.to(missedPunch), TKUtils.getIPAddressFromRequest(request)));
+		MissedPunch missedPunch = (MissedPunch) missedPunchDocument.getMissedPunch();
+		TkServiceLocator.getMissedPunchService().addClockLog(missedPunch, TKUtils.getIPAddressFromRequest(request));
 		
 		missedPunchDocument.setMissedPunch(missedPunch);
 		missedPunchForm.setDocument(missedPunchDocument);
@@ -163,13 +175,13 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
     @RequestMapping(params = "methodToCall=approve")
     public ModelAndView approve(@ModelAttribute("KualiForm") DocumentFormBase form, BindingResult result, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		MissedPunchDocument missedPunchDocument = (MissedPunchDocument) form.getDocument();
-        MissedPunchBo missedPunch = missedPunchDocument.getMissedPunch();
-    	missedPunch = MissedPunchBo.from(TkServiceLocator.getMissedPunchService().updateClockLog(MissedPunchBo.to(missedPunch), TKUtils.getIPAddressFromRequest(request)));
+        MissedPunch missedPunch = (MissedPunch) missedPunchDocument.getMissedPunch();
+    	TkServiceLocator.getMissedPunchService().updateClockLog(missedPunch, TKUtils.getIPAddressFromRequest(request));
         
     	return super.approve(form, result, request, response);
     }
 
-	protected boolean isAssignmentReadOnly(MissedPunchBo missedPunch) {
+	protected boolean isAssignmentReadOnly(MissedPunch missedPunch) {
 		boolean isAssignmentReadOnly = false;
 		
         if (StringUtils.isNotBlank(missedPunch.getClockAction())) {
@@ -225,7 +237,7 @@ public class MissedPunchDocumentController extends TransactionalDocumentControll
     public ModelAndView back(@ModelAttribute("KualiForm") UifFormBase form,
                              BindingResult result, HttpServletRequest request,
                              HttpServletResponse response) {
-        if (!StringUtils.contains(form.getReturnLocation(), "dataObjectClassName="+MissedPunchBo.class.getName())) {
+        if (!StringUtils.contains(form.getReturnLocation(), "dataObjectClassName="+MissedPunch.class.getName())) {
             form.setReturnLocation(UifConstants.NO_RETURN);
         }
         return super.back(form, result, request, response);

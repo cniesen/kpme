@@ -15,31 +15,31 @@
  */
 package org.kuali.kpme.tklm.leave.accrual.bucket;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
-import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.leave.accrual.bucket.YearToDateUsageLeaveBalanceContract;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
-import org.kuali.kpme.tklm.leave.accrual.bucket.exception.MaximumBalanceException;
-import org.kuali.kpme.tklm.leave.accrual.bucket.exception.NegativeBalanceException;
-import org.kuali.kpme.tklm.leave.accrual.bucket.exception.UsageLimitException;
-import org.kuali.rice.krad.util.ObjectUtils;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.tklm.api.leave.accrual.bucket.YearToDateUsageLeaveBalanceContract;
+import org.kuali.kpme.tklm.leave.accrual.bucket.exception.MaximumBalanceException;
+import org.kuali.kpme.tklm.leave.accrual.bucket.exception.NegativeBalanceException;
+import org.kuali.kpme.tklm.leave.accrual.bucket.exception.UsageLimitException;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.override.EmployeeOverride;
+import org.kuali.rice.krad.util.ObjectUtils;
 
 public class YearToDateUsageLeaveBalance extends LeaveBalance implements YearToDateUsageLeaveBalanceContract {
 
 	private List<LeaveBlock> leaveBlocks;
 
-	public YearToDateUsageLeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributesBo principalCalendar) {
+	public YearToDateUsageLeaveBalance(AccrualCategory accrualCategory, PrincipalHRAttributes principalCalendar) {
 		super(accrualCategory, principalCalendar);
 		asOfDate = LocalDate.now();
 		leaveBlocks = new ArrayList<LeaveBlock>();
@@ -52,11 +52,11 @@ public class YearToDateUsageLeaveBalance extends LeaveBalance implements YearToD
 
 		DateTime rolloverDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), asOfDate);
 		
-		if(leaveBlock.getLeaveLocalDate().compareTo(asOfDate) <= 0
-				&& leaveBlock.getLeaveDateTime().compareTo(rolloverDate) >= 0) {
+		if(leaveBlock.getLeaveDate().compareTo(asOfDate.toDate()) <= 0 
+				&& leaveBlock.getLeaveDate().compareTo(rolloverDate.toDate()) >= 0) {
 		
 			if(leaveBlock.getLeaveAmount().signum() < 0) {
-				EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), leaveBlock.getLeaveLocalDate());
+				EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), LocalDate.fromDateFields(leaveBlock.getLeaveDate()));
 				if(earnCode != null) {
 					if(earnCode.getAccrualBalanceAction().equals(HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)){
 			
@@ -68,8 +68,8 @@ public class YearToDateUsageLeaveBalance extends LeaveBalance implements YearToD
 							BigDecimal maxUsage = new BigDecimal(accrualRule.getMaxUsage());
 							BigDecimal fteSum = HrServiceLocator.getJobService().getFteSumForAllActiveLeaveEligibleJobs(leaveBlock.getPrincipalId(), leaveBlock.getLeaveLocalDate());
 							maxUsage = maxUsage.multiply(fteSum).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-
-                            EmployeeOverrideContract employeeOverride = getEmployeeOverride(leaveBlock, "MU");
+							
+							EmployeeOverride employeeOverride = getEmployeeOverride(leaveBlock, "MU");
 							if(employeeOverride != null)
 								maxUsage = new BigDecimal(employeeOverride.getOverrideValue());
 							
@@ -109,11 +109,11 @@ public class YearToDateUsageLeaveBalance extends LeaveBalance implements YearToD
 		
 		DateTime rolloverDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), asOfDate);
 		
-		if(leaveBlock.getLeaveLocalDate().compareTo(asOfDate) <= 0
-				&& leaveBlock.getLeaveDateTime().compareTo(rolloverDate) >= 0) {
+		if(leaveBlock.getLeaveDate().compareTo(asOfDate.toDate()) <= 0 
+				&& leaveBlock.getLeaveDate().compareTo(rolloverDate.toDate()) >= 0) {
 			
 			if(leaveBlock.getLeaveAmount().signum() < 0) {
-				EarnCodeContract earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), leaveBlock.getLeaveLocalDate());
+				EarnCode earnCode = HrServiceLocator.getEarnCodeService().getEarnCode(leaveBlock.getEarnCode(), LocalDate.fromDateFields(leaveBlock.getLeaveDate()));
 				if(earnCode != null) {
 					if(earnCode.getAccrualBalanceAction().equals(HrConstants.ACCRUAL_BALANCE_ACTION.USAGE)){
 	
@@ -125,8 +125,8 @@ public class YearToDateUsageLeaveBalance extends LeaveBalance implements YearToD
 							BigDecimal maxUsage = new BigDecimal(accrualRule.getMaxUsage());
 							BigDecimal fteSum = HrServiceLocator.getJobService().getFteSumForAllActiveLeaveEligibleJobs(leaveBlock.getPrincipalId(), leaveBlock.getLeaveLocalDate());
 							maxUsage = maxUsage.multiply(fteSum).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-
-                            EmployeeOverrideContract employeeOverride = getEmployeeOverride(leaveBlock, "MU");
+							
+							EmployeeOverride employeeOverride = getEmployeeOverride(leaveBlock, "MU");
 							if(employeeOverride != null)
 								maxUsage = new BigDecimal(employeeOverride.getOverrideValue());
 							

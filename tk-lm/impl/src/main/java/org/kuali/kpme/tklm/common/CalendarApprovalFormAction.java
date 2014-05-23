@@ -15,23 +15,24 @@
  */
 package org.kuali.kpme.tklm.common;
 
+import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.workarea.WorkArea;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.util.TkContext;
 import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import javax.servlet.http.HttpServletRequest;
-import java.util.*;
 
 public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 	
@@ -48,8 +49,8 @@ public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 
 		if (calendarApprovalForm.getCalendarDocument() != null) {
 			calendarApprovalForm.setSelectedPayCalendarGroup(calendarApprovalForm.getCalendarDocument().getCalendarEntry().getCalendarName());
-			for (Assignment assignment : calendarApprovalForm.getCalendarDocument().getAllAssignments()) {
-				WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
+			for (Assignment assignment : calendarApprovalForm.getCalendarDocument().getAssignments()) {
+				WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(assignment.getWorkArea(), assignment.getEffectiveLocalDate());
 				if (calendarApprovalForm.getDepartments().contains(workArea.getDept())) {
 					calendarApprovalForm.setSelectedDept(workArea.getDept());
 					break;
@@ -78,21 +79,18 @@ public abstract class CalendarApprovalFormAction extends ApprovalFormAction {
 	}
 
     protected List<CalendarEntry> getCalendarEntries(CalendarEntry currentCalendarEntry) {
-		List<CalendarEntry> contracts =  HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarId(currentCalendarEntry.getHrCalendarId());
-        List<CalendarEntry> cecs = new ArrayList<CalendarEntry>();
-        cecs.addAll(contracts);
-        return cecs;
+		return HrServiceLocator.getCalendarEntryService().getAllCalendarEntriesForCalendarId(currentCalendarEntry.getHrCalendarId());
 	}
 	
-	protected List<String> getSubListPrincipalIds(HttpServletRequest request, List<String> assignmentPrincipalIds) {
-	    String page = request.getParameter((new ParamEncoder(HrConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
-	    // The paging index begins from 1, but the sublist index begins from 0.
-	    // So the logic below sets the sublist begin index to 0 if the page number is null or equals 1
-	    Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1)*HrConstants.PAGE_SIZE;
-	    Integer endIndex = beginIndex + HrConstants.PAGE_SIZE > assignmentPrincipalIds.size() ? assignmentPrincipalIds.size() : beginIndex + HrConstants.PAGE_SIZE;
-	
-	    return assignmentPrincipalIds.subList(beginIndex, endIndex);
-	}
+//	protected List<String> getSubListPrincipalIds(HttpServletRequest request, List<String> assignmentPrincipalIds) {
+//	    String page = request.getParameter((new ParamEncoder(HrConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
+//	    // The paging index begins from 1, but the sublist index begins from 0.
+//	    // So the logic below sets the sublist begin index to 0 if the page number is null or equals 1
+//	    Integer beginIndex = StringUtils.isBlank(page) || StringUtils.equals(page, "1") ? 0 : (Integer.parseInt(page) - 1) * HrConstants.PAGE_SIZE;
+//	    Integer endIndex = beginIndex + HrConstants.PAGE_SIZE > assignmentPrincipalIds.size() ? assignmentPrincipalIds.size() : beginIndex + HrConstants.PAGE_SIZE;
+//	
+//	    return assignmentPrincipalIds.subList(beginIndex, endIndex);
+//	}
 
 	protected Boolean getAscending(HttpServletRequest request) {
 	    // returned value 1 = ascending; 2 = descending

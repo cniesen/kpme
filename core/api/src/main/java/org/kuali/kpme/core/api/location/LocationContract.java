@@ -15,16 +15,16 @@
  */
 package org.kuali.kpme.core.api.location;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
+import java.util.List;
+
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.role.location.LocationPrincipalRoleMemberBoContract;
 
 /**
  * <p>LocationContract interface.</p>
  *
  */
-public interface LocationContract extends KpmeEffectiveDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "Location";
+public interface LocationContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The Primary Key of a Location entry saved in a database
@@ -70,8 +70,19 @@ public interface LocationContract extends KpmeEffectiveDataTransferObject {
 	 */
 	public String getDescription();	
 	
+	// TODO: not sure if this field is needed...
 	public String getUserPrincipalId();
 
+	/**
+	 * History flag for Location lookups 
+	 * 
+	 * <p>
+	 * history of Location
+	 * </p>
+	 * 
+	 * @return Y if want to show history, N if not
+	 */
+	public String getHistory();
 	
 	/**
 	 * Active Role member list for the Location 
@@ -82,7 +93,7 @@ public interface LocationContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return roleMembers for Location
 	 */
-	//public List<? extends LocationPrincipalRoleMemberBoContract> getRoleMembers();
+	public List<? extends LocationPrincipalRoleMemberBoContract> getRoleMembers();
 	
 	/**
 	 * Inactive Role member list for the Location 
@@ -93,6 +104,6 @@ public interface LocationContract extends KpmeEffectiveDataTransferObject {
 	 * 
 	 * @return roleMembers for Location
 	 */
-	//public List<? extends LocationPrincipalRoleMemberBoContract> getInactiveRoleMembers();
+	public List<? extends LocationPrincipalRoleMemberBoContract> getInactiveRoleMembers();
 	
 }

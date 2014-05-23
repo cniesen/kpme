@@ -25,8 +25,6 @@ public class ChangeTargetPersonForm extends KPMEForm {
     
     private String targetUrl;
     private String returnUrl;
-    private String fromAction; 
-    private String message;
     
 	public String getPrincipalName() {
 		return principalName;
@@ -52,21 +50,4 @@ public class ChangeTargetPersonForm extends KPMEForm {
         this.returnUrl = returnUrl;
     }
 
-	public String getFromAction() {
-		return fromAction;
-	}
-
-	public void setFromAction(String fromAction) {
-		this.fromAction = fromAction;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	
 }

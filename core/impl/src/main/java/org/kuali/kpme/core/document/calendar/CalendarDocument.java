@@ -15,71 +15,49 @@
  */
 package org.kuali.kpme.core.document.calendar;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.api.document.calendar.CalendarDocumentContract;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 public abstract class CalendarDocument implements Serializable, CalendarDocumentContract{
 	private static final long serialVersionUID = 6074564807962995821L;
-	//private <T extends CalendarDocumentHeader> T documentHeader;
-	private Map<LocalDate, List<Assignment>> assignments = new HashMap<LocalDate, List<Assignment>>();
-	private CalendarEntry calendarEntry = null;
-	private LocalDate asOfDate;
-	private String calendarType;
+	protected CalendarDocumentHeader documentHeader;
+	protected List<Assignment> assignments = new LinkedList<Assignment>();
+	protected CalendarEntry calendarEntry = null;
+	protected LocalDate asOfDate;
+	protected String calendarType;
 	
 	public abstract CalendarDocumentHeader getDocumentHeader();
 
-	//public abstract Map<LocalDate, List<Assignment>> getAssignmentMap();
+	public abstract List<Assignment> getAssignments();
 
-    public List<Assignment> getAllAssignments() {
-        if (MapUtils.isEmpty(getAssignmentMap())) {
-            return Collections.emptyList();
-        }
-        Set<Assignment> allAssignments = new HashSet<Assignment>();
-        for (List<Assignment> assignList : getAssignmentMap().values()) {
-            allAssignments.addAll(assignList);
-        }
-        return new ArrayList<Assignment>(allAssignments);
-    }
+	public abstract CalendarEntry getCalendarEntry();
 
-    @Override
-    public CalendarEntry getCalendarEntry() {
-        return calendarEntry;
-    }
-
-    public void setCalendarEntry(CalendarEntry calendarEntry) {
-        this.calendarEntry = calendarEntry;
-    }
-
-    @Override
-    public LocalDate getAsOfDate(){
-        return getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
-    }
-
-    public LocalDate getDocEndDate(){
-        return getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
-    }
+	public abstract LocalDate getAsOfDate();	
 	
-	public abstract String getDocumentId();
+	public String getDocumentId() {
+		if(documentHeader != null)
+			return documentHeader.getDocumentId();
+		else
+			return null;
+	}
 	
-	public abstract String getPrincipalId();
+	public String getPrincipalId() {
+		if(documentHeader != null)
+			return documentHeader.getPrincipalId();
+		else
+			return null;
+	}
 
     public String getCalendarType() {
     	return calendarType;
@@ -88,46 +66,32 @@ public abstract class CalendarDocument implements Serializable, CalendarDocument
     public void setCalendarType(String calendarType) {
     	this.calendarType = calendarType;
     }
-
-    @Override
-    public Map<LocalDate, List<Assignment>> getAssignmentMap() {
-        return assignments;
-    }
-
-    public void setAssignments(Map<LocalDate, List<Assignment>> assignments) {
-        this.assignments = assignments;
-    }
-
-    public Map<String, String> getAssignmentDescriptions(LocalDate date) {
-        Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
-        List<Assignment> dayAssignments = getAssignmentMap().get(date);
-        if (CollectionUtils.isNotEmpty(dayAssignments)) {
-            for (Assignment assignment : dayAssignments) {
-                assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
-            }
-        }
-        return assignmentDescriptions;
+    
+    public Map<String, String> getAssignmentDescriptions() {
+   	 Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
+     for (Assignment assignment : assignments) {
+             assignmentDescriptions.putAll(TKUtils.formatAssignmentDescription(assignment));
+     }
+     return assignmentDescriptions;
     }
     
-    public Assignment getAssignment(AssignmentDescriptionKey assignmentDescriptionKey, LocalDate date) {
-        List<Assignment> dayAssignments = getAssignmentMap().get(date);
-        if (CollectionUtils.isNotEmpty(dayAssignments)) {
-            for (Assignment assignment : dayAssignments) {
-                if (StringUtils.equals(assignment.getGroupKeyCode(), assignmentDescriptionKey.getGroupKeyCode()) &&
-                        assignment.getJobNumber().compareTo(assignmentDescriptionKey.getJobNumber()) == 0 &&
-                        assignment.getWorkArea().compareTo(assignmentDescriptionKey.getWorkArea()) == 0 &&
-                        assignment.getTask().compareTo(assignmentDescriptionKey.getTask()) == 0) {
-                    return assignment;
-                }
+    public Assignment getAssignment(AssignmentDescriptionKey assignmentDescriptionKey) {
+
+        for (Assignment assignment : assignments) {
+            if (assignment.getJobNumber().compareTo(assignmentDescriptionKey.getJobNumber()) == 0 &&
+                    assignment.getWorkArea().compareTo(assignmentDescriptionKey.getWorkArea()) == 0 &&
+                    assignment.getTask().compareTo(assignmentDescriptionKey.getTask()) == 0) {
+                return assignment;
             }
         }
 
         //No assignment found so fetch the inactive ones for this payBeginDate
-        Assignment foundAssign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignmentDescriptionKey, date);
+        Assignment foundAssign = HrServiceLocator.getAssignmentService().getAssignmentForTargetPrincipal(assignmentDescriptionKey, calendarEntry.getBeginPeriodFullDateTime().toLocalDate());
         if (foundAssign != null) {
             return foundAssign;
-        } else {
-            return null;
         }
+        else
+        	return null;
     }
+
 }

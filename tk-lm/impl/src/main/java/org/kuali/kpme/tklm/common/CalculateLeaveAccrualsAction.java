@@ -24,9 +24,6 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.leaveplan.LeavePlan;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.core.web.KPMEAction;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
@@ -39,42 +36,20 @@ public class CalculateLeaveAccrualsAction extends KPMEAction {
 	
     public ActionForward runAccruals(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
     	CalculateLeaveAccrualsForm calculateLeaveAccrualsForm = (CalculateLeaveAccrualsForm) form;
-    	String messagePrefix = "AccrualServiceImpl.runAccrual() called with ";
-    	String messageParameters = "";
-    	if(StringUtils.isNotBlank(calculateLeaveAccrualsForm.getPrincipalName())) {
-    		Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(calculateLeaveAccrualsForm.getPrincipalName());
-    		if (principal != null) {
-        		if (StringUtils.isNotBlank(calculateLeaveAccrualsForm.getStartDate()) && StringUtils.isNotBlank(calculateLeaveAccrualsForm.getEndDate())) {
-        			DateTime startDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getStartDate());
-        			DateTime endDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getEndDate());
-        			messageParameters = "Principal: " + principal.getPrincipalName() + " Start Date: " + TKUtils.formatDateTimeShort(startDate) + " End Date: " + TKUtils.formatDateTimeShort(endDate);
-        			LOG.debug(messagePrefix + messageParameters);
-        			LmServiceLocator.getLeaveAccrualService().runAccrual(principal.getPrincipalId(), startDate, endDate, true);
-        		} else {
-        			messageParameters = "Principal: " + principal.getPrincipalName();
-        			LOG.debug(messagePrefix + messageParameters);
-        			LmServiceLocator.getLeaveAccrualService().runAccrual(principal.getPrincipalId());
-        		}
-    		}	
-    	} else if(StringUtils.isNotBlank(calculateLeaveAccrualsForm.getLeavePlanId())) {
-    		LeavePlan aLeavePlan = HrServiceLocator.getLeavePlanService().getLeavePlan(calculateLeaveAccrualsForm.getLeavePlanId());
-    		if (aLeavePlan != null) {
-        		if (StringUtils.isNotBlank(calculateLeaveAccrualsForm.getStartDate()) && StringUtils.isNotBlank(calculateLeaveAccrualsForm.getEndDate())) {
-        			DateTime startDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getStartDate());
-        			DateTime endDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getEndDate());
-        			messageParameters = "Leave Plan: " + aLeavePlan.getLeavePlan() + " Start Date: " + TKUtils.formatDateTimeShort(startDate) + " End Date: " + TKUtils.formatDateTimeShort(endDate);
-        			LOG.debug(messagePrefix + messageParameters);
-        			LmServiceLocator.getLeaveAccrualService().runAccrualForLeavePlan(aLeavePlan, startDate, endDate, true);
-        		} else {
-        			messageParameters = "Leave Plan: " + aLeavePlan.getLeavePlan();
-        			LOG.debug(messagePrefix + messageParameters);
-        			LmServiceLocator.getLeaveAccrualService().runAccrualForLeavePlan(aLeavePlan, null, null, true);
-        		}
-    		}	
-    		
-    	}
     	
-		calculateLeaveAccrualsForm.setMessage("Leave accrual calculation has been submitted with " + messageParameters);
+    	Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(calculateLeaveAccrualsForm.getPrincipalName());
+		if (principal != null) {
+    		if (StringUtils.isNotBlank(calculateLeaveAccrualsForm.getStartDate()) && StringUtils.isNotBlank(calculateLeaveAccrualsForm.getEndDate())) {
+    			DateTime startDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getStartDate());
+    			DateTime endDate = TKUtils.formatDateTimeString(calculateLeaveAccrualsForm.getEndDate());
+    	
+    			LOG.debug("AccrualServiceImpl.runAccrual() called with Principal: " + principal.getPrincipalName() + " Start: " + startDate.toString() + " End: " + endDate.toString());
+    			LmServiceLocator.getLeaveAccrualService().runAccrual(principal.getPrincipalId(), startDate, endDate, true);
+    		} else {
+    			LOG.debug("AccrualServiceImpl.runAccrual() called with Principal: " + principal.getPrincipalName());
+    			LmServiceLocator.getLeaveAccrualService().runAccrual(principal.getPrincipalId());
+    		}
+		}
     	return mapping.findForward("basic");
     }
     
@@ -84,10 +59,6 @@ public class CalculateLeaveAccrualsAction extends KPMEAction {
     	if (StringUtils.isNotBlank(adminForm.getPrincipalName())) {
     		LOG.debug("AccrualServiceImpl.clearAccrual() called with Principal: " + adminForm.getPrincipalName());
     		adminForm.setPrincipalName("");
-    	} 
-    	if (StringUtils.isNotBlank(adminForm.getLeavePlanId())) {
-    		LOG.debug("AccrualServiceImpl.clearAccrual() called with LeavePlanId: " + adminForm.getLeavePlanId());
-    		adminForm.setLeavePlanId("");
     	} 
     	if (StringUtils.isNotBlank(adminForm.getStartDate())) {
     		LOG.debug("AccrualServiceImpl.clearAccrual() called with Start Date: " + adminForm.getStartDate());

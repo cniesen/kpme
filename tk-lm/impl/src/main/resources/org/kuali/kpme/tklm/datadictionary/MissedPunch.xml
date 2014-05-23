@@ -24,7 +24,7 @@
 
     <bean id="MissedPunch" parent="MissedPunch-parentBean" />
 	<bean id="MissedPunch-parentBean" abstract="true" parent="BusinessObjectEntry">
-		<property name="businessObjectClass" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+		<property name="businessObjectClass" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunch" />
 		<property name="titleAttribute" value="tkMissedPunchId" />
 		<property name="objectLabel" value="Missed Punch" />
 		<property name="attributes">
@@ -36,7 +36,6 @@
 				<ref bean="MissedPunch-timesheetDocumentId" />
 				<ref bean="MissedPunch-assignmentKey" />
 				<ref bean="MissedPunch-assignmentValue" />
-                <ref bean="MissedPunch-groupKeyCode" />
                 <ref bean="MissedPunch-jobNumber" />
                 <ref bean="MissedPunch-workArea" />
                 <ref bean="MissedPunch-department"/>
@@ -79,16 +78,6 @@
 								p:targetName="principalId" />
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
 								p:targetName="effectiveDate" />
-                        </list>
-                    </property>
-                </bean>
-                <bean parent="RelationshipDefinition">
-                    <property name="objectAttributeName" value="groupKey" />
-                    <property name="primitiveAttributes">
-                        <list>
-                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="groupKeyCode" p:targetName="groupKeyCode" />
-                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
-                                  p:targetName="effectiveDate" />
                         </list>
                     </property>
                 </bean>
@@ -140,7 +129,19 @@
     </bean>
     
     <bean id="MissedPunch-principalId" parent="MissedPunch-principalId-parentBean" />
-    <bean id="MissedPunch-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+    <bean id="MissedPunch-principalId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="principalId" />
+        <property name="label" value="Principal Id" />
+        <property name="shortLabel" value="Principal Id" />
+        <property name="maxLength" value="40" />
+        <property name="required" value="true" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint" />
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="40" />
+        </property>
+    </bean>
 
     <!--<bean id="MissedPunch-principalName" parent="MissedPunch-principalName-parentBean"/>
     <bean id="MissedPunch-principalName-parentBean" abstract="true" parent="AttributeDefinition">
@@ -214,18 +215,58 @@
             <bean parent="Uif-TextControl" />
         </property>
     </bean>
-
-    <bean id="MissedPunch-groupKeyCode" parent="MissedPunch-groupKeyCode-parentBean" />
-    <bean id="MissedPunch-groupKeyCode-parentBean" abstract="true" parent="KpmeAttributeReference-groupKeyCode"/>
-
+    
     <bean id="MissedPunch-jobNumber" parent="MissedPunch-jobNumber-parentBean" />
-    <bean id="MissedPunch-jobNumber-parentBean" abstract="true" parent="KpmeAttributeReference-jobNumber"/>
+    <bean id="MissedPunch-jobNumber-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="jobNumber" />
+        <property name="label" value="Job Number" />
+        <property name="shortLabel" value="Job Number" />
+        <property name="maxLength" value="3" />
+        <property name="validCharactersConstraint">
+            <bean parent="NumericPatternConstraint" />
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="3" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="3" />
+        </property>
+    </bean>
     
     <bean id="MissedPunch-workArea" parent="MissedPunch-workArea-parentBean" />
-    <bean id="MissedPunch-workArea-parentBean" abstract="true" parent="KpmeAttributeReference-workArea"/>
+    <bean id="MissedPunch-workArea-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="workArea" />
+        <property name="label" value="Work Area" />
+        <property name="shortLabel" value="Work Area" />
+        <property name="maxLength" value="10" />
+        <property name="validCharactersConstraint">
+            <bean parent="NumericPatternConstraint" />
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="7" />
+        </property>
+        <!-- need this for custom doc search until krad rewrite -->
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="7" />
+        </property>
+    </bean>
 
     <bean id="MissedPunch-task" parent="MissedPunch-task-parentBean" />
-    <bean id="MissedPunch-task-parentBean" abstract="true" parent="KpmeAttributeReference-task"/>
+    <bean id="MissedPunch-task-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="task" />
+        <property name="label" value="Task" />
+        <property name="shortLabel" value="Task" />
+        <property name="maxLength" value="10" />
+        <property name="validCharactersConstraint">
+            <bean parent="NumericPatternConstraint" />
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="10" />
+        </property>
+    </bean>
     
     <bean id="MissedPunch-actionDateTime" parent="MissedPunch-actionDateTime-parentBean" />
     <bean id="MissedPunch-actionDateTime-parentBean" abstract="true" parent="AttributeDefinition">
@@ -249,9 +290,26 @@
         </property>
     </bean>
 
-    <bean id="MissedPunch-relativeEffectiveDate" parent="KpmeAttributeReference-relativeEffectiveDate"/>
+    <bean id="MissedPunch-relativeEffectiveDate" parent="MissedPunch-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="controlField">
+            <bean parent="Uif-DateControl" p:hidden="true"/>
+        </property>
+    </bean>
     
-    <bean id="MissedPunch-effectiveDate-parentBean" abstract="true" parent="KpmeAttributeReference-effectiveDate" />
+    <bean id="MissedPunch-effectiveDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Effective Date" />
+        <property name="maxLength" value="12" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+        <property name="name" value="effectiveDate" />
+        <property name="label" value="Effective Date" />
+    </bean>
 
     <bean id="MissedPunch-department" parent="MissedPunch-department-parentBean" />
     <bean id="MissedPunch-department-parentBean" abstract="true" parent="AttributeDefinition">
@@ -325,7 +383,11 @@
     </bean>
     
     <bean id="MissedPunch-timestamp" parent="MissedPunch-timestamp-parentBean" />
-    <bean id="MissedPunch-timestamp-parentBean" abstract="true" parent="KpmeAttributeReference-timestamp">
+    <bean id="MissedPunch-timestamp-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="timestamp" />
+        <property name="label" value="Timestamp" />
+        <property name="shortLabel" value="Timestamp" />
+        <property name="maxLength" value="15" />
         <property name="controlField">
             <bean parent="Uif-HiddenControl" />
         </property>
@@ -336,7 +398,7 @@
     <bean id="MissedPunch-InquiryView" parent="MissedPunch-InquiryView-parentBean" />
     <bean id="MissedPunch-InquiryView-parentBean" abstract="true" parent="Uif-InquiryView">
         <property name="headerText" value="Missed Punch Inquiry" />
-        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunch" />
         <property name="singlePageView" value="true" />
         <property name="items">
             <list>
@@ -388,9 +450,9 @@
     <!-- We Use a custom Doc Search for Missed Punch Lookups -->
     <!-- See MissedPunchDocumentType.xml for Searchable Attribute Definitions -->
     <bean id="MissedPunch-LookupView" parent="MissedPunch-LookupView-parentBean" />
-    <bean id="MissedPunch-LookupView-parentBean" abstract="true" parent="KPMEUif-ViewLinkLookupView">
+    <bean id="MissedPunch-LookupView-parentBean" abstract="true" parent="KPMEUif-LookupView">
         <property name="headerText" value="Missed Punch Lookup" />
-        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunch" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.time.missedpunch.web.MissedPunchLookupableImpl" />
         <property name="criteriaFields">
             <list>
@@ -407,16 +469,15 @@
 	  						p:fieldConversions="documentId:timesheetDocumentId"/>
 	  				</property> -->
 		        </bean>
-                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="groupKeyCode"/>
 		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="jobNumber">
 		        <!-- Can be enabled once a principal id fetch is defined for principalName and
 		        	KRAD Views have been defined for jobNumber. -->
 <!-- 	  				<property name="quickfinder">
-	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.job.JobBo"
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.job.Job"
 	  						p:fieldConversions="jobNumber:jobNumber"/>
 	  				</property>
 	  				<property name="inquiry">
-	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.job.JobBo">
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.job.Job">
 	  						<property name="inquiryParameters">
 	  							<map>
 	  								<entry key="principalId" value="principalId"/>
@@ -429,22 +490,22 @@
 		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea">
 		        <!-- can be enabled once KRAD Views have been defined for task -->
 <!-- 	  				<property name="quickfinder">
-	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkArea"
 	  						p:fieldConversions="workArea:workArea"/>
 	  				</property>
 	  				<property name="inquiry">
-	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkArea"
 	  						p:inquiryParameters="workArea:workArea"/>
 	  				</property> -->
 				</bean>
 		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="task">
 		        <!-- can be re-enabled once KRAD Views have been defined for task. -->
 <!-- 	  				<property name="quickfinder">
-	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.Task"
 	  						p:fieldConversions="task:task"/>
 	  				</property>
 	  				<property name="inquiry">
-	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo">
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.task.Task">
 	  						<property name="inquiryParameters">
 	  							<map>
 	  								<entry key="workArea" value="workArea"/>
@@ -496,7 +557,7 @@
                                     <bean parent="Uif-InputField" p:propertyName="missedPunch.timesheetDocumentId"
                                          p:readOnly="@{!#empty(#dp.missedPunch.timesheetDocumentId)}" />
                                     <bean parent="Uif-InputField" p:propertyName="missedPunch.assignmentKey"
-                                         p:readOnly="@{#dp.assignmentReadOnly  or #dp.missedPunchSubmitted}" p:refreshWhenChangedPropertyNames="#dp.missedPunch.timesheetDocumentId,#dp.missedPunch.actionDate" />
+                                         p:readOnly="@{#dp.assignmentReadOnly  or #dp.missedPunchSubmitted}" p:refreshWhenChangedPropertyNames="#dp.missedPunch.timesheetDocumentId" />
                                     <bean parent="Uif-InputField" p:propertyName="missedPunch.actionDate"
                                           p:readOnly="@{#dp.missedPunchSubmitted}"/>
                                     <bean parent="Uif-InputField" p:propertyName="missedPunch.actionTime"

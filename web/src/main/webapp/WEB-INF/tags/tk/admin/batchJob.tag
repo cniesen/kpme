@@ -13,51 +13,43 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 --%>
-<%@ include file="/rice-portal/jsp/sys/riceTldHeader.jsp" %>
+<%@ include file="/rice-portal/jsp/sys/riceTldHeader.jsp"%>
 
-<c:set var="systemAdmin" value='<%=org.kuali.kpme.core.util.HrContext.isSystemAdmin()%>'/>
-<c:set var="locationAdmin" value='<%=org.kuali.kpme.tklm.time.util.TkContext.isLocationAdmin()%>'/>
-<c:if test="${systemAdmin || locationAdmin}">
-    <div class="portlet">
-        <div class="header">Run Batch Job</div>
+<c:set var="systemAdmin" value='<%=org.kuali.kpme.core.util.HrContext.isSystemAdmin()%>' />
 
-        <html:form action="/batchJob.do">
-            <div class="body">
-                <div id="content">
-                    <table width="100%">
-                        <tr>
-                            <td>Batch Job:</td>
-                            <td colspan="2">
-                                <select name="selectedBatchJob" id="selectedBatchJob">
-                                    <c:forEach var="job" items="${BatchJobActionForm.batchJobNames}">
-                                        <option value="${job}">${job}</option>
-                                    </c:forEach>
-                                </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Pay calendar period:</td>
-                            <td>
-                                <html:text property="hrPyCalendarEntryId"/>
-                                <kul:lookup boClassName="org.kuali.kpme.core.calendar.entry.CalendarEntryBo"
-                                            fieldConversions="hrCalendarEntryId:hrPyCalendarEntryId"/>
-                            </td>
-                            <td>
-                               
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <html:submit property="methodToCall.runBatchJob" value="Run"/>
-                            </td>
-                            <td colspan="2" align="right"> 
-                              	<a href="${ConfigProperties.application.url}/kr-krad/lookup?methodToCall=start&dataObjectClassName=org.kuali.kpme.tklm.time.batch.BatchJobStatus&returnLocation=${ConfigProperties.application.url}/AdminActions.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" >View Batch Jobs</a>
-                            </td>
-                        </tr>
-                    </table>
-                        ${BatchJobActionForm.message}
-                </div>
+<c:if test="${systemAdmin}">
+    <channel:portalChannelTop channelTitle="Run Batch Job" />
+    <html:form action="/batchJob.do">
+        <div class="body">
+            <div id="content">
+                <table>
+                    <tr>
+                        <td>Batch Job:</td>
+                        <td colspan="2">
+                            <select name="selectedBatchJob" id="selectedBatchJob">
+                                <c:forEach var="job" items="${BatchJobActionForm.batchJobNames}">
+                                    <option value="${job}">${job}</option>
+                                </c:forEach>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Pay calendar period:</td>
+                        <td>
+                            <html:text property="hrPyCalendarEntryId" />
+                        </td>
+                        <td>
+                        	<kul:lookup boClassName="org.kuali.kpme.core.calendar.entry.CalendarEntry" fieldConversions="hrCalendarEntryId:hrPyCalendarEntryId" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <html:submit property="methodToCall.runBatchJob" value="Run" />
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </html:form>
-    </div>
+        </div>
+    </html:form>
+    <channel:portalChannelBottom />
 </c:if>

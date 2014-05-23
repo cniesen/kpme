@@ -15,9 +15,28 @@
  */
 package org.kuali.hr.core.workarea;
 
-//@FunctionalTest
-//public class WorkAreaMaintenanceDocumentTest extends KPMEWebTestCase {
-	/*
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.kuali.hr.KPMEWebTestCase;
+import org.kuali.hr.util.HtmlUnitUtil;
+import org.kuali.kpme.core.FunctionalTest;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrTestConstants;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.core.workarea.WorkArea;
+import org.kuali.rice.krad.service.KRADServiceLocator;
+
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+
+@FunctionalTest
+public class WorkAreaMaintenanceDocumentTest extends KPMEWebTestCase {
 	
 	final String ERROR_MESSAGE = "At least one active role must be defined.";
 	final String ERROR_ROLE_MESSAGE = "Cannot define both Principal Id and Position Number for Role.";
@@ -37,7 +56,6 @@ package org.kuali.hr.core.workarea;
 		department.setLocation("BL");
 		department.setEffectiveLocalDate(TEST_DATE.toLocalDate());
 		department.setActive(true);
-        department.setUserPrincipalId("admin");
 		KRADServiceLocator.getBusinessObjectService().save(department);
     }
     
@@ -92,7 +110,7 @@ package org.kuali.hr.core.workarea;
         Assert.assertTrue("Page contains test Earn Code", searchPage.asText().contains(workArea.toString()));
 		
 		DateTime aDate = new DateTime(2011, 5, 1, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
-		WorkAreaContract wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, aDate.toLocalDate());
+		WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, aDate.toLocalDate());
 		String workAreaId = wa.getTkWorkAreaId().toString();
 		this.workArea = wa.getWorkArea();
 		
@@ -108,13 +126,10 @@ package org.kuali.hr.core.workarea;
 	
 	@Override
 	public void tearDown() throws Exception {
-		// TODO
-		// If you ever need this, create a method getDepartmentWithDeptAndGroupKeyCode(String department, String groupKeyCode, LocalDate asOfDate),
-		// which is the equivalent of getDepartmentWithDeptAndLocation(String department, LocalDate asOfDate)
-		DepartmentContract deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithDeptAndLocation(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
-		WorkAreaContract workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, LocalDate.now());
+		Department deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
+		WorkArea workAreaObj = HrServiceLocator.getWorkAreaService().getWorkAreaWithoutRoles(workArea, LocalDate.now());
 		KRADServiceLocator.getBusinessObjectService().delete(workAreaObj);
 		KRADServiceLocator.getBusinessObjectService().delete(deptObj);
 		super.tearDown();
-	}*/
-//}
+	}
+}

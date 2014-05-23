@@ -15,14 +15,18 @@
  */
 package org.kuali.kpme.pm.api.positionreportcat;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+
+import org.kuali.kpme.core.api.institution.InstitutionContract;
+
 import org.kuali.kpme.pm.api.positionreporttype.PositionReportTypeContract;
 
 /**
  * <p>PositionReportCategoryContract interface</p>
  *
  */
-public interface PositionReportCategoryContract extends KpmeEffectiveDataTransferObject {
+public interface PositionReportCategoryContract extends HrBusinessObjectContract {
 
     /**
      * The position report type associated with the PositionReportCategory 
@@ -45,6 +49,50 @@ public interface PositionReportCategoryContract extends KpmeEffectiveDataTransfe
      * @return description for PositionReportCategory
      */
 	public String getDescription();
+
+    /**
+     * The institution associated with the PositionReportCategory
+     *
+     * <p>
+     * institution of a PositionReportCategory
+     * <p>
+     *
+     * @return institution for PositionReportCategory
+     */
+	public String getInstitution();
+
+    /**
+     * The Institution object associated with the PositionReportCategory
+     *
+     * <p>
+     * institution Object of a PositionReportCategory
+     * <p>
+     *
+     * @return institution Object for PositionReportCategory
+     */
+	public InstitutionContract getInstitutionObj();
+
+    /**
+     * The location associated with the PositionReportCategory
+     *
+     * <p>
+     * location of a PositionReportCategory
+     * <p>
+     *
+     * @return location for PositionReportCategory
+     */
+	public String getLocation();
+
+    /**
+     * The Location object associated with the PositionReportCategory
+     *
+     * <p>
+     * location Object of a PositionReportCategory
+     * <p>
+     *
+     * @return location Object for PositionReportCategory
+     */
+	public LocationContract getLocationObj();
 
     /**
      * The primary key for a PositionReportCategory entry saved in the database

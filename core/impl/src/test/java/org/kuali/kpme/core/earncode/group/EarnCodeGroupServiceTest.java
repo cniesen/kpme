@@ -23,9 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.earncode.group.EarnCodeGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 @IntegrationTest
 public class EarnCodeGroupServiceTest extends CoreUnitTestCase{
@@ -39,7 +37,7 @@ public class EarnCodeGroupServiceTest extends CoreUnitTestCase{
 	// KPME-2529
 	@Test
 	public void testEarnGroupsFetch() throws Exception{
-		List<EarnCodeGroupBo> earnGroups = ModelObjectUtils.transform(HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupsForEarnCode("REG", LocalDate.now()),EarnCodeGroupBo.toBo);
+		List<EarnCodeGroup> earnGroups = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroupsForEarnCode("REG", LocalDate.now());
 		Assert.assertTrue("Test Earn Groups fetch succeeded", earnGroups.size()==2);
 	}
 }

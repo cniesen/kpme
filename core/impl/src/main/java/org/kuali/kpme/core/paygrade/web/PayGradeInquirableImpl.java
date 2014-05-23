@@ -20,7 +20,7 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.paygrade.PayGradeBo;
+import org.kuali.kpme.core.paygrade.PayGrade;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
@@ -32,9 +32,9 @@ public class PayGradeInquirableImpl extends KualiInquirableImpl {
 
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-        PayGradeBo payGrade = null;
+        PayGrade payGrade = null;
         if (StringUtils.isNotBlank((String) fieldValues.get("hrPayGradeId"))) {
-            payGrade = PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade((String) fieldValues.get("hrPayGradeId")));
+            payGrade = HrServiceLocator.getPayGradeService().getPayGrade((String) fieldValues.get("hrPayGradeId"));
         } else if (fieldValues.containsKey("payGrade")
                 && fieldValues.containsKey("salGroup")) {
             String pg = (String)fieldValues.get("payGrade");
@@ -42,9 +42,9 @@ public class PayGradeInquirableImpl extends KualiInquirableImpl {
             String effDate = (String) fieldValues.get("effectiveDate");
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
             
-            payGrade = PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade(pg, sg, effectiveDate));
+            payGrade = HrServiceLocator.getPayGradeService().getPayGrade(pg, sg, effectiveDate);
         } else {
-            payGrade = (PayGradeBo) super.getBusinessObject(fieldValues);
+            payGrade = (PayGrade) super.getBusinessObject(fieldValues);
         }
 
 

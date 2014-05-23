@@ -15,22 +15,47 @@
  */
 package org.kuali.kpme.pm.positionreportgroup.validation;
 
-import org.kuali.kpme.pm.positionreportgroup.PositionReportGroupBo;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 
-public class PositionReportGroupValidation extends MaintenanceDocumentRuleBase {
+@SuppressWarnings("deprecation")
+public class PositionReportGroupValidation extends MaintenanceDocumentRuleBase  {
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Report Group");
-		PositionReportGroupBo prg = (PositionReportGroupBo) this.getNewDataObject();
+		PositionReportGroup prg = (PositionReportGroup) this.getNewBo();
 		
 		if (prg != null) {
 			valid = true;
-			//valid &= this.validateGroupKeyCode(prg);
+			valid &= this.validateInstitution(prg);
+			valid &= this.validateLocation(prg);
 		}
 		return valid;
 	}
 	
+	private boolean validateInstitution(PositionReportGroup prg) {
+		if (StringUtils.isNotEmpty(prg.getInstitution())
+				&& !ValidationUtils.validateInstitution(prg.getInstitution(), prg.getEffectiveLocalDate())) {
+			this.putFieldError("institution", "error.existence", "Instituion '"
+					+ prg.getInstitution() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validateLocation(PositionReportGroup prg) {
+		if (StringUtils.isNotEmpty(prg.getLocation())
+				&& !ValidationUtils.validateLocation(prg.getLocation(), prg.getEffectiveLocalDate())) {
+			this.putFieldError("location", "error.existence", "Location '"
+					+ prg.getLocation() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
 }

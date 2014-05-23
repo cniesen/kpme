@@ -17,27 +17,28 @@ package org.kuali.kpme.core.paytype.validation;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.job.Job;
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.core.paytype.PayTypeBo;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.paytype.PayType;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 
-public class PayTypeRule extends HrKeyedBusinessObjectValidation {
+public class PayTypeRule extends MaintenanceDocumentRuleBase {
 
 	boolean validateEarnCode(String regEarnCode, LocalDate asOfDate) {
 		boolean valid = ValidationUtils.validateEarnCode(regEarnCode, asOfDate);
 
 		if (!valid) {
-			this.putFieldError("dataObject.regEarnCode", "earncode.notfound");
+			this.putFieldError("regEarnCode", "earncode.notfound");
 		} else {
 			valid = !ValidationUtils.validateEarnCode(regEarnCode, true,
 					asOfDate);
 			if (!valid) {
-				this.putFieldError("dataObject.regEarnCode", "earncode.ovt.not.required",
+				this.putFieldError("regEarnCode", "earncode.ovt.not.required",
 						regEarnCode);
 			}
 		}
@@ -45,12 +46,40 @@ public class PayTypeRule extends HrKeyedBusinessObjectValidation {
 		return valid;
 	}
 	
+	private boolean validateInstitution(String institution, LocalDate asOfDate) {
+		boolean valid = true;
+		
+		if (!StringUtils.isBlank(institution)) {
+			valid = ValidationUtils.validateInstitution(institution, asOfDate);
+
+			if (!valid) {
+				this.putFieldError("institution", "paytype.institution.invalid", institution);
+			} 			
+		}
+		
+		return valid;
+	}
+	
+	private boolean validateLocation(String location, LocalDate asOfDate) {
+		boolean valid = true;
+		
+		if (!StringUtils.isBlank(location)) {
+			valid = ValidationUtils.validateLocation(location, asOfDate);
+			if (!valid) {
+				this.putFieldError("location", "error.existence", location);
+			} 			
+		}
+
+		return valid;
+	}
+	
+
 	boolean validateActive(String hrPayType, LocalDate asOfDate) {
 		boolean valid = true;
 		List<Job> jobs = HrServiceLocator.getJobService()
 				.getActiveJobsForPayType(hrPayType, asOfDate);
 		if (jobs != null && !jobs.isEmpty()) {
-			this.putFieldError("dataObject.active", "paytype.inactivate.locked", hrPayType);
+			this.putFieldError("active", "paytype.inactivate.locked", hrPayType);
 			valid = false;
 		}
 		return valid;
@@ -60,13 +89,14 @@ public class PayTypeRule extends HrKeyedBusinessObjectValidation {
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
-		if (pbo instanceof PayTypeBo) {
-			PayTypeBo pt = (PayTypeBo) pbo;
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		if (pbo instanceof PayType) {
+			PayType pt = (PayType) pbo;
 
 			valid = validateEarnCode(pt.getRegEarnCode(), pt.getEffectiveLocalDate());
-			valid &= validateGroupKeyCode(pt);
-			if (document.isOldDataObjectInDocument() && !pt.isActive()) {
+			valid &= validateInstitution(pt.getInstitution(), pt.getEffectiveLocalDate());
+			valid &= validateLocation(pt.getLocation(), pt.getEffectiveLocalDate());
+			if (document.isOldBusinessObjectInDocument() && !pt.isActive()) {
 				valid &= validateActive(pt.getPayType(), pt.getEffectiveLocalDate());
 			}
 		}

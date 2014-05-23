@@ -24,7 +24,7 @@ import org.junit.Test;
 import org.kuali.hr.KPMEWebTestCase;
 import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
-import org.kuali.kpme.core.department.DepartmentBo;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
@@ -48,8 +48,6 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 	private static String TEST_CODE_INVALID_DEPT = "INVALID_DEPT";
 	private static Long TEST_CODE_INVALID_WORKAREA = 2L;
 	private static String PAY_TYPE_ERROR = "The specified payType '%' does not exist.";
-	
-	private static final String TEST_GRP_KEY_CD = "DEFAULT";
 
 	/**
 	 * Test to check whether it is showing error message on maintenance screen
@@ -68,7 +66,6 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 		HtmlUnitUtil.setFieldValue(page, "document.newMaintainableObject.dept", TEST_CODE_INVALID_DEPT);
 		HtmlUnitUtil.setFieldValue(page, "document.newMaintainableObject.workArea", "30");
 		HtmlUnitUtil.setFieldValue(page, "document.newMaintainableObject.payType", "BW");
-		HtmlUnitUtil.setFieldValue(page, "document.newMaintainableObject.groupKeyCode", TEST_GRP_KEY_CD);
 		HtmlPage resultantPageAfterEdit = HtmlUnitUtil
 				.clickInputContainingText(page, "submit");
 		HtmlUnitUtil.createTempFile(resultantPageAfterEdit);
@@ -133,16 +130,14 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 	@Override
 	public void setUp() throws Exception {
 		super.setUp();
-		DepartmentBo department = new DepartmentBo();
+		Department department = new Department();
 		department.setDept(TEST_CODE_DEPARTMENT_VALID);
 		department.setChart(TEST_CODE_DEPARTMENT_VALID);
 		department.setDescription(TEST_CODE_DEPARTMENT_VALID);
 		department.setOrg(TEST_CODE_DEPARTMENT_VALID);
-		department.setGroupKeyCode(TEST_GRP_KEY_CD);
-		//department.setLocation("BL");
+		department.setLocation("BL");
 		department.setEffectiveLocalDate(TEST_DATE);
         department.setActive(Boolean.TRUE);
-        department.setUserPrincipalId(TEST_CODE);
 		department = KRADServiceLocator.getBusinessObjectService().save(department);
 		
 		TimeCollectionRule timeCollectionRule = new TimeCollectionRule();
@@ -152,7 +147,6 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 		timeCollectionRule.setUserPrincipalId(TEST_CODE);
         timeCollectionRule.setActive(true);
         timeCollectionRule.setPayType("%");
-        timeCollectionRule.setGroupKeyCode(TEST_GRP_KEY_CD);
         timeCollectionRule = KRADServiceLocator.getBusinessObjectService().save(timeCollectionRule);
 		timeCollectionRuleId = timeCollectionRule.getTkTimeCollectionRuleId();
 
@@ -173,7 +167,6 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 		timeCollectionRuleWIthInvalidWorkArea.setEffectiveLocalDate(TEST_DATE);
         timeCollectionRuleWIthInvalidWorkArea.setActive(true);
         timeCollectionRuleWIthInvalidWorkArea.setPayType("%");
-        timeCollectionRuleWIthInvalidWorkArea.setGroupKeyCode(TEST_GRP_KEY_CD);
 		timeCollectionRuleWIthInvalidWorkArea.setTimestamp(TKUtils.getCurrentTimestamp());
 		timeCollectionRuleWIthInvalidWorkArea.setUserPrincipalId(TEST_CODE);
 		timeCollectionRuleWIthInvalidWorkArea
@@ -196,13 +189,13 @@ public class TimeCollectionRuleMaintTest extends KPMEWebTestCase {
 				timeCollectionRuleObj);
 
 		timeCollectionRuleObj = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(TEST_CODE_DEPARTMENT_VALID,
-									TEST_CODE_INVALID_WORKAREA, "%", TEST_GRP_KEY_CD, LocalDate.now());
+									TEST_CODE_INVALID_WORKAREA, "%", LocalDate.now());
 		//timeCollectionRuleObj = KRADServiceLocator.getBusinessObjectService()
         //        .findByPrimaryKey(TimeCollectionRule.class, Collections.singletonMap("tkTimeCollectionRuleId", timeCollectionRuleIdWithInvalidWorkArea));
 		KRADServiceLocator.getBusinessObjectService().delete(
 				timeCollectionRuleObj);
 
-		DepartmentBo deptObj = DepartmentBo.from(HrServiceLocator.getDepartmentService().getDepartment(TEST_CODE_DEPARTMENT_VALID, TEST_GRP_KEY_CD, LocalDate.now()));
+		Department deptObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(TEST_CODE_DEPARTMENT_VALID, LocalDate.now());
 		KRADServiceLocator.getBusinessObjectService().delete(deptObj);
 		super.tearDown();
 	}

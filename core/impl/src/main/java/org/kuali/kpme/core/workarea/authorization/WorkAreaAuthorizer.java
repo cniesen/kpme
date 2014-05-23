@@ -18,11 +18,11 @@ package org.kuali.kpme.core.workarea.authorization;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentAuthorizerBase;
+import org.kuali.kpme.core.department.Department;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.core.workarea.WorkArea;
 
 @SuppressWarnings("deprecation")
 public class WorkAreaAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
@@ -35,16 +35,16 @@ public class WorkAreaAuthorizer extends KPMEMaintenanceDocumentAuthorizerBase {
 		String department = StringUtils.EMPTY;
 		String location = StringUtils.EMPTY;
 		
-		if (dataObject instanceof WorkAreaBo) {
-			WorkAreaBo workAreaObj = (WorkAreaBo) dataObject;
+		if (dataObject instanceof WorkArea) {
+			WorkArea workAreaObj = (WorkArea) dataObject;
 			
 			if (workAreaObj != null) {
 				department = cleanAttributeValue(workAreaObj.getDept());
-				String groupKeyCode = workAreaObj != null ? workAreaObj.getGroupKeyCode() : null;
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, workAreaObj.getEffectiveLocalDate());
+				
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, workAreaObj.getEffectiveLocalDate());
 			
 				if (departmentObj != null) {
-					location = cleanAttributeValue(departmentObj.getGroupKey().getLocationId());
+					location = cleanAttributeValue(departmentObj.getLocation());
 				}
 			}
 		}

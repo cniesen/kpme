@@ -16,24 +16,15 @@
 package org.kuali.kpme.pm.api.positionreportgroup;
 
 
-import java.util.Set;
-
-import org.kuali.kpme.core.api.mo.EffectiveKeyContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedSetDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+import org.kuali.kpme.core.api.institution.InstitutionContract;
 
 /**
  * <p>PositionReportGroupContract interface</p>
  *
  */
-public interface PositionReportGroupContract extends KpmeEffectiveKeyedSetDataTransferObject {
-	
-	/* 
-	 * The set of EffectiveKeyContract objects that hold the aggregate "white-list" of groupkeys 
-	 * for this PostionReportGroupContract object. 
-	 * 
-	 */
-	@Override
-	public Set<? extends EffectiveKeyContract> getEffectiveKeySet();
+public interface PositionReportGroupContract extends HrBusinessObjectContract {
 
     /**
      * The primary key for a PositionReportGroup entry saved in the database
@@ -67,5 +58,49 @@ public interface PositionReportGroupContract extends KpmeEffectiveKeyedSetDataTr
      * @return description for PositionReportGroup
      */
 	public String getDescription();
+
+    /**
+     * The institution associated with the PositionReportGroup
+     *
+     * <p>
+     * institution of a PositionReportGroup.
+     * <p>
+     *
+     * @return institution for PositionReportGroup
+     */
+	public String getInstitution();
+
+    /**
+     * The location associated with the PositionReportGroup
+     *
+     * <p>
+     * location of a PositionReportGroup.
+     * <p>
+     *
+     * @return location for PositionReportGroup
+     */
+	public String getLocation();
+
+    /**
+     * The Location object associated with the PositionReportGroup
+     *
+     * <p>
+     * locationObj of a PositionReportGroup.
+     * <p>
+     *
+     * @return locationObj for PositionReportGroup
+     */
+	public LocationContract getLocationObj();
+
+    /**
+     * The Institution object associated with the PositionReportGroup
+     *
+     * <p>
+     * institutionObj of a PositionReportGroup.
+     * <p>
+     *
+     * @return institutionObj for PositionReportGroup
+     */
+	public InstitutionContract getInstitutionObj();
 
 }

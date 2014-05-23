@@ -55,4 +55,18 @@ public class KPMELookupableImpl extends LookupableImpl {
 		}
     }
 
+    // KPME-2699 editing inactive records is only allowed for admins
+    @Override
+    public boolean allowsMaintenanceEditAction(Object dataObject) {
+        boolean allowsEdit = super.allowsMaintenanceEditAction(dataObject);
+        if (dataObject instanceof HrBusinessObject) {
+            HrBusinessObject bo = (HrBusinessObject) dataObject;
+            if (!bo.isActive()) {
+                if (!HrContext.canEditInactiveRecords()) {
+                    allowsEdit = false;
+                }
+            }
+        }
+        return allowsEdit;
+    }
 }

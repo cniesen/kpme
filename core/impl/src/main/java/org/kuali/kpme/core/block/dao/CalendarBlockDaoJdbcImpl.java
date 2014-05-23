@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
+import org.kuali.kpme.core.assignment.Assignment;
 import org.kuali.kpme.core.block.CalendarBlock;
 import org.kuali.rice.core.framework.persistence.jdbc.dao.PlatformAwareDaoBaseJdbc;
 import org.kuali.rice.core.framework.persistence.jdbc.sql.Criteria;

@@ -24,21 +24,22 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinitionBo;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class EarnCodeGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements EarnCodeGroupDao {
     
 	@Override
-	public EarnCodeGroupBo getEarnCodeGroup(String earnGroup, LocalDate asOfDate) {
+	public EarnCodeGroup getEarnCodeGroup(String earnGroup, LocalDate asOfDate) {
 		Criteria root = new Criteria();
 
 		root.addEqualTo("earnCodeGroup", earnGroup);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroupBo.class, asOfDate, EarnCodeGroupBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroupBo.class, EarnCodeGroupBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroup.class, asOfDate, EarnCodeGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroup.class, EarnCodeGroup.EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 		//do not include the summary setup earn groups
 
@@ -46,24 +47,24 @@ public class EarnCodeGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
 				
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, root);
-		EarnCodeGroupBo earnGroupObj  = (EarnCodeGroupBo)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, root);
+		EarnCodeGroup earnGroupObj  = (EarnCodeGroup)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 		return earnGroupObj;
 	}
 
 	@Override
-	public EarnCodeGroupBo getEarnCodeGroupSummaryForEarnCode(String earnCode, LocalDate asOfDate) {
+	public EarnCodeGroup getEarnCodeGroupSummaryForEarnCode(String earnCode, LocalDate asOfDate) {
 		Criteria root = new Criteria();
 		Criteria earnCodeJoin = new Criteria();
 		
 		earnCodeJoin.addEqualToField("hrEarnCodeGroupId", Criteria.PARENT_QUERY_PREFIX + "hrEarnCodeGroupId");
 		earnCodeJoin.addEqualTo("earnCode", earnCode);
-		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinitionBo.class, earnCodeJoin);
+		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinition.class, earnCodeJoin);
 		earnCodeSubQuery.setAttributes(new String[]{"hr_earn_code_group_id"});
 		
 		root.addEqualTo("hrEarnCodeGroupId",earnCodeSubQuery);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroupBo.class, asOfDate, EarnCodeGroupBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroupBo.class, EarnCodeGroupBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroup.class, asOfDate, EarnCodeGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroup.class, EarnCodeGroup.EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 		root.addEqualTo("showSummary", true);
 		
@@ -71,77 +72,77 @@ public class EarnCodeGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
 
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, root);
-		EarnCodeGroupBo earnGroupObj  = (EarnCodeGroupBo)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, root);
+		EarnCodeGroup earnGroupObj  = (EarnCodeGroup)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 		return earnGroupObj;
 	}
 
 	@Override
-	public EarnCodeGroupBo getEarnCodeGroupForEarnCode(String earnCode, LocalDate asOfDate) {
+	public EarnCodeGroup getEarnCodeGroupForEarnCode(String earnCode, LocalDate asOfDate) {
 		Criteria root = new Criteria();
 		Criteria earnCodeJoin = new Criteria();
 
 		earnCodeJoin.addEqualToField("hrEarnCodeGroupId", Criteria.PARENT_QUERY_PREFIX + "hrEarnCodeGroupId");
 		earnCodeJoin.addEqualTo("earnCode", earnCode);
-		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinitionBo.class, earnCodeJoin);
+		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinition.class, earnCodeJoin);
 		earnCodeSubQuery.setAttributes(new String[]{"hr_earn_code_group_id"});
 		
 		root.addEqualTo("hrEarnCodeGroupId",earnCodeSubQuery);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroupBo.class, asOfDate, EarnCodeGroupBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroupBo.class, EarnCodeGroupBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroup.class, asOfDate, EarnCodeGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroup.class, EarnCodeGroup.EQUAL_TO_FIELDS, false));
 //		root.addEqualTo("active", true);
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
 		
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, root);
-		EarnCodeGroupBo earnGroupObj  = (EarnCodeGroupBo)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, root);
+		EarnCodeGroup earnGroupObj  = (EarnCodeGroup)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 		return earnGroupObj;
 	}
 	
 	// KPME-2529
 	@Override
-	public List<EarnCodeGroupBo> getEarnCodeGroupsForEarnCode(String earnCode, LocalDate asOfDate) {
+	public List<EarnCodeGroup> getEarnCodeGroupsForEarnCode(String earnCode, LocalDate asOfDate) {
 		
 		Criteria root = new Criteria();
 		Criteria earnCodeJoin = new Criteria();
 
 		earnCodeJoin.addEqualToField("hrEarnCodeGroupId", Criteria.PARENT_QUERY_PREFIX + "hrEarnCodeGroupId");
 		earnCodeJoin.addEqualTo("earnCode", earnCode);
-		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinitionBo.class, earnCodeJoin);
+		ReportQueryByCriteria earnCodeSubQuery = QueryFactory.newReportQuery(EarnCodeGroupDefinition.class, earnCodeJoin);
 		earnCodeSubQuery.setAttributes(new String[]{"hr_earn_code_group_id"});
 		
 		root.addEqualTo("hrEarnCodeGroupId",earnCodeSubQuery);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroupBo.class, asOfDate, EarnCodeGroupBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroupBo.class, EarnCodeGroupBo.BUSINESS_KEYS, false));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(EarnCodeGroup.class, asOfDate, EarnCodeGroup.EQUAL_TO_FIELDS, false));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroup.class, EarnCodeGroup.EQUAL_TO_FIELDS, false));
 
 		Criteria activeFilter = new Criteria(); // Inner Join For Activity
 		activeFilter.addEqualTo("active", true);
 		root.addAndCriteria(activeFilter);
 		
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, root);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, root);
 	      
-	    List<EarnCodeGroupBo> results = new ArrayList<EarnCodeGroupBo>();
+	    List<EarnCodeGroup> results = new ArrayList<EarnCodeGroup>();
 	    results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
 	    
 	    return results;
 	}
 
 	@Override
-	public EarnCodeGroupBo getEarnCodeGroup(String hrEarnCodeGroupId) {
+	public EarnCodeGroup getEarnCodeGroup(String hrEarnCodeGroupId) {
 		Criteria crit = new Criteria();
 		crit.addEqualTo("hrEarnCodeGroupId", hrEarnCodeGroupId);
 		
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, crit);
-		return (EarnCodeGroupBo)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, crit);
+		return (EarnCodeGroup)this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 	}
 	
 	@Override
 	public int getEarnCodeGroupCount(String earnCodeGroup) {
 		Criteria crit = new Criteria();
 	    crit.addEqualTo("earnCodeGroup", earnCodeGroup);
-	    Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, crit);
+	    Query query = QueryFactory.newQuery(EarnCodeGroup.class, crit);
 	    return this.getPersistenceBrokerTemplate().getCount(query);
 	}
 	@Override
@@ -150,12 +151,12 @@ public class EarnCodeGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
 		crit.addEqualTo("earnCodeGroup", earnCodeGroup);
 		crit.addEqualTo("active", "Y");
 		crit.addGreaterThan("effectiveDate", effdt.toDate());
-		Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, crit);
+		Query query = QueryFactory.newQuery(EarnCodeGroup.class, crit);
        	return this.getPersistenceBrokerTemplate().getCount(query);
 	}
 	
-	public List<EarnCodeBo> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist) {
-        List<EarnCodeBo> results = new ArrayList<EarnCodeBo>();
+	public List<EarnCode> getEarnCodeGroups(String earnCodeGroup, String descr, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist) {
+        List<EarnCode> results = new ArrayList<EarnCode>();
         
         Criteria root = new Criteria();
         
@@ -190,11 +191,11 @@ public class EarnCodeGroupDaoOjbImpl extends PlatformAwareDaoBaseOjb implements 
         }
 
         if (StringUtils.equals(showHist, "N")) {
-            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCodeGroupBo.class, effectiveDateFilter, EarnCodeGroupBo.BUSINESS_KEYS, false));
-            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroupBo.class, EarnCodeGroupBo.BUSINESS_KEYS, false));
+            root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(EarnCodeGroup.class, effectiveDateFilter, EarnCodeGroup.EQUAL_TO_FIELDS, false));
+            root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(EarnCodeGroup.class, EarnCodeGroup.EQUAL_TO_FIELDS, false));
         }
         
-        Query query = QueryFactory.newQuery(EarnCodeGroupBo.class, root);
+        Query query = QueryFactory.newQuery(EarnCodeGroup.class, root);
         results.addAll(getPersistenceBrokerTemplate().getCollectionByQuery(query));
         
         return results;

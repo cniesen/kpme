@@ -16,6 +16,7 @@
 package org.kuali.kpme.tklm.time.rules.lunch.department.dao;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -26,22 +27,22 @@ import org.apache.ojb.broker.query.QueryFactory;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb implements DepartmentLunchRuleDao {
     @Override
 	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, 
-												Long jobNumber, String groupKeyCode, LocalDate asOfDate) {
+												Long jobNumber, LocalDate asOfDate) {
 		Criteria root = new Criteria();
 
 		root.addEqualTo("dept", dept);
 		root.addEqualTo("workArea", workArea);
 		root.addEqualTo("principalId", principalId);
 		root.addEqualTo("jobNumber", jobNumber);
-		root.addEqualTo("groupKeyCode", groupKeyCode);
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DeptLunchRule.class, asOfDate, DeptLunchRule.BUSINESS_KEYS, true));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.BUSINESS_KEYS, true));
+        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(DeptLunchRule.class, asOfDate, DeptLunchRule.EQUAL_TO_FIELDS, true));
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.EQUAL_TO_FIELDS, true));
 //		root.addEqualTo("active", true);
 
 		//Criteria activeFilter = new Criteria(); // Inner Join For Activity
@@ -66,7 +67,7 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
 
 	@Override
     @SuppressWarnings("unchecked")
-    public List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber, String groupKeyCode, 
+    public List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber, 
     												   LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory) {
         List<DeptLunchRule> results = new ArrayList<DeptLunchRule>();
         
@@ -102,10 +103,6 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
         	OjbSubQueryUtil.addNumericCriteria(root, "workArea", workArea);
         }
         
-        if (StringUtils.isNotBlank(groupKeyCode)) {
-        	root.addLike("groupKeyCode", groupKeyCode);
-        }
-        
         if (StringUtils.isNotBlank(active)) {
         	Criteria activeFilter = new Criteria();
             if (StringUtils.equals(active, "Y")) {
@@ -131,8 +128,8 @@ public class DepartmentLunchRuleDaoOjbImpl extends PlatformAwareDaoBaseOjb imple
         	root.addAndCriteria(effectiveDateFilter);
         }
         if (StringUtils.equals(showHistory, "N")) {
-        	root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DeptLunchRule.class, effectiveDateFilter, DeptLunchRule.BUSINESS_KEYS, false));
-        	root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.BUSINESS_KEYS, false));
+        	root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQueryWithFilter(DeptLunchRule.class, effectiveDateFilter, DeptLunchRule.EQUAL_TO_FIELDS, false));
+        	root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(DeptLunchRule.class, DeptLunchRule.EQUAL_TO_FIELDS, false));
         }
         
         Query query = QueryFactory.newQuery(DeptLunchRule.class, root);

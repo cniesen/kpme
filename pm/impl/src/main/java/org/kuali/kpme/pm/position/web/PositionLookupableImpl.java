@@ -15,52 +15,78 @@
  */
 package org.kuali.kpme.pm.position.web;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.lookup.KpmeHrGroupKeyedBusinessObjectLookupableImpl;
-import org.kuali.kpme.pm.api.position.PositionContract;
-import org.kuali.kpme.pm.api.positiondepartment.PositionDepartmentContract;
+import org.kuali.kpme.core.lookup.KPMELookupableImpl;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.pm.position.Position;
+import org.kuali.kpme.pm.service.base.PmServiceLocator;
+import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.krad.uif.UifConstants;
+import org.kuali.rice.krad.uif.UifParameters;
+import org.kuali.rice.krad.uif.element.Action;
+import org.kuali.rice.krad.uif.util.LookupInquiryUtils;
 import org.kuali.rice.krad.uif.view.LookupView;
+import org.kuali.rice.krad.util.KRADConstants;
+import org.kuali.rice.krad.util.KRADUtils;
+import org.kuali.rice.krad.util.UrlFactory;
 import org.kuali.rice.krad.web.form.LookupForm;
 
-public class PositionLookupableImpl extends KpmeHrGroupKeyedBusinessObjectLookupableImpl {
+public class PositionLookupableImpl extends KPMELookupableImpl {
 
 	private static final long serialVersionUID = 8658536323175048980L;
 
-	@SuppressWarnings("unchecked")
 	@Override
     protected List<?> getSearchResults(LookupForm form, Map<String, String> searchCriteria, boolean unbounded) {
-		List<PositionContract> retVal = new ArrayList<PositionContract>();
-		// read and remove the primary department from the field map
-		String primaryDepartment = searchCriteria.remove("primaryDepartment");  // KPME-3189
-        List<PositionContract> posContracts = (List<PositionContract>) super.getSearchResults(form, searchCriteria, unbounded);
-		
-        if (StringUtils.isEmpty(primaryDepartment)) {
-        	retVal = posContracts;
+    	String positionNum = searchCriteria.get("positionNumber");
+        String description = searchCriteria.get("description");
+        String workingPositionTitle = searchCriteria.get("workingPositionTitle");
+        String campus = searchCriteria.get("campus");
+        String institution = searchCriteria.get("institution");
+        String classificationTitle = searchCriteria.get("classificationTitle");
+        String positionType = searchCriteria.get("positionType");
+        String poolEligible = searchCriteria.get("poolEligible");
+        String fromEffdt = TKUtils.getFromDateString(searchCriteria.get("effectiveDate"));
+        String toEffdt = TKUtils.getToDateString(searchCriteria.get("effectiveDate"));
+        String active = searchCriteria.get("active");
+        String showHist = searchCriteria.get("history");
+
+        if (StringUtils.equals(positionNum, "%")) {
+            positionNum = "";
         }
-        else {
-	        // clean out wildcards from user entered value for primary department - KPME-3189
-			// TODO: shouldnt this be doing wilcard based matching (using regexes perhaps) instead? 
-			primaryDepartment = StringUtils.remove(StringUtils.remove(primaryDepartment, "*"), "%");
-			// check for each position if its primary department matches the user entered primary department 
-	        for (PositionContract posContract: posContracts) {
-	        	List<? extends PositionDepartmentContract> posDepartments = posContract.getDepartmentList();
-	        	for (PositionDepartmentContract posDepartment: posDepartments) {
-	        		if (posDepartment.getDeptAfflObj().isPrimaryIndicator()) {        			
-	        			if (posDepartment.getDepartment().toUpperCase().equals(primaryDepartment.toUpperCase())) {
-	        				retVal.add(posContract);
-	        				break;
-	        			}
-	        		}
-	        	}
-	        }
-        }
-        return retVal;
+        
+        return PmServiceLocator.getPositionService().getPositions(positionNum, description, workingPositionTitle, campus,
+                institution, classificationTitle, positionType, poolEligible, TKUtils.formatDateString(fromEffdt),
+                TKUtils.formatDateString(toEffdt), active, showHist);	
     }  
 	
+	@Override
+    protected String getActionUrlHref(LookupForm lookupForm, Object dataObject, String methodToCall, List<String> pkNames) {
+		if (!StringUtils.equals(methodToCall, "maintenanceEdit")) {
+			return super.getActionUrlHref(lookupForm, dataObject, methodToCall, pkNames);
+		} else {
+			Properties urlParameters = new Properties();
+
+	        urlParameters.setProperty(UifParameters.DATA_OBJECT_CLASS_NAME, dataObject.getClass().getName());
+	        urlParameters.setProperty(UifParameters.METHOD_TO_CALL, UifConstants.MethodToCallNames.START);
+	        
+	        Map<String, String> primaryKeyValues = KRADUtils.getPropertyKeyValuesFromDataObject(pkNames, dataObject);
+	        for (String primaryKey : primaryKeyValues.keySet()) {
+	            String primaryKeyValue = primaryKeyValues.get(primaryKey);
+
+	            urlParameters.put(primaryKey, primaryKeyValue);
+	        }
+	       	        
+	        String path = ConfigContext.getCurrentContextConfig().getProperty("application.url");
+	        String hrefPrefix = path + "/portal.do?channelTitle=ProcessMaint&channelUrl=" + path + "/ProcessMaint.do";
+	        Position aPosition = (Position) dataObject;
+	        String paramString = "?positionId=" + aPosition.getHrPositionId();
+	        return (hrefPrefix + paramString);
+		}
+    }
 
     @Override
     public void initSuppressAction(LookupForm lookupForm) {

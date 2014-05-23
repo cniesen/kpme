@@ -51,10 +51,11 @@
 
   <bean id="TimeCollectionRuleMaintenanceDocument-TimeCollectionRuleMaintenance" parent="TimeCollectionRuleMaintenanceDocument-TimeCollectionRuleMaintenance-parentBean"/>
 
-  <bean id="TimeCollectionRuleMaintenanceDocument-TimeCollectionRuleMaintenance-parentBean" abstract="true" parent="KPMEEffectiveDateGroupKeyed-MaintainableSectionDefinition">
+  <bean id="TimeCollectionRuleMaintenanceDocument-TimeCollectionRuleMaintenance-parentBean" abstract="true" parent="MaintainableSectionDefinition">
     <property name="title" value="Time Collection Rule Maintenance"/>
     <property name="maintainableItems">
-      <list merge="true">
+      <list>
+        <bean parent="MaintainableFieldDefinition" p:required="true" p:name="effectiveDate" />
       	<bean parent="MaintainableFieldDefinition" p:required="true" p:name="dept" />
       	<bean parent="MaintainableFieldDefinition" p:readOnlyAfterAdd="true"  p:required="true" p:name="workArea"/>
       	<bean parent="MaintainableFieldDefinition" p:readOnlyAfterAdd="true"  p:required="true" p:name="payType"/>

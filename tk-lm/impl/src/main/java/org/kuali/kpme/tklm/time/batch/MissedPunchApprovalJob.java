@@ -15,15 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.batch;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.batch.BatchJob;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.common.BatchJobService;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -31,20 +32,19 @@ import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import java.util.List;
 
 public class MissedPunchApprovalJob extends BatchJob {
 	
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-		TkServiceLocator.getBatchJobService().updateStatus(context.getJobDetail(), BatchJobService.RUNNING_JOB_STATUS_CODE);
+
 		String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 
-        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
 		Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(calendarEntry.getHrCalendarId());
 		DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
 		DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
@@ -58,18 +58,17 @@ public class MissedPunchApprovalJob extends BatchJob {
         				&& TkConstants.MISSEDPUNCH_APPROVAL_TIME_DOC_STATUS.contains(KEWServiceLocator.getRouteHeaderService().getDocumentStatus(timeDocId))) {
         			PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
 					if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getPayCalendar()) && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {	
-						List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentsByTimesheetDocumentId(timeDocId);
+						List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(timeDocId);
 						for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
 							if(missedPunchDocument != null 
 									&& DocumentStatus.ENROUTE.equals(KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber())) ){
-								TkServiceLocator.getMissedPunchDocumentService().approveMissedPunchDocument(missedPunchDocument);
+								TkServiceLocator.getMissedPunchService().approveMissedPunchDocument(missedPunchDocument);
 							}
 						}
 					}
         		}
 			}
 		}
-		TkServiceLocator.getBatchJobService().updateStatus(context.getJobDetail(), BatchJobService.SUCCEEDED_JOB_STATUS_CODE);
 	}
 	
 }

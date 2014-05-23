@@ -15,27 +15,26 @@
  */
 package org.kuali.kpme.tklm.time.batch;
 
+import java.text.DateFormat;
+
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.batch.BatchJob;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.common.BatchJobService;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.quartz.Job;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-
-import java.text.DateFormat;
 
 public class EndReportingPeriodJob extends BatchJob {
 
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		JobDataMap jobDataMap = context.getJobDetail().getJobDataMap();
-		TkServiceLocator.getBatchJobService().updateStatus(context.getJobDetail(), BatchJobService.RUNNING_JOB_STATUS_CODE);
+		
 		String hrCalendarEntryId = jobDataMap.getString("hrCalendarEntryId");
 		String principalId = jobDataMap.getString("principalId");
-
-        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
+		
+		CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCalendarEntry(hrCalendarEntryId);
 		DateTime endPeriodDateTime = calendarEntry.getEndPeriodFullDateTime();
 		
 		String subject = "End of Reporting Period Reminder";
@@ -45,7 +44,6 @@ public class EndReportingPeriodJob extends BatchJob {
 		message.append(", so it can be reviewed and approved by your supervisor.");
 		
 		HrServiceLocator.getKPMENotificationService().sendNotification(subject, message.toString(), principalId);
-		TkServiceLocator.getBatchJobService().updateStatus(context.getJobDetail(), BatchJobService.SUCCEEDED_JOB_STATUS_CODE);
 	}
 	
 }

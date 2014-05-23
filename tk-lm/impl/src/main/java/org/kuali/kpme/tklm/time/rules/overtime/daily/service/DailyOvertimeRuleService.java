@@ -48,12 +48,12 @@ public interface DailyOvertimeRuleService {
 	 * @return
 	 */
     @Cacheable(value= DailyOvertimeRule.CACHE_NAME,
-            key="'groupKeyCode=' + #p0" +
+            key="'location=' + #p0" +
                     "+ '|' + 'paytype=' + #p1" +
                     "+ '|' + 'dept=' + #p2" +
                     "+ '|' + 'workArea=' + #p3" +
                     "+ '|' + 'asOfDate=' + #p4")
-	public DailyOvertimeRule getDailyOvertimeRule(String groupKeyCode, String paytype, String dept, Long workArea, LocalDate asOfDate);
+	public DailyOvertimeRule getDailyOvertimeRule(String location, String paytype, String dept, Long workArea, LocalDate asOfDate);
 	/**
 	 * Process DailyOvertimeRules for the given TkTimeBlockAggregate
 	 * @param timesheetDocument
@@ -68,5 +68,6 @@ public interface DailyOvertimeRuleService {
     @Cacheable(value= DailyOvertimeRule.CACHE_NAME, key="'tkDailyOvertimeRuleId=' + #p0")
 	public DailyOvertimeRule getDailyOvertimeRule(String tkDailyOvertimeRuleId);
     
-    public List<DailyOvertimeRule> getDailyOvertimeRules(String userPrincipalId, List <DailyOvertimeRule> dailyOvertimeRuleObjs);
+    public List<DailyOvertimeRule> getDailyOvertimeRules(String userPrincipalId, String dept, String workArea, String location, LocalDate fromEffdt, LocalDate toEffdt, String active, String showHist);
+
 }

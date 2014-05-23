@@ -15,22 +15,19 @@
  */
 package org.kuali.kpme.core.api.earncode.security;
 
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.location.LocationContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedDataTransferObject;
 import org.kuali.kpme.core.api.salarygroup.SalaryGroupContract;
-import org.kuali.kpme.core.api.util.HrApiConstants;
 
 /**
  * <p>EarnCodeSecurityContract interface</p>
  *
  */
-public interface EarnCodeSecurityContract extends KpmeEffectiveKeyedDataTransferObject {
+public interface EarnCodeSecurityContract extends HrBusinessObjectContract {
 
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCodeSecurity";
-	
 	/**
 	 * The primary key of an EarnCodeSecurity entry saved in a database
 	 * 
@@ -162,26 +159,38 @@ public interface EarnCodeSecurityContract extends KpmeEffectiveKeyedDataTransfer
 	 * @return jobObj for EarnCodeSecurity
 	 */
 	public JobContract getJobObj();
+	
+	/**
+	 * The Location object the EarnCodeSecurity is associated with
+	 * 
+	 * <p>
+	 * If a location is defined, only entries associated with a job rcd in this location will be subject.
+	 * </p>
+	 * 
+	 * @return jobObj for EarnCodeSecurity
+	 */
+	public LocationContract getLocationObj();
+	
+	/**
+	 * The Location name the EarnCodeSecurity is associated with
+	 * 
+	 * <p>
+	 * location of an EarnCodeSecurity
+	 * </p>
+	 * 
+	 * @return location for EarnCodeSecurity
+	 */
+	public String getLocation();
 
-    /**
-     * The Location object the EarnCodeSecurity is associated with
-     *
-     * <p>
-     * If a location is defined, only entries associated with a job rcd in this location will be subject.
-     * </p>
-     *
-     * @return jobObj for EarnCodeSecurity
-     */
-    public LocationContract getLocationObj();
+	/**
+	 * The history flag for EarnCodeSecurity lookups 
+	 * 
+	 * <p>
+	 * history of an EarnCodeSecurity
+	 * </p>
+	 * 
+	 * @return Y if want to show history, N if not
+	 */
+	public String getHistory();
 
-    /**
-     * The Location name the EarnCodeSecurity is associated with
-     *
-     * <p>
-     * location of an EarnCodeSecurity
-     * </p>
-     *
-     * @return location for EarnCodeSecurity
-     */
-    public String getLocation();
 }

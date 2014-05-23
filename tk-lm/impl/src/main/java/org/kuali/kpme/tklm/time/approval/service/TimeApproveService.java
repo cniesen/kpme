@@ -15,21 +15,22 @@
  */
 package org.kuali.kpme.tklm.time.approval.service;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.kew.api.note.Note;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
 
 
 public interface TimeApproveService {
@@ -63,6 +64,8 @@ public interface TimeApproveService {
      */
     Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, DateTime payBeginDate, DateTime payEndDate, String docIdSearchTerm);
 
+    public DocumentRouteHeaderValue getRouteHeader(String documentId);
+    
     /**
      * Get a list of unique principal ids with given criteria
      * used to populate tables in Time approval page 

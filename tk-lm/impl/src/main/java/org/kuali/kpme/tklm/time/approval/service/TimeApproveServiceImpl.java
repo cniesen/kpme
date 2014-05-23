@@ -15,53 +15,8 @@
  */
 package org.kuali.kpme.tklm.time.approval.service;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Hours;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.json.simple.JSONValue;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.calendar.web.CalendarDay;
-import org.kuali.kpme.core.calendar.web.CalendarWeek;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.HrContext;
-import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
-import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryContract;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
-import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
-import org.kuali.kpme.tklm.time.calendar.TkCalendar;
-import org.kuali.kpme.tklm.time.calendar.TkCalendarDay;
-import org.kuali.kpme.tklm.time.flsa.FlsaDay;
-import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
-import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
-import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.web.TimeBlockRenderer;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
-import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
-import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
-import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
-import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.api.note.Note;
-import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,6 +26,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Hours;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.json.simple.JSONValue;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.web.CalendarDay;
+import org.kuali.kpme.core.calendar.web.CalendarWeek;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
+import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
+import org.kuali.kpme.tklm.time.calendar.TkCalendar;
+import org.kuali.kpme.tklm.time.calendar.TkCalendarDay;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.time.flsa.FlsaDay;
+import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timeblock.web.TimeBlockRenderer;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
+import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.action.ActionRequest;
+import org.kuali.rice.kew.api.note.Note;
+import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
+import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class TimeApproveServiceImpl implements TimeApproveService {
 
@@ -131,11 +134,11 @@ public class TimeApproveServiceImpl implements TimeApproveService {
                 //timeBlocks = TkServiceLocator.getTimeBlockService()
                 //              .getTimeBlocks(documentId);
                 List<String> assignKeys = new ArrayList<String>();
-                for(Assignment a : td.getAllAssignments()) {
+                for(Assignment a : td.getAssignments()) {
                 	assignKeys.add(a.getAssignmentKey());
                 }
-                leaveBlocks.addAll(LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId,
-                        payBeginDate.toLocalDate(), payEndDate.toLocalDate(), assignKeys));
+                leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId,
+                		payBeginDate.toLocalDate(), payEndDate.toLocalDate(), assignKeys);
                 notes = getNotesForDocument(documentId);
                 Map<String, List<LocalDate>> earnCodeMap = new HashMap<String, List<LocalDate>>();
                 for(TimeBlock tb : td.getTimeBlocks()) {
@@ -267,8 +270,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			//KPME-2563
 			try{
 				if(td != null) {
-					TimeSummaryContract ts = TkServiceLocator.getTimeSummaryService()
-                            .getTimeSummary(td.getPrincipalId(), td.getTimeBlocks(), td.getCalendarEntry(), td.getAssignmentMap());
+					TimeSummary ts = TkServiceLocator.getTimeSummaryService().getTimeSummary(td);
 					approvalSummaryRow.setTimeSummary(ts);					
 				}				
 			} catch (Exception ex){
@@ -290,7 +292,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
         if (CollectionUtils.isNotEmpty(assignments)) {
             for (Assignment assignment : assignments) {
             	if(assignment.getJob() != null) {
-		            TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+		            TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
 		            isSynchronousUser |= (tcr == null || tcr.isClockUserFl());
             	}
             }
@@ -302,12 +304,14 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 		Map<String, Set<String>> allMessages = new HashMap<String,Set<String>>();
 		allMessages.put("warningMessages", new HashSet<String>());
 
-        Map<String, Set<LeaveBlockContract>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry, principalId);
+		Map<String, Set<LeaveBlock>> eligibilities;
+	
+		eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry, principalId);
 	
 		if (eligibilities != null) {
-			for (Entry<String,Set<LeaveBlockContract>> entry : eligibilities.entrySet()) {
-				for(LeaveBlockContract lb : entry.getValue()) {
-					AccrualCategoryRuleContract rule = lb.getAccrualCategoryRule();
+			for (Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
+				for(LeaveBlock lb : entry.getValue()) {
+					AccrualCategoryRule rule = lb.getAccrualCategoryRule();
 					if (rule != null) {
 						AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(rule.getLmAccrualCategoryId());
 						if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER)) {
@@ -440,8 +444,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 	@Override
 	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, 
 			DateTime payEndDate, List<String> payCalendarLabels, 
-			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks,
-            Long workArea, CalendarEntry payCalendarEntry, Calendar payCalendar,
+			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea, 
+			CalendarEntry payCalendarEntry, Calendar payCalendar,
 			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
 		
 		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
@@ -541,6 +545,11 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			}
 		}
 		return principalDocumentHeader;
+	}
+
+	@Override
+	public DocumentRouteHeaderValue getRouteHeader(String documentId) {
+		return KEWServiceLocator.getRouteHeaderService().getRouteHeader(documentId);
 	}
 	
 }

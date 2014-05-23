@@ -17,7 +17,6 @@ package org.kuali.kpme.pm.pstnrptgrpsubcat.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.pm.pstnrptgrpsubcat.PositionReportGroupSubCategoryBo;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 
 public class PstnRptGrpSubCatMaintainableImpl extends HrBusinessObjectMaintainableImpl {
@@ -26,7 +25,7 @@ public class PstnRptGrpSubCatMaintainableImpl extends HrBusinessObjectMaintainab
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return PositionReportGroupSubCategoryBo.from(PmServiceLocator.getPstnRptGrpSubCatService().getPstnRptGrpSubCatById(id));
+		return PmServiceLocator.getPstnRptGrpSubCatService().getPstnRptGrpSubCatById(id);
 	}
 
 }

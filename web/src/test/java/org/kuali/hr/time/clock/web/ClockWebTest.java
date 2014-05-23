@@ -36,18 +36,15 @@ import org.kuali.kpme.core.FunctionalTest;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.graceperiod.GracePeriodRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
-import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
-import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.kpme.tklm.utils.TkTestConstants;
-import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
 import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
@@ -76,11 +73,11 @@ public class ClockWebTest extends KPMEWebTestCase {
     }
 
     public Long maxTimeBlockId() {
-        Collection aCol = KRADServiceLocator.getBusinessObjectService().findAll(TimeBlockBo.class);
+        Collection aCol = KRADServiceLocator.getBusinessObjectService().findAll(TimeBlock.class);
         Long maxId = new Long(-1);
-        Iterator<TimeBlockBo> itr = aCol.iterator();
+        Iterator<TimeBlock> itr = aCol.iterator();
         while (itr.hasNext()) {
-            TimeBlockBo tb = itr.next();
+            TimeBlock tb = itr.next();
             Long temp = new Long(tb.getTkTimeBlockId());
             if (temp > maxId) {
                 maxId = temp;
@@ -90,7 +87,7 @@ public class ClockWebTest extends KPMEWebTestCase {
     }
 
     public void createTB() {
-        TimeBlockBo timeBlock = new TimeBlockBo();
+        TimeBlock timeBlock = new TimeBlock();
         timeBlock.setUserPrincipalId("admin");
         timeBlock.setJobNumber(2L);
         timeBlock.setWorkArea(1234L);
@@ -98,7 +95,7 @@ public class ClockWebTest extends KPMEWebTestCase {
         timeBlock.setEarnCode("RGN");
         timeBlock.setBeginTimestamp(TKUtils.getCurrentTimestamp());
         timeBlock.setEndTimestamp(TKUtils.getCurrentTimestamp());
-        TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
+        TimeHourDetail timeHourDetail = new TimeHourDetail();
         timeHourDetail.setEarnCode("RGN");
         timeHourDetail.setHours(new BigDecimal(2.0));
         timeBlock.getTimeHourDetails().add(timeHourDetail);
@@ -106,7 +103,7 @@ public class ClockWebTest extends KPMEWebTestCase {
         List<TimeBlock> tbList = new ArrayList<TimeBlock>();
         String documentId = this.maxDocumentId().toString();
         timeBlock.setDocumentId(documentId);
-        tbList.add(TimeBlockBo.to(timeBlock));
+        tbList.add(timeBlock);
         TkServiceLocator.getTimeBlockService().saveTimeBlocks(tbList);
 
         tbId = timeBlock.getTkTimeBlockId();
@@ -165,8 +162,8 @@ public class ClockWebTest extends KPMEWebTestCase {
 
     public void updateWebClient() {
         WebClient webClient = getWebClient();
-        webClient.getOptions().setJavaScriptEnabled(true);
-        webClient.getOptions().setThrowExceptionOnScriptError(false);
+        webClient.setJavaScriptEnabled(true);
+        webClient.setThrowExceptionOnScriptError(false);
         webClient.setAjaxController(new NicelyResynchronizingAjaxController());
         webClient.waitForBackgroundJavaScript(10000);
     }
@@ -193,48 +190,45 @@ public class ClockWebTest extends KPMEWebTestCase {
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
         // Make sure both timestamps preserve seconds
         Assert.assertTrue("The seconds on clock timestamp should be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() != 0);
-        Assert.assertTrue("The seconds on timestamp should be preserved", lastClockLog.getCreateTime().getSecondOfMinute() != 0);
+        Assert.assertTrue("The seconds on timestamp should be preserved", new DateTime(lastClockLog.getTimestamp().getTime()).getSecondOfMinute() != 0);
 
         // Clock out
         clockOut();
         // Make sure both timestamps preserve seconds
         lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
         Assert.assertTrue("The seconds on clock timestamp should be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() != 0);
-        Assert.assertTrue("The seconds on timestamp should be preserved", lastClockLog.getCreateTime().getSecondOfMinute() != 0);
+        Assert.assertTrue("The seconds on timestamp should be preserved", new DateTime(lastClockLog.getTimestamp().getTime()).getSecondOfMinute() != 0);
     }
 
     @Test
     public void testClockActionWithGracePeriodRule() throws Exception {
-    	String gpRuleConfig = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.KPME_GRACE_PERIOD_RULE_CONFIG);
-    	if(gpRuleConfig != null && gpRuleConfig.equals("CLOCK")) {
-	    	//clean clock logs
-	        KRADServiceLocator.getBusinessObjectService().deleteMatching(ClockLogBo.class, Collections.singletonMap("principalId", "admin"));
-	        GracePeriodRule gpr = new GracePeriodRule();
-	        //gpr.setTkGracePeriodRuleId("1");
-	        gpr.setEffectiveLocalDate(new LocalDate(2010, 1, 1));
-	        gpr.setHourFactor(new BigDecimal(3));
-	        gpr.setTimestamp(TKUtils.getCurrentTimestamp());
-	        gpr.setUserPrincipalId("admin");
-	        
-	        gpr.setActive(true);
-	        KRADServiceLocator.getBusinessObjectService().save(gpr);
-	
-	        // Clock in
-	        clockIn();
-	        // Make sure clock out button is rendered
-	        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
-	        // Make sure both timestamps preserve seconds
-	        Assert.assertTrue("The seconds on clock timestamp should NOT be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() == 0);
-	        Assert.assertTrue("The seconds on timestamp should be preserved", lastClockLog.getCreateTime().getSecondOfMinute() != 0);
-	
-	        // Clock out
-	        clockOut();
-	        // Make sure both timestamps preserve seconds
-	        lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
-	        Assert.assertTrue("The seconds on clock timestamp should NOT be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() == 0);
-	        Assert.assertTrue("The seconds on timestamp should be preserved", lastClockLog.getCreateTime().getSecondOfMinute() != 0);
+        //clean clock logs
+        KRADServiceLocator.getBusinessObjectService().deleteMatching(ClockLog.class, Collections.singletonMap("principalId", "admin"));
+        GracePeriodRule gpr = new GracePeriodRule();
+        //gpr.setTkGracePeriodRuleId("1");
+        gpr.setEffectiveLocalDate(new LocalDate(2010, 1, 1));
+        gpr.setHourFactor(new BigDecimal(3));
+        gpr.setTimestamp(TKUtils.getCurrentTimestamp());
+        
+        gpr.setActive(true);
+        KRADServiceLocator.getBusinessObjectService().save(gpr);
 
-    	}
+        // Clock in
+        clockIn();
+        // Make sure clock out button is rendered
+        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
+        // Make sure both timestamps preserve seconds
+        Assert.assertTrue("The seconds on clock timestamp should NOT be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() == 0);
+        Assert.assertTrue("The seconds on timestamp should be preserved", new DateTime(lastClockLog.getTimestamp().getTime()).getSecondOfMinute() != 0);
+
+        // Clock out
+        clockOut();
+        // Make sure both timestamps preserve seconds
+        lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog("admin");
+        Assert.assertTrue("The seconds on clock timestamp should NOT be preserved", lastClockLog.getClockDateTime().getSecondOfMinute() == 0);
+        Assert.assertTrue("The seconds on timestamp should be preserved", new DateTime(lastClockLog.getTimestamp().getTime()).getSecondOfMinute() != 0);
+
+
     }
     
     
@@ -244,7 +238,7 @@ public class ClockWebTest extends KPMEWebTestCase {
 		Assert.assertNotNull(page);
     	
     	Map<String, Object> criteria = new LinkedHashMap<String, Object>();
-    	criteria.put("selectedAssignment", new String[]{HrTestConstants.FormElementTypes.DROPDOWN, "IU-IN_30_30_30"});
+    	criteria.put("selectedAssignment", new String[]{HrTestConstants.FormElementTypes.DROPDOWN, "30_30_30"});
     	// choose the first assignment from the drop down
     	page = HtmlUnitUtil.fillOutForm(page, criteria);
     	Assert.assertNotNull(page);
@@ -304,7 +298,7 @@ public class ClockWebTest extends KPMEWebTestCase {
             Thread.sleep(4000);
         }
         String baseUrl = TkTestConstants.Urls.CLOCK_URL;
-        String actionUrl = baseUrl + "?methodToCall=clockAction&selectedAssignment=IU-IN_30_30_30&currentClockAction=" + clockAction;
+        String actionUrl = baseUrl + "?methodToCall=clockAction&selectedAssignment=30_30_30&currentClockAction=" + clockAction;
         HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), actionUrl);
         Assert.assertNotNull("The login page shouldn't be null", page);
         Thread.sleep(3000);

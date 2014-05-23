@@ -22,7 +22,7 @@
 
 	<bean id="SystemScheduledTimeOff" parent="SystemScheduledTimeOff-parentBean" />
 
-	<bean id="SystemScheduledTimeOff-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+	<bean id="SystemScheduledTimeOff-parentBean" abstract="true" parent="BusinessObjectEntry">
 		<property name="businessObjectClass" value="org.kuali.kpme.tklm.leave.timeoff.SystemScheduledTimeOff" />
 		<property name="titleAttribute" value="id" />
 		<property name="objectLabel" value="SystemScheduledTimeOff" />
@@ -33,7 +33,7 @@
 			<ref bean="SystemScheduledTimeOff-lookupDefinition" />
 		</property>
 		<property name="attributes">
-			<list merge="true">
+			<list>
                 <ref bean="SystemScheduledTimeOff-lmSystemScheduledTimeOffId" />
 				<ref bean="SystemScheduledTimeOff-leavePlan" />
 				<ref bean="SystemScheduledTimeOff-accrualCategory" />
@@ -46,8 +46,12 @@
 				<ref bean="SystemScheduledTimeOff-unusedTime" />
 				<ref bean="SystemScheduledTimeOff-transferConversionFactor" />
 				<ref bean="SystemScheduledTimeOff-transfertoEarnCode" />
-				<ref bean="SystemScheduledTimeOff-premiumEarnCode" />
 				<ref bean="SystemScheduledTimeOff-premiumHoliday" />
+				<ref bean="SystemScheduledTimeOff-effectiveDate" />
+				<ref bean="SystemScheduledTimeOff-timestamp" />
+				<ref bean="SystemScheduledTimeOff-active" />
+				<ref bean="SystemScheduledTimeOff-history" />
+				<ref bean="SystemScheduledTimeOff-relativeEffectiveDate" />
 			</list>
 		</property>
 		<property name="relationships">
@@ -87,16 +91,6 @@
 					<property name="primitiveAttributes">
 						<list>
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="transfertoEarnCode" p:targetName="earnCode" />
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
-								p:targetName="effectiveDate" />
-						</list>
-					</property>
-				</bean>
-				<bean parent="RelationshipDefinition">
-					<property name="objectAttributeName" value="premiumEarnCodeObj" />
-					<property name="primitiveAttributes">
-						<list>
-							<bean parent="PrimitiveAttributeDefinition" p:sourceName="premiumEarnCode" p:targetName="earnCode" />
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
 								p:targetName="effectiveDate" />
 						</list>
@@ -164,13 +158,35 @@
 
 <!-- Leave code -->
 	<bean id="SystemScheduledTimeOff-earnCode" parent="SystemScheduledTimeOff-earnCode-parentBean" />
-	<bean id="SystemScheduledTimeOff-earnCode-parentBean" abstract="true" parent="KpmeAttributeReference-earnCode" />
+	<bean id="SystemScheduledTimeOff-earnCode-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Earn Code" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="earnCode" />
+		<property name="label" value="Earn Code" />
+	</bean>
 
 <!-- Accrued Date -->
 	<bean id="SystemScheduledTimeOff-accruedDate" parent="SystemScheduledTimeOff-accruedDate-parentBean" />
 	<bean id="SystemScheduledTimeOff-accruedDate-parentBean" abstract="true"
-		parent="KpmeAttributeReference-datePicker">
+		parent="AttributeDefinition">
 		<property name="shortLabel" value="Accrued Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
 		<property name="name" value="accruedDate" />
 		<property name="label" value="Accrued Date" />
 	</bean>
@@ -178,15 +194,38 @@
 <!-- Scheduled Time Off Date -->
 	<bean id="SystemScheduledTimeOff-scheduledTimeOffDate" parent="SystemScheduledTimeOff-scheduledTimeOffDate-parentBean" />
 	<bean id="SystemScheduledTimeOff-scheduledTimeOffDate-parentBean" abstract="true"
-		parent="KpmeAttributeReference-datePicker">
+		parent="AttributeDefinition">
 		<property name="shortLabel" value="Scheduled Time Off Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
 		<property name="name" value="scheduledTimeOffDate" />
 		<property name="label" value="Scheduled Time Off Date" />
 	</bean>
 
 <!-- Location -->
 	<bean id="SystemScheduledTimeOff-location" parent="SystemScheduledTimeOff-location-parentBean" />
-	<bean id="SystemScheduledTimeOff-location-parentBean" abstract="true" parent="KpmeAttributeReference-location"/>
+	<bean id="SystemScheduledTimeOff-location-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Location" />
+		<property name="maxLength" value="15" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="location" />
+		<property name="label" value="Location" />
+	</bean>
+
 
 <!-- description -->
 	<bean id="SystemScheduledTimeOff-descr" parent="SystemScheduledTimeOff-descr-parentBean" />
@@ -274,32 +313,85 @@
 		<property name="name" value="transfertoEarnCode" />
 		<property name="label" value="Transfer to Earn Code" />
 	</bean>
-	
-	<bean id="SystemScheduledTimeOff-premiumEarnCode" parent="SystemScheduledTimeOff-premiumEarnCode-parentBean" />
-	<bean id="SystemScheduledTimeOff-premiumEarnCode-parentBean" abstract="true"
-		parent="AttributeDefinition">
-		<property name="shortLabel" value="Premium Earn Code" />
-		<property name="maxLength" value="15" />
-		<property name="validationPattern">
-			<bean parent="AnyCharacterValidationPattern">
-				<property name="allowWhitespace" value="false" />
-			</bean>
-		</property>
-		<property name="control">
-			<bean parent="TextControlDefinition" p:size="10" />
-		</property>
-		<property name="name" value="premiumEarnCode" />
-		<property name="label" value="Premium Earn Code" />
-	</bean>
 
     <!-- Premium Holiday -->
 	<bean id="SystemScheduledTimeOff-premiumHoliday" parent="SystemScheduledTimeOff-premiumHoliday-parentBean" />
 	<bean id="SystemScheduledTimeOff-premiumHoliday-parentBean" abstract="true"
-		parent="KpmeAttributeReference-booleanYesNo">
+		parent="AttributeDefinition">
 		<property name="shortLabel" value="Premium Holiday" />
+		<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder">
+			</bean>
+		</property>
 		<property name="name" value="premiumHoliday" />
 		<property name="label" value="Premium Holiday" />
 	</bean>
+
+    <bean id="SystemScheduledTimeOff-relativeEffectiveDate" parent="SystemScheduledTimeOff-effectiveDate-parentBean" p:name="relativeEffectiveDate">
+        <property name="control">
+            <bean parent="HiddenControlDefinition"/>
+        </property>
+    </bean>
+
+	<!-- effectiveDate -->
+	<bean id="SystemScheduledTimeOff-effectiveDate" parent="SystemScheduledTimeOff-effectiveDate-parentBean" />
+	<bean id="SystemScheduledTimeOff-effectiveDate-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Effective Date" />
+		<property name="maxLength" value="12" />
+		<property name="validationPattern">
+			<bean parent="DateValidationPattern" />
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="12" p:datePicker="true" />
+		</property>
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
+		<property name="name" value="effectiveDate" />
+		<property name="label" value="Effective Date" />
+	</bean>
+	
+	<!-- timeStamp -->
+	<bean id="SystemScheduledTimeOff-timestamp" parent="SystemScheduledTimeOff-timestamp-parentBean" />
+	<bean id="SystemScheduledTimeOff-timestamp-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Timestamp" />
+		<property name="maxLength" value="15" />
+		<property name="control">
+			<bean parent="LookupReadonlyControlDefinition" p:size="15" />
+		</property>
+		<property name="formatterClass"
+			value="org.kuali.rice.core.web.format.TimestampAMPMFormatter" />
+		<property name="name" value="timestamp" />
+		<property name="label" value="Time Stamp" />
+	</bean>
+	
+	<!-- history -->
+	<bean id="SystemScheduledTimeOff-history" parent="SystemScheduledTimeOff-history-parentBean" />
+	<bean id="SystemScheduledTimeOff-history-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Show History" />
+		<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.web.KpmeHistoryKeyValueFinder">
+			</bean>
+		</property>
+		<property name="name" value="history" />
+		<property name="label" value="Show History" />
+	</bean>
+	
+	<!-- active -->
+	<bean id="SystemScheduledTimeOff-active" parent="SystemScheduledTimeOff-active-parentBean" />
+	<bean id="SystemScheduledTimeOff-active-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Active" />
+		<property name="control">
+			<bean parent="CheckboxControlDefinition" />
+		</property>
+		<property name="name" value="active" />
+		<property name="label" value="Active" />
+		<property name="formatterClass" value="org.kuali.rice.core.web.format.BooleanFormatter"/>
+	</bean>
+
+
 
 	<!--  Inquiry Definitions  -->
 
@@ -324,11 +416,9 @@
                             <bean parent="FieldDefinition" p:attributeName="unusedTime" />
                             <bean parent="FieldDefinition" p:attributeName="transfertoEarnCode" />
                             <bean parent="FieldDefinition" p:attributeName="transferConversionFactor" />
-                            <bean parent="FieldDefinition" p:attributeName="premiumEarnCode" />
                             <bean parent="FieldDefinition" p:attributeName="premiumHoliday" />
 							<bean parent="FieldDefinition" p:attributeName="active" />
 							<bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noInquiry="true" p:noLookup="true" />
-                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
 						 </list>
 					</property>
 					<property name="title" value="SystemScheduledTimeOff" />
@@ -354,7 +444,6 @@
 				<bean parent="FieldDefinition" p:attributeName="earnCode" />
 				<bean parent="FieldDefinition" p:attributeName="accruedDate" />
 				<bean parent="FieldDefinition" p:attributeName="scheduledTimeOffDate" />
-				<bean parent="FieldDefinition" p:attributeName="premiumEarnCode" />
 				<bean parent="FieldDefinition" p:attributeName="active" p:defaultValue="Y"/>
 				<bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N"/>
                 <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"

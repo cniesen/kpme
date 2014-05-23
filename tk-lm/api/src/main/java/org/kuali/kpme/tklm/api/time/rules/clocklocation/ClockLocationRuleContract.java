@@ -20,14 +20,14 @@ import java.util.List;
 import org.kuali.kpme.core.api.department.DepartmentContract;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.workarea.WorkAreaContract;
-import org.kuali.kpme.tklm.api.time.rules.TkRuleKeyedContract;
+import org.kuali.kpme.tklm.api.time.rules.TkRuleContract;
 import org.kuali.rice.kim.api.identity.Person;
 
 /**
  * <p>ClockLocationRuleContract interface</p>
  *
  */
-public interface ClockLocationRuleContract extends TkRuleKeyedContract{ //TkRuleContract 
+public interface ClockLocationRuleContract extends TkRuleContract {
 	
 	/**
 	 * The work area associated with the ClockLocationRule
@@ -205,6 +205,5 @@ public interface ClockLocationRuleContract extends TkRuleKeyedContract{ //TkRule
 	 * @return ip addresses string for ClockLocationRule
 	 */
 	public String getIpAddressesString();
-	
 
 }

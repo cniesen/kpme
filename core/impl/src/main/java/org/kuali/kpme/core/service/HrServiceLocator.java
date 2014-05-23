@@ -16,37 +16,36 @@
 package org.kuali.kpme.core.service;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleService;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryService;
-import org.kuali.kpme.core.api.assignment.service.AssignmentService;
-import org.kuali.kpme.core.api.block.service.CalendarBlockService;
-import org.kuali.kpme.core.api.calendar.entry.service.CalendarEntryService;
-import org.kuali.kpme.core.api.calendar.service.CalendarService;
-import org.kuali.kpme.core.api.groupkey.HrGroupKeyService;
-import org.kuali.kpme.core.api.department.DepartmentService;
-import org.kuali.kpme.core.api.departmentaffiliation.service.DepartmentAffiliationService;
-import org.kuali.kpme.core.api.earncode.group.service.EarnCodeGroupService;
-import org.kuali.kpme.core.api.earncode.security.service.EarnCodeSecurityService;
-import org.kuali.kpme.core.api.earncode.service.EarnCodeService;
-import org.kuali.kpme.core.api.institution.service.InstitutionService;
-import org.kuali.kpme.core.api.job.service.JobService;
-import org.kuali.kpme.core.api.leaveplan.LeavePlanService;
-import org.kuali.kpme.core.api.location.service.LocationService;
-import org.kuali.kpme.core.api.paygrade.service.PayGradeService;
-import org.kuali.kpme.core.api.paystep.service.PayStepService;
-import org.kuali.kpme.core.api.paytype.service.PayTypeService;
-import org.kuali.kpme.core.api.permission.HRPermissionService;
-import org.kuali.kpme.core.api.position.service.PositionBaseService;
-import org.kuali.kpme.core.api.principal.service.PrincipalHRAttributesService;
-import org.kuali.kpme.core.api.salarygroup.service.SalaryGroupService;
-import org.kuali.kpme.core.api.task.service.TaskService;
-import org.kuali.kpme.core.api.workarea.service.WorkAreaService;
+import org.kuali.kpme.core.accrualcategory.rule.service.AccrualCategoryRuleService;
+import org.kuali.kpme.core.accrualcategory.service.AccrualCategoryService;
+import org.kuali.kpme.core.assignment.service.AssignmentService;
+import org.kuali.kpme.core.block.service.CalendarBlockService;
+import org.kuali.kpme.core.calendar.entry.service.CalendarEntryService;
+import org.kuali.kpme.core.calendar.service.CalendarService;
+import org.kuali.kpme.core.department.service.DepartmentService;
+import org.kuali.kpme.core.earncode.group.service.EarnCodeGroupService;
+import org.kuali.kpme.core.earncode.security.service.EarnCodeSecurityService;
+import org.kuali.kpme.core.earncode.service.EarnCodeService;
+import org.kuali.kpme.core.institution.service.InstitutionService;
+import org.kuali.kpme.core.job.service.JobService;
+import org.kuali.kpme.core.leaveplan.service.LeavePlanService;
+import org.kuali.kpme.core.location.service.LocationService;
+import org.kuali.kpme.core.paygrade.service.PayGradeService;
+import org.kuali.kpme.core.paystep.service.PayStepService;
+import org.kuali.kpme.core.paytype.service.PayTypeService;
+import org.kuali.kpme.core.position.service.PositionBaseService;
+import org.kuali.kpme.core.principal.service.PrincipalHRAttributesService;
+import org.kuali.kpme.core.salarygroup.service.SalaryGroupService;
 import org.kuali.kpme.core.service.group.KPMEGroupService;
 import org.kuali.kpme.core.service.notification.KPMENotificationService;
+import org.kuali.kpme.core.service.permission.HRPermissionService;
 import org.kuali.kpme.core.service.role.KPMERoleService;
 import org.kuali.kpme.core.service.timezone.TimezoneService;
+import org.kuali.kpme.core.task.service.TaskService;
+import org.kuali.kpme.core.workarea.service.WorkAreaService;
 import org.kuali.rice.core.api.resourceloader.GlobalResourceLoader;
 import org.kuali.rice.core.impl.cache.DistributedCacheManagerDecorator;
+import org.kuali.rice.krad.service.BusinessObjectService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -65,10 +64,12 @@ public class HrServiceLocator implements ApplicationContextAware {
 	public static final String HR_SALARY_GROUP_SERVICE = "salaryGroupService";
 	public static final String HR_ACCRUAL_CATEGORY_SERVICE = "accrualCategoryService";
 	public static final String HR_ACCRUAL_CATEGORY_RULE_SERVICE = "accrualCategoryRuleService";
-    public static final String HR_GROUP_KEY_SERVICE = "HrGroupKeyService";
     public static final String HR_TASK_SERVICE = "taskService";
     public static final String HR_LOCATION_SERVICE = "locationService";
     public static final String HR_PAY_GRADE_SERVICE = "payGradeService";
+    public static final String HR_PERSON_SERVICE = "tkPersonService";
+    public static final String HR_BATCH_JOB_SERVICE = "batchJobService";
+    public static final String HR_BATCH_JOB_ENTRY_SERVICE = "batchJobEntryService";
     public static final String HR_POSITION_SERVICE = "positionBaseService";
     public static final String HR_LEAVE_PLAN_SERVICE = "leavePlanService";
 	public static final String HR_PRINCIPAL_HR_ATTRIBUTES_SERVICE = "principalHRAttributesService";
@@ -77,7 +78,6 @@ public class HrServiceLocator implements ApplicationContextAware {
 	public static final String HR_PAY_TYPE_SERVICE = "payTypeService";
 	public static final String HR_WORK_AREA_SERVICE = "workAreaService";
 	public static final String HR_DEPARTMENT_SERVICE = "departmentService";
-    public static final String DEPT_AFFL_SERVICE = "departmentAffiliationService";
 	public static final String HR_EARN_CODE = "earnCodeService";
 	public static final String HR_EARN_CODE_SECURITY = "earnCodeSecurityService";
 	public static final String HR_TIME_EARN_CODE_GROUP_SERVICE = "earnCodeGroupService";
@@ -121,17 +121,9 @@ public class HrServiceLocator implements ApplicationContextAware {
 		return (SalaryGroupService) CONTEXT.getBean(HR_SALARY_GROUP_SERVICE);
 	}
 
-    public static HrGroupKeyService getHrGroupKeyService() {
-        return (HrGroupKeyService) CONTEXT.getBean(HR_GROUP_KEY_SERVICE);
-    }
-
 	public static DepartmentService getDepartmentService() {
 		return (DepartmentService) CONTEXT.getBean(HR_DEPARTMENT_SERVICE);
 	}
-
-    public static DepartmentAffiliationService getDepartmentAffiliationService() {
-        return (DepartmentAffiliationService) CONTEXT.getBean(DEPT_AFFL_SERVICE);
-    }
 
 	public static WorkAreaService getWorkAreaService() {
 	    return (WorkAreaService)CONTEXT.getBean(HR_WORK_AREA_SERVICE);

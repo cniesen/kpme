@@ -15,13 +15,15 @@
  */
 package org.kuali.kpme.pm.api.positionappointment;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+import org.kuali.kpme.core.api.institution.InstitutionContract;
 
 /**
  * <p>PositionAppointmentContract interface</p>
  *
  */
-public interface PositionAppointmentContract extends KpmeEffectiveKeyedDataTransferObject {
+public interface PositionAppointmentContract extends HrBusinessObjectContract {
 
     /**
      * The primary key for a PositionAppointment entry saved in the database
@@ -55,4 +57,49 @@ public interface PositionAppointmentContract extends KpmeEffectiveKeyedDataTrans
      * @return description for PositionAppointment
      */
 	public String getDescription();
+
+    /**
+     * The institution associated with the PositionAppointment
+     *
+     * <p>
+     * institution for the PositionAppointment.
+     * <p>
+     *
+     * @return institution for PositionAppointment
+     */
+	public String getInstitution();
+
+    /**
+     * The location associated with the PositionAppointment
+     *
+     * <p>
+     * location for the PositionAppointment.
+     * <p>
+     *
+     * @return location for PositionAppointment
+     */
+	public String getLocation();
+
+    /**
+     * The Location object associated with the PositionAppointment
+     *
+     * <p>
+     * locationObj object for the PositionAppointment.
+     * <p>
+     *
+     * @return locationObj for PositionAppointment
+     */
+	public LocationContract getLocationObj();
+
+    /**
+     * The Institution object associated with the PositionAppointment
+     *
+     * <p>
+     * institutionObj object for the PositionAppointment.
+     * <p>
+     *
+     * @return institutionObj for PositionAppointment
+     */
+	public InstitutionContract getInstitutionObj();
+
 }

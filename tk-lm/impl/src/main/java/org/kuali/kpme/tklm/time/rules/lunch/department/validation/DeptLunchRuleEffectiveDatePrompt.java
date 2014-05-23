@@ -15,21 +15,21 @@
  */
 package org.kuali.kpme.tklm.time.rules.lunch.department.validation;
 
-import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.core.web.KPMEHrObjectNewerVersionPromptBase;
+import org.kuali.kpme.core.web.KpmeEffectiveDatePromptBase;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
-public class DeptLunchRuleEffectiveDatePrompt extends KPMEHrObjectNewerVersionPromptBase {
+public class DeptLunchRuleEffectiveDatePrompt extends KpmeEffectiveDatePromptBase {
     
 	@Override
-    protected boolean doesNewerVersionExist(HrBusinessObject pbo) {
+    protected boolean futureEffectiveDateExists(PersistableBusinessObject pbo) {
     	boolean futureEffectiveDateExists = false;
     	
         DeptLunchRule deptLunchRule = (DeptLunchRule) pbo;
         DeptLunchRule lastDeptLunchRule = TkServiceLocator.getDepartmentLunchRuleService().getDepartmentLunchRuleNoWildCards(deptLunchRule.getDept(), 
-        		deptLunchRule.getWorkArea(), deptLunchRule.getPrincipalId(), deptLunchRule.getJobNumber(), deptLunchRule.getGroupKeyCode(), TKUtils.END_OF_TIME);
+        		deptLunchRule.getWorkArea(), deptLunchRule.getPrincipalId(), deptLunchRule.getJobNumber(), TKUtils.END_OF_TIME);
         if (lastDeptLunchRule != null && lastDeptLunchRule.getEffectiveLocalDate() != null && deptLunchRule.getEffectiveLocalDate() != null) {
         	futureEffectiveDateExists = lastDeptLunchRule.getEffectiveLocalDate().isAfter(deptLunchRule.getEffectiveLocalDate());
         }

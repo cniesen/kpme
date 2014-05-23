@@ -29,8 +29,8 @@ public enum AccrualEarnInterval {
 
 
 
-    private final String code;
-    private final String description;
+    public final String code;
+    public final String description;
     private static final Logger LOG = Logger.getLogger(AccrualEarnInterval.class);
 
     private AccrualEarnInterval(String code, String description) {

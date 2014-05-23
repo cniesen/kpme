@@ -15,19 +15,28 @@
  */
 package org.kuali.kpme.tklm.leave.block.web;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
 import org.kuali.kpme.core.lookup.KPMELookupableImpl;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
@@ -37,11 +46,6 @@ import org.kuali.rice.krad.bo.BusinessObject;
 import org.kuali.rice.krad.uif.view.LookupView;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.web.form.LookupForm;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class LeaveBlockHistoryLookupableHelperServiceImpl extends KPMELookupableImpl  {
 	/**
@@ -239,11 +243,11 @@ public class LeaveBlockHistoryLookupableHelperServiceImpl extends KPMELookupable
 				
 				Long workArea = tb.getWorkArea();
 				
-				JobContract job = HrServiceLocator.getJobService().getJob(tb.getPrincipalId(), tb.getJobNumber(), LocalDate.fromDateFields(tb.getLeaveDate()), false);
+				Job job = HrServiceLocator.getJobService().getJob(tb.getPrincipalId(), tb.getJobNumber(), LocalDate.fromDateFields(tb.getLeaveDate()), false);
 				String department = job != null ? job.getDept() : null;
-				String groupKeyCode = job != null ? job.getGroupKeyCode() : null;
-				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, groupKeyCode, LocalDate.fromDateFields(tb.getLeaveDate()));
-				String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
+				
+				Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.fromDateFields(tb.getLeaveDate()));
+				String location = departmentObj != null ? departmentObj.getLocation() : null;
 				DateTime date = LocalDate.now().toDateTimeAtStartOfDay();
 				boolean valid = false;
 				if (HrServiceLocator.getKPMEGroupService().isMemberOfSystemAdministratorGroup(HrContext.getPrincipalId(), date)

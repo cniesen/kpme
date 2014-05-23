@@ -26,9 +26,9 @@ import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
@@ -80,7 +80,7 @@ public class TimeAction extends KPMEAction {
         if (phra == null) {
             return new ActionRedirect("/PersonInfo.do");
         }
-        JobContract job = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
+        Job job = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
 
         if (job != null) {
             List<Assignment> assignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, job.getJobNumber(), LocalDate.now());
@@ -89,7 +89,7 @@ public class TimeAction extends KPMEAction {
                     if (job.getFlsaStatus().equals(HrConstants.FLSA_STATUS_NON_EXEMPT)) {
                         TimeCollectionRule tcr = null;
                         if(asmnt.getJob() != null)
-                        	tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(asmnt.getJob().getDept(), asmnt.getWorkArea(), asmnt.getJob().getHrPayType(), asmnt.getGroupKeyCode(), LocalDate.now());
+                        	tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(asmnt.getJob().getDept(), asmnt.getWorkArea(), asmnt.getJob().getHrPayType(), LocalDate.now());
                         if (tcr != null && tcr.isClockUserFl()) {
                             return new ActionRedirect("/Clock.do");
                         } else {

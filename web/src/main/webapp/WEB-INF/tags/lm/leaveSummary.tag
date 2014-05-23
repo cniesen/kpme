@@ -33,11 +33,11 @@
 							<td width="20%" align="left">${leaveSummary.note}</td>
 							<c:choose>
 								<c:when test="${leaveSummary.usageLimit eq true}">
-									<td colspan="${Form.displayYTDFMLA ? '7' :'6'}">last approved:
+									<td colspan="7">last approved:
 										${leaveSummary.ytdDatesString}</td>
 								</c:when>
 								<c:otherwise>
-									<td colspan="${Form.displayYTDFMLA ? '6' :'5'}">last approved:
+									<td colspan="6">last approved:
 										${leaveSummary.ytdDatesString}</td>
 								</c:otherwise>
 							</c:choose>
@@ -74,10 +74,8 @@
 						</c:if>
 						<td scope="col" title="Total usage on future calendars">Future/Planned
 							Usage</td>
-						<c:if test='${Form.displayYTDFMLA}'>
-							<td scope="col" title="Total usage of Family Medical Leave codes">YTD
+						<td scope="col" title="Total usage of Family Medical Leave codes">YTD
 							FMLA Usage</td>
-						</c:if>
 					</tr>
 				</thead>
 				<tbody>
@@ -127,9 +125,7 @@
 								<td>${row.usageLimit}</td>
 							</c:if>
 							<td>${row.pendingLeaveRequests}</td>
-							<c:if test='${Form.displayYTDFMLA}'>
-								<td>${row.fmlaUsage}</td>
-							</c:if>
+							<td>${row.fmlaUsage}</td>
 						</tr>
 					</c:forEach>
 				</tbody>

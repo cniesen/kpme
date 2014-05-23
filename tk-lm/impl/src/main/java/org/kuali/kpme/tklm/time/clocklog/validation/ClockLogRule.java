@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.clocklocation.validation.ClockLocationRuleRule;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -53,7 +53,7 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 	}
 
 	//TODO fix this class
-	protected boolean validateWorkArea(ClockLogBo clockLog ) {
+	protected boolean validateWorkArea(ClockLog clockLog ) {
 		boolean valid = false;
 		LOG.debug("Validating workarea: " + clockLog.getWorkArea());
 		int count = HrServiceLocator.getWorkAreaService().getWorkAreaCount(null, clockLog.getWorkArea());
@@ -67,7 +67,7 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	protected boolean validateTask(ClockLogBo clockLog ) {
+	protected boolean validateTask(ClockLog clockLog ) {
 		boolean valid = false;
 		LOG.debug("Validating task: " + clockLog.getTask());
 		int count = HrServiceLocator.getTaskService().getTaskCount(clockLog.getTask());
@@ -92,9 +92,9 @@ public class ClockLogRule  extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for ClockLog");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
-		if (pbo instanceof ClockLogBo) {
-			ClockLogBo clockLog = (ClockLogBo) pbo;
+		PersistableBusinessObject pbo = (PersistableBusinessObject)this.getNewDataObject();
+		if (pbo instanceof ClockLog) {
+			ClockLog clockLog = (ClockLog) pbo;
 			clockLog.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
 			if (clockLog != null) {
 				valid = true;

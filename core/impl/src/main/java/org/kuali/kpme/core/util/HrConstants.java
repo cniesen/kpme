@@ -18,19 +18,21 @@ package org.kuali.kpme.core.util;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.kuali.kpme.core.api.KPMEConstants;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.KPMEConstants;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.earncode.EarnCode;
 import org.kuali.kpme.core.earncode.security.EarnCodeType;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
 import org.kuali.rice.kew.api.KewApiConstants;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 
@@ -99,7 +101,6 @@ public class HrConstants {
 		public static final String SUPERVISOR_APPROVAL = "Supervisor Approval";
 		public static final String PAYROLL_APPROVAL = "Payroll Approval";
 		public static final String LEAVE_CALENDAR_DELINQUENCY = "Leave Calendar Delinquency";
-        public static final String CLOCKED_IN_EMPLOYEE = "Clocked In Employee";
 	}
 
 	/**
@@ -162,12 +163,7 @@ public class HrConstants {
 	public static final String WILDCARD_CHARACTER = "%";
 	public static final Long WILDCARD_LONG = -1L;
 
-	public static final class DateTimeFormats {
-        public static final DateTimeFormatter BASIC_TIME_FORMAT = DateTimeFormat.forPattern("HH:mm");
-        public static final DateTimeFormatter BASIC_DATE_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy");
-        public static final DateTimeFormatter BASIC_DATE_FORMAT_WITH_SEC = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
-        public static final DateTimeFormatter FULL_DATE_TIME_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss.SSS");
-    }
+	public static final DateTimeFormatter DT_BASIC_DATE_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy");
 
 	public static final String FLSA_STATUS_NON_EXEMPT ="NE";
     public static final String FLSA_STATUS_EXEMPT ="E";
@@ -191,17 +187,17 @@ public class HrConstants {
 		Set<String> keys = new HashSet<String>();
 		keys.add("leavePlan");
 		keys.add("effectiveDate");
-		CLASS_INQUIRY_KEY_MAP.put(LeavePlanBo.class.getName(), keys);
+		CLASS_INQUIRY_KEY_MAP.put(LeavePlan.class.getName(), keys);
 
 		keys = new HashSet<String>();
 		keys.add("accrualCategory");
 		keys.add("effectiveDate");
-		CLASS_INQUIRY_KEY_MAP.put(AccrualCategoryBo.class.getName(), keys);
+		CLASS_INQUIRY_KEY_MAP.put(AccrualCategory.class.getName(), keys);
 
 		keys = new HashSet<String>();
 		keys.add("earnCode");
 		keys.add("effectiveDate");
-		CLASS_INQUIRY_KEY_MAP.put(EarnCodeBo.class.getName(), keys);
+		CLASS_INQUIRY_KEY_MAP.put(EarnCode.class.getName(), keys);
 	}
 
 	public static final Map<String, String> EARN_CODE_SECURITY_TYPE = new HashMap<String, String>();
@@ -316,7 +312,6 @@ public class HrConstants {
 
 	public static final String LEAVE_CALENDAR_TYPE = "leaveCalendar";
 	public static final String PAY_CALENDAR_TYPE = "payCalendar";
-	public static final Integer PAGE_SIZE = 20;
 	public static final String APPROVAL_TABLE_ID = "row";
 	public static final String TASK_DEFAULT_DESP = "Default";
 	public static final int BIG_DECIMAL_SCALE = 2;
@@ -330,14 +325,6 @@ public class HrConstants {
     public static final BigDecimal BIG_DECIMAL_MS_IN_H = BIG_DECIMAL_1000.multiply(BIG_DECIMAL_60).multiply(BIG_DECIMAL_60);
     public static final BigDecimal BIG_DECIMAL_MS_IN_M = BIG_DECIMAL_1000.multiply(BIG_DECIMAL_60);
     public static final BigDecimal BIG_DECIMAL_HRS_IN_DAY = new BigDecimal(24);
-
-    public static final class GroupKeySettings {
-        public static final String LOCATION_RENDER = "kpme.groupkey.location.render";
-        public static final String CAMPUS_RENDER = "kpme.groupkey.campus.render";
-        public static final String LOCATION_REQUIRED = "kpme.groupkey.location.required";
-        public static final String CAMPUS_REQUIRED = "kpme.groupkey.campus.required";
-    }
-
 
     public static final class CacheNamespace {
         public static final String MODULE_NAME = "core";

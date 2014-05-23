@@ -4,9 +4,8 @@
 <jsp:useBean id="workflowTagSupport" class="org.kuali.kpme.tklm.common.WorkflowTagSupport"/>
 <%@ attribute name="timeApprovalSummary" required="true" type="org.kuali.kpme.tklm.time.timesummary.TimeSummary"%>
 <%@ attribute name="principalId" required="true" type="java.lang.String"%>
-<%@ attribute name="error" required="true" type="java.lang.String"%>
 
-<div id="timeapproval-summary" class="${error}">
+<div id="timeapproval-summary">	
     <div id="timesheet-table-basic">
         <table border="1" >
         <thead>
@@ -44,7 +43,8 @@
 	                        	</c:if>
 	                        </c:forEach>
 	                        <td style="border-left: 2px double #666666;" valign="middle">${timeApprovalSummary.weekTotalMap[entry.key]}</td>
-	                        <td style="border-left: 2px double #666666;" valign="middle">${timeApprovalSummary.flsaWeekTotalMap[entry.key]}</td>
+	                        <td style="border-left: 2px double #666666;" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeApprovalSummary.flsaWeekTotalMap[entry.key]}"/></td>
+
 	                     </tr>
 	              <tbody id="weekSummary${weekString}_${principalId}" style="display: none;">
                    <c:forEach items="${timeApprovalSummary.weeklySections[entry.key]}" var="section">

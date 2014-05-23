@@ -15,18 +15,16 @@
  */
 package org.kuali.kpme.core.api.paytype;
 
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedDataTransferObject;
-import org.kuali.kpme.core.api.util.HrApiConstants;
+import org.kuali.kpme.core.api.institution.InstitutionContract;
+import org.kuali.kpme.core.api.location.LocationContract;
 
 /**
  * <p>PayTypeContract interface.</p>
  *
  */
-public interface PayTypeContract extends KpmeEffectiveKeyedDataTransferObject {
-	
-	public static final String CACHE_NAME = HrApiConstants.CacheNamespace.NAMESPACE_PREFIX + "PayType";
+public interface PayTypeContract extends HrBusinessObjectContract {
 	
 	/**
 	 * The EarnCode object which is used to record regular time by this PayType
@@ -95,6 +93,17 @@ public interface PayTypeContract extends KpmeEffectiveKeyedDataTransferObject {
 	public String getHrEarnCodeId();
 	
 	/**
+	 * History flag for PayType lookups 
+	 * 
+	 * <p>
+	 * history of PayType
+	 * </p>
+	 * 
+	 * @return true if want to show history, false if not
+	 */
+	public String getHistory();
+	
+	/**
 	 * Indicates if the EarnCode associated with the PayType is an Overtime earn code
 	 * 
 	 * <p>
@@ -103,8 +112,30 @@ public interface PayTypeContract extends KpmeEffectiveKeyedDataTransferObject {
 	 * 
 	 * @return true if is overtime, false if not
 	 */
-	public Boolean isOvtEarnCode();
+	public Boolean getOvtEarnCode();
 
+	/**
+	 * Name of the Institution object the PayType is associated with
+	 * 
+	 * <p>
+	 * institution of PayType
+	 * </p>
+	 * 
+	 * @return institution for PayType
+	 */
+	public String getInstitution();
+	
+	/**
+	 * The Institution object the PayType is associated with
+	 * 
+	 * <p>
+	 * institutionObj of PayType
+	 * </p>
+	 * 
+	 * @return institutionObj for PayType
+	 */
+	public InstitutionContract getInstitutionObj();
+	
 	/**
 	 * Indicates if the PayType's Position is FLSA exempt or non-exempt 
 	 * 
@@ -127,4 +158,25 @@ public interface PayTypeContract extends KpmeEffectiveKeyedDataTransferObject {
 	 */
 	public String getPayFrequency();
 
+	/**
+	 * Name of the Location object the PayType is associated with
+	 * 
+	 * <p>
+	 * location of PayType
+	 * </p>
+	 * 
+	 * @return location for PayType
+	 */
+	public String getLocation();
+
+	/**
+	 * The Location object the PayType is associated with
+	 * 
+	 * <p>
+	 * locationObj of PayType
+	 * </p>
+	 * 
+	 * @return locationObj for PayType
+	 */
+	public LocationContract getLocationObj();
 }

@@ -17,29 +17,27 @@ package org.kuali.kpme.pm.positiontype.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.pm.positiontype.PositionTypeBo;
+import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
 @SuppressWarnings("deprecation")
-public class PositionTypeValidation extends HrKeyedBusinessObjectValidation  {
-	
+public class PositionTypeValidation extends MaintenanceDocumentRuleBase  {
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Type");
-		PositionTypeBo positionType = (PositionTypeBo) this.getNewDataObject();
+		PositionType positionType = (PositionType) this.getNewDataObject();
 		
 		if (positionType != null) {
 			valid = true;
-			//valid &= this.validateGroupKeyCode(positionType);
 			valid &= this.validateInstitution(positionType);
 			valid &= this.validateLocation(positionType);
 		}
 		return valid;
 	}
-
-	private boolean validateInstitution(PositionTypeBo positionType) {
+	
+	private boolean validateInstitution(PositionType positionType) {
 		if (StringUtils.isNotEmpty(positionType.getInstitution())
 				&& !ValidationUtils.validateInstitution(positionType.getInstitution(), positionType.getEffectiveLocalDate())) {
 			this.putFieldError("dataObject.institution", "error.existence", "Institution '"
@@ -50,7 +48,7 @@ public class PositionTypeValidation extends HrKeyedBusinessObjectValidation  {
 		}
 	}
 	
-	private boolean validateLocation(PositionTypeBo positionType) {
+	private boolean validateLocation(PositionType positionType) {
 		if (StringUtils.isNotEmpty(positionType.getLocation())
 				&& !ValidationUtils.validateLocation(positionType.getLocation(), positionType.getEffectiveLocalDate())) {
 			this.putFieldError("dataObject.location", "error.existence", "Location '"

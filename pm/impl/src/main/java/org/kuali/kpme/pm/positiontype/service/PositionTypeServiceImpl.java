@@ -18,46 +18,37 @@ package org.kuali.kpme.pm.positiontype.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.api.positiontype.PositionType;
-import org.kuali.kpme.pm.api.positiontype.service.PositionTypeService;
-import org.kuali.kpme.pm.positiontype.PositionTypeBo;
+import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.kpme.pm.positiontype.dao.PositionTypeDao;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PositionTypeServiceImpl implements PositionTypeService {
 
 	private PositionTypeDao positionTypeDao;
-
-	protected List<PositionType> convertToImmutable(List<PositionTypeBo> bos) {
-		return ModelObjectUtils.transform(bos, PositionTypeBo.toImmutable);
-	}
-
+	
 	@Override
-	public PositionType getPositionTypeById(String pmPositionTypeId) {
-		return PositionTypeBo.to(positionTypeDao
-				.getPositionTypeById(pmPositionTypeId));
+	public PositionType getPositionTypeById(
+			String pmPositionTypeId) {
+		return positionTypeDao.getPositionTypeById(pmPositionTypeId);
 	}
 
 	@Override
 	public List<PositionType> getPositionTypeList(String positionType, String institution, String location, LocalDate asOfDate) {
-
-		List<PositionTypeBo> bos = positionTypeDao.getPositionTypeList(
-				positionType, institution, location, asOfDate);
-		return convertToImmutable(bos);
+		return positionTypeDao.getPositionTypeList(positionType, institution, location, asOfDate);
 	}
 
 	public PositionTypeDao getPositionTypeDao() {
 		return positionTypeDao;
 	}
 
-	public void setPositionTypeDao(PositionTypeDao positionTypeDao) {
+	public void setPositionTypeDao(
+			PositionTypeDao positionTypeDao) {
 		this.positionTypeDao = positionTypeDao;
 	}
 
 	@Override
-	public PositionType getPositionType(String positionType,
-			LocalDate asOfDate) {
-		return PositionTypeBo.to(positionTypeDao.getPositionType(positionType, asOfDate));
+	public PositionType getPositionType(String positionType, LocalDate asOfDate) {
+		return positionTypeDao.getPositionType(positionType, asOfDate);
 	}
+
 
 }

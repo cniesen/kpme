@@ -15,23 +15,22 @@
  */
 package org.kuali.kpme.core.job.validation;
 
+import java.util.List;
+
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.core.api.location.Location;
-import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
-
-import java.util.List;
 
 public class JobValidation extends MaintenanceDocumentRuleBase {
 
-	private boolean validatePrincipalId(JobBo job) {
+	private boolean validatePrincipalId(Job job) {
 		if (job.getPrincipalId() != null
 				&& !ValidationUtils.validatePrincipalId(job.getPrincipalId())) {
 			this.putFieldError("principalId", "error.existence",
@@ -42,9 +41,9 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	private boolean validateJobNumber(JobBo job) {
+	private boolean validateJobNumber(Job job) {
 		if (job.getJobNumber() != null) {
-			JobContract jobObj = HrServiceLocator.getJobService().getJob(
+			Job jobObj = HrServiceLocator.getJobService().getJob(
 					job.getPrincipalId(), job.getJobNumber(),
 					job.getEffectiveLocalDate(), false);
 			if (jobObj != null) {
@@ -59,9 +58,10 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		return true;
 	}
 
-	protected boolean validateDepartment(JobBo job) {
-		if (job.getDept() != null && 
-			!ValidationUtils.validateDepartment(job.getDept(), job.getGroupKeyCode(), job.getEffectiveLocalDate())) {
+	protected boolean validateDepartment(Job job) {
+		if (job.getDept() != null
+				&& !ValidationUtils.validateDepartment(job.getDept(), job
+						.getEffectiveLocalDate())) {
 			this.putFieldError("dept", "error.existence", "department '"
 					+ job.getDept() + "'");
 			return false;
@@ -70,7 +70,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	boolean validateSalGroup(JobBo job) {
+	boolean validateSalGroup(Job job) {
 		if (!ValidationUtils.validateSalGroup(job.getHrSalGroup(), job
 				.getEffectiveLocalDate())) {
 			this.putFieldError("hrSalGroup", "error.existence", "Salgroup '"
@@ -81,7 +81,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	boolean validateLocation(JobBo job) {
+	boolean validateLocation(Job job) {
 		if (job.getLocation() != null
 				&& !ValidationUtils.validateLocation(job.getLocation(), job.getEffectiveLocalDate())) {
 			this.putFieldError("location", "error.existence", "location '"
@@ -92,7 +92,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	boolean validatePayType(JobBo job) {
+	boolean validatePayType(Job job) {
 		if (job.getHrPayType() != null
 				&& !ValidationUtils.validatePayType(job.getHrPayType(), job
 						.getEffectiveLocalDate())) {
@@ -104,7 +104,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 
-	boolean validatePayGrade(JobBo job) {
+	boolean validatePayGrade(Job job) {
 		if (job.getPayGrade() != null
 				&& !ValidationUtils.validatePayGrade(job.getPayGrade(), job.getHrSalGroup(), job
 						.getEffectiveLocalDate())) {
@@ -116,15 +116,15 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		}
 	}
 	
-	boolean validatePrimaryIndicator(JobBo job, JobBo oldJob) {
+	boolean validatePrimaryIndicator(Job job, Job oldJob) {
 		boolean valid = true;
-		if (job.isPrimaryJob()) {
+		if (job.getPrimaryIndicator()) {
 			//do not block editing of previous primary job
-			if(oldJob!=null && oldJob.isPrimaryJob()!=null && oldJob.isPrimaryJob()){
+			if(oldJob!=null && oldJob.getPrimaryIndicator()!=null && oldJob.getPrimaryIndicator()){
 				return valid;
 			}
-			JobContract existingJob = HrServiceLocator.getJobService().getPrimaryJob(job.getPrincipalId(), LocalDate.now());
-			if (existingJob != null && existingJob.isPrimaryJob()) {
+			Job existingJob = HrServiceLocator.getJobService().getPrimaryJob(job.getPrincipalId(), LocalDate.now());
+			if (existingJob != null && existingJob.getPrimaryIndicator()) {
 				this.putFieldError("primaryIndicator", "error.primary.job.already.exist", job.getPrincipalId());
 				valid = false;
 			}
@@ -134,7 +134,7 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 	
 	// KPME-1129 Kagata
 	// This method determines if the job can be inactivated or not
-	boolean validateInactivation(JobBo job){
+	boolean validateInactivation(Job job){
 		
 		// Get a list of active assignments based on principalId, jobNumber and current date.
 		// If the list is not null, there are active assignments and the job can't be inactivated, so return false, otherwise true
@@ -151,16 +151,16 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 		return true;
 	}
 
-	private boolean validateConsistentLocation(JobBo job) {
+	private boolean validateConsistentLocation(Job job) {
 		String department = job.getDept();
-		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, job.getGroupKeyCode(), job.getEffectiveLocalDate());
+		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, job.getEffectiveLocalDate());
 		Location location = HrServiceLocator.getLocationService().getLocation(job.getLocation(), job.getEffectiveLocalDate());
 		if(departmentObj != null && location != null) {
-			if(departmentObj.getGroupKey().getLocationId().equals(location.getLocation())) {
+			if(departmentObj.getLocation().equals(location.getLocation())) {
 				return true;
 			}
 			else {
-				this.putFieldError("location", "job.location.inconsistent", departmentObj.getGroupKey().getLocationId());
+				this.putFieldError("location", "job.location.inconsistent", departmentObj.getLocation());
 			}
 		}
 		return false;
@@ -171,14 +171,14 @@ public class JobValidation extends MaintenanceDocumentRuleBase {
 			MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Job");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
-		if (pbo instanceof JobBo) {
-			JobBo job = (JobBo) pbo;
-			JobBo oldJob = (JobBo) this.getOldDataObject();
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		if (pbo instanceof Job) {
+			Job job = (Job) pbo;
+			Job oldJob = (Job) this.getOldBo();
 			if (job != null) {
 				valid = true;
 				valid &= this.validatePrincipalId(job);
-				if(!document.isOldDataObjectInDocument()){
+				if(!document.isOldBusinessObjectInDocument()){
 					valid &= this.validateJobNumber(job);
 				}
 				valid &= this.validateDepartment(job);

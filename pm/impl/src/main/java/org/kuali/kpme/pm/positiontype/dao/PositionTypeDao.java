@@ -18,13 +18,13 @@ package org.kuali.kpme.pm.positiontype.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.pm.positiontype.PositionTypeBo;
+import org.kuali.kpme.pm.positiontype.PositionType;
 
 public interface PositionTypeDao {
 	
-	public PositionTypeBo getPositionTypeById(String pmPositionTypeId);
+	public PositionType getPositionTypeById(String pmPositionTypeId);
 	
-	public List<PositionTypeBo> getPositionTypeList(String ositionType, String institution, String location, LocalDate asOfDate);
+	public List<PositionType> getPositionTypeList(String ositionType, String institution, String location, LocalDate asOfDate);
 	
-	public PositionTypeBo getPositionType(String positionType, LocalDate asOfDate);
+	public PositionType getPositionType(String positionType, LocalDate asOfDate);
 }

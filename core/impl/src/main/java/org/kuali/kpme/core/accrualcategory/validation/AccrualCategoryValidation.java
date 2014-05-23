@@ -24,9 +24,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
 import org.kuali.rice.kns.document.MaintenanceDocument;
@@ -42,10 +41,10 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 	//set in doesCategoryHaveRules() below see KPME JIRA 1352
 	private boolean categoryHasRules = true;
 	
-	boolean doesCategoryHaveRules(AccrualCategoryBo accrualCategory) {
+	boolean doesCategoryHaveRules(AccrualCategory accrualCategory) {
 		boolean valid = true;
 
-		List<AccrualCategoryRuleBo> accrualCategoryRules = accrualCategory.getAccrualCategoryRules();
+		List<AccrualCategoryRule> accrualCategoryRules = accrualCategory.getAccrualCategoryRules();
 		if (accrualCategoryRules != null) {
 			if (StringUtils.isNotBlank(accrualCategory.getHasRules())){
 				if (accrualCategory.getHasRules().equals("N") && accrualCategoryRules.size() == 0) {
@@ -55,14 +54,14 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 					this.putGlobalError("error.accrualCategoryRule.notExpected",count.toString());
 					valid = false;
 				}
-
-                if (!accrualCategory.getHasRules().equals("Y") || accrualCategoryRules.size() <= 0) {
-                    if (accrualCategory.getHasRules().equals("Y")&& accrualCategoryRules.size() == 0) {
-                        this.putGlobalError("error.accrualCategoryRule.required");
-                        valid = false;
-                    }
-                }
-            }
+				
+				if (accrualCategory.getHasRules().equals("Y") && accrualCategoryRules.size() > 0) {
+					//normal case rules expected by other validations on this page
+				}else if (accrualCategory.getHasRules().equals("Y")&& accrualCategoryRules.size() == 0) {
+					this.putGlobalError("error.accrualCategoryRule.required");
+					valid = false;
+				}
+			}
 		}
 		return valid;
 	}
@@ -112,11 +111,11 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 		return valid;
 	}
 
-	boolean validateAccrualRulePresent(List<AccrualCategoryRuleBo> accrualCategoryRules) {
+	boolean validateAccrualRulePresent(List<AccrualCategoryRule> accrualCategoryRules) {
 		boolean valid = false;
 
 		if (accrualCategoryRules != null && accrualCategoryRules.size() > 0) {
-			for (AccrualCategoryRuleBo leaveAccrualCategoryRule : accrualCategoryRules) {
+			for (AccrualCategoryRule leaveAccrualCategoryRule : accrualCategoryRules) {
 				valid |= leaveAccrualCategoryRule.isActive();
 			}
 		}
@@ -144,14 +143,14 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 	}
 	
 	// KPME-1257. Start and end values for a given unit of time should not allow overlapping/gaping 
-	boolean validateStartEndUnits(List<AccrualCategoryRuleBo> accrualCategoryRules, AccrualCategoryRuleBo newAccrualCategoryRule) {
-		List<AccrualCategoryRuleBo> tempAccrualCategoryRules = new ArrayList<AccrualCategoryRuleBo>(accrualCategoryRules);
+	boolean validateStartEndUnits(List<AccrualCategoryRule> accrualCategoryRules, AccrualCategoryRule newAccrualCategoryRule) {
+		List<AccrualCategoryRule> tempAccrualCategoryRules = new ArrayList<AccrualCategoryRule>(accrualCategoryRules);
 		//tempAccrualCategoryRules.add(newAccrualCategoryRule);
 		boolean valid = true;
 		
 		if (accrualCategoryRules != null && accrualCategoryRules.size() > 0) {
 			// the rules list has to be sorted by start field
-			List<AccrualCategoryRuleBo> sortedAccrualCategoryRules = new ArrayList<AccrualCategoryRuleBo>(tempAccrualCategoryRules);
+			List<AccrualCategoryRule> sortedAccrualCategoryRules = new ArrayList<AccrualCategoryRule>(tempAccrualCategoryRules);
 			Collections.sort(sortedAccrualCategoryRules, SENIORITY_ORDER);
 
 			Long previousEndUnit = sortedAccrualCategoryRules.get(sortedAccrualCategoryRules.size()-1).getEnd();
@@ -172,7 +171,7 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
      * @param leaveAccrualCategoryRule
      * @return
      */
-    public boolean validateAccrualCategoryRule(AccrualCategoryRuleBo leaveAccrualCategoryRule){
+    public boolean validateAccrualCategoryRule(AccrualCategoryRule leaveAccrualCategoryRule){
         boolean valid = true;
         // cannot validate the rule without this flag now
         if (StringUtils.isBlank(leaveAccrualCategoryRule.getMaxBalFlag())) {
@@ -221,11 +220,11 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
      * @param accrualCategoryRules
      * @return
      */
-    public boolean validateAccrualCategoryRules(List<AccrualCategoryRuleBo> accrualCategoryRules){
+    public boolean validateAccrualCategoryRules(List<AccrualCategoryRule> accrualCategoryRules){
         boolean valid = true;
 
         for(int i = 0; i < accrualCategoryRules.size(); i++) {
-            AccrualCategoryRuleBo leaveAccrualCategoryRule = accrualCategoryRules.get(i);
+            AccrualCategoryRule leaveAccrualCategoryRule = accrualCategoryRules.get(i);
 
             // cannot validate the rule without this flag now
             if (StringUtils.isBlank(leaveAccrualCategoryRule.getMaxBalFlag())) {
@@ -275,17 +274,17 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 	 * @param accrualCategoryRules
 	 * @return
 	 */
-	public boolean validateAccrualRulesGapOverlap(List<AccrualCategoryRuleBo> accrualCategoryRules) {
+	public boolean validateAccrualRulesGapOverlap(List<AccrualCategoryRule> accrualCategoryRules) {
 		if (CollectionUtils.isNotEmpty(accrualCategoryRules)) {
-			List<AccrualCategoryRuleBo> tempAccrualCategoryRules = new ArrayList<AccrualCategoryRuleBo>(accrualCategoryRules);
+			List<AccrualCategoryRule> tempAccrualCategoryRules = new ArrayList<AccrualCategoryRule>(accrualCategoryRules);
 			// rules should be added in order, sort rules list by start field just in case
-			List<AccrualCategoryRuleBo> sortedAccrualCategoryRules = new ArrayList<AccrualCategoryRuleBo>(tempAccrualCategoryRules);
+			List<AccrualCategoryRule> sortedAccrualCategoryRules = new ArrayList<AccrualCategoryRule>(tempAccrualCategoryRules);
 			Collections.sort(sortedAccrualCategoryRules, SENIORITY_ORDER);
 
 			for(int i = 0; i < sortedAccrualCategoryRules.size(); i++) {
-				AccrualCategoryRuleBo aRule = sortedAccrualCategoryRules.get(i);
+				AccrualCategoryRule aRule = sortedAccrualCategoryRules.get(i);
 				if(aRule != null && i > 0) {
-					AccrualCategoryRuleBo previousRule =  sortedAccrualCategoryRules.get(i-1);
+					AccrualCategoryRule previousRule =  sortedAccrualCategoryRules.get(i-1);
 					if(ObjectUtils.isNotNull(previousRule.getEnd()) && ObjectUtils.isNotNull(aRule.getStart())) {
 						if(previousRule.getEnd().compareTo(aRule.getStart()) != 0) {	// overlap
 							String[] errors={previousRule.getEnd().toString(), aRule.getStart().toString()};
@@ -302,11 +301,11 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 	
 	// KPME-1288. Add a flag to the AccrualCategory Rules table that indicates
 	// whether or not a Max Balance is required
-	boolean validateMaxBalFlag(List<AccrualCategoryRuleBo> accrualCategoryRules) {
+	boolean validateMaxBalFlag(List<AccrualCategoryRule> accrualCategoryRules) {
 		boolean valid = true;
 
 		if (accrualCategoryRules != null && accrualCategoryRules.size() > 0) {
-			for (AccrualCategoryRuleBo accrualCategoryRule : accrualCategoryRules) {
+			for (AccrualCategoryRule accrualCategoryRule : accrualCategoryRules) {
 
 				String maxBalFlag = accrualCategoryRule.getMaxBalFlag();
 				BigDecimal bigDzero = new BigDecimal(0);
@@ -345,22 +344,10 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 		}
 		return valid;
 	}
+	
+	static final Comparator<AccrualCategoryRule> SENIORITY_ORDER = new Comparator<AccrualCategoryRule>() {
 
-    boolean isAccrualCategoryUnique(String newAccrualCategory, String oldAccrualCategory, LocalDate asOfDate) {
-        if (oldAccrualCategory != null && oldAccrualCategory.equals(newAccrualCategory)) {
-            return true;
-        } else {
-            if (HrServiceLocator.getAccrualCategoryService().getAccrualCategory(newAccrualCategory, asOfDate) != null) {
-                this.putFieldError("accrualCategory","error.accrualCategory.unique");
-                return false;
-            }
-        }
-        return true;
-    }
-
-	static final Comparator<AccrualCategoryRuleBo> SENIORITY_ORDER = new Comparator<AccrualCategoryRuleBo>() {
-
-        public int compare(AccrualCategoryRuleBo e1, AccrualCategoryRuleBo e2) {
+        public int compare(AccrualCategoryRule e1, AccrualCategoryRule e2) {
             return e1.getStart().compareTo(e2.getStart());
         }
     };
@@ -371,20 +358,12 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Leave Accrual");
 		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
-        PersistableBusinessObject oldPbo = (PersistableBusinessObject) this.getOldBo();
-
-		if (pbo instanceof AccrualCategoryBo) {
-
-			AccrualCategoryBo leaveAccrualCategory = (AccrualCategoryBo) pbo;
-
+		if (pbo instanceof AccrualCategory) {
+			AccrualCategory leaveAccrualCategory = (AccrualCategory) pbo;
 			if (leaveAccrualCategory != null) {
 				valid = true;
 				valid &= this.validateEffectiveDate(leaveAccrualCategory.getEffectiveLocalDate());                           //validate effective dates
 				valid &= this.doesCategoryHaveRules(leaveAccrualCategory);
-                if (oldPbo instanceof AccrualCategoryBo) {
-                    AccrualCategoryBo oldAccrualCategory = (AccrualCategoryBo) oldPbo;
-                    valid &= this.isAccrualCategoryUnique(leaveAccrualCategory.getAccrualCategory(), oldAccrualCategory.getAccrualCategory(), leaveAccrualCategory.getEffectiveLocalDate()); //validate accrual category is unique
-                }
 				valid &= this.validateAccrualRulePresent(leaveAccrualCategory.getAccrualCategoryRules());               // validate existence of active rules if specified in Acc. Cat.
 				if(valid && CollectionUtils.isNotEmpty(leaveAccrualCategory.getAccrualCategoryRules())) {
 					valid &= this.validateAccrualRulesGapOverlap(leaveAccrualCategory.getAccrualCategoryRules());         //Validate gaps and overaps
@@ -413,13 +392,13 @@ public class AccrualCategoryValidation extends MaintenanceDocumentRuleBase {
 		LOG.debug("entering custom validation for Leave Accrual Rules");
 		PersistableBusinessObject pbo = line;	
 		PersistableBusinessObject pboAccrualCategory = document.getDocumentBusinessObject();
-		AccrualCategoryRuleBo leaveAccrualCategoryRule = (AccrualCategoryRuleBo) pbo;
+		AccrualCategoryRule leaveAccrualCategoryRule = (AccrualCategoryRule) pbo;
 		
-		if(pboAccrualCategory instanceof AccrualCategoryBo){
+		if(pboAccrualCategory instanceof AccrualCategory){
 //            valid &= this.doesCategoryHaveRules((AccrualCategory) pboAccrualCategory);
-			if (StringUtils.isNotBlank(((AccrualCategoryBo) pboAccrualCategory).getHasRules()) && ((AccrualCategoryBo) pboAccrualCategory).getHasRules().equalsIgnoreCase("Y")){
-				if ( pbo instanceof AccrualCategoryRuleBo) {
-					AccrualCategoryBo accrualCategory = (AccrualCategoryBo) pboAccrualCategory;
+			if (StringUtils.isNotBlank(((AccrualCategory) pboAccrualCategory).getHasRules()) && ((AccrualCategory) pboAccrualCategory).getHasRules().equalsIgnoreCase("Y")){
+				if ( pbo instanceof AccrualCategoryRule ) {
+					AccrualCategory accrualCategory = (AccrualCategory) pboAccrualCategory;
 					
 					if (leaveAccrualCategoryRule != null && accrualCategory.getAccrualCategoryRules() != null) {
 						//KPME 1483 avoid NPEs since page required field validations are not present when add button is clicked

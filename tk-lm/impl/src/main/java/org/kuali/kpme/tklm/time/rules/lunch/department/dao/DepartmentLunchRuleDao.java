@@ -21,10 +21,10 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 
 public interface DepartmentLunchRuleDao {
-	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, String groupKeyCode, LocalDate asOfDate);
+	public DeptLunchRule getDepartmentLunchRule(String dept, Long workArea, String principalId, Long jobNumber, LocalDate asOfDate);
 	
 	public DeptLunchRule getDepartmentLunchRule(String tkDeptLunchRuleId);
 
-    List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber, String groupKeyCode, 
+    List<DeptLunchRule> getDepartmentLunchRules(String dept, String workArea, String principalId, String jobNumber, 
     											LocalDate fromEffdt, LocalDate toEffdt, String active, String showHistory);
 }

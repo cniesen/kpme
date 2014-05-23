@@ -15,14 +15,15 @@
  */
 package org.kuali.kpme.tklm.time.clocklog.web;
 
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.core.inquirable.KPMEInquirableImpl;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
-
-import java.util.Map;
 
 public class ClockLogInquirableImpl extends KualiInquirableImpl {
 	/**
@@ -33,19 +34,19 @@ public class ClockLogInquirableImpl extends KualiInquirableImpl {
 	
 	@Override
 	public BusinessObject getBusinessObject(Map fieldValues) {
-		ClockLogBo clocklog = null;
+		ClockLog clocklog = null;
 		
 		if(StringUtils.isNotBlank((String)fieldValues.get("tkClockLogId"))) {
-		clocklog = ClockLogBo.from(TkServiceLocator.getClockLogService().getClockLog((String)fieldValues.get("tkClockLogId")));
-		MissedPunch missedPunch = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId((String) fieldValues.get("tkClockLogId"));
-		if (missedPunch != null) {
-			clocklog.setClockedByMissedPunch(true);
-        	}
+			clocklog = TkServiceLocator.getClockLogService().getClockLog((String)fieldValues.get("tkClockLogId"));
+			if(clocklog != null) {
+				clocklog.setClockedByMissedPunch(TkServiceLocator.getClockLogService().isClockLogCreatedByMissedPunch(clocklog.getTkClockLogId()));
+			}
 		}
 		
 
 		return clocklog;
 	}
+		
 	
 
 

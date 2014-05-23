@@ -26,7 +26,7 @@ import org.kuali.hr.util.HtmlUnitUtil;
 import org.kuali.kpme.core.FunctionalTest;
 import org.kuali.kpme.core.util.HrTestConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.lunch.sys.SystemLunchRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.utils.TkTestConstants;
@@ -65,7 +65,7 @@ public class SystemLunchRuleTest extends KPMEWebTestCase {
     	Assert.assertNotNull(page);
     	
     	Map<String, Object> criteria = new LinkedHashMap<String, Object>();
-    	criteria.put("selectedAssignment", new String[]{HrTestConstants.FormElementTypes.DROPDOWN, "IU-BL_2_1234_2"});
+    	criteria.put("selectedAssignment", new String[]{HrTestConstants.FormElementTypes.DROPDOWN, "2_1234_2"});
     	HtmlUnitUtil.createTempFile(page);
     	// choose the first assignment from the drop down
     	page = HtmlUnitUtil.fillOutForm(page, criteria);

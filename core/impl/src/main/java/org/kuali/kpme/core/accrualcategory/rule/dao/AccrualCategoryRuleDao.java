@@ -17,16 +17,16 @@ package org.kuali.kpme.core.accrualcategory.rule.dao;
 
 import java.util.List;
 
-import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
 
 public interface AccrualCategoryRuleDao {
 	
-    public List <AccrualCategoryRuleBo> getActiveAccrualCategoryRules(String accrualCategoryId);
+    public List <AccrualCategoryRule> getActiveAccrualCategoryRules(String accrualCategoryId);
     
-    public AccrualCategoryRuleBo getAccrualCategoryRule(String lmAccrualCategoryRuleId);
+    public AccrualCategoryRule getAccrualCategoryRule(String lmAccrualCategoryRuleId);
     
-    public List <AccrualCategoryRuleBo> getActiveRulesForAccrualCategoryId(String accrualCategoryId);
+    public List <AccrualCategoryRule> getActiveRulesForAccrualCategoryId(String accrualCategoryId);
     
-    public List <AccrualCategoryRuleBo> getInActiveRulesForAccrualCategoryId(String accrualCategoryId);
+    public List <AccrualCategoryRule> getInActiveRulesForAccrualCategoryId(String accrualCategoryId);
 
 }

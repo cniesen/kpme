@@ -19,13 +19,13 @@ import java.math.BigDecimal;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.salarygroup.SalaryGroup;
+import org.kuali.kpme.core.salarygroup.SalaryGroup;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
-import org.kuali.kpme.pm.api.positiontype.PositionTypeContract;
-import org.kuali.kpme.pm.classification.ClassificationBo;
-import org.kuali.kpme.pm.classification.duty.ClassificationDutyBo;
+import org.kuali.kpme.pm.classification.Classification;
+import org.kuali.kpme.pm.classification.duty.ClassificationDuty;
+import org.kuali.kpme.pm.positionreportgroup.PositionReportGroup;
+import org.kuali.kpme.pm.positiontype.PositionType;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
@@ -35,7 +35,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Classification");
-		ClassificationBo clss = (ClassificationBo) this.getNewDataObject();
+		Classification clss = (Classification) this.getNewDataObject();
 		
 		if (clss != null) {
 			valid = true;
@@ -46,12 +46,11 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 			valid &= this.validateReportingGroup(clss);
 			valid &= this.validatePositionType(clss);
 			valid &= this.validatePercentTime(clss);
-            valid &= this.validatePayGrade(clss);
 		}
 		return valid;
 	}
 	
-	private boolean validateInstitution(ClassificationBo clss) {
+	private boolean validateInstitution(Classification clss) {
 		if (StringUtils.isNotEmpty(clss.getInstitution())
 				&& !ValidationUtils.validateInstitution(clss.getInstitution(), clss.getEffectiveLocalDate())) {
 			this.putFieldError("dataObject.institution", "error.existence", "Instituion '"
@@ -62,7 +61,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		}
 	}
 	
-	private boolean validateLocation(ClassificationBo clss) {
+	private boolean validateLocation(Classification clss) {
 		if (StringUtils.isNotEmpty(clss.getLocation())
 				&& !ValidationUtils.validateLocation(clss.getLocation(), clss.getEffectiveLocalDate())) {
 			this.putFieldError("dataObject.location", "error.existence", "Location '"
@@ -73,7 +72,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		}
 	}
 	
-	private boolean validateLeavePlan(ClassificationBo clss) {
+	private boolean validateLeavePlan(Classification clss) {
 		if (StringUtils.isNotEmpty(clss.getLeavePlan())
 				&& !ValidationUtils.validateLeavePlan(clss.getLeavePlan(), clss.getEffectiveLocalDate())) {
 			this.putFieldError("dataObject.leavePlan", "error.existence", "Leave Plan '"
@@ -84,7 +83,7 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		}
 	}
 	
-	private boolean validateSalGroup(ClassificationBo clss) {
+	private boolean validateSalGroup(Classification clss) {
 		SalaryGroup aSalGroup = HrServiceLocator.getSalaryGroupService().getSalaryGroup(clss.getSalaryGroup(), clss.getEffectiveLocalDate());
 		String errorMes = "SalaryGroup '" + clss.getSalaryGroup() + "'";
 		if(aSalGroup != null) {
@@ -112,12 +111,9 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		return true;
 	}
 	
-	private boolean validateReportingGroup(ClassificationBo clss) {
+	private boolean validateReportingGroup(Classification clss) {
 		if(StringUtils.isNotBlank(clss.getPositionReportGroup())) {
-			// TODO When a collection of group key codes is added to Classification, modify this validation
-			// Comment it out for now to revert single group key code changes
-			/*
-			PositionReportGroupContract aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(clss.getPositionReportGroup(), clss.getEffectiveLocalDate());
+			PositionReportGroup aPrg = PmServiceLocator.getPositionReportGroupService().getPositionReportGroup(clss.getPositionReportGroup(), clss.getEffectiveLocalDate());
 			String errorMes = "PositionReportGroup '" + clss.getPositionReportGroup() + "'";
 			if(aPrg == null) {
 				this.putFieldError("dataObject.positionReportGroup", "error.existence", errorMes);
@@ -139,28 +135,18 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 					this.putFieldError("dataObject.location", "location.inconsistent", params);
 					return false;
 				}
-				
-			}*/
+			}
 		}
 		return true;
 	}
 	
-	private boolean validatePositionType(ClassificationBo clss) {
-		PositionTypeContract aPType = PmServiceLocator.getPositionTypeService().getPositionType(clss.getPositionType(),  clss.getEffectiveLocalDate());
+	private boolean validatePositionType(Classification clss) {
+		PositionType aPType = PmServiceLocator.getPositionTypeService().getPositionType(clss.getPositionType(),  clss.getEffectiveLocalDate());
 		String errorMes = "PositionType '" + clss.getPositionType() + "'";
 		if(aPType == null) {
 			this.putFieldError("dataObject.positionType", "error.existence", errorMes);
 			return false;
 		} else {
-			/*if (!aPType.getGroupKeyCode().equals(clss.getGroupKeyCode())) {
-			String[] params = new String[3];
-			params[0] = clss.getGroupKeyCode();
-			params[1] = aPType.getGroupKeyCode();
-			params[2] = errorMes;
-			this.putFieldError("dataObject.groupKeyCode", "groupKeyCode.inconsistent", params);
-			return false;
-			}*/
-			
 			if(!ValidationUtils.wildCardMatch(aPType.getInstitution(), clss.getInstitution())) {
 				String[] params = new String[3];
 				params[0] = clss.getInstitution();
@@ -182,10 +168,10 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		return true;
 	}
 	
-	private boolean validatePercentTime(ClassificationBo clss) {
+	private boolean validatePercentTime(Classification clss) {
 		if(CollectionUtils.isNotEmpty(clss.getDutyList())) {
 			BigDecimal sum = BigDecimal.ZERO;
-			for(ClassificationDutyBo aDuty : clss.getDutyList()) {
+			for(ClassificationDuty aDuty : clss.getDutyList()) {
 				if(aDuty != null && aDuty.getPercentage() != null) {
 					sum = sum.add(aDuty.getPercentage());
 				}
@@ -200,17 +186,5 @@ public class ClassificationValidation extends MaintenanceDocumentRuleBase{
 		}		
 		return true;
 	}
-
-    private boolean validatePayGrade(ClassificationBo clss) {
-        if (StringUtils.isNotEmpty(clss.getPayGrade()) && !ValidationUtils.validatePayGrade(clss.getPayGrade(), clss.getSalaryGroup(), clss.getEffectiveLocalDate())) {
-            String[] params = new String[2];
-            params[0] = clss.getPayGrade();
-            params[1] = clss.getSalaryGroup();
-            this.putFieldError("dataObject.payGrade", "salaryGroup.contains.payGrade", params);
-            return false;
-        } else {
-            return true;
-        }
-    }
 	
 }

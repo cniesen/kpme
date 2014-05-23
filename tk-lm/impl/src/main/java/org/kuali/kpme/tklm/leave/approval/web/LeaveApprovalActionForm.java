@@ -16,49 +16,28 @@
 package org.kuali.kpme.tklm.leave.approval.web;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.LocalDateTime;
-import org.kuali.kpme.tklm.api.leave.approval.ApprovalLeaveSummaryRowContract;
 import org.kuali.kpme.tklm.common.CalendarApprovalForm;
-import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.rice.core.api.config.property.ConfigContext;
 
 public class LeaveApprovalActionForm extends CalendarApprovalForm {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private List<ApprovalLeaveSummaryRowContract> leaveApprovalRows;
-	private List<LocalDateTime> leaveCalendarDates = new ArrayList<LocalDateTime>();
-	private Boolean displayYTDFMLA;
+	private List<ApprovalLeaveSummaryRow> leaveApprovalRows;
+	private List<Date> leaveCalendarDates = new ArrayList<Date>();
 	
-	public boolean isDisplayYTDFMLA() {
-		if(displayYTDFMLA == null) {
-			String displayColumn = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.DISPLAY_YTD_FMLA_LEAVESUMMARY);
-			if (StringUtils.equals(displayColumn, "Yes")) {
-				displayYTDFMLA = Boolean.TRUE;
-			} else {
-				displayYTDFMLA = Boolean.FALSE;
-			}
-		}
-		return displayYTDFMLA;
-	}
-
-	public void setDisplayYTDFMLA(boolean displayYTDFMLA) {
-		this.displayYTDFMLA = displayYTDFMLA;
-	}
-	
-	public List<ApprovalLeaveSummaryRowContract> getLeaveApprovalRows() {
+	public List<ApprovalLeaveSummaryRow> getLeaveApprovalRows() {
 		return leaveApprovalRows;
 	}
-	public void setLeaveApprovalRows(List<ApprovalLeaveSummaryRowContract> leaveApprovalRows) {
+	public void setLeaveApprovalRows(List<ApprovalLeaveSummaryRow> leaveApprovalRows) {
 		this.leaveApprovalRows = leaveApprovalRows;
 	}
-	public List<LocalDateTime> getLeaveCalendarDates() {
+	public List<Date> getLeaveCalendarDates() {
 		return leaveCalendarDates;
 	}
-	public void setLeaveCalendarDates(List<LocalDateTime> leaveCalendarDates) {
+	public void setLeaveCalendarDates(List<Date> leaveCalendarDates) {
 		this.leaveCalendarDates = leaveCalendarDates;
 	}
 	
@@ -66,7 +45,7 @@ public class LeaveApprovalActionForm extends CalendarApprovalForm {
 		boolean isAnyApprovalRowApprovable = false;
 		
 		if (leaveApprovalRows != null) {
-			for (ApprovalLeaveSummaryRowContract approvalRow : leaveApprovalRows) {
+			for (ApprovalLeaveSummaryRow approvalRow : leaveApprovalRows) {
 				if (approvalRow.isApprovable()) {
 					isAnyApprovalRowApprovable = true;
 					break;

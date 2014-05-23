@@ -20,40 +20,32 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.leaveplan.LeavePlanBo;
-import org.kuali.kpme.core.location.LocationBo;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.leaveplan.LeavePlan;
+import org.kuali.kpme.core.location.Location;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.api.leave.timeoff.SystemScheduledTimeOffContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class SystemScheduledTimeOff extends HrBusinessObject implements SystemScheduledTimeOffContract {
 
-	private static final String ACCRUED_DATE = "accruedDate";
-	private static final String ACCRUAL_CATEGORY = "accrualCategory";
-	private static final String LOCATION = "location";
-	private static final String LEAVE_PLAN = "leavePlan";
-	private static final String EARN_CODE = "earnCode";
-
 	private static final long serialVersionUID = 6660625335629574993L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "SystemScheduledTimeOff";
+	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "SystemScheduledTimeOff";
 	//KPME-2273/1965 Primary Business Keys List.
 	public static final ImmutableList<String> fields = new ImmutableList.Builder<String>()
-             .add(EARN_CODE)             
-             .add(LEAVE_PLAN)
-             .add(LOCATION)
-             .add(ACCRUAL_CATEGORY)
-             .add(ACCRUED_DATE)
+             .add("earnCode")             
+             .add("leavePlan")
+             .add("location")
+             .add("leavePlan")
+             .add("accrualCategory")
+             .add("accruedDate")
              .build();
-	
-	
 	private String lmSystemScheduledTimeOffId;
 	private String leavePlan;
 	private String accrualCategory;
@@ -66,27 +58,14 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 	private String unusedTime;
 	private BigDecimal transferConversionFactor;
 	private String transfertoEarnCode;
-	private String premiumEarnCode;
 	private String premiumHoliday;
+	private Boolean history;
 
-	private LeavePlanBo leavePlanObj;
-	private AccrualCategoryBo accrualCategoryObj;
-	private EarnCodeBo earnCodeObj;
-	private EarnCodeBo transferToEarnCodeObj;
-	private EarnCodeBo premiumEarnCodeObj;
-	private LocationBo locationObj;
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(EARN_CODE, this.getEarnCode())
-			.put(LEAVE_PLAN, this.getLeavePlan())
-			.put(LOCATION, this.getLocation())
-			.put(ACCRUAL_CATEGORY, this.getAccrualCategory())
-			.put(ACCRUED_DATE, this.getAccruedDate())
-			.build();
-	}
+	private LeavePlan leavePlanObj;
+	private AccrualCategory accrualCategoryObj;
+	private EarnCode earnCodeObj;
+	private EarnCode transferToEarnCodeObj;
+	private Location locationObj;
 	
 	public String getLmSystemScheduledTimeOffId() {
 		return lmSystemScheduledTimeOffId;
@@ -102,7 +81,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 		}
 		if (this.earnCodeObj == null && 
 				(!StringUtils.isEmpty(this.earnCode) && getEffectiveDate() != null)) {		
-			earnCodeObj =  EarnCodeBo.from(HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate()));
+			earnCodeObj =  HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
 		}
 		leavePlan = (earnCodeObj != null) ? earnCodeObj.getLeavePlan() : "";
 		return leavePlan;
@@ -118,7 +97,7 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
         }
 		if (this.earnCodeObj == null &&
 				(!StringUtils.isEmpty(this.earnCode) && getEffectiveDate() != null)) {
-			earnCodeObj =  EarnCodeBo.from(HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate()));
+			earnCodeObj =  HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getEffectiveLocalDate());
 		}
 		accrualCategory = (earnCodeObj != null) ? earnCodeObj.getAccrualCategory() : "";
 		return accrualCategory;
@@ -208,19 +187,19 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 		this.premiumHoliday = premiumHoliday;
 	}
 
-	public LeavePlanBo getLeavePlanObj() {
+	public LeavePlan getLeavePlanObj() {
 		return leavePlanObj;
 	}
 
-	public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
+	public void setLeavePlanObj(LeavePlan leavePlanObj) {
 		this.leavePlanObj = leavePlanObj;
 	}
 
-	public AccrualCategoryBo getAccrualCategoryObj() {
+	public AccrualCategory getAccrualCategoryObj() {
 		return accrualCategoryObj;
 	}
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+	public void setAccrualCategoryObj(AccrualCategory accrualCategoryObj) {
 		this.accrualCategoryObj = accrualCategoryObj;
 	}
 
@@ -240,19 +219,19 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 		this.transfertoEarnCode = transfertoEarnCode;
 	}
 
-	public EarnCodeBo getEarnCodeObj() {
+	public EarnCode getEarnCodeObj() {
 		return earnCodeObj;
 	}
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 
-	public LocationBo getLocationObj() {
+	public Location getLocationObj() {
 		return locationObj;
 	}
 
-	public void setLocationObj(LocationBo locationObj) {
+	public void setLocationObj(Location locationObj) {
 		this.locationObj = locationObj;
 	}
 
@@ -267,34 +246,25 @@ public class SystemScheduledTimeOff extends HrBusinessObject implements SystemSc
 		return getLmSystemScheduledTimeOffId();
 	}
 
+	public Boolean getHistory() {
+		return history;
+	}
+
+	public void setHistory(Boolean history) {
+		this.history = history;
+	}
+
 	@Override
 	public void setId(String id) {
 		setLmSystemScheduledTimeOffId(id);
 	}
 
-	public EarnCodeBo getTransferToEarnCodeObj() {
+	public EarnCode getTransferToEarnCodeObj() {
 		return transferToEarnCodeObj;
 	}
 
-	public void setTransferToEarnCodeObj(EarnCodeBo transferToEarnCodeObj) {
+	public void setTransferToEarnCodeObj(EarnCode transferToEarnCodeObj) {
 		this.transferToEarnCodeObj = transferToEarnCodeObj;
 	}
 
-    @Override
-	public String getPremiumEarnCode() {
-		return premiumEarnCode;
-	}
-
-	public void setPremiumEarnCode(String premiumEarnCode) {
-		this.premiumEarnCode = premiumEarnCode;
-	}
-
-	public EarnCodeBo getPremiumEarnCodeObj() {
-		return premiumEarnCodeObj;
-	}
-
-	public void setPremiumEarnCodeObj(EarnCodeBo premiumEarnCodeObj) {
-		this.premiumEarnCodeObj = premiumEarnCodeObj;
-	}
-	
 }

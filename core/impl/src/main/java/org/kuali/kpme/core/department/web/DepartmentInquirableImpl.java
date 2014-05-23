@@ -20,32 +20,28 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.service.HrServiceLocatorInternal;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
 
 public class DepartmentInquirableImpl extends KualiInquirableImpl {
 
-    private static final long serialVersionUID = 8809785231041208573L;
-
-    // This class shouldn't be used any more
     @Override
     @SuppressWarnings("rawtypes")
     public BusinessObject getBusinessObject(Map fieldValues) {
-        DepartmentBo departmentObj = null;
+        Department departmentObj = null;
 
         if (StringUtils.isNotBlank((String) fieldValues.get("hrDeptId"))) {
-            departmentObj = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData((String) fieldValues.get("hrDeptId"));
-        } else if (fieldValues.containsKey("dept") && fieldValues.containsKey("groupKeyCode") && fieldValues.containsKey("effectiveDate")) {
+            departmentObj = HrServiceLocator.getDepartmentService().getDepartment((String) fieldValues.get("hrDeptId"));
+        } else if (fieldValues.containsKey("dept") && fieldValues.containsKey("effectiveDate")) {
             String department = (String) fieldValues.get("dept");
-            String groupKeyCode = (String) fieldValues.get("groupKeyCode");
             String effDate = (String) fieldValues.get("effectiveDate");
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
-            departmentObj = HrServiceLocatorInternal.getDepartmentInternalService().getDepartmentWithRoleData(department, groupKeyCode, effectiveDate);
+            departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, effectiveDate);
         } else {
-            departmentObj = (DepartmentBo) super.getBusinessObject(fieldValues);
+            departmentObj = (Department) super.getBusinessObject(fieldValues);
         }
 
         return departmentObj;

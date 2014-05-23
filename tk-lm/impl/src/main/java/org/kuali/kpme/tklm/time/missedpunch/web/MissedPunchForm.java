@@ -15,31 +15,29 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch.web;
 
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunch;
 import org.kuali.rice.krad.web.form.TransactionalDocumentFormBase;
 
 public class MissedPunchForm extends TransactionalDocumentFormBase {
 
 	private static final long serialVersionUID = -5511083730204963887L;
 	
-	private MissedPunchBo missedPunch = new MissedPunchBo();
+	private MissedPunch missedPunch = new MissedPunch();
 	
 	private boolean assignmentReadOnly;
 	
 	private boolean missedPunchSubmitted;
-	
-	private String ipAddress;
 	
 	@Override
 	public String getDocTypeName() {
 		return "MissedPunchDocumentType";
 	}
 
-	public MissedPunchBo getMissedPunch() {
+	public MissedPunch getMissedPunch() {
 		return missedPunch;
 	}
 
-	public void setMissedPunch(MissedPunchBo missedPunch) {
+	public void setMissedPunch(MissedPunch missedPunch) {
 		this.missedPunch = missedPunch;
 	}
 
@@ -57,14 +55,6 @@ public class MissedPunchForm extends TransactionalDocumentFormBase {
 
 	public void setMissedPunchSubmitted(boolean missedPunchSubmitted) {
 		this.missedPunchSubmitted = missedPunchSubmitted;
-	}
-
-	public String getIpAddress() {
-		return ipAddress;
-	}
-
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
 	}
 
 }

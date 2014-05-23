@@ -18,26 +18,26 @@ package org.kuali.kpme.core.earncode.security.validation;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.core.earncode.security.EarnCodeSecurityBo;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.earncode.security.EarnCodeSecurity;
+import org.kuali.kpme.core.earncode.security.EarnCodeType;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.util.List;
 
 @SuppressWarnings("deprecation")
+public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
 
-//public class EarnCodeSecurityRule extends MaintenanceDocumentRuleBase {
-    public class EarnCodeSecurityRule extends HrKeyedBusinessObjectValidation {
-	private boolean validateSalGroup(EarnCodeSecurityBo departmentEarnCode ) {
+	private boolean validateSalGroup(EarnCodeSecurity departmentEarnCode ) {
 		if (!ValidationUtils.validateSalGroup(departmentEarnCode.getHrSalGroup(), departmentEarnCode.getEffectiveLocalDate())) {
 			this.putFieldError("hrSalGroup", "error.existence", "Salgroup '" + departmentEarnCode.getHrSalGroup()+ "'");
 			return false;
@@ -46,40 +46,25 @@ import java.util.List;
 		}
 	}
 
-	private boolean validateDept(EarnCodeSecurityBo departmentEarnCode) {
-
+	private boolean validateDept(EarnCodeSecurity departmentEarnCode) {
 		if (StringUtils.equals(departmentEarnCode.getDept(), HrConstants.WILDCARD_CHARACTER)) {
             return true;
         }
-
-        if ( (departmentEarnCode.getDepartmentObj() != null)
-            && (StringUtils.equals(departmentEarnCode.getDepartmentObj().getGroupKeyCode(), departmentEarnCode.getGroupKeyCode() ) ) ) {
-            return true;
-        } else {
-            this.putFieldError("dept", "error.department.groupkey.nomatch", departmentEarnCode.getDept());
-            return false;
+        if (!ValidationUtils.validateDepartment(departmentEarnCode.getDept(), departmentEarnCode.getEffectiveLocalDate())) { //!StringUtils.equals(departmentEarnCode.getDept(), HrConstants.WILDCARD_CHARACTER)
+			this.putFieldError("dept", "error.existence", "department '" + departmentEarnCode.getDept() + "'");
+			return false;
         }
-
-    	// KPME-3376
-		// We need groupKeyCode to validate a department, but since EarnCodeSecurityBo doesn't have it,
-		// we could validate a department based on EarnCodeSecurityBo's location, which is done in this.validateDeptForLocation(departmentEarnCode). 
-		// So, there is no need for the validation below.  If we ever add groupKeyCode to EarnCodeSecurityBo, use this validation with dept and groupkey code
-        //if (!ValidationUtils.validateDepartment(departmentEarnCode.getDept(), departmentEarnCode.getEffectiveLocalDate())) { //!StringUtils.equals(departmentEarnCode.getDept(), HrConstants.WILDCARD_CHARACTER)
-		//	this.putFieldError("dept", "error.existence", "department '" + departmentEarnCode.getDept() + "'");
-		//	return false;
-        //}
-
-        //no longer needed since we now have groupKeyCode with a department
-        //return this.validateDeptForLocation(departmentEarnCode);
+        return this.validateDeptForLocation(departmentEarnCode);
 	}
 
     //KPME-2630
-    private boolean validateDeptForLocation(EarnCodeSecurityBo departmentEarnCode){
+    private boolean validateDeptForLocation(EarnCodeSecurity departmentEarnCode){
         if (StringUtils.equals(departmentEarnCode.getLocation(), HrConstants.WILDCARD_CHARACTER)) {
             return true;
         }
-        List<String> depts = HrServiceLocator.getDepartmentService().getDepartmentValuesWithLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate());
+        List<String> depts = HrServiceLocator.getDepartmentService().getDepartmentsForLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate());
         if (depts.isEmpty()) {
+
             this.putFieldError("dept", "error.department.location.nomatch", departmentEarnCode.getDept());
             return false;
         } else {
@@ -91,7 +76,7 @@ import java.util.List;
         }
     }
 
-	private boolean validateEarnCode(EarnCodeSecurityBo departmentEarnCode ) {
+	private boolean validateEarnCode(EarnCodeSecurity departmentEarnCode ) {
 		if (!ValidationUtils.validateEarnCode(departmentEarnCode.getEarnCode(), departmentEarnCode.getEffectiveLocalDate())) {
 			this.putFieldError("earnCode", "error.existence", "Earncode '" + departmentEarnCode.getEarnCode()+ "'");
 			return false;
@@ -100,7 +85,7 @@ import java.util.List;
 		}
 	}
 
-	private boolean validateDuplication(EarnCodeSecurityBo departmentEarnCode) {
+	private boolean validateDuplication(EarnCodeSecurity departmentEarnCode) {
 		if(ValidationUtils.duplicateDeptEarnCodeExists(departmentEarnCode)) {
 			this.putFieldError("effectiveDate", "deptEarncode.duplicate.exists");
 			return false;
@@ -109,69 +94,44 @@ import java.util.List;
 		}
 	}
 
-	private boolean validateLocation(EarnCodeSecurityBo departmentEarnCode) {
-        if (StringUtils.equals(departmentEarnCode.getLocation(), HrConstants.WILDCARD_CHARACTER))
-        {
-            return true;
-        }
-
-        if (departmentEarnCode.getLocation() == null)
-        {
-            return true;
-        }
-
-        if (ValidationUtils.validateLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate()))
-        {
-            if ( (departmentEarnCode.getGroupKey() != null) && (departmentEarnCode.getGroupKey().getLocationId() != null)
-                    && (StringUtils.equals(departmentEarnCode.getLocation(), departmentEarnCode.getGroupKey().getLocationId() ) ) ) {
-                return true;
-            }
-            else
-            {
-                this.putFieldError("location", "error.groupkey.location.nomatch", departmentEarnCode.getLocation());
-                return false;
-
-            }
+	private boolean validateLocation(EarnCodeSecurity departmentEarnCode) {
+		if (departmentEarnCode.getLocation() != null
+				&& !ValidationUtils.validateLocation(departmentEarnCode.getLocation(), departmentEarnCode.getEffectiveLocalDate()) && 
+				!StringUtils.equals(departmentEarnCode.getLocation(), HrConstants.WILDCARD_CHARACTER)) {
+			this.putFieldError("location", "error.existence", "location '"
+					+ departmentEarnCode.getLocation() + "'");
+			return false;
 		} else {
-            this.putFieldError("location", "error.existence", "location '" + departmentEarnCode.getLocation() + "'");
-            return false;
-        }
+			return true;
+		}
 	}
 	
-	private boolean validateDepartmentCurrentUser(EarnCodeSecurityBo departmentEarnCode) {
+	private boolean validateDepartmentCurrentUser(EarnCodeSecurity departmentEarnCode) {
 		boolean isValid = true;
 		
 		String principalId = GlobalVariables.getUserSession().getPrincipalId();
-		String department = departmentEarnCode.getDept(); 
- 
-		List<Department> departmentObjs = HrServiceLocator.getDepartmentService().getDepartments(department, departmentEarnCode.getLocation(), LocalDate.now());
-		
-		for (Department departmentObj : departmentObjs) {
-			// KPME-3376
-			// For now, leave the line below although it's redundant (getDepartments above already takes location - created to reduce
-			// the number of departments to be returned).  
-			String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
-	
-	        DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
-	
-	        //TODO - performance
-			if (!HrContext.isSystemAdmin() 
-					&& !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, asOfDate)
-	    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, asOfDate)
-	    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), location, asOfDate)
-	    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), location, asOfDate)
-	    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), location, asOfDate)
-	    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), location, asOfDate)) {
-				this.putFieldError("dept", "error.department.permissions", department);
-				isValid = false;
-				break;
-			}
+		String department = departmentEarnCode.getDept();
+		Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, LocalDate.now());
+		String location = departmentObj != null ? departmentObj.getLocation() : null;
+
+        DateTime asOfDate = LocalDate.now().toDateTimeAtStartOfDay();
+
+        //TODO - performance
+		if (!HrContext.isSystemAdmin() 
+				&& !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, asOfDate)
+    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), department, asOfDate)
+    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_LOCATION_ADMINISTRATOR.getRoleName(), location, asOfDate)
+    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_LOCATION_ADMINISTRATOR.getRoleName(), location, asOfDate)
+    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), location, asOfDate)
+    			&& !HrServiceLocator.getKPMERoleService().principalHasRoleInLocation(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR_DELEGATE.getRoleName(), location, asOfDate)) {
+			this.putFieldError("dept", "error.department.permissions", department);
+			isValid = false;
 		}
 		
 		return isValid;
 	}
 	
-	private boolean isEarnCodeUsedByActiveTimeBlocks(EarnCodeSecurityBo departmentEarnCode){
+	private boolean isEarnCodeUsedByActiveTimeBlocks(EarnCodeSecurity departmentEarnCode){
 		// KPME-1106 can not deactivate a department earn code if it used in active time blocks
 		boolean valid = true;
 		DateTime latestEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForEarnCode(departmentEarnCode.getEarnCode(), "Time");
@@ -201,9 +161,9 @@ import java.util.List;
 		boolean valid = false;
 
 		LOG.debug("entering custom validation for EarnCodeSecurity");
-		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewDataObject();
-		if (pbo instanceof EarnCodeSecurityBo) {
-			EarnCodeSecurityBo departmentEarnCode = (EarnCodeSecurityBo) pbo;
+		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
+		if (pbo instanceof EarnCodeSecurity) {
+			EarnCodeSecurity departmentEarnCode = (EarnCodeSecurity) pbo;
 
 			if (departmentEarnCode != null) {
 				valid = true;

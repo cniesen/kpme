@@ -17,35 +17,24 @@ package org.kuali.kpme.tklm.time.rules.lunch.department;
 
 import java.math.BigDecimal;
 
-import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.job.JobBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.rules.lunch.department.DeptLunchRuleContract;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
-public class DeptLunchRule extends HrKeyedBusinessObject implements DeptLunchRuleContract {
-    
-	static class KeyFields {
-		private static final String JOB_NUMBER = "jobNumber";
-		private static final String PRINCIPAL_ID = "principalId";
-		private static final String WORK_AREA = "workArea";
-		private static final String DEPT = "dept";
-		private static final String GROUP_KEY_CODE = "groupKeyCode";
-	}
-	
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "DeptLunchRule";
+public class DeptLunchRule extends HrBusinessObject implements DeptLunchRuleContract {
+    public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "DeptLunchRule";
     //KPME-2273/1965 Primary Business Keys List.
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.DEPT)
-            .add(KeyFields.WORK_AREA)
-            .add(KeyFields.PRINCIPAL_ID)
-            .add(KeyFields.JOB_NUMBER)
-            .add(KeyFields.GROUP_KEY_CODE)
+    public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("dept")
+            .add("workArea")
+            .add("principalId")
+            .add("jobNumber")
             .build();
 
 	
@@ -58,26 +47,16 @@ public class DeptLunchRule extends HrKeyedBusinessObject implements DeptLunchRul
     private Long jobNumber;    
     private BigDecimal deductionMins;
     private BigDecimal shiftHours;
+    private String userPrincipalId;
 
     private String tkWorkAreaId;
     private String hrDeptId;
     private String hrJobId;
 
-    private transient WorkAreaBo workAreaObj;
-    private transient DepartmentBo departmentObj;
-    private transient JobBo job;
+    private transient WorkArea workAreaObj;
+    private transient Department departmentObj;
+    private transient Job job;
 	private transient Person principal;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(KeyFields.DEPT, this.getDept())
-			.put(KeyFields.WORK_AREA, this.getWorkArea())
-			.put(KeyFields.PRINCIPAL_ID, this.getPrincipalId())
-			.put(KeyFields.JOB_NUMBER, this.getJobNumber())
-			.put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-			.build();
-	}
 	
 	//for lookups
 	private boolean history;
@@ -90,32 +69,32 @@ public class DeptLunchRule extends HrKeyedBusinessObject implements DeptLunchRul
 		this.principal = principal;
 	}
 
-	public JobBo getJob() {
+	public Job getJob() {
 		return job;
 	}
 
 
-	public void setJob(JobBo job) {
+	public void setJob(Job job) {
 		this.job = job;
 	}
 
 
-	public WorkAreaBo getWorkAreaObj() {
+	public WorkArea getWorkAreaObj() {
 		return workAreaObj;
 	}
 
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+	public void setWorkAreaObj(WorkArea workAreaObj) {
 		this.workAreaObj = workAreaObj;
 	}
 
 
-	public DepartmentBo getDepartmentObj() {
+	public Department getDepartmentObj() {
 		return departmentObj;
 	}
 
 
-	public void setDepartmentObj(DepartmentBo departmentObj) {
+	public void setDepartmentObj(Department departmentObj) {
 		this.departmentObj = departmentObj;
 	}
 
@@ -146,6 +125,16 @@ public class DeptLunchRule extends HrKeyedBusinessObject implements DeptLunchRul
 	public void setJobNumber(Long jobNumber) {
 		this.jobNumber = jobNumber;
 	}
+
+
+	public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
+
+
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
 	public String getTkDeptLunchRuleId() {
 		return tkDeptLunchRuleId;

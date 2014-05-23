@@ -15,17 +15,21 @@
  */
 package org.kuali.kpme.tklm.api.time.missedpunch;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.mo.CreateTime;
-import org.kuali.kpme.core.api.mo.KpmeKeyedDataTransferObject;
+import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.api.task.TaskContract;
+import org.kuali.kpme.core.api.workarea.WorkAreaContract;
+import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 
 /**
  * <p>MissedPunchContract interface</p>
  *
  */
-public interface MissedPunchContract extends KpmeKeyedDataTransferObject, CreateTime {
+public interface MissedPunchContract extends PersistableBusinessObject {
 	
 	/**
 	 * The primary key of a MissedPunch entry saved in a database
@@ -135,18 +139,18 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * 
 	 * @return actionDateTime for MissedPunch
 	 */
-	//public Date getActionDateTime();
+	public Date getActionDateTime();
 	
 	/**
 	 * The action date (Date) associated with the MissedPunch
 	 * 
 	 * <p>
-	 * actionFullDateTime.toLocalDate() of a MissedPunch
+	 * actionDateTime.toDate() of a MissedPunch
 	 * <p>
 	 * 
 	 * @return actionDateTime.toDate() for MissedPunch
 	 */
-    public LocalDate getActionLocalDate() ;
+    public Date getActionDate() ;
    
     /**
 	 * The action time (String) associated with the MissedPunch
@@ -180,6 +184,17 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * @return tkClockLogId for MissedPunch
 	 */
 	public String getTkClockLogId();
+	
+	/**
+	 * The timestamp associated with the MissedPunch
+	 * 
+	 * <p>
+	 * timestamp of a MissedPunch
+	 * <p>
+	 * 
+	 * @return timestamp for MissedPunch
+	 */
+	public Timestamp getTimestamp();
 
 	/**
 	 * The principal name associated with the MissedPunch
@@ -212,7 +227,7 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * 
 	 * @return jobObj for MissedPunch
 	 */
-	//public JobContract getJobObj();
+	public JobContract getJobObj();
 	
 	/**
 	 * The WorkArea object associated with the MissedPunch
@@ -223,7 +238,7 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * 
 	 * @return workAreaObj for MissedPunch
 	 */
-	//public WorkAreaContract getWorkAreaObj();
+	public WorkAreaContract getWorkAreaObj();
 	
 	/**
 	 * The Task object associated with the MissedPunch
@@ -234,7 +249,7 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * 
 	 * @return taskObj for MissedPunch
 	 */
-	//public TaskContract getTaskObj();
+	public TaskContract getTaskObj();
 	
 	/**
 	 * The isAssignmentReadOnly flag of the MissedPunch
@@ -246,9 +261,5 @@ public interface MissedPunchContract extends KpmeKeyedDataTransferObject, Create
 	 * @return Y if it's assignment read only, N if not
 	 */
 	public boolean isAssignmentReadOnly();
-
-    String getMissedPunchDocStatus();
-
-    String getMissedPunchDocId();
 
 }

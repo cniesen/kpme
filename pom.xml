@@ -26,7 +26,7 @@
     <artifactId>kpme</artifactId>
     <packaging>pom</packaging>
     <name>Kuali People Management for the Enterprise</name>
-    <version>2.1.0-SNAPSHOT</version>
+    <version>2.0.3</version>
     <description>Kuali People Management for the Enterprise (KPME) is an open-source, comprehensive HR/Payroll System built by higher education for higher education.</description>
     <url>http://${kuali.site.hostname}/kpme/${project.version}</url>
     <modules>
@@ -37,11 +37,9 @@
         <module>web</module>
         <module>env</module>
         <module>dist</module>
-        <module>tools</module>
-        <module>ui-test</module>
     </modules>
     <properties>
-        <apache.cxf.version>2.7.0</apache.cxf.version>
+        <!-- Build settings -->
         <build.version>${project.name} :: ${project.version} :: ${kuali.build.timestamp}</build.version>
         <docbook.src>${basedir}/src/site/docbook</docbook.src>
         <docbook.filtered>${project.build.directory}/docbook-filtered</docbook.filtered>
@@ -55,7 +53,7 @@
         <enforcer.phase>validate</enforcer.phase>
         <fop.version>1.0</fop.version>
         <gson.version>2.2.2</gson.version>
-        <htmlunit.version>2.14</htmlunit.version>
+        <htmlunit.version>2.12</htmlunit.version>
         <jaxb-impl.version>2.2.6</jaxb-impl.version>
         <jdbc.drivers.location>${settings.localRepository}</jdbc.drivers.location>
         <jetty.version>8.1.9.v20130131</jetty.version>
@@ -67,7 +65,6 @@
         <kuali.release.goals>pre-site deploy</kuali.release.goals>
         <kuali.release.arguments>-DskipTests</kuali.release.arguments>
         <log4j.version>1.2.16</log4j.version>
-        <mockito.version>1.9.0</mockito.version>
         <mysql.jdbc.version>5.1.23</mysql.jdbc.version>
         <mysql.jdbc.artifactId>mysql-connector-java</mysql.jdbc.artifactId>
         <mysql-connector-java.jar.location>${jdbc.drivers.location}/mysql/${mysql.jdbc.artifactId}/${mysql.jdbc.version}/${mysql.jdbc.artifactId}-${mysql.jdbc.version}.jar</mysql-connector-java.jar.location>
@@ -75,7 +72,7 @@
         <oracle.jdbc.version>10.2.0.3.0</oracle.jdbc.version>
         <oracle.jdbc.artifactId>ojdbc14</oracle.jdbc.artifactId>
         <rice.version>2.3.6</rice.version>
-        <selenium-java.version>2.41.0</selenium-java.version>
+        <selenium-java.version>2.32.0</selenium-java.version>
         <slf4j.version>1.7.2</slf4j.version>
         <spring-modules-ojb.version>0.8a</spring-modules-ojb.version>
         <xercesImpl.version>2.11.0</xercesImpl.version>
@@ -95,10 +92,8 @@
         <mysql.host>localhost</mysql.host>
         <mysql.dba.username>root</mysql.dba.username>
         <mysql.dba.password>NONE</mysql.dba.password>
-        <project.scm.url>https://svn.kuali.org/repos/kpme/trunk</project.scm.url>
-        <kpme.java2ws.phase>process-classes</kpme.java2ws.phase>
-        <wsdl.dir>${project.build.directory}/wsdl</wsdl.dir>
-        <project.java.version>1.7</project.java.version>
+
+
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -214,12 +209,6 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit.version}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -358,11 +347,6 @@
                         <artifactId>slf4j-log4j12</artifactId>
                     </exclusion>
                 </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>org.kuali.rice</groupId>
-                <artifactId>rice-development-tools</artifactId>
-                <version>${rice.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.kuali.rice</groupId>
@@ -591,31 +575,7 @@
                 <version>${mysql.jdbc.version}</version>
                 <scope>provided</scope>
             </dependency>
-            <dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-picocontainer</artifactId>
-			<version>1.1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-junit</artifactId>
-			<version>1.1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>info.cukes</groupId>
-			<artifactId>cucumber-java</artifactId>
-			<version>1.1.5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-all</artifactId>
-			<version>1.1</version>
-			<scope>test</scope>
-		</dependency>
-       </dependencies>
+        </dependencies>
     </dependencyManagement>
     <build>
         <testResources>
@@ -1072,8 +1032,8 @@
         </repository>
     </repositories>
     <scm>
-        <connection>scm:${project.scm.vendor}:${project.scm.url}</connection>
-        <developerConnection>scm:${project.scm.vendor}:${project.scm.url}</developerConnection>
-        <url>${project.scm.url}</url>
+        <connection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/tags/kpme-2.0.3</connection>
+        <developerConnection>scm:${project.scm.vendor}:https://svn.kuali.org/repos/kpme/tags/kpme-2.0.3</developerConnection>
+        <url>https://svn.kuali.org/repos/kpme/tags/kpme-2.0.3</url>
     </scm>
 </project>

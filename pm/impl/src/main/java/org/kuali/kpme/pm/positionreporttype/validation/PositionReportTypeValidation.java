@@ -17,9 +17,9 @@ package org.kuali.kpme.pm.positionreporttype.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.ValidationUtils;
-import org.kuali.kpme.pm.positionreporttype.PositionReportTypeBo;
-import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.kpme.pm.positionreporttype.PositionReportType;
+import org.kuali.rice.kns.document.MaintenanceDocument;
+import org.kuali.rice.kns.maintenance.rules.MaintenanceDocumentRuleBase;
 
 @SuppressWarnings("deprecation")
 public class PositionReportTypeValidation extends MaintenanceDocumentRuleBase  {
@@ -27,20 +27,32 @@ public class PositionReportTypeValidation extends MaintenanceDocumentRuleBase  {
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for Position Report Type");
-		PositionReportTypeBo prt = (PositionReportTypeBo) this.getNewDataObject();
+		PositionReportType prt = (PositionReportType) this.getNewBo();
 		
 		if (prt != null) {
 			valid = true;
-			valid &= this.validateGroupKey(prt);
+			valid &= this.validateInstitution(prt);
+			valid &= this.validateLocation(prt);
 		}
 		return valid;
 	}
 	
-	protected boolean validateGroupKey(PositionReportTypeBo prt) {
-		if (StringUtils.isNotEmpty(prt.getGroupKeyCode())
-				&& !ValidationUtils.validateGroupKey(prt.getGroupKeyCode(), prt.getEffectiveLocalDate())) {
-			this.putFieldError("groupKeyCode", "error.existence", "Group Key '"
-					+ prt.getGroupKeyCode() + "'");
+	private boolean validateInstitution(PositionReportType prt) {
+		if (StringUtils.isNotEmpty(prt.getInstitution())
+				&& !ValidationUtils.validateInstitution(prt.getInstitution(), prt.getEffectiveLocalDate())) {
+			this.putFieldError("institution", "error.existence", "Instituion '"
+					+ prt.getInstitution() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validateLocation(PositionReportType prt) {
+		if (StringUtils.isNotEmpty(prt.getLocation())
+				&& !ValidationUtils.validateLocation(prt.getLocation(), prt.getEffectiveLocalDate())) {
+			this.putFieldError("location", "error.existence", "Location '"
+					+ prt.getLocation() + "'");
 			return false;
 		} else {
 			return true;

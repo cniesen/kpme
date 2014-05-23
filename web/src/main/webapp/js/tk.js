@@ -140,8 +140,6 @@ $(document).ready(function() {
     var nextDocumentId = $('input[name=nextDocumentId]').val();
     var prevHrCalendarEntryId = $('input[name=prevHrCalendarEntryId]').val();
     var nextHrCalendarEntryId = $('input[name=nextHrCalendarEntryId]').val();
-    var beginDateString = $('input[name=beginDateString]').val();
-    var endDateString =$('input[name=endDateString]').val();
 
     // create navigation buttons for timesheet
     $('#nav_prev').button({
@@ -177,10 +175,8 @@ $(document).ready(function() {
     });
 
     $('#nav_prev_lc').click(function() {
-    	if(this.form.documentId != undefined){
-    		this.form.documentId.value = prevDocumentId;
-    	}
-    	this.form.hrCalendarEntryId.value = prevHrCalendarEntryId;
+        this.form.documentId.value = prevDocumentId;
+        this.form.hrCalendarEntryId.value = prevHrCalendarEntryId;
         this.form.submit();
     });
 
@@ -192,9 +188,7 @@ $(document).ready(function() {
     });
 
     $('#nav_next_lc').click(function() {
-    	if(this.form.documentId != undefined){
-    		this.form.documentId.value = nextDocumentId;
-    	}
+        this.form.documentId.value = nextDocumentId;
         this.form.hrCalendarEntryId.value = nextHrCalendarEntryId;
         this.form.submit();
     });
@@ -242,34 +236,6 @@ $(document).ready(function() {
     });
 
    
-    // create navigation buttons for leave request approval calendar    
-    $('#nav_prev_lra').button({
-        icons: {
-            primary: "ui-icon-triangle-1-w"
-        },
-        text: false
-    });
-
-    $('#nav_prev_lra').click(function() {
-    	this.form.beginDateString.value = beginDateString;
-    	this.form.endDateString.value = endDateString;
-    	this.form.navigationAction.value = 'PREV';
-    	this.form.submit();
-    });
-
-    $('#nav_next_lra').button({
-        icons: {
-            primary: "ui-icon-triangle-1-e"
-        },
-        text: false
-    });
-
-    $('#nav_next_lra').click(function() {
-    	this.form.beginDateString.value = beginDateString;
-    	this.form.endDateString.value = endDateString;
-    	this.form.navigationAction.value = 'NEXT';
-    	this.form.submit();
-    });
 
     // datepicker
     $('#startDate, #endDate').datepicker({
@@ -612,19 +578,6 @@ $(document).ready(function() {
         active : 0,
         autoHeight: false
     });
-    
-    $("#changeTargetPersonForm #changeTargetPersonId").keypress(function(event) {
-		var key = event.keyCode;
-		/* initiator is undefined check is to prevent return from doing anything if not in a form field since the initiator is undefined */
-		/* 13 is return key code */
-		/* length &gt; 0 check is to allow user to hit return on links */
-		if ( key == 13 ) {
-		  // disallow enter key from fields that dont match prefix.
-		  $("#changeTargetPersonForm #methodToCall").val("changeTargetPerson");
-		  $("#changeTargetPersonForm").submit();
-		}
-	});
-    
 
 });
 
@@ -789,17 +742,7 @@ function addTimeBlockRow(form, tempArr) {
     el.disabled = true;
     cellHours.appendChild(el);
 
-    var deleteButton = row.insertCell(6);
-    var el = document.createElement('input');
-    el.id = 'deleteButton'+iteration;
-    el.type = 'button';
-    el.value = 'Delete';
-    el.className += 'button ui-button ui-widget ui-state-default ui-corner-all';
-    el.onclick =function() {
-    	row.parentNode.removeChild(row);
-    	recalculateTotal();
-    };
-    deleteButton.appendChild(el);
+    row.insertCell(6);
     recalculateTotal();
 }
 

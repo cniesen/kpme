@@ -21,7 +21,6 @@ import java.util.Map;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.document.calendar.CalendarDocumentContract;
 import org.kuali.kpme.core.api.job.JobContract;
-import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockContract;
 import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryContract;
 
@@ -53,7 +52,7 @@ public interface TimesheetDocumentContract extends CalendarDocumentContract {
 	 * 
 	 * @return timeBlocks for TimesheetDocument
 	 */
-	public List<TimeBlock> getTimeBlocks();
+	public List<? extends TimeBlockContract> getTimeBlocks();
 	
 	/**
 	 * The TimeSummary object associated with the TimesheetDocument
@@ -84,7 +83,7 @@ public interface TimesheetDocumentContract extends CalendarDocumentContract {
 	 * job associated with the jobNumber
 	 * <p>
 	 * 
-	 * @param jobNumber number to retrieve Job object from jobNumberToJobMap
+	 * @param job number to retrieve Job object from jobNumberToJobMap
 	 * @return Job object associated with the jobNumber
 	 */
 	public JobContract getJob(Long jobNumber);
@@ -133,6 +132,6 @@ public interface TimesheetDocumentContract extends CalendarDocumentContract {
 	 * @param clockOnlyAssignments
 	 * @return assignmentDescriptions
 	 */
-    public Map<String, String> getAssignmentDescriptions(boolean clockOnlyAssignments, LocalDate date);
+    public Map<String, String> getAssignmentDescriptions(boolean clockOnlyAssignments);
 
 }

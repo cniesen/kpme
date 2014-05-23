@@ -23,7 +23,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 
@@ -31,7 +30,7 @@ import org.kuali.kpme.core.util.TKUtils;
 public class PrincipalHRAttributeServiceTest extends CoreUnitTestCase {
 	@Test
 	public void testGetPrincipalHrAtributes() {
-		List<PrincipalHRAttributes> phraList;
+		List<PrincipalHRAttributes> phraList = new ArrayList<PrincipalHRAttributes>();
 		LocalDate fromEffDate = TKUtils.formatDateString("");
 		LocalDate toEffDate = TKUtils.formatDateString("");
         String leavePlan = "";

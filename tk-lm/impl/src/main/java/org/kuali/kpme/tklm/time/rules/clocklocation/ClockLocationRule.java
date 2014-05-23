@@ -18,45 +18,35 @@ package org.kuali.kpme.tklm.time.rules.clocklocation;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.kuali.kpme.core.api.authorization.DepartmentalRule;
-import org.kuali.kpme.core.department.DepartmentBo;
-import org.kuali.kpme.core.job.JobBo;
-import org.kuali.kpme.core.workarea.WorkAreaBo;
-import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.core.authorization.DepartmentalRule;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.job.Job;
+import org.kuali.kpme.core.workarea.WorkArea;
 import org.kuali.kpme.tklm.api.time.rules.clocklocation.ClockLocationRuleContract;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 
 public class ClockLocationRule extends TkRule implements DepartmentalRule, ClockLocationRuleContract {
-	
-	static class KeyFields {
-		private static final String PRINCIPAL_ID = "principalId";
-		private static final String JOB_NUMBER = "jobNumber";
-		private static final String WORK_AREA = "workArea";
-		private static final String DEPT = "dept";
-		private static final String GROUP_KEY_CODE = "groupKeyCode";
-	}
-	
+
 	private static final long serialVersionUID = 959554402289679184L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ClockLocationRule";
-	
+	public static final String CACHE_NAME = TkConstants.CacheNamespace.NAMESPACE_PREFIX + "ClockLocationRule";
 	//KPME-2273/1965 Primary Business Keys List. 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.DEPT)
-            .add(KeyFields.WORK_AREA)
-            .add(KeyFields.JOB_NUMBER)
-            .add(KeyFields.PRINCIPAL_ID)
-            .add(KeyFields.GROUP_KEY_CODE)
+	public static final ImmutableList<String> EQUAL_TO_FIELDS = new ImmutableList.Builder<String>()
+            .add("dept")
+            .add("workArea")
+            .add("jobNumber")
+            .add("principalId")
             .build();
+
 
 	private String tkClockLocationRuleId;
 
-	private DepartmentBo department;
+	private Department department;
 	private String dept;
 	private String hrDeptId;
 	
@@ -67,22 +57,13 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 	private String hrJobId;
 
 	private List<ClockLocationRuleIpAddress> ipAddresses = new ArrayList<ClockLocationRuleIpAddress>();
+	private String userPrincipalId;
+	private Boolean history;
 
-	private WorkAreaBo workAreaObj;
-	private JobBo job;
+	private WorkArea workAreaObj;
+	private Job job;
 	private transient Person principal;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(KeyFields.DEPT, this.getDept())
-			.put(KeyFields.WORK_AREA, this.getWorkArea())
-			.put(KeyFields.JOB_NUMBER, this.getJobNumber())
-			.put(KeyFields.PRINCIPAL_ID, this.getPrincipalId())
-			.put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-			.build();
-	}
-	
+
 	public Long getWorkArea() {
 		return workArea;
 	}
@@ -99,6 +80,14 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 		this.principalId = principalId;
 	}
 
+	public String getUserPrincipalId() {
+		return userPrincipalId;
+	}
+
+	public void setUserPrincipalId(String userPrincipalId) {
+		this.userPrincipalId = userPrincipalId;
+	}
+
 	public Long getJobNumber() {
 		return jobNumber;
 	}
@@ -106,27 +95,27 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 	public void setJobNumber(Long jobNumber) {
 		this.jobNumber = jobNumber;
 	}
-	public DepartmentBo getDepartment() {
+	public Department getDepartment() {
 	    return department;
 	}
 
-	public void setDepartment(DepartmentBo department) {
+	public void setDepartment(Department department) {
 	    this.department = department;
 	}
 
-	public WorkAreaBo getWorkAreaObj() {
+	public WorkArea getWorkAreaObj() {
 	    return workAreaObj;
 	}
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+	public void setWorkAreaObj(WorkArea workAreaObj) {
 	    this.workAreaObj = workAreaObj;
 	}
 
-	public JobBo getJob() {
+	public Job getJob() {
 	    return job;
 	}
 
-	public void setJob(JobBo job) {
+	public void setJob(Job job) {
 	    this.job = job;
 	}
 
@@ -144,6 +133,14 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 
 	public void setDept(String dept) {
 		this.dept = dept;
+	}
+
+	public void setHistory(Boolean history) {
+		this.history = history;
+	}
+
+	public Boolean getHistory() {
+		return history;
 	}
 
 	public Person getPrincipal() {
@@ -182,8 +179,7 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 	public String getUniqueKey() {
 		String clockLocKey = getDept()+"_"+getPrincipalId()+"_"+
 		(getJobNumber()!=null ? getJobNumber().toString(): "") +"_" + 
-		(getWorkArea() !=null ? getWorkArea().toString() : "") +"_" +
-		(getGroupKeyCode() !=null ? getGroupKeyCode().toString() : "");
+		(getWorkArea() !=null ? getWorkArea().toString() : "");
 		
 		return clockLocKey;
 	}
@@ -208,7 +204,6 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 	public void setIpAddresses(List<ClockLocationRuleIpAddress> ipAddresses) {
 		this.ipAddresses = ipAddresses;
 	}
-	
 	// for lookup and inquiry display only
 	public String getIpAddressesString() {
 		String aString = "";
@@ -217,5 +212,6 @@ public class ClockLocationRule extends TkRule implements DepartmentalRule, Clock
 		}
 		return aString;
 	}
+
 
 }

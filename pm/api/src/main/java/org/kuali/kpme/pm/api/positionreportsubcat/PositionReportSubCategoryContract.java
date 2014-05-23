@@ -15,14 +15,16 @@
  */
 package org.kuali.kpme.pm.api.positionreportsubcat;
 
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.location.LocationContract;
+import org.kuali.kpme.core.api.institution.InstitutionContract;
 import org.kuali.kpme.pm.api.positionreportcat.PositionReportCategoryContract;
 
 /**
  * <p>PositionReportSubCategoryContract interface</p>
  *
  */
-public interface PositionReportSubCategoryContract extends KpmeEffectiveDataTransferObject {
+public interface PositionReportSubCategoryContract extends HrBusinessObjectContract {
 
     /**
      * The primary key for a PositionReportSubCategory entry saved in the database
@@ -78,6 +80,50 @@ public interface PositionReportSubCategoryContract extends KpmeEffectiveDataTran
      * @return description for PositionReportSubCategory
      */
 	public String getDescription();
+
+    /**
+     * The institution associated with the PositionReportSubCategory
+     *
+     * <p>
+     * institution of a PositionReportSubCategory.
+     * <p>
+     *
+     * @return institution for PositionReportSubCategory
+     */
+	public String getInstitution();
+
+    /**
+     * The location associated with the PositionReportSubCategory
+     *
+     * <p>
+     * location of a PositionReportSubCategory.
+     * <p>
+     *
+     * @return location for PositionReportSubCategory
+     */
+	public String getLocation();
+
+    /**
+     * The Location object associated with the PositionReportSubCategory
+     *
+     * <p>
+     * locationObj of a PositionReportSubCategory.
+     * <p>
+     *
+     * @return locationObj for PositionReportSubCategory
+     */
+	public LocationContract getLocationObj();
+
+    /**
+     * The Institution object associated with the PositionReportSubCategory
+     *
+     * <p>
+     * institutionObj of a PositionReportSubCategory.
+     * <p>
+     *
+     * @return institutionObj for PositionReportSubCategory
+     */
+	public InstitutionContract getInstitutionObj();
 
     /**
      * The PositionReportCategory object associated with the PositionReportSubCategory

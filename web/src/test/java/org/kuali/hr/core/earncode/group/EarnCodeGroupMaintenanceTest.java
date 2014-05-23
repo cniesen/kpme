@@ -15,7 +15,33 @@
  */
 package org.kuali.hr.core.earncode.group;
 
-/*@FunctionalTest
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.joda.time.LocalDate;
+import org.junit.Assert;
+import org.junit.Test;
+import org.kuali.hr.KPMEWebTestCase;
+import org.kuali.hr.util.HtmlUnitUtil;
+import org.kuali.kpme.core.FunctionalTest;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroup;
+import org.kuali.kpme.core.earncode.group.EarnCodeGroupDefinition;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrTestConstants;
+import org.kuali.rice.krad.service.KRADServiceLocator;
+
+import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+
+@FunctionalTest
 public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
     private static final Logger LOG = Logger.getLogger(EarnCodeGroupMaintenanceTest.class);
     private static final LocalDate TEST_DATE = LocalDate.now();
@@ -39,7 +65,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnGroup.setShowSummary(true);
         earnGroup.setActive(true);
         earnGroup.setEarnCodeGroups(earnGroups);
-        earnGroup.setUserPrincipalId("admin");
         KRADServiceLocator.getBusinessObjectService().save(earnGroup);
         hrEarnGroupId = earnGroup.getHrEarnCodeGroupId();
 
@@ -61,7 +86,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnCode.setOvtEarnCode(false);
         earnCode.setInflateMinHours(BigDecimal.ZERO);
         earnCode.setInflateFactor(BigDecimal.ZERO);
-        earnCode.setUserPrincipalId("admin");
         earnCode = KRADServiceLocator.getBusinessObjectService().save(earnCode);
         hrEarnCodeId = earnCode.getHrEarnCodeId();
 
@@ -72,7 +96,6 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
         earnGroupRGG.setEffectiveLocalDate(TEST_DATE);
         earnGroupRGG.setShowSummary(true);
         earnGroupRGG.setActive(true);
-        earnGroupRGG.setUserPrincipalId("admin");
         earnGroupRGG = KRADServiceLocator.getBusinessObjectService().save(earnGroupRGG);
         hrEarnGroupIdRGG = earnGroupRGG.getHrEarnCodeGroupId();
     }
@@ -99,7 +122,7 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
 		HtmlUnitUtil.createTempFile(earnCodeLookUp);
 		Assert.assertTrue("Page contains REG entry", earnCodeLookUp.asText().contains("REG"));	
 		
-		EarnCodeGroupContract earnGroup = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup("REG", LocalDate.now());
+		EarnCodeGroup earnGroup = HrServiceLocator.getEarnCodeGroupService().getEarnCodeGroup("REG", LocalDate.now());
 		String earnGroupId = earnGroup.getHrEarnCodeGroupId().toString();
 		HtmlPage maintPage = HtmlUnitUtil.clickAnchorContainingText(earnCodeLookUp, "edit", earnGroupId);		
 		HtmlUnitUtil.createTempFile(maintPage);
@@ -152,7 +175,7 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
     @Test
     //tests EarnCodeGroupValidation
     public void testSubmitEarnGroupMaint() throws Exception {
-        String baseUrl = getBaseURL() + "/kr/maintenance.do?businessObjectClassName=org.kuali.kpme.core.earncode.group.EarnCodeGroupBo&methodToCall=start";
+        String baseUrl = getBaseURL() + "/kr/maintenance.do?businessObjectClassName=org.kuali.kpme.core.earncode.group.EarnCodeGroup&methodToCall=start";
         HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), baseUrl);
         Assert.assertNotNull(page);
 
@@ -221,7 +244,7 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
 
     @Test
     public void testSubmitEarnGroupWithNewerVersionMaint() throws Exception {
-        String baseUrl = getBaseURL() + "/kr/maintenance.do?businessObjectClassName=org.kuali.kpme.core.earncode.group.EarnCodeGroupBo&methodToCall=start";
+        String baseUrl = getBaseURL() + "/kr/maintenance.do?businessObjectClassName=org.kuali.kpme.core.earncode.group.EarnCodeGroup&methodToCall=start";
         HtmlPage page = HtmlUnitUtil.gotoPageAndLogin(getWebClient(), baseUrl);
         Assert.assertNotNull(page);
 
@@ -265,4 +288,4 @@ public class EarnCodeGroupMaintenanceTest extends KPMEWebTestCase {
     }
 
 
-}*/
+}

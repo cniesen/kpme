@@ -17,8 +17,6 @@ package org.kuali.kpme.pm.positionflag.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.pm.positionflag.PositionFlagBo;
-import org.kuali.kpme.pm.positiontype.PositionTypeBo;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 
 public class PositionFlagMaintainableImpl extends HrBusinessObjectMaintainableImpl {
@@ -27,7 +25,7 @@ public class PositionFlagMaintainableImpl extends HrBusinessObjectMaintainableIm
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return PositionFlagBo.from(PmServiceLocator.getPositionFlagService().getPositionFlagById(id));
+		return PmServiceLocator.getPositionFlagService().getPositionFlagById(id);
 	}
 
 }

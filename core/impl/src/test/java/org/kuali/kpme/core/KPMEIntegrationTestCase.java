@@ -154,23 +154,15 @@ public abstract class KPMEIntegrationTestCase extends RiceInternalSuiteDataTestC
 	    clearDatabaseLifecycle.getAlternativeTablesToClear().add("KREW_DOC_TYP_T");
 	    lifecycles.add(clearDatabaseLifecycle);
 	
-	    File[] folders = new File(FILE_PREFIX).listFiles();
+	    File[] files = new File(FILE_PREFIX).listFiles();
 
-	    if (folders != null) {
-            Arrays.sort(folders);
-            for (File folder : folders) {
-            	if (folder.getName().startsWith("00")) {
-            		File[] files = new File(FILE_PREFIX + folder.getName()).listFiles();
-            		if (files != null) {
-                        // Arrays.sort(files);
-                        for (File file : files) {
-                        	if (file.getName().endsWith(".xml")) {
-                        		lifecycles.add(new KPMEXmlDataLoaderLifecycle(FILE_PREFIX + folder.getName() + "/" + file.getName()));
-                        	}
-                        }
-    		        }
-	            }		        
-            }
+	    if (files != null) {
+            Arrays.sort(files);
+	        for (File file : files) {
+	            if (file.getName().endsWith(".xml")) {
+	                lifecycles.add(new KPMEXmlDataLoaderLifecycle(FILE_PREFIX + file.getName()));
+	            }
+	        }
 	    }
 		return lifecycles;
 	}

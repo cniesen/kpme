@@ -15,22 +15,44 @@
  */
 package org.kuali.kpme.pm.positionappointment.validation;
 
-import org.kuali.kpme.core.bo.validation.HrKeyedBusinessObjectValidation;
-import org.kuali.kpme.pm.positionappointment.PositionAppointmentBo;
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.util.ValidationUtils;
+import org.kuali.kpme.pm.positionappointment.PositionAppointment;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
-public class PositionAppointmentValidation extends HrKeyedBusinessObjectValidation {
+public class PositionAppointmentValidation extends MaintenanceDocumentRuleBase {
 
 	@Override
 	protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
 		boolean valid = false;
 		LOG.debug("entering custom validation for position appointment");
-		PositionAppointmentBo pa = (PositionAppointmentBo) this.getNewDataObject();
+		PositionAppointment pa = (PositionAppointment) this.getNewDataObject();
 		
 		if (pa != null) {
 			valid = true;
-			valid &= this.validateGroupKeyCode(pa);
+			valid &= this.validateInstitution(pa);
+			valid &= this.validateLocation(pa);
 		}
 		return valid;
 	}
+	
+	private boolean validateInstitution(PositionAppointment pa) {
+		if (StringUtils.isNotEmpty(pa.getInstitution()) && !ValidationUtils.validateInstitution(pa.getInstitution(), pa.getEffectiveLocalDate())) {
+			this.putFieldError("dataObject.institution", "error.existence", "Instituion '" + pa.getInstitution() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private boolean validateLocation(PositionAppointment pa) {
+		if (StringUtils.isNotEmpty(pa.getLocation()) && !ValidationUtils.validateLocation(pa.getLocation(), pa.getEffectiveLocalDate())) {
+			this.putFieldError("dataObject.location", "error.existence", "Location '" + pa.getLocation() + "'");
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 }

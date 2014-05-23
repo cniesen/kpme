@@ -15,16 +15,21 @@
  */
 package org.kuali.kpme.tklm.time.batch;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.batch.BatchJob;
 import org.kuali.kpme.core.batch.BatchJobUtil;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
 import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
@@ -45,9 +50,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-
-import java.util.Collection;
-import java.util.List;
 
 public class SupervisorApprovalJob extends BatchJob {
 	
@@ -82,21 +84,20 @@ public class SupervisorApprovalJob extends BatchJob {
 							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(timesheetDocument.getPrincipalId(), endDate.toLocalDate());
 							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getPayCalendar()) && phraRecord.getPayCalendar().equals(calendar.getCalendarName())) {
 								// before approve the enroute timesheet doc, we need to find all enroute missed punch docs associated with this timesheet and approve them first
-								List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentsByTimesheetDocumentId(docId);
+								List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(docId);
 								for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
 									if(missedPunchDocument != null 
 											&& DocumentStatus.ENROUTE.equals(KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber())) ){
-										TkServiceLocator.getMissedPunchDocumentService().approveMissedPunchDocument(missedPunchDocument);
+										TkServiceLocator.getMissedPunchService().approveMissedPunchDocument(missedPunchDocument);
 									}
-									
-									TkServiceLocator.getTimesheetService().approveTimesheet(batchUserPrincipalId, timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 								}
 								// find all request actions and approve the document as the users with the request action
 								List<ActionRequest> requestList = KewApiServiceLocator.getWorkflowDocumentService().getPendingActionRequests(docId);
 								for(ActionRequest aRequest : requestList) {
 									if(aRequest.getActionRequested() != null 
 											&& aRequest.getActionRequested().getCode().equals(KewApiConstants.ACTION_REQUEST_APPROVE_REQ)
-											&& StringUtils.isNotBlank(aRequest.getPrincipalId())) {
+											&& StringUtils.isNotBlank(aRequest.getPrincipalId())
+											&& StringUtils.equals(aRequest.getQualifiedRoleNameLabel(), KPMERole.APPROVER.getRoleName())) {
 										TkServiceLocator.getTimesheetService().approveTimesheet(aRequest.getPrincipalId(), timesheetDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
 									}
 								}
@@ -121,8 +122,17 @@ public class SupervisorApprovalJob extends BatchJob {
 						// only approve documents in enroute status
 						if (documentStatus.equals(DocumentStatus.ENROUTE.getCode())) {
 							PrincipalHRAttributes phraRecord = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(leaveCalendarDocument.getPrincipalId(), endDate.toLocalDate());
-							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getLeaveCalendar()) && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {	
-								LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(batchUserPrincipalId, leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
+							if(phraRecord != null && StringUtils.isNotBlank(phraRecord.getLeaveCalendar()) && phraRecord.getLeaveCalendar().equals(calendar.getCalendarName())) {
+								// find all request actions and approve the document as the users with the request action
+								List<ActionRequest> requestList = KewApiServiceLocator.getWorkflowDocumentService().getPendingActionRequests(leaveCalendarDocument.getDocumentId());
+								for(ActionRequest aRequest : requestList) {
+									if(aRequest.getActionRequested() != null 
+											&& aRequest.getActionRequested().getCode().equals(KewApiConstants.ACTION_REQUEST_APPROVE_REQ)
+											&& StringUtils.isNotBlank(aRequest.getPrincipalId())
+											&& StringUtils.equals(aRequest.getQualifiedRoleNameLabel(), KPMERole.APPROVER.getRoleName())) {
+										LmServiceLocator.getLeaveCalendarService().approveLeaveCalendar(aRequest.getPrincipalId(), leaveCalendarDocument, HrConstants.BATCH_JOB_ACTIONS.BATCH_JOB_APPROVE);
+									}
+								}
 							}
 						} else if(documentStatus.equals(DocumentStatus.INITIATED.getCode()) || documentStatus.equals(DocumentStatus.SAVED.getCode())) {
 							String principalId = leaveCalendarDocument.getPrincipalId();
@@ -150,7 +160,7 @@ public class SupervisorApprovalJob extends BatchJob {
 	private boolean missedPunchDocumentsEnroute(String documentId) {
 		boolean missedPunchDocumentsEnroute = false;
 		
-		List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentsByTimesheetDocumentId(documentId);
+		List<MissedPunchDocument> missedPunchDocuments = TkServiceLocator.getMissedPunchService().getMissedPunchDocumentsByTimesheetDocumentId(documentId);
 		for (MissedPunchDocument missedPunchDocument : missedPunchDocuments) {
 			DocumentStatus documentStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(missedPunchDocument.getDocumentNumber());
 			if (DocumentStatus.ENROUTE.equals(documentStatus)) {

@@ -17,7 +17,6 @@ package org.kuali.kpme.pm.positionreporttype.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
-import org.kuali.kpme.pm.positionreporttype.PositionReportTypeBo;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 
 public class PositionReportTypeMaintainableImpl extends HrBusinessObjectMaintainableImpl {
@@ -26,7 +25,7 @@ public class PositionReportTypeMaintainableImpl extends HrBusinessObjectMaintain
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return PositionReportTypeBo.from(PmServiceLocator.getPositionReportTypeService().getPositionReportTypeById(id));
+		return PmServiceLocator.getPositionReportTypeService().getPositionReportTypeById(id);
 	}
 
 }

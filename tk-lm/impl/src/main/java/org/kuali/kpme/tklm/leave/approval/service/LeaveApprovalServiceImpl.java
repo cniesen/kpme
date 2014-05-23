@@ -15,46 +15,10 @@
  */
 package org.kuali.kpme.tklm.leave.approval.service;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.Calendar;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.leave.approval.ApprovalLeaveSummaryRowContract;
-import org.kuali.kpme.tklm.api.leave.approval.LeaveApprovalService;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryContract;
-import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryRowContract;
-import org.kuali.kpme.tklm.api.leave.workflow.LeaveCalendarDocumentHeaderContract;
-import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.leave.approval.web.ApprovalLeaveSummaryRow;
-import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
-import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
-import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.api.action.ActionRequest;
-import org.kuali.rice.kew.api.exception.WorkflowException;
-import org.kuali.rice.kew.api.note.Note;
-import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -64,16 +28,48 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.DateTimeFieldType;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRule;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.Calendar;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.leave.approval.web.ApprovalLeaveSummaryRow;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.calendar.LeaveCalendarDocument;
+import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.leave.summary.LeaveSummary;
+import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
+import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
+import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.action.ActionRequest;
+import org.kuali.rice.kew.api.exception.WorkflowException;
+import org.kuali.rice.kew.api.note.Note;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+
 public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 	
 	public static final int DAYS_WINDOW_DELTA = 31;
 
 	@Override
-	public List<ApprovalLeaveSummaryRowContract> getLeaveApprovalSummaryRows(List<String> principalIds, CalendarEntry payCalendarEntry, List<LocalDateTime> leaveSummaryDates, String docIdSearchTerm) {
-
+	public List<ApprovalLeaveSummaryRow> getLeaveApprovalSummaryRows(List<String> principalIds, CalendarEntry payCalendarEntry, List<Date> leaveSummaryDates, String docIdSearchTerm) {
 		DateTime payBeginDate = payCalendarEntry.getBeginPeriodFullDateTime();
 		DateTime payEndDate = payCalendarEntry.getEndPeriodFullDateTime();
-		List<ApprovalLeaveSummaryRowContract> rowList = new ArrayList<ApprovalLeaveSummaryRowContract>();
+		List<ApprovalLeaveSummaryRow> rowList = new ArrayList<ApprovalLeaveSummaryRow>();		
 		for(String principalId : principalIds) {
 			
 			ApprovalLeaveSummaryRow aRow = new ApprovalLeaveSummaryRow();
@@ -157,7 +153,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 			
             aRow.setLeaveBlockList(leaveBlocks);
             
-			Map<LocalDateTime, Map<String, BigDecimal>> earnCodeLeaveHours = getEarnCodeLeaveHours(leaveBlocks, leaveSummaryDates);
+			Map<Date, Map<String, BigDecimal>> earnCodeLeaveHours = getEarnCodeLeaveHours(leaveBlocks, leaveSummaryDates);
 			aRow.setEarnCodeLeaveHours(earnCodeLeaveHours);
             aRow.setNotes(notes);
 
@@ -170,7 +166,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 			allMessages.get("actionMessages").addAll(transactionalMessages.get("actionMessages"));
 			
 			if(aRow.getLeaveSummary() != null && aRow.getLeaveSummary().getLeaveSummaryRows().size() > 0) {
-				for(LeaveSummaryRowContract summaryRow : aRow.getLeaveSummary().getLeaveSummaryRows()){
+				for(LeaveSummaryRow summaryRow : aRow.getLeaveSummary().getLeaveSummaryRows()){
 					// check for negative available balance for accrual category.
 		    		if(summaryRow.getLeaveBalance() != null && summaryRow.getLeaveBalance().compareTo(BigDecimal.ZERO) < 0) {
 		    			String message = "Negative available balance found for the accrual category '"+summaryRow.getAccrualCategory()+ "'.";
@@ -204,9 +200,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         return cal;
     }
 
-	private Map<Integer, String> getWeekHeadersForSummary(String principalId,LeaveCalendarDocumentHeader lcdh,
-                                                          CalendarEntry cal, Map<String, String> weekDates,
-                                                          Map<String, Set<LocalDateTime>> weekDateList, Map<String,List<Map<String, Object>>> weekDetailMap, Map<String,Boolean> enableWeekDetails) {
+	private Map<Integer, String> getWeekHeadersForSummary(String principalId,LeaveCalendarDocumentHeader lcdh,CalendarEntry cal, Map<String, String> weekDates, Map<String, Set<Date>> weekDateList, Map<String,List<Map<String, Object>>> weekDetailMap, Map<String,Boolean> enableWeekDetails) {
         
 		Map<Integer, String> header = new LinkedHashMap<Integer,String>();                
         header.put(DateTimeConstants.SUNDAY, "Sun");
@@ -261,7 +255,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         
         LocalDateTime weekStart = actualStartDate;
         LocalDateTime weekEnd = actualStartDate;
-        Set<LocalDateTime> dates = new TreeSet<LocalDateTime>();
+        Set<Date> dates = new TreeSet<Date>();
         for (LocalDateTime currentDate = actualStartDate; currentDate.compareTo(actualEndDate) <= 0; currentDate = currentDate.plusDays(1)) {
         	
             if ( (currentDate.getDayOfWeek() == flsaBeginDay && afterFirstDay)
@@ -278,15 +272,15 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
                 display.append(endDateString);
                 weekDates.put(weekString, display.toString());
                 if(currentDate.compareTo(actualEndDate) == 0) {
-                	dates.add(currentDate);
+                	dates.add(currentDate.toDate());
                 }
                 weekDateList.put(weekString, dates);
-                dates = new TreeSet<LocalDateTime>();
-                dates.add(currentDate);
+                dates = new TreeSet<Date>();
+                dates.add(currentDate.toDate());
                 weekStart = currentDate;
                 week++;
             } else {
-            	dates.add(currentDate);
+            	dates.add(currentDate.toDate());
             }
             weekEnd = weekEnd.plusDays(1);
             afterFirstDay = true;
@@ -307,7 +301,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
                 		endDate.toString(TkConstants.DT_ABBREV_DATE_FORMAT) : actualEndDate.toString(TkConstants.DT_ABBREV_DATE_FORMAT);
                 display.append(endDateString);
 	            weekDates.put("Week "+week, display.toString());
-	            dates.add(actualEndDate);
+	            dates.add(actualEndDate.toDate());
 	            weekDateList.put("Week "+week, dates);
         	}
             
@@ -317,18 +311,18 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
         int cnt = 1;
         for(String key : weekDateList.keySet()) {
         	
-        	Set<LocalDateTime> dateList = weekDateList.get(key);
-            LocalDateTime[] datesArray = new LocalDateTime[dateList.size()];
+        	Set<Date> dateList = weekDateList.get(key);
+        	Date[] datesArray = new Date[dateList.size()];
         	datesArray = dateList.toArray(datesArray);
-        	LocalDateTime sd = new LocalDateTime(datesArray[0]);
-        	LocalDateTime ed = new LocalDateTime(datesArray[datesArray.length -1]);
+        	LocalDateTime sd = new LocalDateTime(datesArray[0].getTime());
+        	LocalDateTime ed = new LocalDateTime(datesArray[datesArray.length -1].getTime());
         	if(cnt == 1) {
         		sd = startDate;
         	}
         	if (cnt == weekDateList.size()) {
         		ed = endDate;
         	}
-	        List<Map<String, Object>> detailMap = this.getLeaveApprovalDetailSections(principalId, lcdh,sd.toDateTime(), ed.toDateTime(), new ArrayList<LocalDateTime>(dateList), key, enableWeekDetails);
+	        List<Map<String, Object>> detailMap = this.getLeaveApprovalDetailSections(principalId, lcdh,sd.toDateTime(), ed.toDateTime(), new ArrayList<Date>(dateList), key, enableWeekDetails);
 	        weekDetailMap.put(key, detailMap);
 	        cnt++;
         }
@@ -337,7 +331,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
     }
 	
     private Map<String,Set<String>> findTransactionsWithinPeriod(LeaveCalendarDocumentHeader aDoc,
-                                                                 CalendarEntry payCalendarEntry) {
+			CalendarEntry payCalendarEntry) {
 		Map<String,Set<String>> allMessages = new HashMap<String,Set<String>>();
 		
 		allMessages.put("actionMessages", new HashSet<String>());
@@ -351,18 +345,18 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 
 	private Map<String, Set<String>> findWarnings(String principalId, CalendarEntry calendarEntry, List<LeaveBlock> leaveBlocks) {
 //        List<String> warnings = LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks);
-        Map<String, Set<String>> allMessages= LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks, calendarEntry.getBeginPeriodFullDateTime(), calendarEntry.getEndPeriodFullDateTime());
+        Map<String, Set<String>> allMessages= LeaveCalendarValidationUtil.getWarningMessagesForLeaveBlocks(leaveBlocks, calendarEntry.getBeginPeriodDate(), calendarEntry.getEndPeriodDate());
         //get LeaveSummary and check for warnings
-    	Map<String, Set<LeaveBlockContract>> eligibilities;
+    	Map<String, Set<LeaveBlock>> eligibilities;
     	try {
     		eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry, principalId);
     	} catch (Exception e) {
     		eligibilities = null;
     	}
     	if (eligibilities != null) {
-    		for (Entry<String,Set<LeaveBlockContract>> entry : eligibilities.entrySet()) {
-    			for(LeaveBlockContract block : entry.getValue()) {
-                    AccrualCategoryRuleContract rule = block.getAccrualCategoryRule();
+    		for (Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
+    			for(LeaveBlock block : entry.getValue()) {
+                    AccrualCategoryRule rule = block.getAccrualCategoryRule();
     				if (rule != null) {
     					AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(rule.getLmAccrualCategoryId());
     					if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER)) {
@@ -385,19 +379,19 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
     }
 	
 	@Override
-	public Map<LocalDateTime, Map<String, BigDecimal>> getEarnCodeLeaveHours(List<LeaveBlock> leaveBlocks, List<LocalDateTime> leaveSummaryDates) {
-		Map<LocalDateTime, Map<String, BigDecimal>> earnCodeLeaveHours = new LinkedHashMap<LocalDateTime, Map<String, BigDecimal>>();
+	public Map<Date, Map<String, BigDecimal>> getEarnCodeLeaveHours(List<LeaveBlock> leaveBlocks, List<Date> leaveSummaryDates) {
+		Map<Date, Map<String, BigDecimal>> earnCodeLeaveHours = new LinkedHashMap<Date, Map<String, BigDecimal>>();
 		
-		for (LocalDateTime leaveSummaryDate : leaveSummaryDates) {
+		for (Date leaveSummaryDate : leaveSummaryDates) {
 			earnCodeLeaveHours.put(leaveSummaryDate, new LinkedHashMap<String, BigDecimal>());
 		}
 		
-		for (LeaveBlockContract lb : leaveBlocks) {
+		for (LeaveBlock lb : leaveBlocks) {
 			DateTime leaveDate = lb.getLeaveLocalDate().toDateTimeAtStartOfDay();
 			
-			if (earnCodeLeaveHours.get(leaveDate.toLocalDateTime()) != null) {
+			if (earnCodeLeaveHours.get(leaveDate.toDate()) != null) {
 				
-				Map<String, BigDecimal> leaveHours = earnCodeLeaveHours.get(leaveDate.toLocalDateTime());
+				Map<String, BigDecimal> leaveHours = earnCodeLeaveHours.get(leaveDate.toDate());
 
 				BigDecimal amount = lb.getLeaveAmount();
                 String key = lb.getEarnCode() + "|" + lb.getRequestStatus() + "|" + lb.getLeaveBlockType();
@@ -413,7 +407,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 	}
 	
 	@Override
-	public List<Map<String, Object>> getLeaveApprovalDetailSections(LeaveCalendarDocumentHeaderContract lcdh)  {
+	public List<Map<String, Object>> getLeaveApprovalDetailSections(LeaveCalendarDocumentHeader lcdh)  {
 		
 		List<Map<String, Object>> acRows = new ArrayList<Map<String, Object>>();
 		
@@ -423,18 +417,19 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 		
 		String principalId = lcdh.getPrincipalId();
         CalendarEntry calendarEntry = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(lcdh.getDocumentId()).getCalendarEntry();
+		//CalendarEntries calendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(lcdh.getBeginDate(), lcdh.getEndDate());
 		if(calendarEntry != null) {
 			DateTime beginDate = calendarEntry.getBeginPeriodFullDateTime();
 			DateTime endDate = calendarEntry.getEndPeriodFullDateTime();
-			LeaveSummaryContract leaveSummary;
-			List<LocalDateTime> leaveSummaryDates = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryDates(calendarEntry);
+			LeaveSummary leaveSummary;
+			List<Date> leaveSummaryDates = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryDates(calendarEntry);
             try {
                 leaveSummary = LmServiceLocator.getLeaveSummaryService().getLeaveSummary(principalId, calendarEntry);
             } catch (Exception e) {
                 leaveSummary = null;
             }
             List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, beginDate.toLocalDate(), endDate.toLocalDate());
-			Map<LocalDateTime, Map<String, BigDecimal>> accrualCategoryLeaveHours = getAccrualCategoryLeaveHours(leaveBlocks, leaveSummaryDates);
+			Map<Date, Map<String, BigDecimal>> accrualCategoryLeaveHours = getAccrualCategoryLeaveHours(leaveBlocks, leaveSummaryDates);
 
 			//get all accrual categories of this employee
 			PrincipalHRAttributes pha = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, endDate.toLocalDate());
@@ -446,7 +441,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 					BigDecimal totalAmount = BigDecimal.ZERO;
 					displayMap.put("accrualCategory", ac.getAccrualCategory());
 					int index = 0;
-					for (LocalDateTime leaveSummaryDate : leaveSummaryDates) {
+					for (Date leaveSummaryDate : leaveSummaryDates) {
 						acDayDetails.add(index, null);
 						if (accrualCategoryLeaveHours.get(leaveSummaryDate) != null) {
 							Map<String, BigDecimal> leaveHours = accrualCategoryLeaveHours.get(leaveSummaryDate);
@@ -458,7 +453,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 						}
 						index++;
 					}
-                    LeaveSummaryRowContract lsr = leaveSummary == null ? null : leaveSummary.getLeaveSummaryRowForAccrualCtgy(ac.getAccrualCategory());
+                    LeaveSummaryRow lsr = leaveSummary == null ? null : leaveSummary.getLeaveSummaryRowForAccrualCtgy(ac.getAccrualCategory());
 					displayMap.put("periodUsage", totalAmount);
 					displayMap.put("availableBalance", BigDecimal.ZERO);
                     displayMap.put("availableBalance", lsr == null ? BigDecimal.ZERO : lsr.getLeaveBalance());
@@ -472,14 +467,14 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 		return acRows;
 	}
 
-	public List<Map<String, Object>> getLeaveApprovalDetailSections(String principalId, LeaveCalendarDocumentHeader lcdh,DateTime beginDate, DateTime endDate, List<LocalDateTime> leaveSummaryDates, String week, Map<String,Boolean> enableWeekDetails)  {
+	public List<Map<String, Object>> getLeaveApprovalDetailSections(String principalId, LeaveCalendarDocumentHeader lcdh,DateTime beginDate, DateTime endDate, List<Date> leaveSummaryDates, String week, Map<String,Boolean> enableWeekDetails)  {
 		List<Map<String, Object>> acRows = new ArrayList<Map<String, Object>>();
 		
 		 
         //CalendarEntry calendarEntry = LmServiceLocator.getLeaveCalendarService().getLeaveCalendarDocument(lcdh.getDocumentId()).getCalendarEntry();
 		//CalendarEntries calendarEntry = TkServiceLocator.getCalendarEntriesService().getCalendarEntriesByBeginAndEndDate(lcdh.getBeginDate(), lcdh.getEndDate());
-			LeaveSummaryContract leaveSummary;
-			PrincipalHRAttributes pha;
+			LeaveSummary leaveSummary;
+			PrincipalHRAttributes pha; 
 //			List<Date> leaveSummaryDates = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryDates(calendarEntry);
             try {
                 leaveSummary = LmServiceLocator.getLeaveSummaryService().getLeaveSummaryAsOfDate(principalId, endDate.toLocalDate());
@@ -489,19 +484,19 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
                 pha=null;
             }
             List<LeaveBlock> leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalId, beginDate.toLocalDate(), endDate.toLocalDate());
-			Map<LocalDateTime, Map<String, BigDecimal>> accrualCategoryLeaveHours = getAccrualCategoryLeaveHours(leaveBlocks, leaveSummaryDates);
+			Map<Date, Map<String, BigDecimal>> accrualCategoryLeaveHours = getAccrualCategoryLeaveHours(leaveBlocks, leaveSummaryDates);
 			//get all accrual categories of this employee
 			
 			if(pha != null) {
-				List<? extends AccrualCategoryContract> acList = HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(pha.getLeavePlan(), endDate.toLocalDate());
-				for(AccrualCategoryContract ac : acList) {
+				List<AccrualCategory> acList = HrServiceLocator.getAccrualCategoryService().getActiveAccrualCategoriesForLeavePlan(pha.getLeavePlan(), endDate.toLocalDate());
+				for(AccrualCategory ac : acList) {
 					List<BigDecimal> acDayDetails = new ArrayList<BigDecimal>();
 					Map<String, Object> displayMap = new HashMap<String, Object>();
 					BigDecimal totalAmount = BigDecimal.ZERO;
 					displayMap.put("accrualCategory", ac.getAccrualCategory());
 					int index = 0;
-					for (LocalDateTime leaveSummaryDate : leaveSummaryDates) {
-						if(leaveSummaryDate.compareTo(beginDate.toLocalDateTime()) >= 0 && leaveSummaryDate.compareTo(endDate.toLocalDateTime())<=0) {
+					for (Date leaveSummaryDate : leaveSummaryDates) {
+						if(leaveSummaryDate.compareTo(beginDate.toDate()) >= 0 && leaveSummaryDate.compareTo(endDate.toDate())<=0) {
 							acDayDetails.add(index, null);
 							if (accrualCategoryLeaveHours.get(leaveSummaryDate) != null) {
 								Map<String, BigDecimal> leaveHours = accrualCategoryLeaveHours.get(leaveSummaryDate);
@@ -514,7 +509,7 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 							index++;
 						}
 					}
-                    LeaveSummaryRowContract lsr = leaveSummary == null ? null : leaveSummary.getLeaveSummaryRowForAccrualCtgy(ac.getAccrualCategory());
+                    LeaveSummaryRow lsr = leaveSummary == null ? null : leaveSummary.getLeaveSummaryRowForAccrualCtgy(ac.getAccrualCategory());
                     if(!totalAmount.equals(BigDecimal.ZERO)) {                    	
                     	enableWeekDetails.put(week, Boolean.TRUE);
                     	
@@ -536,20 +531,20 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
     }
 
 	@Override
-	public Map<LocalDateTime, Map<String, BigDecimal>> getAccrualCategoryLeaveHours(List<LeaveBlock> leaveBlocks, List<LocalDateTime> leaveSummaryDates) {
-		Map<LocalDateTime, Map<String, BigDecimal>> accrualCategoryLeaveHours = new LinkedHashMap<LocalDateTime, Map<String, BigDecimal>>();
+	public Map<Date, Map<String, BigDecimal>> getAccrualCategoryLeaveHours(List<LeaveBlock> leaveBlocks, List<Date> leaveSummaryDates) {
+		Map<Date, Map<String, BigDecimal>> accrualCategoryLeaveHours = new LinkedHashMap<Date, Map<String, BigDecimal>>();
 		
-		for (LocalDateTime leaveSummaryDate : leaveSummaryDates) {
+		for (Date leaveSummaryDate : leaveSummaryDates) {
 			accrualCategoryLeaveHours.put(leaveSummaryDate, new LinkedHashMap<String, BigDecimal>());
 		}
 		
-		for (LeaveBlockContract lb : leaveBlocks) {
+		for (LeaveBlock lb : leaveBlocks) {
 			DateTime leaveDate = lb.getLeaveLocalDate().toDateTimeAtStartOfDay();
 			
-			AccrualCategoryContract ac = lb.getAccrualCategoryObj();
+			AccrualCategory ac = lb.getAccrualCategoryObj();
 			if (ac != null && ac.getShowOnGrid().equals("Y")) {
-				if (accrualCategoryLeaveHours.get(leaveDate.toLocalDateTime()) != null) {
-					Map<String, BigDecimal> leaveHours = accrualCategoryLeaveHours.get(leaveDate.toLocalDateTime());
+				if (accrualCategoryLeaveHours.get(leaveDate.toDate()) != null) {
+					Map<String, BigDecimal> leaveHours = accrualCategoryLeaveHours.get(leaveDate.toDate());
 					
 					BigDecimal amount = lb.getLeaveAmount();
 					if (leaveHours.get(ac.getAccrualCategory()) != null) {
@@ -610,8 +605,8 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 	}	
 
 	@Override
-	public Map<String, LeaveCalendarDocumentHeaderContract> getPrincipalDocumentHeader(List<String> principalIds, DateTime payBeginDate, DateTime payEndDate) {
-		Map<String, LeaveCalendarDocumentHeaderContract> principalDocumentHeader = new LinkedHashMap<String, LeaveCalendarDocumentHeaderContract>();
+	public Map<String, LeaveCalendarDocumentHeader> getPrincipalDocumentHeader(List<String> principalIds, DateTime payBeginDate, DateTime payEndDate) {
+		Map<String, LeaveCalendarDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, LeaveCalendarDocumentHeader>();
 		for (String principalId : principalIds) {
 			LeaveCalendarDocumentHeader lcdh = LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate);
 			if(lcdh != null) {
@@ -627,7 +622,8 @@ public class LeaveApprovalServiceImpl implements LeaveApprovalService {
 			String flsaStatus, boolean chkForLeaveEligible) {
 		boolean isActiveAssFound = false;
 		LocalDate asOfDate = LocalDate.now();
-		List<Assignment> activeAssignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, asOfDate);
+		List<Assignment> activeAssignments = HrServiceLocator
+				.getAssignmentService().getAssignments(principalId, asOfDate);
 		if (activeAssignments != null && !activeAssignments.isEmpty()) {
 			for (Assignment assignment : activeAssignments) {
 				if (assignment != null

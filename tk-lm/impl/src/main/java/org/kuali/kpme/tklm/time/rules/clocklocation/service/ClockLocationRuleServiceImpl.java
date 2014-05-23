@@ -15,25 +15,25 @@
  */
 package org.kuali.kpme.tklm.time.rules.clocklocation.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.department.Department;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
-import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
+import org.kuali.kpme.core.KPMENamespace;
+import org.kuali.kpme.core.department.Department;
+import org.kuali.kpme.core.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.clocklocation.ClockLocationRule;
 import org.kuali.kpme.tklm.time.rules.clocklocation.ClockLocationRuleIpAddress;
 import org.kuali.kpme.tklm.time.rules.clocklocation.dao.ClockLocationDao;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 	private ClockLocationDao clockLocationDao;
@@ -46,8 +46,8 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		this.clockLocationDao = clockLocationDao;
 	}
 
-	public void processClockLocationRule(ClockLogBo clockLog, LocalDate asOfDate){
-		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(clockLog.getGroupKeyCode(), clockLog.getDept(),
+	public void processClockLocationRule(ClockLog clockLog, LocalDate asOfDate){
+		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(clockLog.getJob().getDept(),
 										clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), asOfDate);
 		if(lstClockLocationRules.isEmpty()){
 			return;
@@ -63,30 +63,7 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 			}
 		}
 		clockLog.setUnapprovedIP(true);
-		
 		GlobalVariables.getMessageMap().putWarning("property", "ipaddress.invalid.format", clockLog.getIpAddress());
-
-	}
-	
-	public boolean isInValidIPClockLocation(String groupKeyCode, String dept, Long workArea,String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate){
-		Boolean isInValid = true;
-		
-		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(groupKeyCode, dept, workArea, principalId, jobNumber, asOfDate);
-		if(lstClockLocationRules.isEmpty()){
-			isInValid = false;
-			return isInValid;
-		}
-		for(ClockLocationRule clockLocationRule : lstClockLocationRules){
-			List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
-			String ipAddressClock = ipAddress;
-			for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
-				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddressClock)){
-					isInValid = false;
-					break;
-				}
-			}
-		}
-		return isInValid;
 
 	}
 
@@ -110,61 +87,61 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 	}
 
 	@Override
-	public List<ClockLocationRule> getClockLocationRule(String groupKeyCode, String dept, Long workArea,String principalId, Long jobNumber, LocalDate asOfDate) {
+	public List<ClockLocationRule> getClockLocationRule(String dept, Long workArea,String principalId, Long jobNumber, LocalDate asOfDate) {
 
         // 1 : dept, wa, principal, job
-		List<ClockLocationRule> clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, workArea,principalId,jobNumber,asOfDate);
+		List<ClockLocationRule> clockLocationRule = clockLocationDao.getClockLocationRule(dept, workArea,principalId,jobNumber,asOfDate);
 		if(!clockLocationRule.isEmpty()){
 			return clockLocationRule;
 		}
 
         // 2 : dept, wa, principal, -1
-		clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, workArea, principalId, -1L, asOfDate);
+		clockLocationRule = clockLocationDao.getClockLocationRule(dept, workArea, principalId, -1L, asOfDate);
 		if(!clockLocationRule.isEmpty()){
 			return clockLocationRule;
 		}
 
         // 3 : dept, wa, %        , job
-        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, workArea, "%", jobNumber, asOfDate);
+        clockLocationRule = clockLocationDao.getClockLocationRule(dept, workArea, "%", jobNumber, asOfDate);
         if(!clockLocationRule.isEmpty()){
             return clockLocationRule;
         }
 
         // 4 : dept, -1, principal, job
-        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, -1L, principalId, jobNumber, asOfDate);
+        clockLocationRule = clockLocationDao.getClockLocationRule(dept, -1L, principalId, jobNumber, asOfDate);
         if(!clockLocationRule.isEmpty()){
             return clockLocationRule;
         }
 
         // 5 : dept, wa, %        , -1
-		clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, workArea, "%", -1L, asOfDate);
+		clockLocationRule = clockLocationDao.getClockLocationRule(dept, workArea, "%", -1L, asOfDate);
 		if(!clockLocationRule.isEmpty()){
 			return clockLocationRule;
 		}
 
         // 6 : dept, -1, principal, -1
-        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, -1L, principalId, -1L, asOfDate);
+        clockLocationRule = clockLocationDao.getClockLocationRule(dept, -1L, principalId, -1L, asOfDate);
         if(!clockLocationRule.isEmpty()){
             return clockLocationRule;
         }
 
         // 7 : dept, -1, %        , job
-        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, -1L, "%", jobNumber, asOfDate);
+        clockLocationRule = clockLocationDao.getClockLocationRule(dept, -1L, "%", jobNumber, asOfDate);
         if(!clockLocationRule.isEmpty()){
             return clockLocationRule;
         }
 
         // 8 : dept, -1, %        , job
-		clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, dept, -1L, "%", -1L, asOfDate);
+		clockLocationRule = clockLocationDao.getClockLocationRule(dept, -1L, "%", -1L, asOfDate);
 		return clockLocationRule;
 	}
 
 	@Override
-	public List<ClockLocationRule> getNewerVersionClockLocationRule(String groupKeyCode,
+	public List<ClockLocationRule> getNewerVersionClockLocationRule(
 			String dept, Long workArea, String principalId, Long jobNumber,
 			LocalDate asOfDate) {
 		 
-		return clockLocationDao.getNewerVersionClockLocationRule(groupKeyCode, dept, workArea, principalId, jobNumber, asOfDate);
+		return clockLocationDao.getNewerVersionClockLocationRule(dept, workArea, principalId, jobNumber, asOfDate);
 	}
 
 	@Override
@@ -175,28 +152,29 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 	public void populateIPAddressesForCLR(ClockLocationRule clr){
 		clockLocationDao.populateIPAddressesForCLR(clr);
 	}
-    
-    public List<ClockLocationRule> getClockLocationRules(String userPrincipalId, List <ClockLocationRule> clockLocationRuleObjs) {
+
+    public List<ClockLocationRule> getClockLocationRules(String userPrincipalId, LocalDate fromEffdt, LocalDate toEffdt, String principalId, String jobNumber,
+                                                         String dept, String workArea, String active, String showHistory){
     	List<ClockLocationRule> results = new ArrayList<ClockLocationRule>();
     	
-    	if ( clockLocationRuleObjs != null ){
-	    	for (ClockLocationRule clockLocationRuleObj : clockLocationRuleObjs) {
-	        	String department = clockLocationRuleObj.getDept(); 
-	        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartment(department, clockLocationRuleObj.getGroupKeyCode(), clockLocationRuleObj.getEffectiveLocalDate());
-	        	String location = departmentObj != null ? departmentObj.getGroupKey().getLocationId() : null;
-	        	
-	        	Map<String, String> roleQualification = new HashMap<String, String>();
-	        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
-	        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
-	        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
-	        	
-	        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-	    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
-	    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
-	    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
-	        		results.add(clockLocationRuleObj);
-	        	}
-	    	}
+    	List<ClockLocationRule> clockLocationRuleObjs = clockLocationDao.getClockLocationRules(fromEffdt, toEffdt, principalId, jobNumber, dept, workArea, active, showHistory);
+    
+    	for (ClockLocationRule clockLocationRuleObj : clockLocationRuleObjs) {
+        	String department = clockLocationRuleObj.getDept();
+        	Department departmentObj = HrServiceLocator.getDepartmentService().getDepartmentWithoutRoles(department, clockLocationRuleObj.getEffectiveLocalDate());
+        	String location = departmentObj != null ? departmentObj.getLocation() : null;
+        	
+        	Map<String, String> roleQualification = new HashMap<String, String>();
+        	roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
+        	roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), department);
+        	roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), location);
+        	
+        	if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
+    		  || KimApiServiceLocator.getPermissionService().isAuthorizedByTemplate(userPrincipalId, KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+    				  KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>(), roleQualification)) {
+        		results.add(clockLocationRuleObj);
+        	}
     	}
     	
     	return results;

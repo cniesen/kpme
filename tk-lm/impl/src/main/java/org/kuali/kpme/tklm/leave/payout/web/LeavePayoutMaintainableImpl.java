@@ -15,14 +15,17 @@
  */
 package org.kuali.kpme.tklm.leave.payout.web;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.payout.LeavePayout;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
@@ -32,9 +35,6 @@ import org.kuali.rice.krad.bo.DocumentHeader;
 import org.kuali.rice.krad.service.DocumentService;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.ObjectUtils;
-
-import java.math.BigDecimal;
-import java.util.List;
 
 public class LeavePayoutMaintainableImpl extends
         HrBusinessObjectMaintainableImpl {
@@ -73,9 +73,8 @@ public class LeavePayoutMaintainableImpl extends
             //When payout document is disapproved, set all leave block's request statuses to disapproved.
             for(LeaveBlock lb : payout.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setRequestStatus(HrConstants.REQUEST_STATUS.DISAPPROVED);
-                    LmServiceLocator.getLeaveBlockService().deleteLeaveBlock(builder.getLmLeaveBlockId(), routedByPrincipalId);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.DISAPPROVED);
+                    LmServiceLocator.getLeaveBlockService().deleteLeaveBlock(lb.getLmLeaveBlockId(), routedByPrincipalId);
                 }
             }
             //update status of document and associated leave blocks.
@@ -83,9 +82,8 @@ public class LeavePayoutMaintainableImpl extends
             //When payout document moves to final, set all leave block's request statuses to approved.
             for(LeaveBlock lb : payout.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
+                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
             
@@ -99,18 +97,16 @@ public class LeavePayoutMaintainableImpl extends
             		if(payout.getForfeitedAmount() != null)
             			adjustment = adjustment.add(payout.getForfeitedAmount().abs());
             		BigDecimal adjustedLeaveAmount = lb.getLeaveAmount().abs().subtract(adjustment);
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-            		builder.setLeaveAmount(adjustedLeaveAmount.negate());
-            		LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+            		lb.setLeaveAmount(adjustedLeaveAmount.negate());
+            		LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
             	}
             }
         } else if (DocumentStatus.CANCELED.equals(newDocumentStatus)) {
             //When payout document is canceled, set all leave block's request statuses to deferred
             for(LeaveBlock lb : payout.getLeaveBlocks()) {
                 if(ObjectUtils.isNotNull(lb)) {
-                    LeaveBlock.Builder builder = LeaveBlock.Builder.create(lb);
-                    builder.setRequestStatus(HrConstants.REQUEST_STATUS.DEFERRED);
-                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(builder.build(), routedByPrincipalId);
+                    lb.setRequestStatus(HrConstants.REQUEST_STATUS.DEFERRED);
+                    LmServiceLocator.getLeaveBlockService().updateLeaveBlock(lb, routedByPrincipalId);
                 }
             }
         }

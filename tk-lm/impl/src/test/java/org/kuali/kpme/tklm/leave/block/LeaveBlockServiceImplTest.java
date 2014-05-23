@@ -31,9 +31,8 @@ import org.junit.Test;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.TKLMIntegrationTestCase;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockService;
+import org.kuali.kpme.tklm.leave.block.service.LeaveBlockService;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
 @IntegrationTest
@@ -70,10 +69,16 @@ public class LeaveBlockServiceImplTest extends TKLMIntegrationTestCase {
 	@Test
 	public void testGetLeaveBlocks(){
 		// 03/01/2012 to 03/02/2012
-        LocalDate beginDate = LocalDate.parse("2012-03-01");
-        LocalDate endDate = beginDate.plusDays(1);
-
-		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocks(TEST_USER, beginDate, endDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(LocalDate.now().toDate());
+		cal.set(Calendar.YEAR, 2012);
+		cal.set(Calendar.MONTH, 2);
+		cal.set(Calendar.DATE, 1);
+		
+		Date beginDate = cal.getTime();
+		cal.add(Calendar.DATE,1);
+		Date endDate = cal.getTime();
+		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocks(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate));
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 2 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 2);
 	}
@@ -99,43 +104,57 @@ public class LeaveBlockServiceImplTest extends TKLMIntegrationTestCase {
 	@Test
 	public void testGetLeaveBlocksForTimeCalendar() {
 		// 03/01/2012 to 03/06/2012
-        LocalDate beginDate = LocalDate.parse("2012-03-01");
-        LocalDate endDate = LocalDate.parse("2012-03-06");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(LocalDate.now().toDate());
+		cal.set(Calendar.YEAR, 2012);
+		cal.set(Calendar.MONTH, 2);
+		cal.set(Calendar.DATE, 1);
+		
+		Date beginDate = cal.getTime();
+		cal.add(Calendar.DATE,5);
+		Date endDate = cal.getTime();
 		List<String> assignmentKeys = new ArrayList<String>();
-		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 6 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 6);
 		
-		assignmentKeys.add("IU-BL_0_12345_0");
-		leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		assignmentKeys.add("0_12345_0");
+		leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 2 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 2);
 		
-		LeaveBlock.Builder lb = LeaveBlock.Builder.create(LmServiceLocator.getLeaveBlockService().getLeaveBlock("1001"));
+		LeaveBlock lb = LmServiceLocator.getLeaveBlockService().getLeaveBlock("1001");
 		lb.setRequestStatus(HrConstants.REQUEST_STATUS.APPROVED);
-		LmServiceLocator.getLeaveBlockService().saveLeaveBlock(lb.build(), TEST_USER);
-		leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		LmServiceLocator.getLeaveBlockService().saveLeaveBlock(lb, TEST_USER);
+		leaveBlocks = leaveBlockService.getLeaveBlocksForTimeCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertTrue("There should be 3 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 3);
-		Assert.assertTrue("Approved leave block should be in the list", leaveBlocks.contains(lb.build()));
+		Assert.assertTrue("Approved leave block should be in the list", leaveBlocks.contains(lb));
 	}
 	
 	@Test
 	public void testGetLeaveBlocksForLeaveCalendar() {
 		// 03/01/2012 to 03/06/2012
-        LocalDate beginDate = LocalDate.parse("2012-03-01");
-        LocalDate endDate = LocalDate.parse("2012-03-06");
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(LocalDate.now().toDate());
+		cal.set(Calendar.YEAR, 2012);
+		cal.set(Calendar.MONTH, 2);
+		cal.set(Calendar.DATE, 1);
+		
+		Date beginDate = cal.getTime();
+		cal.add(Calendar.DATE,5);
+		Date endDate = cal.getTime();
 		List<String> assignmentKeys = new ArrayList<String>();
-		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		List<LeaveBlock> leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 6 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 6);
 		
-		assignmentKeys.add("IU-BL_0_12345_0");
-		leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		assignmentKeys.add("0_12345_0");
+		leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 5 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 5);
 		
-		assignmentKeys.add("IU-BL_1_12345_0");
-		leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, beginDate, endDate, assignmentKeys);
+		assignmentKeys.add("1_12345_0");
+		leaveBlocks = leaveBlockService.getLeaveBlocksForLeaveCalendar(TEST_USER, LocalDate.fromDateFields(beginDate), LocalDate.fromDateFields(endDate), assignmentKeys);
 		Assert.assertNotNull("Leave blocks not found for user ", leaveBlocks);
 		Assert.assertTrue("There should be 6 leave blocks, not " + leaveBlocks.size(), leaveBlocks.size()== 6);
 	}

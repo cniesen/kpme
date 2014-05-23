@@ -23,15 +23,14 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.assignment.AssignmentDescriptionKey;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
-import org.kuali.kpme.tklm.api.time.mobile.TkMobileService;
+import org.kuali.kpme.tklm.common.TkConstants;
+import org.kuali.kpme.tklm.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -52,7 +51,7 @@ public class TkMobileServiceImpl implements TkMobileService {
 
 		for(Assignment assignment : assignments){
 			if(assignment.getJob() != null) {
-				TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+				TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), LocalDate.now());
 				if(tcr == null || tcr.isClockUserFl()){
 					String key = new AssignmentDescriptionKey(assignment).toAssignmentKeyString();
 					String desc = assignment.getAssignmentDescription();
@@ -74,7 +73,7 @@ public class TkMobileServiceImpl implements TkMobileService {
         // This is primary for getting the assignment, since we get the assignment by using the target principal id on the context
         HrContext.setTargetPrincipalId(principalId);
 
-        CalendarEntry calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, new LocalDate().toDateTimeAtStartOfDay());
+        CalendarEntry calendarEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates(principalId, new LocalDate().toDateTimeAtStartOfDay());
         TimesheetDocument td;
 		try {
 			td = TkServiceLocator.getTimesheetService().openTimesheetDocument(principalId, calendarEntry);
@@ -84,8 +83,8 @@ public class TkMobileServiceImpl implements TkMobileService {
         
         // processClockLog is the correct method to use. It creates and persists a clock log and a time block if necessary.
         // buildClockLog just creates a clock log object.
-        TkServiceLocator.getClockLogService().processClockLog(principalId, td.getDocumentId(), new DateTime(), assignment, td.getCalendarEntry(), ipAddress,
-                LocalDate.now(), getCurrentClockAction(), true);
+        TkServiceLocator.getClockLogService().processClockLog(new DateTime(), assignment, td.getCalendarEntry(), ipAddress,
+                LocalDate.now(), td, getCurrentClockAction(), true, principalId);
 
         // TODO: not sure what we want to return for the errorWarningMap
 

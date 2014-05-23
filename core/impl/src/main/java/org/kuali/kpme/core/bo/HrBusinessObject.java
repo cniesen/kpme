@@ -18,10 +18,8 @@ package org.kuali.kpme.core.bo;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
 public abstract class HrBusinessObject extends PersistableBusinessObjectBase implements HrBusinessObjectContract {
@@ -29,13 +27,9 @@ public abstract class HrBusinessObject extends PersistableBusinessObjectBase imp
 	private static final long serialVersionUID = -5743717258128864335L;
 	
 	private Date effectiveDate;
-	private boolean active=true;
+	private boolean active = true;
 	private Timestamp timestamp;
-    private String userPrincipalId;
-
-    //purely for UI (showHistory)
-    private transient Boolean history;
-
+	
 	public abstract String getId();
 	
 	public abstract void setId(String id);
@@ -82,55 +76,4 @@ public abstract class HrBusinessObject extends PersistableBusinessObjectBase imp
 		return timestamp;
 	}
 
-    public String getUserPrincipalId() {
-        return userPrincipalId;
-    }
-
-    public void setUserPrincipalId(String userPrincipalId) {
-        this.userPrincipalId = userPrincipalId;
-    }
-
-	public boolean areAllBusinessKeyValuesAvailable() {
-		boolean retVal = true;
-		try {
-			if(this.getBusinessKeyValuesMap().isEmpty()) {
-				retVal = false;
-			}
-		}
-		catch(Exception e) {
-			retVal = false;
-		}		
-		return retVal;
-	}
-
-    public Boolean getHistory() {
-        return history;
-    }
-
-    public void setHistory(Boolean history) {
-        this.history = history;
-    }
-
-    public DateTime getCreateTime() {
-        return getTimestamp() == null ? null : new DateTime(getTimestamp().getTime());
-    }
-    
-    
-    /**
-     * Utility method to copy over the common fields like timestamp, effective date etc. from the src object 
-     * to the dest object.
-     * 
-     * @param dest
-     * @param src
-     */
-    public static void copyCommonFields(HrBusinessObject dest, KpmeEffectiveDataTransferObject src) {
-    	dest.setEffectiveDate(src.getEffectiveLocalDate() == null ? null : src.getEffectiveLocalDate().toDate());
-        dest.setActive(src.isActive());
-        if (src.getCreateTime() != null) {
-            dest.setTimestamp(new Timestamp(src.getCreateTime().getMillis()));
-        }
-        dest.setUserPrincipalId(src.getUserPrincipalId());
-        dest.setVersionNumber(src.getVersionNumber());
-        dest.setObjectId(src.getObjectId());
-    }
 }

@@ -38,7 +38,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(0.1));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -63,7 +62,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(3));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -95,7 +93,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(0));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -116,7 +113,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(15));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -136,7 +132,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(15));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -157,7 +152,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(15));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -178,7 +172,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(15));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -199,7 +192,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -220,7 +212,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -241,7 +232,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -262,7 +252,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -283,7 +272,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -304,7 +292,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
 		gpr.setActive(true);
 		gpr.setEffectiveLocalDate(LocalDate.now());
 		gpr.setHourFactor(new BigDecimal(6));
-        gpr.setUserPrincipalId("admin");
 		
 		KRADServiceLocator.getBusinessObjectService().save(gpr);
 		gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());
@@ -325,7 +312,6 @@ public class GracePeriodRuleServiceTest extends TKLMIntegrationTestCase{
         gpr.setActive(true);
         gpr.setEffectiveLocalDate(LocalDate.now());
         gpr.setHourFactor(new BigDecimal(3));
-        gpr.setUserPrincipalId("admin");
 
         KRADServiceLocator.getBusinessObjectService().save(gpr);
         gpr = TkServiceLocator.getGracePeriodService().getGracePeriodRule(LocalDate.now());

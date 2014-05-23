@@ -22,44 +22,27 @@ import java.util.List;
 import org.apache.ojb.broker.query.Criteria;
 import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
-import org.joda.time.LocalDate;
-import org.kuali.kpme.core.assignment.AssignmentBo;
-import org.kuali.kpme.core.util.OjbSubQueryUtil;
-import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrTypeBo;
+import org.kuali.kpme.pm.pstnqlfrtype.PstnQlfrType;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 
 public class PstnQlfrTypeDaoObjImpl extends PlatformAwareDaoBaseOjb implements PstnQlfrTypeDao {
 
 	@Override
-	public PstnQlfrTypeBo getPstnQlfrTypeById(String pmPstnQlfrTypeId) {
+	public PstnQlfrType getPstnQlfrTypeById(String pmPstnQlfrTypeId) {
 		Criteria crit = new Criteria();
         crit.addEqualTo("pmPstnQlfrTypeId", pmPstnQlfrTypeId);
 
-        Query query = QueryFactory.newQuery(PstnQlfrTypeBo.class, crit);
-        return (PstnQlfrTypeBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+        Query query = QueryFactory.newQuery(PstnQlfrType.class, crit);
+        return (PstnQlfrType) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
 	}
 
 	@Override
-	public PstnQlfrTypeBo getPstnQlfrTypeByType(String pmPstnQlfrType) {
-		Criteria crit = new Criteria();
-        crit.addEqualTo("type", pmPstnQlfrType);
-
-        Query query = QueryFactory.newQuery(PstnQlfrTypeBo.class, crit);
-        return (PstnQlfrTypeBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
-	}
-
-	@Override
-	public List<PstnQlfrTypeBo> getAllActivePstnQlfrTypes(LocalDate asOfDate) {
-		List<PstnQlfrTypeBo> aList = new ArrayList<PstnQlfrTypeBo>();
+	public List<PstnQlfrType> getAllActivePstnQlfrTypes() {
+		List<PstnQlfrType> aList = new ArrayList<PstnQlfrType>();
 		Criteria root = new Criteria();
-		if(asOfDate == null) {
-			asOfDate = LocalDate.now();
-		}
-        root.addEqualTo("effectiveDate", OjbSubQueryUtil.getEffectiveDateSubQuery(PstnQlfrTypeBo.class, asOfDate, PstnQlfrTypeBo.BUSINESS_KEYS, false));
-        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(PstnQlfrTypeBo.class, PstnQlfrTypeBo.BUSINESS_KEYS, false));
 		root.addEqualTo("active", true);
-		Query query = QueryFactory.newQuery(PstnQlfrTypeBo.class, root);
-
+		Query query = QueryFactory.newQuery(PstnQlfrType.class, root);
+		
 		Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
 		if(!c.isEmpty())
 			aList.addAll(c);

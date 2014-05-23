@@ -15,22 +15,24 @@
  */
 package org.kuali.kpme.tklm.api.time.timeblock;
 
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.kuali.kpme.core.api.block.CalendarBlockContract;
-import org.kuali.kpme.core.api.mo.UserModified;
-import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailContract;
-
 import java.math.BigDecimal;
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+
+import org.joda.time.DateTime;
+import org.kuali.kpme.core.api.block.CalendarBlockContract;
+import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailContract;
+import org.kuali.kpme.tklm.api.time.workflow.TimesheetDocumentHeaderContract;
+import org.kuali.rice.kim.api.identity.Person;
 
 
 /**
  * <p>TimeBlockContract interface</p>
  *
  */
-public interface TimeBlockContract extends CalendarBlockContract, UserModified, Comparable<TimeBlockContract> {
+public interface TimeBlockContract extends CalendarBlockContract {
 	
 	/**
 	 * The beginTimestamp (Date) associated with the TimeBlock
@@ -41,7 +43,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return new Date(beginTimestamp.getTime()) 
 	 */
-    //public Date getBeginDate();
+    public Date getBeginDate();
     
     /**
 	 * The beginTimestamp (Time) associated with the TimeBlock
@@ -52,7 +54,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return new Time(beginTimestamp.getTime()) 
 	 */
-    public LocalTime getBeginTime();
+    public Time getBeginTime();
    
     /**
 	 * The beginTimestamp (Datetime) associated with the TimeBlock
@@ -74,7 +76,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return endTimestamp for TimeBlock
 	 */
-    //public Timestamp getEndDate();
+    public Timestamp getEndTimestamp();
     
     /**
 	 * The endTimestamp (Date) associated with the TimeBlock
@@ -85,7 +87,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return new Date(endTimestamp.getTime())
 	 */
-    //public Date getEndDate();
+    public Date getEndDate();
 
     /**
 	 * The endTimestamp (Time) associated with the TimeBlock
@@ -96,7 +98,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return new Time(endTimestamp.getTime()) 
 	 */
-    public LocalTime getEndTime();
+    public Time getEndTime();
     
     /**
 	 * The endTimestamp (DateTime) associated with the TimeBlock
@@ -119,7 +121,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if created, N if not
 	 */
-    public Boolean isClockLogCreated();
+    public Boolean getClockLogCreated();
    
     /**
    	 * The hours associated with the TimeBlock
@@ -163,7 +165,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
    	 * 
    	 * @return timestamp for TimeBlock
    	 */
-    public DateTime getCreateTime();
+    public Timestamp getTimestamp();
     
     /**
 	 * The primary key of a TimeBlock entry saved in a database
@@ -196,7 +198,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if pushed back, N if not
 	 */
-    public Boolean isPushBackward();
+    public Boolean getPushBackward();
 
     /**
    	 * The Timeblock begin time to display with the user's Timezone taken into account and applied to this DateTime object.
@@ -218,7 +220,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
    	 * 
    	 * @return Date object representing getBeginTimeDisplay()
    	 */
-    //public DateTime getBeginTimeDisplay();
+    public Date getBeginTimeDisplayDate();
 
     /**
    	 * The date portion of the Timeblock begin time associated with the TimeBlock
@@ -272,6 +274,38 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
    	 */
     public DateTime getEndTimeDisplay();
 
+    /**
+   	 * The Timeblock end time (Date) associated with the TimeBlock
+   	 * 
+   	 * <p>
+   	 * <p>
+   	 * 
+   	 * @return Date object representing getEndTimeDisplay() 
+   	 */
+    public Date getEndTimeDisplayDate();
+    
+    /**
+   	 * The TimesheetDocumentHeader object associated with the TimeBlock
+   	 * 
+   	 * <p>
+   	 * timesheetDocumentHeader of a TimeBlock
+   	 * <p>
+   	 * 
+   	 * @return timesheetDocumentHeader for TimeBlock
+   	 */
+    public TimesheetDocumentHeaderContract getTimesheetDocumentHeader();
+  
+    /**
+   	 * The list of TimeBlockHistory objects associated with the TimeBlock
+   	 * 
+   	 * <p>
+   	 * timeBlockHistories of a TimeBlock
+   	 * <p>
+   	 * 
+   	 * @return timeBlockHistories for TimeBlock
+   	 */
+    public List<? extends TimeBlockHistoryContract> getTimeBlockHistories();
+   
     /**
    	 * The clock log begin id associated with the TimeBlock
    	 * 
@@ -335,7 +369,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if user has a permission to edit/delete this time block, N if not
 	 */
-    //public Boolean getEditable();
+    public Boolean getEditable();
 
     /**
    	 * The principalId associated with the TimeBlock
@@ -390,7 +424,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if user has a permission to delete this time block, N if not
 	 */
-	//public Boolean getDeleteable();
+	public Boolean getDeleteable();
 
 	/**
 	 * Indicates if overtime earn code can be edited
@@ -400,7 +434,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if overtime earn code can be edited, N if not
 	 */
-	//public Boolean getOvertimeEditable();
+	public Boolean getOvertimeEditable();
 
 	/**
 	 * Indicates if this user has a permission to edit this time block
@@ -410,7 +444,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 * 
 	 * @return Y if user has a permission to edit this time block, N if not
 	 */
-    //public Boolean getTimeBlockEditable();
+    public Boolean getTimeBlockEditable();
 
     /**
      * TODO: Make sure this comment is right
@@ -424,6 +458,17 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 */
     public boolean isLunchDeleted();
 
+    /**
+   	 * The Person object associated with the TimeBlock
+   	 * 
+   	 * <p>
+   	 * user of a TimeBlock
+   	 * <p>
+   	 * 
+   	 * @return user for TimeBlock
+   	 */
+	public Person getUser();
+
 	/**
    	 * The id of the CalendarBlock object associated with the TimeBlock
    	 * 
@@ -435,12 +480,4 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
    	 */
 	public String getHrCalendarBlockId();
 
-    public DateTime getLeaveDateTime();
-
-    DateTime getActionDateTime();
-    String getClockAction();
-    String getMissedPunchDocId();
-    String getMissedPunchDocStatus();
-    String getAssignmentValue();
-    Boolean isClockedByMissedPunch();
 }

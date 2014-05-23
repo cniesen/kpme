@@ -31,19 +31,17 @@ import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.api.accrualcategory.AccrualCategoryContract;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.KPMEAccrualCategoryBucketContract;
 import org.kuali.kpme.tklm.api.leave.accrual.bucket.KPMEBalanceException;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 
 public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContract {
@@ -54,11 +52,11 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 	//Leave Summary
 	private LinkedHashMap<String, List<LeaveBalance>> leaveBalances;
 	private CalendarEntry viewingCalendarEntry;
-	private PrincipalHRAttributesBo principalCalendar;
+	private PrincipalHRAttributes principalCalendar;
 	private boolean isInitialized;
 	private LocalDate asOfDate;
 	
-	public void initialize(PrincipalHRAttributesBo currentPrincipalCalendar) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+	public void initialize(PrincipalHRAttributes currentPrincipalCalendar) throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		leaveBalances = new LinkedHashMap<String, List<LeaveBalance>>();
 		principalCalendar = currentPrincipalCalendar;
 		asOfDate = LocalDate.now();
@@ -267,12 +265,12 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 					&& entry.getHrCalendarId().equals(calendarEntry.getHrCalendarId())) {
 				switchingToCurrentLeaveYear = true;
 			}
-			if(entry.getEndPeriodFullDateTime().toLocalDate().isAfter(maxEndDate))
-				maxEndDate = entry.getEndPeriodFullDateTime().toLocalDate();
+			if(entry.getEndPeriodDate().after(maxEndDate.toDate()))
+				maxEndDate = LocalDate.fromDateFields(entry.getEndPeriodDate());
 		}
 		
     	if(switchingToCurrentLeaveYear) {
-    		Interval otherCalendarInterval = new Interval(calendarEntry.getBeginPeriodFullDateTime(), calendarEntry.getEndPeriodFullDateTime());
+    		Interval otherCalendarInterval = new Interval(calendarEntry.getBeginPeriodDate().getTime(), calendarEntry.getEndPeriodDate().getTime());
     		if(otherCalendarInterval.contains(LocalDate.now().toDate().getTime())) {
     			//switching to the present calendar.
     			newAsOfDate = LocalDate.now();
@@ -288,13 +286,13 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
     			}
     	}
     	else
-    		if(calendarEntry.getEndPeriodFullDateTime().isAfter(maxEndDate.toDateTimeAtStartOfDay())){
+    		if(calendarEntry.getEndPeriodDate().after(maxEndDate.toDate())){
     			//switching to a leave year beyond the current leave year, same as future/planning calendar in current leave year.
-    			newAsOfDate = calendarEntry.getBeginPeriodFullDateTime().toLocalDate().minusDays(1);
+    			newAsOfDate = LocalDate.fromDateFields(calendarEntry.getBeginPeriodDate()).minusDays(1);
     		}
     		else {
     			//switching to a calendar period within a past leave calendar year.
-    			DateTime otherCalendarRolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+    			DateTime otherCalendarRolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.fromDateFields(calendarEntry.getEndPeriodDate()));
     			//for past leave calendar years, regardless of calendar period, we require values as of the rollover day.
 				newAsOfDate = LocalDate.fromDateFields(otherCalendarRolloverDate.toDate()).minusDays(1);
     		}
@@ -303,8 +301,8 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
     	for(Entry<String, List<LeaveBalance>> entry : leaveBalances.entrySet()) {
 			for(LeaveBalance leaveBalance : entry.getValue()) {
 				leaveBalance.asOfDate = newAsOfDate;
-				leaveBalance.calendarPeriodBeginDate = calendarEntry.getBeginPeriodFullDateTime().toLocalDate();
-				leaveBalance.calendarPeriodEndDate = calendarEntry.getEndPeriodFullDateTime().toLocalDate();
+				leaveBalance.calendarPeriodBeginDate = LocalDate.fromDateFields(calendarEntry.getBeginPeriodDate());
+				leaveBalance.calendarPeriodEndDate = LocalDate.fromDateFields(calendarEntry.getEndPeriodDate());
 			}
 		}
     	
@@ -375,11 +373,11 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 			//determine which leave blocks are affected by the calendar change, remove them, and re-add them under the new asOfDate
 			if(calendarEntry.getEndPeriodFullDateTime().isBefore(viewingCalendarEntry.getEndPeriodFullDateTime().getMillis())) {
 				//need to remove leave blocks from otherLeaveCalendarDocument begin date to thisLeaveCalendarDocument end date
-				leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalCalendar.getPrincipalId(), calendarEntry.getBeginPeriodFullDateTime().toLocalDate(), viewingCalendarEntry.getEndPeriodFullDateTime().toLocalDate());
+				leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalCalendar.getPrincipalId(), LocalDate.fromDateFields(calendarEntry.getBeginPeriodDateTime()), LocalDate.fromDateFields(viewingCalendarEntry.getEndPeriodDateTime()));
 				//leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForLeaveCalendar(principalCalendar.getPrincipalId(), LocalDate.fromDateFields(calendarEntry.getBeginPeriodDateTime()), LocalDate.fromDateFields(viewingCalendarEntry.getEndPeriodDateTime()), assignmentKeyList);
 			} else {
 				//need to remove leave blocks from thisLeaveCalendarDocument begin date to otherLeaveCalendarDocument end date
-				leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalCalendar.getPrincipalId(), viewingCalendarEntry.getBeginPeriodFullDateTime().toLocalDate(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+				leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocks(principalCalendar.getPrincipalId(), LocalDate.fromDateFields(viewingCalendarEntry.getBeginPeriodDateTime()), LocalDate.fromDateFields(calendarEntry.getEndPeriodDateTime()));
 				//leaveBlocks = LmServiceLocator.getLeaveBlockService().getLeaveBlocksForLeaveCalendar(principalCalendar.getPrincipalId(), LocalDate.fromDateFields(viewingCalendarEntry.getBeginPeriodDateTime()), LocalDate.fromDateFields(calendarEntry.getEndPeriodDateTime()), assignmentKeyList);
 			}
 			//remove affected leave blocks
@@ -390,29 +388,29 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 			//update this bucket and its leave balances with new relative date information
 			LocalDate newAsOfDate = null;
 			DateTime currentLeavePlanStartDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.now()); 
-			if(calendarEntry.getEndPeriodFullDateTime().isBefore(currentLeavePlanStartDate)) {
+			if(calendarEntry.getEndPeriodDate().before(currentLeavePlanStartDate.toDate())) {
 				//require balances as of the final day of the leave calendar year.
-				DateTime calendarEntryLeavePlanRolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
+				DateTime calendarEntryLeavePlanRolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.fromDateFields(calendarEntry.getEndPeriodDate()));
 				newAsOfDate = LocalDate.fromDateFields(calendarEntryLeavePlanRolloverDate.toDate()).minusDays(1);
 			}
 			else {
-				Interval interval = new Interval(calendarEntry.getBeginPeriodFullDateTime(),calendarEntry.getEndPeriodFullDateTime());
+				Interval interval = new Interval(calendarEntry.getBeginPeriodDateTime().getTime(),calendarEntry.getEndPeriodDateTime().getTime());
 				if(interval.contains(LocalDate.now().toDate().getTime())) {
 					newAsOfDate = LocalDate.now();
 				}
 				else
-					if(calendarEntry.getBeginPeriodFullDateTime().toLocalDate().isBefore(LocalDate.now()))
-						newAsOfDate = calendarEntry.getEndPeriodFullDateTime().toLocalDate().minusDays(1);
+					if(calendarEntry.getBeginPeriodDate().before(LocalDate.now().toDate()))
+						newAsOfDate = LocalDate.fromDateFields(calendarEntry.getEndPeriodDate()).minusDays(1);
 					else // if it's in the calendar interval above, the equals case is taken care of, begin date must be after today
-						newAsOfDate = calendarEntry.getBeginPeriodFullDateTime().toLocalDate().minusDays(1);
+						newAsOfDate = LocalDate.fromDateFields(calendarEntry.getBeginPeriodDate()).minusDays(1);
 			}
 
 			asOfDate = newAsOfDate;
 			
 			for(Entry<String, List<LeaveBalance>> leaveBalance : leaveBalances.entrySet()) {
 				for(LeaveBalance balance : leaveBalance.getValue()) {
-					balance.calendarPeriodBeginDate = calendarEntry.getBeginPeriodFullDateTime().toLocalDate();
-					balance.calendarPeriodEndDate = calendarEntry.getEndPeriodFullDateTime().toLocalDate();
+					balance.calendarPeriodBeginDate = LocalDate.fromDateFields(calendarEntry.getBeginPeriodDateTime());
+					balance.calendarPeriodEndDate = LocalDate.fromDateFields(calendarEntry.getEndPeriodDateTime());
 					balance.asOfDate = newAsOfDate;
 				}
 			}
@@ -434,15 +432,15 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 			//moving backward from viewingCalendarEntry
 			CalendarEntry itor = viewingCalendarEntry;
 			
-			while(!itor.getEndPeriodFullDateTime().isBefore(otherCalendarEntry.getEndPeriodFullDateTime())) {
+			while(!itor.getEndPeriodDate().before(otherCalendarEntry.getEndPeriodDate())) {
 				//need to iterate over calendars to gather assignment keys
-				List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAllAssignmentsByCalEntryForLeaveCalendar(principalCalendar.getPrincipalId(), itor);
+				List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalCalendar.getPrincipalId(), itor);
 		        for (Assignment assignment : assignments) {
 		        	assignmentKeys.add(assignment.getAssignmentKey());
 		        }
 		        //check if the iteration crosses a roll over date
-		        if(itor.getEndPeriodFullDateTime().compareTo(leavePlanPrevStart) <= 0) {
-		        	rolloverDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), itor.getBeginPeriodFullDateTime().toLocalDate());
+		        if(itor.getEndPeriodDate().compareTo(leavePlanPrevStart.toDate()) <= 0) {
+		        	rolloverDate = HrServiceLocator.getLeavePlanService().getFirstDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.fromDateFields(itor.getBeginPeriodDate()));
 		        	leavePlanPrevStart = rolloverDate;
 		        }
 				itor = HrServiceLocator.getCalendarEntryService().getPreviousCalendarEntryByCalendarId(viewingCalendarEntry.getHrCalendarId(), itor);
@@ -453,15 +451,15 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 		else if(otherCalendarEntry.getEndPeriodFullDateTime().isAfter(viewingCalendarEntry.getEndPeriodFullDateTime().getMillis())) {
 			//moving forward from viewingCalendarEntry
 			CalendarEntry itor = viewingCalendarEntry;
-			while(!itor.getEndPeriodFullDateTime().isAfter(otherCalendarEntry.getEndPeriodFullDateTime())) {
+			while(!itor.getEndPeriodDate().after(otherCalendarEntry.getEndPeriodDate())) {
 				
-				List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAllAssignmentsByCalEntryForLeaveCalendar(principalCalendar.getPrincipalId(), itor);
+				List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignmentsByCalEntryForLeaveCalendar(principalCalendar.getPrincipalId(), itor);
 		        for (Assignment assignment : assignments) {
 		        	assignmentKeys.add(assignment.getAssignmentKey());
 		        }
 
-				if(itor.getBeginPeriodFullDateTime().compareTo(leavePlanStart) >= 0) {
-					rolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), itor.getEndPeriodFullDateTime().toLocalDate());
+				if(itor.getBeginPeriodDate().compareTo(leavePlanStart.toDate()) >= 0) {
+					rolloverDate = HrServiceLocator.getLeavePlanService().getRolloverDayOfLeavePlan(principalCalendar.getLeavePlan(), LocalDate.fromDateFields(itor.getEndPeriodDate()));
 					leavePlanStart = rolloverDate;
 				}
 				
@@ -535,7 +533,7 @@ public class KPMEAccrualCategoryBucket implements KPMEAccrualCategoryBucketContr
 	}
 
 
-	public LeaveBlockBo withdrawal(AccrualCategoryBo accrualCategory,
+	public LeaveBlock withdrawal(AccrualCategory accrualCategory,
 			BigDecimal amount) {
 		return null;
 	}

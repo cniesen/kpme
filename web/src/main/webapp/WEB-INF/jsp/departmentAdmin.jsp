@@ -22,7 +22,6 @@
 <c:set var="TkForm" value="${TkForm}" scope="request"/>
 
 <tk:tkHeader tabId="departmentAdmin">
-
     <div id="departmentAdmin">
         <table width="100%">
             <tr>
@@ -30,6 +29,7 @@
                     <departmentAdmin:hrPayroll />
                     <departmentAdmin:timeKeeping />
                     <departmentAdmin:leaveMaintenance />
+                    <%--applicable to 2.1 and greater releases <departmentAdmin:positionManagement />--%>
                 </td>
                 <td class="content" valign="top">
                     <departmentAdmin:inquiries />

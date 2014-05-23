@@ -18,7 +18,6 @@ package org.kuali.kpme.tklm.time.rules.timecollection.service;
 import java.util.List;
 
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.springframework.cache.annotation.Cacheable;
 
@@ -28,12 +27,11 @@ public interface TimeCollectionRuleService {
             key="'dept=' + #p0" +
                 "+ '|' + 'workArea=' + #p1" +
                 "+ '|' + 'payType=' + #p2" +
-                "+ '|' + 'groupKeyCode=' + #p3" +
-                "+ '|' + 'asOfDate=' + #p4")
-	public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea, String payType, String groupKeyCode, LocalDate asOfDate);
+                "+ '|' + 'asOfDate=' + #p3")
+	public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea, String payType, LocalDate asOfDate);
 
     @Cacheable(value= TimeCollectionRule.CACHE_NAME, key="'tkTimeCollectionRuleId=' + #p0")
 	public TimeCollectionRule getTimeCollectionRule(String tkTimeCollectionRuleId);
 
-    public List<? extends HrBusinessObjectContract> getTimeCollectionRules(String userPrincipalId, List <TimeCollectionRule> timeCollectionRules);
+    List<TimeCollectionRule> getTimeCollectionRules(String userPrincipalId, String dept, String workArea, String payType, String active, String showHistory);
 }

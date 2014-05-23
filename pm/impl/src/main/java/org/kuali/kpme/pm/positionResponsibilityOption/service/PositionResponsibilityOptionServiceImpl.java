@@ -17,11 +17,8 @@ package org.kuali.kpme.pm.positionResponsibilityOption.service;
 
 import java.util.List;
 
-import org.kuali.kpme.pm.api.positionresponsibilityoption.PositionResponsibilityOption;
-import org.kuali.kpme.pm.api.positionresponsibilityoption.service.PositionResponsibilityOptionService;
+import org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOption;
 import org.kuali.kpme.pm.positionResponsibilityOption.dao.PositionResponsibilityOptionDao;
-import org.kuali.kpme.pm.positionResponsibilityOption.PositionResponsibilityOptionBo;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 public class PositionResponsibilityOptionServiceImpl implements PositionResponsibilityOptionService {
 	
@@ -38,11 +35,11 @@ public class PositionResponsibilityOptionServiceImpl implements PositionResponsi
 	
 	public PositionResponsibilityOption getPositionResponsibilityOptionById(
 			String prOptionId) {
-		return PositionResponsibilityOptionBo.to(positionResponsibilityOptionDao.getPositionResponsibilityOptionById(prOptionId));
+		return positionResponsibilityOptionDao.getPositionResponsibilityOptionById(prOptionId);
 	}
 	public List<PositionResponsibilityOption> getAllActivePstnRspOptions() {
 		
-		return ModelObjectUtils.transform(positionResponsibilityOptionDao.getAllActivePstnRspOptions(),PositionResponsibilityOptionBo.toImmutable);
+		return positionResponsibilityOptionDao.getAllActivePstnRspOptions();
 		
 	}
 	

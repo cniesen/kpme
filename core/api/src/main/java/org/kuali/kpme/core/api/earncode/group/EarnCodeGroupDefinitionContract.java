@@ -16,18 +16,13 @@
 package org.kuali.kpme.core.api.earncode.group;
 
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
-import org.kuali.kpme.core.api.mo.UserModified;
-import org.kuali.rice.core.api.mo.common.GloballyUnique;
-import org.kuali.rice.core.api.mo.common.Identifiable;
-import org.kuali.rice.core.api.mo.common.Versioned;
-import org.kuali.rice.core.api.mo.common.active.Inactivatable;
 import org.kuali.rice.krad.bo.PersistableBusinessObject;
 
 /**
  * <p>EarnCodeGroupDefinitionContract interface</p>
  *
  */
-public interface EarnCodeGroupDefinitionContract extends Versioned, GloballyUnique, Identifiable, Inactivatable, UserModified {
+public interface EarnCodeGroupDefinitionContract extends PersistableBusinessObject {
 
 	/**
 	 * The EarnCode name the EarnCodeGroupDefinition is associated with
@@ -71,7 +66,7 @@ public interface EarnCodeGroupDefinitionContract extends Versioned, GloballyUniq
 	 * 
 	 * @return earnCodeObj for EarnCodeGroupDefinition
 	 */
-//	public EarnCodeContract getEarnCodeObj();
+	public EarnCodeContract getEarnCodeObj();
 
 	/**
 	 * The EarnCode description the EarnCodeGroupDefinition is associated with

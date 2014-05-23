@@ -15,24 +15,23 @@
  */
 package org.kuali.kpme.tklm.leave.payout;
 
-import com.google.common.collect.ImmutableMap;
-import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
-import org.kuali.kpme.core.api.assignment.Assignable;
-import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
-import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.payout.LeavePayoutContract;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
-import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+import org.kuali.kpme.core.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.api.assignment.Assignable;
+import org.kuali.kpme.core.assignment.Assignment;
+import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.core.earncode.EarnCode;
+import org.kuali.kpme.core.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.tklm.api.leave.payout.LeavePayoutContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 public class LeavePayout extends HrBusinessObject implements Assignable, LeavePayoutContract {
 
@@ -47,9 +46,9 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 	private BigDecimal payoutAmount = new BigDecimal("0.0");
     private BigDecimal forfeitedAmount = new BigDecimal("0.0");
 	private transient Person principal;
-	private transient AccrualCategoryBo fromAccrualCategoryObj;
-	private transient EarnCodeBo earnCodeObj;
-	private transient PrincipalHRAttributesBo principalHRAttrObj;
+	private transient AccrualCategory fromAccrualCategoryObj;
+	private transient EarnCode earnCodeObj;
+	private transient PrincipalHRAttributes principalHRAttrObj;
     private String leaveCalendarDocumentId;
     private String accrualCategoryRule;
     private String forfeitedLeaveBlockId;
@@ -57,13 +56,6 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
     private String payoutLeaveBlockId;
 
 	private String status;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
 
 	public String getEarnCode() {
 		return earnCode;
@@ -71,13 +63,13 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 	public void setEarnCode(String earnCode) {
 		this.earnCode = earnCode;
 	}
-	public EarnCodeBo getEarnCodeObj() {
+	public EarnCode getEarnCodeObj() {
 		if (earnCodeObj == null) {
-            earnCodeObj = EarnCodeBo.from(HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, getEffectiveLocalDate()));
+            earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, getEffectiveLocalDate());
         }
         return earnCodeObj;
 	}
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+	public void setEarnCodeObj(EarnCode earnCodeObj) {
 		this.earnCodeObj = earnCodeObj;
 	}
 	public String getPrincipalId() {
@@ -101,7 +93,7 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 	
 	public String getLeavePlan() {
 		if (!StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate()));
+			principalHRAttrObj = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate());
 		}
 		return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
 	}
@@ -133,13 +125,13 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
     public void setForfeitedAmount(BigDecimal amount) {
         this.forfeitedAmount = amount;
     }
-	public AccrualCategoryBo getFromAccrualCategoryObj() {
+	public AccrualCategory getFromAccrualCategoryObj() {
         if (fromAccrualCategoryObj == null) {
-            fromAccrualCategoryObj =  AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
+            fromAccrualCategoryObj =  HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate());
         }
         return fromAccrualCategoryObj;
 	}
-	public void setFromAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+	public void setFromAccrualCategoryObj(AccrualCategory accrualCategoryObj) {
 		this.fromAccrualCategoryObj = accrualCategoryObj;
 	}
 	public static long getSerialversionuid() {
@@ -167,10 +159,10 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
 		setLmLeavePayoutId(id);
 	}
 
-	public PrincipalHRAttributesBo getPrincipalHRAttrObj() {
+	public PrincipalHRAttributes getPrincipalHRAttrObj() {
 		return principalHRAttrObj;
 	}
-	public void setPrincipalHRAttrObj(PrincipalHRAttributesBo hrObj) {
+	public void setPrincipalHRAttrObj(PrincipalHRAttributes hrObj) {
 		this.principalHRAttrObj = hrObj;
 	}
 	public String getAccrualCategoryRule() {

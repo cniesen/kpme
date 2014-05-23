@@ -18,8 +18,8 @@ package org.kuali.kpme.pm.api.classification;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
 import org.kuali.kpme.core.api.location.LocationContract;
-import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 import org.kuali.kpme.pm.api.classification.duty.ClassificationDutyContract;
 import org.kuali.kpme.pm.api.classification.flag.ClassificationFlagContract;
 import org.kuali.kpme.pm.api.classification.qual.ClassificationQualificationContract;
@@ -28,7 +28,7 @@ import org.kuali.kpme.pm.api.classification.qual.ClassificationQualificationCont
  * <p>ClassificationContract interface</p>
  *
  */
-public interface ClassificationContract extends KpmeEffectiveDataTransferObject {
+public interface ClassificationContract extends HrBusinessObjectContract {
 
 	/**
 	 * The identifier of the position classification
@@ -84,17 +84,6 @@ public interface ClassificationContract extends KpmeEffectiveDataTransferObject 
 	 * @return salaryGroup for Classification
 	 */
 	public String getSalaryGroup();
-
-    /**
-     * The Pay Grade to be assigned to Position Classification
-     *
-     * <p>
-     * payGrade for the Classification.
-     * <p>
-     *
-     * @return payGrade for Classification
-     */
-    public String getPayGrade();
 
 	/**
 	 * The maximum percentage of time worked for the position classification
