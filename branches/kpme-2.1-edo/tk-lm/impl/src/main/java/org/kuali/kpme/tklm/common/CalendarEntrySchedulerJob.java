@@ -1,0 +1,94 @@
+/**
+ * Copyright 2004-2014 The Kuali Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.opensource.org/licenses/ecl2.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kuali.kpme.tklm.common;
+
+import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.SchedulerException;
+import org.springframework.scheduling.quartz.QuartzJobBean;
+
+import java.util.List;
+
+public class CalendarEntrySchedulerJob extends QuartzJobBean {
+
+	private static final Logger LOG = Logger.getLogger(CalendarEntrySchedulerJob.class);
+	private static int CALENDAR_ENTRIES_POLLING_WINDOW;
+	
+	private static BatchJobService batchJobService;
+
+	@Override
+	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
+		DateTime asOfDate = new LocalDate().toDateTimeAtStartOfDay();
+        List<CalendarEntry> calendarEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntriesNeedsScheduled(getCalendarEntriesPollingWindow(), asOfDate);
+
+        try {
+	        for (CalendarEntry calendarEntry : calendarEntries) {
+	            if (calendarEntry.getEndPeriodFullDateTime() != null) {
+	            	getBatchJobService().scheduleEndReportingPeriodJobs(calendarEntry);
+	            }
+	        	
+	            if (calendarEntry.getBatchInitiateFullDateTime() != null) {
+	            	getBatchJobService().scheduleInitiateJobs(calendarEntry);
+	            }
+	            
+	            if (calendarEntry.getBatchEndPayPeriodFullDateTime() != null) {
+	            	getBatchJobService().scheduleEndPayPeriodJobs(calendarEntry);
+	            }
+	            
+	            if (calendarEntry.getBatchEmployeeApprovalFullDateTime() != null) {
+	            	getBatchJobService().scheduleEmployeeApprovalJobs(calendarEntry);
+	            }
+	            
+//	            if (calendarEntry.getBatchSupervisorApprovalDateTime() != null) {
+//	            	getBatchJobService().scheduleMissedPunchApprovalJobs(calendarEntry);
+//	            }
+	            
+	            if (calendarEntry.getBatchSupervisorApprovalFullDateTime() != null) {
+	            	getBatchJobService().scheduleSupervisorApprovalJobs(calendarEntry);
+	            }
+	            
+	            if (calendarEntry.getBatchPayrollApprovalFullDateTime() != null) {
+	            	getBatchJobService().schedulePayrollApprovalJobs(calendarEntry);
+	            }
+	        }
+        } catch (SchedulerException se) {
+        	LOG.error("Exception thrown during job scheduling", se);
+//        	throw new JobExecutionException("Exception thrown during job scheduling", se);
+        }
+	}
+	
+	public int getCalendarEntriesPollingWindow() {
+		return CALENDAR_ENTRIES_POLLING_WINDOW;
+	}
+
+	public void setCalendarEntriesPollingWindow(int calendarEntriesPollingWindow) {
+		CALENDAR_ENTRIES_POLLING_WINDOW = calendarEntriesPollingWindow;
+	}
+
+	public static BatchJobService getBatchJobService() {
+		return CalendarEntrySchedulerJob.batchJobService;
+	}
+
+	public void setBatchJobService(BatchJobService batchJobService) {
+		CalendarEntrySchedulerJob.batchJobService = batchJobService;
+	}
+
+}
