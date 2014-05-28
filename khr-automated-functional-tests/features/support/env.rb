@@ -1,9 +1,9 @@
 #$test_site = "http://localhost:8080/kpme-dev" #Local Env
 #$test_site = "http://localhost:8080/kpme-dev2" #Local Env
-#$test_site = "http://ci.kpme.kuali.org/kpme-branchXX"
-$test_site = "http://ci.kpme.kuali.org/kpme-trunk"
+$test_site = "http://ci.kpme.kuali.org/kpme-branch20"
+#$test_site = "http://ci.kpme.kuali.org/kpme-trunk"
 $test_site = ENV['TEST_SITE'] unless ENV['TEST_SITE'] == nil
-$distributed_env = ENV['DISTRIBUTED_ENV']
+#$distributed_env = ENV['DISTRIBUTED_ENV']
 
 $: << File.dirname(__FILE__)+'/../../lib'
 
@@ -32,8 +32,9 @@ if ENV['HEADLESS']
     retry_ctr += 1
     puts "debug env.rb - browser init - attempt #{retry_ctr}"
     begin
-      browser = Watir::Browser.new :chrome, :http_client => client
-      browser.goto("#{$test_site}/login.jsp")
+      browser = Watir::Browser.new :firefox, :http_client => client
+      #browser.goto("#{$test_site}/login.jsp")
+      browser.goto("#{$test_site}")
       sleep 2
       raise "connect failed" unless  browser.text_field(id: "j_username").exists?
       browser.close
@@ -52,7 +53,7 @@ end
 Before do
   if browser == nil
     puts "debug  env.rb - creating new browser"
-    browser = Watir::Browser.new :chrome, :http_client => client
+    browser = Watir::Browser.new :firefox, :http_client => client
     puts "debug  env.rb - browser.nil? #{browser.nil?}"
   end
   @browser = browser

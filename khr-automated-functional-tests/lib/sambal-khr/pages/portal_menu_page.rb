@@ -1,17 +1,17 @@
 class PortalMenu < BasePage
 
-  page_url "#{$test_site}/portal.do?selectedTab=main"
-  expected_title /Kuali Portal Index/
+  page_url "#{$test_site}"
+  #expected_title /Kuali Portal Index/
 
-  expected_element :portal_group_transactions
-  expected_element :portal_group_lookup_and_maintenance
+  #expected_element :portal_group_transactions
+  #expected_element :portal_group_lookup_and_maintenance
   wrapper_elements
 
   #TODO: How to specify both the class and the text?
-  element(:portal_group_transactions) { |b| b.h2(text: "Transactions") }
-  element(:portal_group_lookup_and_maintenance) { |b| b.h2(text: "Lookup and Maintenance") }
+  #element(:portal_group_transactions) { |b| b.h2(text: "Transactions") }
+  #element(:portal_group_lookup_and_maintenance) { |b| b.h2(text: "Lookup and Maintenance") }
 
-  action(:create_project_code) { |b| b.link(title: "Project Code").click }
+  #action(:create_project_code) { |b| b.link(title: "Project Code").click }
 
 
 
@@ -96,16 +96,14 @@ class PortalMenu < BasePage
   #action(:krms_edit_agenda) { |b| b.link(text: "Edit Agenda").click }
   #action(:krms_manage_co_agendas) { |b| b.link(text: "Manage Course Offering Agendas").click}
 
-  element(:username_field) { |b| b.text_field(:name=>"j_username") }
-  element(:password_field) { |b| b.text_field(:name=>"j_password") }
-  element(:login_button) { |b| b.button(:value=>"Login") }
+  element(:username_field) { |b| b.text_field(:id=>"username") }
+  #element(:password_field) { |b| b.text_field(:name=>"j_password") }
+  element(:login_button) { |b| b.button(:value=>"LOGIN") }
   #action(:logout) { |b| b.button(value: "Logout").click }
 
-  def login_with username, password
+  def login_with username
     username_field.set username
-    password_field.set password
     login_button.click
-    enrollment_home_link.wait_until_present
     sleep 5
   end
 
@@ -126,6 +124,13 @@ class PortalMenu < BasePage
 
   def portal_group (group_name)
     b.h2(text: "$group_name")
+  end
+
+  def logout
+    # logout_button.click unless logout_link.exists?
+    if logout_link.visible?
+      logout_link.click
+    end
   end
 
 end
