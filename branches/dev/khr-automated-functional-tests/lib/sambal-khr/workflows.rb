@@ -16,7 +16,7 @@ module Workflows
   end
 
   def go_to_create_population
-     visit Enrollment do |page|
+    visit Enrollment do |page|
       page.manage_populations
     end
     on ManagePopulations do |page|
@@ -104,30 +104,17 @@ module Workflows
     end
   end
 
-  def log_in(user, pwd)
+  def log_in(user)
     current_user = ""
     if !$distributed_env then
       visit PortalMenu do |page|
         current_user = page.current_logged_in_user_id
         if current_user == :no_user
-          page.login_with user, pwd
+          page.login_with user
         elsif current_user != user
           page.logout
           visit Login do |page|
-            page.login_with user, pwd
-          end
-        end
-      end
-    else
-      visit LUMMainPage do |page|
-        current_user = page.current_logged_in_user_id
-        if current_user == :no_user
-          page.login_with user, pwd
-          sleep 2 #workaround for problem loading LUMMainPage first time
-        elsif current_user != user
-          page.logout
-          visit Login do |page|
-            page.login_with user, pwd
+            page.login_with user
           end
         end
       end
