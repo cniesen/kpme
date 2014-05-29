@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="default" name="IU KSB Deployment">
+	<target name="default" depends="deploy-environment" description="Deploy and restart the environment" />
+
+	<target name="init">
+		<property file="deploy-build.properties" />
+	</target>
+	
+	<macrodef name="appdeploy">
+		<attribute name="target" />
+		<attribute name="app" default="${app.code}" />
+		<attribute name="env" default="${env.code}" />
+		<sequential>
+			<echo message="appdeploy: @{target} for @{app}-@{env}" />
+			<exec executable="${ssh.command}">
+				<arg value="${username}@${host.name}" />
+				<arg value="${appdeploy.command} -t @{target} @{app} @{env}"/>
+			</exec>
+		</sequential>
+	</macrodef>
+	
+	<target name="stop-server-cluster" if="stop">
+		<appdeploy target="${stop.target}"/>
+	</target>
+	
+	<target name="clean-server-cluster" if="clean">
+		<appdeploy target="${clean.target}"/>
+	</target>
+	
+	<target name="deploy-server-cluster" if="deploy">
+		<appdeploy target="${deploy.target}"/>
+	</target>
+	
+	<target name="start-server-cluster" if="start">
+		<appdeploy target="${start.target}"/>
+	</target>
+
+	<target name="deploy-environment" depends="init, stop-server-cluster, clean-server-cluster, deploy-server-cluster, start-server-cluster" description="Deploy and restart based on the properties that are set">
+		<echo message="Deploy/restart complete" />
+	</target>
+	
+	<target name="deploy-all-environments" depends="init">
+		<antcall target="stop-server-cluster" />
+		<antcall target="clean-server-cluster" />
+		<antcall target="deploy-server-cluster">
+			<param name="env.code" value="snd" />
+		</antcall>
+		<antcall target="deploy-server-cluster">
+			<param name="env.code" value="unt" />
+		</antcall>
+		<antcall target="deploy-server-cluster">
+			<param name="env.code" value="cnv" />
+		</antcall>
+		<antcall target="deploy-server-cluster">
+			<param name="env.code" value="reg" />
+		</antcall>
+		<antcall target="deploy-server-cluster">
+			<param name="env.code" value="stg" />
+		</antcall>
+		<antcall target="start-server-cluster" />
+	</target>
+
+</project>
