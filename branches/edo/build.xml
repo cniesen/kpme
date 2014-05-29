@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="default" name="IU KSB Packaging">
+	<target name="default" description="Do nothing by default">
+		<echo message="Default target invoked which does nothing" />
+	</target>
+	
+	<target name="init">
+		<property file="build.properties" />	
+	</target>
+	
+	<target name="package-settings-oltp" depends="init">
+		<mkdir dir="${settings.output.dir}" />
+		<copy todir="${settings.output.dir}">
+			<fileset dir="${settings.dir}" />
+		</copy>
+		<filterDirectory dir="${settings.output.dir}" />
+	    <!-- Rename registry-settings-config.xml to <env>_registry-settings-config.xml -->
+		<move file="${settings.output.dir}/${settings.file.name}" tofile="${env.settings.file}" />
+		<zip destfile="${environment.build.dir}/${settings.oltp.zip}">
+			<fileset dir="${settings.output.dir}" />
+		</zip>
+		<chmod perm="660" file="${environment.build.dir}/${settings.oltp.zip}"></chmod>
+	</target>
+	
+	<target name="package-security-oltp" depends="init">
+		<mkdir dir="${security.output.dir}" />
+		<copy todir="${security.output.dir}">
+			<fileset dir="${security.dir}" />
+		</copy>
+		<filterDirectory dir="${security.output.dir}" />
+		<!-- Rename registry-config.xml to <env>_registry-config.xml -->
+		<move file="${security.output.dir}/${security.file.name}" tofile="${env.security.file}" />
+		<zip destfile="${environment.build.dir}/${security.oltp.zip}">
+			<fileset dir="${security.output.dir}" />
+		</zip>
+		<chmod perm="660" file="${environment.build.dir}/${security.oltp.zip}"></chmod>
+	</target>
+	
+	<macrodef name="filterDirectory">
+		<attribute name="dir" />
+		<sequential>
+			<replace dir="@{dir}">
+				<replacefilter token="@app@" value="${application.code}" />
+				<replacefilter token="@env@" value="${build.environment}" />
+			</replace>
+			<replace dir="@{dir}" replacefilterfile="${application.security.properties}" />
+			<replace dir="@{dir}" replacefilterfile="${environment.security.properties}" />
+		</sequential>
+	</macrodef>
+</project>
