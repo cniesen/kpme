@@ -1,12 +1,12 @@
 And(/^the assignment type is NE work area$/) do
-  @timeblock = make TimeBlockObject, :assignment => "IN-DEPT NE Work Area : $5.00 Rcd 0 IN-DEPT", :earn_code => "RGN : Regular Pay Non-Exempt"
+  @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.select_assignment
+  @timeblock.edit :assignment => "IN-DEPT NE Work Area : $5.00 Rcd 0 IN-DEPT"
 
 end
 
 And(/^the earn code is RGN$/) do
-  @timeblock.select_earncode
+  @timeblock.edit :earn_code => "RGN : Regular Pay Non-Exempt"
 
 end
 

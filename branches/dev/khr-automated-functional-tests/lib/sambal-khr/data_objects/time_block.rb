@@ -24,6 +24,8 @@ class TimeBlockObject < DataFactory
       page.start_date.set opts[:start_date] unless opts[:start_date].nil?
       page.in_time.fit opts[:in_time]
       page.out_time.fit opts[:out_time]
+      page.earn_code.pick! opts[:earn_code]
+      page.assignment.pick! opts[:assignment]
 
     end
     set_options(opts)
@@ -45,20 +47,22 @@ class TimeBlockObject < DataFactory
 
 # Selects the value from the drop down
 
+=begin
   def select_earncode
     on TimeblockWidgetPage do |page|
       page.earn_code.pick! (@earn_code)
     end
   end
+=end
 
 
+=begin
   def select_assignment
     on TimeblockWidgetPage do |page|
       page.assignment.pick! (@assignment)
     end
   end
-
-
+=end
 
 
 # Adds the dates from page object and calls edit
