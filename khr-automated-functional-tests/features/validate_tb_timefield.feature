@@ -1,6 +1,5 @@
 @draft
 
-
 Feature: Validate time field in time blocks
 
   Background:

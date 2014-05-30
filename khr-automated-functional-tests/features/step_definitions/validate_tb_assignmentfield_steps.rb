@@ -1,7 +1,12 @@
+=begin
 Given(/^I am logged in as employee(\d+)$/) do |arg1|
   log_in 'inclockdetail1'
 end
+=end
 
+Given(/^I am logged in as employee1$/) do
+  log_in 'inclockdetail1'
+end
 
 When(/^I add a time block with blank assignment$/) do
   @timeblock = make TimeBlockObject
@@ -20,9 +25,9 @@ end
 
 
 When(/^I select NE work area in assignment$/) do
-  @timeblock = make TimeBlockObject, :assignment => "IN-DEPT NE Work Area : $5.00 Rcd 0 IN-DEPT"
+  @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.select_assignment
+  @timeblock.edit :assignment => "IN-DEPT NE Work Area : $5.00 Rcd 0 IN-DEPT"
 
 end
 
@@ -37,9 +42,9 @@ end
 
 
 When(/^I select HR work area in assignment$/) do
-  @timeblock = make TimeBlockObject, :assignment => "IN-DEPT HR Work Area : $5.00 Rcd 1 IN-DEPT"
+  @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.select_assignment
+  @timeblock.edit :assignment => "IN-DEPT HR Work Area : $5.00 Rcd 1 IN-DEPT"
 end
 
 Then(/^default earn codes are displayed$/) do

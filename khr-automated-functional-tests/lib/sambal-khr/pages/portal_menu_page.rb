@@ -111,7 +111,21 @@ class PortalMenu < BasePage
   def current_logged_in_user_id
     user = ""
     begin
-      user = logged_in_user
+      #switch case for the logins
+      #user = logged_in_user
+      # user = 'indetail1' if 'detail1, indiana' == logged_in_user
+      # user = 'inclockdetail1' if 'clockdetail1, indiana' == logged_in_user
+      # user = 'ecsecurity' if 'security, ecs' == logged_in_user
+
+        case logged_in_user
+          when 'detail1, indiana'
+            user = 'indetail1'
+          when 'clockdetail1, indiana'
+            user = 'inclockdetail1'
+          when 'security, ecs'
+            user = 'ecsecurity'
+        end
+
     rescue Watir::Exception::UnknownObjectException
       user = :no_user
     end

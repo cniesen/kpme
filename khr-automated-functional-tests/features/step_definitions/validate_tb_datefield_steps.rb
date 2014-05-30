@@ -53,7 +53,7 @@ When(/^I add a time block with start date later than end date$/) do
   @timeblock.select_date
 
   on TimeblockWidgetPage do |page|
-    @new_startdt = page.add_dates
+    @new_startdt = page.add_dates(1)
   end
 
   @timeblock.edit :start_date => @new_startdt
