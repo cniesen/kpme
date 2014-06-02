@@ -2,6 +2,7 @@
 # a sort of "catch all" Module.
 module Workflows
 
+=begin
   # Site Navigation helpers...
   def go_to_rollover_details
     visit Enrollment do |page|
@@ -103,6 +104,7 @@ module Workflows
       page.test_state_propagation
     end
   end
+=end
 
   def log_in(user)
     current_user = ""

@@ -35,6 +35,7 @@ if ENV['HEADLESS']
       browser = Watir::Browser.new :firefox, :http_client => client
       #browser.goto("#{$test_site}/login.jsp")
       browser.goto("#{$test_site}")
+      #browser.speed = :slow
       sleep 2
       raise "connect failed" unless  browser.text_field(id: "j_username").exists?
       browser.close
@@ -55,11 +56,12 @@ Before do
     puts "debug  env.rb - creating new browser"
     browser = Watir::Browser.new :firefox, :http_client => client
     puts "debug  env.rb - browser.nil? #{browser.nil?}"
+
   end
   @browser = browser
 end
 
-at_exit { browser.close unless browser == nil }
+#at_exit { browser.close unless browser == nil }
 
 if ENV['HEADLESS']
   # commented out to allow parallel execution

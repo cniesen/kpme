@@ -13,17 +13,6 @@ class PortalMenu < BasePage
 
   #action(:create_project_code) { |b| b.link(title: "Project Code").click }
 
-
-
-
-
-
-
-
-
-
-
-
   #  element(:portal_group_transactions) { |b| b.h2(class: "portlet-title").text: "Transactions" }
 
   #element(:enrollment_home_link) { |b| b.link(text: "Enrollment Home") }
@@ -132,6 +121,7 @@ class PortalMenu < BasePage
     user
   end
 
+=begin
   def expected_portal_group (group_name)
     expected_element portal_group("Transactions")
   end
@@ -139,6 +129,7 @@ class PortalMenu < BasePage
   def portal_group (group_name)
     b.h2(text: "$group_name")
   end
+=end
 
   def logout
     # logout_button.click unless logout_link.exists?

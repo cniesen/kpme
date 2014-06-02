@@ -6,7 +6,7 @@ class TimeBlockObject < DataFactory
 #  include Utilities
   #require 'date'
 
-  attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment
+  attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment, :hours
 
 
   def initialize(browser, opts={})
@@ -26,6 +26,7 @@ class TimeBlockObject < DataFactory
       page.out_time.fit opts[:out_time]
       page.earn_code.pick! opts[:earn_code]
       page.assignment.pick! opts[:assignment]
+      page.hours.fit opts[:hours]
 
     end
     set_options(opts)
@@ -45,24 +46,13 @@ class TimeBlockObject < DataFactory
     end
   end
 
-# Selects the value from the drop down
-
-=begin
-  def select_earncode
-    on TimeblockWidgetPage do |page|
-      page.earn_code.pick! (@earn_code)
+# selects the time detail tab
+  def select_timedetail
+    on ClockPage do |page|
+      page.timedetail_tab
     end
   end
-=end
 
-
-=begin
-  def select_assignment
-    on TimeblockWidgetPage do |page|
-      page.assignment.pick! (@assignment)
-    end
-  end
-=end
 
 
 # Adds the dates from page object and calls edit

@@ -1,44 +1,48 @@
+
 class PopulationsBase < BasePage
 
-  wrapper_elements
-  element(:child_populations_table) { |b| b.frm.div(id: "populations_table").table() }
+wrapper_elements
+=begin
+element(:child_populations_table) { |b| b.frm.div(id: "populations_table").table() }
 
-  class << self
+class << self
 
-    def population_lookup_elements
-      element(:keyword) { |b| b.frm.text_field(name: "lookupCriteria[keyword]") }
-      element(:results_table) { |b| b.frm.div(id: "uLookupResults").table(index: 0) }
+  def population_lookup_elements
+    element(:keyword) { |b| b.frm.text_field(name: "lookupCriteria[keyword]") }
+    element(:results_table) { |b| b.frm.div(id: "uLookupResults").table(index: 0) }
 
-      element(:active) { |b| b.frm.radio(value: "kuali.population.population.state.active") }
-      element(:inactive) { |b| b.frm.radio(value: "kuali.population.population.state.inactive") }
-      element(:both) { |b| b.frm.radio(value: "both") }
-    end
+    element(:active) { |b| b.frm.radio(value: "kuali.population.population.state.active") }
+    element(:inactive) { |b| b.frm.radio(value: "kuali.population.population.state.inactive") }
+    element(:both) { |b| b.frm.radio(value: "both") }
+  end
 
-    def population_attribute_elements
-      element(:name) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.populationInfo.name") }
-      element(:description) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.populationInfo.descr.plain") }
-      element(:rule) { |b| b.frm.select(name: "document.newMaintainableObject.dataObject.populationRuleInfo.agendaIds[0]") }
-      element(:child_population) { |b| b.frm.text_field(name: "newCollectionLines['document.newMaintainableObject.dataObject.childPopulations'].name") }
-      element(:reference_population) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.referencePopulation.name") }
+  def population_attribute_elements
+    element(:name) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.populationInfo.name") }
+    element(:description) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.populationInfo.descr.plain") }
+    element(:rule) { |b| b.frm.select(name: "document.newMaintainableObject.dataObject.populationRuleInfo.agendaIds[0]") }
+    element(:child_population) { |b| b.frm.text_field(name: "newCollectionLines['document.newMaintainableObject.dataObject.childPopulations'].name") }
+    element(:reference_population) { |b| b.frm.text_field(name: "document.newMaintainableObject.dataObject.referencePopulation.name") }
 
-      action(:lookup_population) { |b| b.frm.link(id: "lookup_searchPopulation_add").click; b.loading.wait_while_present }
-      action(:lookup_ref_population) { |b| b.frm.link(id: "lookup_searchRefPopulation").click; b.loading.wait_while_present }
-      action(:add) { |b| b.child_populations_table.button(text: "add").click; b.loading.wait_while_present; sleep 1.5 }
-    end
+    action(:lookup_population) { |b| b.frm.link(id: "lookup_searchPopulation_add").click; b.loading.wait_while_present }
+    action(:lookup_ref_population) { |b| b.frm.link(id: "lookup_searchRefPopulation").click; b.loading.wait_while_present }
+    action(:add) { |b| b.child_populations_table.button(text: "add").click; b.loading.wait_while_present; sleep 1.5 }
+  end
 
-    def population_view_elements
-      element(:name_label) { |b| b.frm.div(data_label: "Name").label }
-      value(:name) { |b| b.frm.div(data_label: "Name").span(index: 1).text }
-      value(:description) { |b| b.frm.div(data_label: "Description").span(index: 1).text }
-      value(:state) { |b| b.frm.div(data_label: "State").span(index: 1).text }
-      value(:rule) { |b| b.frm.div(data_label: "Rule").span(index: 2).text }
-      value(:operation) { |b| b.frm.div(data_label: "Operation").span(index: 2).text }
-      value(:reference_population) { |b| b.frm.div(data_label: "Reference Population").span(index: 1).text }
-    end
-
+  def population_view_elements
+    element(:name_label) { |b| b.frm.div(data_label: "Name").label }
+    value(:name) { |b| b.frm.div(data_label: "Name").span(index: 1).text }
+    value(:description) { |b| b.frm.div(data_label: "Description").span(index: 1).text }
+    value(:state) { |b| b.frm.div(data_label: "State").span(index: 1).text }
+    value(:rule) { |b| b.frm.div(data_label: "Rule").span(index: 2).text }
+    value(:operation) { |b| b.frm.div(data_label: "Operation").span(index: 2).text }
+    value(:reference_population) { |b| b.frm.div(data_label: "Reference Population").span(index: 1).text }
   end
 
 end
+=end
+
+end
+=begin
 
 module PopulationsSearch
 
@@ -150,7 +154,7 @@ module PopulationEdit
     child_populations_table.row(text: /#{name}/).button(index: 0).click
     loading.wait_while_present
     wait_until { description.enabled? }
-    sleep 2 #FIXME - Needed because otherwise the automation causes an application error
+    sleep 2
   end
 
 end
@@ -472,3 +476,5 @@ module RegistrationWindowsConstants
   METHOD_MAX_SLOTTED_WINDOW = "Max Slotted Window"
   METHOD_UNIFORM_SLOTTED_WINDOW = "Uniform Slotted Window"
 end
+
+=end

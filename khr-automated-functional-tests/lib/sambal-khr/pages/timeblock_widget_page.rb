@@ -11,7 +11,11 @@ class TimeblockWidgetPage < BasePage
   element(:in_time) { |b| b.text_field(id: 'startTimeHourMinute')}
   element(:out_time) { |b| b.text_field(id: 'endTimeHourMinute')}
 
+  element(:hours) { |b| b.text_field(id: 'hours')}
+
   element(:earn_code_cal) { |b| b.select(id: 'selectedEarnCode').option(value: 'CAL')}
+
+
 
 
   def add_dates (number_of_days)
