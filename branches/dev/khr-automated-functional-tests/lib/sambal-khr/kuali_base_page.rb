@@ -4,9 +4,14 @@ class BasePage < PageFactory
 
     def wrapper_elements
       element(:main_menu_el) { |b| b.link(title: "Main Menu") }
-     #element(:logout_el) { |b| b.button(value: "Logout") }
-     #action(:logout) { |b| b.logout_el.click }
+
       element(:logout_link) { |b| b.link(text: "Logout") }
+      value(:logged_in_user) { |b| b.div(id: "tabs").div(class: "person-info").tr(index: 2).td(index: 1).text }
+
+      #element(:logout_el) { |b| b.button(value: "Logout") }
+      #action(:logout) { |b| b.logout_el.click }
+
+=begin
       element(:administration_el) { |b| b.link(title: "Administration") }
 
       action(:home) { |b| b.link(text: "Home").click }
@@ -18,7 +23,7 @@ class BasePage < PageFactory
 
       value(:build) { |b| b.div(id: "build").text }
       #value(:logged_in_user) { |b| b.div(id: "login-info").text[/(?<=:.).*$/] }
-      value(:logged_in_user) { |b| b.div(id: "tabs").div(class: "person-info").tr(index: 2).td(index: 1).text }
+
 
       value(:copyright) { |b| b.div(id: "footer-copyright").text }
       action(:acknowledgements) { |b| b.link(href: "acknowledgments.jsp").click }
@@ -53,6 +58,8 @@ class BasePage < PageFactory
       #element(:frm) { |b| b.frame(:id=>/easyXDM_default\d+_provider/).frame(id: "iframeportlet") }
       element(:frm) { |b| b }
       element(:frm_popup) { |b| b.frame(:class=>"fancybox-iframe")}
+    end
+=end
     end
   end
 end

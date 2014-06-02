@@ -1,6 +1,8 @@
 class DocumentSearch < BasePage
 
+
   wrapper_elements
+=begin
   frame_element
 
   element(:search_toggle) { |b| b.frm.button(name: "toggleAdvancedSearch") }
@@ -33,5 +35,6 @@ class DocumentSearch < BasePage
   action(:clear) { |b| b.frm.button(name: "methodToCall.clearValues").click }
 
   element(:results_table) { |b| b.frm.table(id: "row", class: "datatable-100") }
+=end
 
 end
