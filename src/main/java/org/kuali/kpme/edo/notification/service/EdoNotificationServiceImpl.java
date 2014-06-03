@@ -1,6 +1,6 @@
 package org.kuali.kpme.edo.notification.service;
 
-import edu.iu.uis.sit.util.mail.AuthenticatedMailer;
+//import edu.iu.uis.sit.util.mail.AuthenticatedMailer;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.rice.core.api.config.property.ConfigContext;
@@ -23,7 +23,7 @@ public class EdoNotificationServiceImpl implements EdoNotificationService {
         String pwd = ConfigContext.getCurrentContextConfig().getProperty(EdoConstants.MAIL_PWD);
 
         LOG.info("EdoNotificationService.sendMail: User " + user);
-        AuthenticatedMailer ml = new AuthenticatedMailer(fromAddress, user, pwd);
+        /*AuthenticatedMailer ml = new AuthenticatedMailer(fromAddress, user, pwd);
         try {
             //check for comma delimited list
             String[] toAddresses = StringUtils.split(toAddress, ',');
@@ -33,6 +33,6 @@ public class EdoNotificationServiceImpl implements EdoNotificationService {
             }
         } catch (MessagingException e) {
             LOG.error("EdoNotificationService.sendMail: Error when sending notification to " + toAddress, e);
-        }
+        }*/
     }
 }

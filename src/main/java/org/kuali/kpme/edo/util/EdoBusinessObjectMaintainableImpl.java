@@ -4,6 +4,7 @@ import org.joda.time.DateTime;
 import org.kuali.kpme.edo.EdoBusinessObject;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
 import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.math.BigDecimal;
@@ -32,7 +33,8 @@ public abstract class EdoBusinessObjectMaintainableImpl extends KualiMaintainabl
         edoObj.setUpdatedBy(GlobalVariables.getUserSession().getPrincipalName());
 
         customSaveLogic(edoObj);
-        KRADServiceLocator.getBusinessObjectService().save(edoObj);
+        //KRADServiceLocator.getBusinessObjectService().save(edoObj);
+        KRADServiceLocatorWeb.getLegacyDataAdapter().save(edoObj);
     }
 
     public abstract EdoBusinessObject getObjectById(BigDecimal id);

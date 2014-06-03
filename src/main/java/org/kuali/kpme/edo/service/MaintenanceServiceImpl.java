@@ -329,8 +329,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 candidateDelegate.setDelegatePrincipalName(name.getPrincipalName());
                 candidateDelegate.setDelegateFullName(name.getDefaultName().getCompositeName());
             }
-            candidateDelegate.setStartDate(edoCandidateDelegate.getActiveFromDate());
-            candidateDelegate.setEndDate(edoCandidateDelegate.getActiveToDate());
+            //candidateDelegate.setStartDate(edoCandidateDelegate.getActiveFromDate());
+            //candidateDelegate.setEndDate(edoCandidateDelegate.getActiveToDate());
             candidateDelegatesList.add(candidateDelegate);
         }
 
@@ -363,8 +363,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 chairDelegate.setDelegatePrincipalName(name.getPrincipalName());
                 chairDelegate.setDelegateFullName(name.getDefaultName().getCompositeName());
             }
-            chairDelegate.setStartDate(edoChairDelegate.getActiveFromDate());
-            chairDelegate.setEndDate(edoChairDelegate.getActiveToDate());
+            //chairDelegate.setStartDate(edoChairDelegate.getActiveFromDate());
+            //chairDelegate.setEndDate(edoChairDelegate.getActiveToDate());
             chairDelegatesList.add(chairDelegate);
         }
 
@@ -400,8 +400,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 candidateGuest.setGuestPrincipalName(name.getPrincipalName());
                 candidateGuest.setGuestFullName(name.getDefaultName().getCompositeName());
             }
-            candidateGuest.setStartDate(edoCandidateGuest.getActiveFromDate());
-            candidateGuest.setEndDate(edoCandidateGuest.getActiveToDate());
+            //candidateGuest.setStartDate(edoCandidateGuest.getActiveFromDate());
+            //candidateGuest.setEndDate(edoCandidateGuest.getActiveToDate());
             candidateGuest.setGuestDossierId(edoCandidateGuest.getQualifier());
             candidateGuest.getGuestDossierId().putAll(edoCandidateGuest.getQualifier());
             //make a call to edo dossier table to fecth dossier and then get dossier type

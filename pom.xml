@@ -8,9 +8,6 @@
 	<description>Edossier application</description>
 
 	<properties>
-		<iurice.group>edu.iu.es.esi.rice</iurice.group>
-		<iurice.version>2.1.7-iu-p42</iurice.version>
-
         <rice.version>2.4.1</rice.version>
 		<app.code>edo</app.code>
 		<env.code>dev</env.code>
@@ -40,28 +37,34 @@
 
 
 	<dependencies>
-		<dependency>
+		<!--<dependency>
 			<groupId>${iurice.group}</groupId>
 			<artifactId>rice-all</artifactId>
 			<version>${iurice.version}</version>
-		</dependency>
-		<dependency>
+		</dependency>-->
+		<!--<dependency>
 			<groupId>${iurice.group}</groupId>
 			<artifactId>rice-extras</artifactId>
 			<version>${iurice.version}</version>
-		</dependency>
+		</dependency>-->
+        <dependency>
+            <groupId>org.kuali.rice</groupId>
+            <artifactId>rice-impl</artifactId>
+            <version>${rice.version}</version>
+        </dependency>
 		<dependency>
-			<groupId>${iurice.group}</groupId>
-			<artifactId>rice-war</artifactId>
-			<version>${iurice.version}</version>
+			<groupId>org.kuali.rice</groupId>
+			<artifactId>rice-standalone</artifactId>
+			<version>${rice.version}</version>
 			<type>war</type>
 		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>${servlet-api.version}</version>
-			<scope>provided</scope>
-		</dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>${servlet-api.version}</version>
+            <scope>provided</scope>
+        </dependency>
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
@@ -154,8 +157,8 @@
 					</webResources>
 					<overlays>
 						<overlay>
-							<groupId>${iurice.group}</groupId>
-							<artifactId>rice-war</artifactId>
+							<groupId>org.kuali.rice</groupId>
+							<artifactId>rice-standalone</artifactId>
 							<includes>
 								<include>core/**</include>
 								<include>ksb/**</include>
@@ -223,9 +226,9 @@
 			</properties>
 			<dependencies>
 				<dependency>
-					<groupId>edu.iu.es.esi.rice</groupId>
+					<groupId>org.kuali.rice</groupId>
 					<artifactId>rice-standalone</artifactId>
-					<version>${iurice.version}</version>
+					<version>${rice.version}</version>
 					<type>war</type>
 				</dependency>
 			</dependencies>
@@ -250,7 +253,7 @@
 							</webResources>
 							<overlays>
 								<overlay>
-									<groupId>${iurice.group}</groupId>
+									<groupId>org.kuali.rice</groupId>
 									<artifactId>rice-standalone</artifactId>
 									<includes>
 										<include>core/**</include>
