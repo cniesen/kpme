@@ -2,7 +2,7 @@ package org.kuali.kpme.edo.workflow.role;
 
 import org.kuali.kpme.edo.permission.EDOKimAttributes;
 import org.kuali.rice.kew.engine.RouteContext;
-import org.kuali.rice.krad.workflow.attribute.QualifierResolverBase;
+import org.kuali.rice.kns.workflow.attribute.QualifierResolverBase;
 
 import java.util.Collections;
 import java.util.HashMap;
