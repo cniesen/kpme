@@ -1,7 +1,8 @@
 #$test_site = "http://localhost:8080/kpme-dev" #Local Env
 #$test_site = "http://localhost:8080/kpme-dev2" #Local Env
-$test_site = "http://ci.kpme.kuali.org/kpme-branch20"
-#$test_site = "http://ci.kpme.kuali.org/kpme-trunk"
+#$test_site = "http://ci.kpme.kuali.org/kpme-branch20"
+#$test_site = "http://testdrive.kpme.kuali.org"
+$test_site = "http://ci.kpme.kuali.org/kpme-release"
 $test_site = ENV['TEST_SITE'] unless ENV['TEST_SITE'] == nil
 #$distributed_env = ENV['DISTRIBUTED_ENV']
 
@@ -61,7 +62,7 @@ Before do
   @browser = browser
 end
 
-#at_exit { browser.close unless browser == nil }
+at_exit { browser.close unless browser == nil }
 
 if ENV['HEADLESS']
   # commented out to allow parallel execution
