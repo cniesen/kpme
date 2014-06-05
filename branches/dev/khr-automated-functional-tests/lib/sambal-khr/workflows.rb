@@ -2,6 +2,12 @@
 # a sort of "catch all" Module.
 module Workflows
 
+
+  def navigate_to_timedetail
+    on ClockPage do |page|
+      page.timedetail_tab
+    end
+  end
 =begin
   # Site Navigation helpers...
   def go_to_rollover_details
