@@ -1,10 +1,4 @@
-=begin
-Given(/^I am logged in as employee(\d+)$/) do |arg1|
-  log_in 'inclockdetail1'
-end
-=end
-
-Given(/^I am logged in as employee1$/) do
+Given(/^I am logged in as indiana time keeping employee$/) do
   log_in 'inclockdetail1'
 end
 
@@ -24,7 +18,7 @@ Then(/^(.*?) error should be displayed$/) do  |error_type|
 end
 
 
-When(/^I select NE work area in assignment$/) do
+When(/^I select non-exempt work area assignment$/) do
   @timeblock = make TimeBlockObject
   @timeblock.select_date
   @timeblock.edit :assignment => "IN-DEPT NE Work Area : $5.00 Rcd 0 IN-DEPT"
@@ -41,7 +35,7 @@ Then(/^default earn code should be selected$/) do
 end
 
 
-When(/^I select HR work area in assignment$/) do
+When(/^I select hourly work area assignment$/) do
   @timeblock = make TimeBlockObject
   @timeblock.select_date
   @timeblock.edit :assignment => "IN-DEPT HR Work Area : $5.00 Rcd 1 IN-DEPT"

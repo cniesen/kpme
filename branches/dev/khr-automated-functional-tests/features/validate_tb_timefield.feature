@@ -3,9 +3,8 @@
 Feature: Validate time field in time blocks
 
   Background:
-    Given I am logged in as employee
-    And the assignment type is NE work area
-    And the earn code is RGN
+    Given I am logged in as indiana non-exempt timekeeping employee
+    And regular pay earn code is selected
 
   Scenario: Verify blank out time cannot be added
     When I add a time block with blank out time
