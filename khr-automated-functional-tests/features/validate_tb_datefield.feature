@@ -3,7 +3,7 @@
 Feature: Validate date field in time blocks
 
   Background:
-    Given I am logged in as employee
+    Given I am logged in as indiana non-exempt timekeeping employee
 
   Scenario: Verify blank end date cannot be added
     When I add a time block with blank end date
