@@ -1,4 +1,4 @@
-Given(/^I am logged in as employee2$/) do
+Given(/^I am logged in as earn code security employee$/) do
   log_in 'ecsecurity'
 end
 
@@ -139,7 +139,7 @@ Then(/^the time block entry should appear for each day$/) do
     day2 = 2
 
     for current_day in day1..day2
-      puts "current day is #{current_day}"
+      #puts "current day is #{current_day}"
       page.hours_entry(current_day)[6,1].should == "8"
       page.widget_entry(current_day)
 
