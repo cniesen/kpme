@@ -26,10 +26,10 @@ class TimeBlockObject < DataFactory
 
       number_of_days = (day_2 - day_1).to_i + 1
       initial_day = 1
-      puts "number_of_days is #{number_of_days}"
+      #puts "number_of_days is #{number_of_days}"
 
       for curr_day in initial_day..number_of_days
-        puts "current day #{curr_day}"
+       # puts "current day #{curr_day}"
         delete_existing_entry(curr_day)
       end
 
@@ -98,9 +98,8 @@ end
 
   def delete_existing_entry(curr_day)
     on KpmeCalendarPage do |page|
-      puts curr_day
-      if page.assignment_type(curr_day) != ""
-        puts "I am going to delete"
+       if page.assignment_type(curr_day) != ""
+        #puts "I am going to delete"
         page.delete_tb(curr_day)
         page.alert.ok
         sleep 5

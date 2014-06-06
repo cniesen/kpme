@@ -3,7 +3,7 @@
   Feature: Validate hours field in time blocks
 
     Background:
-      Given I am logged in as employee2
+      Given I am logged in as earn code security employee
 
 
     Scenario: Verify blank hours field cannot be added
