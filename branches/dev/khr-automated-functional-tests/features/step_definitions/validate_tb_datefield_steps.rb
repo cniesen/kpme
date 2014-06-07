@@ -6,7 +6,7 @@ end
 When /^I add a time block with blank end date$/ do
   @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.edit :end_date=>"", :earn_code => "RGN : Regular Pay Non-Exempt"
+  @timeblock.edit :end_date=>"", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
   @timeblock.add_time_block
 
 end
@@ -30,7 +30,7 @@ end
 When(/^I add a time block with blank start date$/) do
   @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.edit :start_date => "", :earn_code => "RGN : Regular Pay Non-Exempt"
+  @timeblock.edit :start_date => "", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
   @timeblock.add_time_block
 
 end
@@ -39,7 +39,7 @@ end
 When(/^I add a time block with blank start and end date$/) do
   @timeblock = make TimeBlockObject
   @timeblock.select_date
-  @timeblock.edit :start_date => "", :end_date => "", :earn_code => "RGN : Regular Pay Non-Exempt"
+  @timeblock.edit :start_date => "", :end_date => "", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
   @timeblock.add_time_block
 end
 
@@ -53,7 +53,7 @@ When(/^I add a time block with start date later than end date$/) do
     @new_startdt = page.add_dates(1)
   end
 
-  @timeblock.edit :start_date => @new_startdt,:earn_code => "RGN : Regular Pay Non-Exempt"
+  @timeblock.edit :start_date => @new_startdt,:earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
   @timeblock.add_time_block
 
 end
