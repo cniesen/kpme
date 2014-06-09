@@ -3,8 +3,8 @@ class TimeBlockObject < DataFactory
   include DateFactory
   include StringFactory
   include Workflows
-#  include Utilities
-  #require 'date'
+  include Utilities
+
 
   attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment, :hours, :apply_time
 
@@ -26,11 +26,9 @@ class TimeBlockObject < DataFactory
 
       number_of_days = (day_2 - day_1).to_i + 1
       initial_day = 1
-      #puts "number_of_days is #{number_of_days}"
 
       for curr_day in initial_day..number_of_days
-       # puts "current day #{curr_day}"
-        delete_existing_entry(curr_day)
+         delete_existing_entry(curr_day)
       end
 
       page.calendar_day
@@ -48,17 +46,19 @@ class TimeBlockObject < DataFactory
     end
   end
 
+# clicks the checkbox based on the input received
   def set_apply_time
     on TimeblockWidgetPage do |page|
       page.across_days.fit checkbox_trans[@apply_time]
     end
 end
 
+# sets the checkbox based on the input received
   def checkbox_trans
     { "Yes" => :set, "No" => :clear }
   end
 
-# Updates the end date and start date based on the entry
+# updates the end date and start date based on the entry
   def edit (opts={})
     on TimeblockWidgetPage do |page|
       page.end_date.set opts[:end_date] unless opts[:end_date].nil?
@@ -73,14 +73,14 @@ end
     set_options(opts)
   end
 
-# Clicks the add button in the widget
+# clicks the add button in the widget
   def add_time_block
     on TimeblockWidgetPage do |page|
       page.add
     end
   end
 
-# Clicks the day 1 i.e. first monday on calendar
+# clicks the day 1 i.e. first monday on calendar
   def select_date
     on KpmeCalendarPage do |page|
       page.calendar_day
@@ -95,7 +95,6 @@ end
   end
 
 # deletes the existing timeblock entry
-
   def delete_existing_entry(curr_day)
     on KpmeCalendarPage do |page|
        if page.assignment_type(curr_day) != ""
@@ -103,31 +102,9 @@ end
         page.delete_tb(curr_day)
         page.alert.ok
         sleep 5
-
        end
      end
   end
-
-
-# Adds the dates from page object and calls edit
-=begin
-  def add_dates
-    on TimeblockPage do |page|
-
-      ed_dt = page.end_date.value
-      puts "ed dt in date #{ed_dt}"
-      date1 = Date.strptime(ed_dt ,'%m/%d/%Y')
-      st_dt = (date1 + 1).to_s
-      puts "st_dt is #{st_dt}"
-      new_startdate = Date.strptime(st_dt, '%Y-%m-%d').strftime("%m/%d/%Y")
-      #new_startdate
-     edit :start_date => new_startdate
-
-      end
-
-  end
-=end
-
 
 
 
