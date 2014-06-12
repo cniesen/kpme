@@ -6,7 +6,7 @@ class TimeBlockObject < DataFactory
   include Utilities
 
 
-  attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment, :hours, :apply_time
+  attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment, :hours, :apply_time, :amount
 
 
   def initialize(browser, opts={})
@@ -40,8 +40,9 @@ class TimeBlockObject < DataFactory
       page.end_date.set @end_date
       page.assignment.pick! @assignment
       page.earn_code.pick! @earn_code
-      page.hours.set @hours
+      page.hours.fit @hours
       set_apply_time unless @apply_time.nil?
+      page.amount.fit @amount
       page.add
     end
   end

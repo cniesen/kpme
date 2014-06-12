@@ -77,8 +77,8 @@ end
 
 
 Then(/^valid time block entry must display in calendar$/) do
-   on KpmeCalendarPage do |page|
-    page.hours_entry(1)[6,2].should == "24"
+  on KpmeCalendarPage do |page|
+    page.hours_entry(1)[6,2].should == @timeblock.hours
     page.widget_entry(1)
   end
 
@@ -95,7 +95,7 @@ Then(/^valid time block entry must display in calendar$/) do
 
 end
 
-When(/^I create a time block for a date range not applied for all dates$/) do
+When(/^I create a time block for date range not applied to all dates$/) do
   navigate_to_timedetail
   on KpmeCalendarPage do |page|
 
@@ -133,14 +133,14 @@ When(/^I create a time block for a date range$/) do
 end
 
 
-Then(/^the time block entry should appear for each day$/) do
+Then(/^time block entry should appear for each day$/) do
   on KpmeCalendarPage do |page|
     day1 = 1
     day2 = 2
 
     for current_day in day1..day2
       #puts "current day is #{current_day}"
-      page.hours_entry(current_day)[6,1].should == "8"
+      page.hours_entry(current_day)[6,1].should == @timeblock.hours
       page.widget_entry(current_day)
 
 
