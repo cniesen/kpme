@@ -11,6 +11,10 @@ class KpmeCalendarPage < BasePage
   value(:assignment_type) { |curr_day,b| b.td(id: "day_#{curr_day}").div(index: 1).text }
   element(:amount_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: /approvals-table/).text }
 
+  value(:summary_assignment) { |b| b.td(xpath: '//tbody[@id="weekSummaryWeek1"]/tr[2]/td[1]').text }
+  value(:summary_amount) { |b| b.td(xpath: '//tbody[@id="weekSummaryWeek1"]/tr[2]/td[3]').text}
+
+
 
 
   def calc_dates(day_start,day_end)

@@ -19,12 +19,8 @@
 
     Scenario: Verify valid time block with amount can be added
       When I add a time block with valid amount
-      Then time block entry with amount should appear for each day
-
-    Scenario: Verify amount time blocks added over different dates
-      When I create a time block not applied for all dates
-      Then amount time block should appear for each day
+      Then amount should appear in summary
 
     Scenario: Verify amount time blocks added over date range
-      When I add a time block with valid amount over date range
+      When I create a time block not applied for all dates
       Then amount time block should appear for each day

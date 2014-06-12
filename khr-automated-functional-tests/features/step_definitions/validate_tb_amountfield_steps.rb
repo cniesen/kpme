@@ -77,12 +77,15 @@ end
 
 
 
-Then(/^time block entry with amount should appear for each day$/) do
+Then(/^amount should appear in summary$/) do
 
   on KpmeCalendarPage do |page|
     page.amount_entry(1).should include (@timeblock.amount)
+    page.summary_assignment.should == @timeblock.assignment
+    page.summary_amount.should == "$"+@timeblock.amount
     page.widget_entry(1)
   end
+
 
   on TimeblockWidgetPage do |page|
 
@@ -94,8 +97,11 @@ Then(/^time block entry with amount should appear for each day$/) do
     page.close
 
 
-   end
+  end
+
+
 end
+
 
 When(/^I create a time block not applied for all dates$/) do
   navigate_to_timedetail
@@ -152,22 +158,3 @@ Then(/^amount time block should appear for each day$/) do
 end
 
 
-When(/^I add a time block with valid amount over date range$/) do
-
-  navigate_to_timedetail
-  on KpmeCalendarPage do |page|
-
-    @finalstart_dt,@finalend_dt = page.calc_dates(1,2)
-
-  end
-
-  @timeblock = create TimeBlockObject, :start_date => @finalstart_dt,
-                      :end_date => @finalend_dt,
-                      :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
-                      :earn_code => "ECA : ECA - Earn code with Amount",
-                      :amount => "5.00",
-                      :apply_time => "Yes"
-
-
-
-end
