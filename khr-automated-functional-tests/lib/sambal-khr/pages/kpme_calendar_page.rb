@@ -9,6 +9,7 @@ class KpmeCalendarPage < BasePage
   element(:pay_period)  { |b| b.select(id: 'selectedPayPeriod').option(selected: 'selected').text }
 
   value(:assignment_type) { |curr_day,b| b.td(id: "day_#{curr_day}").div(index: 1).text }
+  element(:amount_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: /approvals-table/).text }
 
 
 

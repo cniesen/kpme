@@ -5,7 +5,6 @@
     Background:
       Given I am logged in as earn code security employee
 
-
     Scenario: Verify blank hours field cannot be added
       When I add a blank hours field
       Then blank hours field error must be displayed
@@ -19,10 +18,10 @@
       Then valid time block entry must display in calendar
 
     Scenario: Verify time blocks can be added over different dates
-      When I create a time block for a date range not applied for all dates
-      Then the time block entry should appear for each day
+      When I create a time block for date range not applied to all dates
+      Then time block entry should appear for each day
 
     Scenario: Verify time blocks can be added over date range
       When I create a time block for a date range
-      Then the time block entry should appear for each day
+      Then time block entry should appear for each day
 
