@@ -6,13 +6,23 @@ class TimeBlockObject < DataFactory
   include Utilities
 
 
-  attr_accessor  :start_date, :end_date, :earn_code, :in_time, :out_time, :assignment, :hours, :apply_time, :amount
+  attr_accessor  :start_date,
+                 :end_date,
+                 :earn_code,
+                 :in_time,
+                 :out_time,
+                 :assignment,
+                 :hours,
+                 :apply_time,
+                 :amount,
+                 :defer_add
 
 
   def initialize(browser, opts={})
     @browser = browser
     defaults ={
         #       end_date: "05/14/2014"
+         defer_add: false
     }
     set_options(defaults.merge(opts))
   end
@@ -20,31 +30,43 @@ class TimeBlockObject < DataFactory
 # creates all the data for a timeblock entry and clicks add
     def create
 
-    on KpmeCalendarPage do |page|
-      day_1 = Date.strptime(@start_date,'%m/%d/%Y')
-      day_2 = Date.strptime(@end_date,'%m/%d/%Y')
-
-      number_of_days = (day_2 - day_1).to_i + 1
-      initial_day = 1
-
-      for curr_day in initial_day..number_of_days
-         delete_existing_entry(curr_day)
-      end
-
-      page.calendar_day
-    end
-
-
+    check_existing_entry
     on TimeblockWidgetPage do |page|
       page.start_date.set @start_date
       page.end_date.set @end_date
       page.assignment.pick! @assignment
       page.earn_code.pick! @earn_code
+      page.in_time.fit @in_time
+      page.out_time.fit @out_time
       page.hours.fit @hours
       set_apply_time unless @apply_time.nil?
       page.amount.fit @amount
-      page.add
+      page.add unless @defer_add
     end
+  end
+
+# checks for the existing time block and deletes
+  def check_existing_entry
+    on KpmeCalendarPage do |page|
+
+        if @start_date!="" && @end_date!=""
+          day_1 = Date.strptime(@start_date,'%m/%d/%Y')
+          day_2 = Date.strptime(@end_date,'%m/%d/%Y')
+
+          number_of_days = (day_2 - day_1).to_i + 1
+
+          curr_day = 0
+          while number_of_days > 0 do
+            curr_day += 1
+            delete_existing_entry(curr_day)
+            number_of_days -= 1
+          end
+
+        end
+
+      page.calendar_day
+    end
+
   end
 
 # clicks the checkbox based on the input received
@@ -99,7 +121,6 @@ end
   def delete_existing_entry(curr_day)
     on KpmeCalendarPage do |page|
        if page.assignment_type(curr_day) != ""
-        #puts "I am going to delete"
         page.delete_tb(curr_day)
         page.alert.ok
         sleep 5
