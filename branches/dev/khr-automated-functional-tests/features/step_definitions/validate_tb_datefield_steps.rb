@@ -4,17 +4,23 @@ Given /^I am logged in as indiana non-exempt timekeeping employee$/ do
 end
 
 When /^I add a time block with blank end date$/ do
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :end_date=>"", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => "",
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "10am"
+
 
 end
 
 
 Then /^(.*?) error message should be displayed$/ do |error_type|
   on TimeblockWidgetPage do |page|
-    #puts error_type puts page.validation_text
 
     page.validation_text.should == "End Date is not a valid date" if error_type == "blank end date"
     page.validation_text.should == "Start Date is not a valid date" if error_type == "blank start date"
@@ -28,32 +34,41 @@ end
 
 
 When(/^I add a time block with blank start date$/) do
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :start_date => "", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+
+  @timeblock = create TimeBlockObject,:start_date => "",
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "10am"
 
 end
 
 
 When(/^I add a time block with blank start and end date$/) do
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :start_date => "", :end_date => "", :earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
-  @timeblock.add_time_block
+  @timeblock = create TimeBlockObject,:start_date => "",
+                      :end_date => "",
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "10am"
+
 end
 
 
 
 When(/^I add a time block with start date later than end date$/) do
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-
-  on TimeblockWidgetPage do |page|
-    @new_startdt = page.add_dates(1)
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(2,1)
   end
 
-  @timeblock.edit :start_date => @new_startdt,:earn_code => "RGN : Regular Pay Non-Exempt", :in_time => "8am", :out_time => "10am"
-  @timeblock.add_time_block
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "10am"
 
 end

@@ -1,13 +1,13 @@
-And(/^regular pay earn code is selected$/) do
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :earn_code => "RGN : Regular Pay Non-Exempt"
-
-end
-
 When(/^I add a time block with blank out time$/) do
-  @timeblock.edit :in_time => "8am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am"
 
 end
 
@@ -27,28 +27,69 @@ end
 
 
 When(/^I add a time block with blank in time$/) do
-  @timeblock.edit :out_time => "10am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :out_time => "10am"
+
+
 end
 
 When(/^I add a time block with invalid out time$/) do
-  @timeblock.edit :in_time => "8am", :out_time => "asdf"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "asdf"
+
 end
 
 
 When(/^I add a time block with invalid in time$/) do
-  @timeblock.edit :out_time => "10am", :in_time => "asdf"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :out_time => "10am",
+                      :in_time => "asdf"
+
 end
 
 
 When(/^I add a time block with in time later than out time$/) do
-  @timeblock.edit :in_time => "10am", :out_time => "8am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :out_time => "8am",
+                      :in_time => "10am"
+
 end
 
 When(/^I add a time block with in time same as out time$/) do
-  @timeblock.edit :in_time => "8am", :out_time => "8am"
-  @timeblock.add_time_block
+  on KpmeCalendarPage do |page|
+    @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
+  end
+
+  @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "RGN : Regular Pay Non-Exempt",
+                      :in_time => "8am",
+                      :out_time => "8am"
+
 end
