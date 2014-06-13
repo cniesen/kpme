@@ -20,15 +20,4 @@ class TimeblockWidgetPage < BasePage
 
 
 
-  def add_dates (number_of_days)
-
-    end_dt = end_date.value
-    date1 = Date.strptime(end_dt ,'%m/%d/%Y')
-    start_dt = (date1 + number_of_days).to_s
-    new_startdate = Date.strptime(start_dt, '%Y-%m-%d').strftime('%m/%d/%Y')
-
-  end
-
-
-
 end
