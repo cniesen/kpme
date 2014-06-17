@@ -2,6 +2,8 @@ class KpmeCalendarPage < BasePage
 
   action(:calendar_day) { |b| b.td(id: 'day_1').click }
   action(:delete_tb) { |curr_day,b| b.td(id: "day_#{curr_day}").img(class: 'event-delete').click }
+  value(:assignment_count)  { |curr_day,b| b.td(id: "day_#{curr_day}").divs.size }
+
 
   element(:hours_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: "event-content").text }
   action(:widget_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: 'event-title-true').div(id: /show_./).click }
@@ -11,8 +13,9 @@ class KpmeCalendarPage < BasePage
   value(:assignment_type) { |curr_day,b| b.td(id: "day_#{curr_day}").div(index: 1).text }
   element(:amount_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: /approvals-table/).text }
 
-  value(:summary_assignment) { |b| b.tbody(id: 'weekSummaryWeek1').td(class: 'assignment0', index: 0).text }
-  value(:summary_amount) { |b| b.tbody(id: 'weekSummaryWeek1').td(class: 'assignment0', index: 1).text }
+  value(:summary_assignment) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").text }
+  value(:summary_hours) { |no,ec_type,curr_day,b| b.td(id: "day#{curr_day}_#{ec_type}_assignment#{no}").text }
+  value(:summary_assignment_bgcolor) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").style 'background-color'}
 
 
 

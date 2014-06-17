@@ -15,22 +15,29 @@ class TimeBlockObject < DataFactory
                  :hours,
                  :apply_time,
                  :amount,
-                 :defer_add
+                 :defer_add,
+                 :defer_check_entry
 
 
   def initialize(browser, opts={})
     @browser = browser
     defaults ={
         #       end_date: "05/14/2014"
-         defer_add: false
+         defer_add: false,
+         defer_check_entry: false
+
     }
     set_options(defaults.merge(opts))
   end
 
 # creates all the data for a timeblock entry and clicks add
-    def create
+  def create
 
-    check_existing_entry
+
+    check_existing_entry unless @defer_check_entry
+
+    on(KpmeCalendarPage).calendar_day
+
     on TimeblockWidgetPage do |page|
       page.start_date.set @start_date
       page.end_date.set @end_date
@@ -47,7 +54,7 @@ class TimeBlockObject < DataFactory
 
 # checks for the existing time block and deletes
   def check_existing_entry
-    on KpmeCalendarPage do |page|
+#  on KpmeCalendarPage do |page|
 
         if @start_date!="" && @end_date!=""
           day_1 = Date.strptime(@start_date,'%m/%d/%Y')
@@ -56,7 +63,7 @@ class TimeBlockObject < DataFactory
           number_of_days = (day_2 - day_1).to_i + 1
 
           curr_day = 0
-          while number_of_days > 0 do
+          while number_of_days > 0  do
             curr_day += 1
             delete_existing_entry(curr_day)
             number_of_days -= 1
@@ -64,8 +71,8 @@ class TimeBlockObject < DataFactory
 
         end
 
-      page.calendar_day
-    end
+#      page.calendar_day
+#  end
 
   end
 
@@ -120,10 +127,12 @@ end
 # deletes the existing timeblock entry
   def delete_existing_entry(curr_day)
     on KpmeCalendarPage do |page|
-       if page.assignment_type(curr_day) != ""
+      while page.assignment_count(curr_day) > 2  do
+        #puts page.assignment_count(curr_day)
         page.delete_tb(curr_day)
         page.alert.ok
-        sleep 5
+        sleep 5    # this sleep is to prevent browser's dialog
+
        end
      end
   end
