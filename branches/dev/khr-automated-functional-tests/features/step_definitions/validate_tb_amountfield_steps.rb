@@ -81,8 +81,8 @@ Then(/^amount should appear in summary$/) do
 
   on KpmeCalendarPage do |page|
     page.amount_entry(1).should include (@timeblock.amount)
-    page.summary_assignment.should == @timeblock.assignment
-    page.summary_amount.should == "$"+@timeblock.amount
+    page.summary_assignment(0).should == @timeblock.assignment
+    page.summary_fieldvalue(0,'ECA',1).should == "$"+@timeblock.amount
     page.widget_entry(1)
   end
 
@@ -131,7 +131,7 @@ Then(/^amount time block should appear for each day$/) do
 
     for current_day in day1..day2
       #puts "current day is #{current_day}"
-      page.amount_entry(current_day).should include (@timeblock.amount)
+      page.summary_fieldvalue(0,'ECA',current_day).should include (@timeblock.amount)
       page.widget_entry(current_day)
 
 
