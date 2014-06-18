@@ -11,14 +11,11 @@ When(/^I add a blank hours field$/) do
 
   end
 
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :start_date => @finalstart_dt,
-                  :end_date => @finalend_dt,
-                  :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
-                  :earn_code => "EC1 : EC1 - Security"
+  @timeblock = create TimeBlockObject, :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
+                      :start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :earn_code => "EC1 : EC1 - Security"
 
-  @timeblock.add_time_block
 end
 
 
@@ -39,15 +36,13 @@ When(/^I add hours more than the limit$/) do
 
   end
 
-  @timeblock = make TimeBlockObject
-  @timeblock.select_date
-  @timeblock.edit :start_date => @finalstart_dt,
-                  :end_date => @finalend_dt,
-                  :hours => "25",
-                  :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
-                  :earn_code => "EC1 : EC1 - Security"
+  @timeblock = create TimeBlockObject, :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
+                      :start_date => @finalstart_dt,
+                      :end_date => @finalend_dt,
+                      :hours => "25",
+                      :earn_code => "EC1 : EC1 - Security"
 
-  @timeblock.add_time_block
+
 end
 
 
