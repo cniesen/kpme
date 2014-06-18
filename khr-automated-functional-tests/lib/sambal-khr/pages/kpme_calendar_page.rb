@@ -14,7 +14,7 @@ class KpmeCalendarPage < BasePage
   element(:amount_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: /approvals-table/).text }
 
   value(:summary_assignment) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").text }
-  value(:summary_hours) { |no,ec_type,curr_day,b| b.td(id: "day#{curr_day}_#{ec_type}_assignment#{no}").text }
+  value(:summary_fieldvalue) { |no,ec_type,curr_day,b| b.td(id: "day#{curr_day}_#{ec_type}_assignment#{no}").text }
   value(:summary_assignment_bgcolor) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").style 'background-color'}
 
 
