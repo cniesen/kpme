@@ -11,11 +11,7 @@ Feature: Validate date field in time blocks
 
   Scenario: Verify blank start date cannot be added
     When I add a time block with blank start date
-    Then blank start date error message should be displayed
-
-  Scenario: Verify blank start and end date cannot be added
-    When I add a time block with blank start and end date
-    Then blank dates error message should be displayed
+    Then no assignment should be displayed
 
   Scenario: Verify start date later than end date cannot be added
     When I add a time block with start date later than end date
