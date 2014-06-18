@@ -17,7 +17,8 @@ class TimeBlockObject < DataFactory
                  :amount,
                  :defer_add,
                  :defer_check_entry,
-                 :defer_pick_assignment
+                 :defer_pick_assignment,
+                 :assignment_number
 
 
   def initialize(browser, opts={})
@@ -26,7 +27,8 @@ class TimeBlockObject < DataFactory
         #       end_date: "05/14/2014"
          defer_add: false,
          defer_check_entry: false,
-         defer_pick_assignment: false
+         defer_pick_assignment: false,
+         assignment_number: "0"
 
 
     }
