@@ -7,7 +7,8 @@ When(/^I add a time block with blank out time$/) do
   @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
-                      :in_time => "8am"
+                      :in_time => "8am",
+                      :defer_pick_assignment => true
 
 end
 
@@ -35,7 +36,8 @@ When(/^I add a time block with blank in time$/) do
   @timeblock = create TimeBlockObject,:start_date => @finalstart_dt,
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
-                      :out_time => "10am"
+                      :out_time => "10am",
+                      :defer_pick_assignment => true
 
 
 end
@@ -49,7 +51,8 @@ When(/^I add a time block with invalid out time$/) do
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :in_time => "8am",
-                      :out_time => "asdf"
+                      :out_time => "asdf",
+                      :defer_pick_assignment => true
 
 end
 
@@ -63,7 +66,8 @@ When(/^I add a time block with invalid in time$/) do
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :out_time => "10am",
-                      :in_time => "asdf"
+                      :in_time => "asdf",
+                      :defer_pick_assignment => true
 
 end
 
@@ -77,7 +81,8 @@ When(/^I add a time block with in time later than out time$/) do
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :out_time => "8am",
-                      :in_time => "10am"
+                      :in_time => "10am",
+                      :defer_pick_assignment => true
 
 end
 
@@ -90,6 +95,7 @@ When(/^I add a time block with in time same as out time$/) do
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :in_time => "8am",
-                      :out_time => "8am"
+                      :out_time => "8am",
+                      :defer_pick_assignment => true
 
 end

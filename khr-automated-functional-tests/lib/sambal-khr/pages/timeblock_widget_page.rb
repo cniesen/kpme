@@ -9,6 +9,8 @@ class TimeblockWidgetPage < BasePage
   action(:close) { |b| b.span(text: 'close').click }
 
   element(:assignment) { |b| b.select(id: 'selectedAssignment') }
+  element(:populate_assignment) { |b| b.select(id: 'selectedAssignment').option(text: '-- select an assignment --') }
+
   element(:in_time) { |b| b.text_field(id: 'startTimeHourMinute') }
   element(:out_time) { |b| b.text_field(id: 'endTimeHourMinute') }
 

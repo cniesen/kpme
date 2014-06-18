@@ -16,7 +16,8 @@ class TimeBlockObject < DataFactory
                  :apply_time,
                  :amount,
                  :defer_add,
-                 :defer_check_entry
+                 :defer_check_entry,
+                 :defer_pick_assignment
 
 
   def initialize(browser, opts={})
@@ -24,7 +25,9 @@ class TimeBlockObject < DataFactory
     defaults ={
         #       end_date: "05/14/2014"
          defer_add: false,
-         defer_check_entry: false
+         defer_check_entry: false,
+         defer_pick_assignment: false
+
 
     }
     set_options(defaults.merge(opts))
@@ -41,7 +44,10 @@ class TimeBlockObject < DataFactory
     on TimeblockWidgetPage do |page|
       page.start_date.set @start_date
       page.end_date.set @end_date
-      page.assignment.pick! @assignment
+      if @defer_pick_assignment == false
+        page.populate_assignment.wait_until_present
+        page.assignment.pick! @assignment
+      end
       page.earn_code.pick! @earn_code
       page.in_time.fit @in_time
       page.out_time.fit @out_time

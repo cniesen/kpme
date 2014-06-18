@@ -13,7 +13,8 @@ When /^I add a time block with blank end date$/ do
                       :end_date => "",
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :in_time => "8am",
-                      :out_time => "10am"
+                      :out_time => "10am",
+                      :defer_pick_assignment => true
 
 
 end
@@ -23,8 +24,6 @@ Then /^(.*?) error message should be displayed$/ do |error_type|
   on TimeblockWidgetPage do |page|
 
     page.validation_text.should == "End Date is not a valid date" if error_type == "blank end date"
-    page.validation_text.should == "Start Date is not a valid date" if error_type == "blank start date"
-    page.validation_text.should == "Start Date is not a valid date" if error_type == "blank dates"
     page.validation_text.should == "Start Date is later than end date." if error_type == "start date later"
     page.close
   end
@@ -38,26 +37,21 @@ When(/^I add a time block with blank start date$/) do
     @finalstart_dt,@finalend_dt = page.calc_dates(1,1)
   end
 
-
   @timeblock = create TimeBlockObject,:start_date => "",
                       :end_date => @finalend_dt,
-                      :earn_code => "RGN : Regular Pay Non-Exempt",
-                      :in_time => "8am",
-                      :out_time => "10am"
+                      :defer_pick_assignment => true,
+                      :defer_add => true
 
 end
 
 
-When(/^I add a time block with blank start and end date$/) do
-  @timeblock = create TimeBlockObject,:start_date => "",
-                      :end_date => "",
-                      :earn_code => "RGN : Regular Pay Non-Exempt",
-                      :in_time => "8am",
-                      :out_time => "10am"
+Then(/^no assignment should be displayed$/) do
+  on TimeblockWidgetPage do |page|
+    page.assignment.selected?("-- enter valid date range --").should == true
+    page.close
+  end
 
 end
-
-
 
 When(/^I add a time block with start date later than end date$/) do
   on KpmeCalendarPage do |page|
@@ -69,6 +63,7 @@ When(/^I add a time block with start date later than end date$/) do
                       :end_date => @finalend_dt,
                       :earn_code => "RGN : Regular Pay Non-Exempt",
                       :in_time => "8am",
-                      :out_time => "10am"
+                      :out_time => "10am",
+                      :defer_pick_assignment => true
 
 end
