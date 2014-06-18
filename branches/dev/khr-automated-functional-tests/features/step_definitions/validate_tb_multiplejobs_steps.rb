@@ -31,10 +31,10 @@ end
 Then(/^the different time blocks must appear in summary$/) do
   on KpmeCalendarPage do |page|
     page.summary_assignment(0).should == @timeblock_hr.assignment
-    page.summary_hours(0,'EC1',1).should include @timeblock_hr.hours
+    page.summary_fieldvalue(0,'EC1',1).should include @timeblock_hr.hours
     page.summary_assignment_bgcolor(0).should == "rgba(152, 163, 134, 1)"
     page.summary_assignment(1).should == @timeblock_ne.assignment
-    page.summary_hours(1,'EC1',1).should include @timeblock_ne.hours
+    page.summary_fieldvalue(1,'EC1',1).should include @timeblock_ne.hours
     page.summary_assignment_bgcolor(1).should == "rgba(204, 204, 153, 1)"
 
   end
