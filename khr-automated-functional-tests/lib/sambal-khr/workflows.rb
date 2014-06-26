@@ -114,6 +114,7 @@ module Workflows
 
   def log_in(user)
     current_user = ""
+    sleep 5
     if !$distributed_env then
       visit PortalMenu do |page|
         current_user = page.current_logged_in_user_id

@@ -13,10 +13,19 @@ class KpmeCalendarPage < BasePage
   value(:assignment_type) { |curr_day,b| b.td(id: "day_#{curr_day}").div(index: 1).text }
   element(:amount_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: /approvals-table/).text }
 
-  value(:summary_assignment) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").text }
+  value(:summary_assignment_name) { |no,week_no,b| b.tbody(id: "weekSummaryWeek#{week_no}").td(class: "assignment#{no}").text }
+ # value(:summary_assignment) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").text }
   value(:summary_fieldvalue) { |no,ec_type,curr_day,b| b.td(id: "day#{curr_day}_#{ec_type}_assignment#{no}").text }
   value(:summary_assignment_bgcolor) { |no,b| b.tbody(id: 'weekSummaryWeek1').td(class: "assignment#{no}").style 'background-color'}
 
+
+  value(:assignment_total) { |no,ec_type,week_no,b| b.td(id: "Week#{week_no}_#{ec_type}_assignment#{no}_total").text }
+  value(:other_total)  { |curr_day,b| b.td(id: "day#{curr_day}_Other_total").text }
+  value(:regular_day_total)  { |curr_day,b| b.td(id: "day#{curr_day}_Regular_total").text }
+  value(:week_other_total)  { |curr_week,b| b.td(id: "Week#{curr_week}_Other_total").text }
+  value(:day_other_total)  { |curr_day,b| b.td(id: "day#{curr_day}_Other_total").text }
+  value(:week_day_summary)  { |curr_day,b| b.td(id: "day#{curr_day}_weekTotal").text }
+  value(:week_summary_total)  { |curr_week,b| b.td(id: "Week#{curr_week}_total").text }
 
 
 
