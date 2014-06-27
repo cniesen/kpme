@@ -259,9 +259,9 @@ When(/^I add an amount time block for the week$/) do
     @finalstart_dt,@finalend_dt = page.calc_dates(0,6)
   end
 
-  @timeblock_ne = create TimeBlockObject,:start_date => @finalstart_dt,
+  @timeblock_hr = create TimeBlockObject,:start_date => @finalstart_dt,
                          :end_date => @finalend_dt,
-                         :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
+                         :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
                          :earn_code => "ECA : ECA - Earn code with Amount",
                          :amount => "10.00",
                          :assignment_number => "0"
@@ -272,9 +272,9 @@ end
 Then(/^summary grid displays the earn code with amount for the week$/) do
 
   on KpmeCalendarPage do |page|
-    page.amount_entry(@days).should include (@timeblock_ne.amount)
     for day in @days.downto(@days-6)
-    page.summary_fieldvalue(@timeblock_ne.assignment_number,@ec_type,@days).should == "$"+@timeblock_ne.amount
+    page.amount_entry(@days).should include (@timeblock_hr.amount)
+    page.summary_fieldvalue(@timeblock_hr.assignment_number,@ec_type,@days).should == "$"+@timeblock_hr.amount
     end
     page.week_other_total(@week_no).should == "0.00"
 
