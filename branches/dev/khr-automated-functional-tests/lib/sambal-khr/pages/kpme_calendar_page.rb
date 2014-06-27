@@ -27,6 +27,8 @@ class KpmeCalendarPage < BasePage
   value(:week_day_summary)  { |curr_day,b| b.td(id: "day#{curr_day}_weekTotal").text }
   value(:week_summary_total)  { |curr_week,b| b.td(id: "Week#{curr_week}_total").text }
 
+  value(:time_first_text) { |no,curr_day,b| b.td(id: "day_#{curr_day}").div(class: "approvals-table event  assignment#{no} ").text }
+  value(:time_last_text) { |no,curr_day,b| b.td(id: "day_#{curr_day}").div(class: "approvals-table event last-event assignment#{no} ").text }
 
 
 
