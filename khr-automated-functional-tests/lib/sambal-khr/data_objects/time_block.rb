@@ -136,12 +136,14 @@ end
 # updates the end date and start date based on the entry
   def edit (opts={})
     on TimeblockWidgetPage do |page|
+
       page.end_date.set opts[:end_date] unless opts[:end_date].nil?
       page.start_date.set opts[:start_date] unless opts[:start_date].nil?
       page.in_time.fit opts[:in_time]
       page.out_time.fit opts[:out_time]
       page.assignment.pick! opts[:assignment]
       page.earn_code.pick! opts[:earn_code]
+      page.across_days.fit checkbox_trans[opts[:apply_time]]
       page.hours.fit opts[:hours]
 
     end
