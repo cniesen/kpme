@@ -81,7 +81,7 @@ Then(/^amount should appear in summary$/) do
 
   on KpmeCalendarPage do |page|
     page.amount_entry(1).should include (@timeblock.amount)
-    page.summary_assignment(0).should == @timeblock.assignment
+    page.summary_assignment_name(0,1).should == @timeblock.assignment
     page.summary_fieldvalue(0,'ECA',1).should == "$"+@timeblock.amount
     page.widget_entry(1)
   end
