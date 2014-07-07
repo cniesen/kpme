@@ -19,7 +19,9 @@ class TimeBlockObject < DataFactory
                  :defer_check_entry,
                  :defer_pick_assignment,
                  :assignment_number,
-                 :current_day
+                 :current_day,
+                 :cal_day,
+                 :edit_existing_entry
 
 
   def initialize(browser, opts={})
@@ -29,7 +31,8 @@ class TimeBlockObject < DataFactory
          defer_add: false,
          defer_check_entry: false,
          defer_pick_assignment: false,
-         current_day: 0
+         current_day: 0,
+         edit_existing_entry: 'false'
 
 
     }
@@ -133,8 +136,11 @@ end
     { "Yes" => :set, "No" => :clear }
   end
 
-# updates the end date and start date based on the entry
+# edits the entry of time block widget
   def edit (opts={})
+
+    on(KpmeCalendarPage).widget_entry(opts[:cal_day])  if opts[:edit_existing_entry] == 'true'
+
     on TimeblockWidgetPage do |page|
 
       page.end_date.set opts[:end_date] unless opts[:end_date].nil?
@@ -153,7 +159,9 @@ end
 # clicks the add button in the widget
   def add_time_block
     on TimeblockWidgetPage do |page|
-      page.add
+
+      page.add if @edit_existing_entry == 'false'
+      page.update if @edit_existing_entry == 'true'
     end
   end
 
