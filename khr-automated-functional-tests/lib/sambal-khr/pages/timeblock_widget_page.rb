@@ -3,6 +3,7 @@ class TimeblockWidgetPage < BasePage
   element(:start_date) { |b| b.text_field(id: 'startDate') }
   element(:end_date) { |b| b.text_field(id: 'endDate') }
   action(:add) { |b| b.button(text: 'Add').click }
+  action(:update) { |b| b.button(text: 'Update').click }
   value(:validation_text) { |b| b.p(id: 'validation').text}
   element(:earn_code) { |b| b.select(id: 'selectedEarnCode') }
   element(:across_days) { |b| b.checkbox(id: 'acrossDays') }
