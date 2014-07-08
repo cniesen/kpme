@@ -172,14 +172,22 @@ end
     end
   end
 
-# selects the time detail tab
-  def select_timedetail
-    on ClockPage do |page|
-      page.timedetail_tab
+#removes the only timeblock for that day
+  def remove_timeblock(current_day,cancel)
+    on KpmeCalendarPage do |page|
+      if cancel == 'false'
+      page.delete_tb(current_day)
+      page.alert.ok
+      else
+       page.delete_tb(current_day)
+       page.alert.close
+      end
     end
-  end
+ end
 
-# deletes the existing timeblock entry
+
+
+# deletes all the existing timeblock entry
   def delete_existing_entry(current_day)
     on KpmeCalendarPage do |page|
       while page.assignment_count(current_day) > 2  do
@@ -187,7 +195,6 @@ end
         page.delete_tb(current_day)
         page.alert.ok
         sleep 5    # this sleep is to prevent browser's dialog
-
        end
      end
   end
