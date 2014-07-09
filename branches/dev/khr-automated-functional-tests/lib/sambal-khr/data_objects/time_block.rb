@@ -178,9 +178,11 @@ end
       if cancel == 'false'
       page.delete_tb(current_day)
       page.alert.ok
+      sleep 5
       else
        page.delete_tb(current_day)
        page.alert.close
+        sleep 2
       end
     end
  end
