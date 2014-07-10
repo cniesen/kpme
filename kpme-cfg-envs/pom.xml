@@ -303,7 +303,7 @@
                                     <schemaXMLFile>${project.build.directory}/impex/${kpme.dataSource.database}.xml</schemaXMLFile>
                                 </configuration>
                             </execution>
-
+                            <!--
                             <execution>
                                 <id>convert-schema-rice-oracle</id>
                                 <phase>process-sources</phase>
@@ -319,8 +319,8 @@
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
-
-                            <!--<execution>
+                            -->
+                            <execution>
                                 <id>convert-schema-rice-mysql</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -334,8 +334,8 @@
                                     <outputDir>${project.build.directory}/schema-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
-                            </execution>-->
-
+                            </execution>
+                            <!--
                             <execution>
                                 <id>convert-schema-kpme-oracle</id>
                                 <phase>process-sources</phase>
@@ -351,8 +351,8 @@
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
                             </execution>
-
-                            <!--<execution>
+                            -->
+                            <execution>
                                 <id>convert-schema-kpme-mysql</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -366,8 +366,8 @@
                                     <outputDir>${project.build.directory}/schema-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnSchemaChange>false</runOnlyOnSchemaChange>
                                 </configuration>
-                            </execution>-->
-
+                            </execution>
+                            <!--
                             <execution>
                                 <id>convert-data-rice-oracle</id>
                                 <phase>process-sources</phase>
@@ -386,8 +386,8 @@
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
-
-                            <!--<execution>
+                            -->
+                            <execution>
                                 <id>convert-data-rice-mysql</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -404,8 +404,8 @@
                                     <outputDir>${project.build.directory}/data-sql/${kr.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
-                            </execution>-->
-
+                            </execution>
+                            <!--
                             <execution>
                                 <id>convert-data-kpme-oracle</id>
                                 <phase>process-sources</phase>
@@ -424,8 +424,8 @@
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
                             </execution>
-
-                            <!--<execution>
+                            -->
+                            <execution>
                                 <id>convert-data-kpme-mysql</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -442,14 +442,14 @@
                                     <outputDir>${project.build.directory}/data-sql/${kpme.dataSource.database}</outputDir>
                                     <runOnlyOnChange>false</runOnlyOnChange>
                                 </configuration>
-                            </execution>-->
+                            </execution>
                         </executions>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
-                            <!--<execution>
+                            <execution>
                                 <id>create-scripts-mysql</id>
                                 <phase>process-sources</phase>
                                 <goals>
@@ -575,8 +575,8 @@
                                         <zip basedir="${project.build.directory}/mysql_${build.environment}" destfile="${project.build.directory}/mysql_${build.environment}.zip" />
                                     </target>
                                 </configuration>
-                            </execution>-->
-
+                            </execution>
+                            <!--
                             <execution>
                                 <id>create-scripts-oracle</id>
                                 <phase>process-sources</phase>
@@ -662,7 +662,7 @@
                                     </target>
                                 </configuration>
                             </execution>
-
+                            -->
                         </executions>
                     </plugin>
                 </plugins>
