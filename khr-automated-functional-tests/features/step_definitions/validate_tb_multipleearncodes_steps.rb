@@ -13,15 +13,15 @@ When(/^I add time blocks with different earn code$/) do
                          :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                          :in_time => "12:00 PM",
                          :out_time => "01:00 PM",
-                         :assignment_number => 0
+                         :assignment_number => "0"
 
   @timeblock_ne1 = create TimeBlockObject,:start_date => @finalstart_dt,
                          :end_date => @finalend_dt,
                          :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                          :in_time => "11:00 AM",
                          :out_time => "12:00 PM",
-                         :assignment_number => 0,
-                         :defer_check_entry => "true"
+                         :assignment_number => "0",
+                         :defer_check_entry => true
 
 end
 
@@ -51,7 +51,7 @@ When(/^I add time blocks with different assignments with earn code$/) do
                          :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                          :in_time => "12:30 PM",
                          :out_time => "01:00 PM",
-                         :assignment_number => 1
+                         :assignment_number => "1"
 
   @timeblock_hr = create TimeBlockObject,:start_date => @finalstart_dt,
                           :end_date => @finalend_dt,
@@ -59,8 +59,8 @@ When(/^I add time blocks with different assignments with earn code$/) do
                           :in_time => "11:00 AM",
                           :out_time => "12:30 PM",
                           :earn_code => "CAL : Call Back Comp",
-                          :assignment_number => 0,
-                          :defer_check_entry => "true"
+                          :assignment_number => "0",
+                          :defer_check_entry => true
 
 end
 

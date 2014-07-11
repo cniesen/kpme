@@ -133,19 +133,19 @@ Then(/^time block entry should appear for each day$/) do
     day1 = 1
     day2 = 2
 
-    for current_day in day1..day2
-      #puts "current day is #{current_day}"
-      page.hours_entry(current_day)[6,1].should == @timeblock.hours
-      page.widget_entry(current_day)
+    for day_index in day1..day2
+      #puts "current day is #{day_index}"
+      page.hours_entry(day_index)[6,1].should == @timeblock.hours
+      page.widget_entry(day_index)
 
 
     on TimeblockWidgetPage do |page1|
 
-      if current_day == day1
+      if day_index == day1
       page1.start_date.value.should include (@timeblock.start_date)
       page1.end_date.value.should include (@timeblock.start_date)
       end
-      if current_day == day2
+      if day_index == day2
       page1.start_date.value.should include (@timeblock.end_date)
       page1.end_date.value.should include (@timeblock.end_date)
       end
