@@ -13,9 +13,9 @@ When(/^I cancel a delete operation of a time block$/) do
                       :end_date => @finalend_dt,
                       :in_time => "08:00 AM",
                       :out_time => "10:00 AM",
-                      :assignment_number => '0'
+                      :assignment_number => "0"
 
-  @timeblock.remove_timeblock(@days,'true')
+  @timeblock.remove_timeblock(@days,"true")
 
 end
 
@@ -49,9 +49,9 @@ When(/^I delete a time block$/) do
                       :end_date => @finalend_dt,
                       :in_time => "08:00 AM",
                       :out_time => "10:00 AM",
-                      :assignment_number => '0'
+                      :assignment_number => "0"
 
-  @timeblock.remove_timeblock(@days,'false')
+  @timeblock.remove_timeblock(@days,"false")
 
 end
 

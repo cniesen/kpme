@@ -21,7 +21,7 @@ When(/^I add a time block with regular earn code$/) do
                       :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                       :in_time => "8am",
                       :out_time => "9am",
-                      :assignment_number => 0
+                      :assignment_number => "0"
 end
 
 
@@ -65,7 +65,7 @@ When(/^I add a time block for the entire week with regular earn code$/) do
                          :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                          :in_time => "9am",
                          :out_time => "10am",
-                         :assignment_number => 0
+                         :assignment_number => "0"
 
 
 
@@ -129,8 +129,7 @@ When(/^I add a time block with security earn code$/) do
                          :assignment => "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
                          :earn_code => "EC1 : EC1 - Security",
                          :hours => 1,
-                         :assignment_number => 0
-
+                         :assignment_number => "0"
 end
 
 Then(/^summary grid displays the earn code with total hours$/) do
@@ -185,7 +184,7 @@ When(/^I add time blocks with different earn code for the entire week$/) do
                          :assignment =>  "IA-EC HR Work Area : $5.00 Rcd 0 IA-EC",
                          :earn_code => "EC1 : EC1 - Security",
                          :hours => "1",
-                         :defer_check_entry => "true",
+                         :defer_check_entry => true,
                          :assignment_number => "0"
 
 end

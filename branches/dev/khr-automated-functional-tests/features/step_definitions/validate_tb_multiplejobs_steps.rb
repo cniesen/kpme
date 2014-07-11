@@ -25,7 +25,7 @@ When(/^I add multiple time blocks with different assignments$/) do
                       :assignment => "IA-EC NE Work Area : $5.00 Rcd 1 IA-EC",
                       :earn_code => "EC1 : EC1 - Security",
                       :hours => "2",
-                      :defer_check_entry => "true",
+                      :defer_check_entry => true,
                       :assignment_number => "1"
 
 

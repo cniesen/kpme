@@ -10,7 +10,6 @@ When(/^I add nightly time block applied for each day$/) do
                       :end_date => @finalend_dt,
                       :in_time => "10:00 PM",
                       :out_time => "02:00 AM",
-                      :defer_check_entry => "Yes",
                       :apply_time => "Yes"
 
 end
@@ -37,7 +36,7 @@ When(/^I add nightly time block not applied for each day$/) do
                       :end_date => @finalend_dt,
                       :in_time => "10:00 PM",
                       :out_time => "02:00 AM",
-                      :assignment_number => 0,
+                      :assignment_number => "0",
                       :apply_time => "No"
 
 end
@@ -87,7 +86,7 @@ When(/^I add nightly time block individually for days$/) do
                         :end_date => @finalend_dt,
                         :in_time => "12:00 AM",
                         :out_time => "02:00 AM",
-                        :defer_check_entry => "Yes",
+                        :defer_check_entry => true,
                         :assignment_number => "0",
                         :apply_time => "No"
 
@@ -122,7 +121,7 @@ When(/^I add regular earn codes over multiple days$/) do
                       :end_date => @finalend_dt,
                       :in_time => "01:00 PM",
                       :out_time => "10:00 AM",
-                      :assignment_number => 0
+                      :assignment_number => "0"
 
 
 end
@@ -173,7 +172,7 @@ When(/^I add day time blocks over different days$/) do
                       :end_date => @finalend_dt,
                       :in_time => "08:00 AM",
                       :out_time => "10:00 AM",
-                      :assignment_number => 0
+                      :assignment_number => "0"
 
 end
 

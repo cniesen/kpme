@@ -32,7 +32,7 @@ class TimeBlockObject < DataFactory
          defer_check_entry: false,
          defer_pick_assignment: false,
          current_day: 0,
-         edit_existing_entry: 'false'
+         edit_existing_entry: "false"
 
 
     }
@@ -112,6 +112,7 @@ end
           #puts "no : #{number_of_days}"
 
           number_of_days = (date_2 - date_1).to_i + 1
+
           while number_of_days > 0  do
             delete_existing_entry(@current_day) if page.assignment_count(@current_day) > 2
             @current_day += 1
@@ -139,7 +140,7 @@ end
 # edits the entry of time block widget
   def edit (opts={})
 
-    on(KpmeCalendarPage).widget_entry(opts[:cal_day])  if opts[:edit_existing_entry] == 'true'
+    on(KpmeCalendarPage).widget_entry(opts[:cal_day])  if opts[:edit_existing_entry] == "true"
 
     on TimeblockWidgetPage do |page|
 
@@ -160,8 +161,8 @@ end
   def add_time_block
     on TimeblockWidgetPage do |page|
 
-      page.add if @edit_existing_entry == 'false'
-      page.update if @edit_existing_entry == 'true'
+      page.add if @edit_existing_entry == "false"
+      page.update if @edit_existing_entry == "true"
     end
   end
 
@@ -173,16 +174,19 @@ end
   end
 
 #removes the only timeblock for that day
-  def remove_timeblock(current_day,cancel)
+  def remove_timeblock(cal_day,cancel)
     on KpmeCalendarPage do |page|
-      if cancel == 'false'
-      page.delete_tb(current_day)
-      page.alert.ok
-      sleep 5
+      if cancel == "false"
+        page.delete_tb(cal_day)
+        page.alert.ok
       else
-       page.delete_tb(current_day)
-       page.alert.close
-        sleep 2
+        page.delete_tb(cal_day)
+        page.alert.close
+      end
+      if page.alert.exists? == true
+        #puts " server dialog present"
+        page.alert.close
+        sleep 5
       end
     end
  end
@@ -196,7 +200,10 @@ end
         #puts curr_day
         page.delete_tb(current_day)
         page.alert.ok
-        sleep 5    # this sleep is to prevent browser's dialog
+         if page.alert.exists? == true
+            page.alert.close
+            sleep 5        # this sleep is to prevent browser's dialog
+         end
        end
      end
   end

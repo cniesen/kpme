@@ -28,7 +28,7 @@ When(/^I add same value for multiple time blocks for a day$/) do
                       :end_date => @finalend_dt,
                       :in_time => "8am",
                       :out_time => "10am",
-                      :defer_check_entry => "true"
+                      :defer_check_entry => true
 
 end
 
@@ -75,7 +75,7 @@ When(/^I add partly overlapping out time entry for a day$/) do
                       :end_date => @finalend_dt,
                       :in_time => "9:30am",
                       :out_time => "11am",
-                      :defer_check_entry => "true"
+                      :defer_check_entry => true
 
 end
 
@@ -112,7 +112,7 @@ When(/^I add partly overlapping in time entry for a day$/) do
                       :end_date => @finalend_dt,
                       :in_time => "7:30am",
                       :out_time => "9am",
-                      :defer_check_entry => "true"
+                      :defer_check_entry => true
 
 end
 
@@ -148,7 +148,7 @@ When(/^I add time entry values embedded in another time block$/) do
                       :end_date => @finalend_dt,
                       :in_time => "8:30am",
                       :out_time => "9:30am",
-                      :defer_check_entry => "true"
+                      :defer_check_entry => true
 
 end
 
@@ -184,6 +184,6 @@ When(/^I add time block encapsulating another time entry$/) do
                       :end_date => @finalend_dt,
                       :in_time => "7:30am",
                       :out_time => "11:30am",
-                      :defer_check_entry => "true"
+                      :defer_check_entry => true
 
 end
