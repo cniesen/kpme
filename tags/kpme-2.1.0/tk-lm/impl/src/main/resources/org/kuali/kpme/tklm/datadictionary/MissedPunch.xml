@@ -1,0 +1,531 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="MissedPunch" parent="MissedPunch-parentBean" />
+	<bean id="MissedPunch-parentBean" abstract="true" parent="BusinessObjectEntry">
+		<property name="businessObjectClass" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+		<property name="titleAttribute" value="tkMissedPunchId" />
+		<property name="objectLabel" value="Missed Punch" />
+		<property name="attributes">
+            <list>
+                <ref bean="MissedPunch-tkMissedPunchId" />
+				<ref bean="MissedPunch-principalId" />
+				<!--<ref bean="MissedPunch-principalName" />-->
+				<ref bean="MissedPunch-personName" />
+				<ref bean="MissedPunch-timesheetDocumentId" />
+				<ref bean="MissedPunch-assignmentKey" />
+				<ref bean="MissedPunch-assignmentValue" />
+                <ref bean="MissedPunch-groupKeyCode" />
+                <ref bean="MissedPunch-jobNumber" />
+                <ref bean="MissedPunch-workArea" />
+                <ref bean="MissedPunch-department"/>
+                <ref bean="MissedPunch-task" />
+                <ref bean="MissedPunch-actionDateTime" />
+                <ref bean="MissedPunch-actionDateTimestamp" />
+				<ref bean="MissedPunch-actionDate" />
+				<ref bean="MissedPunch-actionTime" />
+				<ref bean="MissedPunch-clockAction" />
+				<ref bean="MissedPunch-tkClockLogId" />
+				<ref bean="MissedPunch-timestamp" />
+				<ref bean="MissedPunch-relativeEffectiveDate" />
+                <ref bean="MissedPunch-note"/>
+			</list>
+		</property>
+        <property name="relationships">
+            <list>
+                <bean parent="RelationshipDefinition" p:objectAttributeName="person">
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="principalId"
+                                  p:targetName="principalId"/>
+                        </list>
+                    </property>
+                    <property name="supportAttributes">
+                        <list>
+                            <bean parent="SupportAttributeDefinition" p:identifier="true"
+                                  p:sourceName="principalName" p:targetName="principalName"/>
+                            <bean parent="SupportAttributeDefinition" p:sourceName="personName"
+                                  p:targetName="name"/>
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="RelationshipDefinition">
+                    <property name="objectAttributeName" value="jobObj" />
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="jobNumber" p:targetName="jobNumber" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="principalId"
+								p:targetName="principalId" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
+								p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="RelationshipDefinition">
+                    <property name="objectAttributeName" value="groupKey" />
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="groupKeyCode" p:targetName="groupKeyCode" />
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
+                                  p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="RelationshipDefinition">
+                    <property name="objectAttributeName" value="workAreaObj" />
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="workArea" p:targetName="workArea" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
+								p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="RelationshipDefinition">
+                    <property name="objectAttributeName" value="departmentObj" />
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="department" p:targetName="dept" />
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
+                                  p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="RelationshipDefinition">
+                    <property name="objectAttributeName" value="taskObj" />
+                    <property name="primitiveAttributes">
+                        <list>
+                            <bean parent="PrimitiveAttributeDefinition" p:sourceName="task" p:targetName="task" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="workArea"
+								p:targetName="workArea" />
+							<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate"
+								p:targetName="effectiveDate" />
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+	</bean>
+	
+    <bean id="MissedPunch-tkMissedPunchId" parent="MissedPunch-tkMissedPunchId-parentBean" />
+    <bean id="MissedPunch-tkMissedPunchId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="tkMissedPunchId" />
+        <property name="label" value="Missed Punch Id" />
+        <property name="shortLabel" value="Missed Punch Id" />
+        <property name="maxLength" value="60" />
+        <property name="controlField">
+            <bean parent="Uif-HiddenControl" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-principalId" parent="MissedPunch-principalId-parentBean" />
+    <bean id="MissedPunch-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+
+    <!--<bean id="MissedPunch-principalName" parent="MissedPunch-principalName-parentBean"/>
+    <bean id="MissedPunch-principalName-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="principalName" />
+        <property name="label" value="Principal Name" />
+        <property name="shortLabel" value="principalName" />
+        &lt;!&ndash;<property name="controlField">
+            <bean parent="Uif-KimPersonControl" p:principalIdPropertyName="principalId" p:personNamePropertyName="person.personName" p:watermarkText="Name"/>
+        </property>&ndash;&gt;
+    </bean>-->
+    
+    <bean id="MissedPunch-personName" parent="MissedPunch-personName-parentBean"/>
+    <bean id="MissedPunch-personName-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="personName" />
+        <property name="label" value="Person Name" />
+        <property name="shortLabel" value="personName" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="122" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-note" parent="MissedPunch-note-parentBean"/>
+    <bean id="MissedPunch-note-parentBean" abstract="true" parent="Note-noteText">
+        <property name="name" value="note" />
+        <property name="label" value="Note" />
+        <property name="required" value="false" />
+        <property name="shortLabel" value="Note" />
+        <property name="controlField">
+            <bean parent="Uif-TextAreaControl" p:cols="30" p:rows="5"/>
+        </property>
+    </bean>
+
+    <bean id="MissedPunch-timesheetDocumentId" parent="MissedPunch-timesheetDocumentId-parentBean" />
+    <bean id="MissedPunch-timesheetDocumentId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="timesheetDocumentId" />
+        <property name="label" value="Timesheet Document Id" />
+        <property name="shortLabel" value="Timesheet Document Id" />
+        <property name="maxLength" value="14" />
+        <property name="required" value="true" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint" />
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="14" />
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="14" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-assignmentKey" parent="MissedPunch-assignmentKey-parentBean" />
+    <bean id="MissedPunch-assignmentKey-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="assignmentKey" />
+        <property name="label" value="Assignment" />
+        <property name="shortLabel" value="Assignment" />
+        <property name="required" value="true" />
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl" />
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.tklm.time.missedpunch.MissedPunchAssignmentKeyValuesFinder" p:addBlankOption="false" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-assignmentValue" parent="MissedPunch-assignmentValue-parentBean" />
+    <bean id="MissedPunch-assignmentValue-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="assignmentValue" />
+        <property name="label" value="Assignment" />
+        <property name="shortLabel" value="Assignment" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" />
+        </property>
+    </bean>
+
+    <bean id="MissedPunch-groupKeyCode" parent="MissedPunch-groupKeyCode-parentBean" />
+    <bean id="MissedPunch-groupKeyCode-parentBean" abstract="true" parent="KpmeAttributeReference-groupKeyCode"/>
+
+    <bean id="MissedPunch-jobNumber" parent="MissedPunch-jobNumber-parentBean" />
+    <bean id="MissedPunch-jobNumber-parentBean" abstract="true" parent="KpmeAttributeReference-jobNumber"/>
+    
+    <bean id="MissedPunch-workArea" parent="MissedPunch-workArea-parentBean" />
+    <bean id="MissedPunch-workArea-parentBean" abstract="true" parent="KpmeAttributeReference-workArea"/>
+
+    <bean id="MissedPunch-task" parent="MissedPunch-task-parentBean" />
+    <bean id="MissedPunch-task-parentBean" abstract="true" parent="KpmeAttributeReference-task"/>
+    
+    <bean id="MissedPunch-actionDateTime" parent="MissedPunch-actionDateTime-parentBean" />
+    <bean id="MissedPunch-actionDateTime-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="actionDateTime" />
+        <property name="label" value="Missed Action Date Time" />
+        <property name="shortLabel" value="Missed Action Date Time" />
+        <property name="maxLength" value="22" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="22" />
+        </property>
+    </bean>
+
+    <bean id="MissedPunch-actionDateTimestamp" parent="MissedPunch-actionDateTimestamp-parentBean" />
+    <bean id="MissedPunch-actionDateTimestamp-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="actionDateTimestamp" />
+        <property name="label" value="Missed Action Date Time" />
+        <property name="shortLabel" value="Missed Action Date Time" />
+        <property name="maxLength" value="22" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="22" />
+        </property>
+    </bean>
+
+    <bean id="MissedPunch-relativeEffectiveDate" parent="KpmeAttributeReference-relativeEffectiveDate"/>
+    
+    <bean id="MissedPunch-effectiveDate-parentBean" abstract="true" parent="KpmeAttributeReference-effectiveDate" />
+
+    <bean id="MissedPunch-department" parent="MissedPunch-department-parentBean" />
+    <bean id="MissedPunch-department-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="department" />
+        <property name="label" value="Department" />
+        <property name="shortLabel" value="Department" />
+        <property name="forceUppercase" value="true" />
+        <property name="maxLength" value="21" />
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="21" />
+        </property>
+    </bean>
+	
+    <bean id="MissedPunch-actionDate" parent="MissedPunch-actionDate-parentBean" />
+    <bean id="MissedPunch-actionDate-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="actionDate" />
+        <property name="label" value="Missed Action Date (MM/DD/YYYY)" />
+        <property name="shortLabel" value="Missed Action Date" />
+        <property name="required" value="true" />
+        <property name="controlField">
+            <bean parent="Uif-DateControl" p:watermarkText="MM/DD/YYYY" />
+        </property>
+    </bean>
+
+
+    <bean id="MissedPunch-actionTime" parent="MissedPunch-actionTime-parentBean" />
+    <bean id="MissedPunch-actionTime-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="actionTime" />
+        <property name="label" value="Missed Action Time" />
+        <property name="shortLabel" value="Missed Action Time" />
+        <property name="required" value="true" />
+        <property name="validCharactersConstraint">
+            <bean parent="ValidCharactersConstraint" 
+                  p:value="^(0?[1-9]|1[0-2]):([0-5][0-9]) (AM|PM)$" 
+                  p:messageKey="validation.time12AMPM"/>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:watermarkText="6:00 AM"/>
+        </property>
+    </bean>
+
+    <bean id="MissedPunch-clockAction" parent="MissedPunch-clockAction-parentBean" />
+    <bean id="MissedPunch-clockAction-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="clockAction" />
+        <property name="label" value="Missed Clock Action" />
+        <property name="shortLabel" value="Missed Clock Action" />
+        <property name="maxLength" value="20" />
+        <property name="required" value="true" />
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl" />
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.tklm.time.missedpunch.MissedPunchClockActionKeyValuesFinder" p:addBlankOption="false" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-tkClockLogId" parent="MissedPunch-tkClockLogId-parentBean" />
+    <bean id="MissedPunch-tkClockLogId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="name" value="tkClockLogId" />
+        <property name="label" value="Clock Log Id" />
+        <property name="shortLabel" value="Clock Log Id" />
+        <property name="maxLength" value="60" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="60" />
+        </property>
+    </bean>
+    
+    <bean id="MissedPunch-timestamp" parent="MissedPunch-timestamp-parentBean" />
+    <bean id="MissedPunch-timestamp-parentBean" abstract="true" parent="KpmeAttributeReference-timestamp">
+        <property name="controlField">
+            <bean parent="Uif-HiddenControl" />
+        </property>
+    </bean>
+    
+    <!-- Inquiry View -->
+
+    <bean id="MissedPunch-InquiryView" parent="MissedPunch-InquiryView-parentBean" />
+    <bean id="MissedPunch-InquiryView-parentBean" abstract="true" parent="Uif-InquiryView">
+        <property name="headerText" value="Missed Punch Inquiry" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+        <property name="singlePageView" value="true" />
+        <property name="items">
+            <list>
+                <bean parent="Uif-Disclosure-GridSection">
+                    <property name="layoutManager.numberOfColumns" value="2" />
+                    <property name="items">
+		                <list>
+		                    <bean parent="Uif-DataField" p:propertyName="personName" />
+		                    <bean parent="Uif-DataField" p:propertyName="timesheetDocumentId" />
+		                    <bean parent="Uif-DataField" p:propertyName="assignmentValue" />
+		                    <bean parent="Uif-DataField" p:propertyName="actionDateTime" />
+		                    <bean parent="Uif-DataField" p:propertyName="clockAction" />
+		                </list>
+	                </property>
+	            </bean>
+	        </list>
+        </property>
+    </bean> 
+
+
+    <!-- KNS Lookup :( -->
+    <!-- Look up Definitions -->
+    <bean id="MissedPunch-lookupDefinition" parent="MissedPunch-lookupDefinition-parentBean" />
+    <bean id="MissedPunch-lookupDefinition-parentBean" abstract="true"
+          parent="LookupDefinition">
+        <property name="lookupableID" value="missedPunchLookupable"></property>
+        <property name="lookupFields">
+            <list>
+                <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+                      p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
+                <bean parent="FieldDefinition" p:attributeName="principalId" />
+                <bean parent="FieldDefinition" p:attributeName="jobNumber"
+                      p:noDirectInquiry="true"/>
+                <bean parent="FieldDefinition" p:attributeName="department" />
+                <bean parent="FieldDefinition" p:attributeName="workArea" />
+                <bean parent="FieldDefinition" p:attributeName="hrJobId" />
+            </list>
+
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean parent="FieldDefinition" p:attributeName="tkMissedPunchId" />
+            </list>
+        </property>
+        <property name="title" value="MissedPunch Lookup" />
+    </bean>
+
+    <!-- Lookup View -->
+    <!-- We Use a custom Doc Search for Missed Punch Lookups -->
+    <!-- See MissedPunchDocumentType.xml for Searchable Attribute Definitions -->
+    <bean id="MissedPunch-LookupView" parent="MissedPunch-LookupView-parentBean" />
+    <bean id="MissedPunch-LookupView-parentBean" abstract="true" parent="KPMEUif-ViewLinkLookupView">
+        <property name="headerText" value="Missed Punch Lookup" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo" />
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.tklm.time.missedpunch.web.MissedPunchLookupableImpl" />
+        <property name="criteriaFields">
+            <list>
+		        <bean parent="Uif-LookupCriteriaInputField"
+                      p:propertyName="principalName"
+                      p:label="Principal Name">
+                    <property name="control">
+                        <bean parent="Uif-KimPersonControl" p:principalIdPropertyName="principalId" p:personNamePropertyName="person.name" p:watermarkText="Name"/>
+                    </property>
+                </bean>
+		        <bean parent="KPMEGroupKeyLookupCriteriaInputField" p:propertyName="timesheetDocumentId">
+<!-- 	  				<property name="quickfinder">
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader"
+	  						p:fieldConversions="documentId:timesheetDocumentId"/>
+	  				</property> -->
+		        </bean>
+                <bean parent="KPMEGroupKeyLookupCriteriaInputField" p:propertyName="groupKeyCode"/>
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="jobNumber">
+		        <!-- Can be enabled once a principal id fetch is defined for principalName and
+		        	KRAD Views have been defined for jobNumber. -->
+<!-- 	  				<property name="quickfinder">
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.job.JobBo"
+	  						p:fieldConversions="jobNumber:jobNumber"/>
+	  				</property>
+	  				<property name="inquiry">
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.job.JobBo">
+	  						<property name="inquiryParameters">
+	  							<map>
+	  								<entry key="principalId" value="principalId"/>
+	  								<entry key="jobNumber" value="jobNumber"/>
+	  							</map>
+	  						</property>
+	  					</bean>
+	  				</property> -->
+		        </bean>
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="workArea">
+		        <!-- can be enabled once KRAD Views have been defined for task -->
+<!-- 	  				<property name="quickfinder">
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+	  						p:fieldConversions="workArea:workArea"/>
+	  				</property>
+	  				<property name="inquiry">
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+	  						p:inquiryParameters="workArea:workArea"/>
+	  				</property> -->
+				</bean>
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="task">
+		        <!-- can be re-enabled once KRAD Views have been defined for task. -->
+<!-- 	  				<property name="quickfinder">
+	  					<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
+	  						p:fieldConversions="task:task"/>
+	  				</property>
+	  				<property name="inquiry">
+	  					<bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo">
+	  						<property name="inquiryParameters">
+	  							<map>
+	  								<entry key="workArea" value="workArea"/>
+	  								<entry key="task" value="task"/>
+	  							</map>
+	  						</property>
+	  					</bean>
+	  				</property> -->
+  				</bean> 
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="actionDate" p:ranged="true" p:label="Missed Action Date" />
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="actionTime" />
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="clockAction" />
+		        <!-- uncomment to support direct inquiries and lookups for commented properties above.
+		        	principalId field should be populated when principal name is returned. i.e. need relationship definition. -->
+<!-- 		        <bean parent="Uif-HiddenInputField" p:propertyName="relativeEffectiveDate"/>
+		        <bean parent="Uif-HiddenInputField" p:propertyName="principalId" /> -->
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+		        <bean parent="Uif-DataField" p:propertyName="personName" />
+		        <bean parent="Uif-DataField" p:propertyName="timesheetDocumentId" />
+		        <bean parent="Uif-DataField" p:propertyName="assignmentValue" />
+		        <bean parent="Uif-DataField" p:propertyName="actionDateTimestamp" />
+		        <bean parent="Uif-DataField" p:propertyName="clockAction" />
+            </list>
+        </property>
+    </bean>
+    
+    <!--  Submit View -->
+
+    <bean id="MissedPunch-SubmitView" parent="MissedPunch-SubmitView-parentBean" />
+    <bean id="MissedPunch-SubmitView-parentBean" abstract="true" parent="Uif-FormView">
+        <property name="formClass" value="org.kuali.kpme.tklm.time.missedpunch.web.MissedPunchForm" />
+        <property name="headerText" value="Missed Punch" />
+        <property name="breadcrumbs.render" value="false"/>
+        <property name="singlePageView" value="true" />
+        <property name="page">
+            <bean parent="Uif-Page">
+                <property name="items">
+                    <list merge="true">
+                        <bean parent="Uif-GridGroup">
+                            <property name="items">
+                                <list merge="true">
+                                    <bean parent="Uif-DataField" p:propertyName="missedPunch.tkMissedPunchId" 
+                                         p:readOnly="true" p:defaultValue="@{#sequence('TK_MISSED_PUNCH_S')}" p:render="false" />
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.personName"
+                                         p:readOnly="@{!#empty(#dp.missedPunch.principalId)}" />
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.timesheetDocumentId"
+                                         p:readOnly="@{!#empty(#dp.missedPunch.timesheetDocumentId)}" />
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.assignmentKey"
+                                         p:readOnly="@{#dp.assignmentReadOnly  or #dp.missedPunchSubmitted}" p:refreshWhenChangedPropertyNames="#dp.missedPunch.timesheetDocumentId,#dp.missedPunch.actionDate" />
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.actionDate"
+                                          p:readOnly="@{#dp.missedPunchSubmitted}"/>
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.actionTime"
+                                          p:readOnly="@{#dp.missedPunchSubmitted}"/>
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.clockAction"
+                                          p:readOnly="@{#dp.missedPunchSubmitted}"/>
+                                    <bean parent="Uif-InputField" p:propertyName="missedPunch.note"
+                                          p:readOnly="@{#dp.missedPunchSubmitted}"/>
+                                </list>
+                            </property>
+                        </bean>
+                        <bean parent="Uif-FooterBase" p:align="center">
+                            <property name="items">
+                                <list merge="true">
+                                    <bean parent="Uif-PrimaryActionButton" p:methodToCall="submit" p:actionLabel="Submit" 
+                                        p:render="@{!#dp.missedPunchSubmitted}" />
+                                    <bean parent="Uif-PrimaryActionButton" p:actionLabel="Close" 
+                                        p:actionScript="var hash = top.window.location.toString(); 
+                                        				hash = hash.replace('#&amp;' + kradVariables.LIGHTBOX_PARAM + '=true', '');
+                                                        hash = hash.replace('&amp;' + kradVariables.LIGHTBOX_PARAM + '=true', '');
+                                                        hash = hash.replace(kradVariables.LIGHTBOX_PARAM + '=true&amp;', '');
+                                                        top.window.location.replace(hash);" />
+                                </list>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+    
+</beans>

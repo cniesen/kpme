@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="DepartmentMaintenanceDocument" parent="DepartmentMaintenanceDocument-parentBean" />
+    <bean id="DepartmentMaintenanceDocument-parentBean" abstract="true" parent="uifMaintenanceDocumentEntry"
+  		  p:dataObjectClass="org.kuali.kpme.core.department.DepartmentBo"
+  		  p:businessRulesClass="org.kuali.kpme.core.department.validation.DepartmentValidation"
+  		  p:documentAuthorizerClass="org.kuali.kpme.core.department.authorization.DepartmentAuthorizer"
+          p:maintainableClass="org.kuali.kpme.core.department.web.DepartmentMaintainableImpl">
+
+        <property name="documentTypeName" value="DepartmentMaintenanceDocumentType" />
+        <property name="lockingKeys">
+            <list>
+                <value>dept</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="Department-MaintenanceView" parent="Department-MaintenanceView-parentBean"/>
+    <bean id="Department-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+        <property name="title" value="Department Maintenance"/>
+        <property name="headerText" value="Department Maintenance"/>
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.department.web.DepartmentMaintainableImpl" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.department.DepartmentBo"/>
+        <property name="items">
+            <list merge="true">
+                <bean parent="KPMEGroupKeyed-MaintenanceGridSection">
+                    <property name="headerText" value="Department Maintenance"/>
+                    <property name="items">
+                        <list merge="true">
+                            <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
+                                <property name="inquiry">
+                                    <bean parent="Uif-Inquiry" p:render="false"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-InputField" p:propertyName="description" p:required="true"/>
+                            <bean parent="Uif-InputField" p:propertyName="chart">
+                                <property name="quickfinder">
+                                    <bean parent="Uif-QuickFinderByScript"
+                                          p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.Chart"
+                                          p:fieldConversions="chartOfAccountsCode:chart"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-InputField" p:propertyName="org">
+                                <property name="quickfinder">
+                                    <bean parent="Uif-QuickFinderByScript"
+                                          p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.Organization"
+                                          p:fieldConversions="organizationCode:org"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-InputField" p:propertyName="payrollApproval"/>
+                            <bean parent="Uif-InputField" p:propertyName="active"/>
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="Department-RoleMembers" />
+                <bean parent="Department-InactiveRoleMembers" />
+            </list>
+        </property>
+    </bean>
+</beans>
