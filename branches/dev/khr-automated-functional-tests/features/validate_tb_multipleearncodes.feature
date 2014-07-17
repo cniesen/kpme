@@ -1,4 +1,6 @@
-Feature: Validate earn code summary in time blocks
+@wip
+
+Feature: Validate multiple earn code summary in time blocks
 
   Background:
     Given I am logged in as earn code security employee
