@@ -21,7 +21,8 @@ class TimeBlockObject < DataFactory
                  :assignment_number,
                  :current_day,
                  :cal_day,
-                 :edit_existing_entry
+                 :edit_existing_entry,
+                 :day_click
 
 
   def initialize(browser, opts={})
@@ -32,7 +33,9 @@ class TimeBlockObject < DataFactory
          defer_check_entry: false,
          defer_pick_assignment: false,
          current_day: 0,
-         edit_existing_entry: "false"
+         edit_existing_entry: "false",
+         day_click: 1
+
 
 
     }
@@ -43,22 +46,35 @@ class TimeBlockObject < DataFactory
   def create
 
     check_existing_entry unless @defer_check_entry
-    on(KpmeCalendarPage).calendar_day
+    #on(KpmeCalendarPage).calendar_day
+    on(KpmeCalendarPage).calendar_day(@day_click)
 
     on TimeblockWidgetPage do |page|
 
       # send_keys is done so that the assignment gets loaded because the start date text does not have to be cleared
       if @start_date !=""
         page.start_date.send_keys([:control, 'a'])
-        page.start_date.send_keys([:command, 'a'])
+        #page.start_date.send_keys([:command, 'a'])
         page.start_date.send_keys @start_date
       else
         page.start_date.set @start_date
       end
 
-      page.end_date.set @end_date
+      if @end_date !=""
+        page.end_date.send_keys([:control, 'a'])
+        #page.start_date.send_keys([:command, 'a'])
+        page.end_date.send_keys @end_date
+      else
+        page.end_date.set @end_date
+      end
 
-      page.assignment.pick! @assignment unless @defer_pick_assignment  #some user profiles do not want assignment to be selected
+      page.start_date.click
+      page.end_date.click
+
+      if @defer_pick_assignment == false
+        page.assignment.wait_until_present
+        page.assignment.pick! @assignment  #some user profiles do not want assignment to be selected
+      end
       page.earn_code.pick! @earn_code
 
       in_time_values unless @in_time.nil?
@@ -71,29 +87,29 @@ class TimeBlockObject < DataFactory
     end
   end
 
-def in_time_values
- on TimeblockWidgetPage do |page|
-  if @in_time !=""
-    page.in_time.send_keys([:control, 'a'])
-    page.in_time.send_keys([:command, 'a'])
-    page.in_time.send_keys @in_time
-  else
-    page.in_time.set @in_time
+  def in_time_values
+    on TimeblockWidgetPage do |page|
+      if @in_time !=""
+       page.in_time.send_keys([:control, 'a'])
+       page.in_time.send_keys([:command, 'a'])
+       page.in_time.send_keys @in_time
+      else
+       page.in_time.set @in_time
+      end
+   end
   end
- end
-end
 
-def out_time_values
- on TimeblockWidgetPage do |page|
-  if @out_time !=""
-    page.out_time.send_keys([:control, 'a'])
-    page.out_time.send_keys([:command, 'a'])
-    page.out_time.send_keys @out_time
-  else
-    page.out_time.set @out_time
+  def out_time_values
+    on TimeblockWidgetPage do |page|
+      if @out_time !=""
+        page.out_time.send_keys([:control, 'a'])
+        page.out_time.send_keys([:command, 'a'])
+        page.out_time.send_keys @out_time
+      else
+        page.out_time.set @out_time
+      end
+    end
   end
- end
-end
 
 
 # checks for the existing time block for the entire pay period and deletes
@@ -120,9 +136,7 @@ end
           end
 
         end
-
-  end
-
+    end
   end
 
 # clicks the checkbox based on the input received
@@ -130,7 +144,7 @@ end
     on TimeblockWidgetPage do |page|
       page.across_days.fit checkbox_trans[@apply_time]
     end
-end
+  end
 
 # sets the checkbox based on the input received
   def checkbox_trans
@@ -169,7 +183,7 @@ end
 # clicks the day 1 i.e. first monday on calendar
   def select_date
     on KpmeCalendarPage do |page|
-      page.calendar_day
+      page.calendar_day(@day_click)
     end
   end
 
@@ -189,7 +203,7 @@ end
         sleep 5
       end
     end
- end
+  end
 
 
 
@@ -205,9 +219,6 @@ end
             sleep 5        # this sleep is to prevent browser's dialog
          end
        end
-     end
+      end
+    end
   end
-
-
-
-end
