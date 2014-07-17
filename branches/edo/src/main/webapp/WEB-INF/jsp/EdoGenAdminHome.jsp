@@ -10,7 +10,7 @@
 
             <h2>General Administrative Actions</h2>
 
-            <%-- <edo:edoCurrentPermissions />
+         <%-- <edo:edoCurrentPermissions />
 
             Supp Doc Group List<br>
 
@@ -20,6 +20,16 @@
             <P>
                 Member of any groups? ${isMember}
             </P> --%>
+
+            <c:if test="${!empty missingGroups}">
+                Missing Groups:<br><br>
+                <c:forEach var="grp" items="${missingGroups}">
+                    ${grp}<br>
+                </c:forEach>
+            </c:if>
+            <c:if test="${empty missingGroups}">
+                All Expected Groups Found<br>
+            </c:if>
 
         </div>
         <br style="clear: both;" />

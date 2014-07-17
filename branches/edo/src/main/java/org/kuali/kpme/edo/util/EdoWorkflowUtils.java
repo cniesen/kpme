@@ -16,6 +16,9 @@ public final class EdoWorkflowUtils {
 		sb.append("<principalId>");
 		sb.append(dossier.getCandidatePrincipalId());
 		sb.append("</principalId>");
+        sb.append("<dossierId>");
+        sb.append(dossier.getDossierID());
+        sb.append("</dossierId>");
 		sb.append("<departmentId>");
 		sb.append(dossier.getDepartmentID());
 		sb.append("</departmentId>");
@@ -38,6 +41,9 @@ public final class EdoWorkflowUtils {
 		sb.append("<principalId>");
 		sb.append(dossier.getCandidatePrincipalId());
 		sb.append("</principalId>");
+        sb.append("<dossierId>");
+        sb.append(dossier.getDossierID());
+        sb.append("</dossierId>");
 		sb.append("<departmentId>");
 		sb.append(dossier.getDepartmentID());
 		sb.append("</departmentId>");
@@ -66,6 +72,9 @@ public final class EdoWorkflowUtils {
 		sb.append("<principalId>");
 		sb.append(dossier.getCandidatePrincipalId());
 		sb.append("</principalId>");
+        sb.append("<dossierId>");
+        sb.append(dossier.getDossierID());
+        sb.append("</dossierId>");
 		sb.append("<departmentId>");
 		sb.append(dossier.getDepartmentID());
 		sb.append("</departmentId>");

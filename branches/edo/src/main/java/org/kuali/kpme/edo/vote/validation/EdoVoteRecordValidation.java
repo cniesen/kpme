@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 
 public class EdoVoteRecordValidation {
 
-    public static boolean validateVoteRecord(EdoVoteRecord voteRecord) {
+    public static boolean validateVoteRecord(EdoVoteRecord voteRecord) throws Exception {
         EdoDossier dossier = EdoServiceLocator.getEdoDossierService().getDossierById(BigDecimal.valueOf(voteRecord.getDossierId()));
 
         if (StringUtils.equals(voteRecord.getVoteType(), EdoConstants.VOTE_TYPE_MULTIPLE)) {
@@ -58,22 +58,32 @@ public class EdoVoteRecordValidation {
         return false;
     }
 
-    private static void validateTotalCount(EdoVoteRecord voteRecord) {
+    private static void validateTotalCount(EdoVoteRecord voteRecord) throws Exception {
         EdoDossier dossier = EdoServiceLocator.getEdoDossierService().getDossierById(BigDecimal.valueOf(voteRecord.getDossierId()));
 
         if (dossier.getDossierType().getDossierTypeName().equals(EdoConstants.VoteType.VOTE_TYPE_TENURE) ||
             dossier.getDossierType().getDossierTypeName().equals(EdoConstants.VoteType.VOTE_TYPE_TENURE_PROMOTION)    ) {
 
-            Integer total = voteRecord.getYesCountTenure() + voteRecord.getNoCountTenure() + voteRecord.getAbsentCountTenure() + voteRecord.getAbstainCountTenure();
-            if (total < 1) {
-                GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.multiple.zero");
+            try {
+                Integer total = voteRecord.getYesCountTenure() + voteRecord.getNoCountTenure() + voteRecord.getAbsentCountTenure() + voteRecord.getAbstainCountTenure();
+                if (total < 1) {
+                    GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.multiple.zero");
+                }
+            }
+            catch (Exception e) {
+                GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.empty");
             }
         }
         if (dossier.getDossierType().getDossierTypeName().equals(EdoConstants.VoteType.VOTE_TYPE_PROMOTION) ||
                 dossier.getDossierType().getDossierTypeName().equals(EdoConstants.VoteType.VOTE_TYPE_TENURE_PROMOTION)    ) {
-            Integer total = voteRecord.getYesCountPromotion() + voteRecord.getNoCountPromotion() + voteRecord.getAbsentCountPromotion() + voteRecord.getAbstainCountPromotion();
-            if (total < 1) {
-                GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.multiple.zero");
+
+            try {
+                Integer total = voteRecord.getYesCountPromotion() + voteRecord.getNoCountPromotion() + voteRecord.getAbsentCountPromotion() + voteRecord.getAbstainCountPromotion();
+                if (total < 1) {
+                    GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.multiple.zero");
+                }
+            } catch (Exception e) {
+                GlobalVariables.getMessageMap().putError(EdoConstants.ErrorKeys.ERROR_KEYS,"error.vote.empty");
             }
         }
         return;

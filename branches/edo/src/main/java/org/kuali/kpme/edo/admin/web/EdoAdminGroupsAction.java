@@ -49,7 +49,7 @@ public class EdoAdminGroupsAction extends EdoAction {
     public ActionForward execute(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
         EdoAdminGroupsForm groupsForm = (EdoAdminGroupsForm) form;
-        //groupsForm.setWorkflowDisplayList(EdoServiceLocator.getEdoWorkflowDefinitionService().getWorkflowsForDisplay());
+        groupsForm.setWorkflowDisplayList(EdoServiceLocator.getEdoWorkflowDefinitionService().getWorkflowsForDisplay());
 
         return super.execute(mapping, form, request, response);
     }
@@ -267,7 +267,7 @@ public class EdoAdminGroupsAction extends EdoAction {
         String groupJSON = "";
 
         String instCode = groupsForm.getInstitutionCode();
-        String workflowId = EdoConstants.EDO_DEFAULT_WORKFLOW_ID;
+        String workflowId = groupsForm.getWorkflowId();
 
         BufferedReader rdr = new BufferedReader(new StringReader(groupsForm.getUnitList()));
         List<String> lines = new ArrayList<String>();

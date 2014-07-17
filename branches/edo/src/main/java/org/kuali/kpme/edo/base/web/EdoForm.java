@@ -44,6 +44,7 @@ public class EdoForm extends KualiForm {
     private boolean canUploadReconsiderItems = false;
     private boolean canManageGroups = false;
     private String tabId;
+    private boolean hasAdministratorRole = false;
     private boolean hasSuperUserRole = false;
     public String getMethodToCall() {
 		return methodToCall;
@@ -239,12 +240,24 @@ public class EdoForm extends KualiForm {
         this.canManageGroups = canManageGroups;
     }
 
-	public boolean isHasSuperUserRole() {
+    public boolean isHasAdministratorRole() {
+        return hasAdministratorRole;
+    }
+
+    public void setHasAdministratorRole(boolean hasAdministratorRole) {
+        this.hasAdministratorRole = hasAdministratorRole;
+    }
+
+    public boolean isHasSuperUserRole() {
 		return hasSuperUserRole;
 	}
 
 	public void setHasSuperUserRole(boolean hasSuperUserRole) {
 		this.hasSuperUserRole = hasSuperUserRole;
 	}
+
+	
+	
+	
     
 }

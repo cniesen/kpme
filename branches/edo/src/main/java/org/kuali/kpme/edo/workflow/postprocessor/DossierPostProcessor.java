@@ -111,9 +111,43 @@ public class DossierPostProcessor extends DefaultPostProcessor {
             	dossier.setDossierStatus(EdoConstants.DOSSIER_STATUS.PENDING);
                 }
             } */
+            //this has to be changed
             else if (DocumentStatus.ENROUTE.equals(newDocumentStatus) && dossier.getDossierStatus().equals(EdoConstants.DOSSIER_STATUS.PENDING)) {
                 if(!(StringUtils.equals(EdoConstants.DOSSIER_STATUS.RECONSIDERATION, dossier.getDossierStatus()))) {
             	dossier.setDossierStatus(EdoConstants.DOSSIER_STATUS.SUBMITTED);
+            	//may be its here we have to send out an email to the sec unit reviewers
+            	if(StringUtils.isNotBlank(dossier.getSecondaryUnit())){
+                	//also send a notification to the secondary unit reviwers if the candidate has the secondary unit
+                	// get the second unit reviewer associated with the logged in candidate
+                    List<String> secUnitReviewers = EdoServiceLocator.getEdoMaintenanceService().getCandidateSecondaryUnitReviewers(dossier.getDossierID());
+                    for(String secUnitReviewer : secUnitReviewers) {
+                        Person reviewer = KimApiServiceLocator.getPersonService().getPerson(secUnitReviewer);
+                        String subject = "Workflow Notification";
+                        String content = "This is an FYI email notification : "
+                        		+ "Candidate" + dossier.getCandidateUsername()
+    							+ "has submitted their dossier for review at http://edossier.iu.edu.\n\n"
+    							+ "For additional help or feedback, email <edossier@indiana.edu>.";        				
+                        String testEmailAddresses = new String();
+    					if (!TagSupport.isNonProductionEnvironment()) {
+    							EdoServiceLocator.getEdoNotificationService()
+    									.sendMail(reviewer.getEmailAddress(),
+    											"edossier@indiana.edu",
+    											subject, content);
+    						
+    					} else {
+    						testEmailAddresses = ConfigContext
+    								.getCurrentContextConfig()
+    								.getProperty(
+    										EdoConstants.TEST_EMAIL_NOTIFICATION);
+    						EdoServiceLocator.getEdoNotificationService()
+    								.sendMail(testEmailAddresses,
+    										"edossier@indiana.edu", subject,
+    										content);
+    					}
+                    	
+                    }
+
+            	}
                 }
             }
             dossier.setLastUpdated(EdoUtils.getNow());

@@ -46,6 +46,7 @@ public class EdoAdminGroupMembersAction extends EdoAction {
 
         EdoAdminGroupMembersForm adminForm = (EdoAdminGroupMembersForm)form;
 
+        adminForm.setWorkflowSelectList(EdoServiceLocator.getEdoWorkflowDefinitionService().getWorkflowsForDisplay());
         adminForm.setDepartmentSelectList(EdoServiceLocator.getEdoGroupTrackingService().getDistinctDepartmentList());
         adminForm.setSchoolSelectList(EdoServiceLocator.getEdoGroupTrackingService().getDistinctSchoolList());
         adminForm.setCampusSelectList(EdoServiceLocator.getEdoGroupTrackingService().getDistinctCampusList());
@@ -140,6 +141,28 @@ public class EdoAdminGroupMembersAction extends EdoAction {
         return fwd;
     }
 
+    public ActionForward getWorkflowLayers(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) {
+
+        EdoAdminGroupMembersForm memberForm = (EdoAdminGroupMembersForm) form;
+        String rldListJSON = "[ ";
+        String workflowID = "DEFAULT";
+        if (request.getParameterMap().containsKey("wid")) {
+            workflowID = request.getParameter("wid");
+        }
+        List<EdoReviewLayerDefinition> rlds = EdoServiceLocator.getEdoReviewLayerDefinitionService().getReviewLayerDefinitionsByWorkflowId(workflowID);
+
+        for (EdoReviewLayerDefinition rld : rlds) {
+            rldListJSON = rldListJSON.concat(rld.getReviewLayerDefJSONString() + ",");
+        }
+        rldListJSON = rldListJSON.substring(0, rldListJSON.length()-1) + " ]";
+        memberForm.setReviewLayersJSON(rldListJSON);
+        request.setAttribute("reviewLayersJSON", rldListJSON);
+
+        return mapping.findForward("workflow_ws");
+    }
+
+    // PRIVATE METHODS
+
     private List<List<String>> convertCSVRecordsToMemberRecords(List<List<String>> csv_records) {
         List<List<String>> member_records = new ArrayList<List<String>>();
         MessageMap msgmap = GlobalVariables.getMessageMap();
@@ -227,7 +250,7 @@ public class EdoAdminGroupMembersAction extends EdoAction {
             if (reviewLevel.compareTo(BigDecimal.valueOf(5)) == 1) {
                 dossierType = "";
             }
-            String groupName = EdoServiceLocator.getEdoGroupService().buildGroupName(nodeName,workflowAction,dossierType,unitName);
+            String groupName = EdoServiceLocator.getEdoGroupService().buildGroupName(nodeName,workflowAction,dossierType,unitName,EdoConstants.EDO_DEFAULT_WORKFLOW_ID);
 
             // just create the group list anyway
             List<EdoGroup> grpList = EdoServiceLocator.getEdoGroupService().createKimGroups(EdoConstants.EDO_DEFAULT_WORKFLOW_ID, rec.get(0), rec.get(1), rec.get(2), "IU");

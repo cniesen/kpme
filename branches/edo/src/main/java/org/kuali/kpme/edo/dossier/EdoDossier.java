@@ -40,6 +40,7 @@ public class EdoDossier {
     private String     candidateUsername;
     private String     secondaryUnit;
     private String     workflowId;
+    private BigDecimal candidacyYear;
 
     private EdoDossierType dossierType;
     // methods
@@ -206,6 +207,14 @@ public class EdoDossier {
 
     public void setWorkflowId(String workflowId) {
         this.workflowId = workflowId;
+    }
+
+    public BigDecimal getCandidacyYear() {
+        return candidacyYear;
+    }
+
+    public void setCandidacyYear(BigDecimal candidacyYear) {
+        this.candidacyYear = candidacyYear;
     }
 
     public String getCandidatePrincipalId() {

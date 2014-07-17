@@ -44,12 +44,12 @@
                         {   aTargets: [7], sTitle: "Department", bVisible: true  },
                         {   aTargets: [8], sTitle: "Campus", bVisible: true  },
                         {   aTargets: [9], sTitle: "School", bVisible: true  },
-                        {   aTargets: [10], sTitle: "Year", bVisible: true  },
+                        {   aTargets: [10], sTitle: "Year", bVisible: true },
                         {   aTargets: [11], sTitle: "Dossier", bVisible: false  },
                         {   aTargets: [12], sTitle: "Status", bVisible: true  }
                     ],
                     "bJQueryUI": true,
-                    "iDisplayLength": 25
+                    "iDisplayLength": 50
                 }
         );
     });

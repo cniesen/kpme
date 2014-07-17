@@ -4,6 +4,7 @@ import org.kuali.kpme.edo.reviewlayerdef.EdoReviewLayerDefinition;
 import org.kuali.kpme.edo.reviewlayerdef.EdoSuppReviewLayerDefinition;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,8 @@ public interface EdoReviewLayerDefinitionDao {
     public List<EdoReviewLayerDefinition> getReviewLayerDefinitions(String workflowId);
     public List<EdoReviewLayerDefinition> getReviewLayerDefinitions(String nodeName, String voteType, String reviewLetter);
     public List<EdoReviewLayerDefinition> getReviewLayerDefinitions(String workflowId, Set<String> nodeNames);
+    public List<EdoSuppReviewLayerDefinition> getSuppReviewLayerDefinitions(String workflowId, Set<String> nodeNames);
+
 
     public void saveOrUpdate(EdoReviewLayerDefinition reviewLayerDefinition);
 
@@ -30,7 +33,7 @@ public interface EdoReviewLayerDefinitionDao {
     //public EdoReviewLayerDefinition getReviewLayerDefinition(String nodeName);
 
     //public BigDecimal getMaxRouteLevel();
-    public List<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxReviewLevel);
+    public List<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxReviewLevel, String workflowId);
     //supplemental auth nodes
     public List<String> getAuthorizedSupplementalNodes(BigDecimal reviewLayerDefinitionId);
     public EdoSuppReviewLayerDefinition getSuppReviewLayerDefinition(BigDecimal reviewLayerDefinitionID);

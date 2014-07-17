@@ -133,7 +133,7 @@
             <description>Document type used for Supplemental document routing</description>
             <active>true</active>
             <routingVersion>2</routingVersion>
-            <postProcessorName>org.kuali.kpme.edo.workflow.postprocessor.DossierPostProcessor</postProcessorName>
+            <postProcessorName>org.kuali.kpme.edo.workflow.postprocessor.SupplementalPostProcessor</postProcessorName>
             <docHandler>${EDO.DocHandlerURL}/EdoDossierRoute.do?methodToCall=docHandler</docHandler>
             <notificationFromAddress>edossier@indiana.edu</notificationFromAddress>
             <emailStylesheet>eDossier.email.style</emailStylesheet>
@@ -146,10 +146,15 @@
                         <branch name="supplDeptLevelAck" >
                             <role name="supplDeptLevelAck" nextNode="joinPrincipals" />
                         </branch>
-
+                        
+                        <branch name="supplDeptChairLevelAck" >
+                            <role name="supplDeptChairLevelAck" nextNode="joinPrincipals" />
+                        </branch>
+                       
                         <branch name="supplSchoolLevelAck" >
                             <role name="supplSchoolLevelAck" nextNode="joinPrincipals" />
                         </branch>
+                        
 
                         <branch name="supplDeanAck" >
                             <role name="supplDeanAck" nextNode="joinPrincipals" />
@@ -165,6 +170,10 @@
 
                         <branch name="supplDeptLevel" >
                             <role name="supplDeptLevel" nextNode="joinPrincipals" />
+                        </branch>
+                        
+                         <branch name="supplDeptChairLevel" >
+                            <role name="supplDeptChairLevel" nextNode="joinPrincipals" />
                         </branch>
 
                         <branch name="supplSchoolLevel" >
@@ -217,6 +226,23 @@
                    	<mandatoryRoute>false</mandatoryRoute>
                     <finalApproval>false</finalApproval>
                 </role>
+                
+                <!-- **************** Dept Chair Branch **************** -->
+                
+                   <role name="supplDeptChairLevelAck">
+                	 <qualifierResolverClass>org.kuali.kpme.edo.workflow.role.SuppGenericQualifierResolver</qualifierResolverClass>
+                    <activationType>P</activationType>
+                    <mandatoryRoute>false</mandatoryRoute>
+                    <finalApproval>false</finalApproval>
+                </role>
+
+                <role name="supplDeptChairLevel">
+                	<qualifierResolverClass>org.kuali.kpme.edo.workflow.role.SuppGenericQualifierResolver</qualifierResolverClass>
+                    <activationType>P</activationType>
+                   	<mandatoryRoute>false</mandatoryRoute>
+                    <finalApproval>false</finalApproval>
+                </role>
+                
 
                 <!-- **************** School Branch **************** -->
                 <role name="supplSchoolLevelAck">

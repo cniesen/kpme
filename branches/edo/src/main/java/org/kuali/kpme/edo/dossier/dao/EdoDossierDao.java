@@ -23,4 +23,5 @@ public interface EdoDossierDao {
     public List<EdoDossier> getDossierListByUserName(String userName);
     public EdoDossier getDossierByDossierId( String dossierId );
     public EdoDossier getDossier(String documentId);
+    public List<EdoDossier> getDossierListByQualifierAndStatus(String qualifierId);
 }

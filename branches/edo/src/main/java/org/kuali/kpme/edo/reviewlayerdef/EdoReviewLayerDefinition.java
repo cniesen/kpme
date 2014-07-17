@@ -1,8 +1,14 @@
 package org.kuali.kpme.edo.reviewlayerdef;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.kuali.kpme.edo.EdoBusinessObject;
 
+import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EdoReviewLayerDefinition extends EdoBusinessObject implements Comparable<EdoReviewLayerDefinition> {
 
@@ -106,5 +112,22 @@ public class EdoReviewLayerDefinition extends EdoBusinessObject implements Compa
     @Override
     public void setId(BigDecimal id) {
         setReviewLayerDefinitionId(id);
+    }
+
+    public String getReviewLayerDefJSONString() {
+        ArrayList<String> tmp = new ArrayList<String>();
+        Type tmpType = new TypeToken<List<String>>() {}.getType();
+        Gson gson = new Gson();
+        String lastUpdateString = new SimpleDateFormat("yyyy-MM-dd hh:mma").format(this.getLastUpdated());
+
+        tmp.add(this.getReviewLayerDefinitionId().toString());
+        tmp.add(this.getDescription());
+        tmp.add(this.getNodeName());
+        tmp.add(this.getVoteType());
+        tmp.add(this.getWorkflowId());
+        tmp.add(this.getWorkflowQualifier());
+        tmp.add(lastUpdateString);
+
+        return gson.toJson(tmp, tmpType);
     }
 }

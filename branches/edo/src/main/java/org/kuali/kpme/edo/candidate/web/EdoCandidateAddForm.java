@@ -17,7 +17,6 @@ public class EdoCandidateAddForm extends EdoForm {
     public String currentRank;
     public String primaryDepartmentID;
     public String tnpDepartmentID;
-    public int candidacyYear;
     public String candidacySchool;
     public String candidacyCampus;
 
@@ -59,14 +58,6 @@ public class EdoCandidateAddForm extends EdoForm {
 
     public void setTnpDepartmentID(String tnpDepartmentID) {
         this.tnpDepartmentID = tnpDepartmentID;
-    }
-
-    public int getCandidacyYear() {
-        return candidacyYear;
-    }
-
-    public void setCandidacyYear(int candidacyYear) {
-        this.candidacyYear = candidacyYear;
     }
 
     public String getCandidacySchool() {

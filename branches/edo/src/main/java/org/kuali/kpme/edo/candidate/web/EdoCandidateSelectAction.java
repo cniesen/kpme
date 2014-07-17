@@ -117,6 +117,16 @@ public class EdoCandidateSelectAction extends EdoAction {
             if (EdoServiceLocator.getAuthorizationService().isAuthorizedToUploadExternalLetter_W(EdoContext.getPrincipalId(),candidateDossier.getDossierId().intValue())) {
                 dossierList.add(candidateDossier);
             }
+            
+            // is this user an administrator with check list sign off permission
+            if (EdoServiceLocator.getAuthorizationService().isCheckListSignOffAuthorized_W(EdoContext.getPrincipalId(),candidateDossier.getDossierId().intValue())) {
+                dossierList.add(candidateDossier);
+            }
+            
+            //is this user with second unit upload letter permission
+            if (EdoServiceLocator.getAuthorizationService().isSeconUnitAuthorized_W(EdoContext.getPrincipalId(),candidateDossier.getDossierId().intValue())) {
+                dossierList.add(candidateDossier);
+            }
 
             if (StringUtils.isNotEmpty(candidateDossier.getDocumentId())) {
                 try {

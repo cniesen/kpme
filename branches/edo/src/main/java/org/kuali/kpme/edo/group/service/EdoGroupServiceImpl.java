@@ -66,7 +66,7 @@ public class EdoGroupServiceImpl implements EdoGroupService {
 
     // e.g. buildGroupName( "LEVEL2", "APPROVE", "TENURE", "BL-VPIT")
     //      buildGroupName( "LEVEL8", "APPROVE", "", "")
-    public String buildGroupName(String routeLevel, String workflowAction, String dossierReviewLevel, String unitDesignation) {
+    public String buildGroupName(String routeLevel, String workflowAction, String dossierReviewLevel, String unitDesignation, String workflowId) {
         String grpName;
         String cleanUnitId = unitDesignation.replace("-", "");
 
@@ -79,14 +79,14 @@ public class EdoGroupServiceImpl implements EdoGroupService {
             grpName = grpName + "-" + cleanUnitId;
         }
 
-        return grpName;
+        return grpName + "_" + workflowId;
     }
 
     public List<EdoGroup> createKimGroups(String workflowId, String departmentId, String schoolId, String campusId, String institutionId) {
         EdoGroupService grpSvc = EdoServiceLocator.getEdoGroupService();
         EdoGroupDefinitionService grpDefSvc = EdoServiceLocator.getEdoGroupDefinitionService();
 
-        List<EdoGroupDefinition> grpDefList = grpDefSvc.getEdoGroupDefinitionsByWorkflowId(EdoConstants.EDO_DEFAULT_WORKFLOW_ID);
+        List<EdoGroupDefinition> grpDefList = grpDefSvc.getEdoGroupDefinitionsByWorkflowId(workflowId);
         List<Group> kimGrpList = new LinkedList<Group>();
         List<EdoGroup> grpList = new LinkedList<EdoGroup>();
 
@@ -94,7 +94,7 @@ public class EdoGroupServiceImpl implements EdoGroupService {
         if (CollectionUtils.isNotEmpty(grpDefList)) {
             for (EdoGroupDefinition grpDef : grpDefList) {
                 if (grpDef.getKimTypeName().equalsIgnoreCase("department")) {
-                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), departmentId);
+                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), departmentId, workflowId);
                     EdoGroup grp = grpSvc.createGroup(grpName, grpDef.getKimTypeName());
                     grp.setKimRoleName(grpDef.getKimRoleName());
                     grp.addGroupAttribute(EdoConstants.EDO_ATTRIBUTE_DEPARTMENT_ID, departmentId);
@@ -119,7 +119,7 @@ public class EdoGroupServiceImpl implements EdoGroupService {
                     }
                 }
                 if (grpDef.getKimTypeName().equalsIgnoreCase("school")) {
-                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), schoolId);
+                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), schoolId, workflowId);
                     EdoGroup grp = grpSvc.createGroup(grpName, grpDef.getKimTypeName());
                     grp.setKimRoleName(grpDef.getKimRoleName());
                     grp.addGroupAttribute(EdoConstants.EDO_ATTRIBUTE_SCHOOL_ID, schoolId);
@@ -145,7 +145,7 @@ public class EdoGroupServiceImpl implements EdoGroupService {
                     }
                 }
                 if (grpDef.getKimTypeName().equalsIgnoreCase("campus")) {
-                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), campusId);
+                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), grpDef.getDossierType(), campusId, workflowId);
                     EdoGroup grp = grpSvc.createGroup(grpName, grpDef.getKimTypeName());
                     grp.setKimRoleName(grpDef.getKimRoleName());
                     grp.addGroupAttribute(EdoConstants.EDO_ATTRIBUTE_CAMPUS_ID, campusId);
@@ -170,7 +170,7 @@ public class EdoGroupServiceImpl implements EdoGroupService {
                     }
                 }
                 if (grpDef.getKimTypeName().equalsIgnoreCase("institution")) {
-                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), "", "");
+                    String grpName = grpSvc.buildGroupName(grpDef.getWorkflowLevel(), grpDef.getWorkflowType(), "", "", workflowId);
                     EdoGroup grp = grpSvc.createGroup(grpName, grpDef.getKimTypeName());
                     grp.setKimRoleName(grpDef.getKimRoleName());
                     grp.addGroupAttribute(EdoConstants.EDO_ATTRIBUTE_INSTITUTION_ID, institutionId);

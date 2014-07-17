@@ -34,4 +34,8 @@ public interface EdoDossierService {
     public boolean approveSupplemental(String principalId, Integer dossierId, String dossierType);
     public boolean routeReconsiderDocument(String principalId, Integer dossierId, String dossierType);
     public boolean isRoutedAsReconsiderDocument(Integer dossierId);
+    //fecth the list of dossiers
+    public List<EdoDossier> getDossierListByQualifierAndStatus(String qualifierId);
+    public List<String> getDistinctDossierDepartmentIDs();
+    public List<String> getDistinctDossierSchoolIDs();
 }

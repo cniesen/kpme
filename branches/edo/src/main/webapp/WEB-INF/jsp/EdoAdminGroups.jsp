@@ -36,11 +36,19 @@
 
             <fieldset>
                 <legend>
-                    <em><strong>Department, School and Campus Codes</strong></em>
+                    <em><strong>Workflow, Department, School and Campus Codes</strong></em>
                 </legend>
                 <html:form action="/EdoAdminGroups.do?tabId=gadmin" method="post"
                            enctype="multipart/form-data">
                 <html:hidden property="methodToCall" value="" />
+                Workflow
+                <select name="workflowId" id="wfID">
+                    <option value="">-- Choose a workflow --</option>
+                    <c:forEach var="wid" items="${Form.workflowSelectList.keySet()}">
+                        <option value="${wid}">${Form.workflowSelectList.get(wid)}</option>
+                    </c:forEach>
+                </select>
+
                 Department Code
                 <html:text property="departmentCode" size="12" />&nbsp;&nbsp;
                 School Code

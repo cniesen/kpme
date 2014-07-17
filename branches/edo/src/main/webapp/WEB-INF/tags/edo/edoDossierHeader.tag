@@ -23,6 +23,8 @@
 <c:set var="canRouteReconsider" value="<%= EdoContext.canRouteReconsider() %>" />
 <c:set var="canUpdateDossierStatus" value="<%= EdoContext.canUpdateDossierstatus() %>" />
 <c:set var="isSubmitButtonActive" value="<%= EdoContext.isSubmitButtonActive() %>" />
+<c:set var="canSignOff"  value="<%= EdoContext.canCheckListSignOffPersonRoute() %>" />
+
 
 
 
@@ -95,9 +97,10 @@
                     </td>
                 </tr>
             </c:if>
-            <c:if test="${canSubmit and isValidDossier == 1 and canSeeSubmitDossierButton and isSubmitButtonActive}">
+           <c:if test="${isValidDossier == 1 and isSubmitButtonActive and canSignOff }">
                 <tr>
                     <td align="right" bgcolor="#eeeeee">Submit your Dossier</td><td align="left">
+                      <div style="float: left; padding-right: 10px;">
                         <html:form action="/EdoDossierRoute">
                             <html:hidden property="methodToCall" value="routeDocument"/>
                             <html:hidden property="cid" value="${selectedCandidate.candidateID}"/>
@@ -113,12 +116,31 @@
                            	<img src="images/ajax-loader.gif" id="ajaxSubmit" style="display: none;">
                                
                         </html:form>
-                    </td>
+                          </div>
+
+                             <div style="float: left">
+	                                <html:form action="/EdoDossierRoute">
+	                                    <html:hidden property="methodToCall" value="returnToCandidate"/>
+	                                    <html:hidden property="cid" value="${selectedCandidate.candidateID}"/>
+	                                    <html:hidden property="candidateUsername" value="${selectedCandidate.candidateUsername}"/>
+	                                    <html:hidden property="dossierId" value="${selectedCandidate.candidateDossierID}"/>
+	                                    <html:hidden property="dossierType" value="${selectedCandidate.dossierTypeName}"/>
+	
+	                                    <input type="image" alt="Cancel Dossier"
+	                                           name="cancelDossier" id="cancelDossier"
+	                                           src="images/buttonsmall_rtrntcandidate.gif"
+	                                           onclick="this.form.submit"
+	                                           style="border: none; vertical-align: middle;" />
+	                                     <img src="images/ajax-loader.gif" id="ajaxSubmit" style="display: none;">
+	                                </html:form>
+	                            </div>
+
+                     </td>
                 </tr>
             </c:if>
 
-            <%-- submit button for candidate sign-off --%>
-            <c:if test="${isCandidate and isValidDossier == 1 and canSeeSubmitDossierButton}">
+            <%-- submit button by candidate for sign-off --%>
+            <c:if test="${isCandidate and isValidDossier == 1 and canSeeSubmitDossierButton and isSubmitButtonActive}">
                 <tr>
                 <td align="right" bgcolor="#eeeeee">Submit your Dossier</td><td align="left">
                 <html:form action="/EdoDossierRoute">
@@ -148,7 +170,7 @@
             </c:if>
 			<c:if test="${canRouteReconsider}">
 			 
-	            <c:if test="${canRoute && dossierReadyForRoute}">
+	            <c:if test="${(canRoute) && dossierReadyForRoute}">
 	                <tr>
 	                    <td align="right" bgcolor="#eeeeee">Route Dossier</td><td align="left">
 	                        <div style="float: left; padding-right: 10px;">
@@ -168,7 +190,7 @@
                                
 	                            </html:form>
 	                        </div>
-	                        <c:if test="${canReturn}">
+	                       <%--  <c:if test="${canReturn}">
 	                            <div style="float: left">
 	                                <html:form action="/EdoDossierRoute">
 	                                    <html:hidden property="methodToCall" value="returnToCandidate"/>
@@ -185,7 +207,7 @@
 	                                     <img src="images/ajax-loader.gif" id="ajaxSubmit" style="display: none;">
 	                                </html:form>
 	                            </div>
-	                        </c:if>
+	                        </c:if> --%>
 	                    </td>
 	                </tr>
 	            </c:if>

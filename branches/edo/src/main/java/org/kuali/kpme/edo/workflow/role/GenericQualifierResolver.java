@@ -7,7 +7,7 @@ import org.kuali.kpme.edo.service.EdoServiceLocator;
 import org.kuali.kpme.edo.util.EdoPropertyConstants;
 import org.kuali.rice.kew.engine.RouteContext;
 import org.kuali.rice.kew.routeheader.DocumentRouteHeaderValue;
-import org.kuali.rice.kns.workflow.attribute.QualifierResolverBase;
+import org.kuali.rice.krad.workflow.attribute.QualifierResolverBase;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,6 +49,12 @@ public class GenericQualifierResolver extends QualifierResolverBase {
                 String campusId = StringUtils.substringBetween(documentContent, "<campusId>", "</campusId>");
                 if(StringUtils.isNotBlank(campusId)) {
                     qualifiers.put(EDOKimAttributes.EDO_CAMPUS_ID, campusId);
+                }
+            }
+            if (qualifier.equals(EdoPropertyConstants.EdoReviewLayerDefinitionFields.DOSSIER_ID)) {
+                String dossierId = StringUtils.substringBetween(documentContent, "<dossierId>", "</dossierId>");
+                if(StringUtils.isNotBlank(dossierId)) {
+                    qualifiers.put(EDOKimAttributes.EDO_DOSSIER_ID, dossierId);
                 }
             }
         }

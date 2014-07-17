@@ -74,6 +74,11 @@ public class EdoReviewLayerDefinitionServiceImpl implements EdoReviewLayerDefini
     public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitions(String workflowId, Set<String> nodeNames) {
         return this.edoReviewLayerDefinitionDao.getReviewLayerDefinitions(workflowId, nodeNames);
     }
+    public Collection<EdoSuppReviewLayerDefinition> getSuppReviewLayerDefinitions(String workflowId, Set<String> nodeNames) {
+        return this.edoReviewLayerDefinitionDao.getSuppReviewLayerDefinitions(workflowId, nodeNames);
+
+    }
+
 
     /* public List<String> getValidNodes() {
         List<EdoReviewLayerDefinition> edoReviewLayerDefinitions = this.edoReviewLayerDefinitionDao.getReviewLayerDefinitions();
@@ -153,9 +158,9 @@ public class EdoReviewLayerDefinitionServiceImpl implements EdoReviewLayerDefini
     	
     	
     }
-    public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxRouteLevel) {
+    public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxRouteLevel, String workflowId) {
 
-        return this.edoReviewLayerDefinitionDao.getReviewLayerDefinitionsToMax(maxRouteLevel);
+        return this.edoReviewLayerDefinitionDao.getReviewLayerDefinitionsToMax(maxRouteLevel, workflowId);
     }
 
     public void setEdoReviewLayerDefinitionDao(EdoReviewLayerDefinitionDao edoReviewLayerDefinitionDao) {

@@ -27,6 +27,10 @@ public interface AuthorizationService {
     public boolean isAuthorizedToDelegateChair(String principalId);
     public boolean isAuthorizedToSubmitSupplemental(String principalId);
     public boolean isAuthorizedToSubmitReconsider(String principalId);
+    public boolean isCheckListSignOffAuthorized(String principalId, Integer dossierId);
+    public boolean isSeconUnitAuthorized(String principalId, Integer dossierId);
+
+
 
     // wrappers for chair delegate checks
     public boolean isAuthorizedToEditDossier_W(String principalId, Integer dossierId);
@@ -42,4 +46,8 @@ public interface AuthorizationService {
     public boolean isAuthorizedToUploadExternalLetter_W(String principalId, Integer dossierId);
     public boolean isAuthorizedToSubmitSupplemental_W(String principalId);
     public boolean isAuthorizedToSubmitReconsider_W(String principalId);
+    public boolean isCheckListSignOffAuthorized_W(String principalId, Integer dossierId);
+    public boolean isSeconUnitAuthorized_W(String principalId, Integer dossierId);
+
+
 }

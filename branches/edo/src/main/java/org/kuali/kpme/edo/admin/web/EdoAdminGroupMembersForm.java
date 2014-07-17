@@ -17,12 +17,30 @@ import java.util.Map;
  */
 public class EdoAdminGroupMembersForm extends EdoForm {
 
+    private Map<String,String> workflowSelectList;
     private List<String> departmentSelectList;
     private List<String> schoolSelectList;
     private List<String> campusSelectList;
     private Map<BigDecimal,String> reviewLevelSelectList;
     private FormFile UploadMbrFile;
     private String memberData;
+    private String reviewLayersJSON;
+
+    public String getReviewLayersJSON() {
+        return reviewLayersJSON;
+    }
+
+    public void setReviewLayersJSON(String reviewLayersJSON) {
+        this.reviewLayersJSON = reviewLayersJSON;
+    }
+
+    public Map<String, String> getWorkflowSelectList() {
+        return workflowSelectList;
+    }
+
+    public void setWorkflowSelectList(Map<String, String> workflowSelectList) {
+        this.workflowSelectList = workflowSelectList;
+    }
 
     public List<String> getDepartmentSelectList() {
         return departmentSelectList;

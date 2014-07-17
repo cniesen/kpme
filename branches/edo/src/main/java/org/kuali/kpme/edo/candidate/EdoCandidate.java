@@ -23,10 +23,10 @@ public class EdoCandidate {
     private String currentRank;
     private String primaryDeptID ;
     private String tnpDeptID;
-    private BigDecimal candidacyYear;
     private String candidacySchool;
     private String candidacyCampus;
     private String currentDossier;
+    private String secondaryUnit;
 
     public BigDecimal getCandidateID() {
         return candidateID;
@@ -84,14 +84,6 @@ public class EdoCandidate {
         this.tnpDeptID = tnpDeptID;
     }
 
-    public BigDecimal getCandidacyYear() {
-        return candidacyYear;
-    }
-
-    public void setCandidacyYear(BigDecimal candidacyYear) {
-        this.candidacyYear = candidacyYear;
-    }
-
     public String getCandidacySchool() {
         return candidacySchool;
     }
@@ -115,8 +107,17 @@ public class EdoCandidate {
     public void setCurrentDossier(String currentDossier) {
         this.currentDossier = currentDossier;
     }
+    
 
-    public String getCandidateJSONString() {
+    public String getSecondaryUnit() {
+		return secondaryUnit;
+	}
+
+	public void setSecondaryUnit(String secondaryUnit) {
+		this.secondaryUnit = secondaryUnit;
+	}
+
+	public String getCandidateJSONString() {
         ArrayList<String> tmp = new ArrayList<String>();
         Type tmpType = new TypeToken<List<String>>() {}.getType();
         Gson gson = new Gson();
@@ -130,8 +131,8 @@ public class EdoCandidate {
         tmp.add(this.getPrimaryDeptID());
         tmp.add(this.getCandidacyCampus());
         tmp.add(this.getCandidacySchool());
-        tmp.add(this.getCandidacyYear().toString());
         tmp.add(this.getCurrentDossier());
+        tmp.add(this.getSecondaryUnit());
         // dossier ID
         return gson.toJson(tmp, tmpType).toString();
     }

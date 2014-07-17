@@ -23,6 +23,7 @@ public interface MaintenanceService {
     public boolean saveGuestForDossierId(String emplid, Date startDate, Date endDate, BigDecimal dossierId);
     public boolean hasCandidateRole(String emplid);
     public boolean hasChairRole(String emplid);
+    public boolean hasAdministratorRole(String emplid);
     public boolean hasSuperUserRole(String emplid);
     public boolean hasCandidateRole_W(String emplid);
     public boolean hasChairRole_W(String emplid);
@@ -44,6 +45,9 @@ public interface MaintenanceService {
     public boolean deleteChairDelegate(String emplId, String facultyId, String roleName);
     public List<String> getSecondUnitReviewerDossierList(String secondUnitRevEmplid);
     public List<String> getCandidateSecondaryUnitReviewers(BigDecimal dossierId);
+    public List<String> getCheckListSignOffPerson(String deptId, String schoolId, BigDecimal dossierId);
+    public List<String> getCheckListSignOffList(String signOffEmmlid);
+
 
 
 }

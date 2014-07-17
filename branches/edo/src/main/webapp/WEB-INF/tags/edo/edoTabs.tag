@@ -19,6 +19,8 @@
 <%-- <c:if test="${isReviewer}"> --%>
 <c:if test="${EdoForm.useReviewerScreen}">
     <li id="reviews" class="ui-state-default ui-corner-top"><a href="EdoCandidateList.do?tabId=reviews&nid=rev_0_1">Reviews</a></li>
+    <li id="reviewerHelp" class="ui-state-default ui-corner-top"><a href="EdoReviewerHelpGuide.do?tabId=reviewerHelp&nid=cklst_0_0" target="helpwin">Reviewer Help</a></li>
+    
 </c:if>
 
 <%-- <c:if test="${isCandidate}"> --%>

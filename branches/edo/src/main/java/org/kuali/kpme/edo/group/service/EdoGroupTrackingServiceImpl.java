@@ -6,10 +6,7 @@ import org.kuali.kpme.edo.group.dao.EdoGroupTrackingDao;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
 import org.kuali.rice.krad.util.ObjectUtils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * $HeadURL$
@@ -84,6 +81,7 @@ public class EdoGroupTrackingServiceImpl extends PlatformAwareDaoBaseOjb impleme
         for (String str : hash.keySet()) {
             deptList.add(str);
         }
+        Collections.sort(deptList);
         return deptList;
     }
 
@@ -101,6 +99,7 @@ public class EdoGroupTrackingServiceImpl extends PlatformAwareDaoBaseOjb impleme
         for (String str : hash.keySet()) {
             schoolList.add(str);
         }
+        Collections.sort(schoolList);
         return schoolList;
     }
 
@@ -118,6 +117,7 @@ public class EdoGroupTrackingServiceImpl extends PlatformAwareDaoBaseOjb impleme
         for (String str : hash.keySet()) {
             campusList.add(str);
         }
+        Collections.sort(campusList);
         return campusList;
     }
 

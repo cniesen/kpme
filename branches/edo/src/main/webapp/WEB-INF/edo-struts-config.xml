@@ -48,6 +48,8 @@
         <form-bean name="EdoPTReportForm" type="org.kuali.kpme.edo.reports.web.EdoPTReportForm" />
         <form-bean name="EdoDisplaySubmitButtonForm" type="org.kuali.kpme.edo.submitButton.web.EdoDisplaySubmitButtonForm" />
         <form-bean name="EdoSecondUnitForm" type="org.kuali.kpme.edo.item.web.EdoSecondUnitForm" />
+        <form-bean name="EdoReviewerHelpGuideForm" type="org.kuali.kpme.edo.reviewerhelp.web.EdoReviewerHelpGuideForm"/>
+        
 	  </form-beans>
     <global-exceptions>
         <exception type="java.lang.Exception" path="/WEB-INF/jsp/error.jsp"
@@ -128,6 +130,7 @@
                 input="/WEB-INF/jsp/EdoAdminGroupMembers.jsp"
                 parameter="methodToCall">
             <forward name="basic" path="/WEB-INF/jsp/EdoAdminGroupMembers.jsp" />
+            <forward name="workflow_ws" path="/WEB-INF/jsp/EdoGroupMbrsWorkflowWS.jsp" />
         </action>
 
         <action path="/EdoManageAdmins" name="EdoManageAdminsForm" type="org.kuali.kpme.edo.admin.web.EdoManageAdminsAction"
@@ -262,10 +265,14 @@
                 attribute="EdoForm" parameter="methodToCall">
             <forward name="basic" path="/WEB-INF/jsp/EdoDisplaySubmitButton.jsp"/>
         </action>
+          <action path="/EdoReviewerHelpGuide" name="EdoReviewerHelpGuideForm" type="org.kuali.kpme.edo.reviewerhelp.web.EdoReviewerHelpGuideAction" scope="request"
+                attribute="EdoForm" parameter="methodToCall">
+            <forward name="basic" path="/WEB-INF/jsp/EdoReviewerHelpGuide.jsp"/>
+        </action>
 
     </action-mappings>
 
-    <controller processorClass="org.kuali.kpme.edo.base.web.EdoRequestProcessor"></controller>
+    <controller processorClass="org.kuali.kpme.edo.base.web.EdoRequestProcessor" maxFileSize="4G"></controller>
 
     <message-resources null="true" parameter="ApplicationResources"/>
     <plug-in className="org.apache.struts.validator.ValidatorPlugIn">

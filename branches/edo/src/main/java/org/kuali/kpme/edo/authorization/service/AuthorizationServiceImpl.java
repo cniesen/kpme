@@ -61,6 +61,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         List<String> roleIds7 = new ArrayList<String>();
         List<String> roleIds8 = new ArrayList<String>();
         List<String> roleIds9 = new ArrayList<String>();
+        List<String> roleIds10 = new ArrayList<String>();
         List<String> roleList = new ArrayList<String>();
         roleIds.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_ADMINISTRATOR"));
         roleIds1.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_CANDIDATE")); // i have a question regarding this
@@ -71,6 +72,8 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         roleIds7.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_CHAIR_DELEGATE"));
         roleIds8.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_FINAL_ADMINSTRATORS"));
         roleIds9.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_SECOND_UNIT_REVIEWER"));
+        roleIds10.add(getRoleService().getRoleIdByNamespaceCodeAndName("EDO", "EDO_CHECK_LIST_SIGN_OFF"));
+
 
 
         if (KimApiServiceLocator.getRoleService().principalHasRole(emplid, roleIds, new HashMap<String, String>())) {
@@ -107,7 +110,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         }
 
         if (KimApiServiceLocator.getRoleService().principalHasRole(emplid, roleIds6, new HashMap<String, String>())) {
-            roleList.add("Super User");
+            //roleList.add("Super User");
+            roleList.add(EdoConstants.ROLE_SUPER_USER);
+
         }
 
        /* if (KimApiServiceLocator.getRoleService().principalHasRole(emplid, roleIds7, new HashMap<String, String>())) {
@@ -143,6 +148,9 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         
         if (KimApiServiceLocator.getRoleService().principalHasRole(emplid, roleIds9, new HashMap<String, String>())) {
             roleList.add(EdoConstants.ROLE_SECONDARY_UNIT_REVIEWER);
+        }
+        if (KimApiServiceLocator.getRoleService().principalHasRole(emplid, roleIds10, new HashMap<String, String>())) {
+            roleList.add(EdoConstants.ROLE_CHECK_LIST_SIGN_OFF);
         }
         return roleList;
     }
@@ -292,6 +300,54 @@ public class AuthorizationServiceImpl implements AuthorizationService {
         return isAuthorized;
 
     }
+    public boolean isCheckListSignOffAuthorized(String principalId, Integer dossierId) {
+        boolean isAuthorized = false;
+        String dossierDepartmentId = null;
+        String dossierSchoolId = null;
+
+        if (StringUtils.isNotEmpty(principalId) && dossierId != null) {
+            dossierDepartmentId = EdoServiceLocator.getEdoDossierService().getDossierById(BigDecimal.valueOf(dossierId)).getDepartmentID();
+            dossierSchoolId    = EdoServiceLocator.getEdoDossierService().getDossierById(BigDecimal.valueOf(dossierId)).getSchoolID();
+            Map<String, String> qualification = new HashMap<String, String>();
+
+            // check department, school and campus attributes on the permission check, in turn
+            qualification.put(EDOKimAttributes.EDO_DEPARTMENT_ID, dossierDepartmentId);
+            boolean isDeptQualified = KimApiServiceLocator.getPermissionService().isAuthorized(principalId, EdoConstants.EDO_NAME_SPACE, EdoConstants.EDO_CHECK_LIST_SIGN_OFF_PERMISSION, qualification );
+
+            qualification.clear();
+            qualification.put(EDOKimAttributes.EDO_SCHOOL_ID, dossierSchoolId);
+            boolean isSchoolQualified = KimApiServiceLocator.getPermissionService().isAuthorized(principalId, EdoConstants.EDO_NAME_SPACE, EdoConstants.EDO_CHECK_LIST_SIGN_OFF_PERMISSION, qualification );
+            
+            qualification.clear();
+            qualification.put(EDOKimAttributes.EDO_DOSSIER_ID, dossierId.toString());
+            boolean isDossierQualified = KimApiServiceLocator.getPermissionService().isAuthorized(principalId, EdoConstants.EDO_NAME_SPACE, EdoConstants.EDO_CHECK_LIST_SIGN_OFF_PERMISSION, qualification );
+            
+            if (isDeptQualified || isSchoolQualified || isDossierQualified) {
+                isAuthorized = true;
+            }
+        }
+        return isAuthorized;
+
+    }
+    public boolean isSeconUnitAuthorized(String principalId, Integer dossierId) {
+    	  boolean isAuthorized = false;
+         
+
+          if (StringUtils.isNotEmpty(principalId) && dossierId != null) {
+              Map<String, String> qualification = new HashMap<String, String>();
+
+              qualification.put(EDOKimAttributes.EDO_DOSSIER_ID, dossierId.toString());
+              boolean isDossierIdQualified = KimApiServiceLocator.getPermissionService().isAuthorized(principalId, EdoConstants.EDO_NAME_SPACE, EdoConstants.EDO_SEC_UNIT_UPLOAD_LETTER_PERMISSION, qualification );
+
+              
+              if (isDossierIdQualified) {
+                  isAuthorized = true;
+              }
+          }
+          return isAuthorized;
+    	
+    }
+
 
     public boolean isAuthorizedToDelegateChair(String principalId) {
         boolean isAuthorized = false;
@@ -424,7 +480,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
                                 && !isCandidateLevel){
                 return true;
             }
-        } else if (actionType.equals(ActionType.RETURN_TO_PREVIOUS)) {
+        } /*else if (actionType.equals(ActionType.RETURN_TO_PREVIOUS)) {
             if (wfd != null
                     && validActions.contains(ActionType.RETURN_TO_PREVIOUS)
                     && wfd.checkStatus(DocumentStatus.ENROUTE)
@@ -435,7 +491,7 @@ public class AuthorizationServiceImpl implements AuthorizationService {
 
                 //TODO: LevelX should be changed to a permission attribute check or something similar.
             }
-        } else if (actionType.equals(ActionType.SU_ROUTE_NODE_APPROVE)) {
+        } */else if (actionType.equals(ActionType.SU_ROUTE_NODE_APPROVE)) {
             if (wfd != null
                     && validActions.contains(ActionType.SU_ROUTE_NODE_APPROVE)){
                 return true;
@@ -584,6 +640,30 @@ public class AuthorizationServiceImpl implements AuthorizationService {
          return isAuthorized;
     	
     }
+    public boolean isCheckListSignOffAuthorized_W(String principalId, Integer dossierId) {
+    	 boolean isAuthorized = false;
+
+         List<String> allPrincipals = EdoContext.getPrincipalDelegators(principalId);
+
+         for (String principal : allPrincipals) {
+             isAuthorized = isAuthorized || isCheckListSignOffAuthorized(principal, dossierId);
+         }
+         return isAuthorized;
+    	
+    }
+    public boolean isSeconUnitAuthorized_W(String principalId, Integer dossierId) {
+    	 boolean isAuthorized = false;
+
+         List<String> allPrincipals = EdoContext.getPrincipalDelegators(principalId);
+
+         for (String principal : allPrincipals) {
+             isAuthorized = isAuthorized || isSeconUnitAuthorized(principal, dossierId);
+         }
+         return isAuthorized;
+    	
+    }
+
+
     public boolean isAuthorizedToSubmitSupplemental_W(String principalId) {
     	 boolean isAuthorized = false;
     	 List<String> allPrincipals = EdoContext.getPrincipalDelegators(principalId);

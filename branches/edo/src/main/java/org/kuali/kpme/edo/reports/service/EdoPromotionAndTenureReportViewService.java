@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.kuali.kpme.edo.reports.EdoPromotionAndTenureReport;
 
+import edu.iu.uis.sit.util.directory.KeyValue;
+
 
 public interface EdoPromotionAndTenureReportViewService {
 
@@ -28,5 +30,5 @@ public interface EdoPromotionAndTenureReportViewService {
 	
 	public List<String> getDistinctWorkflowList();
 	
-	public Map<Integer, String> getDistinctVoteRoundList();
+	public List<KeyValue> getDistinctVoteRoundList();
 }

@@ -17,6 +17,8 @@ public class EdoSuppReviewLayerDefinition extends EdoBusinessObject {
     private boolean acknowledgeFlag;
     private String workflowId;
     private String workflowQualifier;
+    private String description;
+
     
     private EdoReviewLayerDefinition reviewLayerDefinition;
     
@@ -80,7 +82,15 @@ public class EdoSuppReviewLayerDefinition extends EdoBusinessObject {
         return getSuppReviewLayerDefinitionId();
     }
 
-    @Override
+    public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	@Override
     public void setId(BigDecimal id) {
         setSuppReviewLayerDefinitionId(id);
     }

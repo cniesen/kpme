@@ -57,13 +57,6 @@
                               length="12"
                               nullable="false"
                               primarykey="false" />
-            <field-descriptor name="candidacyYear"
-                              column="candidacy_year"
-                              jdbc-type="NUMERIC"
-                              precision="4"
-                              scale="0"
-                              nullable="false"
-                              primarykey="false" />
             <field-descriptor name="candidacySchool"
                               column="candidacy_school"
                               jdbc-type="VARCHAR"
@@ -651,6 +644,13 @@
                           jdbc-type="VARCHAR"
                           length="25"
                           nullable="false"/>
+        <field-descriptor name="candidacyYear"
+                          column="candidacy_year"
+                          jdbc-type="NUMERIC"
+                          precision="4"
+                          scale="0"
+                          nullable="false"/>
+
     </class-descriptor>
     <class-descriptor class="org.kuali.kpme.edo.vote.EdoVoteRecord" table="EDO_VOTE_RECORD_T">
            <field-descriptor name="voteRecordId"
@@ -942,7 +942,6 @@
                           precision="4"
                           scale="0"
                           nullable="false" />
-                         
         <field-descriptor name="suppNodeName"
                           column="SUPPLEMENTAL_NODE_NAME"
                           jdbc-type="VARCHAR"
@@ -954,6 +953,10 @@
                           length="1"
                           nullable="false"
                           conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+       <field-descriptor name="description"
+                          column="description"
+                          jdbc-type="CLOB"
+                          primarykey="false" />
          <field-descriptor name="workflowId"
                            column="WORKFLOW_ID"
                            jdbc-type="VARCHAR"

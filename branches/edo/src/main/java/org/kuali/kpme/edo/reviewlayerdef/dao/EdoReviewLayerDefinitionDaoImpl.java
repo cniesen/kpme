@@ -139,6 +139,20 @@ public class EdoReviewLayerDefinitionDaoImpl extends PlatformAwareDaoBaseOjb imp
 
         return results;
     }
+    public List<EdoSuppReviewLayerDefinition> getSuppReviewLayerDefinitions(String workflowId, Set<String> nodeNames) {
+        List<EdoSuppReviewLayerDefinition> results = new LinkedList<EdoSuppReviewLayerDefinition>();
+
+        if (CollectionUtils.isNotEmpty(nodeNames)) {
+            Criteria criteria = new Criteria();
+            criteria.addIn("suppNodeName", nodeNames);
+            criteria.addEqualTo("workflowId", workflowId);
+
+            Query query = QueryFactory.newQuery(EdoSuppReviewLayerDefinition.class, criteria);
+            results.addAll(this.getPersistenceBrokerTemplate().getCollectionByQuery(query));
+        }
+
+        return results;
+    }
 
     public void saveOrUpdate(EdoReviewLayerDefinition reviewLayerDefinition) {
         this.getPersistenceBrokerTemplate().store(reviewLayerDefinition);
@@ -175,10 +189,11 @@ public class EdoReviewLayerDefinitionDaoImpl extends PlatformAwareDaoBaseOjb imp
         }
     }  */
 
-    public List<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxReviewLevel) {
+    public List<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxReviewLevel, String workflowId) {
         List<EdoReviewLayerDefinition> results = new LinkedList<EdoReviewLayerDefinition>();
 
         Criteria criteria = new Criteria();
+        criteria.addEqualTo("workflowId", workflowId);
         criteria.addLessThan("reviewLevel", maxReviewLevel);
 
         Query query = QueryFactory.newQuery(EdoReviewLayerDefinition.class, criteria);

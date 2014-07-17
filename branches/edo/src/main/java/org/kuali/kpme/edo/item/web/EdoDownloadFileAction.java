@@ -14,8 +14,8 @@ import org.kuali.kpme.edo.item.EdoItemV;
 import org.kuali.kpme.edo.service.EdoServiceLocator;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoContext;
-import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.api.action.ActionItem;
+import org.kuali.rice.kew.actionrequest.ActionRequestValue;
+import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.MessageMap;
@@ -24,7 +24,7 @@ import org.kuali.rice.krad.util.ObjectUtils;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.ByteArrayOutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
@@ -72,19 +72,30 @@ public class EdoDownloadFileAction extends EdoAction {
                     found = true;
                     LOG.info("Download file action invoked");
                     if (StringUtils.isNotBlank(itemId)) {
-                        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+                        //ByteArrayOutputStream bao = new ByteArrayOutputStream();
                         try {
-                            EdoItem item = EdoServiceLocator.getEdoItemService().getFile(BigDecimal.valueOf(Integer.parseInt(itemId)), bao);
+                            //EdoItem item = EdoServiceLocator.getEdoItemService().getFile(BigDecimal.valueOf(Integer.parseInt(itemId)), bao);
+                            EdoItem item = EdoServiceLocator.getEdoItemService().getEdoItem(itemId1);
+                            File fp = new File(item.getFileLocation());
+
                             String newFileName = item.getFileName().replaceAll(" ", "_").replaceAll(",", "_") + "_" + item.getFilenameFromPath();
                             String contentType = item.getContentType();
                             LOG.info("Starting file download [" + item.getFileName() + "] content-type: [" + contentType + "]");
                             response.setContentType(contentType);
                             response.addHeader("content-disposition", "filename=\"" + newFileName + "\"");
-                            response.setContentLength(bao.size());
-                            bao.writeTo(response.getOutputStream());
-                            bao.close();
-                            response.getOutputStream().flush();
-                            response.getOutputStream().close();
+                            response.setContentLength((int) fp.length());
+
+                            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(fp));
+                            BufferedOutputStream bos = new BufferedOutputStream(response.getOutputStream());
+                            byte[] buffer = new byte[EdoConstants.FILE_DOWNLOAD_PARAMETERS.FILE_WRITE_BUFFER_SIZE];
+                            int available  = -1;
+                            while((available = inputStream.read(buffer)) > 0) {
+                                bos.write(buffer, 0, available);
+                                //bos.flush();
+                            }
+                            bos.flush();
+                            bos.close();
+
                             LOG.info("Output stream closed and flushed");
                         }
                         catch (Exception e) {
@@ -150,17 +161,13 @@ public class EdoDownloadFileAction extends EdoAction {
         // is this user a member of a group that has access to this dossier?
         if (StringUtils.isNotEmpty(candidateDossier.getDocumentId())) {
             try {
-                //List<ActionRequestValue> actionRequestValues = new LinkedList<ActionRequestValue>();
-            	List<ActionItem> actionRequestValues = new LinkedList<ActionItem>();
-
+                List<ActionRequestValue> actionRequestValues = new LinkedList<ActionRequestValue>();
                 List<String> groupIds = new LinkedList<String>();
 
-                //actionRequestValues.addAll(KEWServiceLocator.getActionRequestService().findAllActionRequestsByDocumentId(candidateDossier.getDocumentId()));
-                actionRequestValues.addAll(KewApiServiceLocator.getActionListService().getAllActionItems(candidateDossier.getDocumentId()));
+                actionRequestValues.addAll(KEWServiceLocator.getActionRequestService().findAllActionRequestsByDocumentId(candidateDossier.getDocumentId()));
 
                 //Find the group ids to check.
-                //for (ActionRequestValue actionRequestValue : actionRequestValues) {
-                  for (ActionItem actionRequestValue : actionRequestValues) {
+                for (ActionRequestValue actionRequestValue : actionRequestValues) {
                     if (StringUtils.isNotEmpty(actionRequestValue.getGroupId())) {
                         groupIds.add(actionRequestValue.getGroupId());
                     }

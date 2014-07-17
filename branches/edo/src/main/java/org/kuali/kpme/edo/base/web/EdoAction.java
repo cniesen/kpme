@@ -132,6 +132,9 @@ public class EdoAction extends KualiAction {
             if (EdoServiceLocator.getEdoMaintenanceService().hasCandidateRole(EdoContext.getPrincipalId())) {
                 edoForm.setHasCandidateRole(true);
             }
+            if (EdoServiceLocator.getEdoMaintenanceService().hasAdministratorRole(EdoContext.getPrincipalId())) {
+                edoForm.setHasAdministratorRole(true);
+            }
             if (EdoServiceLocator.getEdoMaintenanceService().hasSuperUserRole(EdoContext.getPrincipalId())) {
                 edoForm.setHasSuperUserRole(true);
             }
@@ -156,6 +159,9 @@ public class EdoAction extends KualiAction {
                 if (EdoServiceLocator.getAuthorizationService().isAuthorizedToUploadExternalLetter_W(EdoContext.getUser().getEmplId(), selectedCandidate.getCandidateDossierID().intValue()) ) {
                     edoForm.setHasUploadExternalLetterByDept(true);
                 }
+               /* if (EdoServiceLocator.getAuthorizationService().isSeconUnitAuthorized_W(EdoContext.getUser().getEmplId(), selectedCandidate.getCandidateDossierID().intValue()) ) {
+                	edoForm.setCanViewSecUntFdrForSelCan(true);
+                } */
 
                 // set flag for viewing the vote record, by level
                 String workflowId = EdoServiceLocator.getEdoDossierService().getDossierById(selectedCandidate.getCandidateDossierID()).getWorkflowId();
@@ -188,6 +194,14 @@ public class EdoAction extends KualiAction {
                 if (EdoRule.canUploadFileUnderReconsiderCategory(selectedCandidate.getCandidateDossierID())) {
                 	edoForm.setCanUploadReconsiderItems(true);
                 } 
+                //can view the secondary unit folder for selected candidate
+               /* List<String> candidateList = EdoServiceLocator.getEdoMaintenanceService().getSecondUnitReviewerDossierList(EdoContext.getPrincipalId());
+                for(String candidate : candidateList) {
+                if(StringUtils.equals(candidate, selectedCandidate.getCandidateUsername())){
+                	edoForm.setCanViewSecUntFdrForSelCan(true);
+                	}
+                }*/
+                
                 
             }
         }
