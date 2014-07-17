@@ -1,6 +1,6 @@
 @wip
 
-Feature: Validate overlapping time blocks
+Feature: Validate existing time blocks
 
   Background:
     Given I am logged in as earn code security employee
