@@ -1,11 +1,12 @@
 package org.kuali.kpme.edo.base.web;
 
+import edu.iu.uis.cas.filter.CASAuthentication;
+import edu.iu.uis.cas.filter.CASFilter;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoConstants.ConfigSettings;
 import org.kuali.rice.core.api.config.property.ConfigContext;
-//import org.kuali.rice.kew.web.DummyLoginFilter;
-import org.kuali.rice.krad.web.filter.DummyLoginFilter;
+import org.kuali.rice.kew.web.DummyLoginFilter;
 import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -24,7 +25,7 @@ import java.util.Map;
  * To change this template use File | Settings | File Templates.
  */
 public class EdoLoginFilter implements Filter{
-    //Filter casFilter = new HreCASFilter();
+    Filter casFilter = new HreCASFilter();
     Filter dummyLoginFilter = new DummyLoginFilter();
     private static boolean testMode;
     public static String TEST_NETWORK_ID;
@@ -58,22 +59,20 @@ public class EdoLoginFilter implements Filter{
     }
 
     protected Filter getTargetFilter() {
-        return this.dummyLoginFilter;
-        /*if (getTestMode()) {
+        if (getTestMode()) {
             return this.dummyLoginFilter;
         } else {
             return this.casFilter;
-        }*/
+        }
     }
 
     public static String getRemoteUser(HttpServletRequest request) {
-        return (StringUtils.isEmpty(TEST_NETWORK_ID) ? "rpiercy": TEST_NETWORK_ID);
-        /*if (getTestMode()) {
+        if (getTestMode()) {
             return (StringUtils.isEmpty(TEST_NETWORK_ID) ? "rpiercy": TEST_NETWORK_ID);
         } else {
             return HreCASFilter.getRemoteUser(request);
-        }*/
-   }
+        }
+    }
 
     protected void applyRedirectHeader(ServletRequest request, ServletResponse response) {
 		HttpServletResponse httpResponse = (HttpServletResponse)response;
@@ -93,7 +92,7 @@ public class EdoLoginFilter implements Filter{
 		}
 
 
-    /*public static final class HreCASFilter extends CASFilter {
+    public static final class HreCASFilter extends CASFilter {
 
         @Override
         protected boolean shouldPromptForSafeword(CASAuthentication authentication, HttpServletRequest request) throws IOException, ServletException {
@@ -112,12 +111,12 @@ public class EdoLoginFilter implements Filter{
                 log("CASFilter doFilter(): Already Authenticated");
                 // if we're watching for susequent safeword authentication,
                 // redirect to CAS to aquire new ticket
-                *//**
+                /**
                  *
                  * This is the difference from the original filter and prevents the redirect
                  * on every request
                  *
-                 *//*
+                 */
                 if (shouldPromptForSafeword(authentication, request)) {
                     log("CASFilter doFilter(): watching for safeword, redirect to aquire new ticket");
                     // clear the exsiting authentication
@@ -173,5 +172,4 @@ public class EdoLoginFilter implements Filter{
         }
 
     }
-    */
 }

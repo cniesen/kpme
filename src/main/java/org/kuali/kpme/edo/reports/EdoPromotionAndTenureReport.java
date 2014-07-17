@@ -13,10 +13,8 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.edo.reviewlayerdef.EdoReviewLayerDefinition;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoConstants.VoteType;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.krad.bo.BusinessObjectBase;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.service.PersistenceService;
 import org.kuali.rice.krad.util.ObjectUtils;
 
@@ -544,7 +542,7 @@ public class EdoPromotionAndTenureReport extends BusinessObjectBase {
 	 */
 	protected static PersistenceService getPersistenceService() {
 		if ( persistenceService == null ) {
-			persistenceService = KNSServiceLocator.getPersistenceService();
+			persistenceService = KRADServiceLocator.getPersistenceService();
 		}
 		return persistenceService;
 	}

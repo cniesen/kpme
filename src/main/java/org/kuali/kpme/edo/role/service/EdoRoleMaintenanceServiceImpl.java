@@ -44,25 +44,18 @@ public class EdoRoleMaintenanceServiceImpl implements EdoRoleMaintenanceService 
         quals.put(EdoConstants.ROLE_ADMINISTRATOR_SCHOOL_ID, "-");
         quals.put(EdoConstants.ROLE_ADMINISTRATOR_CAMPUS_ID, "-");
 
-        //quals.put("Department", "-");
-        //quals.put("School", "-");
-        //quals.put("Campus", "-");
-
         for (String id : departments) {
             if (id.equalsIgnoreCase(unit)) {
-                //quals.put("Department", id);
                 quals.put(EdoConstants.ROLE_ADMINISTRATOR_DEPT_ID, id);
             }
         }
         for (String id : schools) {
             if (id.equalsIgnoreCase(unit)) {
-                //quals.put("School", id);
                 quals.put(EdoConstants.ROLE_ADMINISTRATOR_SCHOOL_ID, id);
             }
         }
         for (String id : campuses) {
             if (id.equalsIgnoreCase(unit)) {
-                //quals.put("Campus", id);
                 quals.put(EdoConstants.ROLE_ADMINISTRATOR_CAMPUS_ID, id);
             }
         }

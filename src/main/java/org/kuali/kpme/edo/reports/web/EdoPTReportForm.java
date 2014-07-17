@@ -1,11 +1,11 @@
 package org.kuali.kpme.edo.reports.web;
 
 import java.util.List;
-import java.util.Map;
 
 import org.kuali.kpme.edo.base.web.EdoForm;
 import org.kuali.kpme.edo.reports.EdoPromotionAndTenureReport;
 
+import edu.iu.uis.sit.util.directory.KeyValue;
 
 /**
  * $HeadURL$
@@ -26,7 +26,7 @@ public class EdoPTReportForm extends EdoForm {
 	private String workflowId;
 	private List<String> workflows;
 	private Integer voteRoundCode;
-	private Map<Integer, String> voteRounds;
+	private List<KeyValue> voteRounds;
 	
 	private List<EdoPromotionAndTenureReport> reports;
 
@@ -102,11 +102,11 @@ public class EdoPTReportForm extends EdoForm {
 		this.voteRoundCode = voteRoundCode;
 	}
 
-	public Map<Integer, String> getVoteRounds() {
+	public List<KeyValue> getVoteRounds() {
 		return voteRounds;
 	}
 
-	public void setVoteRounds(Map<Integer, String> voteRounds) {
+	public void setVoteRounds(List<KeyValue> voteRounds) {
 		this.voteRounds = voteRounds;
 	}
 

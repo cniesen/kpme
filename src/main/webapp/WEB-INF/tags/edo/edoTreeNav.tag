@@ -37,7 +37,7 @@
 	<div id="treenav">
 		<ul>
 
-            <c:if test="${EdoForm.useAssignDelegateFunc && EdoForm.hasCandidateRole}">
+            <c:if test="${EdoForm.useAssignDelegateFunc && EdoForm.hasCandidateRole && selectedCandidate.getDossierStatus().equals(dossierStatusOpen)}">
                 <li id="cand_0_1">
                     <a href="EdoAssignCandidateDelegate.do?tabId=dossier">Assign a Candidate Delegate</a>
                 </li>
@@ -86,6 +86,12 @@
                             <c:url value="EdoAdminGroupMembers.do?tabId=gadmin" var="grp_mbrs" />
                             <a href="${grp_mbrs}">Manage Group Members</a>
                         </li>
+                        <c:if test="${EdoForm.canManageGroups}">
+                            <li id="gadm_0_9">
+                                <c:url value="EdoManageAdmins.do?tabId=gadmin" var="mng_admins" />
+                                <a href="${mng_admins}">Manage Staff Administrators</a>
+                            </li>
+                        </c:if>
                         <li id="gadm_0_8">
                             <c:url value="EdoPTReport.do?tabId=gadmin" var="rpt_pt" />
                             <a href="${rpt_pt}">P&T Summary Report</a>
@@ -112,7 +118,7 @@
                         ${selectedCandidate.getCandidateFirstname()})</a>
                     <ul>
                         <c:if test="${EdoForm.useGenAdminScreen || EdoForm.useReviewerScreen}">
-                            <c:if test="${(selectedCandidate.getDossierStatus().equals(dossierStatusSubmitted) || selectedCandidate.getDossierStatus().equals(dossierStatusClosed) || selectedCandidate.getDossierStatus().equals(dossierStatusReconsider))}">
+                            <c:if test="${(selectedCandidate.getDossierStatus().equals(dossierStatusSubmitted) || selectedCandidate.getDossierStatus().equals(dossierStatusClosed) || selectedCandidate.getDossierStatus().equals(dossierStatusReconsider) || EdoForm.hasAdministratorRole)}">
 
                                 <c:if test="${EdoForm.hasViewVoteRecordCurrentDossier}">
                                     <li id="cklst_1_${checklistVoteRecordID}">
@@ -122,10 +128,10 @@
                                     <li id="cklst_2_${checklistReviewLettersID}">
                                         <a href="EdoReviewLetter.do?">${checklistInternalLettersLabel}</a></li>
                                 </c:if>
-                                <c:if test="${EdoForm.hasViewReviewLetterCurrentDossier}">
+                               <%--  <c:if test="${EdoForm.canViewSecUntFdrForSelCan}">
                                     <li id="cklst_9_${checklistSecondUnitID}">
-                                        <a href="EdoSecondUnit.do?">${checklistSecondUnitLabel}</a></li>
-                                </c:if>
+                                        <a href="EdoSecondUnit.do?">2nd Unit Reviews</a></li>
+                                </c:if> --%>
 
                                 <c:if test="${EdoForm.hasViewReviewLetterCurrentDossier || EdoForm.hasUploadExternalLetterByDept}">
                                     <li id="cklst_3_${checklistExternalLettersID}">

@@ -34,6 +34,7 @@ public class EdoSelectedCandidate {
     private String dossierTypeName;
     private String dossierTypeFlag;
     private String dossierWorkflowId;
+    private String secondaryUnit;
 
     private String aoeDescription;
 
@@ -63,6 +64,7 @@ public class EdoSelectedCandidate {
         setDossierTypeCode(dossierType.getDossierTypeCode());
         setCandidateDossierID(dossier.getDossierID());
         setDossierWorkflowId(dossier.getWorkflowId());
+        setSecondaryUnit(dossier.getSecondaryUnit());
     }
 
     public String getDossierWorkflowId() {
@@ -189,8 +191,16 @@ public class EdoSelectedCandidate {
     public void setDossierStatus(String dossierStatus) {
         this.dossierStatus = dossierStatus;
     }
+    
+    public String getSecondaryUnit() {
+		return secondaryUnit;
+	}
 
-    public String getAoeDescription() {
+	public void setSecondaryUnit(String secondaryUnit) {
+		this.secondaryUnit = secondaryUnit;
+	}
+
+	public String getAoeDescription() {
         String aoeDescription = StringUtils.EMPTY;
 
         if (StringUtils.isNotBlank(this.aoe)) {

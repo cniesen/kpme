@@ -19,6 +19,8 @@ import org.kuali.kpme.edo.util.EdoPropertyConstants;
 import org.kuali.rice.krad.service.DataDictionaryService;
 import org.kuali.rice.krad.util.ObjectUtils;
 
+import edu.iu.uis.sit.util.directory.KeyValue;
+
 public class EdoPromotionAndTenureReportViewServiceImpl implements EdoPromotionAndTenureReportViewService {
 
     private EdoPromotionAndTenureReportViewDao edoPromotionAndTenureReportViewDao;
@@ -148,13 +150,16 @@ public class EdoPromotionAndTenureReportViewServiceImpl implements EdoPromotionA
 	}
 
 	@Override
-	public Map<Integer, String> getDistinctVoteRoundList() {
-		Map<Integer, String> voteRounds = new HashMap<Integer, String>();
+	public List<KeyValue> getDistinctVoteRoundList() {
+		List<KeyValue> voteRounds = new ArrayList<KeyValue>();
 		
 		List<Integer> voteRoundCodes = getEdoPromotionAndTenureReportViewDao().getDistinctVoteRoundList();
 		
-		for(Integer voteRound : voteRoundCodes) {
-            voteRounds.put(voteRound, EdoConstants.VOTE_ROUNDS.get(voteRound));
+		for(Integer voteRound : voteRoundCodes) {			
+			KeyValue voteRoundValue = new KeyValue();
+			voteRoundValue.setKey(voteRound);
+			voteRoundValue.setValue(EdoConstants.VOTE_ROUNDS.get(voteRound));
+			voteRounds.add(voteRoundValue);
 		}
 		
 		return voteRounds;

@@ -75,6 +75,8 @@ public class EdoConstants {
 	public static final String ROLE_SUPER_USER = "Super User";
 	public static final String ROLE_FINAL_ADMINISTRATOR = "Final Administrator";
 	public static final String ROLE_SECONDARY_UNIT_REVIEWER = "Candidate Second Unit Reviewer";
+	public static final String ROLE_CHECK_LIST_SIGN_OFF = "Check List Sign Off Person";
+
 
 	//actions
 	public static final String ACTION_DELETE = "DELETE";
@@ -96,6 +98,8 @@ public class EdoConstants {
     public static final String CHAIR_DELEGATE_LEVEL7_ROLE = "EDO_CHAIR_DELEGATE_LEVEL7";
     public static final String CHAIR_DELEGATE_LEVEL8_ROLE = "EDO_CHAIR_DELEGATE_LEVEL8";
     public static final String SECOND_UNIT_REVIEWER_ROLE =  "EDO_SECOND_UNIT_REVIEWER";
+    public static final String CHECK_LIST_SIGN_OFF_ROLE = 	"EDO_CHECK_LIST_SIGN_OFF";
+    
 
     //edo name space
 	public static final String EDO_NAME_SPACE = "EDO";
@@ -118,6 +122,8 @@ public class EdoConstants {
     public static final String EDO_UPLOAD_EXTERNAL_LETTER_TPL = "Upload External Letter";
     public static final String EDO_UPLOAD_REVIEW_LETTER_TPL = "Upload Review Letter";
     public static final String EDO_MANAGE_EXTERNAL_LETTERS ="Manage External Letters";
+    public static final String EDO_CHECK_LIST_SIGN_OFF_PERMISSION = "Check List Sign Off";
+    public static final String EDO_SEC_UNIT_UPLOAD_LETTER_PERMISSION = "Upload Secondary Unit Letter";
 
     public static final String EDO_ATTRIBUTE_DEPARTMENT_ID = "edoDepartmentId";
     public static final String EDO_ATTRIBUTE_SCHOOL_ID = "edoSchoolId";
@@ -139,10 +145,14 @@ public class EdoConstants {
 	 public static final class FILE_UPLOAD_PARAMETERS {
         public static final int THRESHHOLD_SIZE = 1024 * 1024 * 3;
         public static final int MAX_FILE_SIZE = 1024 * 1024 * 1024 * 4;
-        public static final int REQUEST_SIZE = 1024 * 1024 * 1024 * 4;
+        public static final int REQUEST_SIZE = 1024 * 1024 * 1;
         public static final String DEFAULT_MIME_TYPE = "application/octet-stream";
         public static final int MAX_FILENAME_LENGTH = 255;
         public static final String KUALI_MAX_FILE_UPLOAD_SIZE = "4000M";
+         public static final int FILE_WRITE_BUFFER_SIZE = 1024;
+     }
+    public static final class FILE_DOWNLOAD_PARAMETERS {
+        public static final int FILE_WRITE_BUFFER_SIZE = 1024;
     }
 
     // edo content strings

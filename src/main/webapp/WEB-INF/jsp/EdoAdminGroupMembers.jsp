@@ -22,6 +22,35 @@
                     frm.submit();
                 }
 
+                function fnSetWorkflow() {
+                    var workflowID = $("select#wfID option:selected").val();
+
+                }
+
+                $(function(){
+                    $("select#wfID").change(function() {
+                        $.ajax({
+                            url: "EdoAdminGroupMembers.do?methodToCall=getWorkflowLayers&wid=" + $("select#wfID option:selected").val(),
+                            dataType: "json",
+                            success: function( data ) {
+                                        var options = '';
+                                        for ( i = 0; i < data.length; i++) {
+                                            options += '<option value="' + data[i][0] + '">' + data[i][1] + '</option>';
+                                        }
+                                        $("select#rl_list").html(options);
+                            },
+                            error: function (xhr, status, errorThrown) {
+                                alert(errorThrown);
+                            }
+                        })
+                        //$.getJSON("EdoAdminGroupMembers.do?methodToCall=getWorkflowLayers&wid=" + $("select#wfID option:selected").val(),
+                        //          function( data ) {
+                        //              var options = '';
+                        //              for ( i = 0; i < data.length; i++) {
+                        //                  options += '<option value="' + data[i][0] + '">' + data[i][1] + '</option>';
+                        //              }
+                        })
+                    });
             </script>
 
             <c:if test="${!empty ErrorPropertyList}">
@@ -33,8 +62,15 @@
 
             <fieldset>
             <legend>
-                <strong>Department/School/Campus Selection</strong>
+                <strong>Workflow/Department/School/Campus Selection</strong>
             </legend>
+            Workflow
+            <select name="workflowID" id="wfID">
+                <option value="">-- Choose a workflow --</option>
+                <c:forEach var="wid" items="${Form.workflowSelectList.keySet()}">
+                    <option value="${wid}">${Form.workflowSelectList.get(wid)}</option>
+                </c:forEach>
+            </select>
             Department Code
             <select name="departmentCode" id="departmentCode">
                 <option value="">-- No department --</option>
@@ -83,9 +119,9 @@
                     <td>
                         <select name="reviewLevelSelectList" id="rl_list">
 
-                            <c:forEach var="level" items="${Form.reviewLevelSelectList}">
+                            <%-- <c:forEach var="level" items="${Form.reviewLevelSelectList}">
                                 <option value="${level.key}">${level.value}</option>
-                            </c:forEach>
+                            </c:forEach> --%>
                         </select>
                     </td>
                     <td>
@@ -129,6 +165,7 @@
                        enctype="multipart/form-data">
             <html:hidden property="methodToCall" value="" />
             <html:hidden property="memberData" value="" />
+            <html:hidden property="reviewLayersJSON" value="" />
             <input type="file" name="uploadMbrFile" id="uploadMbrFile" size="60" />
             <button name="uploadmbrsubmit" onclick="javascript:dispatch(document.forms[0], 'uploadMbrCSV');">Upload file</button> <br>
             </html:form>

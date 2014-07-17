@@ -47,7 +47,7 @@ For additional help or feedback, email <![CDATA[<mailto:]]><xsl:value-of select=
 										</xsl:when>
 
 										<xsl:when
-											test="contains($NodeName, 'supplDeptLevelAck') or contains($NodeName, 'supplSchoolLevelAck') or contains($NodeName, 'supplCampusLevelAck')">
+											test="contains($NodeName, 'supplDeptLevelAck') or contains($NodeName, 'supplDeptChairLevelAck') or contains($NodeName, 'supplSchoolLevelAck') or contains($NodeName, 'supplCampusLevelAck')">
 Candidate <xsl:value-of select="actionItem/docInitiatorDisplayName"/>, for whom you have already voted on, has added material(s) to their supplemental folder. Please consider these materials and notify others at your level (i.e., committee members) to do so as well.
 
     i.   Choosing ҁcknowledgeҠmeans that upon review, no further action will be taken.
@@ -67,7 +67,7 @@ For additional help or feedback, email <![CDATA[<mailto:]]><xsl:value-of select=
 										</xsl:when>
 
 										<xsl:when
-											test="contains($NodeName, 'supplDeptLevel') or contains($NodeName, 'supplSchoolLevel') or contains($NodeName, 'supplCampusLevel')">
+											test="contains($NodeName, 'supplDeptLevel') or contains($NodeName, 'supplDeptChairLevel') or contains($NodeName, 'supplSchoolLevel') or contains($NodeName, 'supplCampusLevel')">
 You are being informed that Candidate <xsl:value-of select="actionItem/docInitiatorDisplayName"/>, whose e-dossier is currently under review at your level, has added material(s) to the supplemental folder.
 
 Please notify others at your level (i.e., committee members) of these materials. No other action is required.

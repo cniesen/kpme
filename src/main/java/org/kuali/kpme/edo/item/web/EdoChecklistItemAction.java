@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -251,15 +252,36 @@ public class EdoChecklistItemAction extends EdoAction {
 
         EdoChecklistItemForm edoChecklistItemForm = (EdoChecklistItemForm)form;
         MessageMap msgmap = GlobalVariables.getMessageMap();
+        String itemListJSON = "";
 
         String newFilename = edoChecklistItemForm.getNewFilename();
         String fileDescription = edoChecklistItemForm.getFileDescription();
         BigDecimal itemID = BigDecimal.valueOf(edoChecklistItemForm.getItemID());
         EdoItem item = EdoServiceLocator.getEdoItemService().getEdoItem(itemID);
+        EdoSelectedCandidate selectedCandidate = (EdoSelectedCandidate) request.getSession().getAttribute("selectedCandidate");
+        String nidParam = request.getSession().getAttribute("nid").toString();
+        int currentTreeNodeID = Integer.parseInt(nidParam.split("_")[2]);
 
         item.setFileName(newFilename);
         item.setFileDescription(fileDescription);
         EdoServiceLocator.getEdoItemService().saveOrUpdate(item);
+
+        List<EdoItemV> itemList = EdoServiceLocator.getEdoItemVService().getItemList( selectedCandidate.getCandidateDossierID(), BigDecimal.valueOf(currentTreeNodeID) );
+        edoChecklistItemForm.setItemList(itemList);
+
+        if (itemList != null && itemList.size() > 0) {
+            Collections.sort(itemList, new EdoItemVDateComparator());
+            for ( EdoItemV itemV : itemList ) {
+                // check for item refresh
+                if (itemV.getItemID().equals(item.getItemID())) {
+                    itemV.setFileName(item.getFileName());
+                    itemV.setFileDescription(item.getFileDescription());
+                }
+                itemListJSON = itemListJSON.concat(itemV.getItemJSONString() + ",");
+            }
+        }
+
+        request.setAttribute("itemlistJSON", itemListJSON);
 
         ActionForward fwd = mapping.findForward("basic");
 
@@ -395,7 +417,15 @@ public class EdoChecklistItemAction extends EdoAction {
                 if ( isNewFile || replaceFile ) {
                     try {
                         FileOutputStream fos = new FileOutputStream(newFile);
-                        fos.write(uploadFile.getFileData());
+                        // just stream the file directly to disk through a buffer
+                        InputStream fileStream = uploadFile.getInputStream();
+                        byte[] buffer = new byte[EdoConstants.FILE_UPLOAD_PARAMETERS.FILE_WRITE_BUFFER_SIZE];
+                        int len = 0;
+                        while ((len = fileStream.read(buffer)) != -1) {
+                            fos.write(buffer, 0, len);
+                        }
+
+                        //fos.write(uploadFile.getFileData());
                         fos.flush();
                         fos.close();
                         LOG.info("File [" + item.getFileName() + "] written to the file system.");

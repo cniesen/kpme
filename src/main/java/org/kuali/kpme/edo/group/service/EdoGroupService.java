@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface EdoGroupService {
     public EdoGroup createGroup(String groupName, String kimTypeName);
-    public String buildGroupName(String routeLevel, String workflowAction, String dossierReviewLevel, String unitDesignation);
+    public String buildGroupName(String routeLevel, String workflowAction, String dossierReviewLevel, String unitDesignation, String workflowId);
     public List<EdoGroup> createKimGroups(String workflowId, String departmentId, String schoolId, String campusId, String institutionId);
     public void addGroupToRole(EdoGroup group);
     public boolean addMemberToGroup(String principalId, String groupId);

@@ -39,7 +39,7 @@
                 </legend>
                 <blockquote>Select the organizational level for the staff administrator from the drop down lists.  Select only one
                     level (department, school, or campus).  If you select more than one level, we'll use the lowest level
-                    unit for the staff administrator.  Then click "Set."<br><br>
+                    unit for the staff administrator.<br><br>
                     Once the staff administrator definition is set, click "Add" to include the administrator to your build list.  Keep
                     adding staff administrator definitions until you have the list you want.
                 </blockquote>

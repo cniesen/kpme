@@ -25,6 +25,7 @@ public class EdoPropertyConstants {
 	}
 	
 	public static class EdoReviewLayerDefinitionFields {
+        public static final String DOSSIER_ID = "dossierId";
         public static final String DEPARTMENT_ID = "departmentId";
         public static final String SCHOOL_ID = "schoolId";
         public static final String CAMPUS_ID = "campusId";
@@ -36,6 +37,7 @@ public class EdoPropertyConstants {
 	}
 
     public static class EdoSuppReviewLayerDefinitionFields {
+        public static final String DOSSIER_ID = "dossierId";
         public static final String DEPARTMENT_ID = "departmentId";
         public static final String SCHOOL_ID = "schoolId";
         public static final String CAMPUS_ID = "campusId";

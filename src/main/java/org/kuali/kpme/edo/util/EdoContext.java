@@ -222,7 +222,8 @@ public class EdoContext {
     public static boolean canSeeSubmitDossierButton() {
         EdoSelectedCandidate selectedCandidate = getSelectedCandidate();
         if (selectedCandidate != null) {
-        	if(StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.RECONSIDERATION) || StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.CLOSED) || StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.SUBMITTED)) {
+        	if(StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.RECONSIDERATION) || StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.CLOSED) || StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.SUBMITTED)
+        			|| StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.PENDING)) {
         		return false;
         	}
         	else {
@@ -326,7 +327,27 @@ public class EdoContext {
 
         return false;
     }
-  
+    //a check list signoff person can route the dossier if the following condidtion is satisfied
+    public static boolean canCheckListSignOffPersonRoute() {
+        EdoSelectedCandidate selectedCandidate = getSelectedCandidate();
+       /* if (selectedCandidate != null) {
+        	//check if the selected candidate status is "pending'
+        	//check if the logged in person has "check list sign off role"
+        	if(StringUtils.equals(selectedCandidate.getDossierStatus(), "PENDING") && EdoContext.getUser().getCurrentRoleList().contains(EdoConstants.ROLE_CHECK_LIST_SIGN_OFF)) {
+        		return true;
+        	}
+        	
+        }*/
+        if (selectedCandidate != null) {
+            if (EdoServiceLocator.getAuthorizationService().isCheckListSignOffAuthorized_W(EdoContext.getUser().getEmplId(), selectedCandidate.getCandidateDossierID().intValue()) && (StringUtils.equals(selectedCandidate.getDossierStatus(), EdoConstants.DOSSIER_STATUS.PENDING))) {
+            	return true;
+            }
+        }
+
+
+        return false;
+    }
+    
     //can update the dossier status to "CLOSED" or "RECONSIDER'
     
   public static boolean canUpdateDossierstatus() {

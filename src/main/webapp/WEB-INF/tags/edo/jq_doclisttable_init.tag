@@ -51,6 +51,14 @@
                             </c:if>
                                 {
                                     "sExtends": "text",
+                                    "sButtonText": "Redraw Table",
+                                    "fnClick": function (nButton, oConfig, oFlash) {
+                                        var nid = "${nidFwd}";
+                                        document.location.href = "EdoChecklistItem.do?nid=" + nid;
+                                    }
+                                },
+                                {
+                                    "sExtends": "text",
                                     "sButtonText": "Show Marked",
                                     "fnClick": function (nButton, oConfig, oFlash) {
                                         var nid = "${nidFwd}";

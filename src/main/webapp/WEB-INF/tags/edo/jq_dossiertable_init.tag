@@ -49,7 +49,7 @@
                         {   aTargets: [12], sTitle: "Dossier Status", bVisible: true  }
                     ],
                     "bJQueryUI": true,
-                    "iDisplayLength": 20
+                    "iDisplayLength": 50
                 }
         );
     });

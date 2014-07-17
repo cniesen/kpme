@@ -37,6 +37,7 @@ public interface EdoReviewLayerDefinitionService {
 
     // public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitions(Set<String> nodeNames);  // DONE
     public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitions(String workflowId, Set<String> nodeNames);  // IMPL done
+    public Collection<EdoSuppReviewLayerDefinition> getSuppReviewLayerDefinitions(String workflowId, Set<String> nodeNames);  // IMPL done
 
     // no usages
     //public List<String> getValidNodes();
@@ -60,7 +61,7 @@ public interface EdoReviewLayerDefinitionService {
     // no alteration needed
     public void saveOrUpdate(EdoReviewLayerDefinition reviewLayerDefinition);
 
-    public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxRouteLevel);
+    public Collection<EdoReviewLayerDefinition> getReviewLayerDefinitionsToMax(BigDecimal maxRouteLevel, String workflowId);
 
     // no alteration needed; id passed in
     //get the supplemental nodes (authorized nodes)

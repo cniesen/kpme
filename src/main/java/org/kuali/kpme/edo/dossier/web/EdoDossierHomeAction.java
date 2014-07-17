@@ -7,7 +7,6 @@ import org.kuali.kpme.edo.base.web.EdoAction;
 import org.kuali.kpme.edo.candidate.EdoCandidate;
 import org.kuali.kpme.edo.dossier.EdoCandidateDossier;
 import org.kuali.kpme.edo.service.EdoServiceLocator;
-import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoContext;
 import org.kuali.kpme.edo.util.EdoUser;
 import org.kuali.rice.kim.api.identity.Person;
@@ -15,9 +14,7 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * $HeadURL$ $Revision$ Created with IntelliJ IDEA. User: bradleyt Date: 2/14/13
@@ -127,8 +124,14 @@ public class EdoDossierHomeAction extends EdoAction {
 	    HashSet<EdoCandidateDossier> set = new
 		HashSet<EdoCandidateDossier>(dossierList); dossierList.clear();
 		dossierList.addAll(set);
+        Collections.sort(dossierList, new Comparator<EdoCandidateDossier>() {
+            @Override
+            public int compare(EdoCandidateDossier o1, EdoCandidateDossier o2) {
+                return o1.getLastName().compareTo(o2.getLastName());
+            }
+        });
 
-		if (!dossierList.isEmpty()) {
+        if (!dossierList.isEmpty()) {
 			for (EdoCandidateDossier dossier : dossierList) {
 				dossierListJSON = dossierListJSON.concat(dossier.getCandidateDossierJSONString() + ",");
 			}

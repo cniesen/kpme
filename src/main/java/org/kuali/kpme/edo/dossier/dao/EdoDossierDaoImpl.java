@@ -104,6 +104,31 @@ public class EdoDossierDaoImpl  extends PlatformAwareDaoBaseOjb implements EdoDo
          return dossierList;
     	
     }
+    public List<EdoDossier> getDossierListByQualifierAndStatus(String qualifierId) {
+    	 List<EdoDossier> dossierList = new ArrayList<EdoDossier>();
+
+         Criteria cConditions = new Criteria();
+         cConditions.addEqualTo("dossierStatus", "PENDING");
+         
+         Criteria departmentCriteria = new Criteria();
+         departmentCriteria.addEqualTo("departmentID", qualifierId);
+         
+         Criteria schoolCriteria = new Criteria();
+         schoolCriteria.addEqualTo("schoolID", qualifierId);
+         
+         departmentCriteria.addOrCriteria(schoolCriteria);
+         
+         cConditions.addAndCriteria(departmentCriteria);
+       
+         Query query = QueryFactory.newQuery(EdoDossier.class, cConditions);
+         Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+         if (c != null && c.size() != 0) {
+             dossierList.addAll(c);
+         }
+         return dossierList;
+    	
+    }
 
     public EdoDossier getDossier(String documentId) {
         Criteria crit = new Criteria();

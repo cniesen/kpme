@@ -1,6 +1,10 @@
 package org.kuali.kpme.edo.reports.web;
 
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.struts.action.ActionForm;
@@ -14,11 +18,10 @@ import org.kuali.kpme.edo.util.EdoContext;
 import org.kuali.kpme.edo.util.EdoPropertyConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 
+import edu.iu.uis.sit.util.directory.KeyValue;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * $HeadURL$
@@ -48,7 +51,7 @@ public class EdoPTReportAction extends EdoAction {
         List<String> workflows = EdoServiceLocator.getEdoReviewLayerDefinitionService().getDistinctWorkflowIds();
         reportForm.setWorkflows(workflows);
         
-        Map<Integer, String> voteRounds = EdoServiceLocator.getEdoPromotionAndTenureReportViewService().getDistinctVoteRoundList();
+        List<KeyValue> voteRounds = EdoServiceLocator.getEdoPromotionAndTenureReportViewService().getDistinctVoteRoundList();
         reportForm.setVoteRounds(voteRounds);
         
         return super.execute(mapping, form, request, response);

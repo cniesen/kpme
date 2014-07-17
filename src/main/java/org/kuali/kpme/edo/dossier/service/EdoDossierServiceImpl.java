@@ -86,7 +86,9 @@ public class EdoDossierServiceImpl implements EdoDossierService {
             workflowDocument.setTitle("Supplemental - candidate: " + principal.getPrincipalName());
 
             //Route the document.
-            workflowDocument.route(buildRouteDescription(workflowId, workflowDocument.getCurrentNodeNames(), null));
+            //workflowDocument.route(buildRouteDescription(workflowId, workflowDocument.getCurrentNodeNames(), null));
+            workflowDocument.route("Candidate Supplemental Submission");
+
 
             //Update that we have finished the routing process.
             routed = true;
@@ -225,10 +227,9 @@ public class EdoDossierServiceImpl implements EdoDossierService {
                    
                     
                 } else {
-                    Person candidatePerson = KimApiServiceLocator.getPersonService().getPerson(candidatePrincipalId);
 
                     // send candidate FYI email here, if appropriate
-                    if (workflowDocument.getCurrentNodeNames().contains(EdoConstants.ROUTING_NODE_NAMES.LEVELX)) {
+                  /*  if (workflowDocument.getCurrentNodeNames().contains(EdoConstants.ROUTING_NODE_NAMES.LEVELX)) {
                         LOG.info("EdoDossierService.routeDocument: Notifying candidate [" + candidatePrincipal.getPrincipalName() + "] of chair sign-off");
                         if (!TagSupport.isNonProductionEnvironment()) {
                             EdoServiceLocator.getEdoNotificationService().sendMail(candidatePerson.getEmailAddress(),
@@ -238,7 +239,7 @@ public class EdoDossierServiceImpl implements EdoDossierService {
                         } else {
                             LOG.info("In non-production environment, not sending notification.");
                         }
-                    }
+                    }*/
                     //Update the dossier
                     workflowDocument.approve(buildRouteDescription(workflowId, workflowDocument.getCurrentNodeNames(), ActionType.APPROVE));
                     //i think its here i have to check for reconsider routing or parent dossier routing
@@ -276,6 +277,16 @@ public class EdoDossierServiceImpl implements EdoDossierService {
                 routed = true;
             } else {
                 routed = this.initiateWorkflowDocument(principalId, dossierId, dossierType);
+                //send an email notification to the candidate that his dossier has been submitted
+                Person candidatePerson = KimApiServiceLocator.getPersonService().getPerson(candidatePrincipalId);
+                if (!TagSupport.isNonProductionEnvironment()) {
+                    EdoServiceLocator.getEdoNotificationService().sendMail(candidatePerson.getEmailAddress(),
+                        "edossier@indiana.edu", "Workflow Notification",
+                        "This is an FYI email notification: Your Department Chair has provided the Checklist Sign-off and your dossier has been submitted for review.\n\n" +
+                        "For additional help or feedback, email <edossier@indiana.edu>.");
+                } else {
+                    LOG.info("In non-production environment, not sending notification.");
+                }
             }
         }
         return routed;
@@ -368,7 +379,7 @@ public class EdoDossierServiceImpl implements EdoDossierService {
                     //  previousNodes = dossierWorkflowDocument.getPreviousNodeNames();
                     EdoReviewLayerDefinition reviewLayerDefinition = EdoServiceLocator.getEdoReviewLayerDefinitionService().getReviewLayerDefinition(dossier.getWorkflowId(), currentRouteLevel);
                     if (reviewLayerDefinition != null) {
-                    	Collection<EdoReviewLayerDefinition> validReviewLayers = EdoServiceLocator.getEdoReviewLayerDefinitionService().getReviewLayerDefinitionsToMax(reviewLayerDefinition.getReviewLevel());
+                    	Collection<EdoReviewLayerDefinition> validReviewLayers = EdoServiceLocator.getEdoReviewLayerDefinitionService().getReviewLayerDefinitionsToMax(reviewLayerDefinition.getReviewLevel(), dossier.getWorkflowId());
                         // generate a list of node names
                        for (EdoReviewLayerDefinition rvwLayer : validReviewLayers) {
                            // authorizedNodes.add(EdoServiceLocator.getEdoReviewLayerDefinitionService().buildNodeMap(validReviewLayers).get(rvwLayer.getNodeName())); //this is throwing null pointer exception
@@ -428,6 +439,10 @@ public class EdoDossierServiceImpl implements EdoDossierService {
     public List<EdoDossier> getDossierListByUserName(String userName) {
     	return edoDossierDao.getDossierListByUserName(userName);
     }
+    public List<EdoDossier> getDossierListByQualifierAndStatus(String qualifierId) {
+    	return edoDossierDao.getDossierListByQualifierAndStatus(qualifierId);
+    }
+
     //supplemental tracking table
     public void populateSuppTrackingTable( List<String> previousNodes, Integer dossierId) {
     	 List<BigDecimal> previousLevels = new ArrayList<BigDecimal>();
@@ -492,6 +507,8 @@ public class EdoDossierServiceImpl implements EdoDossierService {
         boolean routed = false;
         EdoDossierType dossierTypeObj = EdoServiceLocator.getEdoDossierTypeService().getEdoDossierType(dossierType);
         if (ObjectUtils.isNotNull(dossierId)) {
+            String workflowId = EdoServiceLocator.getEdoDossierService().getDossierById(BigDecimal.valueOf(dossierId)).getWorkflowId();
+
             //Get the document header.
             List<DossierProcessDocumentHeader> documentHeaders = EdoServiceLocator.getDossierProcessDocumentHeaderService().getDossierProcessDocumentHeaderByDocType(dossierId, dossierTypeObj.getDocumentTypeName());
 
@@ -502,7 +519,10 @@ public class EdoDossierServiceImpl implements EdoDossierService {
             		workflowDocument = WorkflowDocumentFactory.loadDocument(EdoContext.getPrincipalId(), documentHeader.getDocumentId());
            
             	  if (workflowDocument.checkStatus(DocumentStatus.ENROUTE)) {
-                      workflowDocument.approve("Supplemental Document is Approved");
+                     workflowDocument.approve("Supplemental Document is Approved");
+
+                    //workflowDocument.approve(buildSuppRouteDescription(workflowId, workflowDocument.getCurrentNodeNames(), ActionType.APPROVE));
+
                       routed = true;
             	  	}
             	}
@@ -570,6 +590,42 @@ public class EdoDossierServiceImpl implements EdoDossierService {
         return edoDossierDao.getDossier(documentId);
     }
 
+    public List<String> getDistinctDossierDepartmentIDs() {
+        List<String> deptList = new LinkedList<String>();
+
+        Map<String,String> hash = new HashMap<String, String>();
+
+        List<EdoDossier> allEntries = edoDossierDao.getDossierList();
+        for (EdoDossier edoDossier : allEntries) {
+            if (edoDossier.getDepartmentID() != null) {
+                hash.put(edoDossier.getDepartmentID(),"1");
+            }
+        }
+        for (String str : hash.keySet()) {
+            deptList.add(str.trim());
+        }
+        return deptList;
+    }
+
+    public List<String> getDistinctDossierSchoolIDs() {
+        List<String> schoolList = new LinkedList<String>();
+
+        Map<String,String> hash = new HashMap<String, String>();
+
+        List<EdoDossier> allEntries = edoDossierDao.getDossierList();
+        for (EdoDossier edoDossier : allEntries) {
+            if (edoDossier.getSchoolID() != null) {
+                hash.put(edoDossier.getSchoolID(),"1");
+            }
+        }
+        for (String str : hash.keySet()) {
+            schoolList.add(str.trim());
+        }
+        return schoolList;
+    }
+
+    // PRIVATE METHODS
+
     private String buildRouteDescription(String workflowId, Set<String> currentNodeNames, ActionType actionType) {
         StringBuilder routeDescription = new StringBuilder();
         if (actionType != null) {
@@ -587,6 +643,54 @@ public class EdoDossierServiceImpl implements EdoDossierService {
                     } else {
                         routeDescription.append(", ");
                         routeDescription.append(reviewLayerDefinition.getDescription());
+                    }
+                }
+            } else {
+                routeDescription.append("Completed");
+            }
+        }
+
+        return routeDescription.toString();
+    }
+    private String buildSuppRouteDescription(String workflowId, Set<String> currentNodeNames, ActionType actionType) {
+        StringBuilder routeDescription = new StringBuilder();
+        if (actionType != null) {
+            routeDescription.append(actionType.getLabel() + ": ");
+        }
+
+      /*  if (CollectionUtils.isNotEmpty(currentNodeNames)) {
+            Collection<EdoSuppReviewLayerDefinition> suppReviewLayerDefinitions = EdoServiceLocator.getEdoReviewLayerDefinitionService().getSuppReviewLayerDefinitions(workflowId, currentNodeNames);
+            if (CollectionUtils.isNotEmpty(suppReviewLayerDefinitions)) {
+
+            for (EdoSuppReviewLayerDefinition suppReviewLayerDefinition : suppReviewLayerDefinitions) {
+                EdoReviewLayerDefinition edoReviewLayerDefinition = EdoServiceLocator.getEdoReviewLayerDefinitionService().getReviewLayerDefinition(workflowId, suppReviewLayerDefinition.getReviewLayerDefinitionId());
+                if(ObjectUtils.isNotNull(edoReviewLayerDefinition)) {
+                routeDescription.append(", ");
+                routeDescription.append(edoReviewLayerDefinition.getDescription());
+                }
+                else {
+                    routeDescription.append("Completed");
+
+                	}
+            	
+            	}
+            }
+
+        }
+
+        return routeDescription.toString();
+    }*/
+        if (CollectionUtils.isNotEmpty(currentNodeNames)) {
+            Collection<EdoSuppReviewLayerDefinition> suppReviewLayerDefinitions = EdoServiceLocator.getEdoReviewLayerDefinitionService().getSuppReviewLayerDefinitions(workflowId, currentNodeNames);
+
+            if (CollectionUtils.isNotEmpty(suppReviewLayerDefinitions)) {
+                int i = 0;
+                for (EdoSuppReviewLayerDefinition suppReviewLayerDefinition : suppReviewLayerDefinitions) {
+                    if (i == 0) {
+                        routeDescription.append(suppReviewLayerDefinition.getDescription());
+                    } else {
+                        routeDescription.append(", ");
+                        routeDescription.append(suppReviewLayerDefinition.getDescription());
                     }
                 }
             } else {

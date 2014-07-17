@@ -10,19 +10,21 @@ import org.kuali.kpme.edo.dossier.EdoCandidateDossier;
 import org.kuali.kpme.edo.service.EdoServiceLocator;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoContext;
+import org.kuali.kpme.edo.util.EdoUser;
 import org.kuali.rice.kew.actionrequest.ActionRequestValue;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.action.ActionItem;
 import org.kuali.rice.kew.service.KEWServiceLocator;
+import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * $HeadURL: https://svn.uits.iu.edu/hr/edo/trunk/src/main/java/org/kuali/kpme/edo/candidate/web/EdoCandidateListAction.java $
- * $Id: EdoCandidateListAction.java 11337 2014-03-25 16:32:01Z nrmalae $
+ * $Id: EdoCandidateListAction.java 11668 2014-06-17 17:38:38Z nrmalae $
  * Created with IntelliJ IDEA.
  * User: tcbradley
  * Date: 10/19/12
@@ -47,7 +49,19 @@ public class EdoCandidateListAction extends EdoAction {
             if (edoCandidateDossierList != null) {
                 dossierList.addAll(edoCandidateDossierList);
             }
-        } else {
+        } 
+        //secondary unit reviewer role
+      /* if (EdoUser.getCurrentTargetRoles().contains(EdoConstants.ROLE_SECONDARY_UNIT_REVIEWER)) {
+                List<String> dossierIdList = EdoServiceLocator.getEdoMaintenanceService().getSecondUnitReviewerDossierList(EdoUser.getCurrentTargetPerson().getPrincipalId());
+                for (String dossierId : dossierIdList) {
+                    //Person person = KimApiServiceLocator.getPersonService().getPerson(candidate);
+                	EdoCandidateDossier edoCandidateDossier = EdoServiceLocator.getEdoCandidateDossierService().getCandidateDossierByDossierId(dossierId);
+                    if (edoCandidateDossier != null && (StringUtils.equals(edoCandidateDossier.getDossierStatus(), EdoConstants.DOSSIER_STATUS.SUBMITTED))) {
+                        dossierList.add(edoCandidateDossier);
+                    }
+                }
+            }*/
+      
             //Get reviewer dossiers
             if (EdoContext.canUserReviewerScreen() && StringUtils.equals(edoCandidateListForm.getTabId(), EdoConstants.DOSSIER_TAB.REVIEWS)) {
                 //Get the full dossier list that is open/submitted.
@@ -58,7 +72,16 @@ public class EdoCandidateListAction extends EdoAction {
                     // doing this check before the docID check to give ADMINISTRATORs access to OPEN dossiers
                     if (EdoServiceLocator.getAuthorizationService().isAuthorizedToUploadExternalLetter_W(EdoContext.getUser().getEmplId(), candidateDossier.getDossierId().intValue()) && !(StringUtils.equals(candidateDossier.getDossierStatus(), EdoConstants.DOSSIER_STATUS.CLOSED))) {
                         dossierList.add(candidateDossier);
-                    } else {
+                    } 
+                    if (EdoServiceLocator.getAuthorizationService().isCheckListSignOffAuthorized_W(EdoContext.getUser().getEmplId(), candidateDossier.getDossierId().intValue()) && (StringUtils.equals(candidateDossier.getDossierStatus(), EdoConstants.DOSSIER_STATUS.PENDING))) {
+                        dossierList.add(candidateDossier);
+                    	
+                    }
+                    if (EdoServiceLocator.getAuthorizationService().isSeconUnitAuthorized_W(EdoContext.getUser().getEmplId(), candidateDossier.getDossierId().intValue()) && (StringUtils.equals(candidateDossier.getDossierStatus(), EdoConstants.DOSSIER_STATUS.SUBMITTED))) {
+                        dossierList.add(candidateDossier);
+                    } 
+                    
+                   // if {
                         if (StringUtils.isNotEmpty(candidateDossier.getDocumentId()) && !(StringUtils.equals(candidateDossier.getDossierStatus(), EdoConstants.DOSSIER_STATUS.CLOSED))) {
                             try {
                                 List<ActionRequestValue> actionRequestValues = new LinkedList<ActionRequestValue>();
@@ -84,15 +107,21 @@ public class EdoCandidateListAction extends EdoAction {
                                 //Catch the exception.
                             }
                         }
-                    }
+                   // }
                 }
             }
-        }
+       
 
         //remove duplicate edossiers : i dont know if this is necessary or not
         HashSet<EdoCandidateDossier> set = new HashSet<EdoCandidateDossier>(dossierList);
         dossierList.clear();
         dossierList.addAll(set);
+        Collections.sort(dossierList, new Comparator<EdoCandidateDossier>() {
+            @Override
+            public int compare(EdoCandidateDossier o1, EdoCandidateDossier o2) {
+                return o1.getLastName().compareTo(o2.getLastName());
+            }
+        });
 
         if (!dossierList.isEmpty()) {
             for (EdoCandidateDossier dossier : dossierList) {

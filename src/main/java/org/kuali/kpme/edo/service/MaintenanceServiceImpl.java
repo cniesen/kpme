@@ -11,6 +11,7 @@ import org.kuali.kpme.edo.candidate.delegate.EdoChairDelegate;
 import org.kuali.kpme.edo.candidate.guest.EdoCandidateGuest;
 import org.kuali.kpme.edo.dossier.EdoDossier;
 import org.kuali.kpme.edo.dossier.type.EdoDossierType;
+import org.kuali.kpme.edo.permission.EDOKimAttributes;
 import org.kuali.kpme.edo.role.EDORole;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.kpme.edo.util.EdoContext;
@@ -329,8 +330,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 candidateDelegate.setDelegatePrincipalName(name.getPrincipalName());
                 candidateDelegate.setDelegateFullName(name.getDefaultName().getCompositeName());
             }
-            //candidateDelegate.setStartDate(edoCandidateDelegate.getActiveFromDate());
-            //candidateDelegate.setEndDate(edoCandidateDelegate.getActiveToDate());
+            candidateDelegate.setStartDate(edoCandidateDelegate.getActiveFromDate());
+            candidateDelegate.setEndDate(edoCandidateDelegate.getActiveToDate());
             candidateDelegatesList.add(candidateDelegate);
         }
 
@@ -363,8 +364,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 chairDelegate.setDelegatePrincipalName(name.getPrincipalName());
                 chairDelegate.setDelegateFullName(name.getDefaultName().getCompositeName());
             }
-            //chairDelegate.setStartDate(edoChairDelegate.getActiveFromDate());
-            //chairDelegate.setEndDate(edoChairDelegate.getActiveToDate());
+            chairDelegate.setStartDate(edoChairDelegate.getActiveFromDate());
+            chairDelegate.setEndDate(edoChairDelegate.getActiveToDate());
             chairDelegatesList.add(chairDelegate);
         }
 
@@ -400,8 +401,8 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 candidateGuest.setGuestPrincipalName(name.getPrincipalName());
                 candidateGuest.setGuestFullName(name.getDefaultName().getCompositeName());
             }
-            //candidateGuest.setStartDate(edoCandidateGuest.getActiveFromDate());
-            //candidateGuest.setEndDate(edoCandidateGuest.getActiveToDate());
+            candidateGuest.setStartDate(edoCandidateGuest.getActiveFromDate());
+            candidateGuest.setEndDate(edoCandidateGuest.getActiveToDate());
             candidateGuest.setGuestDossierId(edoCandidateGuest.getQualifier());
             candidateGuest.getGuestDossierId().putAll(edoCandidateGuest.getQualifier());
             //make a call to edo dossier table to fecth dossier and then get dossier type
@@ -561,6 +562,53 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
         return secondUnitRevList;
     }
+    public List<String> getCheckListSignOffList(String signOffEmmlid) {
+    	//get the logged in person deptId or schoolId
+    	//and if thats a qualifier resolver
+    	//and pass in that qualifier resolver to the edossier table and get the list of candidates who has
+    	//that dept id or schooolid along with the status pending
+    	//return the candidate list
+       // HashMap<String, String> qualifications = new HashMap<String, String>();
+        //qualifications cannot be empty
+        List<String> candidateList = new ArrayList<String>();
+        List<EdoDossier> eDossierList = new ArrayList<EdoDossier>();
+        List<String> qualifierList = new ArrayList<String>();
+        List<String> roleIds = new ArrayList<String>();
+        String roleId = getRoleService().getRoleIdByNamespaceCodeAndName(EdoConstants.EDO_NAME_SPACE, EdoConstants.CHECK_LIST_SIGN_OFF_ROLE);
+        if (StringUtils.isNotBlank(roleId)) {
+            roleIds.add(roleId);
+       // List<Map<String, String>> qualifiersList = getRoleService().getRoleQualifersForPrincipalByNamespaceAndRolename(signOffEmmlid, EdoConstants.EDO_NAME_SPACE, EdoConstants.CHECK_LIST_SIGN_OFF_ROLE, qualifications);
+        List<Map<String, String>> lstAttrSet = getRoleService().getRoleQualifersForPrincipalByRoleIds(signOffEmmlid, roleIds, new HashMap<String, String>());
+
+        //for(Map<String, String> qualifier : qualifiersList ) {
+    		/*for (Map.Entry<String, String> entry : qualifier.entrySet()) {
+    			String attr = entry.getValue();
+    			//make a service call to the dossier
+    			eDossierList =  EdoServiceLocator.getEdoDossierService().getDossierListByQualifierAndStatus(attr);
+    		}*/
+        	 for (Map<String, String> attrSet : lstAttrSet) {
+                 String qualifiers = (String) attrSet.get(EdoConstants.ROLE_CHECK_LIST_SIGN_OFF);
+                 if (StringUtils.isNotBlank(qualifiers)) {
+                     String[] faculties = StringUtils.split(qualifiers, ",");
+                     for (String qualifier : faculties) {
+                         if (StringUtils.isNotBlank(qualifier)) {
+                         	qualifierList.add(qualifier);
+                         }
+                     }
+                 }
+             }
+    		
+    	
+    	  /*for(EdoDossier  edossier : eDossierList) {
+    		candidateList.add(edossier.getCandidateUsername());
+    		
+    	}*/
+      }
+    	return candidateList;
+    }
+    	
+
+    
     //i have to debug this one
     public List<String> getCandidateSecondaryUnitReviewers(BigDecimal dossierId) {
         Collection<String> secUnitReviewers = new ArrayList<String>();
@@ -577,8 +625,37 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
         return candidateSecUnitRew;
     }
+    public List<String> getCheckListSignOffPerson(String deptId, String schoolId, BigDecimal dossierId) {
+        Collection<String> checkListSignOffCollection = new ArrayList<String>();
+        List<String> checkListSignOffList = new ArrayList<String>();
+        HashMap<String, String> qualifications1 = new HashMap<String, String>();
+        HashMap<String, String> qualifications2 = new HashMap<String, String>();
+        HashMap<String, String> qualifications3 = new HashMap<String, String>();
+
+
+        qualifications1.put(EDOKimAttributes.EDO_DEPARTMENT_ID, deptId );
+        checkListSignOffCollection = getRoleService().getRoleMemberPrincipalIds(EdoConstants.EDO_NAME_SPACE, EdoConstants.CHECK_LIST_SIGN_OFF_ROLE, qualifications1);
+        
+        if(checkListSignOffCollection.isEmpty()) {
+            //check with another qualifier resolver
+            qualifications2.put(EDOKimAttributes.EDO_SCHOOL_ID, schoolId );
+            checkListSignOffCollection = getRoleService().getRoleMemberPrincipalIds(EdoConstants.EDO_NAME_SPACE, EdoConstants.CHECK_LIST_SIGN_OFF_ROLE, qualifications2);
+
+        }
+        if(checkListSignOffCollection.isEmpty()) {
+            //check with another qualifier resolver
+            qualifications3.put(EDOKimAttributes.EDO_DOSSIER_ID,  dossierId.toString());
+            checkListSignOffCollection = getRoleService().getRoleMemberPrincipalIds(EdoConstants.EDO_NAME_SPACE, EdoConstants.CHECK_LIST_SIGN_OFF_ROLE, qualifications3);
+
+        }
+        Iterator<String> collectionIterator = checkListSignOffCollection.iterator();
+        while (collectionIterator.hasNext()) {
+            checkListSignOffList.add(collectionIterator.next());
+        }
+        return checkListSignOffList;
+    }
     
-       /*    public List<String> getCandidateSecondaryUnitReviewers(String userName) {
+       public List<String> getCandidateSecondaryUnitReviewers(String userName) {
         //first get the dossier list of the candidate
         List<String> secondaryUnitReviewers = new ArrayList<String>();
         List<EdoDossier> edossierList = EdoServiceLocator.getEdoDossierService().getDossierListByUserName(userName);
@@ -603,7 +680,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
        
 
         return secondaryUnitReviewers;
-    }*/
+    }
     public boolean hasSuperUserRole_W(String emplid) {
     	 boolean hasRole = false;
     	 List<String> allPrincipals = EdoContext.getPrincipalDelegators(emplid);
@@ -612,6 +689,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         	 hasRole = hasRole || hasSuperUserRole(principal);
          }
          return hasRole;
+    }
+
+    public boolean hasAdministratorRole(String emplid) {
+        List<String> principalIds = new LinkedList<String>();
+
+        principalIds.addAll(KimApiServiceLocator.getRoleService().getRoleMemberPrincipalIds(EdoConstants.EDO_NAME_SPACE, EDORole.EDO_ADMINISTRATOR.getEdoRole(), new HashMap<String, String>()));
+
+        return principalIds.contains(emplid);
     }
 
     public boolean hasSuperUserRole(String emplid) {

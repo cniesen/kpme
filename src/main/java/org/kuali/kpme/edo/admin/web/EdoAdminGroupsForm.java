@@ -19,6 +19,7 @@ import java.util.Map;
  */
 public class EdoAdminGroupsForm extends EdoForm {
 
+    private String workflowId;
     private String departmentCode;
     private String schoolCode;
     private String campusCode;
@@ -34,6 +35,14 @@ public class EdoAdminGroupsForm extends EdoForm {
     private String addToGroupName;
     private String groupMembersJSON;
     private String groupJSON;
+
+    public String getWorkflowId() {
+        return workflowId;
+    }
+
+    public void setWorkflowId(String workflowId) {
+        this.workflowId = workflowId;
+    }
 
     public String getDepartmentCode() {
         return departmentCode;
