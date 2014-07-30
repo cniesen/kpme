@@ -85,6 +85,7 @@ class PortalMenu < BasePage
   #action(:krms_edit_agenda) { |b| b.link(text: "Edit Agenda").click }
   #action(:krms_manage_co_agendas) { |b| b.link(text: "Manage Course Offering Agendas").click}
 
+  element(:logout_admin) { |b| b.button(:value=> "Logout") }
   element(:username_field) { |b| b.text_field(:id=>"username") }
   #element(:password_field) { |b| b.text_field(:name=>"j_password") }
   element(:login_button) { |b| b.button(:value=>"LOGIN") }
@@ -113,6 +114,10 @@ class PortalMenu < BasePage
             user = 'inclockdetail1'
           when 'security, ecs'
             user = 'ecsecurity'
+          when 'clock1, indiana'
+            user = 'inclock1'
+          when 'admin, admin'
+            user = 'admin'
         end
 
     rescue Watir::Exception::UnknownObjectException

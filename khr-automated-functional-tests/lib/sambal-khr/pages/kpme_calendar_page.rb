@@ -30,6 +30,11 @@ class KpmeCalendarPage < BasePage
   value(:time_first_text) { |no,curr_day,b| b.td(id: "day_#{curr_day}").div(class: "approvals-table event  assignment#{no} ").text }
   value(:time_last_text) { |no,curr_day,b| b.td(id: "day_#{curr_day}").div(class: "approvals-table event last-event assignment#{no} ").text }
 
+  element(:calendar_text_entry)  { |cal_day,b| b.div(text: "#{cal_day}").parent.text }
+  action(:actual_time_inquiry) { |b| b.link(id: 'atiLink').click }
+
+
+
 
 
   def calc_dates(day_start,day_end)

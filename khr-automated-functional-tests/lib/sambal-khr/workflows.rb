@@ -8,6 +8,23 @@ module Workflows
       page.timedetail_tab
     end
   end
+
+  def clear_existing_document(doc_id)
+
+    on AdminMaintenancePage do |page|
+      page.time_leave_link
+      page.admin_actions
+    end
+
+    on AdminOperationsPage do |page|
+      page.document_no.set doc_id
+      page.submit
+
+    end
+
+
+  end
+
 =begin
   # Site Navigation helpers...
   def go_to_rollover_details
@@ -118,6 +135,12 @@ module Workflows
     if !$distributed_env then
       visit PortalMenu do |page|
         current_user = page.current_logged_in_user_id
+        #puts current_user
+        #puts "#{page.logout_admin.exists?}"
+        if (page.logout_admin.exists? == true && current_user == :no_user)
+          page.logout_admin.click
+          visit PortalMenu
+        end
         if current_user == :no_user
           page.login_with user
         elsif current_user != user
