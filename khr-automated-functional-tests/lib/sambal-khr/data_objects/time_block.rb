@@ -190,17 +190,11 @@ class TimeBlockObject < DataFactory
 #removes the only timeblock for that day
   def remove_timeblock(cal_day,cancel)
     on KpmeCalendarPage do |page|
+      page.delete_tb(cal_day)
       if cancel == "false"
-        page.delete_tb(cal_day)
-        page.alert.ok
+        page.button_ok
       else
-        page.delete_tb(cal_day)
-        page.alert.close
-      end
-      if page.alert.exists? == true
-        #puts " server dialog present"
-        page.alert.close
-        sleep 5
+        page.button_cancel
       end
     end
   end
@@ -213,11 +207,12 @@ class TimeBlockObject < DataFactory
       while page.assignment_count(current_day) > 2  do
         #puts curr_day
         page.delete_tb(current_day)
-        page.alert.ok
-         if page.alert.exists? == true
-            page.alert.close
-            sleep 5        # this sleep is to prevent browser's dialog
-         end
+        page.button_ok
+         # page.alert.ok
+         # if page.alert.exists? == true
+         #   page.alert.close
+         #   sleep 5        # this sleep is to prevent browser's dialog
+         # end
        end
       end
     end

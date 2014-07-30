@@ -4,6 +4,10 @@ class KpmeCalendarPage < BasePage
   action(:delete_tb) { |curr_day,b| b.td(id: "day_#{curr_day}").img(class: 'event-delete').click }
   value(:assignment_count)  { |curr_day,b| b.td(id: "day_#{curr_day}").divs.size }
 
+  action(:button_ok)  { |b| b.button(text: 'OK').click }
+  action(:button_cancel)  { |b| b.button(text: 'Cancel').click }
+
+
 
   element(:hours_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: "event-content").text }
   action(:widget_entry) { |day_count,b| b.td(id: "day_#{day_count}").div(class: 'event-title-true').div(id: /show_./).click }
