@@ -11,9 +11,10 @@ When(/^I select dates prior to the pay calendar$/) do
 end
 
 
-Then(/^assignment field is selected with no assignments$/) do
+Then(/^error message about pay dates should appear$/) do
   on TimeblockWidgetPage do |page|
-    page.assignment.selected?("-- no assignments found --").should == true
+    page.validation_text.should == "Both dates must fall within this pay period"
+    #page.assignment.selected?("-- no assignments found --").should == true
   end
 end
 
