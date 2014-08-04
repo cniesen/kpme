@@ -22,11 +22,14 @@ Then(/^time entry should be created in calendar page$/) do
   on KpmeCalendarPage do |page|
 
     @cal_date=@timeentry.initial_time.to_s[-42,2]
+    @cal_date = @cal_date[1,1] if @cal_date < "10"
     @date_in=@timeentry.clock_in_work_sts.to_s[-42,2]
+    @date_in = @date_in[1,1] if @date_in < "10"
     @clock_in=@timeentry.clock_in_work_sts.to_s[-34,5]
     @in_noon=@timeentry.clock_in_work_sts.to_s[-25,2]
     @clock_out=@timeentry.clock_out_work_sts.to_s[-34,5]
     @out_noon=@timeentry.clock_out_work_sts.to_s[-25,2]
+
 
     page.calendar_text_entry(@cal_date).should include (@date_in)
     page.calendar_text_entry(@cal_date).should include ("IN-DEPT HR Work Area")
