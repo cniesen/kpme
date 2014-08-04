@@ -1,4 +1,6 @@
+#KPMEQA-274 and 275
 @wip
+
 
 Feature: Validate overnight shifts in time block
 
@@ -17,7 +19,7 @@ Feature: Validate overnight shifts in time block
       When I add nightly time block individually for days
       Then the time block should be added for each day
 
-    Scenario: Validate multiple day and night time blocks can be added
+  Scenario: Validate multiple day and night time blocks can be added
       When I add regular earn codes over multiple days
       Then the time block should not be added
       And un apply the time block for each day

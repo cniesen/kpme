@@ -1,4 +1,6 @@
+#KPMEQA-267
 @wip
+
 
 Feature: Validate assignment field in time blocks
 
