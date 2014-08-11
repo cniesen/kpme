@@ -12,7 +12,6 @@ class ClockTimeentryObject < DataFactory
                    :initial_work_sts,
                    :doc_id,
                    :wait_time,
-                   :initial_time,
                    :clock_in_work_sts,
                    :clock_out_work_sts
 
@@ -35,14 +34,13 @@ class ClockTimeentryObject < DataFactory
 
      @assignment_name=page.assignment_name.text
      @initial_work_sts = page.work_status.text
-     @initial_time = Time.new.strftime('%a, %B %d %Y %H:%M:%S %p, %Z')
+     #@initial_time = Time.new.strftime('%a, %B %d %Y %H:%M:%S %p, %Z')
      page.clock_in.click
      @clock_in_work_sts = page.work_status.text
-     @time_in = Time.new.strftime('%a, %B %d %Y %H:%M:%S %p, %Z')
      sleep(@wait_time)
      page.clock_out.click
      @clock_out_work_sts = page.work_status.text
-     @time_out = Time.new.strftime('%a, %B %d %Y %H:%M:%S %p, %Z')
+
 
 
    end
