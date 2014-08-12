@@ -3,6 +3,7 @@ class KpmeCalendarPage < BasePage
   action(:calendar_day) { |day_click,b| b.td(id: "day_#{day_click}").click }
   action(:delete_tb) { |curr_day,b| b.td(id: "day_#{curr_day}").img(class: 'event-delete').click }
   value(:assignment_count)  { |curr_day,b| b.td(id: "day_#{curr_day}").divs.size }
+  element(:calendar_date) { |day_click,b| b.div(id: "dayNumber_#{day_click}").text }
 
   action(:button_ok)  { |b| b.button(text: 'OK').click }
   action(:button_cancel)  { |b| b.button(text: 'Cancel').click }

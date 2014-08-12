@@ -160,8 +160,19 @@ class TimeBlockObject < DataFactory
 
       page.end_date.set opts[:end_date] unless opts[:end_date].nil?
       page.start_date.set opts[:start_date] unless opts[:start_date].nil?
-      page.in_time.fit opts[:in_time]
-      page.out_time.fit opts[:out_time]
+
+      unless opts[:in_time].nil?
+        @in_time = opts[:in_time]
+        in_time_values
+      end
+
+       unless opts[:out_time].nil?
+         @out_time = opts[:out_time]
+         out_time_values
+       end
+
+      #page.in_time.fit opts[:in_time]
+      #page.out_time.fit opts[:out_time]
       page.assignment.pick! opts[:assignment]
       page.earn_code.pick! opts[:earn_code]
       page.across_days.fit checkbox_trans[opts[:apply_time]]
@@ -180,14 +191,27 @@ class TimeBlockObject < DataFactory
     end
   end
 
-# clicks the day 1 i.e. first monday on calendar
-  def select_date
+# clicks the day that is passed
+  def select_date (opts={:@day_click=>1})
     on KpmeCalendarPage do |page|
-      page.calendar_day(@day_click)
+      page.calendar_day(opts[:@day_click])
     end
   end
 
-#removes the only timeblock for that day
+# returns the start and end date in the pay period drop down
+  def retrieve_dates
+    on KpmeCalendarPage do |page|
+
+      pay_startdate = page.pay_period.split('-').first
+      start_dt = Date.strptime(pay_startdate,'%m/%d/%Y')
+      pay_enddate = page.pay_period.split('- ').last
+      end_dt = Date.strptime(pay_enddate,'%m/%d/%Y')
+      return (start_dt).to_s,(end_dt).to_s
+      end
+
+    end
+
+# removes the only timeblock for that day
   def remove_timeblock(cal_day,cancel)
     on KpmeCalendarPage do |page|
       page.delete_tb(cal_day)
@@ -211,7 +235,7 @@ class TimeBlockObject < DataFactory
          # page.alert.ok
          # if page.alert.exists? == true
          #   page.alert.close
-         #   sleep 5        # this sleep is to prevent browser's dialog
+            sleep 3        # this sleep is to prevent any browser dialog
          # end
        end
       end
