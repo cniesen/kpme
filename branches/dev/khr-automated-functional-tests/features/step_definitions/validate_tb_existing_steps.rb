@@ -54,7 +54,8 @@ Given(/^I have a time block created$/) do
                       :start_date => @finalstart_dt,
                       :end_date => @finalend_dt,
                       :in_time => "8am",
-                      :out_time => "10am"
+                      :out_time => "10am",
+                      :assignment_number => "0"
 
 end
 
