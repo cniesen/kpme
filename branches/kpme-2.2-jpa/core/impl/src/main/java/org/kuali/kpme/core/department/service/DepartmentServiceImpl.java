@@ -17,19 +17,25 @@ package org.kuali.kpme.core.department.service;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.bo.dao.EffectiveObjectDao;
 import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.api.department.DepartmentService;
 import org.kuali.kpme.core.api.groupkey.HrGroupKey;
 import org.kuali.kpme.core.api.groupkey.HrGroupKeyService;
 import org.kuali.kpme.core.department.DepartmentBo;
 import org.kuali.kpme.core.department.dao.DepartmentDao;
+import org.kuali.rice.core.api.criteria.CountFlag;
+import org.kuali.rice.core.api.criteria.QueryByCriteria;
+import org.kuali.rice.core.api.criteria.QueryResults;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.DataObjectService;
 
 import java.util.*;
 
 public class DepartmentServiceImpl implements DepartmentService {
 
-	private DepartmentDao departmentDao;
+    private EffectiveObjectDao effectiveObjectDao;
+    private DataObjectService dataObjectService;
     private HrGroupKeyService hrGroupKeyService;
     private static final ModelObjectUtils.Transformer<DepartmentBo, Department> toDepartment =
             new ModelObjectUtils.Transformer<DepartmentBo, Department>() {
@@ -38,29 +44,24 @@ public class DepartmentServiceImpl implements DepartmentService {
                 };
             };
 	
-	public DepartmentDao getDepartmentDao() {
-		return departmentDao;
-	}
-	
-	public void setDepartmentDao(DepartmentDao departmentDao) {
-		this.departmentDao = departmentDao;
-	}
-	
 	@Override
     public Department getDepartment(String hrDeptId) {
         return DepartmentBo.to(getDepartmentBo(hrDeptId));
     }
 
-
 	protected DepartmentBo getDepartmentBo(String hrDeptId) {
-		DepartmentBo departmentObj = departmentDao.getDepartment(hrDeptId);
-
-		return departmentObj;
+        return dataObjectService.find(DepartmentBo.class, hrDeptId);
 	}
     
 	@Override
 	public int getDepartmentCount(String department, String groupKeyCode) {
-		return departmentDao.getDepartmentCount(department, groupKeyCode);
+        Map<String, String> criteria = new HashMap<String, String>();
+        criteria.put("dept", department);
+        criteria.put("groupKeyCode", groupKeyCode);
+        QueryByCriteria.Builder builder = QueryByCriteria.Builder.andAttributes(criteria);
+        builder.setCountFlag(CountFlag.ONLY);
+        QueryResults<DepartmentBo> results = dataObjectService.findMatching(DepartmentBo.class, builder.build());
+		return results.getTotalRowCount();
 	}
 
     @Override
@@ -69,19 +70,15 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     protected DepartmentBo getDepartmentBo(String department,  String groupKeyCode, LocalDate asOfDate) {
-        return departmentDao.getDepartment(department, groupKeyCode, asOfDate);
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("dept", department);
+        criteria.put("groupKeyCode", groupKeyCode);
+        return effectiveObjectDao.getSingleEffectiveObject(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
     }
 
     @Override
     public List<String> getDepartmentValuesWithLocation(String location, LocalDate asOfDate) {
-        List<String> groupKeyCodes = getGroupKeyCodesFromList(hrGroupKeyService.getHrGroupKeysWithLocation(location, asOfDate));
-        List<DepartmentBo> departmentObjs = departmentDao.getDepartmentsWithGroupKeys(groupKeyCodes, asOfDate);
-        List<String> depts = new ArrayList<String>();
-        for (DepartmentBo departmentObj : departmentObjs) {
-            depts.add(departmentObj.getBusinessKeyId());
-        }
-
-        return depts;
+        return getDepartmentValuesWithLocations(Collections.singletonList(location), asOfDate);
     }
 
     @Override
@@ -92,9 +89,13 @@ public class DepartmentServiceImpl implements DepartmentService {
         
         List<HrGroupKey> groupKeys = hrGroupKeyService.getHrGroupKeysForLocations(locations, asOfDate);
         List<String> groupKeyCodes = getGroupKeyCodesFromList(groupKeys);
-        List<DepartmentBo> departmentObjs = departmentDao.getDepartmentsWithGroupKeys(groupKeyCodes, asOfDate);
+
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("groupKeyCode", groupKeyCodes);
+
+        List<DepartmentBo> departmentBos = effectiveObjectDao.getEffectiveObjectList(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
         List<String> depts = new ArrayList<String>();
-        for (DepartmentBo departmentObj : departmentObjs) {
+        for (DepartmentBo departmentObj : departmentBos) {
             depts.add(departmentObj.getBusinessKeyId());
         }
 
@@ -106,20 +107,22 @@ public class DepartmentServiceImpl implements DepartmentService {
       	List<HrGroupKey> groupKeys = hrGroupKeyService.getHrGroupKeysWithLocation(location, asOfDate);
         List<String> groupKeyCodes = getGroupKeyCodesFromList(groupKeys);
 
-    	List<DepartmentBo> departmentObjs = departmentDao.getDepartmentsWithGroupKeys(groupKeyCodes, asOfDate);
-    	
-        return ModelObjectUtils.transform(departmentObjs, toDepartment);
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("groupKeyCode", groupKeyCodes);
+
+        List<DepartmentBo> departmentBos = effectiveObjectDao.getEffectiveObjectList(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
+
+        return ModelObjectUtils.transform(departmentBos, toDepartment);
     }
 
     @Override
-    public List<Department> getDepartmentsWithGroupKey(String groupKeyCode, LocalDate asOfDate)
-    {
-        List<String> groupKeyCodes = new ArrayList<String>();
-        groupKeyCodes.add(groupKeyCode);
+    public List<Department> getDepartmentsWithGroupKey(String groupKeyCode, LocalDate asOfDate) {
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("groupKeyCode", groupKeyCode);
 
-        List<DepartmentBo> departmentObjs = departmentDao.getDepartmentsWithGroupKeys(groupKeyCodes, asOfDate);
+        List<DepartmentBo> departmentBos = effectiveObjectDao.getEffectiveObjectList(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
 
-        return ModelObjectUtils.transform(departmentObjs, toDepartment);
+        return ModelObjectUtils.transform(departmentBos, toDepartment);
     }
 
 
@@ -127,18 +130,22 @@ public class DepartmentServiceImpl implements DepartmentService {
     public List<Department> getDepartments(String department, String location, LocalDate asOfDate) {
         List<HrGroupKey> groupKeys = hrGroupKeyService.getHrGroupKeysWithLocation(location, asOfDate);
         List<String> groupKeyCodes = getGroupKeyCodesFromList(groupKeys);
-    	List<DepartmentBo> departmentObjs = departmentDao.getDepartmentsWithDepartmentAndGroupKeys(department, groupKeyCodes, asOfDate);
 
-        return ModelObjectUtils.transform(departmentObjs, toDepartment);
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("groupKeyCode", groupKeyCodes);
+        criteria.put("dept", department);
+
+        List<DepartmentBo> departmentBos = effectiveObjectDao.getEffectiveObjectList(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
+
+        return ModelObjectUtils.transform(departmentBos, toDepartment);
     }
 
 
     @Override
-    public List<Department> getDepartments(LocalDate asOfDate)
-    {
-        List<DepartmentBo> departmentObjs = departmentDao.getDepartments(asOfDate);
+    public List<Department> getDepartments(LocalDate asOfDate) {
+        List<DepartmentBo> departmentBos = effectiveObjectDao.getEffectiveObjectList(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, Collections.<String, Object>emptyMap(), asOfDate);
 
-        return ModelObjectUtils.transform(departmentObjs, toDepartment);
+        return ModelObjectUtils.transform(departmentBos, toDepartment);
     }
 
 
@@ -152,5 +159,13 @@ public class DepartmentServiceImpl implements DepartmentService {
             groupKeyCodes.add(key.getGroupKeyCode());
         }
         return groupKeyCodes;
+    }
+
+    public void setEffectiveObjectDao(EffectiveObjectDao effectiveObjectDao) {
+        this.effectiveObjectDao = effectiveObjectDao;
+    }
+
+    public void setDataObjectService(DataObjectService dataObjectService) {
+        this.dataObjectService = dataObjectService;
     }
 }

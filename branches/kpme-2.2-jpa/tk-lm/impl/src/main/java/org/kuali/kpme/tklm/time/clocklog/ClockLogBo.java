@@ -15,7 +15,9 @@
  */
 package org.kuali.kpme.tklm.time.clocklog;
 
+import com.google.common.collect.ImmutableList;
 import java.sql.Timestamp;
+import javax.persistence.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -26,67 +28,106 @@ import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.TaskBo;
 import org.kuali.kpme.core.workarea.WorkAreaBo;
+import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLogContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-
+@Entity
+@Table(name = "TK_CLOCK_LOG_T")
 public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLogContract {
 
-	private static final long serialVersionUID = -6928657854016622568L;
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		            .add("task")
-                    .add("groupKeyCode")
-		            .add("principalId")
-		            .add("workArea")
-		            .add("jobNumber")
-		            .build();
+    private static final long serialVersionUID = -6928657854016622568L;
 
+    //KPME-2273/1965 Primary Business Keys List.	 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add("task").add("groupKeyCode").add("principalId").add("workArea").add("jobNumber").build();
+
+    @PortableSequenceGenerator(name = "TK_CLOCK_LOG_S")
+    @GeneratedValue(generator = "TK_CLOCK_LOG_S")
+    @Id
+    @Column(name = "TK_CLOCK_LOG_ID", length = 60)
     private String tkClockLogId;
-	private String documentId;
+
+    @Column(name = "DOCUMENT_ID", nullable = false, length = 14)
+    private String documentId;
+
+    @Column(name = "GRP_KEY_CD", nullable = false, length = 30)
     private String groupKeyCode;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
     private String principalId;
+
+    @Column(name = "JOB_NUMBER", nullable = false)
     private Long jobNumber;
+
+    @Column(name = "WORK_AREA", nullable = false)
     private Long workArea;
+
+    @Column(name = "TASK", nullable = false)
     private Long task;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CLOCK_TS", nullable = false)
     private Timestamp clockTimestamp;
+
+    @Column(name = "CLOCK_TS_TZ", nullable = false, length = 50)
     private String clockTimestampTimezone;
+
+    @Column(name = "CLOCK_ACTION", nullable = false, length = 2)
     private String clockAction;
+
+    @Column(name = "IP_ADDRESS", length = 15)
     private String ipAddress;
+
+    @Column(name = "USER_PRINCIPAL_ID", length = 40)
     private String userPrincipalId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "TIMESTAMP", nullable = false)
     private Timestamp timestamp;
+
+    @Column(name = "UNAPPROVED_IP", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
     private boolean unapprovedIP = false;
 
+    @Transient
     private boolean clockedByMissedPunch;
 
+    @Transient
     private transient HrGroupKey groupKey;
+
+    @Transient
     private transient Job job;
+
+    @Transient
     private transient WorkAreaBo workAreaObj;
+
+    @Transient
     private transient TaskBo taskObj;
 
+    @Transient
     private transient Person principal;
-    
-	public String getTkClockLogId() {
-		return tkClockLogId;
-	}
 
-	public void setTkClockLogId(String tkClockLogId) {
-		this.tkClockLogId = tkClockLogId;
-	}
-	
-	public String getDocumentId() {
-		return documentId;
-	}
+    public String getTkClockLogId() {
+        return tkClockLogId;
+    }
 
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
-	}
+    public void setTkClockLogId(String tkClockLogId) {
+        this.tkClockLogId = tkClockLogId;
+    }
 
-	public String getPrincipalId() {
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
+
+    public String getPrincipalId() {
         return principalId;
     }
 
@@ -109,13 +150,13 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
     public void setClockTimestamp(Timestamp clockTimestamp) {
         this.clockTimestamp = clockTimestamp;
     }
-    
+
     public DateTime getClockDateTime() {
-    	return clockTimestamp != null? new DateTime(clockTimestamp.getTime()) : null;
+        return clockTimestamp != null ? new DateTime(clockTimestamp.getTime()) : null;
     }
-    
+
     public void setClockDateTime(DateTime clockDateTime) {
-    	clockTimestamp = clockDateTime != null ? new Timestamp(clockDateTime.getMillis()) : null;
+        clockTimestamp = clockDateTime != null ? new Timestamp(clockDateTime.getMillis()) : null;
     }
 
     public String getClockAction() {
@@ -176,7 +217,6 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
      */
     public String getNextValidClockAction() {
         String ret;
-
         if (this.getClockAction().equals(TkConstants.CLOCK_IN)) {
             ret = TkConstants.CLOCK_OUT;
         } else if (this.getClockAction().equals(TkConstants.CLOCK_OUT)) {
@@ -188,7 +228,6 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
         } else {
             ret = TkConstants.CLOCK_IN;
         }
-
         return ret;
     }
 
@@ -225,66 +264,68 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
     }
 
     public Job getJob() {
-		return job;
-	}
+        return job;
+    }
 
-	public void setJob(Job job) {
-		this.job = job;
-	}
+    public void setJob(Job job) {
+        this.job = job;
+    }
 
-	public WorkAreaBo getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public WorkAreaBo getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public TaskBo getTaskObj() {
-		return taskObj;
-	}
+    public TaskBo getTaskObj() {
+        return taskObj;
+    }
 
-	public void setTaskObj(TaskBo taskObj) {
-		this.taskObj = taskObj;
-	}
+    public void setTaskObj(TaskBo taskObj) {
+        this.taskObj = taskObj;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
-	public Long getWorkArea() {
-		return workArea;
-	}
-	public Long getTask() {
-		return task;
-	}
+    public void setTask(Long task) {
+        this.task = task;
+    }
 
-	public Person getPrincipal() {
-		return principal;
-	}
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    public Long getTask() {
+        return task;
+    }
 
-	public boolean isClockedByMissedPunch() {
-		return clockedByMissedPunch;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
 
-	public void setClockedByMissedPunch(boolean clockedByMissedPunch) {
-		this.clockedByMissedPunch = clockedByMissedPunch;
-	}
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-	public boolean isUnapprovedIP() {
-		return unapprovedIP;
-	}
+    public boolean isClockedByMissedPunch() {
+        return clockedByMissedPunch;
+    }
 
-	public void setUnapprovedIP(boolean unapprovedIP) {
-		this.unapprovedIP = unapprovedIP;
-	}
+    public void setClockedByMissedPunch(boolean clockedByMissedPunch) {
+        this.clockedByMissedPunch = clockedByMissedPunch;
+    }
+
+    public boolean isUnapprovedIP() {
+        return unapprovedIP;
+    }
+
+    public void setUnapprovedIP(boolean unapprovedIP) {
+        this.unapprovedIP = unapprovedIP;
+    }
 
     public static ClockLogBo from(ClockLog im) {
         if (im == null) {
@@ -305,14 +346,11 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
         cl.setTimestamp(im.getCreateTime() == null ? null : new Timestamp(im.getCreateTime().getMillis()));
         cl.setUnapprovedIP(im.isUnapprovedIP());
         cl.setClockedByMissedPunch(im.isClockedByMissedPunch());
-
         cl.setJob(im.getJob());
         cl.setGroupKeyCode(im.getGroupKeyCode());
         cl.setGroupKey(im.getGroupKey());
-
         cl.setVersionNumber(im.getVersionNumber());
         cl.setObjectId(im.getObjectId());
-
         return cl;
     }
 
@@ -320,7 +358,6 @@ public class ClockLogBo extends PersistableBusinessObjectBase implements ClockLo
         if (bo == null) {
             return null;
         }
-
         return ClockLog.Builder.create(bo).build();
     }
 }

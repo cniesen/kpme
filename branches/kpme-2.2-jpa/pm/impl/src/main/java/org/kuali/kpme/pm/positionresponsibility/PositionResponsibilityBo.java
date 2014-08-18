@@ -16,93 +16,113 @@
 package org.kuali.kpme.pm.positionresponsibility;
 
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kuali.kpme.pm.api.positionresponsibility.PositionResponsibility;
 import org.kuali.kpme.pm.api.positionresponsibility.PositionResponsibilityContract;
 import org.kuali.kpme.pm.position.PositionBo;
 import org.kuali.kpme.pm.position.PositionDerived;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.location.api.campus.Campus;
 
+@Entity
+@Table(name = "PM_PSTN_RPS_T")
 public class PositionResponsibilityBo extends PositionDerived implements PositionResponsibilityContract {
 
-	private static final long serialVersionUID = -1631206606795253956L;
+    private static final long serialVersionUID = -1631206606795253956L;
 
-	/*
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionResponsibilityBo, PositionResponsibilityBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionResponsibilityBo, PositionResponsibility> toImmutable =
-	        new ModelObjectUtils.Transformer<PositionResponsibilityBo, PositionResponsibility>() {
-	            public PositionResponsibility transform(PositionResponsibilityBo input) {
-	                return PositionResponsibilityBo.to(input);
-	            };
-	        };
-	 
-	/*
+    public static final ModelObjectUtils.Transformer<PositionResponsibilityBo, PositionResponsibility> toImmutable = new ModelObjectUtils.Transformer<PositionResponsibilityBo, PositionResponsibility>() {
+
+        public PositionResponsibility transform(PositionResponsibilityBo input) {
+            return PositionResponsibilityBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionResponsibility, PositionResponsibilityBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionResponsibility, PositionResponsibilityBo> toBo =
-	        new ModelObjectUtils.Transformer<PositionResponsibility, PositionResponsibilityBo>() {
-	            public PositionResponsibilityBo transform(PositionResponsibility input) {
-	                return PositionResponsibilityBo.from(input);
-	            };
-	        };
-	        
-	private String positionResponsibilityId;
-	private String positionResponsibilityOption;
-	private BigDecimal percentTime;
-	private Campus campusObj;
+    public static final ModelObjectUtils.Transformer<PositionResponsibility, PositionResponsibilityBo> toBo = new ModelObjectUtils.Transformer<PositionResponsibility, PositionResponsibilityBo>() {
 
-	public String getPositionResponsibilityId() {
-		return positionResponsibilityId;
-	}
+        public PositionResponsibilityBo transform(PositionResponsibility input) {
+            return PositionResponsibilityBo.from(input);
+        }
 
-	public void setPositionResponsibilityId(String positionResponsibilityId) {
-		this.positionResponsibilityId = positionResponsibilityId;
-	}
+        ;
+    };
 
-	public String getPositionResponsibilityOption() {
-		return positionResponsibilityOption;
-	}
+    @PortableSequenceGenerator(name = "PSTN_RPS_OPT_S")
+    @GeneratedValue(generator = "PSTN_RPS_OPT_S")
+    @Id
+    @Column(name = "PM_PSTN_RPS_ID", length = 60)
+    private String positionResponsibilityId;
 
-	public void setPositionResponsibilityOption(String positionResponsibilityOption) {
-		this.positionResponsibilityOption = positionResponsibilityOption;
-	}
+    @Column(name = "PM_RPS_OPTION", nullable = false, length = 20)
+    private String positionResponsibilityOption;
 
-	
-	public BigDecimal getPercentTime() {
-		return percentTime;
-	}
+    @Column(name = "PRCT_TM", length = 10)
+    private BigDecimal percentTime;
 
-	public void setPercentTime(BigDecimal percentTime) {
-		this.percentTime = percentTime;
-	}
-	
-	public Campus getCampusObj() {
-		return campusObj;
-	}
+    @Transient
+    private Campus campusObj;
 
-	public void setCampusObj(Campus campusObj) {
-		this.campusObj = campusObj;
-	}
+    public String getPositionResponsibilityId() {
+        return positionResponsibilityId;
+    }
 
-	public String getId() {
-		return this.getPositionResponsibilityId();
-	}
+    public void setPositionResponsibilityId(String positionResponsibilityId) {
+        this.positionResponsibilityId = positionResponsibilityId;
+    }
 
-	public void setId(String id) {
-		this.setPositionResponsibilityId(id);
-		
-	}
+    public String getPositionResponsibilityOption() {
+        return positionResponsibilityOption;
+    }
+
+    public void setPositionResponsibilityOption(String positionResponsibilityOption) {
+        this.positionResponsibilityOption = positionResponsibilityOption;
+    }
+
+    public BigDecimal getPercentTime() {
+        return percentTime;
+    }
+
+    public void setPercentTime(BigDecimal percentTime) {
+        this.percentTime = percentTime;
+    }
+
+    public Campus getCampusObj() {
+        return campusObj;
+    }
+
+    public void setCampusObj(Campus campusObj) {
+        this.campusObj = campusObj;
+    }
+
+    public String getId() {
+        return this.getPositionResponsibilityId();
+    }
+
+    public void setId(String id) {
+        this.setPositionResponsibilityId(id);
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -112,23 +132,15 @@ public class PositionResponsibilityBo extends PositionDerived implements Positio
             return true;
         if (obj.getClass() != getClass())
             return false;
-
-        PositionResponsibilityBo rhs = (PositionResponsibilityBo)obj;
-        return new EqualsBuilder()
-                .append(positionResponsibilityId, rhs.getPositionResponsibilityId())
-                .append(positionResponsibilityOption, rhs.getPositionResponsibilityOption())
-                .append(percentTime, rhs.getPercentTime())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .isEquals();
-
+        PositionResponsibilityBo rhs = (PositionResponsibilityBo) obj;
+        return new EqualsBuilder().append(positionResponsibilityId, rhs.getPositionResponsibilityId()).append(positionResponsibilityOption, rhs.getPositionResponsibilityOption()).append(percentTime, rhs.getPercentTime()).append(hrPositionId, rhs.getHrPositionId()).isEquals();
     }
-    
+
     public static PositionResponsibilityBo from(PositionResponsibility im) {
         if (im == null) {
             return null;
         }
         PositionResponsibilityBo pr = new PositionResponsibilityBo();
-        
         pr.setCampusObj(im.getCampusObj());
         pr.setPositionResponsibilityOption(im.getPositionResponsibilityOption());
         pr.setPositionResponsibilityId(im.getPositionResponsibilityId());
@@ -136,10 +148,9 @@ public class PositionResponsibilityBo extends PositionDerived implements Positio
         pr.setVersionNumber(im.getVersionNumber());
         pr.setObjectId(im.getObjectId());
         pr.setHrPositionId(im.getHrPositionId());
-        
         return pr;
-    } 
-    
+    }
+
     public static PositionResponsibility to(PositionResponsibilityBo bo) {
         if (bo == null) {
             return null;

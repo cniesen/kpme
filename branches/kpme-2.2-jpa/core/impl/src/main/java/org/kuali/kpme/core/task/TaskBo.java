@@ -15,135 +15,155 @@
  */
 package org.kuali.kpme.core.task;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.paygrade.PayGrade;
 import org.kuali.kpme.core.api.task.Task;
 import org.kuali.kpme.core.api.task.TaskContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.workarea.WorkAreaBo;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.sql.Timestamp;
-
+@Entity
+@Table(name = "TK_TASK_T")
 public class TaskBo extends HrBusinessObject implements TaskContract {
 
-	private static final String TASK = "task";
+    private static final String TASK = "task";
 
-	private static final long serialVersionUID = -7536342291963303862L;
+    private static final long serialVersionUID = -7536342291963303862L;
 
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Task";
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(TASK)
-            .build();
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Task";
 
-    public static final ModelObjectUtils.Transformer<TaskBo, Task> toTask =
-            new ModelObjectUtils.Transformer<TaskBo, Task>() {
-                public Task transform(TaskBo input) {
-                    return TaskBo.to(input);
-                };
-            };
-    public static final ModelObjectUtils.Transformer<Task, TaskBo> toTaskBo =
-            new ModelObjectUtils.Transformer<Task, TaskBo>() {
-                public TaskBo transform(Task input) {
-                    return TaskBo.from(input);
-                };
-            };
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(TASK).build();
 
+    public static final ModelObjectUtils.Transformer<TaskBo, Task> toTask = new ModelObjectUtils.Transformer<TaskBo, Task>() {
+
+        public Task transform(TaskBo input) {
+            return TaskBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<Task, TaskBo> toTaskBo = new ModelObjectUtils.Transformer<Task, TaskBo>() {
+
+        public TaskBo transform(Task input) {
+            return TaskBo.from(input);
+        }
+
+        ;
+    };
+
+    @PortableSequenceGenerator(name = "TK_TASK_S")
+    @GeneratedValue(generator = "TK_TASK_S")
+    @Id
+    @Column(name = "TK_TASK_ID", length = 60)
     private String tkTaskId;
+
+    @Column(name = "TASK")
     private Long task;
+
+    @Column(name = "WORK_AREA")
     private Long workArea;
+
+    @Column(name = "DESCR", nullable = false, length = 30)
     private String description;
+
+    @Column(name = "ADMIN_DESCR", nullable = false, length = 30)
     private String administrativeDescription;
-    
+
+    @Transient
     private WorkAreaBo workAreaObj;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(TASK, this.getTask())		
-				.build();
-	}
-    
-	public String getTkTaskId() {
-		return tkTaskId;
-	}
 
-	public void setTkTaskId(String tkTaskId) {
-		this.tkTaskId = tkTaskId;
-	}
-	
-	public Long getTask() {
-		return task;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(TASK, this.getTask()).build();
+    }
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
+    public String getTkTaskId() {
+        return tkTaskId;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public void setTkTaskId(String tkTaskId) {
+        this.tkTaskId = tkTaskId;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public Long getTask() {
+        return task;
+    }
+
+    public void setTask(Long task) {
+        this.task = task;
+    }
+
+    public Long getWorkArea() {
+        return workArea;
+    }
+
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
     public String getDescription() {
-    	return description;
+        return description;
     }
 
     public void setDescription(String description) {
-    	this.description = description;
+        this.description = description;
     }
-    
+
     public String getAdministrativeDescription() {
-    	return administrativeDescription;
+        return administrativeDescription;
     }
 
     public void setAdministrativeDescription(String administrativeDescription) {
-    	this.administrativeDescription = administrativeDescription;
+        this.administrativeDescription = administrativeDescription;
     }
 
-	public WorkAreaBo getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public WorkAreaBo getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return workArea + "_" + task;
-	}
+    @Override
+    public String getUniqueKey() {
+        return workArea + "_" + task;
+    }
 
-	@Override
-	public String getId() {
-		return getTkTaskId();
-	}
+    @Override
+    public String getId() {
+        return getTkTaskId();
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkTaskId(id);
-	}
+    @Override
+    public void setId(String id) {
+        setTkTaskId(id);
+    }
 
     public static TaskBo from(Task im) {
         if (im == null) {
             return null;
         }
         TaskBo task = new TaskBo();
-
         task.setTkTaskId(im.getTkTaskId());
         task.setTask(im.getTask());
         task.setDescription(im.getDescription());
         task.setWorkArea(im.getWorkArea());
         task.setDescription(im.getDescription());
         task.setAdministrativeDescription(im.getAdministrativeDescription());
-
         task.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         task.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -152,7 +172,6 @@ public class TaskBo extends HrBusinessObject implements TaskContract {
         task.setUserPrincipalId(im.getUserPrincipalId());
         task.setVersionNumber(im.getVersionNumber());
         task.setObjectId(im.getObjectId());
-
         return task;
     }
 
@@ -160,8 +179,6 @@ public class TaskBo extends HrBusinessObject implements TaskContract {
         if (bo == null) {
             return null;
         }
-
         return Task.Builder.create(bo).build();
     }
-
 }

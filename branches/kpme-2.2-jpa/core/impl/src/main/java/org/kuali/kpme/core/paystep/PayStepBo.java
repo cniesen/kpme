@@ -15,8 +15,14 @@
  */
 package org.kuali.kpme.core.paystep;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.kuali.kpme.core.api.paystep.PayStep;
@@ -24,220 +30,232 @@ import org.kuali.kpme.core.api.paystep.PayStepContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PAY_STEP_T")
 public class PayStepBo extends HrBusinessObject implements Comparable, PayStepContract {
 
-	static class KeyFields {
-		private static final String PAY_STEP = "payStep";
-	}
+    static class KeyFields {
 
-	/*
+        private static final String PAY_STEP = "payStep";
+    }
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPayStepBo, PayStepBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PayStepBo, PayStep> toImmutable =
-			new ModelObjectUtils.Transformer<PayStepBo, PayStep>() {
-		public PayStep transform(PayStepBo input) {
-			return PayStepBo.to(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PayStepBo, PayStep> toImmutable = new ModelObjectUtils.Transformer<PayStepBo, PayStep>() {
 
-	/*
+        public PayStep transform(PayStepBo input) {
+            return PayStepBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPayStep, PayStepBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PayStep, PayStepBo> toBo =
-			new ModelObjectUtils.Transformer<PayStep, PayStepBo>() {
-		public PayStepBo transform(PayStep input) {
-			return PayStepBo.from(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PayStep, PayStepBo> toBo = new ModelObjectUtils.Transformer<PayStep, PayStepBo>() {
 
-	private static final Logger LOG = Logger.getLogger(PayStepBo.class);
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-			.add(KeyFields.PAY_STEP)
-			.build();
+        public PayStepBo transform(PayStep input) {
+            return PayStepBo.from(input);
+        }
 
-	private static final long serialVersionUID = 1L;
+        ;
+    };
 
-	private String pmPayStepId;
-	private String payStep;
-	private String salaryGroup;
-	private String payGrade;
-	private int stepNumber;
-	private BigDecimal compRate;
-	private int serviceAmount;
-	private String serviceUnit;
+    private static final Logger LOG = Logger.getLogger(PayStepBo.class);
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return  new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.PAY_STEP, this.getPayStep())
-				.build();
-	}
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.PAY_STEP).build();
 
-	@Override
-	public boolean isActive() {
-		return super.isActive();
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void setActive(boolean active) {
-		super.setActive(active);
-	}
+    @PortableSequenceGenerator(name = "PM_PAY_STEP_S")
+    @GeneratedValue(generator = "PM_PAY_STEP_S")
+    @Id
+    @Column(name = "PM_PAY_STEP_ID", length = 60)
+    private String pmPayStepId;
 
-	@Override
-	public String getObjectId() {
-		return super.getObjectId();
-	}
+    @Column(name = "PAY_STEP", nullable = false, length = 10)
+    private String payStep;
 
-	@Override
-	public Long getVersionNumber() {
-		return super.getVersionNumber();
-	}
+    @Column(name = "SALARY_GROUP", nullable = false, length = 10)
+    private String salaryGroup;
 
-	@Override
-	public int compareTo(Object o) {
-		if(o instanceof PayStepBo) {
-			PayStepBo s = (PayStepBo) o;
-			if(StringUtils.equals(s.salaryGroup,salaryGroup)
-					&& StringUtils.equals(s.payGrade,payGrade)) {
+    @Column(name = "PAY_GRADE", nullable = false, length = 20)
+    private String payGrade;
 
-				Integer otherServiceTime = 0;
-				if(StringUtils.equals(s.serviceUnit,HrConstants.SERVICE_TIME_YEAR))
-					otherServiceTime = s.getServiceAmount() * 12;
-				else
-					otherServiceTime = s.getServiceAmount();
+    @Column(name = "STEP_NUM")
+    private int stepNumber;
 
-				Integer thisServiceTime = 0;
-				if(StringUtils.equals(serviceUnit, HrConstants.SERVICE_TIME_YEAR))
-					thisServiceTime = serviceAmount * 12;
-				else
-					thisServiceTime = serviceAmount;
+    @Column(name = "COMP_RATE")
+    private BigDecimal compRate;
 
-				return otherServiceTime.compareTo(thisServiceTime);
-			}
-			else 
-				//	throw new IllegalArgumentException("pay step must be within the same salary group and pay grade");
-				LOG.error("pay step must be within the same salary group and pay grade");
-		}
+    @Column(name = "SERVICE_AMOUNT")
+    private int serviceAmount;
 
-		return 0;
-	}
+    @Column(name = "SERVICE_UNIT", length = 5)
+    private String serviceUnit;
 
-	public String getPayStep() {
-		return payStep;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.PAY_STEP, this.getPayStep()).build();
+    }
 
-	public void setPayStep(String payStep) {
-		this.payStep = payStep;
-	}
+    @Override
+    public boolean isActive() {
+        return super.isActive();
+    }
 
-	public String getSalaryGroup() {
-		return salaryGroup;
-	}
+    @Override
+    public void setActive(boolean active) {
+        super.setActive(active);
+    }
 
-	public void setSalaryGroup(String salaryGroup) {
-		this.salaryGroup = salaryGroup;
-	}
+    @Override
+    public String getObjectId() {
+        return super.getObjectId();
+    }
 
-	public String getPayGrade() {
-		return payGrade;
-	}
+    @Override
+    public Long getVersionNumber() {
+        return super.getVersionNumber();
+    }
 
-	public void setPayGrade(String payGrade) {
-		this.payGrade = payGrade;
-	}
+    @Override
+    public int compareTo(Object o) {
+        if (o instanceof PayStepBo) {
+            PayStepBo s = (PayStepBo) o;
+            if (StringUtils.equals(s.salaryGroup, salaryGroup) && StringUtils.equals(s.payGrade, payGrade)) {
+                Integer otherServiceTime = 0;
+                if (StringUtils.equals(s.serviceUnit, HrConstants.SERVICE_TIME_YEAR))
+                    otherServiceTime = s.getServiceAmount() * 12;
+                else
+                    otherServiceTime = s.getServiceAmount();
+                Integer thisServiceTime = 0;
+                if (StringUtils.equals(serviceUnit, HrConstants.SERVICE_TIME_YEAR))
+                    thisServiceTime = serviceAmount * 12;
+                else
+                    thisServiceTime = serviceAmount;
+                return otherServiceTime.compareTo(thisServiceTime);
+            } else
+                //	throw new IllegalArgumentException("pay step must be within the same salary group and pay grade");  
+                LOG.error("pay step must be within the same salary group and pay grade");
+        }
+        return 0;
+    }
 
-	public int getStepNumber() {
-		return stepNumber;
-	}
+    public String getPayStep() {
+        return payStep;
+    }
 
-	public void setStepNumber(int stepNumber) {
-		this.stepNumber = stepNumber;
-	}
+    public void setPayStep(String payStep) {
+        this.payStep = payStep;
+    }
 
-	public BigDecimal getCompRate() {
-		return compRate;
-	}
+    public String getSalaryGroup() {
+        return salaryGroup;
+    }
 
-	public void setCompRate(BigDecimal compRate) {
-		this.compRate = compRate;
-	}
+    public void setSalaryGroup(String salaryGroup) {
+        this.salaryGroup = salaryGroup;
+    }
 
-	public int getServiceAmount() {
-		return serviceAmount;
-	}
+    public String getPayGrade() {
+        return payGrade;
+    }
 
-	public void setServiceAmount(int serviceInterval) {
-		this.serviceAmount = serviceInterval;
-	}
+    public void setPayGrade(String payGrade) {
+        this.payGrade = payGrade;
+    }
 
-	public String getServiceUnit() {
-		return serviceUnit;
-	}
+    public int getStepNumber() {
+        return stepNumber;
+    }
 
-	public void setServiceUnit(String serviceUnit) {
-		this.serviceUnit = serviceUnit;
-	}
+    public void setStepNumber(int stepNumber) {
+        this.stepNumber = stepNumber;
+    }
 
-	@Override
-	public String getId() {
-		return pmPayStepId;
-	}
+    public BigDecimal getCompRate() {
+        return compRate;
+    }
 
-	@Override
-	public void setId(String id) {
-		pmPayStepId = id;
-	}
+    public void setCompRate(BigDecimal compRate) {
+        this.compRate = compRate;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return getPmPayStepId();
-	}
+    public int getServiceAmount() {
+        return serviceAmount;
+    }
 
-	public String getPmPayStepId() {
-		return pmPayStepId;
-	}
+    public void setServiceAmount(int serviceInterval) {
+        this.serviceAmount = serviceInterval;
+    }
 
-	public void setPmPayStepId(String pmPayStepId) {
-		this.pmPayStepId = pmPayStepId;
-	}
+    public String getServiceUnit() {
+        return serviceUnit;
+    }
 
-	public static PayStepBo from(PayStep im) {
-		if (im == null) {
-			return null;
-		}
-		PayStepBo ps = new PayStepBo();
-		ps.setPmPayStepId(im.getPmPayStepId());
-		ps.setPayStep(im.getPayStep());
-		ps.setSalaryGroup(im.getSalaryGroup());
-		ps.setPayGrade(im.getPayGrade());
-		ps.setStepNumber(im.getStepNumber());
-		ps.setCompRate(im.getCompRate());
-		ps.setServiceAmount(im.getServiceAmount());
-		ps.setServiceUnit(im.getServiceUnit());
+    public void setServiceUnit(String serviceUnit) {
+        this.serviceUnit = serviceUnit;
+    }
 
-		// finally copy over the common fields into ps from im
-		copyCommonFields(ps, im);
+    @Override
+    public String getId() {
+        return pmPayStepId;
+    }
 
-		return ps;
-	}
+    @Override
+    public void setId(String id) {
+        pmPayStepId = id;
+    }
 
-	public static PayStep to(PayStepBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PayStep.Builder.create(bo).build();
-	}
+    @Override
+    protected String getUniqueKey() {
+        return getPmPayStepId();
+    }
+
+    public String getPmPayStepId() {
+        return pmPayStepId;
+    }
+
+    public void setPmPayStepId(String pmPayStepId) {
+        this.pmPayStepId = pmPayStepId;
+    }
+
+    public static PayStepBo from(PayStep im) {
+        if (im == null) {
+            return null;
+        }
+        PayStepBo ps = new PayStepBo();
+        ps.setPmPayStepId(im.getPmPayStepId());
+        ps.setPayStep(im.getPayStep());
+        ps.setSalaryGroup(im.getSalaryGroup());
+        ps.setPayGrade(im.getPayGrade());
+        ps.setStepNumber(im.getStepNumber());
+        ps.setCompRate(im.getCompRate());
+        ps.setServiceAmount(im.getServiceAmount());
+        ps.setServiceUnit(im.getServiceUnit());
+        // finally copy over the common fields into ps from im  
+        copyCommonFields(ps, im);
+        return ps;
+    }
+
+    public static PayStep to(PayStepBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PayStep.Builder.create(bo).build();
+    }
 }

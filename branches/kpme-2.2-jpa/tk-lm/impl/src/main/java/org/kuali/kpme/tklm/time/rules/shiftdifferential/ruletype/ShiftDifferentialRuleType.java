@@ -15,91 +15,107 @@
  */
 package org.kuali.kpme.tklm.time.rules.shiftdifferential.ruletype;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.namespace.QName;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.rules.shiftdifferential.ruletype.ShiftDifferentialRuleTypeContract;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.kuali.kpme.tklm.time.rules.shiftdifferential.service.ShiftTypeService;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.rice.core.api.resourceloader.GlobalResourceLoader;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import javax.xml.namespace.QName;
+@Entity
+@Table(name = "TK_SHIFT_DIFFERENTIAL_RL_TYP_T")
+public class ShiftDifferentialRuleType extends HrBusinessObject implements ShiftDifferentialRuleTypeContract {
 
-public class ShiftDifferentialRuleType extends HrBusinessObject implements ShiftDifferentialRuleTypeContract{
-	
-	static class KeyFields {
-    	private static final String NAME = "name";
+    static class KeyFields {
+
+        private static final String NAME = "name";
     }
-	private static final long serialVersionUID = 1L;
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ShiftDifferentialRuleType";
-	
-	private String tkShiftDiffRuleTypeId;
-	private String namespace;
-	private String name;
 
+    private static final long serialVersionUID = 1L;
+
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ShiftDifferentialRuleType";
+
+    @PortableSequenceGenerator(name = "TK_SHIFT_DIFFERENTIAL_RL_TYP_S")
+    @GeneratedValue(generator = "TK_SHIFT_DIFFERENTIAL_RL_TYP_S")
+    @Id
+    @Column(name = "TK_SHIFT_DIFF_RL_TYP_ID", length = 60)
+    private String tkShiftDiffRuleTypeId;
+
+    @Transient
+    private String namespace;
+
+    @Column(name = "TYP_NM", length = 60)
+    private String name;
+
+    @Column(name = "SERVICE_NM", length = 100)
     private String serviceName;
 
+    @Transient
     private transient ShiftTypeService shiftTypeService;
-	
-	public String getTkShiftDiffRuleTypeId() {
-		return tkShiftDiffRuleTypeId;
-	}
 
-	public void setTkShiftDiffRuleTypeId(String tkShiftDiffRuleTypeId) {
-		this.tkShiftDiffRuleTypeId = tkShiftDiffRuleTypeId;
-	}
+    public String getTkShiftDiffRuleTypeId() {
+        return tkShiftDiffRuleTypeId;
+    }
 
-	public String getNamespace() {
-		return namespace;
-	}
+    public void setTkShiftDiffRuleTypeId(String tkShiftDiffRuleTypeId) {
+        this.tkShiftDiffRuleTypeId = tkShiftDiffRuleTypeId;
+    }
 
-	public void setNamespace(String namespace) {
-		this.namespace = namespace;
-	}
+    public String getNamespace() {
+        return namespace;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public String getServiceName() {
-		return serviceName;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
+    public String getServiceName() {
+        return serviceName;
+    }
 
-	 @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.NAME, this.getName())
-				.build();
-	}
+    public void setServiceName(String serviceName) {
+        this.serviceName = serviceName;
+    }
 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.NAME)
-            .build();
-	
-	@Override
-	public String getId() {
-		return getTkShiftDiffRuleTypeId();
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.NAME, this.getName()).build();
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkShiftDiffRuleTypeId(id);
-	}
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.NAME).build();
 
-	@Override
-	protected String getUniqueKey() {
-		return getName();
-	}
+    @Override
+    public String getId() {
+        return getTkShiftDiffRuleTypeId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setTkShiftDiffRuleTypeId(id);
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getName();
+    }
 
     public void setShiftTypeService(ShiftTypeService shiftTypeService) {
         this.shiftTypeService = shiftTypeService;
@@ -118,7 +134,5 @@ public class ShiftDifferentialRuleType extends HrBusinessObject implements Shift
             }
         }
         return shiftTypeService;
-
     }
-
 }

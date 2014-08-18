@@ -15,29 +15,43 @@
  */
 package org.kuali.kpme.pm.pstnqlfctnvl;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.pm.api.pstnqlfctnvl.PositionQualificationValueContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "PM_PSTN_QLFCTN_VL_T")
 public class PositionQualificationValue extends PersistableBusinessObjectBase implements PositionQualificationValueContract {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String pmPstnQlfctnVlId;
-	private String vlName;
-	
-	public String getVlName() {
-		return vlName;
-	}
-	public void setVlName(String vlName) {
-		this.vlName = vlName;
-	}
-	public String getPmPstnQlfctnVlId() {
-		return pmPstnQlfctnVlId;
-	}
-	public void setPmPstnQlfctnVlId(String pmPstnQlfctnVlId) {
-		this.pmPstnQlfctnVlId = pmPstnQlfctnVlId;
-	}
-	
-	
-	
+    @PortableSequenceGenerator(name = "PM_PSTN_QLFCTN_VL_S")
+    @GeneratedValue(generator = "PM_PSTN_QLFCTN_VL_S")
+    @Id
+    @Column(name = "PM_PSTN_QLFCTN_VL_ID", length = 60)
+    private String pmPstnQlfctnVlId;
+
+    @Column(name = "VL_NM", nullable = false, length = 20)
+    private String vlName;
+
+    public String getVlName() {
+        return vlName;
+    }
+
+    public void setVlName(String vlName) {
+        this.vlName = vlName;
+    }
+
+    public String getPmPstnQlfctnVlId() {
+        return pmPstnQlfctnVlId;
+    }
+
+    public void setPmPstnQlfctnVlId(String pmPstnQlfctnVlId) {
+        this.pmPstnQlfctnVlId = pmPstnQlfctnVlId;
+    }
 }

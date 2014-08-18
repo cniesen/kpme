@@ -54,7 +54,7 @@ public class DepartmentLookupableImpl  extends KpmeHrGroupKeyedBusinessObjectLoo
     protected Collection<?> executeSearch(Map<String, String> searchCriteria, List<String> wildcardAsLiteralSearchCriteria, boolean bounded, Integer searchResultsLimit) {
 
             String userPrincipalId = GlobalVariables.getUserSession().getPrincipalId();
-		 List<DepartmentBo> results = (List<DepartmentBo>) super.executeSearch(searchCriteria, wildcardAsLiteralSearchCriteria, bounded, searchResultsLimit);
+		    List<DepartmentBo> results = (List<DepartmentBo>) super.executeSearch(searchCriteria, wildcardAsLiteralSearchCriteria, bounded, searchResultsLimit);
 	        List<DepartmentBo> filteredResults = filterLookupDepartments(results, userPrincipalId);
 	        return filteredResults;
 	}

@@ -15,10 +15,18 @@
  */
 package org.kuali.kpme.core.job;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.job.Job;
@@ -39,251 +47,284 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "HR_JOB_T")
 public class JobBo extends HrKeyedBusinessObject implements JobContract {
-	static class KeyFields {
-		private static final String JOB_NUMBER = "jobNumber";
-		private static final String PRINCIPAL_ID = "principalId";
-		//private static final String GROUP_KEY_CODE = "groupKeyCode";
-	}
-	private static final long serialVersionUID = 1369595897637935064L;	
-	//KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(KeyFields.PRINCIPAL_ID)
-	            .add(KeyFields.JOB_NUMBER)
-	            //.add(KeyFields.GROUP_KEY_CODE)
-	            .build();
-	
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Job";
-	
-    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
-            .add(JobBo.CACHE_NAME)
-            .add(AssignmentBo.CACHE_NAME)
-            .add(CalendarBlockPermissions.CACHE_NAME)
-            .add(RoleMember.Cache.NAME)
-            .build();
-	
-	//private String location;
-	private String hrPayType;
-	private String payGrade;
-	private BigDecimal standardHours;
-	private String hrJobId;
-	private String principalId;
-	private String firstName;
-	private String lastName;
-	private String principalName;
-	private Long jobNumber;
-	private String dept;
-	private String hrSalGroup;
-	private Boolean primaryIndicator;
-	private KualiDecimal compRate = new KualiDecimal(0);
-	private String positionNumber;
-    private BigDecimal fte = new BigDecimal(0); //kpme1465, chen
+
+    static class KeyFields {
+
+        private static final String JOB_NUMBER = "jobNumber";
+
+        private static final String PRINCIPAL_ID = "principalId";
+    }
+
+    private static final long serialVersionUID = 1369595897637935064L;
+
+    //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.PRINCIPAL_ID).add(KeyFields.JOB_NUMBER).build();
+
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Job";
+
+    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>().add(JobBo.CACHE_NAME).add(AssignmentBo.CACHE_NAME).add(CalendarBlockPermissions.CACHE_NAME).add(RoleMember.Cache.NAME).build();
+
+    //private String location;  
+    @Column(name = "HR_PAYTYPE", nullable = false, length = 5)
+    private String hrPayType;
+
+    @Column(name = "PAY_GRADE", nullable = false, length = 27)
+    private String payGrade;
+
+    @Column(name = "STD_HOURS", nullable = false, length = 27)
+    private BigDecimal standardHours;
+
+    @PortableSequenceGenerator(name = "HR_JOB_S")
+    @GeneratedValue(generator = "HR_JOB_S")
+    @Id
+    @Column(name = "HR_JOB_ID", length = 60)
+    private String hrJobId;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
+
+    @Transient
+    private String firstName;
+
+    @Transient
+    private String lastName;
+
+    @Transient
+    private String principalName;
+
+    @Column(name = "JOB_NUMBER", nullable = false)
+    private Long jobNumber;
+
+    @Column(name = "DEPT", nullable = false, length = 21)
+    private String dept;
+
+    @Column(name = "HR_SAL_GROUP", nullable = false, length = 10)
+    private String hrSalGroup;
+
+    @Column(name = "PRIMARY_INDICATOR", nullable = false, length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private Boolean primaryIndicator;
+
+    @Column(name = "COMP_RATE", nullable = false, length = 27)
+    private KualiDecimal compRate = new KualiDecimal(0);
+
+    @Column(name = "POSITION_NBR", length = 20)
+    private String positionNumber;
+
+    @Transient
+    private BigDecimal fte = new BigDecimal(0);
+
+    //kpme1465, chen  
+    @Column(name = "FLSA_STATUS", length = 15)
     private String flsaStatus;
-	
-	private boolean eligibleForLeave;
-	
-	private transient Person principal;
-	private transient DepartmentBo deptObj;
-	private PayTypeBo payTypeObj;
-	//private transient LocationBo locationObj;
+
+    @Column(name = "ELIGIBLE_FOR_LEAVE", nullable = false, length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean eligibleForLeave;
+
+    @Transient
+    private transient Person principal;
+
+    @Transient
+    private transient DepartmentBo deptObj;
+
+    @Transient
+    private PayTypeBo payTypeObj;
+
+    //private transient LocationBo locationObj;  
+    @Transient
     private transient PayGradeBo payGradeObj;
+
+    @Transient
     private transient SalaryGroupBo salaryGroupObj;
+
+    @Transient
     private transient PositionBaseBo positionObj;
-    
+
     @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.PRINCIPAL_ID, this.getPrincipalId())
-				.put(KeyFields.JOB_NUMBER, this.getJobNumber())
-				//.put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-				.build();
-	}
-    
-    
-	public String getFlsaStatus() {
-		return flsaStatus;
-	}
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.PRINCIPAL_ID, this.getPrincipalId()).put(KeyFields.JOB_NUMBER, this.getJobNumber()).build();
+    }
 
-	public void setFlsaStatus(String flsaStatus) {
-		this.flsaStatus = flsaStatus;
-	}
+    public String getFlsaStatus() {
+        return flsaStatus;
+    }
 
-	public BigDecimal getFte() {
-		if ( this.standardHours != null ) {
-			return this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
-		} else {
-			return fte;
-		}
-	}
+    public void setFlsaStatus(String flsaStatus) {
+        this.flsaStatus = flsaStatus;
+    }
 
-	public void setFte() {
-		if ( this.standardHours != null ) {
-			this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
-		} else {
-			this.fte = new BigDecimal(0).setScale(2);
-		}
-	}
-	
-	public String getPayGrade() {
-		return payGrade;
-	}
+    public BigDecimal getFte() {
+        if (this.standardHours != null) {
+            return this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
+        } else {
+            return fte;
+        }
+    }
 
-	public void setPayGrade(String payGrade) {
-		this.payGrade = payGrade;
-	}
+    public void setFte() {
+        if (this.standardHours != null) {
+            this.fte = this.standardHours.divide(new BigDecimal(40)).setScale(2, RoundingMode.HALF_EVEN);
+        } else {
+            this.fte = new BigDecimal(0).setScale(2);
+        }
+    }
 
-	public BigDecimal getStandardHours() {
-		return standardHours;
-	}
+    public String getPayGrade() {
+        return payGrade;
+    }
 
-	public void setStandardHours(BigDecimal standardHours) {
-		this.standardHours = standardHours;
-	}
+    public void setPayGrade(String payGrade) {
+        this.payGrade = payGrade;
+    }
 
-	public String getPrincipalId() {
-		return principalId;
-	}
+    public BigDecimal getStandardHours() {
+        return standardHours;
+    }
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
-	
-	public String getFirstName() {
-		return firstName;
-	}
+    public void setStandardHours(BigDecimal standardHours) {
+        this.standardHours = standardHours;
+    }
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public String getLastName() {
-		return lastName;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
+    public String getFirstName() {
+        return firstName;
+    }
 
-	public String getName() {
-		if (principal == null) {
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getName() {
+        if (principal == null) {
             principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
-	    }
-	    return (principal != null) ? principal.getName() : "";
-	}
+        }
+        return (principal != null) ? principal.getName() : "";
+    }
 
-	public String getPrincipalName() {
-		if(principalName == null && !this.getPrincipalId().isEmpty()) {
-			EntityNamePrincipalName aPerson = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(getPrincipalId());
-			if (aPerson != null && aPerson.getDefaultName() != null) {
+    public String getPrincipalName() {
+        if (principalName == null && !this.getPrincipalId().isEmpty()) {
+            EntityNamePrincipalName aPerson = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(getPrincipalId());
+            if (aPerson != null && aPerson.getDefaultName() != null) {
                 setPrincipalName(aPerson.getDefaultName().getCompositeName());
             }
-		}
-		return principalName;
-	}
+        }
+        return principalName;
+    }
 
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
-	}
+    public void setPrincipalName(String principalName) {
+        this.principalName = principalName;
+    }
 
-	public Long getJobNumber() {
-		return jobNumber;
-	}
+    public Long getJobNumber() {
+        return jobNumber;
+    }
 
-	public void setJobNumber(Long jobNumber) {
-		this.jobNumber = jobNumber;
-	}
-	
-	public String getHrPayType() {
-		return hrPayType;
-	}
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
+    }
 
-	public void setHrPayType(String hrPayType) {
-		this.hrPayType = hrPayType;
-	}
+    public String getHrPayType() {
+        return hrPayType;
+    }
 
-	public String getHrJobId() {
-		return hrJobId;
-	}
+    public void setHrPayType(String hrPayType) {
+        this.hrPayType = hrPayType;
+    }
 
-	public void setHrJobId(String hrJobId) {
-		this.hrJobId = hrJobId;
-	}
+    public String getHrJobId() {
+        return hrJobId;
+    }
 
-	public String getDept() {
-		return dept;
-	}
+    public void setHrJobId(String hrJobId) {
+        this.hrJobId = hrJobId;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public String getDept() {
+        return dept;
+    }
 
-	public String getHrSalGroup() {
-		return hrSalGroup;
-	}
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
-	public void setHrSalGroup(String hrSalGroup) {
-		this.hrSalGroup = hrSalGroup;
-	}
+    public String getHrSalGroup() {
+        return hrSalGroup;
+    }
 
+    public void setHrSalGroup(String hrSalGroup) {
+        this.hrSalGroup = hrSalGroup;
+    }
 
-	public KualiDecimal getCompRate() {
-		return compRate;
-	}
+    public KualiDecimal getCompRate() {
+        return compRate;
+    }
 
-
-	public void setCompRate(KualiDecimal compRate) {
+    public void setCompRate(KualiDecimal compRate) {
         this.compRate = compRate;
-	}
+    }
 
-	public DepartmentBo getDeptObj() {
-		if(deptObj == null) {
-			this.setDeptObj(DepartmentBo.from(HrServiceLocator.getDepartmentService().getDepartment(dept, groupKeyCode, getEffectiveLocalDate())));
-		}
-		return deptObj;
-	}
+    public DepartmentBo getDeptObj() {
+        if (deptObj == null) {
+            this.setDeptObj(DepartmentBo.from(HrServiceLocator.getDepartmentService().getDepartment(dept, groupKeyCode, getEffectiveLocalDate())));
+        }
+        return deptObj;
+    }
 
+    public void setDeptObj(DepartmentBo deptObj) {
+        this.deptObj = deptObj;
+    }
 
-	public void setDeptObj(DepartmentBo deptObj) {
-		this.deptObj = deptObj;
-	}
+    public PayTypeBo getPayTypeObj() {
+        return payTypeObj;
+    }
 
+    public void setPayTypeObj(PayTypeBo payTypeObj) {
+        this.payTypeObj = payTypeObj;
+    }
 
-	public PayTypeBo getPayTypeObj() {
-		return payTypeObj;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
 
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
 
-	public void setPayTypeObj(PayTypeBo payTypeObj) {
-		this.payTypeObj = payTypeObj;
-	}
-
-
-	public Person getPrincipal() {
-		return principal;
-	}
-
-
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
-
-
-	public void setPrimaryIndicator(Boolean primaryIndicator) {
-		this.primaryIndicator = primaryIndicator;
-	}
+    public void setPrimaryIndicator(Boolean primaryIndicator) {
+        this.primaryIndicator = primaryIndicator;
+    }
 
     public Boolean getPrimaryIndicator() {
         return primaryIndicator;
     }
-	public Boolean isPrimaryJob() {
-		return primaryIndicator;
-	}
 
-	/*
+    public Boolean isPrimaryJob() {
+        return primaryIndicator;
+    }
+
+    /*
 	public LocationBo getLocationObj() {
         if (locationObj == null) {
             this.setLocationObj(LocationBo.from(HrServiceLocator.getLocationService().getLocation(location,getEffectiveLocalDate())));
@@ -294,81 +335,77 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 	public void setLocationObj(LocationBo locationObj) {
 		this.locationObj = locationObj;
 	}*/
-
-	public PayGradeBo getPayGradeObj() {
-		return payGradeObj;
-	}
-
-	public void setPayGradeObj(PayGradeBo payGradeObj) {
-		this.payGradeObj = payGradeObj;
-	}
-
-	public SalaryGroupBo getSalaryGroupObj() {
-		return salaryGroupObj;
-	}
-
-	public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
-		this.salaryGroupObj = salaryGroupObj;
-	}
-
-	public void setPositionNumber(String positionNumber) {
-		this.positionNumber = positionNumber;
-	}
-
-	public String getPositionNumber() {
-		return positionNumber;
-	}
-
-	public void setPositionObj(PositionBaseBo positionObj) {
-		this.positionObj = positionObj;
-	}
-
-	public PositionBaseBo getPositionObj() {
-        if (positionObj == null) {
-            this.setPositionObj(PositionBaseBo.from((PositionBase)HrServiceLocator.getPositionService().getPosition(positionNumber, getEffectiveLocalDate())));
-        }
-        return positionObj;
-
+    public PayGradeBo getPayGradeObj() {
+        return payGradeObj;
     }
 
-	@Override
-	public String getUniqueKey() {
-		return getPrincipalId() + "_" + getJobNumber();
-	}
+    public void setPayGradeObj(PayGradeBo payGradeObj) {
+        this.payGradeObj = payGradeObj;
+    }
 
-	@Override
-	public String getId() {
-		return getHrJobId();
-	}
+    public SalaryGroupBo getSalaryGroupObj() {
+        return salaryGroupObj;
+    }
 
-	@Override
-	public void setId(String id) {
-		setHrJobId(id);
-	}
-	public boolean isEligibleForLeave() {
-		return eligibleForLeave;
-	}
+    public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
+        this.salaryGroupObj = salaryGroupObj;
+    }
 
-	public void setEligibleForLeave(boolean eligibleForLeave) {
-		this.eligibleForLeave = eligibleForLeave;
-	}
+    public void setPositionNumber(String positionNumber) {
+        this.positionNumber = positionNumber;
+    }
+
+    public String getPositionNumber() {
+        return positionNumber;
+    }
+
+    public void setPositionObj(PositionBaseBo positionObj) {
+        this.positionObj = positionObj;
+    }
+
+    public PositionBaseBo getPositionObj() {
+        if (positionObj == null) {
+            this.setPositionObj(PositionBaseBo.from((PositionBase) HrServiceLocator.getPositionService().getPosition(positionNumber, getEffectiveLocalDate())));
+        }
+        return positionObj;
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return getPrincipalId() + "_" + getJobNumber();
+    }
+
+    @Override
+    public String getId() {
+        return getHrJobId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setHrJobId(id);
+    }
+
+    public boolean isEligibleForLeave() {
+        return eligibleForLeave;
+    }
+
+    public void setEligibleForLeave(boolean eligibleForLeave) {
+        this.eligibleForLeave = eligibleForLeave;
+    }
 
     public static JobBo from(Job im) {
         if (im == null) {
             return null;
         }
         JobBo job = new JobBo();
-
-        //job.setLocation(im.getLocation());
+        //job.setLocation(im.getLocation());  
         job.setHrPayType(im.getHrPayType());
         job.setPayGrade(im.getPayGrade());
         job.setStandardHours(im.getStandardHours());
         job.setHrJobId(im.getHrJobId());
         job.setPrincipalId(im.getPrincipalId());
-        
         job.setGroupKeyCode(im.getGroupKeyCode());
         job.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
-        
         job.setFirstName(im.getFirstName());
         job.setLastName(im.getLastName());
         job.setPrincipalName(im.getPrincipalName());
@@ -381,7 +418,6 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         job.setFte();
         job.setFlsaStatus(im.getFlsaStatus());
         job.setPayGrade(im.getPayGrade());
-        
         job.setEligibleForLeave(im.isEligibleForLeave());
         if (im.getPayTypeObj() != null) {
             job.setPayTypeObj(PayTypeBo.from(im.getPayTypeObj()));
@@ -390,8 +426,6 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
                 job.setPayTypeObj(PayTypeBo.from(HrServiceLocator.getPayTypeService().getPayType(im.getHrPayType(), im.getEffectiveLocalDate())));
             }
         }
-
-
         job.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         job.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -400,7 +434,6 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         job.setUserPrincipalId(im.getUserPrincipalId());
         job.setVersionNumber(im.getVersionNumber());
         job.setObjectId(im.getObjectId());
-
         return job;
     }
 
@@ -408,7 +441,6 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         if (bo == null) {
             return null;
         }
-
         return Job.Builder.create(bo).build();
     }
 }

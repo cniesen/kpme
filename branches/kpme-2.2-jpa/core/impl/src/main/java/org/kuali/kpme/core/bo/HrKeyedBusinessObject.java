@@ -21,19 +21,31 @@ import org.kuali.kpme.core.institution.InstitutionBo;
 import org.kuali.kpme.core.location.LocationBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
+import javax.persistence.Column;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Transient;
+
+@MappedSuperclass
 public abstract class HrKeyedBusinessObject extends HrBusinessObject implements HrKeyedBusinessObjectContract {
 
 	private static final long serialVersionUID = -4676316817255855400L;
-	
+
+    @Column(name = "GRP_KEY_CD", nullable = true)
 	protected String groupKeyCode;
+
+    @Transient
 	protected transient HrGroupKeyBo groupKey;
 	
 	//purely for lookup criteria
+    @Transient
     protected transient String locationId;
+    @Transient
 	protected transient String institutionCode;
 	
 	// purely for KNS lookup criteria
+    @Transient
 	protected transient InstitutionBo institutionObj;
+    @Transient
 	protected transient LocationBo locationObj;
 	
 	@Override

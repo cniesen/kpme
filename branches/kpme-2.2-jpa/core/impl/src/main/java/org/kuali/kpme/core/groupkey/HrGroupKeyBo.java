@@ -15,9 +15,15 @@
  */
 package org.kuali.kpme.core.groupkey;
 
-
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.groupkey.HrGroupKey;
 import org.kuali.kpme.core.api.groupkey.HrGroupKeyContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
@@ -25,36 +31,52 @@ import org.kuali.kpme.core.institution.InstitutionBo;
 import org.kuali.kpme.core.location.LocationBo;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.location.api.campus.Campus;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "HR_GRP_KEY_T")
 public class HrGroupKeyBo extends HrBusinessObject implements HrGroupKeyContract {
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(Elements.GROUP_KEY_CODE)
-            .build();
-    
-    // KPME-3378
-    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
-            .add(HrGroupKeyBo.CACHE_NAME)
-            .build();
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "HrGroupKey";
-	
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(Elements.GROUP_KEY_CODE).build();
+
+    // KPME-3378 
+    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>().add(HrGroupKeyBo.CACHE_NAME).build();
+
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "HrGroupKey";
+
     private static final long serialVersionUID = 4566214396709772458L;
+
+    @PortableSequenceGenerator(name = "HR_GRP_KEY_S")
+    @GeneratedValue(generator = "HR_GRP_KEY_S")
+    @Id
+    @Column(name = "ID", nullable = false, length = 60)
     private String id;
+
+    @Column(name = "GRP_KEY_CD", nullable = false, length = 30)
     private String groupKeyCode;
+
+    @Column(name = "INSTITUTION", nullable = false, length = 15)
     private String institutionCode;
+
+    @Column(name = "DESCR", length = 255)
     private String description;
 
+    @Column(name = "LOCATION", length = 20)
     private String locationId;
+
+    @Column(name = "CAMPUS_CD", length = 10)
     private String campusCode;
 
+    @Transient
     private LocationBo location;
+
+    @Transient
     private Campus campus;
+
+    @Transient
     private InstitutionBo institution;
 
-    
     /*
 	 * convert immutable to bo
 	 * 
@@ -62,34 +84,34 @@ public class HrGroupKeyBo extends HrBusinessObject implements HrGroupKeyContract
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfHrGroupKey, HrGroupKeyBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<HrGroupKey, HrGroupKeyBo> toBo =
-		new ModelObjectUtils.Transformer<HrGroupKey, HrGroupKeyBo>() {
-			public HrGroupKeyBo transform(HrGroupKey input) {
-				return HrGroupKeyBo.from(input);
-			};
-		};
+    public static final ModelObjectUtils.Transformer<HrGroupKey, HrGroupKeyBo> toBo = new ModelObjectUtils.Transformer<HrGroupKey, HrGroupKeyBo>() {
 
-	/*
+        public HrGroupKeyBo transform(HrGroupKey input) {
+            return HrGroupKeyBo.from(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfHrGroupKeyBo, HrGroupKeyBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<HrGroupKeyBo, HrGroupKey> toImmutable =
-		new ModelObjectUtils.Transformer<HrGroupKeyBo, HrGroupKey>() {
-			public HrGroupKey transform(HrGroupKeyBo input) {
-				return HrGroupKeyBo.to(input);
-			};
-		};
-		
-		
+    public static final ModelObjectUtils.Transformer<HrGroupKeyBo, HrGroupKey> toImmutable = new ModelObjectUtils.Transformer<HrGroupKeyBo, HrGroupKey>() {
+
+        public HrGroupKey transform(HrGroupKeyBo input) {
+            return HrGroupKeyBo.to(input);
+        }
+
+        ;
+    };
 
     @Override
     public Map<String, Object> getBusinessKeyValuesMap() {
-        return new ImmutableMap.Builder<String, Object>()
-                .put(Elements.GROUP_KEY_CODE, this.getGroupKeyCode())
-                .build();
+        return new ImmutableMap.Builder<String, Object>().put(Elements.GROUP_KEY_CODE, this.getGroupKeyCode()).build();
     }
 
     @Override
@@ -151,7 +173,6 @@ public class HrGroupKeyBo extends HrBusinessObject implements HrGroupKeyContract
         this.campusCode = campusCode;
     }
 
-
     public LocationBo getLocation() {
         return location;
     }
@@ -187,13 +208,10 @@ public class HrGroupKeyBo extends HrBusinessObject implements HrGroupKeyContract
         hgk.setDescription(im.getDescription());
         hgk.setLocationId(im.getLocationId());
         hgk.setCampusCode(im.getCampusCode());
-
         hgk.setLocation(im.getLocation() == null ? null : LocationBo.from(im.getLocation()));
         hgk.setCampus(im.getCampus());
         hgk.setInstitution(im.getInstitution() == null ? null : InstitutionBo.from(im.getInstitution()));
-        
         copyCommonFields(hgk, im);
-
         return hgk;
     }
 
@@ -201,13 +219,11 @@ public class HrGroupKeyBo extends HrBusinessObject implements HrGroupKeyContract
         if (bo == null) {
             return null;
         }
-
         return HrGroupKey.Builder.create(bo).build();
     }
 
     static class Elements {
-        final static String GROUP_KEY_CODE = "groupKeyCode";
+
+        static final String GROUP_KEY_CODE = "groupKeyCode";
     }
-
-
 }

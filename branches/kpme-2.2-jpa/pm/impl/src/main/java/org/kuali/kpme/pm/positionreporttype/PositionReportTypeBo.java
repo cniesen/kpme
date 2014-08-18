@@ -15,124 +15,136 @@
  */
 package org.kuali.kpme.pm.positionreporttype;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.pm.api.positionreporttype.PositionReportType;
 import org.kuali.kpme.pm.api.positionreporttype.PositionReportTypeContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_RPT_TYP_T")
 public class PositionReportTypeBo extends HrKeyedBusinessObject implements PositionReportTypeContract {
-	private static final String POSITION_REPORT_TYPE = "positionReportType";
 
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		     .add(POSITION_REPORT_TYPE)
-		     .build();
+    private static final String POSITION_REPORT_TYPE = "positionReportType";
 
-	private static final long serialVersionUID = 1L;
-	
-	private String pmPositionReportTypeId;
-	private String positionReportType;
-	private String description;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_TYPE, this.getPositionReportType())
-				.build();
-	}
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(POSITION_REPORT_TYPE).build();
 
-	/*
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "PM_PSTN_RPT_TYP_S")
+    @GeneratedValue(generator = "PM_PSTN_RPT_TYP_S")
+    @Id
+    @Column(name = "PM_PSTN_RPT_TYP_ID", length = 60)
+    private String pmPositionReportTypeId;
+
+    @Column(name = "PSTN_RPT_TYP", nullable = false, length = 50)
+    private String positionReportType;
+
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(POSITION_REPORT_TYPE, this.getPositionReportType()).build();
+    }
+
+    /*
 		 * convert bo to immutable
 		 *
 		 * Can be used with ModelObjectUtils:
 		 *
 		 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportTypeBo, PositionReportTypeBo.toImmutable);
 		 */
-		public static final ModelObjectUtils.Transformer<PositionReportTypeBo, PositionReportType> toImmutable =
-				new ModelObjectUtils.Transformer<PositionReportTypeBo, PositionReportType>() {
-			public PositionReportType transform(PositionReportTypeBo input) {
-				return PositionReportTypeBo.to(input);
-			};
-		};
-	
-		/*
+    public static final ModelObjectUtils.Transformer<PositionReportTypeBo, PositionReportType> toImmutable = new ModelObjectUtils.Transformer<PositionReportTypeBo, PositionReportType>() {
+
+        public PositionReportType transform(PositionReportTypeBo input) {
+            return PositionReportTypeBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 		 * convert immutable to bo
 		 * 
 		 * Can be used with ModelObjectUtils:
 		 * 
 		 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportType, PositionReportTypeBo.toBo);
 		 */
-		public static final ModelObjectUtils.Transformer<PositionReportType, PositionReportTypeBo> toBo =
-				new ModelObjectUtils.Transformer<PositionReportType, PositionReportTypeBo>() {
-			public PositionReportTypeBo transform(PositionReportType input) {
-				return PositionReportTypeBo.from(input);
-			};
-		};
-	
-	@Override
-	public String getId() {
-		return getPmPositionReportTypeId();
-	}
+    public static final ModelObjectUtils.Transformer<PositionReportType, PositionReportTypeBo> toBo = new ModelObjectUtils.Transformer<PositionReportType, PositionReportTypeBo>() {
 
-	@Override
-	public void setId(String id) {
-		setPmPositionReportTypeId(id);
-	}
+        public PositionReportTypeBo transform(PositionReportType input) {
+            return PositionReportTypeBo.from(input);
+        }
 
-	@Override
-	protected String getUniqueKey() {
-		return getPositionReportType() + "_" + getGroupKeyCode();
-	}
+        ;
+    };
 
-	public String getPositionReportType() {
-		return positionReportType;
-	}
+    @Override
+    public String getId() {
+        return getPmPositionReportTypeId();
+    }
 
-	public void setPositionReportType(String positionReportType) {
-		this.positionReportType = positionReportType;
-	}
+    @Override
+    public void setId(String id) {
+        setPmPositionReportTypeId(id);
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return getPositionReportType() + "_" + getGroupKeyCode();
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getPositionReportType() {
+        return positionReportType;
+    }
 
-	public String getPmPositionReportTypeId() {
-		return pmPositionReportTypeId;
-	}
+    public void setPositionReportType(String positionReportType) {
+        this.positionReportType = positionReportType;
+    }
 
-	public void setPmPositionReportTypeId(String pmPositionReportTypeId) {
-		this.pmPositionReportTypeId = pmPositionReportTypeId;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public static PositionReportTypeBo from(PositionReportType im) {
-		if (im == null) {
-			return null;
-		}
-		PositionReportTypeBo prt = new PositionReportTypeBo();
-		
-		prt.setPmPositionReportTypeId(im.getPmPositionReportTypeId());
-		prt.setPositionReportType(im.getPositionReportType());
-		prt.setDescription(im.getDescription());
-        
-		// finally copy over the common fields into prt from im
-		copyCommonFields(prt, im);
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-		return prt;
-	} 
+    public String getPmPositionReportTypeId() {
+        return pmPositionReportTypeId;
+    }
 
-	public static PositionReportType to(PositionReportTypeBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionReportType.Builder.create(bo).build();
-	}
+    public void setPmPositionReportTypeId(String pmPositionReportTypeId) {
+        this.pmPositionReportTypeId = pmPositionReportTypeId;
+    }
 
+    public static PositionReportTypeBo from(PositionReportType im) {
+        if (im == null) {
+            return null;
+        }
+        PositionReportTypeBo prt = new PositionReportTypeBo();
+        prt.setPmPositionReportTypeId(im.getPmPositionReportTypeId());
+        prt.setPositionReportType(im.getPositionReportType());
+        prt.setDescription(im.getDescription());
+        // finally copy over the common fields into prt from im  
+        copyCommonFields(prt, im);
+        return prt;
+    }
+
+    public static PositionReportType to(PositionReportTypeBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionReportType.Builder.create(bo).build();
+    }
 }

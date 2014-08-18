@@ -36,7 +36,11 @@
         <constructor-arg value="kpmeCore" />
     </bean>
 
-    <util:list id="jpaPackagesToScan"/>
+    <util:list id="jpaPackagesToScan">
+        <value>org.kuali.kpme.core.api.data.jpa</value>
+        <value>org.kuali.kpme.core.bo</value>
+        <value>org.kuali.kpme.core.department</value>
+    </util:list>
 
     <util:list id="managedClassNames">
         <!-- If you add an entity to this list, please also remember to add it to META-INF/persistence-weaving.xml -->
@@ -45,6 +49,12 @@
     <util:list id="additionalMetadataProviders" />
     <util:list id="springMetadataFileLocations" />
 
+    <alias name="sharedEntityManager" alias="kpme.entityManager"/>
     <import resource="classpath:org/kuali/rice/krad/config/KRADSpringBeans-jpa-common.xml" />
 
+
+    <bean id="effectiveDao" class="org.kuali.kpme.core.bo.dao.EffectiveObjectDaoJpaImpl"
+          p:lookupCriteriaGenerator-ref="lookupCriteriaGenerator"
+          p:entityManager-ref="kpme.entityManager"
+            />
 </beans>

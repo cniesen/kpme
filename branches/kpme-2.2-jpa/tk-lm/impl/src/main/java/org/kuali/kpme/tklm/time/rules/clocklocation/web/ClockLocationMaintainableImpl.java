@@ -103,10 +103,10 @@ public class ClockLocationMaintainableImpl extends HrBusinessObjectMaintainableI
     }
 		
 	@Override
-	public void saveBusinessObject() {
+	public void saveDataObject() {
 		ClockLocationRule clr = (ClockLocationRule) this.getBusinessObject();
 		List<ClockLocationRuleIpAddress> ips = clr.getIpAddresses();
-		super.saveBusinessObject();
+		super.saveDataObject();
 		if(!ips.isEmpty()) {
 			for(ClockLocationRuleIpAddress ipAddress : ips) {
 				ipAddress.setTkClockLocationRuleId(clr.getTkClockLocationRuleId());

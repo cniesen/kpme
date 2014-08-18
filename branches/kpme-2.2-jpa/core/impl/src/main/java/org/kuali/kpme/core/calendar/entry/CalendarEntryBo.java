@@ -15,6 +15,16 @@
  */
 package org.kuali.kpme.core.calendar.entry;
 
+import java.sql.Time;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -27,40 +37,78 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.sql.Time;
-import java.util.Date;
-
+@Entity
+@Table(name = "HR_CALENDAR_ENTRIES_T")
 public class CalendarEntryBo extends PersistableBusinessObjectBase implements CalendarEntryContract {
 
-	private static final long serialVersionUID = -1977756526579659122L;
-    public static final ModelObjectUtils.Transformer<CalendarEntryBo, CalendarEntry> toCalendarEntry =
-            new ModelObjectUtils.Transformer<CalendarEntryBo, CalendarEntry>() {
-                public CalendarEntry transform(CalendarEntryBo input) {
-                    return CalendarEntryBo.to(input);
-                };
-            };
-    public static final ModelObjectUtils.Transformer<CalendarEntry, CalendarEntryBo> toCalendarEntryBo =
-            new ModelObjectUtils.Transformer<CalendarEntry, CalendarEntryBo>() {
-                public CalendarEntryBo transform(CalendarEntry input) {
-                    return CalendarEntryBo.from(input);
-                };
-            };
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "CalendarEntry";
+    private static final long serialVersionUID = -1977756526579659122L;
 
+    public static final ModelObjectUtils.Transformer<CalendarEntryBo, CalendarEntry> toCalendarEntry = new ModelObjectUtils.Transformer<CalendarEntryBo, CalendarEntry>() {
+
+        public CalendarEntry transform(CalendarEntryBo input) {
+            return CalendarEntryBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<CalendarEntry, CalendarEntryBo> toCalendarEntryBo = new ModelObjectUtils.Transformer<CalendarEntry, CalendarEntryBo>() {
+
+        public CalendarEntryBo transform(CalendarEntry input) {
+            return CalendarEntryBo.from(input);
+        }
+
+        ;
+    };
+
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "CalendarEntry";
+
+    @PortableSequenceGenerator(name = "HR_CALENDAR_ENTRIES_S")
+    @GeneratedValue(generator = "HR_CALENDAR_ENTRIES_S")
+    @Id
+    @Column(name = "HR_CALENDAR_ENTRY_ID", length = 60)
     private String hrCalendarEntryId;
+
+    @Column(name = "HR_CALENDAR_ID", length = 60)
     private String hrCalendarId;
+
+    @Column(name = "CALENDAR_NAME", length = 30)
     private String calendarName;
 
+    @Column(name = "BEGIN_PERIOD_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date beginPeriodDateTime;
+
+    @Column(name = "END_PERIOD_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date endPeriodDateTime;
+
+    @Column(name = "BATCH_INITIATE_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date batchInitiateDateTime;
+
+    @Column(name = "BATCH_END_PAY_PERIOD_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date batchEndPayPeriodDateTime;
+
+    @Column(name = "BATCH_EMPLOYEE_APPROVAL_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date batchEmployeeApprovalDateTime;
+
+    @Column(name = "BATCH_SUPERVISOR_APPROVAL_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date batchSupervisorApprovalDateTime;
+
+    @Column(name = "BATCH_PAYROLL_APPROVAL_DATE")
+    @Temporal(TemporalType.TIMESTAMP)
     private Date batchPayrollApprovalDateTime;
 
+    @Transient
     private transient String calendarTypes;
+
+    @Transient
     private transient CalendarBo calendarObj;
 
     public String getHrCalendarId() {
@@ -78,20 +126,20 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     }
 
     public String getHrCalendarEntryId() {
-		return hrCalendarEntryId;
-	}
+        return hrCalendarEntryId;
+    }
 
-	public void setHrCalendarEntryId(String hrCalendarEntryId) {
-		this.hrCalendarEntryId = hrCalendarEntryId;
-	}
+    public void setHrCalendarEntryId(String hrCalendarEntryId) {
+        this.hrCalendarEntryId = hrCalendarEntryId;
+    }
 
-	public String getCalendarName() {
-		return calendarName;
-	}
+    public String getCalendarName() {
+        return calendarName;
+    }
 
-	public void setCalendarName(String calendarName) {
-		this.calendarName = calendarName;
-	}
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
 
     public Date getBeginPeriodDateTime() {
         return beginPeriodDateTime;
@@ -102,28 +150,28 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     }
 
     public Date getBeginPeriodDate() {
-    	return beginPeriodDateTime != null ? LocalDate.fromDateFields(beginPeriodDateTime).toDate() : null;
+        return beginPeriodDateTime != null ? LocalDate.fromDateFields(beginPeriodDateTime).toDate() : null;
     }
-    
+
     public void setBeginPeriodDate(Date beginPeriodDate) {
-    	LocalDate localDate = beginPeriodDate != null ? LocalDate.fromDateFields(beginPeriodDate) : null;
-    	LocalTime localTime = beginPeriodDateTime != null ? LocalTime.fromDateFields(beginPeriodDateTime) : LocalTime.MIDNIGHT;
-    	beginPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = beginPeriodDate != null ? LocalDate.fromDateFields(beginPeriodDate) : null;
+        LocalTime localTime = beginPeriodDateTime != null ? LocalTime.fromDateFields(beginPeriodDateTime) : LocalTime.MIDNIGHT;
+        beginPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
-    
+
     public Time getBeginPeriodTime() {
-    	return beginPeriodDateTime != null ? new Time(beginPeriodDateTime.getTime()) : null;
+        return beginPeriodDateTime != null ? new Time(beginPeriodDateTime.getTime()) : null;
     }
-    
+
     public void setBeginPeriodTime(Time beginPeriodTime) {
-    	LocalDate localDate = beginPeriodDateTime != null ? LocalDate.fromDateFields(beginPeriodDateTime) : LocalDate.now();
-    	LocalTime localTime = beginPeriodTime != null ? LocalTime.fromDateFields(beginPeriodTime) : null;
-    	beginPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = beginPeriodDateTime != null ? LocalDate.fromDateFields(beginPeriodDateTime) : LocalDate.now();
+        LocalTime localTime = beginPeriodTime != null ? LocalTime.fromDateFields(beginPeriodTime) : null;
+        beginPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getBeginPeriodFullDateTime() {
-    	return beginPeriodDateTime != null ? new DateTime(beginPeriodDateTime) : null;
+        return beginPeriodDateTime != null ? new DateTime(beginPeriodDateTime) : null;
     }
 
     @Override
@@ -135,9 +183,9 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     public LocalDateTime getBeginPeriodLocalDateTime() {
         return getBeginPeriodFullDateTime() != null ? getBeginPeriodFullDateTime().toLocalDateTime() : null;
     }
-    
+
     public void setBeginPeriodFullDateTime(DateTime beginPeriodFullDateTime) {
-    	beginPeriodDateTime = beginPeriodFullDateTime != null ? beginPeriodFullDateTime.toDate() : null;
+        beginPeriodDateTime = beginPeriodFullDateTime != null ? beginPeriodFullDateTime.toDate() : null;
     }
 
     public Date getEndPeriodDateTime() {
@@ -149,37 +197,37 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     }
 
     public Date getEndPeriodDate() {
-    	return endPeriodDateTime != null ? LocalDate.fromDateFields(endPeriodDateTime).toDate() : null;
+        return endPeriodDateTime != null ? LocalDate.fromDateFields(endPeriodDateTime).toDate() : null;
     }
-    
+
     public void setEndPeriodDate(Date endPeriodDate) {
-    	LocalDate localDate = endPeriodDate != null ? LocalDate.fromDateFields(endPeriodDate) : null;
-    	LocalTime localTime = endPeriodDateTime != null ? LocalTime.fromDateFields(endPeriodDateTime) : LocalTime.MIDNIGHT;
-    	endPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = endPeriodDate != null ? LocalDate.fromDateFields(endPeriodDate) : null;
+        LocalTime localTime = endPeriodDateTime != null ? LocalTime.fromDateFields(endPeriodDateTime) : LocalTime.MIDNIGHT;
+        endPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getEndPeriodTime() {
-    	return endPeriodDateTime != null ? new Time(endPeriodDateTime.getTime()) : null;
+        return endPeriodDateTime != null ? new Time(endPeriodDateTime.getTime()) : null;
     }
-    
+
     public void setEndPeriodTime(Time endPeriodTime) {
-    	LocalDate localDate = endPeriodDateTime != null ? LocalDate.fromDateFields(endPeriodDateTime) : LocalDate.now();
-    	LocalTime localTime = endPeriodTime != null ? LocalTime.fromDateFields(endPeriodTime) : null;
-    	endPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = endPeriodDateTime != null ? LocalDate.fromDateFields(endPeriodDateTime) : LocalDate.now();
+        LocalTime localTime = endPeriodTime != null ? LocalTime.fromDateFields(endPeriodTime) : null;
+        endPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getEndPeriodFullDateTime() {
-    	return endPeriodDateTime != null ? new DateTime(endPeriodDateTime) : null;
+        return endPeriodDateTime != null ? new DateTime(endPeriodDateTime) : null;
     }
 
     @Override
     public LocalTime getEndPeriodLocalTime() {
         return endPeriodDateTime != null ? new LocalTime(endPeriodDateTime.getTime()) : null;
     }
-    
+
     public void setEndPeriodFullDateTime(DateTime endPeriodFullDateTime) {
-    	endPeriodDateTime = endPeriodFullDateTime != null ? endPeriodFullDateTime.toDate() : null;
+        endPeriodDateTime = endPeriodFullDateTime != null ? endPeriodFullDateTime.toDate() : null;
     }
 
     @Override
@@ -190,23 +238,23 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     public Date getBatchInitiateDateTime() {
         return batchInitiateDateTime;
     }
-    
+
     public void setBatchInitiateDateTime(Date batchInitiateDateTime) {
         this.batchInitiateDateTime = batchInitiateDateTime;
     }
-    
+
     public Date getBatchInitiateDate() {
-    	return batchInitiateDateTime != null ? LocalDate.fromDateFields(batchInitiateDateTime).toDate() : null;
+        return batchInitiateDateTime != null ? LocalDate.fromDateFields(batchInitiateDateTime).toDate() : null;
     }
-    
+
     public void setBatchInitiateDate(Date batchInitiateDate) {
-    	LocalDate localDate = batchInitiateDate != null ? LocalDate.fromDateFields(batchInitiateDate) : null;
-    	LocalTime localTime = batchInitiateDateTime != null ? LocalTime.fromDateFields(batchInitiateDateTime) : LocalTime.MIDNIGHT;
-    	batchInitiateDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = batchInitiateDate != null ? LocalDate.fromDateFields(batchInitiateDate) : null;
+        LocalTime localTime = batchInitiateDateTime != null ? LocalTime.fromDateFields(batchInitiateDateTime) : LocalTime.MIDNIGHT;
+        batchInitiateDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getBatchInitiateTime() {
-    	return batchInitiateDateTime != null ? new Time(batchInitiateDateTime.getTime()) : null;
+        return batchInitiateDateTime != null ? new Time(batchInitiateDateTime.getTime()) : null;
     }
 
     @Override
@@ -220,13 +268,13 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     }
 
     public void setBatchInitiateTime(Time batchInitiateTime) {
-    	LocalDate localDate = batchInitiateDateTime != null ? LocalDate.fromDateFields(batchInitiateDateTime) : LocalDate.now();
-    	LocalTime localTime = batchInitiateTime != null ? LocalTime.fromDateFields(batchInitiateTime) : null;
-    	batchInitiateDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = batchInitiateDateTime != null ? LocalDate.fromDateFields(batchInitiateDateTime) : LocalDate.now();
+        LocalTime localTime = batchInitiateTime != null ? LocalTime.fromDateFields(batchInitiateTime) : null;
+        batchInitiateDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     public void setBatchInitiateFullDateTime(DateTime batchInitiateFullDateTime) {
-    	batchInitiateDateTime = batchInitiateFullDateTime != null ? batchInitiateFullDateTime.toDate() : null;
+        batchInitiateDateTime = batchInitiateFullDateTime != null ? batchInitiateFullDateTime.toDate() : null;
     }
 
     public Date getBatchEndPayPeriodDateTime() {
@@ -236,39 +284,39 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     public void setBatchEndPayPeriodDateTime(Date batchEndPayPeriodDateTime) {
         this.batchEndPayPeriodDateTime = batchEndPayPeriodDateTime;
     }
-    
+
     public Date getBatchEndPayPeriodDate() {
-    	return batchEndPayPeriodDateTime != null ? LocalDate.fromDateFields(batchEndPayPeriodDateTime).toDate() : null;
+        return batchEndPayPeriodDateTime != null ? LocalDate.fromDateFields(batchEndPayPeriodDateTime).toDate() : null;
     }
-    
+
     public void setBatchEndPayPeriodDate(Date batchEndPayPeriodDate) {
-    	LocalDate localDate = batchEndPayPeriodDate != null ? LocalDate.fromDateFields(batchEndPayPeriodDate) : null;
-    	LocalTime localTime = batchEndPayPeriodDateTime != null ? LocalTime.fromDateFields(batchEndPayPeriodDateTime) : LocalTime.MIDNIGHT;
-    	batchEndPayPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = batchEndPayPeriodDate != null ? LocalDate.fromDateFields(batchEndPayPeriodDate) : null;
+        LocalTime localTime = batchEndPayPeriodDateTime != null ? LocalTime.fromDateFields(batchEndPayPeriodDateTime) : LocalTime.MIDNIGHT;
+        batchEndPayPeriodDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getBatchEndPayPeriodTime() {
-    	return batchEndPayPeriodDateTime != null ? new Time(batchEndPayPeriodDateTime.getTime()) : null;
+        return batchEndPayPeriodDateTime != null ? new Time(batchEndPayPeriodDateTime.getTime()) : null;
     }
 
     @Override
     public LocalTime getBatchEndPayPeriodLocalTime() {
         return batchEndPayPeriodDateTime != null ? new LocalTime(batchEndPayPeriodDateTime.getTime()) : null;
     }
-    
+
     public void setBatchEndPayPeriodTime(Time batchEndPayPeriodTime) {
-    	LocalDate localDate = batchEndPayPeriodDateTime != null ? LocalDate.fromDateFields(batchEndPayPeriodDateTime) : LocalDate.now();
-    	LocalTime localTime = batchEndPayPeriodTime != null ? LocalTime.fromDateFields(batchEndPayPeriodTime) : null;
-    	batchEndPayPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = batchEndPayPeriodDateTime != null ? LocalDate.fromDateFields(batchEndPayPeriodDateTime) : LocalDate.now();
+        LocalTime localTime = batchEndPayPeriodTime != null ? LocalTime.fromDateFields(batchEndPayPeriodTime) : null;
+        batchEndPayPeriodDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getBatchEndPayPeriodFullDateTime() {
-    	return batchEndPayPeriodDateTime != null ? new DateTime(batchEndPayPeriodDateTime) : null;
+        return batchEndPayPeriodDateTime != null ? new DateTime(batchEndPayPeriodDateTime) : null;
     }
 
     public void setBatchEndPayPeriodFullDateTime(DateTime batchEndPayPeriodFullDateTime) {
-    	batchEndPayPeriodDateTime = batchEndPayPeriodFullDateTime != null ? batchEndPayPeriodFullDateTime.toDate() : null;
+        batchEndPayPeriodDateTime = batchEndPayPeriodFullDateTime != null ? batchEndPayPeriodFullDateTime.toDate() : null;
     }
 
     public Date getBatchEmployeeApprovalDateTime() {
@@ -278,39 +326,39 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     public void setBatchEmployeeApprovalDateTime(Date batchEmployeeApprovalDateTime) {
         this.batchEmployeeApprovalDateTime = batchEmployeeApprovalDateTime;
     }
-    
+
     public Date getBatchEmployeeApprovalDate() {
-    	return batchEmployeeApprovalDateTime != null ? LocalDate.fromDateFields(batchEmployeeApprovalDateTime).toDate() : null;
+        return batchEmployeeApprovalDateTime != null ? LocalDate.fromDateFields(batchEmployeeApprovalDateTime).toDate() : null;
     }
-    
+
     public void setBatchEmployeeApprovalDate(Date batchEmployeeApprovalDate) {
-    	LocalDate localDate = batchEmployeeApprovalDate != null ? LocalDate.fromDateFields(batchEmployeeApprovalDate) : null;
-    	LocalTime localTime = batchEmployeeApprovalDateTime != null ? LocalTime.fromDateFields(batchEmployeeApprovalDateTime) : LocalTime.MIDNIGHT;
-    	batchEmployeeApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = batchEmployeeApprovalDate != null ? LocalDate.fromDateFields(batchEmployeeApprovalDate) : null;
+        LocalTime localTime = batchEmployeeApprovalDateTime != null ? LocalTime.fromDateFields(batchEmployeeApprovalDateTime) : LocalTime.MIDNIGHT;
+        batchEmployeeApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getBatchEmployeeApprovalTime() {
-    	return batchEmployeeApprovalDateTime != null ? new Time(batchEmployeeApprovalDateTime.getTime()) : null;
+        return batchEmployeeApprovalDateTime != null ? new Time(batchEmployeeApprovalDateTime.getTime()) : null;
     }
 
     @Override
     public LocalTime getBatchEmployeeApprovalLocalTime() {
         return batchEmployeeApprovalDateTime != null ? new LocalTime(batchEmployeeApprovalDateTime.getTime()) : null;
     }
-    
+
     public void setBatchEmployeeApprovalTime(Time batchEmployeeApprovalTime) {
-    	LocalDate localDate = batchEmployeeApprovalDateTime != null ? LocalDate.fromDateFields(batchEmployeeApprovalDateTime) : LocalDate.now();
-    	LocalTime localTime = batchEmployeeApprovalTime != null ? LocalTime.fromDateFields(batchEmployeeApprovalTime) : null;
-    	batchEmployeeApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = batchEmployeeApprovalDateTime != null ? LocalDate.fromDateFields(batchEmployeeApprovalDateTime) : LocalDate.now();
+        LocalTime localTime = batchEmployeeApprovalTime != null ? LocalTime.fromDateFields(batchEmployeeApprovalTime) : null;
+        batchEmployeeApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getBatchEmployeeApprovalFullDateTime() {
-    	return batchEmployeeApprovalDateTime != null ? new DateTime(batchEmployeeApprovalDateTime) : null;
+        return batchEmployeeApprovalDateTime != null ? new DateTime(batchEmployeeApprovalDateTime) : null;
     }
 
     public void setBatchEmployeeApprovalFullDateTime(DateTime batchEmployeeApprovalFullDateTime) {
-    	batchEmployeeApprovalDateTime = batchEmployeeApprovalFullDateTime != null ? batchEmployeeApprovalFullDateTime.toDate() : null;
+        batchEmployeeApprovalDateTime = batchEmployeeApprovalFullDateTime != null ? batchEmployeeApprovalFullDateTime.toDate() : null;
     }
 
     public Date getBatchSupervisorApprovalDateTime() {
@@ -320,107 +368,105 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
     public void setBatchSupervisorApprovalDateTime(Date batchSupervisorApprovalDateTime) {
         this.batchSupervisorApprovalDateTime = batchSupervisorApprovalDateTime;
     }
-    
+
     public Date getBatchSupervisorApprovalDate() {
-    	return batchSupervisorApprovalDateTime != null ? LocalDate.fromDateFields(batchSupervisorApprovalDateTime).toDate() : null;
+        return batchSupervisorApprovalDateTime != null ? LocalDate.fromDateFields(batchSupervisorApprovalDateTime).toDate() : null;
     }
-    
+
     public void setBatchSupervisorApprovalDate(Date batchSupervisorApprovalDate) {
-    	LocalDate localDate = batchSupervisorApprovalDate != null ? LocalDate.fromDateFields(batchSupervisorApprovalDate) : null;
-    	LocalTime localTime = batchSupervisorApprovalDateTime != null ? LocalTime.fromDateFields(batchSupervisorApprovalDateTime) : LocalTime.MIDNIGHT;
-    	batchSupervisorApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = batchSupervisorApprovalDate != null ? LocalDate.fromDateFields(batchSupervisorApprovalDate) : null;
+        LocalTime localTime = batchSupervisorApprovalDateTime != null ? LocalTime.fromDateFields(batchSupervisorApprovalDateTime) : LocalTime.MIDNIGHT;
+        batchSupervisorApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getBatchSupervisorApprovalTime() {
-    	return batchSupervisorApprovalDateTime != null ? new Time(batchSupervisorApprovalDateTime.getTime()) : null;
+        return batchSupervisorApprovalDateTime != null ? new Time(batchSupervisorApprovalDateTime.getTime()) : null;
     }
 
     @Override
     public LocalTime getBatchSupervisorApprovalLocalTime() {
         return batchSupervisorApprovalDateTime != null ? new LocalTime(batchSupervisorApprovalDateTime.getTime()) : null;
     }
-    
+
     public void setBatchSupervisorApprovalTime(Time batchSupervisorApprovalTime) {
-    	LocalDate localDate = batchSupervisorApprovalDateTime != null ? LocalDate.fromDateFields(batchSupervisorApprovalDateTime) : LocalDate.now();
-    	LocalTime localTime = batchSupervisorApprovalTime != null ? LocalTime.fromDateFields(batchSupervisorApprovalTime) : null;
-    	batchSupervisorApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = batchSupervisorApprovalDateTime != null ? LocalDate.fromDateFields(batchSupervisorApprovalDateTime) : LocalDate.now();
+        LocalTime localTime = batchSupervisorApprovalTime != null ? LocalTime.fromDateFields(batchSupervisorApprovalTime) : null;
+        batchSupervisorApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getBatchSupervisorApprovalFullDateTime() {
-    	return batchSupervisorApprovalDateTime != null ? new DateTime(batchSupervisorApprovalDateTime) : null;
+        return batchSupervisorApprovalDateTime != null ? new DateTime(batchSupervisorApprovalDateTime) : null;
     }
 
     public void setBatchSupervisorApprovalFullDateTime(DateTime batchSupervisorApprovalFullDateTime) {
-    	batchSupervisorApprovalDateTime = batchSupervisorApprovalFullDateTime != null ? batchSupervisorApprovalFullDateTime.toDate() : null;
+        batchSupervisorApprovalDateTime = batchSupervisorApprovalFullDateTime != null ? batchSupervisorApprovalFullDateTime.toDate() : null;
     }
 
-	public CalendarBo getCalendarObj() {
-		if(calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
-			this.setCalendarObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName())));
-		}		
-		return calendarObj;
-	}
+    public CalendarBo getCalendarObj() {
+        if (calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
+            this.setCalendarObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName())));
+        }
+        return calendarObj;
+    }
 
-	public void setCalendarObj(CalendarBo calendarObj) {
-		this.calendarObj = calendarObj;
-	}
+    public void setCalendarObj(CalendarBo calendarObj) {
+        this.calendarObj = calendarObj;
+    }
 
     public int compareTo(CalendarEntryContract pce) {
         return this.getBeginPeriodFullDateTime().compareTo(pce.getBeginPeriodFullDateTime());
     }
 
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof CalendarEntryBo) {
-			CalendarEntryBo other = (CalendarEntryBo) obj;
-            return this.hrCalendarId.equals(other.hrCalendarId)
-                && this.hrCalendarEntryId.equals(other.hrCalendarEntryId);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CalendarEntryBo) {
+            CalendarEntryBo other = (CalendarEntryBo) obj;
+            return this.hrCalendarId.equals(other.hrCalendarId) && this.hrCalendarEntryId.equals(other.hrCalendarEntryId);
         }
-		return super.equals(obj);
-	}
-
-	public Date getBatchPayrollApprovalDateTime() {
-		return batchPayrollApprovalDateTime;
-	}
-
-	public void setBatchPayrollApprovalDateTime(
-			Date batchPayrollApprovalDateTime) {
-		this.batchPayrollApprovalDateTime = batchPayrollApprovalDateTime;
-	}
-	
-    public Date getBatchPayrollApprovalDate() {
-    	return batchPayrollApprovalDateTime != null ? LocalDate.fromDateFields(batchPayrollApprovalDateTime).toDate() : null;
+        return super.equals(obj);
     }
-    
+
+    public Date getBatchPayrollApprovalDateTime() {
+        return batchPayrollApprovalDateTime;
+    }
+
+    public void setBatchPayrollApprovalDateTime(Date batchPayrollApprovalDateTime) {
+        this.batchPayrollApprovalDateTime = batchPayrollApprovalDateTime;
+    }
+
+    public Date getBatchPayrollApprovalDate() {
+        return batchPayrollApprovalDateTime != null ? LocalDate.fromDateFields(batchPayrollApprovalDateTime).toDate() : null;
+    }
+
     public void setBatchPayrollApprovalDate(Date batchPayrollApprovalDate) {
-    	LocalDate localDate = batchPayrollApprovalDate != null ? LocalDate.fromDateFields(batchPayrollApprovalDate) : null;
-    	LocalTime localTime = batchPayrollApprovalDateTime != null ? LocalTime.fromDateFields(batchPayrollApprovalDateTime) : LocalTime.MIDNIGHT;
-    	batchPayrollApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
+        LocalDate localDate = batchPayrollApprovalDate != null ? LocalDate.fromDateFields(batchPayrollApprovalDate) : null;
+        LocalTime localTime = batchPayrollApprovalDateTime != null ? LocalTime.fromDateFields(batchPayrollApprovalDateTime) : LocalTime.MIDNIGHT;
+        batchPayrollApprovalDateTime = localDate != null ? localDate.toDateTime(localTime).toDate() : null;
     }
 
     public Time getBatchPayrollApprovalTime() {
-    	return batchPayrollApprovalDateTime != null ? new Time(batchPayrollApprovalDateTime.getTime()) : null;
+        return batchPayrollApprovalDateTime != null ? new Time(batchPayrollApprovalDateTime.getTime()) : null;
     }
 
     @Override
     public LocalTime getBatchPayrollApprovalLocalTime() {
         return batchPayrollApprovalDateTime != null ? new LocalTime(batchPayrollApprovalDateTime.getTime()) : null;
     }
-    
+
     public void setBatchPayrollApprovalTime(Time batchPayrollApprovalTime) {
-    	LocalDate localDate = batchPayrollApprovalDateTime != null ? LocalDate.fromDateFields(batchPayrollApprovalDateTime) : LocalDate.now();
-    	LocalTime localTime = batchPayrollApprovalTime != null ? LocalTime.fromDateFields(batchPayrollApprovalTime) : null;
-    	batchPayrollApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
+        LocalDate localDate = batchPayrollApprovalDateTime != null ? LocalDate.fromDateFields(batchPayrollApprovalDateTime) : LocalDate.now();
+        LocalTime localTime = batchPayrollApprovalTime != null ? LocalTime.fromDateFields(batchPayrollApprovalTime) : null;
+        batchPayrollApprovalDateTime = localTime != null ? localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate() : null;
     }
 
     @Override
     public DateTime getBatchPayrollApprovalFullDateTime() {
-    	return batchPayrollApprovalDateTime != null ? new DateTime(batchPayrollApprovalDateTime) : null;
+        return batchPayrollApprovalDateTime != null ? new DateTime(batchPayrollApprovalDateTime) : null;
     }
-    
+
     public void setBatchPayrollApprovalFullDateTime(DateTime batchPayrollApprovalFullDateTime) {
-    	batchPayrollApprovalDateTime = batchPayrollApprovalFullDateTime != null ? batchPayrollApprovalFullDateTime.toDate() : null;
+        batchPayrollApprovalDateTime = batchPayrollApprovalFullDateTime != null ? batchPayrollApprovalFullDateTime.toDate() : null;
     }
 
     public String getCalendarTypes() {
@@ -446,10 +492,8 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
         ce.setBatchEmployeeApprovalDateTime(im.getBatchEmployeeApprovalFullDateTime() == null ? null : im.getBatchEmployeeApprovalFullDateTime().toDate());
         ce.setBatchSupervisorApprovalDateTime(im.getBatchSupervisorApprovalFullDateTime() == null ? null : im.getBatchSupervisorApprovalFullDateTime().toDate());
         ce.setBatchPayrollApprovalDateTime(im.getBatchPayrollApprovalFullDateTime() == null ? null : im.getBatchPayrollApprovalFullDateTime().toDate());
-
         ce.setVersionNumber(im.getVersionNumber());
         ce.setObjectId(im.getObjectId());
-
         return ce;
     }
 
@@ -457,7 +501,6 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
         if (bo == null) {
             return null;
         }
-
         return CalendarEntry.Builder.create(bo).build();
     }
 }

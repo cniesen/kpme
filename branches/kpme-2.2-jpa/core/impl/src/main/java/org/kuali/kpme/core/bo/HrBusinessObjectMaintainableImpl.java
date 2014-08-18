@@ -19,16 +19,21 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.persistence.sessions.CopyGroup;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.bo.dao.EffectiveObjectDao;
 import org.kuali.kpme.core.cache.CacheUtils;
+import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.document.MaintenanceDocument;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
 import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.krad.data.DataObjectService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.ObjectUtils;
 
 public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainableImpl {
     protected static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(HrBusinessObjectMaintainableImpl.class);
@@ -38,10 +43,11 @@ public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainable
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void saveBusinessObject() {
-		HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
+	public void saveDataObject() {
+        HrBusinessObject hrObj = (HrBusinessObject) this.getDataObject();
+
 		if(hrObj.getId()!=null){
-			HrBusinessObject oldHrObj = this.getObjectById(hrObj.getId());
+			HrBusinessObject oldHrObj = (HrBusinessObject)ObjectUtils.deepCopy(this.getObjectById(hrObj.getId()));
 			if(oldHrObj!= null){
 				//if the effective dates are the same do not create a new row just inactivate the old one
 				if(hrObj.getEffectiveDate().equals(oldHrObj.getEffectiveDate())){
@@ -53,17 +59,27 @@ public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainable
 					oldHrObj.setEffectiveDate(hrObj.getEffectiveDate());
 					oldHrObj.setActive(false);
 					oldHrObj.setId(null);
+                    oldHrObj.setVersionNumber(null);
                     customInactiveSaveLogicNewEffective(oldHrObj);
 				}
-                KRADServiceLocatorWeb.getLegacyDataAdapter().save(oldHrObj);
+                KRADServiceLocatorWeb.getLegacyDataAdapter().linkAndSave(oldHrObj);
 			}
 		}
-		hrObj.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        HrBusinessObject newBo = (HrBusinessObject)ObjectUtils.deepCopy(hrObj);
+        newBo.setTimestamp(new Timestamp(System.currentTimeMillis()));
+        newBo.setId(null);
+        newBo.setVersionNumber(null);
 
-		hrObj.setId(null);
 		
-		customSaveLogic(hrObj);
-		KRADServiceLocatorWeb.getLegacyDataAdapter().save(hrObj);
+		customSaveLogic(newBo);
+        //DataObjectService dos = KRADServiceLocator.getDataObjectService();
+        //if (dos.supports(hrObj.getClass())) {
+        //    EffectiveObjectDao effectiveObjectDao = (EffectiveObjectDao)HrServiceLocator.getBean("effectiveDao");
+        //    effectiveObjectDao.cloneAndPersistDataObject(hrObj);
+        //} else {
+
+            KRADServiceLocatorWeb.getLegacyDataAdapter().linkAndSave(newBo);
+        //}
 
         //cache clearing?!?!
         try {
@@ -90,7 +106,7 @@ public abstract class HrBusinessObjectMaintainableImpl extends KualiMaintainable
 
     @Override
     public void prepareForSave() {
-    HrBusinessObject hrObj = (HrBusinessObject) this.getBusinessObject();
-    hrObj.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+        HrBusinessObject hrObj = (HrBusinessObject) this.getDataObject();
+        hrObj.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     }
 }

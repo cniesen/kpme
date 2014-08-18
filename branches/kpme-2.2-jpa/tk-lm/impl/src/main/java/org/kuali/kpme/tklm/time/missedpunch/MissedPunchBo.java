@@ -15,6 +15,16 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch;
 
+import java.sql.Timestamp;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -42,130 +52,187 @@ import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
+@Entity
+@Table(name = "TK_MISSED_PUNCH_T")
 public class MissedPunchBo extends PersistableBusinessObjectBase implements MissedPunchContract {
 
-	private static final long serialVersionUID = 4494739150619504989L;
-    public static final ModelObjectUtils.Transformer<MissedPunchBo, MissedPunch> toMissedPunch =
-            new ModelObjectUtils.Transformer<MissedPunchBo, MissedPunch>() {
-                public MissedPunch transform(MissedPunchBo input) {
-                    return MissedPunchBo.to(input);
-                };
-            };
-    public static final ModelObjectUtils.Transformer<MissedPunch, MissedPunchBo> toMissedPunchBo =
-            new ModelObjectUtils.Transformer<MissedPunch, MissedPunchBo>() {
-                public MissedPunchBo transform(MissedPunch input) {
-                    return MissedPunchBo.from(input);
-                };
-            };
-	private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("hh:mm aa");
-	
-	private String tkMissedPunchId;
-	private String principalId;
-	private String timesheetDocumentId;
-	private Long jobNumber;
-	private Long workArea;
-	private Long task;
-	private Date actionDateTime;
-	private String clockAction;
-	private String tkClockLogId;
-	private Timestamp timestamp;
+    private static final long serialVersionUID = 4494739150619504989L;
+
+    public static final ModelObjectUtils.Transformer<MissedPunchBo, MissedPunch> toMissedPunch = new ModelObjectUtils.Transformer<MissedPunchBo, MissedPunch>() {
+
+        public MissedPunch transform(MissedPunchBo input) {
+            return MissedPunchBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<MissedPunch, MissedPunchBo> toMissedPunchBo = new ModelObjectUtils.Transformer<MissedPunch, MissedPunchBo>() {
+
+        public MissedPunchBo transform(MissedPunch input) {
+            return MissedPunchBo.from(input);
+        }
+
+        ;
+    };
+
+    private static final DateTimeFormatter FORMATTER = DateTimeFormat.forPattern("hh:mm aa");
+
+    @PortableSequenceGenerator(name = "TK_MISSED_PUNCH_S")
+    @GeneratedValue(generator = "TK_MISSED_PUNCH_S")
+    @Id
+    @Column(name = "TK_MISSED_PUNCH_ID", nullable = false, length = 60)
+    private String tkMissedPunchId;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
+
+    @Column(name = "TIMESHEET_DOCUMENT_ID", nullable = false, length = 14)
+    private String timesheetDocumentId;
+
+    @Column(name = "JOB_NUMBER")
+    private Long jobNumber;
+
+    @Column(name = "WORK_AREA")
+    private Long workArea;
+
+    @Column(name = "TASK")
+    private Long task;
+
+    @Column(name = "ACTION_DATE", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date actionDateTime;
+
+    @Column(name = "CLOCK_ACTION", nullable = false, length = 20)
+    private String clockAction;
+
+    @Column(name = "TK_CLOCK_LOG_ID", length = 60)
+    private String tkClockLogId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "TIMESTAMP", nullable = false)
+    private Timestamp timestamp;
+
+    @Column(name = "GRP_KEY_CD", nullable = false, length = 30)
     private String groupKeyCode;
 
+    @Transient
     private transient HrGroupKeyBo groupKey;
-	private transient String principalName;
+
+    @Transient
+    private transient String principalName;
+
+    @Transient
     private transient String personName;
-	private transient JobBo jobObj;
-	private transient WorkAreaBo workAreaObj;
+
+    @Transient
+    private transient JobBo jobObj;
+
+    @Transient
+    private transient WorkAreaBo workAreaObj;
+
+    @Transient
     private transient DepartmentBo departmentObj;
-	private transient TaskBo taskObj;
+
+    @Transient
+    private transient TaskBo taskObj;
+
+    @Transient
     private transient LocalDate localDate;
+
+    @Transient
     private transient LocalTime localTime;
+
+    @Transient
     private transient Person person;
-	
-	private transient boolean isAssignmentReadOnly;
+
+    @Transient
+    private transient boolean isAssignmentReadOnly;
+
+    @Transient
     private transient String note;
+
+    @Transient
     private transient String missedPunchDocId;
+
+    @Transient
     private transient String missedPunchDocStatus;
 
-	public String getTkMissedPunchId() {
-		return tkMissedPunchId;
-	}
+    public String getTkMissedPunchId() {
+        return tkMissedPunchId;
+    }
 
-	public void setTkMissedPunchId(String tkMissedPunchId) {
-		this.tkMissedPunchId = tkMissedPunchId;
-	}
+    public void setTkMissedPunchId(String tkMissedPunchId) {
+        this.tkMissedPunchId = tkMissedPunchId;
+    }
 
-	public String getPrincipalId() {
-		return principalId;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public String getTimesheetDocumentId() {
-		return timesheetDocumentId;
-	}
+    public String getTimesheetDocumentId() {
+        return timesheetDocumentId;
+    }
 
-	public void setTimesheetDocumentId(String timesheetDocumentId) {
-		this.timesheetDocumentId = timesheetDocumentId;
-	}
-	
-	public String getAssignmentKey() {
-		return KpmeUtils.formatAssignmentKey(getGroupKeyCode(), getJobNumber(), getWorkArea(), getTask());
-	}
-	
-	public void setAssignmentKey(String assignmentKey) {
-		AssignmentDescriptionKey assignmentDescriptionKey = AssignmentDescriptionKey.get(assignmentKey);
+    public void setTimesheetDocumentId(String timesheetDocumentId) {
+        this.timesheetDocumentId = timesheetDocumentId;
+    }
 
+    public String getAssignmentKey() {
+        return KpmeUtils.formatAssignmentKey(getGroupKeyCode(), getJobNumber(), getWorkArea(), getTask());
+    }
+
+    public void setAssignmentKey(String assignmentKey) {
+        AssignmentDescriptionKey assignmentDescriptionKey = AssignmentDescriptionKey.get(assignmentKey);
         setGroupKeyCode(assignmentDescriptionKey.getGroupKeyCode());
-		setJobNumber(assignmentDescriptionKey.getJobNumber());
-		setWorkArea(assignmentDescriptionKey.getWorkArea());
-		setTask(assignmentDescriptionKey.getTask());
-	}
-	
-	public String getAssignmentValue() {
-		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getGroupKeyCode(), getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getActionFullDateTime().toLocalDate());
-	}
-	
+        setJobNumber(assignmentDescriptionKey.getJobNumber());
+        setWorkArea(assignmentDescriptionKey.getWorkArea());
+        setTask(assignmentDescriptionKey.getTask());
+    }
+
+    public String getAssignmentValue() {
+        return HrServiceLocator.getAssignmentService().getAssignmentDescription(getGroupKeyCode(), getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getActionFullDateTime().toLocalDate());
+    }
+
     public Date getRelativeEffectiveDate() {
-        if(getActionDate()!=null)
-        	return getActionDate();
-        else 
-        	return new Date();
+        if (getActionDate() != null)
+            return getActionDate();
+        else
+            return new Date();
     }
 
     public void setRelativeEffectiveDate(Date relativeEffectiveDate) {
-        //do nothing
     }
 
-	public Long getJobNumber() {
-		return jobNumber;
-	}
+    public Long getJobNumber() {
+        return jobNumber;
+    }
 
-	public void setJobNumber(Long jobNumber) {
-		this.jobNumber = jobNumber;
-	}
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public Long getTask() {
-		return task;
-	}
+    public Long getTask() {
+        return task;
+    }
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
+    public void setTask(Long task) {
+        this.task = task;
+    }
 
     @Override
     public String getGroupKeyCode() {
@@ -187,148 +254,143 @@ public class MissedPunchBo extends PersistableBusinessObjectBase implements Miss
     public void setGroupKey(HrGroupKeyBo groupKey) {
         this.groupKey = groupKey;
     }
-	
+
     public DateTime getActionFullDateTime() {
-    	return actionDateTime != null ? new DateTime(actionDateTime) : null;
+        return actionDateTime != null ? new DateTime(actionDateTime) : null;
     }
 
     public LocalDate getActionLocalDate() {
         return actionDateTime != null ? new LocalDate(actionDateTime) : null;
     }
-    
+
     public void setActionFullDateTime(DateTime actionFullDateTime) {
-    	this.actionDateTime = actionFullDateTime != null ? actionFullDateTime.toDate() : null;
+        this.actionDateTime = actionFullDateTime != null ? actionFullDateTime.toDate() : null;
     }
 
-	public Date getActionDateTime() {
-		return new Date(actionDateTime.getTime());
-	}
+    public Date getActionDateTime() {
+        return new Date(actionDateTime.getTime());
+    }
 
     public Timestamp getActionDateTimestamp() {
         return new Timestamp(actionDateTime.getTime());
     }
 
-	public void setActionDateTime(Date actionDateTime) {
-		this.actionDateTime = new Date(actionDateTime.getTime());
-	}
-	
-    public Date getActionDate() {
-    	return actionDateTime != null ? LocalDate.fromDateFields(actionDateTime).toDate() : (getLocalDate() != null ? getLocalDate().toDate() : null);
+    public void setActionDateTime(Date actionDateTime) {
+        this.actionDateTime = new Date(actionDateTime.getTime());
     }
-    
+
+    public Date getActionDate() {
+        return actionDateTime != null ? LocalDate.fromDateFields(actionDateTime).toDate() : (getLocalDate() != null ? getLocalDate().toDate() : null);
+    }
+
     public void setActionDate(Date actionDate) {
-    	setLocalDate(actionDate != null ? LocalDate.fromDateFields(actionDate) : null);
-    	//LocalTime localTime = actionDateTime != null ? LocalTime.fromDateFields(actionDateTime) : LocalTime.MIDNIGHT;
-        if (localDate != null
-                && localTime != null) {
-    	    actionDateTime = localDate.toDateTime(localTime).toDate();
+        setLocalDate(actionDate != null ? LocalDate.fromDateFields(actionDate) : null);
+        //LocalTime localTime = actionDateTime != null ? LocalTime.fromDateFields(actionDateTime) : LocalTime.MIDNIGHT; 
+        if (localDate != null && localTime != null) {
+            actionDateTime = localDate.toDateTime(localTime).toDate();
         }
     }
-    
+
     public String getActionTime() {
-    	return actionDateTime != null ? FORMATTER.print(LocalTime.fromDateFields(actionDateTime)) : getLocalTimeString();
+        return actionDateTime != null ? FORMATTER.print(LocalTime.fromDateFields(actionDateTime)) : getLocalTimeString();
     }
-    
+
     public void setActionTime(String actionTime) {
         if (StringUtils.isNotBlank(actionTime)) {
             setLocalTime(actionTime != null ? FORMATTER.parseLocalTime(actionTime) : null);
-            if (localDate != null
-                    && localTime != null) {
+            if (localDate != null && localTime != null) {
                 actionDateTime = localTime.toDateTime(localDate.toDateTimeAtStartOfDay()).toDate();
             }
         }
     }
 
-	public String getClockAction() {
-		return clockAction;
-	}
+    public String getClockAction() {
+        return clockAction;
+    }
 
-	public void setClockAction(String clockAction) {
-		this.clockAction = clockAction;
-	}
+    public void setClockAction(String clockAction) {
+        this.clockAction = clockAction;
+    }
 
-	public String getTkClockLogId() {
-		return tkClockLogId;
-	}
+    public String getTkClockLogId() {
+        return tkClockLogId;
+    }
 
-	public void setTkClockLogId(String tkClockLogId) {
-		this.tkClockLogId = tkClockLogId;
-	}
+    public void setTkClockLogId(String tkClockLogId) {
+        this.tkClockLogId = tkClockLogId;
+    }
 
-	public Timestamp getTimestamp() {
-		return timestamp == null ?  null : new Timestamp(timestamp.getTime());
-	}
+    public Timestamp getTimestamp() {
+        return timestamp == null ? null : new Timestamp(timestamp.getTime());
+    }
 
     public DateTime getCreateTime() {
         return timestamp == null ? null : new DateTime(timestamp.getTime());
     }
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
-	}
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
 
-	public String getPrincipalName() {
-		if (StringUtils.isBlank(principalName) && StringUtils.isNotBlank(principalId)) {
-			Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
+    public String getPrincipalName() {
+        if (StringUtils.isBlank(principalName) && StringUtils.isNotBlank(principalId)) {
+            Principal principal = KimApiServiceLocator.getIdentityService().getPrincipal(principalId);
             principalName = principal != null ? principal.getPrincipalName() : null;
-		}
-		
-		return principalName;
-	}
+        }
+        return principalName;
+    }
 
-	public void setPrincipalName(String principalName) {
-		this.principalName = principalName;
-	}
+    public void setPrincipalName(String principalName) {
+        this.principalName = principalName;
+    }
 
-	public String getPersonName() {
-		if (StringUtils.isBlank(personName) && StringUtils.isNotBlank(principalId)) {
-			EntityNamePrincipalName entityNamePrincipalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
-			if (entityNamePrincipalName != null
-                    && entityNamePrincipalName.getDefaultName() != null) {
+    public String getPersonName() {
+        if (StringUtils.isBlank(personName) && StringUtils.isNotBlank(principalId)) {
+            EntityNamePrincipalName entityNamePrincipalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+            if (entityNamePrincipalName != null && entityNamePrincipalName.getDefaultName() != null) {
                 personName = entityNamePrincipalName.getDefaultName().getCompositeName();
             } else {
                 return "";
             }
-		}
-		
-		return personName;
-	}
+        }
+        return personName;
+    }
 
-	public void setPersonName(String personName) {
-		this.personName = personName;
-	}
+    public void setPersonName(String personName) {
+        this.personName = personName;
+    }
 
-	public JobBo getJobObj() {
-		return jobObj;
-	}
+    public JobBo getJobObj() {
+        return jobObj;
+    }
 
-	public void setJobObj(JobBo jobObj) {
-		this.jobObj = jobObj;
-	}
+    public void setJobObj(JobBo jobObj) {
+        this.jobObj = jobObj;
+    }
 
-	public WorkAreaBo getWorkAreaObj() {
-		return workAreaObj;
-	}
+    public WorkAreaBo getWorkAreaObj() {
+        return workAreaObj;
+    }
 
-	public void setWorkAreaObj(WorkAreaBo workAreaObj) {
-		this.workAreaObj = workAreaObj;
-	}
+    public void setWorkAreaObj(WorkAreaBo workAreaObj) {
+        this.workAreaObj = workAreaObj;
+    }
 
-	public TaskBo getTaskObj() {
-		return taskObj;
-	}
+    public TaskBo getTaskObj() {
+        return taskObj;
+    }
 
-	public void setTaskObj(TaskBo taskObj) {
-		this.taskObj = taskObj;
-	}
-	
-	public boolean isAssignmentReadOnly() {
-		return isAssignmentReadOnly;
-	}
-	
-	public void setAssignmentReadOnly(boolean isAssignmentReadOnly) {
-		this.isAssignmentReadOnly = isAssignmentReadOnly;
-	}
+    public void setTaskObj(TaskBo taskObj) {
+        this.taskObj = taskObj;
+    }
+
+    public boolean isAssignmentReadOnly() {
+        return isAssignmentReadOnly;
+    }
+
+    public void setAssignmentReadOnly(boolean isAssignmentReadOnly) {
+        this.isAssignmentReadOnly = isAssignmentReadOnly;
+    }
 
     public LocalDate getLocalDate() {
         return localDate;
@@ -386,46 +448,42 @@ public class MissedPunchBo extends PersistableBusinessObjectBase implements Miss
         this.note = note;
     }
 
-	public String getMissedPunchDocId() {
-		if(StringUtils.isBlank(missedPunchDocId)) {
-			MissedPunchDocument aDoc = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentByMissedPunchId(this.getTkMissedPunchId());
-			if(aDoc != null) {
-				this.setMissedPunchDocId(aDoc.getDocumentNumber());
-			}
-		}
-		
-		return missedPunchDocId;
-	}
+    public String getMissedPunchDocId() {
+        if (StringUtils.isBlank(missedPunchDocId)) {
+            MissedPunchDocument aDoc = TkServiceLocator.getMissedPunchDocumentService().getMissedPunchDocumentByMissedPunchId(this.getTkMissedPunchId());
+            if (aDoc != null) {
+                this.setMissedPunchDocId(aDoc.getDocumentNumber());
+            }
+        }
+        return missedPunchDocId;
+    }
 
-	public void setMissedPunchDocId(String missedPunchDocId) {
-		this.missedPunchDocId = missedPunchDocId;
-	}
+    public void setMissedPunchDocId(String missedPunchDocId) {
+        this.missedPunchDocId = missedPunchDocId;
+    }
 
-	public String getMissedPunchDocStatus() {
-		if(StringUtils.isBlank(missedPunchDocStatus)) {
+    public String getMissedPunchDocStatus() {
+        if (StringUtils.isBlank(missedPunchDocStatus)) {
             String docId = getMissedPunchDocId();
-			if(StringUtils.isNotEmpty(docId)) {
-				DocumentStatus aStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(docId);
-				if(aStatus != null) {
-					this.setMissedPunchDocStatus(aStatus.getLabel());
-				}
-			}
-		}
-		
-		return missedPunchDocStatus;
-	}
+            if (StringUtils.isNotEmpty(docId)) {
+                DocumentStatus aStatus = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(docId);
+                if (aStatus != null) {
+                    this.setMissedPunchDocStatus(aStatus.getLabel());
+                }
+            }
+        }
+        return missedPunchDocStatus;
+    }
 
-	public void setMissedPunchDocStatus(String missedPunchDocStatus) {
-		this.missedPunchDocStatus = missedPunchDocStatus;
-	}
+    public void setMissedPunchDocStatus(String missedPunchDocStatus) {
+        this.missedPunchDocStatus = missedPunchDocStatus;
+    }
 
     public static MissedPunchBo from(MissedPunch im) {
         if (im == null) {
             return null;
         }
         MissedPunchBo mp = new MissedPunchBo();
-
-
         mp.setTkMissedPunchId(im.getTkMissedPunchId());
         mp.setPrincipalId(im.getPrincipalId());
         mp.setTimesheetDocumentId(im.getTimesheetDocumentId());
@@ -435,20 +493,16 @@ public class MissedPunchBo extends PersistableBusinessObjectBase implements Miss
         mp.setActionDateTime(im.getActionFullDateTime() == null ? null : im.getActionFullDateTime().toDate());
         mp.setClockAction(im.getClockAction());
         mp.setTkClockLogId(im.getTkClockLogId());
-
         mp.setPrincipalName(im.getPrincipalName());
         mp.setPersonName(im.getPersonName());
-
         mp.setGroupKeyCode(im.getGroupKeyCode());
         mp.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
         mp.setAssignmentReadOnly(im.isAssignmentReadOnly());
         mp.setMissedPunchDocId(im.getMissedPunchDocId());
         mp.setMissedPunchDocStatus(im.getMissedPunchDocStatus());
-
         mp.setTimestamp(im.getCreateTime() == null ? null : new Timestamp(im.getCreateTime().getMillis()));
         mp.setVersionNumber(im.getVersionNumber());
         mp.setObjectId(im.getObjectId());
-
         return mp;
     }
 
@@ -456,7 +510,6 @@ public class MissedPunchBo extends PersistableBusinessObjectBase implements Miss
         if (bo == null) {
             return null;
         }
-
         return MissedPunch.Builder.create(bo).build();
     }
 }

@@ -15,11 +15,21 @@
  */
 package org.kuali.kpme.core.accrualcategory;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.accrualcategory.rule.AccrualCategoryRuleBo;
 import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
@@ -28,195 +38,221 @@ import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
 import org.kuali.kpme.core.leaveplan.LeavePlanBo;
 import org.kuali.kpme.core.util.HrConstants;
-
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "LM_ACCRUAL_CATEGORY_T")
 public class AccrualCategoryBo extends HrBusinessObject implements AccrualCategoryContract {
+
     private static final String ACCRUAL_CATEGORY = "accrualCategory";
 
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategory";
-    
-    //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(ACCRUAL_CATEGORY)
-            .build();	
-	private static final long serialVersionUID = 1L;
-	private String lmAccrualCategoryId;
-	private String leavePlan;
-	private String accrualCategory;
-	private String descr;
-	private String accrualEarnInterval;
-	private String proration;
-	private String donation;
-	private String showOnGrid;
-	private String unitOfTime;
-	private String hasRules;
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "AccrualCategory";
+
+    //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(ACCRUAL_CATEGORY).build();
+
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "LM_ACCRUAL_CATEGORY_S")
+    @GeneratedValue(generator = "LM_ACCRUAL_CATEGORY_S")
+    @Id
+    @Column(name = "LM_ACCRUAL_CATEGORY_ID", length = 60)
+    private String lmAccrualCategoryId;
+
+    @Column(name = "LEAVE_PLAN", nullable = false, length = 15)
+    private String leavePlan;
+
+    @Column(name = "ACCRUAL_CATEGORY", nullable = false, length = 15)
+    private String accrualCategory;
+
+    @Column(name = "DESCR", length = 50)
+    private String descr;
+
+    @Column(name = "ACCRUAL_INTERVAL_EARN", nullable = false, length = 1)
+    private String accrualEarnInterval;
+
+    @Column(name = "PRORATION", nullable = false, length = 1)
+    private String proration;
+
+    @Column(name = "DONATION", nullable = false, length = 1)
+    private String donation;
+
+    @Column(name = "SHOW_ON_GRID", nullable = false, length = 1)
+    private String showOnGrid;
+
+    @Column(name = "UNIT_OF_TIME", nullable = false, length = 5)
+    private String unitOfTime;
+
+    @Column(name = "HAS_RULES", nullable = false, length = 1)
+    private String hasRules;
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
     private String earnCode;
+
+    @Transient
     private EarnCodeBo earnCodeObj;
+
+    @Column(name = "MIN_PERCENT_WORKED", nullable = false)
     private BigDecimal minPercentWorked;
 
-	private LeavePlanBo leavePlanObj;
-	private List<AccrualCategoryRuleBo> accrualCategoryRules = new LinkedList<AccrualCategoryRuleBo>();
+    @Transient
+    private LeavePlanBo leavePlanObj;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(ACCRUAL_CATEGORY, this.getAccrualCategory())		
-				.build();
-	}
+    @OneToMany(targetEntity = AccrualCategoryRuleBo.class, orphanRemoval = true, cascade = { CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST })
+    @JoinColumn(name = "LM_ACCRUAL_CATEGORY_ID", referencedColumnName = "LM_ACCRUAL_CATEGORY_ID", insertable = false, updatable = false)
+    private List<AccrualCategoryRuleBo> accrualCategoryRules = new LinkedList<AccrualCategoryRuleBo>();
 
-	public String getHasRules() {
-		return hasRules;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(ACCRUAL_CATEGORY, this.getAccrualCategory()).build();
+    }
 
-	public void setHasRules(String hasRules) {
-		this.hasRules = hasRules;
-	}
-	
-	public BigDecimal getMinPercentWorked() {
-		return minPercentWorked;
-	}
+    public String getHasRules() {
+        return hasRules;
+    }
 
-	public void setMinPercentWorked(BigDecimal minPercentWorked) {
-		this.minPercentWorked = minPercentWorked;
-	}
+    public void setHasRules(String hasRules) {
+        this.hasRules = hasRules;
+    }
 
-	public LeavePlanBo getLeavePlanObj() {
-		return leavePlanObj;
-	}
+    public BigDecimal getMinPercentWorked() {
+        return minPercentWorked;
+    }
 
-	public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
-		this.leavePlanObj = leavePlanObj;
-	}
+    public void setMinPercentWorked(BigDecimal minPercentWorked) {
+        this.minPercentWorked = minPercentWorked;
+    }
 
-	public List<AccrualCategoryRuleBo> getAccrualCategoryRules() {
-		return accrualCategoryRules;
-	}
+    public LeavePlanBo getLeavePlanObj() {
+        return leavePlanObj;
+    }
 
-	public void setAccrualCategoryRules(
-			List<AccrualCategoryRuleBo> accrualCategoryRules) {
-		this.accrualCategoryRules = accrualCategoryRules;
-	}
+    public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
+        this.leavePlanObj = leavePlanObj;
+    }
 
-	public String getLmAccrualCategoryId() {
-		return lmAccrualCategoryId;
-	}
+    public List<AccrualCategoryRuleBo> getAccrualCategoryRules() {
+        return accrualCategoryRules;
+    }
 
-	public void setLmAccrualCategoryId(String lmAccrualCategoryId) {
-		this.lmAccrualCategoryId = lmAccrualCategoryId;
-	}
+    public void setAccrualCategoryRules(List<AccrualCategoryRuleBo> accrualCategoryRules) {
+        this.accrualCategoryRules = accrualCategoryRules;
+    }
 
-	public String getLeavePlan() {
-		return leavePlan;
-	}
+    public String getLmAccrualCategoryId() {
+        return lmAccrualCategoryId;
+    }
 
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
+    public void setLmAccrualCategoryId(String lmAccrualCategoryId) {
+        this.lmAccrualCategoryId = lmAccrualCategoryId;
+    }
 
-	public String getAccrualCategory() {
-		return accrualCategory;
-	}
+    public String getLeavePlan() {
+        return leavePlan;
+    }
 
-	public void setAccrualCategory(String accrualCategory) {
-		this.accrualCategory = accrualCategory;
-	}
+    public void setLeavePlan(String leavePlan) {
+        this.leavePlan = leavePlan;
+    }
 
-	public String getDescr() {
-		return descr;
-	}
+    public String getAccrualCategory() {
+        return accrualCategory;
+    }
 
-	public void setDescr(String descr) {
-		this.descr = descr;
-	}
+    public void setAccrualCategory(String accrualCategory) {
+        this.accrualCategory = accrualCategory;
+    }
 
-	public String getAccrualEarnInterval() {
-		return accrualEarnInterval;
-	}
+    public String getDescr() {
+        return descr;
+    }
 
-	public void setAccrualEarnInterval(String accrualEarnInterval) {
-		this.accrualEarnInterval = accrualEarnInterval;
-	}
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
 
-	public String getProration() {
-		return proration;
-	}
+    public String getAccrualEarnInterval() {
+        return accrualEarnInterval;
+    }
 
-	public void setProration(String proration) {
-		this.proration = proration;
-	}
+    public void setAccrualEarnInterval(String accrualEarnInterval) {
+        this.accrualEarnInterval = accrualEarnInterval;
+    }
 
-	public String getDonation() {
-		return donation;
-	}
+    public String getProration() {
+        return proration;
+    }
 
-	public void setDonation(String donation) {
-		this.donation = donation;
-	}
+    public void setProration(String proration) {
+        this.proration = proration;
+    }
 
-	public String getShowOnGrid() {
-		return showOnGrid;
-	}
+    public String getDonation() {
+        return donation;
+    }
 
-	public void setShowOnGrid(String showOnGrid) {
-		this.showOnGrid = showOnGrid;
-	}
+    public void setDonation(String donation) {
+        this.donation = donation;
+    }
 
-	public String getUnitOfTime() {
-		return unitOfTime;
-	}
+    public String getShowOnGrid() {
+        return showOnGrid;
+    }
 
-	public void setUnitOfTime(String unitOfTime) {
-		this.unitOfTime = unitOfTime;
-	}
+    public void setShowOnGrid(String showOnGrid) {
+        this.showOnGrid = showOnGrid;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return lmAccrualCategoryId;
-	}
+    public String getUnitOfTime() {
+        return unitOfTime;
+    }
 
+    public void setUnitOfTime(String unitOfTime) {
+        this.unitOfTime = unitOfTime;
+    }
 
+    @Override
+    protected String getUniqueKey() {
+        return lmAccrualCategoryId;
+    }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public String getEarnCode() {
+        return earnCode;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
     @Override
     public DateTime getCreateTime() {
         return getTimestamp() != null ? new DateTime(getTimestamp().getTime()) : null;
     }
-	@Override
-	public void setId(String id) {
-		setLmAccrualCategoryId(id);
-	}
 
-	@Override
-	public String getId() {
-		return getLmAccrualCategoryId();
-	}
+    @Override
+    public void setId(String id) {
+        setLmAccrualCategoryId(id);
+    }
+
+    @Override
+    public String getId() {
+        return getLmAccrualCategoryId();
+    }
 
     public static AccrualCategoryBo from(AccrualCategory im) {
         if (im == null) {
             return null;
         }
         AccrualCategoryBo ac = new AccrualCategoryBo();
-
         ac.setAccrualCategory(im.getAccrualCategory());
         ac.setAccrualEarnInterval(im.getAccrualEarnInterval());
         ac.setDescr(im.getDescr());
@@ -225,7 +261,6 @@ public class AccrualCategoryBo extends HrBusinessObject implements AccrualCatego
         ac.setEarnCode(im.getEarnCode());
         ac.setHasRules(im.getHasRules());
         ac.setId(ac.getId());
-
         ac.setLmAccrualCategoryId(im.getLmAccrualCategoryId());
         ac.setLeavePlan(im.getLeavePlan());
         ac.setProration(im.getProration());
@@ -236,7 +271,7 @@ public class AccrualCategoryBo extends HrBusinessObject implements AccrualCatego
         ac.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         ac.setActive(im.isActive());
         if (im.getCreateTime() != null) {
-        ac.setTimestamp(new Timestamp(im.getCreateTime().getMillis()));
+            ac.setTimestamp(new Timestamp(im.getCreateTime().getMillis()));
         }
         ac.setUserPrincipalId(im.getUserPrincipalId());
         ac.setVersionNumber(im.getVersionNumber());
@@ -249,7 +284,6 @@ public class AccrualCategoryBo extends HrBusinessObject implements AccrualCatego
         if (bo == null) {
             return null;
         }
-
         return AccrualCategory.Builder.create(bo).build();
     }
 }

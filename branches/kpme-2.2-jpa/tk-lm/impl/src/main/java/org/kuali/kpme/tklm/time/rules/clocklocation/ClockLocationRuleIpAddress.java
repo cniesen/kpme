@@ -15,63 +15,77 @@
  */
 package org.kuali.kpme.tklm.time.rules.clocklocation;
 
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.tklm.api.time.rules.clocklocation.ClockLocationRuleIpAddressContract;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "TK_CLOCK_LOC_RL_IP_ADDR_T")
 public class ClockLocationRuleIpAddress extends HrBusinessObject implements ClockLocationRuleIpAddressContract {
 
-	private static final long serialVersionUID = 1L;
-	private String tkClockLocationRuleIpId;
-	private String tkClockLocationRuleId;
-	private String ipAddress;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
-	
-	@Override
-	public String getId() {
-		return this.getTkClockLocationRuleIpId();
-	}
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public void setId(String id) {
-		this.setTkClockLocationRuleIpId(id);
-	}
-	@Override
-	public String getUniqueKey() {
-		String ipAddressKey = getTkClockLocationRuleIpId().toString()
-			+"_"+ getTkClockLocationRuleId().toString() + "_" + getIpAddress();
-		return ipAddressKey;
-	}
+    @PortableSequenceGenerator(name = "TK_CLOCK_LOC_RL_IP_ADDR_S")
+    @GeneratedValue(generator = "TK_CLOCK_LOC_RL_IP_ADDR_S")
+    @Id
+    @Column(name = "TK_CLOCK_LOC_RULE_IP_ID", length = 60)
+    private String tkClockLocationRuleIpId;
 
-	public String getIpAddress() {
-		return ipAddress;
-	}
+    @Column(name = "TK_CLOCK_LOC_RULE_ID", length = 60)
+    private String tkClockLocationRuleId;
 
-	public void setIpAddress(String ipAddress) {
-		this.ipAddress = ipAddress;
-	}
+    @Column(name = "IP_ADDRESS", nullable = false, length = 15)
+    private String ipAddress;
 
-	public String getTkClockLocationRuleIpId() {
-		return tkClockLocationRuleIpId;
-	}
+    // TODO returning an empty map for the time-being, until the BK is finalized  
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
 
-	public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
-		this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
-	}
+    @Override
+    public String getId() {
+        return this.getTkClockLocationRuleIpId();
+    }
 
-	public String getTkClockLocationRuleId() {
-		return tkClockLocationRuleId;
-	}
+    @Override
+    public void setId(String id) {
+        this.setTkClockLocationRuleIpId(id);
+    }
 
-	public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
-		this.tkClockLocationRuleId = tkClockLocationRuleId;
-	}
+    @Override
+    public String getUniqueKey() {
+        String ipAddressKey = getTkClockLocationRuleIpId().toString() + "_" + getTkClockLocationRuleId().toString() + "_" + getIpAddress();
+        return ipAddressKey;
+    }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    public void setIpAddress(String ipAddress) {
+        this.ipAddress = ipAddress;
+    }
+
+    public String getTkClockLocationRuleIpId() {
+        return tkClockLocationRuleIpId;
+    }
+
+    public void setTkClockLocationRuleIpId(String tkClockLocationRuleIpId) {
+        this.tkClockLocationRuleIpId = tkClockLocationRuleIpId;
+    }
+
+    public String getTkClockLocationRuleId() {
+        return tkClockLocationRuleId;
+    }
+
+    public void setTkClockLocationRuleId(String tkClockLocationRuleId) {
+        this.tkClockLocationRuleId = tkClockLocationRuleId;
+    }
 }

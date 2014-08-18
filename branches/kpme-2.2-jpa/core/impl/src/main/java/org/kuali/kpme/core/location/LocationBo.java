@@ -17,137 +17,149 @@ package org.kuali.kpme.core.location;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.location.Location;
 import org.kuali.kpme.core.api.location.LocationContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.role.location.LocationPrincipalRoleMemberBo;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import javax.persistence.Transient;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
+@Entity
+@Table(name = "HR_LOCATION_T")
 public class LocationBo extends HrBusinessObject implements LocationContract {
 
-	private static final String LOCATION = "location";
-	
-	private static final long serialVersionUID = 9015089510044249197L;
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(LOCATION)
-	            .build();
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Location";
+    private static final String LOCATION = "location";
 
-	private String hrLocationId;
-	private String location;
-	private String timezone;
-	private String description;
+    private static final long serialVersionUID = 9015089510044249197L;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(LOCATION, this.getLocation())
-			.build();
-	}
-	
-	
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(LOCATION).build();
+
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Location";
+
+    @PortableSequenceGenerator(name = "HR_LOCATION_S")
+    @GeneratedValue(generator = "HR_LOCATION_S")
+    @Id
+    @Column(name = "HR_LOCATION_ID", nullable = false, length = 60)
+    private String hrLocationId;
+
+    @Column(name = "LOCATION", length = 20)
+    private String location;
+
+    @Column(name = "TIMEZONE", length = 10)
+    private String timezone;
+
+    @Column(name = "DESCRIPTION", length = 60)
+    private String description;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(LOCATION, this.getLocation()).build();
+    }
+
     @Transient
     private List<LocationPrincipalRoleMemberBo> roleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
-    
+
     @Transient
     private List<LocationPrincipalRoleMemberBo> inactiveRoleMembers = new ArrayList<LocationPrincipalRoleMemberBo>();
 
-	@Override
-	public String getUniqueKey() {
-		return location;
-	}
-	
-	@Override
-	public String getId() {
-		return getHrLocationId();
-	}
+    @Override
+    public String getUniqueKey() {
+        return location;
+    }
 
-	@Override
-	public void setId(String id) {
-		setHrLocationId(id);
-	}
+    @Override
+    public String getId() {
+        return getHrLocationId();
+    }
 
-	public String getHrLocationId() {
-		return hrLocationId;
-	}
+    @Override
+    public void setId(String id) {
+        setHrLocationId(id);
+    }
 
-	public void setHrLocationId(String hrLocationId) {
-		this.hrLocationId = hrLocationId;
-	}
+    public String getHrLocationId() {
+        return hrLocationId;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public void setHrLocationId(String hrLocationId) {
+        this.hrLocationId = hrLocationId;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public String getTimezone() {
-		return timezone;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
+    public String getTimezone() {
+        return timezone;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public List<LocationPrincipalRoleMemberBo> getRoleMembers() {
-		return roleMembers;
-	}
-	
-	public void addRoleMember(LocationPrincipalRoleMemberBo roleMemberBo) {
-		roleMembers.add(roleMemberBo);
-	}
-	
-	public void removeRoleMember(LocationPrincipalRoleMemberBo roleMemberBo) {
-		roleMembers.remove(roleMemberBo);
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setRoleMembers(List<LocationPrincipalRoleMemberBo> roleMembers) {
-		this.roleMembers = roleMembers;
-	}
+    public List<LocationPrincipalRoleMemberBo> getRoleMembers() {
+        return roleMembers;
+    }
 
-	public List<LocationPrincipalRoleMemberBo> getInactiveRoleMembers() {
-		return inactiveRoleMembers;
-	}
-	
-	public void addInactiveRoleMember(LocationPrincipalRoleMemberBo inactiveRoleMemberBo) {
-		inactiveRoleMembers.add(inactiveRoleMemberBo);
-	}
-	
-	public void removeInactiveRoleMember(LocationPrincipalRoleMemberBo inactiveRoleMemberBo) {
-		inactiveRoleMembers.remove(inactiveRoleMemberBo);
-	}
+    public void addRoleMember(LocationPrincipalRoleMemberBo roleMemberBo) {
+        roleMembers.add(roleMemberBo);
+    }
 
-	public void setInactiveRoleMembers(List<LocationPrincipalRoleMemberBo> inactiveRoleMembers) {
-		this.inactiveRoleMembers = inactiveRoleMembers;
-	}
+    public void removeRoleMember(LocationPrincipalRoleMemberBo roleMemberBo) {
+        roleMembers.remove(roleMemberBo);
+    }
+
+    public void setRoleMembers(List<LocationPrincipalRoleMemberBo> roleMembers) {
+        this.roleMembers = roleMembers;
+    }
+
+    public List<LocationPrincipalRoleMemberBo> getInactiveRoleMembers() {
+        return inactiveRoleMembers;
+    }
+
+    public void addInactiveRoleMember(LocationPrincipalRoleMemberBo inactiveRoleMemberBo) {
+        inactiveRoleMembers.add(inactiveRoleMemberBo);
+    }
+
+    public void removeInactiveRoleMember(LocationPrincipalRoleMemberBo inactiveRoleMemberBo) {
+        inactiveRoleMembers.remove(inactiveRoleMemberBo);
+    }
+
+    public void setInactiveRoleMembers(List<LocationPrincipalRoleMemberBo> inactiveRoleMembers) {
+        this.inactiveRoleMembers = inactiveRoleMembers;
+    }
 
     public static LocationBo from(Location im) {
         if (im == null) {
             return null;
         }
         LocationBo loc = new LocationBo();
-
         loc.setLocation(im.getLocation());
         loc.setHrLocationId(im.getHrLocationId());
         loc.setTimezone(im.getTimezone());
         loc.setDescription(im.getDescription());
-
         loc.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         loc.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -156,7 +168,6 @@ public class LocationBo extends HrBusinessObject implements LocationContract {
         loc.setUserPrincipalId(im.getUserPrincipalId());
         loc.setVersionNumber(im.getVersionNumber());
         loc.setObjectId(im.getObjectId());
-
         return loc;
     }
 
@@ -164,7 +175,6 @@ public class LocationBo extends HrBusinessObject implements LocationContract {
         if (bo == null) {
             return null;
         }
-
         return Location.Builder.create(bo).build();
     }
 }

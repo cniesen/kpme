@@ -48,7 +48,7 @@ public class PositionBaseMaintainableServiceImpl extends HrBusinessObjectMaintai
     }
 
     @Override
-    public void saveBusinessObject() {
+    public void saveDataObject() {
         PositionBaseBo position = (PositionBaseBo) this.getBusinessObject();
         //String nextUniqueNumber = HrServiceLocator.getPositionService().getNextUniquePositionNumber();
         //position.setPositionNumber(nextUniqueNumber);

@@ -17,6 +17,7 @@ package org.kuali.kpme.core.calendar.service;
 
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.bo.dao.EffectiveObjectDao;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.service.CalendarService;
 import org.kuali.kpme.core.api.job.Job;
@@ -35,9 +36,6 @@ public class CalendarServiceImpl implements CalendarService {
 	private static final Logger LOG = Logger.getLogger(CalendarServiceImpl.class);
 	private CalendarDao calendarDao;
 
-	public void setCalendarDao(CalendarDao calendarDao) {
-		this.calendarDao = calendarDao;
-	}
 
 	@Override
 	public Calendar getCalendar(String hrCalendarId) {
@@ -146,4 +144,7 @@ public class CalendarServiceImpl implements CalendarService {
 		return CalendarBo.to(calendarDao.getCalendarByName(calendarName));
 	}
 
+    public void setCalendarDao(CalendarDao calendarDao) {
+        this.calendarDao = calendarDao;
+    }
 }

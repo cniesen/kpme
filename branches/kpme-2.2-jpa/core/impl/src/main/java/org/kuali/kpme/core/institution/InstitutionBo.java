@@ -15,80 +15,90 @@
  */
 package org.kuali.kpme.core.institution;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import java.sql.Timestamp;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.institution.Institution;
 import org.kuali.kpme.core.api.institution.InstitutionContract;
 import org.kuali.kpme.core.api.paytype.PayType;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.sql.Timestamp;
-
+@Entity
+@Table(name = "PM_INSTITUTION_T")
 public class InstitutionBo extends HrBusinessObject implements InstitutionContract {
 
-	 private static final String INSTITUTION_CODE = "institutionCode";
+    private static final String INSTITUTION_CODE = "institutionCode";
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -4414386560856612370L;
+    private static final long serialVersionUID = -4414386560856612370L;
 
-	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(INSTITUTION_CODE)
-            .build();    
-	
-	private String pmInstitutionId;
-	private String institutionCode;
-	private String description;
+    //KPME-2273/1965 Primary Business Keys List.  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(INSTITUTION_CODE).build();
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(INSTITUTION_CODE, this.getInstitutionCode())
-			.build();
-	}
-	
-	public String getInstitutionCode() {
-		return institutionCode;
-	}
-	
-	public void setInstitutionCode(String institutionCode) {
-		this.institutionCode = institutionCode;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
+    @PortableSequenceGenerator(name = "PM_INSTITUTION_S")
+    @GeneratedValue(generator = "PM_INSTITUTION_S")
+    @Id
+    @Column(name = "PM_INSTITUTION_ID", length = 60)
+    private String pmInstitutionId;
 
-	@Override
-	public String getId() {
-		return pmInstitutionId;
-	}
+    @Column(name = "INSTITUTION_CODE", nullable = false, length = 15)
+    private String institutionCode;
 
-	@Override
-	public void setId(String id) {
-		setPmInstitutionId(id);
-	}
+    @Column(name = "DESCRIPTION", length = 50)
+    private String description;
 
-	@Override
-	protected String getUniqueKey() {
-		return institutionCode + "_" + getEffectiveDate() + "_" + getTimestamp();
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(INSTITUTION_CODE, this.getInstitutionCode()).build();
+    }
 
-	public String getPmInstitutionId() {
-		return pmInstitutionId;
-	}
+    public String getInstitutionCode() {
+        return institutionCode;
+    }
 
-	public void setPmInstitutionId(String pmInstitutionId) {
-		this.pmInstitutionId = pmInstitutionId;
-	}
+    public void setInstitutionCode(String institutionCode) {
+        this.institutionCode = institutionCode;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    @Override
+    public String getId() {
+        return pmInstitutionId;
+    }
+
+    @Override
+    public void setId(String id) {
+        setPmInstitutionId(id);
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return institutionCode + "_" + getEffectiveDate() + "_" + getTimestamp();
+    }
+
+    public String getPmInstitutionId() {
+        return pmInstitutionId;
+    }
+
+    public void setPmInstitutionId(String pmInstitutionId) {
+        this.pmInstitutionId = pmInstitutionId;
+    }
 
     public static InstitutionBo from(Institution im) {
         if (im == null) {
@@ -98,7 +108,6 @@ public class InstitutionBo extends HrBusinessObject implements InstitutionContra
         inst.setPmInstitutionId(im.getPmInstitutionId());
         inst.setInstitutionCode(im.getInstitutionCode());
         inst.setDescription(im.getDescription());
-
         inst.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         inst.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -107,7 +116,6 @@ public class InstitutionBo extends HrBusinessObject implements InstitutionContra
         inst.setUserPrincipalId(im.getUserPrincipalId());
         inst.setVersionNumber(im.getVersionNumber());
         inst.setObjectId(im.getObjectId());
-
         return inst;
     }
 
@@ -115,7 +123,6 @@ public class InstitutionBo extends HrBusinessObject implements InstitutionContra
         if (bo == null) {
             return null;
         }
-
         return Institution.Builder.create(bo).build();
     }
 }

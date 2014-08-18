@@ -18,7 +18,13 @@ package org.kuali.kpme.pm.position.funding;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kuali.kpme.core.kfs.coa.businessobject.Account;
@@ -28,59 +34,87 @@ import org.kuali.kpme.pm.api.position.funding.PositionFundingContract;
 import org.kuali.kpme.pm.position.PositionDerived;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kns.service.KNSServiceLocator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.LegacyDataAdapter;
 
+@Entity
+@Table(name = "PM_PSTN_FNDNG_T")
 public class PositionFundingBo extends PositionDerived implements PositionFundingContract {
-	
-	private static final long serialVersionUID = 1315658420315845055L;
 
+    private static final long serialVersionUID = 1315658420315845055L;
 
-	private String pmPositionFunctionId;
-	
-	
-	private String chart;
-	private String org;
-	private String account;
-	private String subAccount;
-	private String objectCode;
-	private String subObjectCode;
-	private String orgRefCode;
-	private BigDecimal percent;
-	private BigDecimal amount;
-	private boolean priorityFlag;
+    @PortableSequenceGenerator(name = "PM_PSTN_FNDNG_S")
+    @GeneratedValue(generator = "PM_PSTN_FNDNG_S")
+    @Id
+    @Column(name = "PM_PSTN_FNDNG_ID", length = 60)
+    private String pmPositionFunctionId;
 
-	// indicates where the funding information comes from, it could be from
-	// maint document, Institution batch imports, etc..
-	// we use source on the maint document to determine which funding
-	// information is readonly
-	private String source;
-	private transient BusinessObjectService businessObjectService;
+    @Column(name = "CHART", length = 50)
+    private String chart;
 
-	public String getPmPositionFunctionId() {
-		return pmPositionFunctionId;
-	}
+    @Column(name = "ORG", length = 50)
+    private String org;
 
-	public void setPmPositionFunctionId(String pmPositionFunctionId) {
-		this.pmPositionFunctionId = pmPositionFunctionId;
-	}
+    @Column(name = "ACCNT", nullable = false, length = 50)
+    private String account;
 
-	public String getSource() {
-		return source;
-	}
+    @Column(name = "SUB_ACCNT", length = 50)
+    private String subAccount;
 
-	public void setSource(String source) {
-		this.source = source;
-	}
+    @Column(name = "OBJ_CD", nullable = false, length = 50)
+    private String objectCode;
+
+    @Column(name = "SUB_OBJ_CD", length = 50)
+    private String subObjectCode;
+
+    @Column(name = "ORG_REF_CD", length = 50)
+    private String orgRefCode;
+
+    @Column(name = "PRCNT", length = 10)
+    private BigDecimal percent;
+
+    @Column(name = "AMNT", length = 10)
+    private BigDecimal amount;
+
+    @Column(name = "PRIORITY_FLG", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean priorityFlag;
+
+    // indicates where the funding information comes from, it could be from  
+    // maint document, Institution batch imports, etc..  
+    // we use source on the maint document to determine which funding  
+    // information is readonly  
+    @Transient
+    private String source;
+
+    @Transient
+    private transient BusinessObjectService businessObjectService;
+
+    public String getPmPositionFunctionId() {
+        return pmPositionFunctionId;
+    }
+
+    public void setPmPositionFunctionId(String pmPositionFunctionId) {
+        this.pmPositionFunctionId = pmPositionFunctionId;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
 
     public String getChart() {
         if (StringUtils.isEmpty(this.chart)) {
             Map<String, String> fields = new HashMap<String, String>();
             fields.put("accountNumber", this.account);
             fields.put("active", "true");
-            Account account = (Account) KNSServiceLocator.getBusinessObjectService().findByPrimaryKey(Account.class,
-                    fields);
+            Account account = (Account) KNSServiceLocator.getBusinessObjectService().findByPrimaryKey(Account.class, fields);
             if (account != null && !account.isClosed()) {
                 this.setChart(account.getChartOfAccountsCode());
             } else {
@@ -90,160 +124,149 @@ public class PositionFundingBo extends PositionDerived implements PositionFundin
         return chart;
     }
 
-	public void setChart(String chart) {
-		this.chart = chart;
-	}
+    public void setChart(String chart) {
+        this.chart = chart;
+    }
 
-	public String getOrg() {
-		return org;
-	}
+    public String getOrg() {
+        return org;
+    }
 
-	public void setOrg(String org) {
-		this.org = org;
-	}
+    public void setOrg(String org) {
+        this.org = org;
+    }
 
-	public String getAccount() {
-		return account;
-	}
+    public String getAccount() {
+        return account;
+    }
 
-	public void setAccount(String account) {
-		this.account = account;
-	}
+    public void setAccount(String account) {
+        this.account = account;
+    }
 
-	public String getSubAccount() {
-		return subAccount;
-	}
+    public String getSubAccount() {
+        return subAccount;
+    }
 
-	public void setSubAccount(String subAccount) {
-		this.subAccount = subAccount;
-	}
+    public void setSubAccount(String subAccount) {
+        this.subAccount = subAccount;
+    }
 
-	public String getObjectCode() {
-		return objectCode;
-	}
+    public String getObjectCode() {
+        return objectCode;
+    }
 
-	public void setObjectCode(String objectCode) {
-		this.objectCode = objectCode;
-	}
+    public void setObjectCode(String objectCode) {
+        this.objectCode = objectCode;
+    }
 
-	public String getSubObjectCode() {
-		return subObjectCode;
-	}
+    public String getSubObjectCode() {
+        return subObjectCode;
+    }
 
-	public void setSubObjectCode(String subObjectCode) {
-		this.subObjectCode = subObjectCode;
-	}
+    public void setSubObjectCode(String subObjectCode) {
+        this.subObjectCode = subObjectCode;
+    }
 
-	public String getOrgRefCode() {
-		return orgRefCode;
-	}
+    public String getOrgRefCode() {
+        return orgRefCode;
+    }
 
-	public void setOrgRefCode(String orgRefCode) {
-		this.orgRefCode = orgRefCode;
-	}
+    public void setOrgRefCode(String orgRefCode) {
+        this.orgRefCode = orgRefCode;
+    }
 
-	public BigDecimal getPercent() {
-		return percent;
-	}
+    public BigDecimal getPercent() {
+        return percent;
+    }
 
-	public void setPercent(BigDecimal percent) {
-		this.percent = percent;
-	}
+    public void setPercent(BigDecimal percent) {
+        this.percent = percent;
+    }
 
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	public void setAmount(BigDecimal amount) {
-		this.amount = amount;
-	}
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
 
-	public boolean isPriorityFlag() {
-		return priorityFlag;
-	}
+    public boolean isPriorityFlag() {
+        return priorityFlag;
+    }
 
-	public void setPriorityFlag(boolean priorityFlag) {
-		this.priorityFlag = priorityFlag;
-	}
+    public void setPriorityFlag(boolean priorityFlag) {
+        this.priorityFlag = priorityFlag;
+    }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null)
-			return false;
-		if (obj == this)
-			return true;
-		if (obj.getClass() != getClass())
-			return false;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+        PositionFundingBo rhs = (PositionFundingBo) obj;
+        return new EqualsBuilder().append(pmPositionFunctionId, rhs.getPmPositionFunctionId()).append(hrPositionId, rhs.getHrPositionId()).append(chart, rhs.getChart()).append(org, rhs.getOrg()).append(account, rhs.getAccount()).append(subAccount, rhs.getSubAccount()).append(objectCode, rhs.getObjectCode()).append(subObjectCode, rhs.getSubObjectCode()).append(orgRefCode, rhs.getOrgRefCode()).append(percent, rhs.getPercent()).append(amount, rhs.getAmount()).append(priorityFlag, rhs.isPriorityFlag()).isEquals();
+    }
 
-		PositionFundingBo rhs = (PositionFundingBo) obj;
-		return new EqualsBuilder()
-				.append(pmPositionFunctionId, rhs.getPmPositionFunctionId())
-				.append(hrPositionId, rhs.getHrPositionId())
-				.append(chart, rhs.getChart()).append(org, rhs.getOrg())
-				.append(account, rhs.getAccount())
-				.append(subAccount, rhs.getSubAccount())
-				.append(objectCode, rhs.getObjectCode())
-				.append(subObjectCode, rhs.getSubObjectCode())
-				.append(orgRefCode, rhs.getOrgRefCode())
-				.append(percent, rhs.getPercent())
-				.append(amount, rhs.getAmount())
-				.append(priorityFlag, rhs.isPriorityFlag()).isEquals();
+    public static PositionFundingBo from(PositionFunding im) {
+        if (im == null) {
+            return null;
+        }
+        PositionFundingBo positionFundingBo = new PositionFundingBo();
+        positionFundingBo.setAccount(im.getAccount());
+        positionFundingBo.setAmount(im.getAmount());
+        positionFundingBo.setChart(im.getChart());
+        positionFundingBo.setHrPositionId(im.getHrPositionId());
+        positionFundingBo.setObjectCode(im.getObjectCode());
+        positionFundingBo.setOrg(im.getOrg());
+        positionFundingBo.setOrgRefCode(im.getOrgRefCode());
+        positionFundingBo.setPercent(im.getPercent());
+        positionFundingBo.setPmPositionFunctionId(im.getPmPositionFunctionId());
+        positionFundingBo.setPriorityFlag(im.isPriorityFlag());
+        positionFundingBo.setSource(im.getSource());
+        positionFundingBo.setSubAccount(im.getSubAccount());
+        positionFundingBo.setSubObjectCode(im.getSubObjectCode());
+        positionFundingBo.setObjectId(im.getObjectId());
+        positionFundingBo.setVersionNumber(im.getVersionNumber());
+        return positionFundingBo;
+    }
 
-	}
+    public static PositionFunding to(PositionFundingBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionFunding.Builder.create(bo).build();
+    }
 
-	public static PositionFundingBo from(PositionFunding im) {
-		if (im == null) {
-			return null;
-		}
+    public static final ModelObjectUtils.Transformer<PositionFundingBo, PositionFunding> toImmutable = new ModelObjectUtils.Transformer<PositionFundingBo, PositionFunding>() {
 
-		PositionFundingBo positionFundingBo = new PositionFundingBo();
+        public PositionFunding transform(PositionFundingBo input) {
+            return PositionFundingBo.to(input);
+        }
 
-		positionFundingBo.setAccount(im.getAccount());
-		positionFundingBo.setAmount(im.getAmount());
-		positionFundingBo.setChart(im.getChart());
-		positionFundingBo.setHrPositionId(im.getHrPositionId());
-		positionFundingBo.setObjectCode(im.getObjectCode());
-		positionFundingBo.setOrg(im.getOrg());
-		positionFundingBo.setOrgRefCode(im.getOrgRefCode());
-		positionFundingBo.setPercent(im.getPercent());
-		positionFundingBo.setPmPositionFunctionId(im.getPmPositionFunctionId());
-		positionFundingBo.setPriorityFlag(im.isPriorityFlag());
-		positionFundingBo.setSource(im.getSource());
-		positionFundingBo.setSubAccount(im.getSubAccount());
-		positionFundingBo.setSubObjectCode(im.getSubObjectCode());
-		positionFundingBo.setObjectId(im.getObjectId());
-		positionFundingBo.setVersionNumber(im.getVersionNumber());
+        ;
+    };
 
-		return positionFundingBo;
-	}
+    public static final ModelObjectUtils.Transformer<PositionFunding, PositionFundingBo> toBo = new ModelObjectUtils.Transformer<PositionFunding, PositionFundingBo>() {
 
-	public static PositionFunding to(PositionFundingBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionFunding.Builder.create(bo).build();
-	}
+        public PositionFundingBo transform(PositionFunding input) {
+            return PositionFundingBo.from(input);
+        }
 
-	public static final ModelObjectUtils.Transformer<PositionFundingBo, PositionFunding> toImmutable = new ModelObjectUtils.Transformer<PositionFundingBo, PositionFunding>() {
-		public PositionFunding transform(PositionFundingBo input) {
-			return PositionFundingBo.to(input);
-		};
-	};
+        ;
+    };
 
-	public static final ModelObjectUtils.Transformer<PositionFunding, PositionFundingBo> toBo = new ModelObjectUtils.Transformer<PositionFunding, PositionFundingBo>() {
-		public PositionFundingBo transform(PositionFunding input) {
-			return PositionFundingBo.from(input);
-		};
-	};
-	
-	@Override
-	public String getId() {
-		return this.getPmPositionFunctionId();
-	}
+    @Override
+    public String getId() {
+        return this.getPmPositionFunctionId();
+    }
 
-	@Override
-	public void setId(String id) {
-		this.setPmPositionFunctionId(id);
-	}
-
+    @Override
+    public void setId(String id) {
+        this.setPmPositionFunctionId(id);
+    }
 }

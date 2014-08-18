@@ -15,42 +15,49 @@
  */
 package org.kuali.kpme.pm.positionResponsibilityOption;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.calendar.CalendarBo;
 import org.kuali.kpme.core.leaveplan.LeavePlanBo;
 import org.kuali.kpme.pm.api.positionresponsibilityoption.PositionResponsibilityOption;
 import org.kuali.kpme.pm.api.positionresponsibilityoption.PositionResponsibilityOptionContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PSTN_RPS_OPT_T")
 public class PositionResponsibilityOptionBo extends HrBusinessObject implements PositionResponsibilityOptionContract {
-	
-	private static final String PR_DESCRIPTION = "prDescription";
 
-	/**
+    private static final String PR_DESCRIPTION = "prDescription";
+
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -5054782543015429750L;
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(PR_DESCRIPTION)
-		    .build();
-	
-	/*
+    private static final long serialVersionUID = -5054782543015429750L;
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(PR_DESCRIPTION).build();
+
+    /*
 	 * convert bo to immutable
 	 *
      * Can be used with ModelObjectUtils:
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionResponsibilityOptionBo, PositionResponsibilityOptionBo.toImmutable);
      */
-    public static final ModelObjectUtils.Transformer<PositionResponsibilityOptionBo, PositionResponsibilityOption> toImmutable =
-            new ModelObjectUtils.Transformer<PositionResponsibilityOptionBo, PositionResponsibilityOption>() {
-                public PositionResponsibilityOption transform(PositionResponsibilityOptionBo input) {
-                    return PositionResponsibilityOptionBo.to(input);
-                };
-            };
+    public static final ModelObjectUtils.Transformer<PositionResponsibilityOptionBo, PositionResponsibilityOption> toImmutable = new ModelObjectUtils.Transformer<PositionResponsibilityOptionBo, PositionResponsibilityOption>() {
+
+        public PositionResponsibilityOption transform(PositionResponsibilityOptionBo input) {
+            return PositionResponsibilityOptionBo.to(input);
+        }
+
+        ;
+    };
 
     /*
      * convert immutable to bo
@@ -59,79 +66,81 @@ public class PositionResponsibilityOptionBo extends HrBusinessObject implements 
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionResponsibilityOption, PositionResponsibilityOptionBo.toBo);
      */
-    public static final ModelObjectUtils.Transformer<PositionResponsibilityOption, PositionResponsibilityOptionBo> toBo =
-            new ModelObjectUtils.Transformer<PositionResponsibilityOption, PositionResponsibilityOptionBo>() {
-                public PositionResponsibilityOptionBo transform(PositionResponsibilityOption input) {
-                    return PositionResponsibilityOptionBo.from(input);
-                };
-            };
-	
-	private String prOptionId;
-	private String prOptionName;
-	private String prDescription;
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(PR_DESCRIPTION, this.getPrDescription())
-				.build();
-	}
-	
-	public String getPrOptionId() {
-		return prOptionId;
-	}
+    public static final ModelObjectUtils.Transformer<PositionResponsibilityOption, PositionResponsibilityOptionBo> toBo = new ModelObjectUtils.Transformer<PositionResponsibilityOption, PositionResponsibilityOptionBo>() {
 
-	public void setPrOptionId(String prOptionId) {
-		this.prOptionId = prOptionId;
-	}
+        public PositionResponsibilityOptionBo transform(PositionResponsibilityOption input) {
+            return PositionResponsibilityOptionBo.from(input);
+        }
 
-	public String getPrOptionName() {
-		return prOptionName;
-	}
+        ;
+    };
 
-	public void setPrOptionName(String prOptionName) {
-		this.prOptionName = prOptionName;
-	}
+    @PortableSequenceGenerator(name = "PSTN_RPS_OPT_S")
+    @GeneratedValue(generator = "PSTN_RPS_OPT_S")
+    @Id
+    @Column(name = "PSTN_RPS_OPT_ID", length = 60)
+    private String prOptionId;
 
-	public String getPrDescription() {
-		return prDescription;
-	}
+    @Column(name = "NAME", nullable = false, length = 50)
+    private String prOptionName;
 
-	public void setPrDescription(String prDescription) {
-		this.prDescription = prDescription;
-	}
+    @Column(name = "DESCRIPTION", length = 500)
+    private String prDescription;
 
-	@Override
-	public String getId() {
-		return this.getPrOptionId();
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(PR_DESCRIPTION, this.getPrDescription()).build();
+    }
 
-	@Override
-	public void setId(String id) {
-		this.setPrOptionId(id);
-		
-	}
+    public String getPrOptionId() {
+        return prOptionId;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return this.getPrOptionName();
-	}
-	
+    public void setPrOptionId(String prOptionId) {
+        this.prOptionId = prOptionId;
+    }
+
+    public String getPrOptionName() {
+        return prOptionName;
+    }
+
+    public void setPrOptionName(String prOptionName) {
+        this.prOptionName = prOptionName;
+    }
+
+    public String getPrDescription() {
+        return prDescription;
+    }
+
+    public void setPrDescription(String prDescription) {
+        this.prDescription = prDescription;
+    }
+
+    @Override
+    public String getId() {
+        return this.getPrOptionId();
+    }
+
+    @Override
+    public void setId(String id) {
+        this.setPrOptionId(id);
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return this.getPrOptionName();
+    }
 
     public static PositionResponsibilityOptionBo from(PositionResponsibilityOption im) {
         if (im == null) {
             return null;
         }
         PositionResponsibilityOptionBo pro = new PositionResponsibilityOptionBo();
-
         pro.setPrOptionId(im.getPrOptionId());
         pro.setPrOptionName(im.getPrOptionName());
         pro.setPrDescription(im.getPrDescription());
-        
-        // finally copy over the common fields into pro from im
+        // finally copy over the common fields into pro from im 
         copyCommonFields(pro, im);
-
         return pro;
     }
 
@@ -139,8 +148,6 @@ public class PositionResponsibilityOptionBo extends HrBusinessObject implements 
         if (bo == null) {
             return null;
         }
-
         return PositionResponsibilityOption.Builder.create(bo).build();
     }
-
 }

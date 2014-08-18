@@ -43,8 +43,8 @@ public class LeaveAdjustmentMaintainableServiceImpl extends HrBusinessObjectMain
 	}
 	
 	@Override
-	public void saveBusinessObject() {
-		super.saveBusinessObject();
+	public void saveDataObject() {
+		super.saveDataObject();
 		
 		// create leave block 
 		LeaveAdjustment la = (LeaveAdjustment) this.getBusinessObject();

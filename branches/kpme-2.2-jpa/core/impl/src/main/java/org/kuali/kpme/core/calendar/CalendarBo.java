@@ -16,6 +16,9 @@
 package org.kuali.kpme.core.calendar;
 
 import com.google.common.collect.ImmutableList;
+import java.sql.Time;
+import javax.persistence.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.joda.time.DateTimeConstants;
@@ -25,98 +28,122 @@ import org.kuali.kpme.core.api.calendar.CalendarContract;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.sql.Time;
-
+@Entity
+@Table(name = "HR_CALENDAR_T")
 public class CalendarBo extends PersistableBusinessObjectBase implements CalendarContract {
+
     public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Calendar";
-    public static final ModelObjectUtils.Transformer<CalendarBo, Calendar> toCalendar =
-            new ModelObjectUtils.Transformer<CalendarBo, Calendar>() {
-                public Calendar transform(CalendarBo input) {
-                    return CalendarBo.to(input);
-                };
-            };
-    public static final ModelObjectUtils.Transformer<Calendar, CalendarBo> toCalendarBo =
-            new ModelObjectUtils.Transformer<Calendar, CalendarBo>() {
-                public CalendarBo transform(Calendar input) {
-                    return CalendarBo.from(input);
-                };
-            };
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add("calendarName")
-            .build();
+
+    public static final ModelObjectUtils.Transformer<CalendarBo, Calendar> toCalendar = new ModelObjectUtils.Transformer<CalendarBo, Calendar>() {
+
+        public Calendar transform(CalendarBo input) {
+            return CalendarBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<Calendar, CalendarBo> toCalendarBo = new ModelObjectUtils.Transformer<Calendar, CalendarBo>() {
+
+        public CalendarBo transform(Calendar input) {
+            return CalendarBo.from(input);
+        }
+
+        ;
+    };
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add("calendarName").build();
+
     /**
      *
      */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String hrCalendarId;
-	private String calendarName;
-	private String calendarDescriptions;
+    @PortableSequenceGenerator(name = "HR_CALENDAR_S")
+    @GeneratedValue(generator = "HR_CALENDAR_S")
+    @Id
+    @Column(name = "HR_CALENDAR_ID", length = 60)
+    private String hrCalendarId;
 
-	private String flsaBeginDay;
-	private Time flsaBeginTime;
-	private String calendarTypes;
-	private int flsaBeginDayConstant = -1;
+    @Column(name = "CALENDAR_NAME", length = 15)
+    private String calendarName;
 
-	public String getHrCalendarId() {
-		return hrCalendarId;
-	}
+    @Column(name = "CALENDAR_DESCRIPTIONS", length = 50)
+    private String calendarDescriptions;
 
-	public void setHrCalendarId(String hrCalendarId) {
-		this.hrCalendarId = hrCalendarId;
-	}
+    @Column(name = "FLSA_BEGIN_DAY", length = 9)
+    private String flsaBeginDay;
 
-	public String getCalendarName() {
-		return calendarName;
-	}
+    @Temporal(TemporalType.TIME)
+    @Column(name = "FLSA_BEGIN_TIME")
+    private Time flsaBeginTime;
 
-	public void setCalendarName(String calendarName) {
-		this.calendarName = calendarName;
-	}
+    @Column(name = "CALENDAR_TYPES", length = 9)
+    private String calendarTypes;
 
-	public String getCalendarTypes() {
-		return calendarTypes;
-	}
+    @Transient
+    private int flsaBeginDayConstant = -1;
 
-	public void setCalendarTypes(String calendarTypes) {
-		this.calendarTypes = calendarTypes;
-	}
+    public String getHrCalendarId() {
+        return hrCalendarId;
+    }
 
-	public void setFlsaBeginDayConstant(int flsaBeginDayConstant) {
-		this.flsaBeginDayConstant = flsaBeginDayConstant;
-	}
+    public void setHrCalendarId(String hrCalendarId) {
+        this.hrCalendarId = hrCalendarId;
+    }
 
-	public String getCalendarDescriptions() {
-		return calendarDescriptions;
-	}
+    public String getCalendarName() {
+        return calendarName;
+    }
 
-	public void setCalendarDescriptions(String calendarDescriptions) {
-		this.calendarDescriptions = calendarDescriptions;
-	}
+    public void setCalendarName(String calendarName) {
+        this.calendarName = calendarName;
+    }
 
-	public String getFlsaBeginDay() {
-		return flsaBeginDay;
-	}
+    public String getCalendarTypes() {
+        return calendarTypes;
+    }
 
-	public void setFlsaBeginDay(String flsaBeginDay) {
-		this.flsaBeginDay = flsaBeginDay;
-		this.setFlsaBeinDayConstant(flsaBeginDay);
-	}
+    public void setCalendarTypes(String calendarTypes) {
+        this.calendarTypes = calendarTypes;
+    }
 
-	public Time getFlsaBeginTime() {
-		return flsaBeginTime;
-	}
+    public void setFlsaBeginDayConstant(int flsaBeginDayConstant) {
+        this.flsaBeginDayConstant = flsaBeginDayConstant;
+    }
+
+    public String getCalendarDescriptions() {
+        return calendarDescriptions;
+    }
+
+    public void setCalendarDescriptions(String calendarDescriptions) {
+        this.calendarDescriptions = calendarDescriptions;
+    }
+
+    public String getFlsaBeginDay() {
+        return flsaBeginDay;
+    }
+
+    public void setFlsaBeginDay(String flsaBeginDay) {
+        this.flsaBeginDay = flsaBeginDay;
+        this.setFlsaBeinDayConstant(flsaBeginDay);
+    }
+
+    public Time getFlsaBeginTime() {
+        return flsaBeginTime;
+    }
 
     public LocalTime getFlsaBeginLocalTime() {
         return getFlsaBeginTime() == null ? null : LocalTime.fromDateFields(getFlsaBeginTime());
     }
 
-	public void setFlsaBeginTime(Time flsaBeginTime) {
-		this.flsaBeginTime = flsaBeginTime;
-	}
+    public void setFlsaBeginTime(Time flsaBeginTime) {
+        this.flsaBeginTime = flsaBeginTime;
+    }
 
-	/**
+    /**
 	 * This method sets a constant matching those listed in
 	 * org.joda.time.DateTimeConstants for day comparisons.
 	 *
@@ -126,27 +153,26 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
 	 *
 	 * @param day
 	 */
-	private void setFlsaBeinDayConstant(String day) {
-		if (!StringUtils.isEmpty(day)) {
-			day = day.toLowerCase().trim();
-
-			if (day.startsWith("m")) {
-				this.flsaBeginDayConstant = DateTimeConstants.MONDAY;
-			} else if (day.startsWith("tu")) {
-				this.flsaBeginDayConstant = DateTimeConstants.TUESDAY;
-			} else if (day.startsWith("w")) {
-				this.flsaBeginDayConstant = DateTimeConstants.WEDNESDAY;
-			} else if (day.startsWith("th")) {
-				this.flsaBeginDayConstant = DateTimeConstants.THURSDAY;
-			} else if (day.startsWith("f")) {
-				this.flsaBeginDayConstant = DateTimeConstants.FRIDAY;
-			} else if (day.startsWith("sa")) {
-				this.flsaBeginDayConstant = DateTimeConstants.SATURDAY;
-			} else if (day.startsWith("su")) {
-				this.flsaBeginDayConstant = DateTimeConstants.SUNDAY;
-			}
-		}
-	}
+    private void setFlsaBeinDayConstant(String day) {
+        if (!StringUtils.isEmpty(day)) {
+            day = day.toLowerCase().trim();
+            if (day.startsWith("m")) {
+                this.flsaBeginDayConstant = DateTimeConstants.MONDAY;
+            } else if (day.startsWith("tu")) {
+                this.flsaBeginDayConstant = DateTimeConstants.TUESDAY;
+            } else if (day.startsWith("w")) {
+                this.flsaBeginDayConstant = DateTimeConstants.WEDNESDAY;
+            } else if (day.startsWith("th")) {
+                this.flsaBeginDayConstant = DateTimeConstants.THURSDAY;
+            } else if (day.startsWith("f")) {
+                this.flsaBeginDayConstant = DateTimeConstants.FRIDAY;
+            } else if (day.startsWith("sa")) {
+                this.flsaBeginDayConstant = DateTimeConstants.SATURDAY;
+            } else if (day.startsWith("su")) {
+                this.flsaBeginDayConstant = DateTimeConstants.SUNDAY;
+            }
+        }
+    }
 
     public int getFlsaEndDayConstant() {
         if (this.getFlsaBeginDayConstant() == DateTimeConstants.MONDAY) {
@@ -167,7 +193,7 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
         return 0;
     }
 
-	/**
+    /**
 	 * org.joda.time.DateTimeConstants.MONDAY
 	 * ...
 	 * org.joda.time.DateTimeConstants.SUNDAY
@@ -175,12 +201,12 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
 	 * @return an int representing the FLSA start day, sourced from
 	 * org.joda.time.DateTimeConstants in the interval [1,7].
 	 */
-	public int getFlsaBeginDayConstant() {
-		if (flsaBeginDayConstant < 0) {
-			this.setFlsaBeinDayConstant(this.getFlsaBeginDay());
-		}
-		return flsaBeginDayConstant;
-	}
+    public int getFlsaBeginDayConstant() {
+        if (flsaBeginDayConstant < 0) {
+            this.setFlsaBeinDayConstant(this.getFlsaBeginDay());
+        }
+        return flsaBeginDayConstant;
+    }
 
     @Override
     public int hashCode() {
@@ -190,7 +216,7 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
     @Override
     public boolean equals(Object o) {
         if (o instanceof CalendarBo) {
-            CalendarBo pc = (CalendarBo)o;
+            CalendarBo pc = (CalendarBo) o;
             return this.getHrCalendarId().compareTo(pc.getHrCalendarId()) == 0;
         } else {
             return false;
@@ -209,10 +235,8 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
         cal.setFlsaBeginTime(im.getFlsaBeginLocalTime() == null ? null : new Time(im.getFlsaBeginLocalTime().toDateTimeToday().getMillis()));
         cal.setCalendarTypes(im.getCalendarTypes());
         cal.setFlsaBeginDayConstant(im.getFlsaBeginDayConstant());
-
         cal.setVersionNumber(im.getVersionNumber());
         cal.setObjectId(im.getObjectId());
-
         return cal;
     }
 
@@ -220,7 +244,6 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
         if (bo == null) {
             return null;
         }
-
         return Calendar.Builder.create(bo).build();
     }
 }

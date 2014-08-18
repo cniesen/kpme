@@ -15,25 +15,40 @@
  */
 package org.kuali.kpme.core.bo;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.data.jpa.converters.CreateTimeConverter;
 import org.kuali.kpme.core.api.mo.KpmeEffectiveDataTransferObject;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
+import javax.persistence.*;
+import java.util.Date;
+
+@MappedSuperclass
 public abstract class HrBusinessObject extends PersistableBusinessObjectBase implements HrBusinessObjectContract {
 
 	private static final long serialVersionUID = -5743717258128864335L;
-	
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "EFFDT", nullable = true)
 	private Date effectiveDate;
+
+    @Convert(converter=BooleanYNConverter.class)
+    @Column(name = "ACTIVE", nullable = true)
 	private boolean active=true;
-	private Timestamp timestamp;
+
+    @Convert(converter=CreateTimeConverter.class)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "TIMESTAMP", nullable = true)
+	private Date timestamp;
+
+    @Column(name = "USER_PRINCIPAL_ID", nullable = true)
     private String userPrincipalId;
 
     //purely for UI (showHistory)
+    @Transient
     private transient Boolean history;
 
 	public abstract String getId();
@@ -74,11 +89,11 @@ public abstract class HrBusinessObject extends PersistableBusinessObjectBase imp
 		this.active = active;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 
-	public Timestamp getTimestamp() {
+	public Date getTimestamp() {
 		return timestamp;
 	}
 
@@ -127,7 +142,7 @@ public abstract class HrBusinessObject extends PersistableBusinessObjectBase imp
     	dest.setEffectiveDate(src.getEffectiveLocalDate() == null ? null : src.getEffectiveLocalDate().toDate());
         dest.setActive(src.isActive());
         if (src.getCreateTime() != null) {
-            dest.setTimestamp(new Timestamp(src.getCreateTime().getMillis()));
+            dest.setTimestamp(src.getCreateTime().toDate());
         }
         dest.setUserPrincipalId(src.getUserPrincipalId());
         dest.setVersionNumber(src.getVersionNumber());

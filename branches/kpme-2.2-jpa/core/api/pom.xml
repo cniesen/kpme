@@ -34,6 +34,10 @@
             <artifactId>rice-krad-web-framework</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.kuali.rice</groupId>
+            <artifactId>rice-krad-data</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>

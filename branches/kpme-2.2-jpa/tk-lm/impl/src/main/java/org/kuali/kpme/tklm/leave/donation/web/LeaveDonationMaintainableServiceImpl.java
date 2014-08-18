@@ -38,8 +38,8 @@ public class LeaveDonationMaintainableServiceImpl extends HrBusinessObjectMainta
 	}
 	
 	@Override
-	public void saveBusinessObject() {
-		super.saveBusinessObject();
+	public void saveDataObject() {
+		super.saveDataObject();
 		//leave donation saved, clear cache before grabbing saved object
         CacheUtils.flushCache(LeaveDonation.CACHE_NAME);
 

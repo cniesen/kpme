@@ -25,13 +25,14 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.kns.inquiry.KualiInquirableImpl;
 import org.kuali.rice.krad.bo.BusinessObject;
+import org.kuali.rice.krad.inquiry.InquirableImpl;
 
-public class PayGradeInquirableImpl extends KualiInquirableImpl {
+public class PayGradeInquirableImpl extends InquirableImpl {
 
 	private static final long serialVersionUID = -4002061046745019065L;
 
-	@Override
-	public BusinessObject getBusinessObject(Map fieldValues) {
+    @Override
+    public Object retrieveDataObject(Map<String, String> fieldValues) {
         PayGradeBo payGrade = null;
         if (StringUtils.isNotBlank((String) fieldValues.get("hrPayGradeId"))) {
             payGrade = PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade((String) fieldValues.get("hrPayGradeId")));
@@ -41,14 +42,14 @@ public class PayGradeInquirableImpl extends KualiInquirableImpl {
             String sg = (String)fieldValues.get("salGroup");
             String effDate = (String) fieldValues.get("effectiveDate");
             LocalDate effectiveDate = StringUtils.isBlank(effDate) ? LocalDate.now() : TKUtils.formatDateString(effDate);
-            
+
             payGrade = PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade(pg, sg, effectiveDate));
         } else {
-            payGrade = (PayGradeBo) super.getBusinessObject(fieldValues);
+            payGrade = (PayGradeBo) super.retrieveDataObject(fieldValues);
         }
 
 
-		return payGrade;
-	}
+        return payGrade;
+    }
 	
 }

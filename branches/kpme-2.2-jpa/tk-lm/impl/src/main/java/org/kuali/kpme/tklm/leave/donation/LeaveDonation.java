@@ -15,184 +15,209 @@
  */
 package org.kuali.kpme.tklm.leave.donation;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
-import org.kuali.kpme.tklm.api.leave.donation.LeaveDonationContract;
 import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.leave.donation.LeaveDonationContract;
 import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "LM_LEAVE_DONATION_T")
 public class LeaveDonation extends HrBusinessObject implements LeaveDonationContract {
-	
+
     private static final String AMOUNT_RECEIVED = "amountReceived";
-	private static final String RECIPIENTS_ACCRUAL_CATEGORY = "recipientsAccrualCategory";
-	private static final String RECIPIENTS_PRINCIPAL_ID = "recipientsPrincipalID";
-	private static final String AMOUNT_DONATED = "amountDonated";
-	private static final String DONATED_ACCRUAL_CATEGORY = "donatedAccrualCategory";
-	private static final String DONORS_PRINCIPAL_ID = "donorsPrincipalID";
-    
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "LeaveDonation";
+
+    private static final String RECIPIENTS_ACCRUAL_CATEGORY = "recipientsAccrualCategory";
+
+    private static final String RECIPIENTS_PRINCIPAL_ID = "recipientsPrincipalID";
+
+    private static final String AMOUNT_DONATED = "amountDonated";
+
+    private static final String DONATED_ACCRUAL_CATEGORY = "donatedAccrualCategory";
+
+    private static final String DONORS_PRINCIPAL_ID = "donorsPrincipalID";
+
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "LeaveDonation";
+
     private static final long serialVersionUID = 1L;
-    //KPME-2273/1965 Primary Business Keys List.	
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DONORS_PRINCIPAL_ID)
-            .add(DONATED_ACCRUAL_CATEGORY)
-            .add(AMOUNT_DONATED)
-            .add(RECIPIENTS_PRINCIPAL_ID)
-            .add(RECIPIENTS_ACCRUAL_CATEGORY)
-            .add(AMOUNT_RECEIVED)
-            .build();    
-    
+
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(DONORS_PRINCIPAL_ID).add(DONATED_ACCRUAL_CATEGORY).add(AMOUNT_DONATED).add(RECIPIENTS_PRINCIPAL_ID).add(RECIPIENTS_ACCRUAL_CATEGORY).add(AMOUNT_RECEIVED).build();
+
+    @PortableSequenceGenerator(name = "LM_LEAVE_DONATION_S")
+    @GeneratedValue(generator = "LM_LEAVE_DONATION_S")
+    @Id
+    @Column(name = "LM_LEAVE_DONATION_ID", length = 60)
     private String lmLeaveDonationId;
-	private String donatedAccrualCategory;
-	private String recipientsAccrualCategory;
-	private BigDecimal amountDonated = new BigDecimal("0.0");
-	private BigDecimal amountReceived = new BigDecimal("0.0");
-	private String donorsPrincipalID;
-	private String recipientsPrincipalID;
-	private String description;
-	
-	private transient AccrualCategoryBo accrualCategoryObj;
-	private transient Person personObj;
-	private transient EarnCodeBo earnCodeObj;
-	
-	private String donatedEarnCode;
-	private String recipientsEarnCode;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DONORS_PRINCIPAL_ID, this.getDonorsPrincipalID())
-			.put(DONATED_ACCRUAL_CATEGORY, this.getDonatedAccrualCategory())
-			.put(AMOUNT_DONATED, this.getAmountDonated())
-			.put(RECIPIENTS_PRINCIPAL_ID, this.getRecipientsPrincipalID())
-			.put(RECIPIENTS_ACCRUAL_CATEGORY, this.getRecipientsAccrualCategory())
-			.put(AMOUNT_RECEIVED, this.getAmountReceived())
-			.build();
-	}
-	
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    @Column(name = "DONATED_ACC_CAT", nullable = false, length = 15)
+    private String donatedAccrualCategory;
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
+    @Column(name = "RECIPIENTS_ACC_CAT", nullable = false, length = 15)
+    private String recipientsAccrualCategory;
 
-	public String getDonatedEarnCode() {
-		return donatedEarnCode;
-	}
+    @Column(name = "AMOUNT_DONATED", nullable = false, length = 20)
+    private BigDecimal amountDonated = new BigDecimal("0.0");
 
-	public void setDonatedEarnCode(String donatedEarnCode) {
-		this.donatedEarnCode = donatedEarnCode;
-	}
+    @Column(name = "AMOUNT_RECEIVED", nullable = false, length = 20)
+    private BigDecimal amountReceived = new BigDecimal("0.0");
 
-	public String getRecipientsEarnCode() {
-		return recipientsEarnCode;
-	}
+    @Column(name = "DONOR", nullable = false, length = 20)
+    private String donorsPrincipalID;
 
-	public void setRecipientsEarnCode(String recipientsEarnCode) {
-		this.recipientsEarnCode = recipientsEarnCode;
-	}
+    @Column(name = "RECEPIENT", nullable = false, length = 20)
+    private String recipientsPrincipalID;
 
-	public String getLmLeaveDonationId() {
-		return lmLeaveDonationId;
-	}
+    @Column(name = "DESCR", nullable = false, length = 50)
+    private String description;
 
-	public void setLmLeaveDonationId(String lmLeaveDonationId) {
-		this.lmLeaveDonationId = lmLeaveDonationId;
-	}
+    @Transient
+    private transient AccrualCategoryBo accrualCategoryObj;
 
-	public String getDonatedAccrualCategory() {
-		return donatedAccrualCategory;
-	}
+    @Transient
+    private transient Person personObj;
 
-	public void setDonatedAccrualCategory(String donatedAccrualCategory) {
-		this.donatedAccrualCategory = donatedAccrualCategory;
-	}
+    @Transient
+    private transient EarnCodeBo earnCodeObj;
 
-	public String getRecipientsAccrualCategory() {
-		return recipientsAccrualCategory;
-	}
+    @Column(name = "DONATED_ER_CODE", nullable = false, length = 15)
+    private String donatedEarnCode;
 
-	public void setRecipientsAccrualCategory(String recipientsAccrualCategory) {
-		this.recipientsAccrualCategory = recipientsAccrualCategory;
-	}
+    @Column(name = "RECIPIENTS_ER_CODE", nullable = false, length = 15)
+    private String recipientsEarnCode;
 
-	public BigDecimal getAmountDonated() {
-		return amountDonated;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(DONORS_PRINCIPAL_ID, this.getDonorsPrincipalID()).put(DONATED_ACCRUAL_CATEGORY, this.getDonatedAccrualCategory()).put(AMOUNT_DONATED, this.getAmountDonated()).put(RECIPIENTS_PRINCIPAL_ID, this.getRecipientsPrincipalID()).put(RECIPIENTS_ACCRUAL_CATEGORY, this.getRecipientsAccrualCategory()).put(AMOUNT_RECEIVED, this.getAmountReceived()).build();
+    }
 
-	public void setAmountDonated(BigDecimal amountDonated) {
-		this.amountDonated = amountDonated;
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public BigDecimal getAmountReceived() {
-		return amountReceived;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public void setAmountReceived(BigDecimal amountReceived) {
-		this.amountReceived = amountReceived;
-	}
+    public String getDonatedEarnCode() {
+        return donatedEarnCode;
+    }
 
-	public String getDonorsPrincipalID() {
-		return donorsPrincipalID;
-	}
+    public void setDonatedEarnCode(String donatedEarnCode) {
+        this.donatedEarnCode = donatedEarnCode;
+    }
 
-	public void setDonorsPrincipalID(String donorsPrincipalID) {
-		this.donorsPrincipalID = donorsPrincipalID;
-	}
+    public String getRecipientsEarnCode() {
+        return recipientsEarnCode;
+    }
 
-	public String getRecipientsPrincipalID() {
-		return recipientsPrincipalID;
-	}
+    public void setRecipientsEarnCode(String recipientsEarnCode) {
+        this.recipientsEarnCode = recipientsEarnCode;
+    }
 
-	public void setRecipientsPrincipalID(String recipientsPrincipalID) {
-		this.recipientsPrincipalID = recipientsPrincipalID;
-	}
+    public String getLmLeaveDonationId() {
+        return lmLeaveDonationId;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setLmLeaveDonationId(String lmLeaveDonationId) {
+        this.lmLeaveDonationId = lmLeaveDonationId;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDonatedAccrualCategory() {
+        return donatedAccrualCategory;
+    }
 
-	public Person getPersonObj() {
-		return personObj;
-	}
+    public void setDonatedAccrualCategory(String donatedAccrualCategory) {
+        this.donatedAccrualCategory = donatedAccrualCategory;
+    }
 
-	public void setPersonObj(Person personObj) {
-		this.personObj = personObj;
-	}
+    public String getRecipientsAccrualCategory() {
+        return recipientsAccrualCategory;
+    }
 
-	public AccrualCategoryBo getAccrualCategoryObj() {
-		return accrualCategoryObj;
-	}
+    public void setRecipientsAccrualCategory(String recipientsAccrualCategory) {
+        this.recipientsAccrualCategory = recipientsAccrualCategory;
+    }
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
-		this.accrualCategoryObj = accrualCategoryObj;
-	}
+    public BigDecimal getAmountDonated() {
+        return amountDonated;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return getDonorsPrincipalID() +"_"+ getRecipientsPrincipalID() +"_"+ getDonatedAccrualCategory() +"_"+ getRecipientsAccrualCategory();
-	}
+    public void setAmountDonated(BigDecimal amountDonated) {
+        this.amountDonated = amountDonated;
+    }
 
-	@Override
-	public String getId() {
-		return getLmLeaveDonationId();
-	}
+    public BigDecimal getAmountReceived() {
+        return amountReceived;
+    }
 
-	@Override
-	public void setId(String id) {
-		setLmLeaveDonationId(id);
-	}
+    public void setAmountReceived(BigDecimal amountReceived) {
+        this.amountReceived = amountReceived;
+    }
 
+    public String getDonorsPrincipalID() {
+        return donorsPrincipalID;
+    }
+
+    public void setDonorsPrincipalID(String donorsPrincipalID) {
+        this.donorsPrincipalID = donorsPrincipalID;
+    }
+
+    public String getRecipientsPrincipalID() {
+        return recipientsPrincipalID;
+    }
+
+    public void setRecipientsPrincipalID(String recipientsPrincipalID) {
+        this.recipientsPrincipalID = recipientsPrincipalID;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Person getPersonObj() {
+        return personObj;
+    }
+
+    public void setPersonObj(Person personObj) {
+        this.personObj = personObj;
+    }
+
+    public AccrualCategoryBo getAccrualCategoryObj() {
+        return accrualCategoryObj;
+    }
+
+    public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+        this.accrualCategoryObj = accrualCategoryObj;
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getDonorsPrincipalID() + "_" + getRecipientsPrincipalID() + "_" + getDonatedAccrualCategory() + "_" + getRecipientsAccrualCategory();
+    }
+
+    @Override
+    public String getId() {
+        return getLmLeaveDonationId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setLmLeaveDonationId(id);
+    }
 }

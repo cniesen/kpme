@@ -15,132 +15,143 @@
  */
 package org.kuali.kpme.pm.pstncontracttype;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.pm.api.pstncontracttype.PstnContractType;
 import org.kuali.kpme.pm.api.pstncontracttype.PstnContractTypeContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_CNTRCT_TYP_T")
 public class PstnContractTypeBo extends HrKeyedBusinessObject implements PstnContractTypeContract {
-	
-	static class KeyFields {
-		final static String GROUP_KEY_CODE = "groupKeyCode";
-		private static final String NAME = "name";
-	}
-	
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(KeyFields.NAME)
-		    .add(KeyFields.GROUP_KEY_CODE)
-		    .build();
 
-	private static final long serialVersionUID = 1L;
-	
-	private String pmCntrctTypeId;		
-	private String name;
-	private String description;
-		
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(KeyFields.NAME, this.getName())
-			.put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-			.build();
-	}
-	
-	/*
+    static class KeyFields {
+
+        static final String GROUP_KEY_CODE = "groupKeyCode";
+
+        private static final String NAME = "name";
+    }
+
+    //KPME-2273/1965 Primary Business Keys List.	 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.NAME).add(KeyFields.GROUP_KEY_CODE).build();
+
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "PM_PSTN_CNTRCT_TYP_S")
+    @GeneratedValue(generator = "PM_PSTN_CNTRCT_TYP_S")
+    @Id
+    @Column(name = "PM_CNTRCT_TYP_ID", length = 60)
+    private String pmCntrctTypeId;
+
+    @Column(name = "NAME", nullable = false, length = 50)
+    private String name;
+
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.NAME, this.getName()).put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode()).build();
+    }
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPstnContractTypeBo, PstnContractTypeBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PstnContractTypeBo, PstnContractType> toImmutable =
-			new ModelObjectUtils.Transformer<PstnContractTypeBo, PstnContractType>() {
-		public PstnContractType transform(PstnContractTypeBo input) {
-			return PstnContractTypeBo.to(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PstnContractTypeBo, PstnContractType> toImmutable = new ModelObjectUtils.Transformer<PstnContractTypeBo, PstnContractType>() {
 
-	/*
+        public PstnContractType transform(PstnContractTypeBo input) {
+            return PstnContractTypeBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPstnContractType, PstnContractTypeBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PstnContractType, PstnContractTypeBo> toBo =
-			new ModelObjectUtils.Transformer<PstnContractType, PstnContractTypeBo>() {
-		public PstnContractTypeBo transform(PstnContractType input) {
-			return PstnContractTypeBo.from(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PstnContractType, PstnContractTypeBo> toBo = new ModelObjectUtils.Transformer<PstnContractType, PstnContractTypeBo>() {
 
-	@Override
-	public String getId() {
-		return getPmCntrctTypeId();
-	}
+        public PstnContractTypeBo transform(PstnContractType input) {
+            return PstnContractTypeBo.from(input);
+        }
 
-	@Override
-	public void setId(String id) {
-		setPmCntrctTypeId(id);
-	}
+        ;
+    };
 
-	@Override
-	protected String getUniqueKey() {
-		return getName() + "_" + getGroupKeyCode();
-	}
+    @Override
+    public String getId() {
+        return getPmCntrctTypeId();
+    }
 
-	public String getPmCntrctTypeId() {
-		return pmCntrctTypeId;
-	}
+    @Override
+    public void setId(String id) {
+        setPmCntrctTypeId(id);
+    }
 
-	public void setPmCntrctTypeId(String pmCntrctTypeId) {
-		this.pmCntrctTypeId = pmCntrctTypeId;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return getName() + "_" + getGroupKeyCode();
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getPmCntrctTypeId() {
+        return pmCntrctTypeId;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setPmCntrctTypeId(String pmCntrctTypeId) {
+        this.pmCntrctTypeId = pmCntrctTypeId;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public static PstnContractTypeBo from(PstnContractType im) {
-		if (im == null) {
-			return null;
-		}
-		PstnContractTypeBo pa = new PstnContractTypeBo();
-		pa.setPmCntrctTypeId(im.getPmCntrctTypeId());
-		pa.setName(im.getName());
-		pa.setDescription(im.getDescription());
-		pa.setGroupKeyCode(im.getGroupKeyCode());        
-		pa.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
-		
-		// finally copy over the common fields into pa from im
-		copyCommonFields(pa, im);
+    public String getDescription() {
+        return description;
+    }
 
-		return pa;
-	} 
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public static PstnContractType to(PstnContractTypeBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PstnContractType.Builder.create(bo).build();
-	}
+    public static PstnContractTypeBo from(PstnContractType im) {
+        if (im == null) {
+            return null;
+        }
+        PstnContractTypeBo pa = new PstnContractTypeBo();
+        pa.setPmCntrctTypeId(im.getPmCntrctTypeId());
+        pa.setName(im.getName());
+        pa.setDescription(im.getDescription());
+        pa.setGroupKeyCode(im.getGroupKeyCode());
+        pa.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
+        // finally copy over the common fields into pa from im 
+        copyCommonFields(pa, im);
+        return pa;
+    }
 
+    public static PstnContractType to(PstnContractTypeBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PstnContractType.Builder.create(bo).build();
+    }
 }

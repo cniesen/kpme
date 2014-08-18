@@ -15,120 +15,129 @@
  */
 package org.kuali.kpme.pm.pstnrptgrpsubcat;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.pm.api.pstnrptgrpsubcat.PositionReportGroupSubCategory;
 import org.kuali.kpme.pm.api.pstnrptgrpsubcat.PositionReportGroupSubCategoryContract;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_RPT_GRP_SUB_CAT_T")
 public class PositionReportGroupSubCategoryBo extends HrKeyedBusinessObject implements PositionReportGroupSubCategoryContract {
-	
-	static class KeyFields {
-		private static final String POSITION_REPORT_GROUP = "positionReportGroup";
-		private static final String POSITION_REPORT_SUB_CAT = "positionReportSubCat";
-	}
 
-	private static final long serialVersionUID = 1L;
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		     .add(KeyFields.POSITION_REPORT_SUB_CAT)
-		     .add(KeyFields.POSITION_REPORT_GROUP)
-		     .build();
-	
-	private String pmPstnRptGrpSubCatId;
-	private String pstnRptGrpSubCat;
-	private String positionReportGroup;
-	private String positionReportSubCat;
-	private String description;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.POSITION_REPORT_SUB_CAT, this.getPositionReportSubCat())
-				.put(KeyFields.POSITION_REPORT_GROUP, this.getPositionReportGroup())
-				.build();
-	}
-	
-	@Override
-	public String getId() {
-		return this.getPmPstnRptGrpSubCatId();
-	}
+    static class KeyFields {
 
-	@Override
-	public void setId(String id) {
-		setPmPstnRptGrpSubCatId(id);
-	}
+        private static final String POSITION_REPORT_GROUP = "positionReportGroup";
 
-	@Override
-	protected String getUniqueKey() {
-		return getPstnRptGrpSubCat() + "_" + getPositionReportGroup() + "_" + getPositionReportSubCat();
-	}
+        private static final String POSITION_REPORT_SUB_CAT = "positionReportSubCat";
+    }
 
-	public String getPmPstnRptGrpSubCatId() {
-		return pmPstnRptGrpSubCatId;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setPmPstnRptGrpSubCatId(String pmPstnRptGrpSubCatId) {
-		this.pmPstnRptGrpSubCatId = pmPstnRptGrpSubCatId;
-	}
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.POSITION_REPORT_SUB_CAT).add(KeyFields.POSITION_REPORT_GROUP).build();
 
-	public String getPstnRptGrpSubCat() {
-		return pstnRptGrpSubCat;
-	}
+    @PortableSequenceGenerator(name = "PM_PSTN_RPT_GRP_SUB_CAT_S")
+    @GeneratedValue(generator = "PM_PSTN_RPT_GRP_SUB_CAT_S")
+    @Id
+    @Column(name = "PM_PSTN_RPT_GRP_SUB_CAT_ID", length = 60)
+    private String pmPstnRptGrpSubCatId;
 
-	public void setPstnRptGrpSubCat(String pstnRptGrpSubCat) {
-		this.pstnRptGrpSubCat = pstnRptGrpSubCat;
-	}
+    @Column(name = "PSTN_RPT_GRP_SUB_CAT", nullable = false, length = 50)
+    private String pstnRptGrpSubCat;
 
-	public String getPositionReportGroup() {
-		return positionReportGroup;
-	}
+    @Column(name = "PSTN_RPT_GRP", nullable = false, length = 50)
+    private String positionReportGroup;
 
-	public void setPositionReportGroup(String positionReportGroup) {
-		this.positionReportGroup = positionReportGroup;
-	}
+    @Column(name = "PSTN_RPT_SUB_CAT", nullable = false, length = 50)
+    private String positionReportSubCat;
 
-	public String getPositionReportSubCat() {
-		return positionReportSubCat;
-	}
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
 
-	public void setPositionReportSubCat(String positionReportSubCat) {
-		this.positionReportSubCat = positionReportSubCat;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.POSITION_REPORT_SUB_CAT, this.getPositionReportSubCat()).put(KeyFields.POSITION_REPORT_GROUP, this.getPositionReportGroup()).build();
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    @Override
+    public String getId() {
+        return this.getPmPstnRptGrpSubCatId();
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	
-	public static PositionReportGroupSubCategoryBo from(PositionReportGroupSubCategory im) {
-		PositionReportGroupSubCategoryBo retVal = new PositionReportGroupSubCategoryBo();
-		
-		// copy over BO-specific fields
-		retVal.setPositionReportGroup(im.getPositionReportGroup());
-		retVal.setPositionReportSubCat(im.getPositionReportSubCat());
-		retVal.setPstnRptGrpSubCat(im.getPstnRptGrpSubCat());
-		retVal.setPmPstnRptGrpSubCatId(im.getPmPstnRptGrpSubCatId());
-		retVal.setDescription(im.getDescription());
-		
-		// fnally copy over fields common to all Hr BOs
-		copyCommonFields(retVal, im);		
-		
-		return retVal;
-	}
-	
-	public static PositionReportGroupSubCategory to(PositionReportGroupSubCategoryBo bo) {
+    @Override
+    public void setId(String id) {
+        setPmPstnRptGrpSubCatId(id);
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getPstnRptGrpSubCat() + "_" + getPositionReportGroup() + "_" + getPositionReportSubCat();
+    }
+
+    public String getPmPstnRptGrpSubCatId() {
+        return pmPstnRptGrpSubCatId;
+    }
+
+    public void setPmPstnRptGrpSubCatId(String pmPstnRptGrpSubCatId) {
+        this.pmPstnRptGrpSubCatId = pmPstnRptGrpSubCatId;
+    }
+
+    public String getPstnRptGrpSubCat() {
+        return pstnRptGrpSubCat;
+    }
+
+    public void setPstnRptGrpSubCat(String pstnRptGrpSubCat) {
+        this.pstnRptGrpSubCat = pstnRptGrpSubCat;
+    }
+
+    public String getPositionReportGroup() {
+        return positionReportGroup;
+    }
+
+    public void setPositionReportGroup(String positionReportGroup) {
+        this.positionReportGroup = positionReportGroup;
+    }
+
+    public String getPositionReportSubCat() {
+        return positionReportSubCat;
+    }
+
+    public void setPositionReportSubCat(String positionReportSubCat) {
+        this.positionReportSubCat = positionReportSubCat;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public static PositionReportGroupSubCategoryBo from(PositionReportGroupSubCategory im) {
+        PositionReportGroupSubCategoryBo retVal = new PositionReportGroupSubCategoryBo();
+        // copy over BO-specific fields  
+        retVal.setPositionReportGroup(im.getPositionReportGroup());
+        retVal.setPositionReportSubCat(im.getPositionReportSubCat());
+        retVal.setPstnRptGrpSubCat(im.getPstnRptGrpSubCat());
+        retVal.setPmPstnRptGrpSubCatId(im.getPmPstnRptGrpSubCatId());
+        retVal.setDescription(im.getDescription());
+        // fnally copy over fields common to all Hr BOs  
+        copyCommonFields(retVal, im);
+        return retVal;
+    }
+
+    public static PositionReportGroupSubCategory to(PositionReportGroupSubCategoryBo bo) {
         if (bo == null) {
             return null;
         }
-
         return PositionReportGroupSubCategory.Builder.create(bo).build();
     }
-
-
 }

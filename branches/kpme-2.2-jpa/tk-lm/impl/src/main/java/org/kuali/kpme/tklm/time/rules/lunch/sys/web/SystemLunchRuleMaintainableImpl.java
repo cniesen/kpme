@@ -32,7 +32,7 @@ public class SystemLunchRuleMaintainableImpl extends KualiMaintainableImpl {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void saveBusinessObject() {
+	public void saveDataObject() {
 		SystemLunchRule sysLunchRule = (SystemLunchRule)this.getBusinessObject();
 		if(sysLunchRule.getTkSystemLunchRuleId()!=null && sysLunchRule.isActive()){
 			SystemLunchRule oldSystemLunchRule = TkServiceLocator.getSystemLunchRuleService().getSystemLunchRule(sysLunchRule.getTkSystemLunchRuleId());

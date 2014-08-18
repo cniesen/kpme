@@ -15,68 +15,82 @@
  */
 package org.kuali.kpme.tklm.time.rules.graceperiod;
 
-import java.math.BigDecimal;
-
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.tklm.api.time.rules.graceperiod.GracePeriodRuleContract;
-import org.kuali.kpme.tklm.api.common.TkConstants;
-
 import com.google.common.collect.ImmutableMap;
+import java.math.BigDecimal;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.time.rules.graceperiod.GracePeriodRuleContract;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "TK_GRACE_PERIOD_RL_T")
 public class GracePeriodRule extends HrBusinessObject implements GracePeriodRuleContract {
 
-	private static final long serialVersionUID = 2756221187837436165L;
+    private static final long serialVersionUID = 2756221187837436165L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "GracePeriodRule";
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "GracePeriodRule";
 
-	private String tkGracePeriodRuleId;
-	private BigDecimal hourFactor;
-	private boolean history; // KPME-2543
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
+    @PortableSequenceGenerator(name = "TK_GRACE_PERIOD_RL_S")
+    @GeneratedValue(generator = "TK_GRACE_PERIOD_RL_S")
+    @Id
+    @Column(name = "TK_GRACE_PERIOD_RULE_ID", length = 60)
+    private String tkGracePeriodRuleId;
 
-	public BigDecimal getHourFactor() {
-	    return hourFactor;
-	}
+    @Column(name = "HOUR_FACTOR", nullable = false, precision = 2)
+    private BigDecimal hourFactor;
 
-	public void setHourFactor(BigDecimal hourFactor) {
-	    this.hourFactor = hourFactor;
-	}
+    @Transient
+    private boolean history;
 
-	public String getTkGracePeriodRuleId() {
-		return tkGracePeriodRuleId;
-	}
+    // KPME-2543 
+    // TODO returning an empty map for the time-being, until the BK is finalized 
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
 
-	public void setTkGracePeriodRuleId(String tkGracePeriodRuleId) {
-		this.tkGracePeriodRuleId = tkGracePeriodRuleId;
-	}
+    public BigDecimal getHourFactor() {
+        return hourFactor;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return hourFactor + "";
-	}
+    public void setHourFactor(BigDecimal hourFactor) {
+        this.hourFactor = hourFactor;
+    }
 
-	@Override
-	public String getId() {
-		return getTkGracePeriodRuleId();
-	}
+    public String getTkGracePeriodRuleId() {
+        return tkGracePeriodRuleId;
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkGracePeriodRuleId(id);
-	}
+    public void setTkGracePeriodRuleId(String tkGracePeriodRuleId) {
+        this.tkGracePeriodRuleId = tkGracePeriodRuleId;
+    }
 
-	public boolean isHistory() {
-		return history;
-	}
+    @Override
+    public String getUniqueKey() {
+        return hourFactor + "";
+    }
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
+    @Override
+    public String getId() {
+        return getTkGracePeriodRuleId();
+    }
 
+    @Override
+    public void setId(String id) {
+        setTkGracePeriodRuleId(id);
+    }
+
+    public boolean isHistory() {
+        return history;
+    }
+
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 }

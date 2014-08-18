@@ -27,4 +27,10 @@ public class HrApiConstants {
 	 }
 	 
 	 public static final String ASSIGNMENT_KEY_DELIMITER = "_";
+
+    public static final class CommonFieldNames {
+        public static final String EFFECTIVE_DATE = "effectiveDate";
+        public static final String TIMESTAMP = "timestamp";
+        public static final String BUSINESS_KEYS = "BUSINESS_KEYS";
+    }
 }

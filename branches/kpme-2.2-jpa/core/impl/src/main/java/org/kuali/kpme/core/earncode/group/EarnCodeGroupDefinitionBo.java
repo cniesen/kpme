@@ -15,6 +15,12 @@
  */
 package org.kuali.kpme.core.earncode.group;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
@@ -25,135 +31,148 @@ import org.kuali.kpme.core.earncode.EarnCodeBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "HR_EARN_CODE_GROUP_DEF_T")
 public class EarnCodeGroupDefinitionBo extends PersistableBusinessObjectBase implements EarnCodeGroupDefinitionContract {
 
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -8463674251885306591L;
-	
-	public static final ModelObjectUtils.Transformer<EarnCodeGroupDefinition, EarnCodeGroupDefinitionBo> toEarnCodeGroupDefinitionBo =
-            new ModelObjectUtils.Transformer<EarnCodeGroupDefinition, EarnCodeGroupDefinitionBo>() {
-                public EarnCodeGroupDefinitionBo transform(EarnCodeGroupDefinition input) {
-                    return EarnCodeGroupDefinitionBo.from(input);
-                };
-            };
+    private static final long serialVersionUID = -8463674251885306591L;
 
-	private String hrEarnCodeGroupDefId;
+    public static final ModelObjectUtils.Transformer<EarnCodeGroupDefinition, EarnCodeGroupDefinitionBo> toEarnCodeGroupDefinitionBo = new ModelObjectUtils.Transformer<EarnCodeGroupDefinition, EarnCodeGroupDefinitionBo>() {
 
-	private String earnCode;
+        public EarnCodeGroupDefinitionBo transform(EarnCodeGroupDefinition input) {
+            return EarnCodeGroupDefinitionBo.from(input);
+        }
 
-	private String hrEarnCodeGroupId;
+        ;
+    };
 
-	private String userPrincipalId;
-	 
-	private boolean active=true;
-	
+    @PortableSequenceGenerator(name = "HR_EARN_CODE_GROUP_DEF_S")
+    @GeneratedValue(generator = "HR_EARN_CODE_GROUP_DEF_S")
+    @Id
+    @Column(name = "HR_EARN_CODE_GROUP_DEF_ID", length = 60)
+    private String hrEarnCodeGroupDefId;
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
+    private String earnCode;
+
+    @Column(name = "HR_EARN_CODE_GROUP_ID", nullable = false, length = 60)
+    private String hrEarnCodeGroupId;
+
+    @Transient
+    private String userPrincipalId;
+
+    @Transient
+    private boolean active = true;
+
+    @Transient
     private EarnCodeBo earnCodeObj;
+
+    @Transient
     private transient EarnCodeService earnCodeService;
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public String getEarnCode() {
+        return earnCode;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
-	
-	public String getHrEarnCodeGroupDefId() {
-		return hrEarnCodeGroupDefId;
-	}
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
-	public void setHrEarnCodeGroupDefId(String hrEarnCodeGroupDefId) {
-		this.hrEarnCodeGroupDefId = hrEarnCodeGroupDefId;
-	}
+    public String getHrEarnCodeGroupDefId() {
+        return hrEarnCodeGroupDefId;
+    }
 
-	public String getHrEarnCodeGroupId() {
-		return hrEarnCodeGroupId;
-	}
+    public void setHrEarnCodeGroupDefId(String hrEarnCodeGroupDefId) {
+        this.hrEarnCodeGroupDefId = hrEarnCodeGroupDefId;
+    }
 
-	public void setHrEarnCodeGroupId(String hrEarnCodeGroupId) {
-		this.hrEarnCodeGroupId = hrEarnCodeGroupId;
-	}
+    public String getHrEarnCodeGroupId() {
+        return hrEarnCodeGroupId;
+    }
 
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    public void setHrEarnCodeGroupId(String hrEarnCodeGroupId) {
+        this.hrEarnCodeGroupId = hrEarnCodeGroupId;
+    }
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
-		
-	// this is for the maintenance screen
-	public String getEarnCodeDesc() {
-		if(this.earnCode != null){
-			EarnCodeContract earnCode =getEarnCodeService().getEarnCode(this.earnCode, LocalDate.now());
-			
-			if(earnCode != null && StringUtils.isNotBlank(earnCode.getDescription())) {
-				return earnCode.getDescription();
-			}
-		}
-		return "";
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public String getUserPrincipalId() {
-		return userPrincipalId;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public void setUserPrincipalId(String userPrincipalId) {
-		this.userPrincipalId = userPrincipalId;
-	}
+    // this is for the maintenance screen  
+    public String getEarnCodeDesc() {
+        if (this.earnCode != null) {
+            EarnCodeContract earnCode = getEarnCodeService().getEarnCode(this.earnCode, LocalDate.now());
+            if (earnCode != null && StringUtils.isNotBlank(earnCode.getDescription())) {
+                return earnCode.getDescription();
+            }
+        }
+        return "";
+    }
 
-	public boolean isActive() {
-		return active;
-	}
+    public String getUserPrincipalId() {
+        return userPrincipalId;
+    }
 
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	
-	@Override
-	public String getId() {
-		return hrEarnCodeGroupDefId;
-	}
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
-	public void setId(String id) {
-		setHrEarnCodeGroupDefId(id);
-	}
-	
-	public static EarnCodeGroupDefinitionBo from(EarnCodeGroupDefinition im) {
-	    if (im == null) {
-	        return null;
-	    }
-	    EarnCodeGroupDefinitionBo ecgd = new EarnCodeGroupDefinitionBo();
-	    
-	    ecgd.setHrEarnCodeGroupDefId(im.getHrEarnCodeGroupDefId());
-	    ecgd.setEarnCode(im.getEarnCode());
-	    ecgd.setHrEarnCodeGroupId(im.getHrEarnCodeGroupId());
-	    ecgd.setActive(im.isActive());
-	    ecgd.setUserPrincipalId(im.getUserPrincipalId());
-	    ecgd.setVersionNumber(im.getVersionNumber());
-	    ecgd.setObjectId(im.getObjectId());
-	    return ecgd;
-	} 
-	
-	public static EarnCodeGroupDefinition to(EarnCodeGroupDefinitionBo bo) {
-	    if (bo == null) {
-	        return null;
-	    }
-	    return EarnCodeGroupDefinition.Builder.create(bo).build();
-	}
+    public boolean isActive() {
+        return active;
+    }
 
-	public EarnCodeService getEarnCodeService() {
-		if(earnCodeService == null) {
-			earnCodeService = HrServiceLocator.getEarnCodeService();
-		}
-		return earnCodeService;
-	}
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
-	public void setEarnCodeService(EarnCodeService earnCodeService) {
-		this.earnCodeService = earnCodeService;
-	}
-	
+    @Override
+    public String getId() {
+        return hrEarnCodeGroupDefId;
+    }
+
+    public void setId(String id) {
+        setHrEarnCodeGroupDefId(id);
+    }
+
+    public static EarnCodeGroupDefinitionBo from(EarnCodeGroupDefinition im) {
+        if (im == null) {
+            return null;
+        }
+        EarnCodeGroupDefinitionBo ecgd = new EarnCodeGroupDefinitionBo();
+        ecgd.setHrEarnCodeGroupDefId(im.getHrEarnCodeGroupDefId());
+        ecgd.setEarnCode(im.getEarnCode());
+        ecgd.setHrEarnCodeGroupId(im.getHrEarnCodeGroupId());
+        ecgd.setActive(im.isActive());
+        ecgd.setUserPrincipalId(im.getUserPrincipalId());
+        ecgd.setVersionNumber(im.getVersionNumber());
+        ecgd.setObjectId(im.getObjectId());
+        return ecgd;
+    }
+
+    public static EarnCodeGroupDefinition to(EarnCodeGroupDefinitionBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return EarnCodeGroupDefinition.Builder.create(bo).build();
+    }
+
+    public EarnCodeService getEarnCodeService() {
+        if (earnCodeService == null) {
+            earnCodeService = HrServiceLocator.getEarnCodeService();
+        }
+        return earnCodeService;
+    }
+
+    public void setEarnCodeService(EarnCodeService earnCodeService) {
+        this.earnCodeService = earnCodeService;
+    }
 }

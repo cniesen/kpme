@@ -15,7 +15,12 @@
  */
 package org.kuali.kpme.pm.classification.qual;
 
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.pm.PMConstants;
 import org.kuali.kpme.pm.api.classification.qual.ClassificationQualification;
@@ -24,150 +29,169 @@ import org.kuali.kpme.pm.api.pstnqlfrtype.PstnQlfrTypeContract;
 import org.kuali.kpme.pm.classification.ClassificationDerived;
 import org.kuali.kpme.pm.service.base.PmServiceLocator;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.util.ObjectUtils;
 
+@Entity
+@Table(name = "PM_PSTN_CL_QLFCTN_T")
 public class ClassificationQualificationBo extends ClassificationDerived implements ClassificationQualificationContract {
-	private static final long serialVersionUID = 1L;
-	
-	private String pmClassificationQualificationId;
-	private String qualificationType;
-	private String typeValue;		// for GUI only
-	private String qualifier;
-	private String qualificationValue;
-	private String displayOrder;
-	private transient String qualifierString;
-	
-	public String getQualifierString() {
-		String qualifierString = qualificationValue;
-		if (qualifier != null) {
-			PstnQlfrTypeContract qualifierType = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeByType(qualificationType);
-			
-			if (ObjectUtils.isNotNull(qualifierType)
-					&& qualifierType.getTypeValue().equals(PMConstants.PSTN_QLFR_NUMBER)) {
-				if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.GREATER_EQUAL)) {
-					qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.GREATER_EQUAL + " " + qualificationValue;
-				} else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.GREATER_THAN)) {
-					qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.GREATER_THAN + " " + qualificationValue;
-				} else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.LESS_EQUAL)) {
-					qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.LESS_EQUAL + " " + qualificationValue;
-				} else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.LESS_THAN)) {
-					qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.LESS_THAN + " " + qualificationValue;
-				} else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.EQUAL)) {
-					qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.EQUAL + " " + qualificationValue;
-				} else {
-					qualifierString = qualifier + " " + qualificationValue;
-				}
-			}
-		}
-		return qualifierString;
-	}
 
-	public void setQualifierString(String qualifierString) {
-		this.qualifierString = qualifierString;
-	}
-		
-	public String getQualificationType() {
-		return qualificationType;
-	}
+    private static final long serialVersionUID = 1L;
 
-	public void setQualificationType(String qualificationType) {
-		this.qualificationType = qualificationType;
-	}
+    @PortableSequenceGenerator(name = "PM_PSTN_CL_QLFCTN_S")
+    @GeneratedValue(generator = "PM_PSTN_CL_QLFCTN_S")
+    @Id
+    @Column(name = "PM_PSTN_CL_QLFCTN_ID", length = 60)
+    private String pmClassificationQualificationId;
 
-	public String getQualifier() {
-		return qualifier;
-	}
+    @Column(name = "QLFCTN_TP", nullable = false, length = 20)
+    private String qualificationType;
 
-	public void setQualifier(String qualifier) {
-		this.qualifier = qualifier;
-	}
+    @Transient
+    private String typeValue;
 
-	public String getQualificationValue() {
-		return qualificationValue;
-	}
+    // for GUI only 
+    @Column(name = "QUALIFIER", nullable = false, length = 10)
+    private String qualifier;
 
-	public void setQualificationValue(String qualificationValue) {
-		this.qualificationValue = qualificationValue;
-	}
+    @Column(name = "QLFCTN_VL", nullable = false, length = 50)
+    private String qualificationValue;
 
-	public String getDisplayOrder() {
-		return displayOrder;
-	}
+    @Transient
+    private String displayOrder;
 
-	public void setDisplayOrder(String displayOrder) {
-		this.displayOrder = displayOrder;
-	}
+    @Transient
+    private transient String qualifierString;
 
-	public String getPmClassificationQualificationId() {
-		return pmClassificationQualificationId;
-	}
+    public String getQualifierString() {
+        String qualifierString = qualificationValue;
+        if (qualifier != null) {
+            PstnQlfrTypeContract qualifierType = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeByType(qualificationType);
+            if (ObjectUtils.isNotNull(qualifierType) && qualifierType.getTypeValue().equals(PMConstants.PSTN_QLFR_NUMBER)) {
+                if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.GREATER_EQUAL)) {
+                    qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.GREATER_EQUAL + " " + qualificationValue;
+                } else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.GREATER_THAN)) {
+                    qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.GREATER_THAN + " " + qualificationValue;
+                } else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.LESS_EQUAL)) {
+                    qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.LESS_EQUAL + " " + qualificationValue;
+                } else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.LESS_THAN)) {
+                    qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.LESS_THAN + " " + qualificationValue;
+                } else if (qualifier.equals(PMConstants.PSTN_CLSS_QLFR_VALUE.EQUAL)) {
+                    qualifierString = PMConstants.PSTN_CLSS_QLFR_STRING_VALUE.EQUAL + " " + qualificationValue;
+                } else {
+                    qualifierString = qualifier + " " + qualificationValue;
+                }
+            }
+        }
+        return qualifierString;
+    }
 
-	public void setPmClassificationQualificationId(
-			String pmClassificationQualificationId) {
-		this.pmClassificationQualificationId = pmClassificationQualificationId;
-	}
+    public void setQualifierString(String qualifierString) {
+        this.qualifierString = qualifierString;
+    }
 
-	public String getTypeValue() {
-		if(StringUtils.isNotEmpty(this.getQualificationType())) {
-			PstnQlfrTypeContract aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(this.getQualificationType());
-			if(aTypeObj != null) {
-				return aTypeObj.getTypeValue();
-			}
-		}
-		return "";
-	}
+    public String getQualificationType() {
+        return qualificationType;
+    }
 
-	public void setTypeValue(String typeValue) {
-		this.typeValue = typeValue;
-	}
+    public void setQualificationType(String qualificationType) {
+        this.qualificationType = qualificationType;
+    }
 
-	public static ClassificationQualificationBo from(ClassificationQualification im) {
+    public String getQualifier() {
+        return qualifier;
+    }
 
-		if (im == null) {
-			return null;
-		}
+    public void setQualifier(String qualifier) {
+        this.qualifier = qualifier;
+    }
 
-		ClassificationQualificationBo classificationQualificationBo = new ClassificationQualificationBo();
+    public String getQualificationValue() {
+        return qualificationValue;
+    }
 
-		classificationQualificationBo.setDisplayOrder(im.getDisplayOrder());
-		classificationQualificationBo.setObjectId(im.getObjectId());
-		classificationQualificationBo.setPmClassificationQualificationId(im.getPmClassificationQualificationId());
-		classificationQualificationBo.setPmPositionClassId(im.getPmPositionClassId());
-		classificationQualificationBo.setQualificationType(im.getQualificationType());
-		classificationQualificationBo.setQualificationValue(im.getQualificationValue());
-		classificationQualificationBo.setQualifier(im.getQualifier());
-		classificationQualificationBo.setVersionNumber(im.getVersionNumber());
-		
-		return classificationQualificationBo;
+    public void setQualificationValue(String qualificationValue) {
+        this.qualificationValue = qualificationValue;
+    }
 
-	}
+    public String getDisplayOrder() {
+        return displayOrder;
+    }
 
-	public static ClassificationQualification to(ClassificationQualificationBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return ClassificationQualification.Builder.create(bo).build();
-	}
-	
-	public static final ModelObjectUtils.Transformer<ClassificationQualificationBo, ClassificationQualification> toImmutable = new ModelObjectUtils.Transformer<ClassificationQualificationBo, ClassificationQualification>() {
-		public ClassificationQualification transform(ClassificationQualificationBo input) {
-			return ClassificationQualificationBo.to(input);
-		};
-	};
+    public void setDisplayOrder(String displayOrder) {
+        this.displayOrder = displayOrder;
+    }
 
-	public static final ModelObjectUtils.Transformer<ClassificationQualification, ClassificationQualificationBo> toBo = new ModelObjectUtils.Transformer<ClassificationQualification, ClassificationQualificationBo>() {
-		public ClassificationQualificationBo transform(ClassificationQualification input) {
-			return ClassificationQualificationBo.from(input);
-		};
-	};
+    public String getPmClassificationQualificationId() {
+        return pmClassificationQualificationId;
+    }
 
-	@Override
-	public String getId() {
-		return this.getPmClassificationQualificationId();
-	}
+    public void setPmClassificationQualificationId(String pmClassificationQualificationId) {
+        this.pmClassificationQualificationId = pmClassificationQualificationId;
+    }
 
-	@Override
-	public void setId(String id) {
-		this.setPmClassificationQualificationId(id);
-	}
+    public String getTypeValue() {
+        if (StringUtils.isNotEmpty(this.getQualificationType())) {
+            PstnQlfrTypeContract aTypeObj = PmServiceLocator.getPstnQlfrTypeService().getPstnQlfrTypeById(this.getQualificationType());
+            if (aTypeObj != null) {
+                return aTypeObj.getTypeValue();
+            }
+        }
+        return "";
+    }
+
+    public void setTypeValue(String typeValue) {
+        this.typeValue = typeValue;
+    }
+
+    public static ClassificationQualificationBo from(ClassificationQualification im) {
+        if (im == null) {
+            return null;
+        }
+        ClassificationQualificationBo classificationQualificationBo = new ClassificationQualificationBo();
+        classificationQualificationBo.setDisplayOrder(im.getDisplayOrder());
+        classificationQualificationBo.setObjectId(im.getObjectId());
+        classificationQualificationBo.setPmClassificationQualificationId(im.getPmClassificationQualificationId());
+        classificationQualificationBo.setPmPositionClassId(im.getPmPositionClassId());
+        classificationQualificationBo.setQualificationType(im.getQualificationType());
+        classificationQualificationBo.setQualificationValue(im.getQualificationValue());
+        classificationQualificationBo.setQualifier(im.getQualifier());
+        classificationQualificationBo.setVersionNumber(im.getVersionNumber());
+        return classificationQualificationBo;
+    }
+
+    public static ClassificationQualification to(ClassificationQualificationBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return ClassificationQualification.Builder.create(bo).build();
+    }
+
+    public static final ModelObjectUtils.Transformer<ClassificationQualificationBo, ClassificationQualification> toImmutable = new ModelObjectUtils.Transformer<ClassificationQualificationBo, ClassificationQualification>() {
+
+        public ClassificationQualification transform(ClassificationQualificationBo input) {
+            return ClassificationQualificationBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<ClassificationQualification, ClassificationQualificationBo> toBo = new ModelObjectUtils.Transformer<ClassificationQualification, ClassificationQualificationBo>() {
+
+        public ClassificationQualificationBo transform(ClassificationQualification input) {
+            return ClassificationQualificationBo.from(input);
+        }
+
+        ;
+    };
+
+    @Override
+    public String getId() {
+        return this.getPmClassificationQualificationId();
+    }
+
+    @Override
+    public void setId(String id) {
+        this.setPmClassificationQualificationId(id);
+    }
 }

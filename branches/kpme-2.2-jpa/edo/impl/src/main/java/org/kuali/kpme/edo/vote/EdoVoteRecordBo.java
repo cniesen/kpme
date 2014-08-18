@@ -1,6 +1,9 @@
 package org.kuali.kpme.edo.vote;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.sql.Timestamp;
+import javax.persistence.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -10,96 +13,119 @@ import org.kuali.kpme.edo.api.vote.EdoVoteRecordContract;
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "EDO_VOTE_RECORD_T")
 public class EdoVoteRecordBo extends PersistableBusinessObjectBase implements EdoVoteRecordContract {
-	
-	private static final long serialVersionUID = 3095972270492358821L;
 
+    private static final long serialVersionUID = 3095972270492358821L;
 
-	static class KeyFields {
-		private static final String EDO_DOSSIER_ID = "edoDossierId";
-		private static final String EDO_REVIEW_LAYER_DEFINITION_ID = "edoReviewLayerDefinitionId";
-		private static final String VOTE_TYPE = "voteType";
-		private static final String VOTE_ROUND = "voteRound";
-		private static final String VOTE_SUB_ROUND = "voteSubRound";
-	}
-	
+    static class KeyFields {
+
+        private static final String EDO_DOSSIER_ID = "edoDossierId";
+
+        private static final String EDO_REVIEW_LAYER_DEFINITION_ID = "edoReviewLayerDefinitionId";
+
+        private static final String VOTE_TYPE = "voteType";
+
+        private static final String VOTE_ROUND = "voteRound";
+
+        private static final String VOTE_SUB_ROUND = "voteSubRound";
+    }
+
+    @PortableSequenceGenerator(name = "EDO_DOSSIER_S")
+    @GeneratedValue(generator = "EDO_DOSSIER_S")
+    @Id
+    @Column(name = "EDO_VOTE_RECORD_ID", nullable = false, length = 60)
     private String edoVoteRecordId;
+
+    @Column(name = "EDO_DOSSIER_ID", nullable = false, length = 60)
     private String edoDossierId;
+
+    @Column(name = "EDO_REVIEW_LAYER_DEF_ID", nullable = false, length = 60)
     private String edoReviewLayerDefinitionId;
+
+    @Column(name = "VOTE_TYPE", nullable = false, length = 45)
     private String voteType;
+
+    @Column(name = "AOE_CODE", length = 1)
     private String aoeCode;
+
+    @Transient
     private String aoeDescription;
-    
+
+    @Column(name = "YES_COUNT")
     private Integer yesCount;
+
+    @Column(name = "NO_COUNT")
     private Integer noCount;
+
+    @Column(name = "ABSENT_COUNT")
     private Integer absentCount;
+
+    @Column(name = "ABSTAIN_COUNT")
     private Integer abstainCount;
-    
+
+    @Column(name = "VOTE_ROUND")
     private Integer voteRound;
+
+    @Column(name = "VOTE_SUBROUND")
     private Integer voteSubRound;
-    
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "CREATED_AT", nullable = false)
     private Timestamp createdAtVal;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "UPDATED_AT", nullable = false)
     private Timestamp updatedAtVal;
+
+    @Column(name = "CREATED_BY", nullable = false, length = 40)
     private String createdBy;
-   
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-    		.add(KeyFields.EDO_DOSSIER_ID)
-    		.add(KeyFields.EDO_REVIEW_LAYER_DEFINITION_ID)
-    		.add(KeyFields.VOTE_TYPE)
-    		.add(KeyFields.VOTE_ROUND)
-    		.add(KeyFields.VOTE_SUB_ROUND)
-			.build();
-	
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return  new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.EDO_DOSSIER_ID, this.getEdoDossierId())
-				.put(KeyFields.EDO_REVIEW_LAYER_DEFINITION_ID, this.getEdoReviewLayerDefinitionId())
-				.put(KeyFields.VOTE_TYPE, this.getVoteType())
-				.put(KeyFields.VOTE_ROUND, this.getVoteRound())
-				.put(KeyFields.VOTE_SUB_ROUND, this.getVoteSubRound())
-				.build();
-	}
-    
-	public String getId() {
-		return getEdoVoteRecordId();
-	}
-	
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.EDO_DOSSIER_ID).add(KeyFields.EDO_REVIEW_LAYER_DEFINITION_ID).add(KeyFields.VOTE_TYPE).add(KeyFields.VOTE_ROUND).add(KeyFields.VOTE_SUB_ROUND).build();
+
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.EDO_DOSSIER_ID, this.getEdoDossierId()).put(KeyFields.EDO_REVIEW_LAYER_DEFINITION_ID, this.getEdoReviewLayerDefinitionId()).put(KeyFields.VOTE_TYPE, this.getVoteType()).put(KeyFields.VOTE_ROUND, this.getVoteRound()).put(KeyFields.VOTE_SUB_ROUND, this.getVoteSubRound()).build();
+    }
+
+    public String getId() {
+        return getEdoVoteRecordId();
+    }
+
     public String getEdoVoteRecordId() {
-		return edoVoteRecordId;
-	}
+        return edoVoteRecordId;
+    }
 
-	public void setEdoVoteRecordId(String edoVoteRecordId) {
-		this.edoVoteRecordId = edoVoteRecordId;
-	}
+    public void setEdoVoteRecordId(String edoVoteRecordId) {
+        this.edoVoteRecordId = edoVoteRecordId;
+    }
 
-	public String getEdoDossierId() {
-		return edoDossierId;
-	}
+    public String getEdoDossierId() {
+        return edoDossierId;
+    }
 
-	public void setEdoDossierId(String edoDossierId) {
-		this.edoDossierId = edoDossierId;
-	}
+    public void setEdoDossierId(String edoDossierId) {
+        this.edoDossierId = edoDossierId;
+    }
 
-	public String getEdoReviewLayerDefinitionId() {
-		return edoReviewLayerDefinitionId;
-	}
+    public String getEdoReviewLayerDefinitionId() {
+        return edoReviewLayerDefinitionId;
+    }
 
-	public void setEdoReviewLayerDefinitionId(String edoReviewLayerDefinitionId) {
-		this.edoReviewLayerDefinitionId = edoReviewLayerDefinitionId;
-	}
+    public void setEdoReviewLayerDefinitionId(String edoReviewLayerDefinitionId) {
+        this.edoReviewLayerDefinitionId = edoReviewLayerDefinitionId;
+    }
 
-	public String getVoteType() {
+    public String getVoteType() {
         return voteType;
     }
 
     public void setVoteType(String voteType) {
         this.voteType = voteType;
     }
-   
+
     public String getAoeCode() {
         return aoeCode;
     }
@@ -110,11 +136,9 @@ public class EdoVoteRecordBo extends PersistableBusinessObjectBase implements Ed
 
     public String getAoeDescription() {
         String aoeDescription = StringUtils.EMPTY;
-
         if (StringUtils.isNotEmpty(aoeCode)) {
             aoeDescription = EdoConstants.AREA_OF_EXCELLENCE.get(aoeCode);
         }
-
         return aoeDescription;
     }
 
@@ -135,113 +159,109 @@ public class EdoVoteRecordBo extends PersistableBusinessObjectBase implements Ed
     }
 
     public Integer getYesCount() {
-		return yesCount;
-	}
+        return yesCount;
+    }
 
-	public void setYesCount(Integer yesCount) {
-		this.yesCount = yesCount;
-	}
+    public void setYesCount(Integer yesCount) {
+        this.yesCount = yesCount;
+    }
 
-	public Integer getNoCount() {
-		return noCount;
-	}
+    public Integer getNoCount() {
+        return noCount;
+    }
 
-	public void setNoCount(Integer noCount) {
-		this.noCount = noCount;
-	}
+    public void setNoCount(Integer noCount) {
+        this.noCount = noCount;
+    }
 
-	public Integer getAbsentCount() {
-		return absentCount;
-	}
+    public Integer getAbsentCount() {
+        return absentCount;
+    }
 
-	public void setAbsentCount(Integer absentCount) {
-		this.absentCount = absentCount;
-	}
+    public void setAbsentCount(Integer absentCount) {
+        this.absentCount = absentCount;
+    }
 
-	public Integer getAbstainCount() {
-		return abstainCount;
-	}
+    public Integer getAbstainCount() {
+        return abstainCount;
+    }
 
-	public void setAbstainCount(Integer abstainCount) {
-		this.abstainCount = abstainCount;
-	}
-   
-	public DateTime getCreatedAt() {
-		return createdAtVal == null ? null : new DateTime(createdAtVal);
-	}
+    public void setAbstainCount(Integer abstainCount) {
+        this.abstainCount = abstainCount;
+    }
 
-	public void setCreatedAtVal(Timestamp createdAtVal) {
-		this.createdAtVal = createdAtVal;
-	}
+    public DateTime getCreatedAt() {
+        return createdAtVal == null ? null : new DateTime(createdAtVal);
+    }
 
-	public DateTime getUpdatedAt() {
-		return updatedAtVal == null ? null : new DateTime(updatedAtVal);
-	}
+    public void setCreatedAtVal(Timestamp createdAtVal) {
+        this.createdAtVal = createdAtVal;
+    }
 
-	public void setUpdatedAtVal(Timestamp updatedAtVal) {
-		this.updatedAtVal = updatedAtVal;
-	}
+    public DateTime getUpdatedAt() {
+        return updatedAtVal == null ? null : new DateTime(updatedAtVal);
+    }
 
-	public String getCreatedBy() {
-		return createdBy;
-	}
+    public void setUpdatedAtVal(Timestamp updatedAtVal) {
+        this.updatedAtVal = updatedAtVal;
+    }
 
-	public void setCreatedBy(String createdBy) {
-		this.createdBy = createdBy;
-	}
+    public String getCreatedBy() {
+        return createdBy;
+    }
 
-	public static EdoVoteRecordBo from(EdoVoteRecord edoVoteRecord) {
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public static EdoVoteRecordBo from(EdoVoteRecord edoVoteRecord) {
         if (edoVoteRecord == null) {
             return null;
         }
         EdoVoteRecordBo edoVoteRecordBo = new EdoVoteRecordBo();
-        
         edoVoteRecordBo.setEdoVoteRecordId(edoVoteRecord.getEdoVoteRecordId());
-        
         edoVoteRecordBo.setEdoDossierId(edoVoteRecord.getEdoDossierId());
         edoVoteRecordBo.setEdoReviewLayerDefinitionId(edoVoteRecord.getEdoReviewLayerDefinitionId());
         edoVoteRecordBo.setVoteType(edoVoteRecord.getVoteType());
         edoVoteRecordBo.setAoeCode(edoVoteRecord.getAoeCode());
-        
         edoVoteRecordBo.setYesCount(edoVoteRecord.getYesCount());
         edoVoteRecordBo.setNoCount(edoVoteRecord.getNoCount());
-       
         edoVoteRecordBo.setAbsentCount(edoVoteRecord.getAbsentCount());
         edoVoteRecordBo.setAbstainCount(edoVoteRecord.getAbstainCount());
-        
         edoVoteRecordBo.setVoteRound(edoVoteRecord.getVoteRound());
         edoVoteRecordBo.setVoteSubRound(edoVoteRecord.getVoteSubRound());
-
         edoVoteRecordBo.setCreatedAtVal(edoVoteRecord.getCreatedAt() == null ? null : new Timestamp(edoVoteRecord.getCreatedAt().getMillis()));
         edoVoteRecordBo.setUpdatedAtVal(edoVoteRecord.getUpdatedAt() == null ? null : new Timestamp(edoVoteRecord.getUpdatedAt().getMillis()));
         edoVoteRecordBo.setCreatedBy(edoVoteRecord.getCreatedBy());
-        
         edoVoteRecordBo.setVersionNumber(edoVoteRecord.getVersionNumber());
-        edoVoteRecordBo.setObjectId(edoVoteRecord.getObjectId()); 
-        
-        // finally copy over the common fields into phra from im
-        //copyCommonFields(edoVoteRecordBo, edoVoteRecord);
-     
+        edoVoteRecordBo.setObjectId(edoVoteRecord.getObjectId());
+        // finally copy over the common fields into phra from im  
+        //copyCommonFields(edoVoteRecordBo, edoVoteRecord);  
         return edoVoteRecordBo;
-    } 
-    
+    }
+
     public static EdoVoteRecord to(EdoVoteRecordBo bo) {
         if (bo == null) {
             return null;
         }
         return EdoVoteRecord.Builder.create(bo).build();
     }
-    
+
     public static final ModelObjectUtils.Transformer<EdoVoteRecordBo, EdoVoteRecord> toImmutable = new ModelObjectUtils.Transformer<EdoVoteRecordBo, EdoVoteRecord>() {
+
         public EdoVoteRecord transform(EdoVoteRecordBo input) {
             return EdoVoteRecordBo.to(input);
-        };
+        }
+
+        ;
     };
-            
+
     public static final ModelObjectUtils.Transformer<EdoVoteRecord, EdoVoteRecordBo> toBo = new ModelObjectUtils.Transformer<EdoVoteRecord, EdoVoteRecordBo>() {
+
         public EdoVoteRecordBo transform(EdoVoteRecord input) {
             return EdoVoteRecordBo.from(input);
-        };
+        }
+
+        ;
     };
-    
 }

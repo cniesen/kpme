@@ -15,50 +15,107 @@
  */
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.time.DateUtils;
 import org.kuali.kpme.core.api.kfs.coa.businessobject.AccountContract;
+import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
+import org.kuali.kpme.core.kfs.coa.businessobject.Organization;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.InverseBooleanYNConverter;
 
 /**
  * 
  */
+@Entity
+@Table(name = "CA_ACCOUNT_T")
+@IdClass(Account.AccountId.class)
 public class Account extends PersistableBusinessObjectBase implements AccountContract {
+
     protected static final org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(Account.class);
 
+    @Id
+    @Column(name = "FIN_COA_CD")
     private String chartOfAccountsCode;
+
+    @Id
+    @Column(name = "ACCOUNT_NBR")
     private String accountNumber;
+
+    @Column(name = "ACCOUNT_NM")
     private String accountName;
+
+    @Column(name = "ACCT_CREATE_DT")
+    @Temporal(TemporalType.DATE)
     private Date accountCreateDate;
+
+    @Column(name = "ACCT_EFFECT_DT")
+    @Temporal(TemporalType.DATE)
     private Date accountEffectiveDate;
+
+    @Column(name = "ACCT_EXPIRATION_DT")
+    @Temporal(TemporalType.DATE)
     private Date accountExpirationDate;
+
+    @Column(name = "ACCT_CLOSED_IND")
+    @Convert(converter = InverseBooleanYNConverter.class)
     private boolean active;
+
+    @Column(name = "ORG_CD")
     private String organizationCode;
 
+    @ManyToOne(targetEntity = Chart.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false)
     private Chart chartOfAccounts;
+
+    @ManyToOne(targetEntity = Organization.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    /*
+FIXME: JPA_CONVERSION
+For compound primary keys, make sure the join columns are in the correct order.
+*/
+    @JoinColumns({ @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false), @JoinColumn(name = "ORG_CD", referencedColumnName = "ORG_CD", insertable = false, updatable = false) })
     private Organization organization;
 
+    @Transient
     private List subAccounts;
 
     public String getOrganizationCode() {
-		return organizationCode;
-	}
+        return organizationCode;
+    }
 
-	public void setOrganizationCode(String organizationCode) {
-		this.organizationCode = organizationCode;
-	}
-	
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
+
     /**
      * Default no-arg constructor.
      */
     public Account() {
-        active = true; // assume active is true until set otherwise
-    }    
+        active = true;
+    }
 
     /**
      * Gets the accountNumber attribute.
@@ -164,26 +221,21 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
         if (LOG.isDebugEnabled()) {
             LOG.debug("entering isExpired(" + testDate + ")");
         }
-
-        // dont even bother trying to test if the accountExpirationDate is null
+        // dont even bother trying to test if the accountExpirationDate is null 
         if (this.accountExpirationDate == null) {
             return false;
         }
-
-        // remove any time-components from the testDate
+        // remove any time-components from the testDate 
         testDate = DateUtils.truncate(testDate, Calendar.DAY_OF_MONTH);
-
-        // get a calendar reference to the Account Expiration
-        // date, and remove any time components
+        // get a calendar reference to the Account Expiration 
+        // date, and remove any time components 
         Calendar acctDate = Calendar.getInstance();
         acctDate.setTime(this.accountExpirationDate);
         acctDate = DateUtils.truncate(acctDate, Calendar.DAY_OF_MONTH);
-
-        // if the Account Expiration Date is before the testDate
+        // if the Account Expiration Date is before the testDate 
         if (acctDate.before(testDate)) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -199,12 +251,10 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
      * @return true or false based on the logic outlined above
      */
     public boolean isExpired(Date testDate) {
-
-        // dont even bother trying to test if the accountExpirationDate is null
+        // dont even bother trying to test if the accountExpirationDate is null 
         if (this.accountExpirationDate == null) {
             return false;
         }
-
         Calendar acctDate = Calendar.getInstance();
         acctDate.setTime(testDate);
         return isExpired(acctDate);
@@ -236,7 +286,7 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
     public boolean isClosed() {
         return !active;
     }
-    
+
     /**
      * Sets the closed attribute.
      * 
@@ -291,7 +341,6 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
         return subAccounts;
     }
 
-
     /**
      * @param subAccounts The subAccounts to set.
      */
@@ -299,14 +348,12 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
         this.subAccounts = subAccounts;
     }
 
-
     /**
      * @return Returns the chartOfAccountsCode.
      */
     public String getChartOfAccountsCode() {
         return chartOfAccountsCode;
     }
-
 
     /**
      * @param chartOfAccountsCode The chartOfAccountsCode to set.
@@ -320,13 +367,10 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
      */
     protected LinkedHashMap toStringMapper() {
         LinkedHashMap m = new LinkedHashMap();
-
         m.put("chartCode", this.chartOfAccountsCode);
         m.put("accountNumber", this.accountNumber);
-
         return m;
     }
-
 
     /**
      * Implementing equals since I need contains to behave reasonably in a hashed datastructure.
@@ -335,11 +379,9 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
      */
     public boolean equals(Object obj) {
         boolean equal = false;
-
         if (obj != null) {
             if (this.getClass().equals(obj.getClass())) {
                 Account other = (Account) obj;
-
                 if (StringUtils.equals(this.getChartOfAccountsCode(), other.getChartOfAccountsCode())) {
                     if (StringUtils.equals(this.getAccountNumber(), other.getAccountNumber())) {
                         equal = true;
@@ -347,7 +389,6 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
                 }
             }
         }
-
         return equal;
     }
 
@@ -360,10 +401,8 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
      */
     public int hashCode() {
         String hashString = getChartOfAccountsCode() + "|" + getAccountNumber();
-
         return hashString.hashCode();
     }
-
 
     /**
      * Convenience method to make the primitive account fields from this Account easier to compare to the account fields from
@@ -375,5 +414,54 @@ public class Account extends PersistableBusinessObjectBase implements AccountCon
         String key = getChartOfAccountsCode() + ":" + getAccountNumber();
         return key;
     }
-}
 
+    public static final class AccountId implements Serializable, Comparable<AccountId> {
+
+        private String chartOfAccountsCode;
+
+        private String accountNumber;
+
+        public String getChartOfAccountsCode() {
+            return this.chartOfAccountsCode;
+        }
+
+        public void setChartOfAccountsCode(String chartOfAccountsCode) {
+            this.chartOfAccountsCode = chartOfAccountsCode;
+        }
+
+        public String getAccountNumber() {
+            return this.accountNumber;
+        }
+
+        public void setAccountNumber(String accountNumber) {
+            this.accountNumber = accountNumber;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("chartOfAccountsCode", this.chartOfAccountsCode).append("accountNumber", this.accountNumber).toString();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null)
+                return false;
+            if (other == this)
+                return true;
+            if (other.getClass() != this.getClass())
+                return false;
+            final AccountId rhs = (AccountId) other;
+            return new EqualsBuilder().append(this.chartOfAccountsCode, rhs.chartOfAccountsCode).append(this.accountNumber, rhs.accountNumber).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(this.chartOfAccountsCode).append(this.accountNumber).toHashCode();
+        }
+
+        @Override
+        public int compareTo(AccountId other) {
+            return new CompareToBuilder().append(this.chartOfAccountsCode, other.chartOfAccountsCode).append(this.accountNumber, other.accountNumber).toComparison();
+        }
+    }
+}

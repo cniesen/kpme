@@ -16,44 +16,69 @@
 package org.kuali.kpme.pm.position;
 
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kuali.kpme.pm.api.position.PositionDuty;
 import org.kuali.kpme.pm.api.position.PositionDutyContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "PM_PSTN_DUTY_T")
 public class PositionDutyBo extends PositionDerived implements PositionDutyContract {
-private static final long serialVersionUID = 1L;
-	
-	private String pmDutyId;
-	private String name;
-	private String description;
-	private BigDecimal percentage;
-	
-	public String getPmDutyId() {
-		return pmDutyId;
-	}
-	public void setPmDutyId(String pmDutyId) {
-		this.pmDutyId = pmDutyId;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public BigDecimal getPercentage() {
-		return percentage;
-	}
-	public void setPercentage(BigDecimal percentage) {
-		this.percentage = percentage;
-	}
+
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "PM_PSTN_DUTY_S")
+    @GeneratedValue(generator = "PM_PSTN_DUTY_S")
+    @Id
+    @Column(name = "PM_DUTY_ID", length = 60)
+    private String pmDutyId;
+
+    @Column(name = "NAME", nullable = false, length = 50)
+    private String name;
+
+    @Column(name = "DESCR", nullable = false, length = 300)
+    private String description;
+
+    @Column(name = "PRCTG", length = 10)
+    private BigDecimal percentage;
+
+    public String getPmDutyId() {
+        return pmDutyId;
+    }
+
+    public void setPmDutyId(String pmDutyId) {
+        this.pmDutyId = pmDutyId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPercentage() {
+        return percentage;
+    }
+
+    public void setPercentage(BigDecimal percentage) {
+        this.percentage = percentage;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -63,64 +88,57 @@ private static final long serialVersionUID = 1L;
             return true;
         if (obj.getClass() != getClass())
             return false;
-
-        PositionDutyBo rhs = (PositionDutyBo)obj;
-        return new EqualsBuilder()
-                .append(pmDutyId, rhs.getPmDutyId())
-                .append(name, rhs.getName())
-                .append(description, rhs.getDescription())
-                .append(percentage, rhs.getPercentage())
-                .append(hrPositionId, rhs.getHrPositionId())
-                .isEquals();
-
+        PositionDutyBo rhs = (PositionDutyBo) obj;
+        return new EqualsBuilder().append(pmDutyId, rhs.getPmDutyId()).append(name, rhs.getName()).append(description, rhs.getDescription()).append(percentage, rhs.getPercentage()).append(hrPositionId, rhs.getHrPositionId()).isEquals();
     }
-	@Override
-	public String getId() {
-		return this.getPmDutyId();
-	}
-	@Override
-	public void setId(String id) {
-		this.setPmDutyId(id);
-	}
-	
-	    public static PositionDutyBo from(PositionDuty im) {
-		
-				if (im == null) {
-					return null;
-				}
-		
-				PositionDutyBo positionDutyBo = new PositionDutyBo();
-		
-				positionDutyBo.setDescription(im.getDescription());
-				positionDutyBo.setHrPositionId(im.getHrPositionId());
-				positionDutyBo.setName(im.getName());
-				positionDutyBo.setObjectId(im.getObjectId());
-				positionDutyBo.setPercentage(im.getPercentage());
-				positionDutyBo.setPmDutyId(im.getPmDutyId());
-				positionDutyBo.setVersionNumber(im.getVersionNumber());
-				
-				return positionDutyBo;
-		
-			}
-		
-			public static PositionDuty to(PositionDutyBo bo) {
-				if (bo == null) {
-					return null;
-				}
-				return PositionDuty.Builder.create(bo).build();
-			}
-			
-			public static final ModelObjectUtils.Transformer<PositionDutyBo, PositionDuty> toImmutable = new ModelObjectUtils.Transformer<PositionDutyBo, PositionDuty>() {
-				public PositionDuty transform(PositionDutyBo input) {
-					return PositionDutyBo.to(input);
-				};
-			};
-		
-			public static final ModelObjectUtils.Transformer<PositionDuty, PositionDutyBo> toBo = new ModelObjectUtils.Transformer<PositionDuty, PositionDutyBo>() {
-				public PositionDutyBo transform(PositionDuty input) {
-					return PositionDutyBo.from(input);
-				};
-			};
-		 
-	
+
+    @Override
+    public String getId() {
+        return this.getPmDutyId();
+    }
+
+    @Override
+    public void setId(String id) {
+        this.setPmDutyId(id);
+    }
+
+    public static PositionDutyBo from(PositionDuty im) {
+        if (im == null) {
+            return null;
+        }
+        PositionDutyBo positionDutyBo = new PositionDutyBo();
+        positionDutyBo.setDescription(im.getDescription());
+        positionDutyBo.setHrPositionId(im.getHrPositionId());
+        positionDutyBo.setName(im.getName());
+        positionDutyBo.setObjectId(im.getObjectId());
+        positionDutyBo.setPercentage(im.getPercentage());
+        positionDutyBo.setPmDutyId(im.getPmDutyId());
+        positionDutyBo.setVersionNumber(im.getVersionNumber());
+        return positionDutyBo;
+    }
+
+    public static PositionDuty to(PositionDutyBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionDuty.Builder.create(bo).build();
+    }
+
+    public static final ModelObjectUtils.Transformer<PositionDutyBo, PositionDuty> toImmutable = new ModelObjectUtils.Transformer<PositionDutyBo, PositionDuty>() {
+
+        public PositionDuty transform(PositionDutyBo input) {
+            return PositionDutyBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<PositionDuty, PositionDutyBo> toBo = new ModelObjectUtils.Transformer<PositionDuty, PositionDutyBo>() {
+
+        public PositionDutyBo transform(PositionDuty input) {
+            return PositionDutyBo.from(input);
+        }
+
+        ;
+    };
 }

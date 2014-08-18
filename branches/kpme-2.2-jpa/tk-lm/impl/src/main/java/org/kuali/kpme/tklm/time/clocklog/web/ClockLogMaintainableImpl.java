@@ -53,7 +53,7 @@ public class ClockLogMaintainableImpl extends org.kuali.rice.kns.maintenance.Kua
 	}
 	
 	@Override
-	public void saveBusinessObject() {
+	public void saveDataObject() {
 		ClockLogBo clockLog = (ClockLogBo) this.getBusinessObject();
 		clockLog.setTkClockLogId(null);
 		clockLog.setTimestamp(null);
