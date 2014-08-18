@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean name="PrincipalHRAttributes" parent="PrincipalHRAttributes-parentBean" />
+	<bean id="PrincipalHRAttributes-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+		<property name="dataObjectClass" value="org.kuali.kpme.core.principal.PrincipalHRAttributesBo" />
+		<property name="titleAttribute" value="principalId" />
+		<property name="objectLabel" value="principalId" />
+		<property name="inquiryDefinition">
+			<ref bean="PrincipalHRAttributes-inquiryDefinition" />
+		</property>
+		<property name="lookupDefinition">
+			<ref bean="PrincipalHRAttributes-lookupDefinition" />
+		</property>
+		<property name="attributes">
+			<list merge="true">
+                <ref bean="PrincipalHRAttributes-hrPrincipalAttributeId" />
+				<ref bean="PrincipalHRAttributes-principalId" />
+				<ref bean="PrincipalHRAttributes-name" />
+				<ref bean="PrincipalHRAttributes-payCalendar" />
+				<ref bean="PrincipalHRAttributes-leavePlan" />
+				<ref bean="PrincipalHRAttributes-leaveCalendar" />
+				<ref bean="PrincipalHRAttributes-serviceDate" />
+				<ref bean="PrincipalHRAttributes-fmlaEligible" />
+				<ref bean="PrincipalHRAttributes-workersCompEligible" />
+				<!-- <ref bean="PrincipalHRAttributes-recordTime" />
+				<ref bean="PrincipalHRAttributes-recordLeave" /> -->
+				<ref bean="PrincipalHRAttributes-timezone" />
+			</list>
+		</property>
+		<!--<property name="relationships">
+  		<list>
+            <bean parent="RelationshipDefinition">
+              <property name="objectAttributeName" value="person"/>
+              <property name="primitiveAttributes">
+                <list>
+                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="principalId" p:targetName="principalId"/>
+                </list>
+              </property>
+            </bean>
+            <bean parent="RelationshipDefinition">
+              <property name="objectAttributeName" value="calendar"/>
+              <property name="primitiveAttributes">
+                <list>
+                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="leaveCalendar" p:targetName="calendarName"/>
+                </list>
+              </property>
+            </bean>
+            <bean parent="RelationshipDefinition">
+              <property name="objectAttributeName" value="calendar"/>
+              <property name="primitiveAttributes">
+                <list>
+					<bean parent="PrimitiveAttributeDefinition" p:sourceName="payCalendar" p:targetName="calendarName"/>
+                </list>
+              </property>
+            </bean>
+            <bean parent="RelationshipDefinition">
+				<property name="objectAttributeName" value="leavePlanObj" />
+				<property name="primitiveAttributes">
+					<list>
+						<bean parent="PrimitiveAttributeDefinition" p:sourceName="leavePlan" p:targetName="leavePlan" />
+					</list>
+				</property>
+				<property name="supportAttributes">
+					<list>
+						<bean parent="SupportAttributeDefinition" p:targetName="effectiveDate"
+							p:sourceName="relativeEffectiveDate" />
+					</list>
+				</property>
+			</bean>
+        </list>
+    </property>  		-->
+	</bean>
+
+    <bean id="PrincipalHRAttributes-hrPrincipalAttributeId" parent="PrincipalHRAttributes-hrPrincipalAttributeId-parentBean" />
+    <bean id="PrincipalHRAttributes-hrPrincipalAttributeId-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="HR Attr Id" />
+        <property name="maxLength" value="40" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="40" />
+        </property>
+        <property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="40" />
+        </property>
+        <property name="name" value="hrPrincipalAttributeId" />
+        <property name="label" value="HR Attribute Id" />
+    </bean>
+
+	<bean id="PrincipalHRAttributes-principalId" parent="PrincipalHRAttributes-principalId-parentBean" />
+	<bean id="PrincipalHRAttributes-principalId-parentBean" abstract="true" parent="KpmeAttributeReference-principalId" />
+	
+ 	<bean id="PrincipalHRAttributes-name" parent="PrincipalHRAttributes-name-parentBean"/>
+ 	<bean id="PrincipalHRAttributes-name-parentBean" abstract="true" parent="AttributeDefinition">
+    	<property name="shortLabel" value="Name"/>
+    	<property name="maxLength" value="30" />
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="30" />
+        </property>
+    	<property name="control">
+      		<bean parent="LookupReadonlyControlDefinition" p:size="30" />
+    	</property>
+    	<property name="name" value="name"/>
+    	<property name="label" value="Name"/>
+  	</bean>
+  	
+	<bean id="PrincipalHRAttributes-payCalendar" parent="PrincipalHRAttributes-payCalendar-parentBean"/>
+ 	<bean id="PrincipalHRAttributes-payCalendar-parentBean" abstract="true" parent="AttributeDefinition">
+    	<property name="shortLabel" value="Pay Calendar"/>
+    	<property name="maxLength" value="15" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+    	<property name="name" value="payCalendar"/>
+    	<property name="label" value="Pay Calendar"/>
+  	</bean>
+	
+	<bean id="PrincipalHRAttributes-leaveCalendar" parent="PrincipalHRAttributes-leaveCalendar-parentBean"/>
+ 	<bean id="PrincipalHRAttributes-leaveCalendar-parentBean" abstract="true" parent="AttributeDefinition">
+    	<property name="shortLabel" value="Leave Calendar"/>
+    	<property name="maxLength" value="15" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+    	<property name="name" value="leaveCalendar"/>
+    	<property name="label" value="Leave Calendar"/>
+  	</bean>
+  	
+  	<!-- 	leave plan -->
+	<bean id="PrincipalHRAttributes-leavePlan" parent="PrincipalHRAttributes-leavePlan-parentBean" />
+	<bean id="PrincipalHRAttributes-leavePlan-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Leave Plan" />
+		<property name="maxLength" value="15" />
+        <property name="validCharactersConstraint">
+            <bean parent="AnyCharacterPatternConstraint">
+                <property name="allowWhitespace" value="false" />
+            </bean>
+        </property>
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="10" />
+		</property>
+		<property name="name" value="leavePlan" />
+		<property name="label" value="Leave Plan" />
+	</bean>
+		
+	<bean id="PrincipalHRAttributes-serviceDate" parent="PrincipalHRAttributes-serviceDate-parentBean" />
+	<bean id="PrincipalHRAttributes-serviceDate-parentBean" abstract="true"
+		parent="KpmeAttributeReference-datePicker">
+		<property name="shortLabel" value="Service Date" />
+		<property name="name" value="serviceDate" />
+		<property name="label" value="Service Date" />
+        <property name="controlField">
+            <bean parent="Uif-DateControl"/>
+        </property>
+	</bean>
+	
+	<bean id="PrincipalHRAttributes-timezone" parent="PrincipalHRAttributes-timezone-parentBean" />
+	<bean id="PrincipalHRAttributes-timezone-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Timezone" />
+		<property name="maxLength" value="30" />
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl"/>
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.principal.valuesfinder.TimeZoneKeyValue"/>
+        </property>
+		<property name="control">
+			<bean parent="SelectControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.principal.valuesfinder.TimeZoneKeyValue" p:includeKeyInLabel="false"/>
+		</property>
+		<property name="name" value="timezone" />
+		<property name="label" value="Timezone" />
+	</bean>
+
+	
+
+ 	<bean id="PrincipalHRAttributes-fmlaEligible" parent="PrincipalHRAttributes-fmlaEligible-parentBean"/>
+  	<bean id="PrincipalHRAttributes-fmlaEligible-parentBean" abstract="true" parent="AttributeReference-genericBoolean">
+    	<property name="shortLabel" value="FMLA Eligible"/>
+    	<property name="name" value="fmlaEligible"/>
+    	<property name="label" value="FMLA Eligible"/>
+        <property name="controlField">
+            <bean parent="Uif-CheckboxControl"/>
+        </property>
+  	</bean>
+	
+ 	<bean id="PrincipalHRAttributes-workersCompEligible" parent="PrincipalHRAttributes-workersCompEligible-parentBean"/>
+  	<bean id="PrincipalHRAttributes-workersCompEligible-parentBean" abstract="true" parent="AttributeReference-genericBoolean">
+    	<property name="shortLabel" value="Workman's Comp Eligible"/>
+    	<property name="name" value="workersCompEligible"/>
+    	<property name="label" value="Worker's Comp Eligible"/>
+        <property name="controlField">
+            <bean parent="Uif-CheckboxControl"/>
+        </property>
+  	</bean>
+
+
+
+  	<!-- KPME-1268 Kagata adding recordTime -->
+	<!-- <bean id="PrincipalHRAttributes-recordTime" parent="PrincipalHRAttributes-recordTime-parentBean" />
+	<bean id="PrincipalHRAttributes-recordTime-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Record Time" />
+				<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.tklm.time.util.TkHistoryKeyValueFinder">
+			</bean>
+		</property>
+		<property name="name" value="recordTime" />
+		<property name="label" value="Record Time" />
+	</bean>
+	
+	KPME-1268 Kagata adding recordLeave
+	<bean id="PrincipalHRAttributes-recordLeave" parent="PrincipalHRAttributes-recordLeave-parentBean" />
+	<bean id="PrincipalHRAttributes-recordLeave-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="shortLabel" value="Record Leave" />
+				<property name="control">
+			<bean parent="RadioControlDefinition" p:valuesFinderClass="org.kuali.kpme.core.principal.valuesfinder.RecordLeaveKeyValueFinder">
+			</bean>
+		</property>
+		<property name="name" value="recordLeave" />
+		<property name="label" value="Record Leave" />
+	</bean> -->
+
+  <!--***************************************************************************
+                             Views
+  ***************************************************************************-->
+
+    <!--Principal HR Inquiry View-->
+    <bean id="PrincipalHRAttributes-InquiryView" parent="Uif-InquiryView">
+        <property name="headerText" value="Principal HR Attributes Inquiry"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.principal.PrincipalHRAttributesBo"/>
+        <property name="singlePageView" value="true"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-Disclosure-GridSection">
+                    <property name="layoutManager.numberOfColumns" value="2"/>
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+                            <bean parent="Uif-DataField" p:propertyName="principalId" />
+                            <bean parent="Uif-DataField" p:propertyName="name" />
+                            <bean parent="Uif-DataField" p:propertyName="payCalendar" />
+                            <bean parent="Uif-DataField" p:propertyName="leavePlan" />
+                            <bean parent="Uif-DataField" p:propertyName="leaveCalendar" />
+                            <bean parent="Uif-DataField" p:propertyName="serviceDate" />
+                            <bean parent="Uif-DataField" p:propertyName="timezone" />
+                            <bean parent="Uif-DataField" p:propertyName="fmlaEligible" />
+                            <bean parent="Uif-DataField" p:propertyName="workersCompEligible" />
+                            <bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+	<!--  KNS inquiry  -->
+  
+  	<bean id="PrincipalHRAttributes-inquiryDefinition" parent="PrincipalHRAttributes-inquiryDefinition-parentBean" />
+
+	<bean id="PrincipalHRAttributes-inquiryDefinition-parentBean" abstract="true"
+		parent="InquiryDefinition"  p:inquirableClass="org.kuali.kpme.core.principal.web.PrincipalHRAttributesInquirableImpl">
+		<property name="inquirySections">
+			<list>
+				<bean parent="InquirySectionDefinition">
+					<property name="numberOfColumns" value="1" />
+					<property name="inquiryFields">
+						<list>
+							<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+							<bean parent="FieldDefinition" p:attributeName="principalId" />
+							<bean parent="FieldDefinition" p:attributeName="name" />
+							<bean parent="FieldDefinition" p:attributeName="payCalendar" />
+							<bean parent="FieldDefinition" p:attributeName="leavePlan" />
+							<bean parent="FieldDefinition" p:attributeName="leaveCalendar" />
+							<bean parent="FieldDefinition" p:attributeName="serviceDate" />
+							<bean parent="FieldDefinition" p:attributeName="timezone" />
+							<bean parent="FieldDefinition" p:attributeName="fmlaEligible" />
+							<bean parent="FieldDefinition" p:attributeName="workersCompEligible" />
+			                <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+			                      p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
+                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
+						</list>
+					</property>
+					<property name="title" value="Principal HR Attributes" />
+				</bean>
+			</list>
+		</property>
+		<property name="translateCodes" value="false"/>
+		<property name="title" value="Principal HR Attributes Inquiry" />
+	</bean>
+
+    <!--Principal HR Lookup View-->
+    <bean id="PrincipalHRAttributes-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+        <property name="headerText" value="Principal HR Attributes Lookup"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.principal.PrincipalHRAttributesBo"/>
+        <property name="criteriaFields">
+            <list>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true"/>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                              p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                              p:fieldConversions="principalId:principalId"/>
+                    </property>
+                    <property name="inquiry">
+                        <bean parent="Uif-Inquiry" p:render="false"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="leavePlan">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                              p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlanBo"
+                              p:fieldConversions="leavePlan:leavePlan"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active"/>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N"/>
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean parent="Uif-DataField" p:propertyName="principalId">
+                    <property name="inquiry">
+                        <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                              p:inquiryParameters="principalId:principalId"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-DataField" p:propertyName="name"/>
+                <bean parent="Uif-DataField" p:propertyName="leavePlan">
+                    <property name="inquiry">
+                        <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.kpme.core.leaveplan.LeavePlanBo"
+                              p:inquiryParameters="leavePlanObj.lmLeavePlanId:lmLeavePlanId"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-DataField" p:propertyName="timezone"/>
+                <bean parent="Uif-DataField" p:propertyName="effectiveDate"/>
+                <bean parent="Uif-DataField" p:propertyName="timestamp"/>
+                <bean parent="Uif-DataField" p:propertyName="active"/>
+            </list>
+        </property>
+    </bean>
+    
+	<!-- KNS Lookup -->
+
+	<bean id="PrincipalHRAttributes-lookupDefinition" parent="PrincipalHRAttributes-lookupDefinition-parentBean" />
+	<bean id="PrincipalHRAttributes-lookupDefinition-parentBean" abstract="true"
+		parent="LookupDefinition">
+		<property name="lookupableID" value="principalHRAttributesLookupable"></property>
+		<property name="lookupFields">
+			<list>				
+				<bean parent="FieldDefinition" p:attributeName="principalId" />
+                <bean parent="FieldDefinition" p:attributeName="leavePlan" />
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate"
+					p:noInquiry="true" p:noLookup="true" />
+				<bean parent="FieldDefinition" p:attributeName="active" />
+				<bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N" />
+                <bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+                      p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>				
+				<bean parent="FieldDefinition" p:attributeName="principalId" />
+				<bean parent="FieldDefinition" p:attributeName="name" />
+                <bean parent="FieldDefinition" p:attributeName="leavePlan" />
+				<bean parent="FieldDefinition" p:attributeName="timezone" />
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+				<bean parent="FieldDefinition" p:attributeName="timestamp" />
+				<bean parent="FieldDefinition" p:attributeName="active" />
+			</list>
+		</property>
+		<property name="title" value="Principal HR Attributes Lookup" />
+	</bean>
+
+</beans>

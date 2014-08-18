@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean name="Institution" parent="Institution-parentBean" />
+
+	<bean id="Institution-parentBean" abstract="true"
+		parent="KPMEHrBusinessObjectParent">
+		<property name="businessObjectClass" value="org.kuali.kpme.core.institution.InstitutionBo" />
+		<property name="titleAttribute" value="id" />
+		<property name="objectLabel" value="institution" />
+		<property name="inquiryDefinition">
+			<ref bean="Institution-inquiryDefinition" />
+		</property>
+		<property name="lookupDefinition">
+			<ref bean="Institution-lookupDefinition" />
+		</property>
+		<property name="attributes">
+			<list merge="true">
+				<ref bean="Institution-pmInstitutionId" />
+				<ref bean="Institution-institutionCode" />
+				<ref bean="Institution-description" />
+			</list>
+		</property>
+	</bean>
+
+<bean id="Institution-pmInstitutionId" parent="Institution-pmInstitutionId-parentBean" />
+	<bean id="Institution-pmInstitutionId-parentBean" abstract="true" parent="AttributeDefinition">
+		<property name="name" value="pmInstitutionId" />
+        <property name="label" value="Institution Id" />
+		<property name="shortLabel" value="Institution Id" />
+		<property name="maxLength" value="60" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="false" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="60" />
+		</property>
+	</bean>
+	
+	<!-- institution -->
+	<bean id="Institution-institutionCode" parent="Institution-institutionCode-parentBean" />
+	<bean id="Institution-institutionCode-parentBean" abstract="true" parent="KpmeAttributeReference-institution">
+		<property name="shortLabel" value="Institution Code" />
+		<property name="name" value="institutionCode" />
+		<property name="label" value="Institution Code" />
+	</bean>
+	
+	<!-- description -->
+	<bean id="Institution-description" parent="Institution-description-parentBean" />
+	<bean id="Institution-description-parentBean" abstract="true"
+		parent="AttributeDefinition">
+		<property name="shortLabel" value="Description" />
+		<property name="maxLength" value="50" />
+		<property name="validationPattern">
+			<bean parent="AnyCharacterValidationPattern">
+				<property name="allowWhitespace" value="true" />
+			</bean>
+		</property>
+		<property name="control">
+			<bean parent="TextControlDefinition" p:size="20" />
+		</property>
+		<property name="name" value="description" />
+		<property name="label" value="Description" />
+	</bean>
+	
+	<!--  Inquiry Definitions  -->
+  
+  	<bean id="Institution-inquiryDefinition" parent="Institution-inquiryDefinition-parentBean" />
+
+	<bean id="Institution-inquiryDefinition-parentBean" abstract="true"
+		parent="InquiryDefinition" p:inquirableClass="org.kuali.kpme.core.institution.web.InstitutionInquirableImpl">
+		<property name="inquirySections">
+			<list>
+				<bean parent="InquirySectionDefinition">
+					<property name="numberOfColumns" value="1" />
+					<property name="inquiryFields">
+						<list>
+							<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+							<bean parent="FieldDefinition" p:attributeName="institutionCode" />
+							<bean parent="FieldDefinition" p:attributeName="description" />
+							<bean parent="FieldDefinition" p:attributeName="active" />
+							<bean parent="FieldDefinition" p:attributeName="relativeEffectiveDate"
+								p:noInquiry="true" p:noLookup="true" p:hidden="true" p:defaultValue=" "/>
+                            <bean parent="FieldDefinition" p:attributeName="userPrincipalId" />
+						</list>
+					</property>
+					<property name="title" value="Institution" />
+				</bean>
+			</list>
+		</property>
+		<property name="translateCodes" value="false"/>
+		<property name="title" value="Institution Inquiry" />
+	</bean>
+
+	<!--  Look up Definitions  -->
+
+	<bean id="Institution-lookupDefinition" parent="Institution-lookupDefinition-parentBean" />
+	<bean id="Institution-lookupDefinition-parentBean" abstract="true"
+		parent="LookupDefinition">
+		<property name="lookupableID" value="institutionLookupable" />
+		<property name="lookupFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+				<bean parent="FieldDefinition" p:attributeName="institutionCode" />
+				<bean parent="FieldDefinition" p:attributeName="history" p:defaultValue="N" />
+				<bean parent="FieldDefinition" p:attributeName="active" />
+			</list>
+		</property>
+		<property name="resultFields">
+			<list>
+				<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+				<bean parent="FieldDefinition" p:attributeName="institutionCode" />
+				<bean parent="FieldDefinition" p:attributeName="description" />
+				<bean parent="FieldDefinition" p:attributeName="active"/>
+			</list>
+		</property>
+		<property name="title" value="Institution Lookup" />
+	</bean>
+
+  <!-- KRAD Lookup View Definition -->
+ 
+  <bean id="Institution-LookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView">
+    <property name="headerText" value="Institution Lookup" />
+    <property name="dataObjectClassName" value="org.kuali.kpme.core.institution.InstitutionBo" />
+    <property name="criteriaFields">
+      <list>
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="institutionCode" />
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="history" p:defaultValue="N" />
+		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" />
+      </list>
+    </property>
+    <property name="resultFields">
+      <list>
+        <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+		<bean parent="Uif-DataField" p:propertyName="institutionCode" />
+		<bean parent="Uif-DataField" p:propertyName="description" />
+		<bean parent="Uif-DataField" p:propertyName="active" />
+      </list>
+    </property>
+  </bean>
+
+</beans>
