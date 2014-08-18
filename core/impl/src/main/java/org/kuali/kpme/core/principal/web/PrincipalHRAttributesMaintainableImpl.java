@@ -39,8 +39,8 @@ public class PrincipalHRAttributesMaintainableImpl extends HrBusinessObjectMaint
 	}
 
 	@Override
-	public void saveBusinessObject() {
-		super.saveBusinessObject();
+	public void saveDataObject() {
+		super.saveDataObject();
 		CacheUtils.flushCache(PrincipalHRAttributesBo.CACHE_NAME);
 		CacheUtils.flushCache(HrConstants.CacheNamespace.KPME_GLOBAL_CACHE_NAME);
 	}

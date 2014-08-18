@@ -17,7 +17,11 @@ package org.kuali.kpme.tklm.time.timehourdetail;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.kuali.kpme.core.api.util.KpmeUtils;
@@ -25,22 +29,38 @@ import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "TK_HOUR_DETAIL_T")
 public class TimeHourDetailBo extends PersistableBusinessObjectBase implements TimeHourDetailContract {
 
-	private static final long serialVersionUID = 1L;
-	private String tkTimeHourDetailId;
-	private String tkTimeBlockId;
-	private String earnCode;
-	private BigDecimal hours = HrConstants.BIG_DECIMAL_SCALED_ZERO;
-	private BigDecimal amount = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "TK_HOUR_DETAIL_S")
+    @GeneratedValue(generator = "TK_HOUR_DETAIL_S")
+    @Id
+    @Column(name = "TK_HOUR_DETAIL_ID", length = 60)
+    private String tkTimeHourDetailId;
+
+    @Column(name = "TK_TIME_BLOCK_ID", length = 60)
+    private String tkTimeBlockId;
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
+    private String earnCode;
+
+    @Column(name = "HOURS", nullable = false, precision = 5, scale = 2)
+    private BigDecimal hours = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+
+    @Column(name = "AMOUNT", nullable = false, precision = 6, scale = 2)
+    private BigDecimal amount = HrConstants.BIG_DECIMAL_SCALED_ZERO;
 
     public TimeHourDetailBo() {
     }
 
     protected TimeHourDetailBo(TimeHourDetailBo t) {
-        // All of the following are Immutable, be aware if new fields
-        // are added.
+        // All of the following are Immutable, be aware if new fields  
+        // are added.  
         this.tkTimeHourDetailId = t.tkTimeHourDetailId;
         this.tkTimeBlockId = t.tkTimeBlockId;
         this.earnCode = t.earnCode;
@@ -52,80 +72,73 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
         return new TimeHourDetailBo(this);
     }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public String getEarnCode() {
+        return earnCode;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
-	public BigDecimal getHours() {
-		return hours;
-	}
+    public BigDecimal getHours() {
+        return hours;
+    }
 
-	public void setHours(BigDecimal hours) {
-		if(hours != null){
-			this.hours = hours.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-		} else {
-			this.hours = hours;
-		}
-	}
+    public void setHours(BigDecimal hours) {
+        if (hours != null) {
+            this.hours = hours.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
+        } else {
+            this.hours = hours;
+        }
+    }
 
-	public BigDecimal getAmount() {
-		return amount;
-	}
+    public BigDecimal getAmount() {
+        return amount;
+    }
 
-	public void setAmount(BigDecimal amount) {
-		if(amount != null){
-			this.amount = amount.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-		} else {
-			this.amount = amount;
-		}
-	}
+    public void setAmount(BigDecimal amount) {
+        if (amount != null) {
+            this.amount = amount.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
+        } else {
+            this.amount = amount;
+        }
+    }
 
-	public String getTkTimeBlockId() {
-		return tkTimeBlockId;
-	}
+    public String getTkTimeBlockId() {
+        return tkTimeBlockId;
+    }
 
-	public void setTkTimeBlockId(String tkTimeBlockId) {
-		this.tkTimeBlockId = tkTimeBlockId;
-	}
-	public void setTkTimeHourDetailId(String tkTimeHourDetailId) {
-		this.tkTimeHourDetailId = tkTimeHourDetailId;
-	}
+    public void setTkTimeBlockId(String tkTimeBlockId) {
+        this.tkTimeBlockId = tkTimeBlockId;
+    }
 
-	public String getTkTimeHourDetailId() {
-		return tkTimeHourDetailId;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) { 
-			return false;
-		}
-		if (obj == this) { 
-			return true;
-		}
-		if (obj.getClass() != getClass()) {
-			return false;
-		}
-		TimeHourDetailBo timeHourDetail = (TimeHourDetailBo) obj;
-		return new EqualsBuilder()
-			.append(earnCode, timeHourDetail.earnCode)
-			.append(KpmeUtils.nullSafeCompare(amount, timeHourDetail.amount), 0)
-			.append(KpmeUtils.nullSafeCompare(hours, timeHourDetail.hours), 0)
-			.isEquals();
-	}
+    public void setTkTimeHourDetailId(String tkTimeHourDetailId) {
+        this.tkTimeHourDetailId = tkTimeHourDetailId;
+    }
 
-	@Override
-	public int hashCode() {
-		return new HashCodeBuilder(17, 31)
-			.append(earnCode)
-			.append(amount)
-			.append(hours)
-			.toHashCode();
-	}
+    public String getTkTimeHourDetailId() {
+        return tkTimeHourDetailId;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        TimeHourDetailBo timeHourDetail = (TimeHourDetailBo) obj;
+        return new EqualsBuilder().append(earnCode, timeHourDetail.earnCode).append(KpmeUtils.nullSafeCompare(amount, timeHourDetail.amount), 0).append(KpmeUtils.nullSafeCompare(hours, timeHourDetail.hours), 0).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(17, 31).append(earnCode).append(amount).append(hours).toHashCode();
+    }
 
     public static TimeHourDetailBo from(TimeHourDetail im) {
         TimeHourDetailBo tb = new TimeHourDetailBo();
@@ -136,7 +149,6 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
         tb.setEarnCode(im.getEarnCode());
         tb.setObjectId(im.getObjectId());
         tb.setVersionNumber(im.getVersionNumber());
-
         return tb;
     }
 
@@ -144,8 +156,6 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
         if (bo == null) {
             return null;
         }
-
         return TimeHourDetail.Builder.create(bo).build();
     }
-
 }

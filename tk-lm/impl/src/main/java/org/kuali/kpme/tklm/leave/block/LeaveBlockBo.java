@@ -15,6 +15,24 @@
  */
 package org.kuali.kpme.tklm.leave.block;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -44,62 +62,104 @@ import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockHistory;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.workflow.LeaveCalendarDocumentHeader;
 import org.kuali.kpme.tklm.leave.workflow.LeaveRequestDocument;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.document.DocumentStatus;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.util.ObjectUtils;
 
-import javax.persistence.Transient;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
+@Entity
+@Table(name = "LM_LEAVE_BLOCK_T")
 public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBlockContract {
-	
-	private static final long serialVersionUID = -8240826812581295376L;
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "LeaveBlock";
 
-	protected String earnCode;
-	protected Long workArea;
-	protected Long jobNumber;
-	protected Long task;
-	protected BigDecimal leaveAmount = new BigDecimal("0.0");
-	
-	private Date leaveDate;
-	private String description;
-	private String scheduleTimeOffId;
-	private String accrualCategory;
-	private Boolean accrualGenerated;
-	private Long blockId;
-	private String requestStatus;
-	private String leaveBlockType;
-	private String documentStatus;
-	private String principalIdModified;
-	
-	private List<LeaveBlockHistory> leaveBlockHistories = new ArrayList<LeaveBlockHistory>();
+    private static final long serialVersionUID = -8240826812581295376L;
+
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "LeaveBlock";
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
+    protected String earnCode;
+
+    @Column(name = "WORK_AREA", nullable = false)
+    protected Long workArea;
+
+    @Column(name = "JOB_NUMBER", nullable = false)
+    protected Long jobNumber;
+
+    @Column(name = "TASK", nullable = false)
+    protected Long task;
+
+    @Column(name = "LEAVE_AMOUNT", nullable = false)
+    protected BigDecimal leaveAmount = new BigDecimal("0.0");
+
+    @Column(name = "LEAVE_DATE", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date leaveDate;
+
+    @Column(name = "DESCRIPTION", length = 255)
+    private String description;
+
+    @Column(name = "LM_SYS_SCHD_TIMEOFF_ID", length = 60)
+    private String scheduleTimeOffId;
+
+    @Column(name = "ACCRUAL_CATEGORY", length = 15)
+    private String accrualCategory;
+
+    @Column(name = "ACCRUAL_GENERATED", nullable = false, length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private Boolean accrualGenerated;
+
+    @Column(name = "BLOCK_ID")
+    private Long blockId;
+
+    @Column(name = "REQUEST_STATUS", nullable = false, length = 1)
+    private String requestStatus;
+
+    @Column(name = "LEAVE_BLOCK_TYPE", nullable = false, length = 5)
+    private String leaveBlockType;
+
+    @Transient
+    private String documentStatus;
+
+    @Column(name = "PRINCIPAL_ID_MODIFIED", length = 40)
+    private String principalIdModified;
+
+    @OneToMany(targetEntity = LeaveBlockHistory.class, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "LM_LEAVE_BLOCK_ID", referencedColumnName = "LM_LEAVE_BLOCK_ID", insertable = false, updatable = false)
+    private List<LeaveBlockHistory> leaveBlockHistories = new ArrayList<LeaveBlockHistory>();
+
+    @Column(name = "LEAVE_REQUEST_ID", length = 40)
     private String leaveRequestDocumentId;
-        
-	protected String lmLeaveBlockId;
-	private String userPrincipalId;
-    
-	@Transient
-	private Date beginDate;
-    @Transient
-	private boolean submit;
-	@Transient
-	private String reason;
 
-	private String assignmentKey;
+    @PortableSequenceGenerator(name = "LM_LEAVE_BLOCK_S")
+    @GeneratedValue(generator = "LM_LEAVE_BLOCK_S")
+    @Id
+    @Column(name = "LM_LEAVE_BLOCK_ID", length = 60)
+    protected String lmLeaveBlockId;
 
     @Transient
-	private String calendarId;
-	@Transient
-	private String planningDescription;
+    private String userPrincipalId;
+
+    @Transient
+    private Date beginDate;
+
+    @Transient
+    private boolean submit;
+
+    @Transient
+    private String reason;
+
+    @Transient
+    private String assignmentKey;
+
+    @Transient
+    private String calendarId;
+
+    @Transient
+    private String planningDescription;
 
     @Transient
     private AccrualCategoryRule accrualCategoryRule;
@@ -109,348 +169,352 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
 
     @Transient
     private PrincipalHRAttributes principalHRAttributes;
-  
+
     @Transient
     private String affectPay;
 
-	private String transactionalDocId;
-	private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
+    @Column(name = "TRANS_DOC_ID", length = 40)
+    private String transactionalDocId;
 
-	public String getAccrualCategoryRuleId() {
+    @Transient
+    private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
+
+    public String getAccrualCategoryRuleId() {
         AccrualCategoryRuleContract aRule = getAccrualCategoryRule();
-		return ObjectUtils.isNull(aRule) ? null : aRule.getLmAccrualCategoryRuleId();
-	}
-	
-	public static class Builder {
+        return ObjectUtils.isNull(aRule) ? null : aRule.getLmAccrualCategoryRuleId();
+    }
 
-		// required parameters for the constructor
-		private final Date leaveDate;
-		private final String principalId;
-		private final String documentId;
-		private final String earnCode;
-		private final BigDecimal leaveAmount;
+    public static class Builder {
 
-		private String description = null;
-		private String principalIdModified = null;
-		private Timestamp timestamp = null;
-		private Boolean accrualGenerated = Boolean.FALSE;
-		private Long blockId = 0L;
-		private String scheduleTimeOffId;
-		private String accrualCategory;
-		private String requestStatus;
-		private Long workArea;
-		private Long jobNumber;
-		private Long task;
-		private String leaveBlockType;
-		private String userPrincipalId;
-		private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
-		private String groupKeyCode;
-		
-		public Builder(LocalDate leaveDate, String documentId,
-				String principalId, String earnCode, BigDecimal leaveAmount, String groupKeyCode) {
-			this.leaveDate = leaveDate.toDate();
-			this.documentId = documentId;
-			this.principalId = principalId;
-			this.earnCode = earnCode;
-			this.leaveAmount = leaveAmount;
-			this.groupKeyCode = groupKeyCode;
-		}
+        // required parameters for the constructor 
+        private final Date leaveDate;
 
-		// validations could be done in the builder methods below
+        private final String principalId;
 
-		public Builder description(String val) {
-			this.description = val;
-			return this;
-		}
+        private final String documentId;
 
+        private final String earnCode;
 
-		public Builder principalIdModified(String val) {
-			this.principalIdModified = val;
-			return this;
-		}
+        private final BigDecimal leaveAmount;
 
-		public Builder timestamp(Timestamp val) {
-			this.timestamp = val;
-			return this;
-		}
+        private String description = null;
 
-		public Builder accrualGenerated(Boolean val) {
-			this.accrualGenerated = val;
-			return this;
-		}
+        private String principalIdModified = null;
 
-		public Builder blockId(Long val) {
-			this.blockId = val;
-			return this;
-		}
+        private Timestamp timestamp = null;
 
-		// TODO: need to hook up the objcets to get the real ids
-		public Builder scheduleTimeOffId(String val) {
-			this.scheduleTimeOffId = val;
-			return this;
-		}
+        private Boolean accrualGenerated = Boolean.FALSE;
 
-		public Builder accrualCategory(String val) {
-			this.accrualCategory = val;
-			return this;
-		}
+        private Long blockId = 0L;
 
-		public Builder workArea(Long val) {
-			this.workArea = val;
-			return this;
-		}
+        private String scheduleTimeOffId;
 
-		public Builder jobNumber(Long val) {
-			this.jobNumber = val;
-			return this;
-		}
+        private String accrualCategory;
 
-		public Builder task(Long val) {
-			this.task = val;
-			return this;
-		}
+        private String requestStatus;
 
-		public Builder requestStatus(String val) {
-			this.requestStatus = val;
-			return this;
-		}
-		
-		public Builder leaveBlockType(String leaveBlockType) {
-			this.leaveBlockType = leaveBlockType;
-			return this;
-		}
-		
-		public Builder userPrincipalId(String userPrincipalId) {
-			this.userPrincipalId = userPrincipalId;
-			return this;
-		}
+        private Long workArea;
 
-		public Builder LeaveCalendarDocumentHeader(LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
-			this.leaveCalendarDocumentHeader = leaveCalendarDocumentHeader;
-			return this;
-		}
-		
-		public LeaveBlockBo build() {
-			return new LeaveBlockBo(this);
-		}
-	}
+        private Long jobNumber;
 
-	private LeaveBlockBo(Builder builder) {
-		leaveDate = builder.leaveDate;
-		description = builder.description;
-		principalId = builder.principalId;
-		earnCode = builder.earnCode;
-		leaveAmount = builder.leaveAmount;
-		documentId = builder.documentId;
-		principalIdModified = builder.principalIdModified;
-		timestamp = builder.timestamp;
-		accrualGenerated = builder.accrualGenerated;
-		blockId = builder.blockId;
-		scheduleTimeOffId = builder.scheduleTimeOffId;
-		accrualCategory = builder.accrualCategory;
-		requestStatus = builder.requestStatus;
-		workArea = builder.workArea;
-		jobNumber = builder.jobNumber;
-		task = builder.task;
-		leaveBlockType = builder.leaveBlockType;
-		userPrincipalId = builder.userPrincipalId;
-		leaveCalendarDocumentHeader = builder.leaveCalendarDocumentHeader;
-		groupKeyCode = builder.groupKeyCode;
-		// TODO: need to hook up leaveCodeObj, systemScheduledTimeOffObj,
-		// accrualCategoryObj, and ids for individual obj
-	}
+        private Long task;
 
-	public LeaveBlockBo() {
+        private String leaveBlockType;
 
-	}
+        private String userPrincipalId;
 
-	
-	public String getAccrualCategory() {
-		return accrualCategory;
-	}
+        private LeaveCalendarDocumentHeader leaveCalendarDocumentHeader;
 
-	public void setAccrualCategory(String accrualCategory) {
-		this.accrualCategory = accrualCategory;
-	}
+        private String groupKeyCode;
 
-	public Boolean isAccrualGenerated() {
-		return accrualGenerated;
-	}
+        public Builder(LocalDate leaveDate, String documentId, String principalId, String earnCode, BigDecimal leaveAmount, String groupKeyCode) {
+            this.leaveDate = leaveDate.toDate();
+            this.documentId = documentId;
+            this.principalId = principalId;
+            this.earnCode = earnCode;
+            this.leaveAmount = leaveAmount;
+            this.groupKeyCode = groupKeyCode;
+        }
+
+        // validations could be done in the builder methods below 
+        public Builder description(String val) {
+            this.description = val;
+            return this;
+        }
+
+        public Builder principalIdModified(String val) {
+            this.principalIdModified = val;
+            return this;
+        }
+
+        public Builder timestamp(Timestamp val) {
+            this.timestamp = val;
+            return this;
+        }
+
+        public Builder accrualGenerated(Boolean val) {
+            this.accrualGenerated = val;
+            return this;
+        }
+
+        public Builder blockId(Long val) {
+            this.blockId = val;
+            return this;
+        }
+
+        // TODO: need to hook up the objcets to get the real ids 
+        public Builder scheduleTimeOffId(String val) {
+            this.scheduleTimeOffId = val;
+            return this;
+        }
+
+        public Builder accrualCategory(String val) {
+            this.accrualCategory = val;
+            return this;
+        }
+
+        public Builder workArea(Long val) {
+            this.workArea = val;
+            return this;
+        }
+
+        public Builder jobNumber(Long val) {
+            this.jobNumber = val;
+            return this;
+        }
+
+        public Builder task(Long val) {
+            this.task = val;
+            return this;
+        }
+
+        public Builder requestStatus(String val) {
+            this.requestStatus = val;
+            return this;
+        }
+
+        public Builder leaveBlockType(String leaveBlockType) {
+            this.leaveBlockType = leaveBlockType;
+            return this;
+        }
+
+        public Builder userPrincipalId(String userPrincipalId) {
+            this.userPrincipalId = userPrincipalId;
+            return this;
+        }
+
+        public Builder LeaveCalendarDocumentHeader(LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
+            this.leaveCalendarDocumentHeader = leaveCalendarDocumentHeader;
+            return this;
+        }
+
+        public LeaveBlockBo build() {
+            return new LeaveBlockBo(this);
+        }
+    }
+
+    private LeaveBlockBo(Builder builder) {
+        leaveDate = builder.leaveDate;
+        description = builder.description;
+        principalId = builder.principalId;
+        earnCode = builder.earnCode;
+        leaveAmount = builder.leaveAmount;
+        documentId = builder.documentId;
+        principalIdModified = builder.principalIdModified;
+        timestamp = builder.timestamp;
+        accrualGenerated = builder.accrualGenerated;
+        blockId = builder.blockId;
+        scheduleTimeOffId = builder.scheduleTimeOffId;
+        accrualCategory = builder.accrualCategory;
+        requestStatus = builder.requestStatus;
+        workArea = builder.workArea;
+        jobNumber = builder.jobNumber;
+        task = builder.task;
+        leaveBlockType = builder.leaveBlockType;
+        userPrincipalId = builder.userPrincipalId;
+        leaveCalendarDocumentHeader = builder.leaveCalendarDocumentHeader;
+        groupKeyCode = builder.groupKeyCode;
+    }
+
+    public LeaveBlockBo() {
+    }
+
+    public String getAccrualCategory() {
+        return accrualCategory;
+    }
+
+    public void setAccrualCategory(String accrualCategory) {
+        this.accrualCategory = accrualCategory;
+    }
+
+    public Boolean isAccrualGenerated() {
+        return accrualGenerated;
+    }
 
     public Boolean getAccrualGenerated() {
         return accrualGenerated;
     }
 
-	public void setAccrualGenerated(Boolean accrualGenerated) {
-		this.accrualGenerated = accrualGenerated;
-	}
+    public void setAccrualGenerated(Boolean accrualGenerated) {
+        this.accrualGenerated = accrualGenerated;
+    }
 
-	public boolean isSubmit() {
-		return submit;
-	}
+    public boolean isSubmit() {
+        return submit;
+    }
 
-	public void setSubmit(boolean submit) {
-		this.submit = submit;
-	}
+    public void setSubmit(boolean submit) {
+        this.submit = submit;
+    }
 
-	public Long getBlockId() {
-		return blockId;
-	}
+    public Long getBlockId() {
+        return blockId;
+    }
 
-	public void setBlockId(Long blockId) {
-		this.blockId = blockId;
-	}
+    public void setBlockId(Long blockId) {
+        this.blockId = blockId;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public Date getLeaveDate() {
-		return leaveDate;
-	}
+    public Date getLeaveDate() {
+        return leaveDate;
+    }
 
     public DateTime getLeaveDateTime() {
         return leaveDate != null ? new DateTime(leaveDate.getTime()) : null;
     }
 
-	public void setLeaveDate(Date leaveDate) {
-		this.leaveDate = leaveDate;
-	}
-	
-	public LocalDate getLeaveLocalDate() {
-		return leaveDate != null ? LocalDate.fromDateFields(leaveDate) : null;
-	}
-	
-	public void setLeaveLocalDate(LocalDate leaveLocalDate) {
-		this.leaveDate = leaveLocalDate != null ? leaveLocalDate.toDate() : null;
-	}
+    public void setLeaveDate(Date leaveDate) {
+        this.leaveDate = leaveDate;
+    }
 
-	public String getScheduleTimeOffId() {
-		return scheduleTimeOffId;
-	}
+    public LocalDate getLeaveLocalDate() {
+        return leaveDate != null ? LocalDate.fromDateFields(leaveDate) : null;
+    }
 
-	public void setScheduleTimeOffId(String scheduleTimeOffId) {
-		this.scheduleTimeOffId = scheduleTimeOffId;
-	}
+    public void setLeaveLocalDate(LocalDate leaveLocalDate) {
+        this.leaveDate = leaveLocalDate != null ? leaveLocalDate.toDate() : null;
+    }
 
-	public String getRequestStatus() {
-		return requestStatus;
-	}
+    public String getScheduleTimeOffId() {
+        return scheduleTimeOffId;
+    }
 
-	public void setRequestStatus(String requestStatus) {
-		this.requestStatus = requestStatus;
-	}
+    public void setScheduleTimeOffId(String scheduleTimeOffId) {
+        this.scheduleTimeOffId = scheduleTimeOffId;
+    }
+
+    public String getRequestStatus() {
+        return requestStatus;
+    }
+
+    public void setRequestStatus(String requestStatus) {
+        this.requestStatus = requestStatus;
+    }
 
     public String getRequestStatusString() {
         String status = HrConstants.REQUEST_STATUS_STRINGS.get(getRequestStatus());
         return status == null ? "usage" : status;
     }
 
-	public List<LeaveBlockHistory> getLeaveBlockHistories() {
-		return leaveBlockHistories;
-	}
+    public List<LeaveBlockHistory> getLeaveBlockHistories() {
+        return leaveBlockHistories;
+    }
 
-	public void setLeaveBlockHistories(
-			List<LeaveBlockHistory> leaveBlockHistories) {
-		this.leaveBlockHistories = leaveBlockHistories;
-	}
+    public void setLeaveBlockHistories(List<LeaveBlockHistory> leaveBlockHistories) {
+        this.leaveBlockHistories = leaveBlockHistories;
+    }
 
-	public String getReason() {
-		return reason;
-	}
+    public String getReason() {
+        return reason;
+    }
 
-	public void setReason(String reason) {
-		this.reason = reason;
-	}
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
 
     public List<Assignment> getAssignments() {
         AssignmentDescriptionKey key = AssignmentDescriptionKey.get(getAssignmentKey());
-        return Collections.singletonList(
-                HrServiceLocator.getAssignmentService().getAssignment(getPrincipalId(), key, getLeaveLocalDate()));
+        return Collections.singletonList(HrServiceLocator.getAssignmentService().getAssignment(getPrincipalId(), key, getLeaveLocalDate()));
     }
-	public String getAssignmentTitle() {
-		StringBuilder b = new StringBuilder();
 
-		if (this.workArea != null) {
-			WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(
-                    this.workArea, LocalDate.now());
-			if (wa != null) {
-				b.append(wa.getDescription());
-			}
-			TaskContract task = HrServiceLocator.getTaskService().getTask(
-					this.getTask(), this.getLeaveLocalDate());
-			if (task != null) {
-				// do not display task description if the task is the default
-				// one
-				// default task is created in getTask() of TaskService
-				if (!task.getDescription()
-						.equals(HrConstants.TASK_DEFAULT_DESP)) {
-					b.append("-").append(task.getDescription());
-				}
-			}
-		}
-		return b.toString();
-	}
+    public String getAssignmentTitle() {
+        StringBuilder b = new StringBuilder();
+        if (this.workArea != null) {
+            WorkArea wa = HrServiceLocator.getWorkAreaService().getWorkArea(this.workArea, LocalDate.now());
+            if (wa != null) {
+                b.append(wa.getDescription());
+            }
+            TaskContract task = HrServiceLocator.getTaskService().getTask(this.getTask(), this.getLeaveLocalDate());
+            if (task != null) {
+                // do not display task description if the task is the default 
+                // one 
+                // default task is created in getTask() of TaskService 
+                if (!task.getDescription().equals(HrConstants.TASK_DEFAULT_DESP)) {
+                    b.append("-").append(task.getDescription());
+                }
+            }
+        }
+        return b.toString();
+    }
 
-	public String getCalendarId() {
+    public String getCalendarId() {
         if (StringUtils.isEmpty(calendarId)) {
             PrincipalHRAttributes principalHRAttributes = getPrincipalHRAttributes();
             CalendarContract pcal;
-            if(principalHRAttributes != null) {
-                //pcal = principalHRAttributes.getCalendar() != null ? principalHRAttributes.getCalendar() : principalHRAttributes.getLeaveCalObj() ;
+            if (principalHRAttributes != null) {
+                //pcal = principalHRAttributes.getCalendar() != null ? principalHRAttributes.getCalendar() : principalHRAttributes.getLeaveCalObj() ; 
                 pcal = principalHRAttributes.getLeaveCalObj() != null ? principalHRAttributes.getLeaveCalObj() : principalHRAttributes.getCalendar();
-                if(pcal!= null) {
+                if (pcal != null) {
                     CalendarEntry calEntries = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(pcal.getHrCalendarId(), getLeaveLocalDate().toDateTimeAtStartOfDay());
-                    if(calEntries != null) {
+                    if (calEntries != null) {
                         this.calendarId = calEntries.getHrCalendarEntryId();
                     }
                 }
             }
         }
-		return calendarId;
-	}
+        return calendarId;
+    }
 
-	public void setCalendarId(String calendarId) {
-		this.calendarId = calendarId;
-	}
-	
-	public String getEarnCodeDescription() {
-		String earnCodeDescription = "";
-		
-		EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getLeaveLocalDate());
-		if (earnCodeObj != null) {
-			earnCodeDescription = earnCodeObj.getDescription();
-		}
-		
-		return earnCodeDescription;
-	}
+    public void setCalendarId(String calendarId) {
+        this.calendarId = calendarId;
+    }
 
-	public String getLeaveBlockType() {
-		return leaveBlockType;
-	}
+    public String getEarnCodeDescription() {
+        String earnCodeDescription = "";
+        EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, getLeaveLocalDate());
+        if (earnCodeObj != null) {
+            earnCodeDescription = earnCodeObj.getDescription();
+        }
+        return earnCodeDescription;
+    }
 
-	public void setLeaveBlockType(String leaveBlockType) {
-		this.leaveBlockType = leaveBlockType;
-	}
+    public String getLeaveBlockType() {
+        return leaveBlockType;
+    }
 
-	public LeaveCalendarDocumentHeader getLeaveCalendarDocumentHeader() {
+    public void setLeaveBlockType(String leaveBlockType) {
+        this.leaveBlockType = leaveBlockType;
+    }
+
+    public LeaveCalendarDocumentHeader getLeaveCalendarDocumentHeader() {
         if (leaveCalendarDocumentHeader == null && this.getDocumentId() != null) {
             setLeaveCalendarDocumentHeader(LmServiceLocator.getLeaveCalendarDocumentHeaderService().getDocumentHeader(this.getDocumentId()));
         }
         return leaveCalendarDocumentHeader;
     }
 
-    public void setLeaveCalendarDocumentHeader(
-    		LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
+    public void setLeaveCalendarDocumentHeader(LeaveCalendarDocumentHeader leaveCalendarDocumentHeader) {
         this.leaveCalendarDocumentHeader = leaveCalendarDocumentHeader;
     }
 
-
-	
     public boolean isEditable() {
         return LmServiceLocator.getLMPermissionService().canEditLeaveBlock(HrContext.getPrincipalId(), this);
     }
@@ -458,24 +522,25 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
     public boolean isDeletable() {
         return LmServiceLocator.getLMPermissionService().canDeleteLeaveBlock(HrContext.getPrincipalId(), this);
     }
-    
+
     public String getAssignmentKey() {
         if (assignmentKey == null) {
             this.setAssignmentKey(KpmeUtils.formatAssignmentKey(groupKeyCode, jobNumber, workArea, task));
         }
         return assignmentKey;
     }
+
     public void setAssignmentKey(String assignmentDescription) {
         this.assignmentKey = assignmentDescription;
     }
 
-	public String getDocumentStatus() {
-		return documentStatus;
-	}
+    public String getDocumentStatus() {
+        return documentStatus;
+    }
 
-	public void setDocumentStatus(String documentStatus) {
-		this.documentStatus = documentStatus;
-	}
+    public void setDocumentStatus(String documentStatus) {
+        this.documentStatus = documentStatus;
+    }
 
     public String getLeaveRequestDocumentId() {
         return leaveRequestDocumentId;
@@ -487,19 +552,7 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(this.principalId)
-                .append(this.jobNumber)
-                .append(this.workArea)
-                .append(this.task)
-                .append(this.earnCode)
-                .append(this.leaveDate)
-                .append(this.leaveAmount)
-                .append(this.accrualCategory)
-                .append(this.earnCode)
-                .append(this.description)
-                .append(this.leaveBlockType)
-                .toHashCode();
+        return new HashCodeBuilder().append(this.principalId).append(this.jobNumber).append(this.workArea).append(this.task).append(this.earnCode).append(this.leaveDate).append(this.leaveAmount).append(this.accrualCategory).append(this.earnCode).append(this.description).append(this.leaveBlockType).toHashCode();
     }
 
     @Override
@@ -514,152 +567,138 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
             return false;
         }
         LeaveBlockBo leaveBlock = (LeaveBlockBo) obj;
-        return new EqualsBuilder()
-                .append(principalId, leaveBlock.principalId)
-                .append(jobNumber, leaveBlock.jobNumber)
-                .append(workArea, leaveBlock.workArea)
-                .append(task, leaveBlock.task)
-                .append(earnCode, leaveBlock.earnCode)
-                .append(leaveDate, leaveBlock.leaveDate)
-                .append(KpmeUtils.nullSafeCompare(leaveAmount, leaveBlock.leaveAmount), 0)
-                .append(accrualCategory, leaveBlock.accrualCategory)
-                .append(earnCode, leaveBlock.earnCode)
-                .append(description, leaveBlock.description)
-                .append(leaveBlockType, leaveBlock.leaveBlockType)
-                .isEquals();
+        return new EqualsBuilder().append(principalId, leaveBlock.principalId).append(jobNumber, leaveBlock.jobNumber).append(workArea, leaveBlock.workArea).append(task, leaveBlock.task).append(earnCode, leaveBlock.earnCode).append(leaveDate, leaveBlock.leaveDate).append(KpmeUtils.nullSafeCompare(leaveAmount, leaveBlock.leaveAmount), 0).append(accrualCategory, leaveBlock.accrualCategory).append(earnCode, leaveBlock.earnCode).append(description, leaveBlock.description).append(leaveBlockType, leaveBlock.leaveBlockType).isEquals();
     }
-    
+
     public String getPlanningDescription() {
-    	if(this.getRequestStatus() != null
-                && this.getRequestStatus().equals(HrConstants.REQUEST_STATUS.DEFERRED)) {
-    		List<LeaveRequestDocument> lrdList = LmServiceLocator.getLeaveRequestDocumentService().getLeaveRequestDocumentsByLeaveBlockId(this.getLmLeaveBlockId());
-    		if(CollectionUtils.isNotEmpty(lrdList)) {
-    			for(LeaveRequestDocument lrd : lrdList) {    				
-    				DocumentStatus status = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(lrd.getDocumentNumber());
-    				if(status != null && DocumentStatus.CANCELED.getCode().equals(status.getCode())) {
-	    				String requestDescription = "";
-						if(StringUtils.isNotEmpty(this.getDescription())) {
-							requestDescription = this.getDescription() + " <br/>";
-						}
-						String actionDateString = TKUtils.formatDate(lrd.getDocumentHeader().getWorkflowDocument().getDateFinalized().toLocalDate());
-						requestDescription += "Approval deferred on " + actionDateString + ". Reason: " + lrd.getDescription();
-			    		this.setPlanningDescription(requestDescription);
-						return planningDescription;
-    				}
-    			}
-    		}
-    	}
-    	this.setPlanningDescription(this.getDescription());
-    	return planningDescription;
+        if (this.getRequestStatus() != null && this.getRequestStatus().equals(HrConstants.REQUEST_STATUS.DEFERRED)) {
+            List<LeaveRequestDocument> lrdList = LmServiceLocator.getLeaveRequestDocumentService().getLeaveRequestDocumentsByLeaveBlockId(this.getLmLeaveBlockId());
+            if (CollectionUtils.isNotEmpty(lrdList)) {
+                for (LeaveRequestDocument lrd : lrdList) {
+                    DocumentStatus status = KewApiServiceLocator.getWorkflowDocumentService().getDocumentStatus(lrd.getDocumentNumber());
+                    if (status != null && DocumentStatus.CANCELED.getCode().equals(status.getCode())) {
+                        String requestDescription = "";
+                        if (StringUtils.isNotEmpty(this.getDescription())) {
+                            requestDescription = this.getDescription() + " <br/>";
+                        }
+                        String actionDateString = TKUtils.formatDate(lrd.getDocumentHeader().getWorkflowDocument().getDateFinalized().toLocalDate());
+                        requestDescription += "Approval deferred on " + actionDateString + ". Reason: " + lrd.getDescription();
+                        this.setPlanningDescription(requestDescription);
+                        return planningDescription;
+                    }
+                }
+            }
+        }
+        this.setPlanningDescription(this.getDescription());
+        return planningDescription;
     }
 
-	public void setPlanningDescription(String planningDescription) {
-		this.planningDescription = planningDescription;
-	}
+    public void setPlanningDescription(String planningDescription) {
+        this.planningDescription = planningDescription;
+    }
 
-	public void setTransactionDocId(String documentHeaderId) {
-		transactionalDocId = documentHeaderId;		
-	}
-	
-	public String getTransactionalDocId() {
-		return transactionalDocId;
-	}
+    public void setTransactionDocId(String documentHeaderId) {
+        transactionalDocId = documentHeaderId;
+    }
 
-	public DateTime getBeginDateTime() {
-		return beginTimestamp != null ? new DateTime(beginTimestamp) : null;
-	}
-	
-	public void setBeginDateTime(DateTime beginDateTime) {
-		beginTimestamp = beginDateTime != null ? new Timestamp(beginDateTime.getMillis()) : null;
-	}
-	
-	
-	public Date getBeginDate() {
-	    	Date beginDate = null;	    	
-	    	if (beginTimestamp != null) {
-	    		beginDate = new Date(beginTimestamp.getTime());
-	    	}
-	        return beginDate;
-	}
+    public String getTransactionalDocId() {
+        return transactionalDocId;
+    }
 
-	public Timestamp getBeginTimestampVal() {
-	        return new Timestamp(beginTimestamp.getTime());
-	}
+    public DateTime getBeginDateTime() {
+        return beginTimestamp != null ? new DateTime(beginTimestamp) : null;
+    }
 
-	public Timestamp getEndTimestampVal() {
-	        return new Timestamp(endTimestamp.getTime());
-	}
+    public void setBeginDateTime(DateTime beginDateTime) {
+        beginTimestamp = beginDateTime != null ? new Timestamp(beginDateTime.getMillis()) : null;
+    }
 
-	public void setBeginDate(Date beginDate) {
-	    	DateTime dateTime = new DateTime(beginTimestamp);
-	    	LocalDate localDate = new LocalDate(beginDate);
-	    	LocalTime localTime = new LocalTime(beginTimestamp);
-	    	beginTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
-	}
-	
-	public DateTime getEndDateTime() {
-		return endTimestamp != null ? new DateTime(endTimestamp) : null;
-	}
-	
-	public void setEndDateTime(DateTime endDateTime) {
-		endTimestamp = endDateTime != null ? new Timestamp(endDateTime.getMillis()) : null;
-	}
+    public Date getBeginDate() {
+        Date beginDate = null;
+        if (beginTimestamp != null) {
+            beginDate = new Date(beginTimestamp.getTime());
+        }
+        return beginDate;
+    }
 
-	public String getLmLeaveBlockId() {
-		return lmLeaveBlockId;
-	}
+    public Timestamp getBeginTimestampVal() {
+        return new Timestamp(beginTimestamp.getTime());
+    }
 
-	public void setLmLeaveBlockId(String lmLeaveBlockId) {
-		this.lmLeaveBlockId = lmLeaveBlockId;
-	}
+    public Timestamp getEndTimestampVal() {
+        return new Timestamp(endTimestamp.getTime());
+    }
 
-	public String getPrincipalIdModified() {
-		return principalIdModified;
-	}
+    public void setBeginDate(Date beginDate) {
+        DateTime dateTime = new DateTime(beginTimestamp);
+        LocalDate localDate = new LocalDate(beginDate);
+        LocalTime localTime = new LocalTime(beginTimestamp);
+        beginTimestamp = new Timestamp(localDate.toDateTime(localTime, dateTime.getZone()).getMillis());
+    }
 
-	public void setPrincipalIdModified(String principalIdModified) {
-		this.principalIdModified = principalIdModified;
-	}
+    public DateTime getEndDateTime() {
+        return endTimestamp != null ? new DateTime(endTimestamp) : null;
+    }
 
-	public BigDecimal getLeaveAmount() {
-		return leaveAmount;
-	}
+    public void setEndDateTime(DateTime endDateTime) {
+        endTimestamp = endDateTime != null ? new Timestamp(endDateTime.getMillis()) : null;
+    }
 
-	public void setLeaveAmount(BigDecimal leaveAmount) {
-		this.leaveAmount = leaveAmount;
-	}
+    public String getLmLeaveBlockId() {
+        return lmLeaveBlockId;
+    }
 
-	public Long getWorkArea() {
-		return workArea;
-	}
+    public void setLmLeaveBlockId(String lmLeaveBlockId) {
+        this.lmLeaveBlockId = lmLeaveBlockId;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
+    public String getPrincipalIdModified() {
+        return principalIdModified;
+    }
 
-	public Long getJobNumber() {
-		return jobNumber;
-	}
+    public void setPrincipalIdModified(String principalIdModified) {
+        this.principalIdModified = principalIdModified;
+    }
 
-	public void setJobNumber(Long jobNumber) {
-		this.jobNumber = jobNumber;
-	}
+    public BigDecimal getLeaveAmount() {
+        return leaveAmount;
+    }
 
-	public Long getTask() {
-		return task;
-	}
+    public void setLeaveAmount(BigDecimal leaveAmount) {
+        this.leaveAmount = leaveAmount;
+    }
 
-	public void setTask(Long task) {
-		this.task = task;
-	}
+    public Long getWorkArea() {
+        return workArea;
+    }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public Long getJobNumber() {
+        return jobNumber;
+    }
+
+    public void setJobNumber(Long jobNumber) {
+        this.jobNumber = jobNumber;
+    }
+
+    public Long getTask() {
+        return task;
+    }
+
+    public void setTask(Long task) {
+        this.task = task;
+    }
+
+    public String getEarnCode() {
+        return earnCode;
+    }
+
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
     public AccrualCategoryRule getAccrualCategoryRule() {
         if (accrualCategoryRule == null) {
@@ -696,20 +735,20 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
     }
 
     public String getUserPrincipalId() {
-	    return userPrincipalId;
-	}
+        return userPrincipalId;
+    }
 
-	public void setUserPrincipalId(String userPrincipalId) {
-	   	this.userPrincipalId = userPrincipalId;
-	}
+    public void setUserPrincipalId(String userPrincipalId) {
+        this.userPrincipalId = userPrincipalId;
+    }
 
-	public String getAffectPay() {
-		return affectPay;
-	}
+    public String getAffectPay() {
+        return affectPay;
+    }
 
-	public void setAffectPay(String affectPay) {
-		this.affectPay = affectPay;
-	}
+    public void setAffectPay(String affectPay) {
+        this.affectPay = affectPay;
+    }
 
     public void setAccrualCategoryRule(AccrualCategoryRule accrualCategoryRule) {
         this.accrualCategoryRule = accrualCategoryRule;
@@ -721,8 +760,7 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
 
     @Override
     public HrGroupKey getGroupKey() {
-        if (groupKey == null
-                && getGroupKeyCode() != null) {
+        if (groupKey == null && getGroupKeyCode() != null) {
             setGroupKey(HrServiceLocator.getHrGroupKeyService().getHrGroupKey(getGroupKeyCode(), getLeaveLocalDate()));
         }
         return groupKey;
@@ -759,18 +797,13 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
         lb.setDocumentStatus(im.getDocumentStatus());
         lb.setPrincipalIdModified(im.getUserPrincipalId());
         lb.setLeaveRequestDocumentId(im.getLeaveRequestDocumentId());
-
         lb.setLmLeaveBlockId(im.getLmLeaveBlockId());
-
         lb.setBeginDate(im.getBeginDateTime() == null ? null : im.getBeginDateTime().toDate());
         lb.setSubmit(im.isSubmit());
         lb.setReason(im.getReason());
-
         lb.setAssignmentKey(im.getAssignmentKey());
-
         lb.setCalendarId(im.getCalendarId());
         lb.setPlanningDescription(im.getPlanningDescription());
-
         lb.setAccrualCategoryRule(im.getAccrualCategoryRule());
         lb.setAccrualCategoryObj(im.getAccrualCategoryObj());
         lb.setGroupKeyCode(im.getGroupKeyCode());
@@ -779,7 +812,6 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
         lb.setTransactionDocId(im.getTransactionalDocId());
         lb.setObjectId(im.getObjectId());
         lb.setVersionNumber(im.getVersionNumber());
-
         return lb;
     }
 
@@ -787,7 +819,6 @@ public class LeaveBlockBo extends CalendarBlock implements Assignable, LeaveBloc
         if (bo == null) {
             return null;
         }
-
         return LeaveBlock.Builder.create(bo).build();
     }
 }

@@ -15,17 +15,37 @@
  */
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.log4j.Logger;
 import org.kuali.kpme.core.api.kfs.coa.businessobject.OrganizationContract;
+import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
 /**
  * 
  */
+@Entity
+@Table(name = "CA_ORG_T")
+@IdClass(Organization.OrganizationId.class)
 public class Organization extends PersistableBusinessObjectBase implements OrganizationContract {
+
     private static final Logger LOG = Logger.getLogger(Organization.class);
 
     private static final long serialVersionUID = 121873645110037203L;
@@ -33,13 +53,24 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
     /**
      * Default no-arg constructor.
      */
-
+    @Id
+    @Column(name = "ORG_CD")
     private String organizationCode;
+
+    @Column(name = "ORG_NM")
     private String organizationName;
+
+    @ManyToOne(targetEntity = Chart.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false)
     private Chart chartOfAccounts;
+
+    @Column(name = "ORG_ACTIVE_CD")
+    @Convert(converter = BooleanYNConverter.class)
     private boolean active;
-    
-    // fields for mixed anonymous keys
+
+    // fields for mixed anonymous keys 
+    @Id
+    @Column(name = "FIN_COA_CD")
     private String chartOfAccountsCode;
 
     /**
@@ -78,8 +109,6 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
         this.organizationName = organizationName;
     }
 
-    
-
     /**
      * Gets the chartOfAccounts attribute.
      * 
@@ -117,16 +146,13 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
         this.chartOfAccountsCode = chartOfAccountsCode;
     }
 
-    
     /**
      * @see org.kuali.rice.kns.bo.BusinessObjectBase#toStringMapper()
      */
     protected LinkedHashMap toStringMapper() {
         LinkedHashMap m = new LinkedHashMap();
-
         m.put("chartOfAccountsCode", this.chartOfAccountsCode);
         m.put("organizationCode", this.organizationCode);
-
         return m;
     }
 
@@ -156,21 +182,14 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
      */
     public boolean equals(Object obj) {
         boolean equal = false;
-
         LOG.debug("Org equals");
-
         if (obj != null) {
-
             if (this == obj)
                 return true;
-
             if (this.getClass().isAssignableFrom(obj.getClass())) {
-
                 Organization other = (Organization) obj;
-
                 LOG.debug("this: " + this);
                 LOG.debug("other: " + other);
-
                 if (StringUtils.equals(this.getChartOfAccountsCode(), other.getChartOfAccountsCode())) {
                     if (StringUtils.equals(this.getOrganizationCode(), other.getOrganizationCode())) {
                         equal = true;
@@ -178,7 +197,6 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
                 }
             }
         }
-
         return equal;
     }
 
@@ -206,4 +224,53 @@ public class Organization extends PersistableBusinessObjectBase implements Organ
         this.active = active;
     }
 
+    public static final class OrganizationId implements Serializable, Comparable<OrganizationId> {
+
+        private String chartOfAccountsCode;
+
+        private String organizationCode;
+
+        public String getChartOfAccountsCode() {
+            return this.chartOfAccountsCode;
+        }
+
+        public void setChartOfAccountsCode(String chartOfAccountsCode) {
+            this.chartOfAccountsCode = chartOfAccountsCode;
+        }
+
+        public String getOrganizationCode() {
+            return this.organizationCode;
+        }
+
+        public void setOrganizationCode(String organizationCode) {
+            this.organizationCode = organizationCode;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("chartOfAccountsCode", this.chartOfAccountsCode).append("organizationCode", this.organizationCode).toString();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null)
+                return false;
+            if (other == this)
+                return true;
+            if (other.getClass() != this.getClass())
+                return false;
+            final OrganizationId rhs = (OrganizationId) other;
+            return new EqualsBuilder().append(this.chartOfAccountsCode, rhs.chartOfAccountsCode).append(this.organizationCode, rhs.organizationCode).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(this.chartOfAccountsCode).append(this.organizationCode).toHashCode();
+        }
+
+        @Override
+        public int compareTo(OrganizationId other) {
+            return new CompareToBuilder().append(this.chartOfAccountsCode, other.chartOfAccountsCode).append(this.organizationCode, other.organizationCode).toComparison();
+        }
+    }
 }

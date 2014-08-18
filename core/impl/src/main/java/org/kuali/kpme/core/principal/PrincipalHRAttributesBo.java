@@ -15,8 +15,18 @@
  */
 package org.kuali.kpme.core.principal;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.Date;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
@@ -31,20 +41,21 @@ import org.kuali.rice.kim.api.identity.IdentityService;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "HR_PRINCIPAL_ATTRIBUTES_T")
 public class PrincipalHRAttributesBo extends HrBusinessObject implements PrincipalHRAttributesContract {
 
-	private static final String PRINCIPAL_ID = "principalId";
-	
-	private static final long serialVersionUID = 6843318899816055301L;
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
-            .build();
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
+    private static final String PRINCIPAL_ID = "principalId";
+
+    private static final long serialVersionUID = 6843318899816055301L;
+
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(PRINCIPAL_ID).build();
+
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
 
     /*
 	 * convert bo to immutable
@@ -53,12 +64,14 @@ public class PrincipalHRAttributesBo extends HrBusinessObject implements Princip
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPrincipalHRAttributesBo, PrincipalHRAttributesBo.toImmutable);
      */
-    public static final ModelObjectUtils.Transformer<PrincipalHRAttributesBo, PrincipalHRAttributes> toImmutable =
-            new ModelObjectUtils.Transformer<PrincipalHRAttributesBo, PrincipalHRAttributes>() {
-                public PrincipalHRAttributes transform(PrincipalHRAttributesBo input) {
-                    return PrincipalHRAttributesBo.to(input);
-                };
-            };
+    public static final ModelObjectUtils.Transformer<PrincipalHRAttributesBo, PrincipalHRAttributes> toImmutable = new ModelObjectUtils.Transformer<PrincipalHRAttributesBo, PrincipalHRAttributes>() {
+
+        public PrincipalHRAttributes transform(PrincipalHRAttributesBo input) {
+            return PrincipalHRAttributesBo.to(input);
+        }
+
+        ;
+    };
 
     /*
      * convert immutable to bo
@@ -67,178 +80,208 @@ public class PrincipalHRAttributesBo extends HrBusinessObject implements Princip
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPrincipalHRAttributes, PrincipalHRAttributesBo.toBo);
      */
-    public static final ModelObjectUtils.Transformer<PrincipalHRAttributes, PrincipalHRAttributesBo> toBo =
-            new ModelObjectUtils.Transformer<PrincipalHRAttributes, PrincipalHRAttributesBo>() {
-                public PrincipalHRAttributesBo transform(PrincipalHRAttributes input) {
-                    return PrincipalHRAttributesBo.from(input);
-                };
-            };
+    public static final ModelObjectUtils.Transformer<PrincipalHRAttributes, PrincipalHRAttributesBo> toBo = new ModelObjectUtils.Transformer<PrincipalHRAttributes, PrincipalHRAttributesBo>() {
 
-	private String hrPrincipalAttributeId;
-	private String principalId;
-	private String leaveCalendar;
-	private String payCalendar;
-	private String leavePlan;
-	private Date serviceDate;
-	private boolean fmlaEligible;
-	private boolean workersCompEligible;
-	private String timezone;
-	
-	private transient CalendarBo calendar;
-	private transient CalendarBo leaveCalObj;
-	private transient Person person;
-	private transient LeavePlanBo leavePlanObj;
+        public PrincipalHRAttributesBo transform(PrincipalHRAttributes input) {
+            return PrincipalHRAttributesBo.from(input);
+        }
+
+        ;
+    };
+
+    @PortableSequenceGenerator(name = "HR_PRINCIPAL_ATTRIBUTE_S")
+    @GeneratedValue(generator = "HR_PRINCIPAL_ATTRIBUTE_S")
+    @Id
+    @Column(name = "HR_PRINCIPAL_ATTRIBUTE_ID", length = 60)
+    private String hrPrincipalAttributeId;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
+
+    @Column(name = "LEAVE_CALENDAR", length = 15)
+    private String leaveCalendar;
+
+    @Column(name = "PAY_CALENDAR", length = 15)
+    private String payCalendar;
+
+    @Column(name = "LEAVE_PLAN", nullable = false, length = 15)
+    private String leavePlan;
+
+    @Column(name = "SERVICE_DATE", nullable = false)
+    @Temporal(TemporalType.DATE)
+    private Date serviceDate;
+
+    @Column(name = "FMLA_ELIGIBLE", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean fmlaEligible;
+
+    @Column(name = "WORKERS_ELIGIBLE", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean workersCompEligible;
+
+    @Column(name = "TIMEZONE", length = 10)
+    private String timezone;
+
+    @Transient
+    private transient CalendarBo calendar;
+
+    @Transient
+    private transient CalendarBo leaveCalObj;
+
+    @Transient
+    private transient Person person;
+
+    @Transient
+    private transient LeavePlanBo leavePlanObj;
+
+    @Transient
     private transient IdentityService identityService;
 
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(PRINCIPAL_ID, this.getPrincipalId())
-				.build();
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(PRINCIPAL_ID, this.getPrincipalId()).build();
+    }
 
-	public String getPrincipalId() {
-		return principalId;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public String getName() {
-		if (person == null) {
+    public String getName() {
+        if (person == null) {
             EntityNamePrincipalName name = getIdentityService().getDefaultNamesForPrincipalId(this.principalId);
             if (name != null) {
                 return name.getDefaultName().getCompositeName();
             }
             return StringUtils.EMPTY;
         }
-	    return (person != null) ? person.getName() : "";
-	}
+        return (person != null) ? person.getName() : "";
+    }
 
-	public String getPayCalendar() {
-		return payCalendar;
-	}
+    public String getPayCalendar() {
+        return payCalendar;
+    }
 
-	public void setPayCalendar(String payCalendar) {
-		this.payCalendar = payCalendar;
-	}
+    public void setPayCalendar(String payCalendar) {
+        this.payCalendar = payCalendar;
+    }
 
-	public String getLeavePlan() {
-		return leavePlan;
-	}
+    public String getLeavePlan() {
+        return leavePlan;
+    }
 
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
+    public void setLeavePlan(String leavePlan) {
+        this.leavePlan = leavePlan;
+    }
 
-	public Date getServiceDate() {
-		return serviceDate;
-	}
+    public Date getServiceDate() {
+        return serviceDate;
+    }
 
-	public void setServiceDate(Date serviceDate) {
-		this.serviceDate = serviceDate;
-	}
-	
-	public LocalDate getServiceLocalDate() {
-		return serviceDate != null ? LocalDate.fromDateFields(serviceDate) : null;
-	}
-	
-	public void setServiceLocalDate(LocalDate serviceLocalDate) {
-		this.serviceDate = serviceLocalDate != null ? serviceLocalDate.toDate() : null;
-	}
+    public void setServiceDate(Date serviceDate) {
+        this.serviceDate = serviceDate;
+    }
 
-	public boolean isFmlaEligible() {
-		return fmlaEligible;
-	}
+    public LocalDate getServiceLocalDate() {
+        return serviceDate != null ? LocalDate.fromDateFields(serviceDate) : null;
+    }
 
-	public void setFmlaEligible(boolean fmlaEligible) {
-		this.fmlaEligible = fmlaEligible;
-	}
+    public void setServiceLocalDate(LocalDate serviceLocalDate) {
+        this.serviceDate = serviceLocalDate != null ? serviceLocalDate.toDate() : null;
+    }
 
-	public boolean isWorkersCompEligible() {
-		return workersCompEligible;
-	}
+    public boolean isFmlaEligible() {
+        return fmlaEligible;
+    }
 
-	public void setWorkersCompEligible(boolean workersCompEligible) {
-		this.workersCompEligible = workersCompEligible;
-	}
+    public void setFmlaEligible(boolean fmlaEligible) {
+        this.fmlaEligible = fmlaEligible;
+    }
 
-	public String getTimezone() {
-		return timezone;
-	}
+    public boolean isWorkersCompEligible() {
+        return workersCompEligible;
+    }
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
+    public void setWorkersCompEligible(boolean workersCompEligible) {
+        this.workersCompEligible = workersCompEligible;
+    }
 
-	public CalendarBo getCalendar() {
-		return calendar;
-	}
+    public String getTimezone() {
+        return timezone;
+    }
 
-	public void setCalendar(CalendarBo calendar) {
-		this.calendar = calendar;
-	}
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
 
-	public Person getPerson() {
-		return person;
-	}
+    public CalendarBo getCalendar() {
+        return calendar;
+    }
 
-	public void setPerson(Person person) {
-		this.person = person;
-	}
+    public void setCalendar(CalendarBo calendar) {
+        this.calendar = calendar;
+    }
 
-	public LeavePlanBo getLeavePlanObj() {
-        if (leavePlanObj == null
-                && StringUtils.isNotEmpty(leavePlan)) {
-            leavePlanObj = LeavePlanBo.from(HrServiceLocator.getLeavePlanService().getLeavePlan(leavePlan,getEffectiveLocalDate()));
+    public Person getPerson() {
+        return person;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public LeavePlanBo getLeavePlanObj() {
+        if (leavePlanObj == null && StringUtils.isNotEmpty(leavePlan)) {
+            leavePlanObj = LeavePlanBo.from(HrServiceLocator.getLeavePlanService().getLeavePlan(leavePlan, getEffectiveLocalDate()));
         }
-		return leavePlanObj;
-	}
+        return leavePlanObj;
+    }
 
-	public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
-		this.leavePlanObj = leavePlanObj;
-	}
+    public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
+        this.leavePlanObj = leavePlanObj;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return principalId + "_" + payCalendar == null ? "" : payCalendar + "_"
-				+ leaveCalendar == null ? "" : leaveCalendar;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return principalId + "_" + payCalendar == null ? "" : payCalendar + "_" + leaveCalendar == null ? "" : leaveCalendar;
+    }
 
-	public String getLeaveCalendar() {
-		return leaveCalendar;
-	}
+    public String getLeaveCalendar() {
+        return leaveCalendar;
+    }
 
-	public void setLeaveCalendar(String leaveCalendar) {
-		this.leaveCalendar = leaveCalendar;
-	}
+    public void setLeaveCalendar(String leaveCalendar) {
+        this.leaveCalendar = leaveCalendar;
+    }
 
-	@Override
-	public String getId() {
-		return this.getHrPrincipalAttributeId();
-	}
-	@Override
-	public void setId(String id) {
-		setHrPrincipalAttributeId(id);
-	}
+    @Override
+    public String getId() {
+        return this.getHrPrincipalAttributeId();
+    }
 
-	public CalendarBo getLeaveCalObj() {
-		return leaveCalObj;
-	}
+    @Override
+    public void setId(String id) {
+        setHrPrincipalAttributeId(id);
+    }
 
-	public void setLeaveCalObj(CalendarBo leaveCalObj) {
-		this.leaveCalObj = leaveCalObj;
-	}
+    public CalendarBo getLeaveCalObj() {
+        return leaveCalObj;
+    }
 
-	public String getHrPrincipalAttributeId() {
-		return hrPrincipalAttributeId;
-	}
+    public void setLeaveCalObj(CalendarBo leaveCalObj) {
+        this.leaveCalObj = leaveCalObj;
+    }
 
-	public void setHrPrincipalAttributeId(String hrPrincipalAttributeId) {
-		this.hrPrincipalAttributeId = hrPrincipalAttributeId;
-	}
+    public String getHrPrincipalAttributeId() {
+        return hrPrincipalAttributeId;
+    }
+
+    public void setHrPrincipalAttributeId(String hrPrincipalAttributeId) {
+        this.hrPrincipalAttributeId = hrPrincipalAttributeId;
+    }
 
     public IdentityService getIdentityService() {
         if (identityService == null) {
@@ -256,7 +299,6 @@ public class PrincipalHRAttributesBo extends HrBusinessObject implements Princip
             return null;
         }
         PrincipalHRAttributesBo phra = new PrincipalHRAttributesBo();
-
         phra.setHrPrincipalAttributeId(im.getHrPrincipalAttributeId());
         phra.setPrincipalId(im.getPrincipalId());
         phra.setLeaveCalendar(im.getLeaveCalendar());
@@ -269,10 +311,8 @@ public class PrincipalHRAttributesBo extends HrBusinessObject implements Princip
         phra.setCalendar(CalendarBo.from(im.getCalendar()));
         phra.setLeaveCalObj(CalendarBo.from(im.getLeaveCalObj()));
         phra.setLeavePlanObj(LeavePlanBo.from(im.getLeavePlanObj()));
-
-        // finally copy over the common fields into phra from im
+        // finally copy over the common fields into phra from im  
         copyCommonFields(phra, im);
-
         return phra;
     }
 
@@ -280,8 +320,6 @@ public class PrincipalHRAttributesBo extends HrBusinessObject implements Princip
         if (bo == null) {
             return null;
         }
-
         return PrincipalHRAttributes.Builder.create(bo).build();
     }
-
 }

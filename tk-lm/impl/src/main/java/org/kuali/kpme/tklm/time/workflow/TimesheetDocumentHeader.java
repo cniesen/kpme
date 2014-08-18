@@ -16,95 +16,97 @@
 package org.kuali.kpme.tklm.time.workflow;
 
 import java.util.Date;
-
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.document.calendar.CalendarDocumentHeader;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.api.time.workflow.TimesheetDocumentHeaderContract;
 
+@Entity
+@Table(name = "TK_DOCUMENT_HEADER_T")
 public class TimesheetDocumentHeader extends CalendarDocumentHeader implements TimesheetDocumentHeaderContract {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public TimesheetDocumentHeader() {
-		this.calendarType = HrConstants.PAY_CALENDAR_TYPE;
-	}
-	
-	public TimesheetDocumentHeader(String documentId, String principalId, Date payBeginDate, Date payEndDate, String documentStatus) {
-		this.documentId = documentId;
-		this.principalId = principalId;
-		this.beginDate = payBeginDate;
-		this.endDate = payEndDate;
-		this.documentStatus = documentStatus;
-		this.calendarType = HrConstants.PAY_CALENDAR_TYPE;
-	}
+    public TimesheetDocumentHeader() {
+        this.calendarType = HrConstants.PAY_CALENDAR_TYPE;
+    }
 
-    @Override
-	public String getDocumentId() {
-		return documentId;
-	}
-
-	public void setDocumentId(String documentId) {
-		this.documentId = documentId;
-	}
+    public TimesheetDocumentHeader(String documentId, String principalId, Date payBeginDate, Date payEndDate, String documentStatus) {
+        this.documentId = documentId;
+        this.principalId = principalId;
+        this.beginDate = payBeginDate;
+        this.endDate = payEndDate;
+        this.documentStatus = documentStatus;
+        this.calendarType = HrConstants.PAY_CALENDAR_TYPE;
+    }
 
     @Override
-	public String getPrincipalId() {
-		return principalId;
-	}
+    public String getDocumentId() {
+        return documentId;
+    }
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
-
-    @Override
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-	
-	@Override
-	public DateTime getEndDateTime() {
-		return endDate != null ? new DateTime(endDate) : null;
-	}
-	
-	public void setEndDateTime(DateTime endDateTime) {
-		this.endDate = endDateTime != null ? endDateTime.toDate() : null;
-	}
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
+    }
 
     @Override
-	public String getDocumentStatus() {
-		return documentStatus;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public void setDocumentStatus(String documentStatus) {
-		this.documentStatus = documentStatus;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
     @Override
-	public Date getBeginDate() {
-		return beginDate;
-	}
+    public Date getEndDate() {
+        return endDate;
+    }
 
-	public void setBeginDate(Date beginDate) {
-		this.beginDate = beginDate;
-	}
-	
-	@Override
-	public DateTime getBeginDateTime() {
-		return beginDate != null ? new DateTime(beginDate) : null;
-	}
-	
-	public void setBeginDateTime(DateTime beginDateTime) {
-		this.beginDate = beginDateTime != null ? beginDateTime.toDate() : null;
-	}
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
 
-	@Override
-	public String getCalendarType() {
-		return calendarType;
-	}
+    @Override
+    public DateTime getEndDateTime() {
+        return endDate != null ? new DateTime(endDate) : null;
+    }
 
+    public void setEndDateTime(DateTime endDateTime) {
+        this.endDate = endDateTime != null ? endDateTime.toDate() : null;
+    }
+
+    @Override
+    public String getDocumentStatus() {
+        return documentStatus;
+    }
+
+    public void setDocumentStatus(String documentStatus) {
+        this.documentStatus = documentStatus;
+    }
+
+    @Override
+    public Date getBeginDate() {
+        return beginDate;
+    }
+
+    public void setBeginDate(Date beginDate) {
+        this.beginDate = beginDate;
+    }
+
+    @Override
+    public DateTime getBeginDateTime() {
+        return beginDate != null ? new DateTime(beginDate) : null;
+    }
+
+    public void setBeginDateTime(DateTime beginDateTime) {
+        this.beginDate = beginDateTime != null ? beginDateTime.toDate() : null;
+    }
+
+    @Override
+    public String getCalendarType() {
+        return calendarType;
+    }
 }

@@ -108,6 +108,12 @@
                 <value>classpath:/org/kuali/rice/krad/login/DummyLoginView.xml</value>
             </list>
         </property>
+        <property name="providers">
+            <list>
+                <ref bean="jpaPersistenceProvider"/>
+                <ref bean="metadataProvider"/>
+            </list>
+        </property>
     </bean>
     
 
@@ -150,7 +156,7 @@
 
 
     <!-- CORE DAOs -->
-    
+
 	<bean id="hrBusinessObjectDao" class="org.kuali.kpme.core.bo.dao.HrBusinessObjectDaoOjbImpl" parent="platformAwareDao" />
 
     <bean id="hrGroupKeyDao" class="org.kuali.kpme.core.groupkey.dao.HrGroupKeyDaoOjbImpl" parent="platformAwareDao" />
@@ -171,7 +177,7 @@
 
     <bean id="calendarEntryDao" class="org.kuali.kpme.core.calendar.entry.dao.CalendarEntryDaoOjbImpl" parent="platformAwareDao" />
 
-    <bean id="departmentDao" class="org.kuali.kpme.core.department.dao.DepartmentDaoOjbImpl" parent="platformAwareDao" />
+    <!--<bean id="departmentDao" class="org.kuali.kpme.core.department.dao.DepartmentDaoOjbImpl" parent="platformAwareDao" />-->
 
     <bean id="departmentAffiliationDao" class="org.kuali.kpme.core.departmentaffiliation.dao.DepartmentAffiliationDaoObjImpl" parent="platformAwareDao" />
 
@@ -262,12 +268,14 @@
     </bean>
 
     <bean id="departmentService" class="org.kuali.kpme.core.department.service.DepartmentServiceImpl">
-        <property name="departmentDao" ref="departmentDao"/>
+        <property name="dataObjectService" ref="dataObjectService"/>
+        <property name="effectiveObjectDao" ref="effectiveDao" />
         <property name="hrGroupKeyService" ref="hrGroupKeyService"/>
     </bean>
 
     <bean id="departmentInternalService" class="org.kuali.kpme.core.department.service.DepartmentInternalServiceImpl">
-        <property name="departmentDao" ref="departmentDao"/>
+        <property name="dataObjectService" ref="dataObjectService"/>
+        <property name="effectiveObjectDao" ref="effectiveDao" />
         <property name="kpmeRoleService" ref="kpmeRoleService"/>
     </bean>
 

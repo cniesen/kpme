@@ -17,6 +17,7 @@ package org.kuali.kpme.core.department.service;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.bo.dao.EffectiveObjectDao;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.department.DepartmentBo;
 import org.kuali.kpme.core.department.dao.DepartmentDao;
@@ -25,20 +26,20 @@ import org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo;
 import org.kuali.kpme.core.service.role.KPMERoleService;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.impl.role.RoleMemberBo;
+import org.kuali.rice.krad.data.DataObjectService;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 
 public class DepartmentInternalServiceImpl implements DepartmentInternalService {
 
-    private DepartmentDao departmentDao;
+    private DataObjectService dataObjectService;
+    private EffectiveObjectDao effectiveObjectDao;
     private KPMERoleService kpmeRoleService;
 
     @Override
     public DepartmentBo getDepartmentWithRoleData(String hrDeptId) {
-        DepartmentBo departmentObj = departmentDao.getDepartment(hrDeptId);
+        DepartmentBo departmentObj = dataObjectService.find(DepartmentBo.class, hrDeptId);
 
         if (departmentObj != null) {
             populateDepartmentRoleMembers(departmentObj, departmentObj.getEffectiveLocalDate());
@@ -74,17 +75,16 @@ public class DepartmentInternalServiceImpl implements DepartmentInternalService 
 
     @Override
     public DepartmentBo getDepartmentWithRoleData(String department, String groupKeyCode, LocalDate asOfDate) {
-        DepartmentBo departmentObj = departmentDao.getDepartment(department, groupKeyCode, asOfDate);
+        Map<String, Object> criteria = new HashMap<String, Object>();
+        criteria.put("dept", department);
+        criteria.put("groupKeyCode", groupKeyCode);
+        DepartmentBo departmentBo =  effectiveObjectDao.getSingleEffectiveObject(DepartmentBo.class, DepartmentBo.BUSINESS_KEYS, criteria, asOfDate);
 
-        if (departmentObj != null) {
-            populateDepartmentRoleMembers(departmentObj, asOfDate);
+        if (departmentBo != null) {
+            populateDepartmentRoleMembers(departmentBo, asOfDate);
         }
 
-        return departmentObj;
-    }
-
-    public void setDepartmentDao(DepartmentDao departmentDao) {
-        this.departmentDao = departmentDao;
+        return departmentBo;
     }
 
     public void setKpmeRoleService(KPMERoleService kpmeRoleService) {
@@ -92,4 +92,11 @@ public class DepartmentInternalServiceImpl implements DepartmentInternalService 
     }
 
 
+    public void setEffectiveObjectDao(EffectiveObjectDao effectiveObjectDao) {
+        this.effectiveObjectDao = effectiveObjectDao;
+    }
+
+    public void setDataObjectService(DataObjectService dataObjectService) {
+        this.dataObjectService = dataObjectService;
+    }
 }

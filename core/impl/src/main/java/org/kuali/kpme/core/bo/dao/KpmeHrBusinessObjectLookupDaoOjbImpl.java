@@ -26,6 +26,7 @@ import org.apache.log4j.Logger;
 import org.apache.ojb.broker.query.Criteria;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.bo.HrBusinessObjectContract;
+import org.kuali.kpme.core.api.util.HrApiConstants;
 import org.kuali.kpme.core.lookup.WildcardableAttributeDefinition;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.kpme.core.util.TKUtils;
@@ -39,7 +40,7 @@ public class KpmeHrBusinessObjectLookupDaoOjbImpl extends LookupDaoOjb {
 
 	private static final String DOES_NOT_CONTAIN_BUSINESS_KEYS_MESSAGE = " does not contain a BUSINESS_KEYS list";
 	private static final String TIMESTAMP = "timestamp";
-	private static final String BUSINESS_KEYS_VAR_NAME = "BUSINESS_KEYS";
+
 	private static final String EFFECTIVE_DATE = "effectiveDate";
 	private static final String NO = "N";
 	private static final String HISTORY_PARAM_NAME = "history";
@@ -137,7 +138,7 @@ public class KpmeHrBusinessObjectLookupDaoOjbImpl extends LookupDaoOjb {
 
 		List<String> businessKeys = new ArrayList<String>();
 		try {
-			businessKeys = (List<String>) hrBOClass.getDeclaredField(BUSINESS_KEYS_VAR_NAME).get(hrBOClass);
+			businessKeys = (List<String>) hrBOClass.getDeclaredField(HrApiConstants.CommonFieldNames.BUSINESS_KEYS).get(hrBOClass);
 		} 
 		catch (NoSuchFieldException e) {
 			LOG.warn(hrBOClass.getName() + DOES_NOT_CONTAIN_BUSINESS_KEYS_MESSAGE);

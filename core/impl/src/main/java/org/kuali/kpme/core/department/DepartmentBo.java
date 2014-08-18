@@ -15,12 +15,18 @@
  */
 package org.kuali.kpme.core.department;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.api.department.DepartmentContract;
@@ -31,81 +37,94 @@ import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
 import org.kuali.kpme.core.kfs.coa.businessobject.Organization;
 import org.kuali.kpme.core.role.department.DepartmentPrincipalRoleMemberBo;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "HR_DEPT_T")
 public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentContract {
 
     static class KeyFields {
-        final static String DEPT = "dept";
-        final static String GROUP_KEY_CODE = "groupKeyCode";
+        static final String DEPT = "dept";
+        static final String GROUP_KEY_CODE = "groupKeyCode";
     }
 
-	private static final long serialVersionUID = 5476378484272246487L;
+    private static final long serialVersionUID = 5476378484272246487L;
 
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Department";
-	//KPME-2273/1965 Primary Business Keys List.		
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.DEPT)
-            .add(KeyFields.GROUP_KEY_CODE)
-            .build();
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "Department";
 
+    //KPME-2273/1965 Primary Business Keys List.		 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.DEPT).add(KeyFields.GROUP_KEY_CODE).build();
+
+    @PortableSequenceGenerator(name = "HR_DEPT_S")
+    @GeneratedValue(generator = "HR_DEPT_S")
+    @Id
+    @Column(name = "HR_DEPT_ID", nullable = false, length = 60)
     private String hrDeptId;
+
+    @Column(name = "DEPT", nullable = false, length = 21)
     private String dept;
+
+    @Column(name = "DESCRIPTION", nullable = false, length = 30)
     private String description;
+
+    @Column(name = "CHART", nullable = false, length = 10)
     private String chart;
+
+    @Column(name = "ORG", nullable = false, length = 10)
     private String org;
+
+    @Column(name = "PYRLL_APPRVL", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
     private boolean payrollApproval;
 
+    @Transient
     private Chart chartObj;
+
+    @Transient
     private Organization orgObj;
-    
+
     @Transient
     private List<DepartmentPrincipalRoleMemberBo> roleMembers = new ArrayList<DepartmentPrincipalRoleMemberBo>();
-    
+
     @Transient
     private List<DepartmentPrincipalRoleMemberBo> inactiveRoleMembers = new ArrayList<DepartmentPrincipalRoleMemberBo>();
-    
-    
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.DEPT, this.getDept())
-                .put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-				.build();
-	}
-    
-	@Override
-	public String getUniqueKey() {
-		return getDept() + "_" + getOrg() + "_" + getChart();
-	}
-    
-	@Override
-	public String getId() {
-		return getHrDeptId();
-	}
 
-	@Override
-	public void setId(String id) {
-		setHrDeptId(id);
-	}
-	
-	public String getHrDeptId() {
-		return hrDeptId;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.DEPT, this.getDept()).put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode()).build();
+    }
 
-	public void setHrDeptId(String hrDeptId) {
-		this.hrDeptId = hrDeptId;
-	}
+    @Override
+    public String getUniqueKey() {
+        return getDept() + "_" + getOrg() + "_" + getChart();
+    }
 
-	public String getDept() {
-		return dept;
-	}
+    @Override
+    public String getId() {
+        return getHrDeptId();
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    @Override
+    public void setId(String id) {
+        setHrDeptId(id);
+    }
+
+    public String getHrDeptId() {
+        return hrDeptId;
+    }
+
+    public void setHrDeptId(String hrDeptId) {
+        this.hrDeptId = hrDeptId;
+    }
+
+    public String getDept() {
+        return dept;
+    }
+
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
     public String getDescription() {
         return description;
@@ -115,7 +134,7 @@ public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentCon
         this.description = description;
     }
 
-	public String getChart() {
+    public String getChart() {
         return chart;
     }
 
@@ -131,65 +150,64 @@ public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentCon
         this.org = org;
     }
 
-	public Chart getChartObj() {
-		return chartObj;
-	}
+    public Chart getChartObj() {
+        return chartObj;
+    }
 
-	public void setChartObj(Chart chartObj) {
-		this.chartObj = chartObj;
-	}
+    public void setChartObj(Chart chartObj) {
+        this.chartObj = chartObj;
+    }
 
-	public Organization getOrgObj() {
-		return orgObj;
-	}
+    public Organization getOrgObj() {
+        return orgObj;
+    }
 
-	public void setOrgObj(Organization orgObj) {
-		this.orgObj = orgObj;
-	}
+    public void setOrgObj(Organization orgObj) {
+        this.orgObj = orgObj;
+    }
 
-	public List<DepartmentPrincipalRoleMemberBo> getRoleMembers() {
-		return roleMembers;
-	}
-	
-	public void addRoleMember(DepartmentPrincipalRoleMemberBo roleMemberBo) {
-		roleMembers.add(roleMemberBo);
-	}
-	
-	public void removeRoleMember(DepartmentPrincipalRoleMemberBo roleMemberBo) {
-		roleMembers.remove(roleMemberBo);
-	}
-	
-	public void setRoleMembers(List<DepartmentPrincipalRoleMemberBo> roleMembers) {
-		this.roleMembers = roleMembers;
-	}
+    public List<DepartmentPrincipalRoleMemberBo> getRoleMembers() {
+        return roleMembers;
+    }
 
-	public List<DepartmentPrincipalRoleMemberBo> getInactiveRoleMembers() {
-		return inactiveRoleMembers;
-	}
-	
-	public void addInactiveRoleMember(DepartmentPrincipalRoleMemberBo inactiveRoleMemberBo) {
-		inactiveRoleMembers.add(inactiveRoleMemberBo);
-	}
-	
-	public void removeInactiveRoleMember(DepartmentPrincipalRoleMemberBo inactiveRoleMemberBo) {
-		inactiveRoleMembers.remove(inactiveRoleMemberBo);
-	}
+    public void addRoleMember(DepartmentPrincipalRoleMemberBo roleMemberBo) {
+        roleMembers.add(roleMemberBo);
+    }
 
-	public void setInactiveRoleMembers(List<DepartmentPrincipalRoleMemberBo> inactiveRoleMembers) {
-		this.inactiveRoleMembers = inactiveRoleMembers;
-	}
-	
-	public boolean isPayrollApproval() {
-		return payrollApproval;
-	}
+    public void removeRoleMember(DepartmentPrincipalRoleMemberBo roleMemberBo) {
+        roleMembers.remove(roleMemberBo);
+    }
 
-	public void setPayrollApproval(boolean payrollApproval) {
-		this.payrollApproval = payrollApproval;
-	}
+    public void setRoleMembers(List<DepartmentPrincipalRoleMemberBo> roleMembers) {
+        this.roleMembers = roleMembers;
+    }
+
+    public List<DepartmentPrincipalRoleMemberBo> getInactiveRoleMembers() {
+        return inactiveRoleMembers;
+    }
+
+    public void addInactiveRoleMember(DepartmentPrincipalRoleMemberBo inactiveRoleMemberBo) {
+        inactiveRoleMembers.add(inactiveRoleMemberBo);
+    }
+
+    public void removeInactiveRoleMember(DepartmentPrincipalRoleMemberBo inactiveRoleMemberBo) {
+        inactiveRoleMembers.remove(inactiveRoleMemberBo);
+    }
+
+    public void setInactiveRoleMembers(List<DepartmentPrincipalRoleMemberBo> inactiveRoleMembers) {
+        this.inactiveRoleMembers = inactiveRoleMembers;
+    }
+
+    public boolean isPayrollApproval() {
+        return payrollApproval;
+    }
+
+    public void setPayrollApproval(boolean payrollApproval) {
+        this.payrollApproval = payrollApproval;
+    }
 
     public static DepartmentBo from(Department im) {
         DepartmentBo dept = new DepartmentBo();
-
         dept.setHrDeptId(im.getHrDeptId());
         dept.setDept(im.getDept());
         dept.setGroupKeyCode(im.getGroupKeyCode());
@@ -201,14 +219,13 @@ public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentCon
         dept.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         dept.setActive(im.isActive());
         if (im.getCreateTime() != null) {
-            dept.setTimestamp(new Timestamp(im.getCreateTime().getMillis()));
+            dept.setTimestamp(im.getCreateTime().toDate());
         }
         dept.setUserPrincipalId(im.getUserPrincipalId());
         dept.setVersionNumber(im.getVersionNumber());
         dept.setObjectId(im.getObjectId());
         dept.setGroupKeyCode(im.getGroupKeyCode());
         dept.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
-
         return dept;
     }
 
@@ -216,7 +233,6 @@ public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentCon
         if (bo == null) {
             return null;
         }
-
         return Department.Builder.create(bo).build();
     }
 
@@ -226,7 +242,6 @@ public class DepartmentBo extends HrKeyedBusinessObject implements DepartmentCon
 
     public static String getDeptFromBusinessKeyId(String id) {
         String[] temp = StringUtils.split(id, '|');
-
         if (temp.length > 1) {
             return temp[1];
         }

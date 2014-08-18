@@ -18,118 +18,148 @@ package org.kuali.kpme.tklm.time.timeblock;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
 
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockHistoryContract;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
+import org.kuali.kpme.tklm.time.timeblock.TimeBlockHistoryDetail;
 import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "TK_TIME_BLOCK_HIST_T")
 public class TimeBlockHistory extends TimeBlockBo implements TimeBlockHistoryContract {
 
-	private static final long serialVersionUID = 3943771766084238699L;
+    private static final long serialVersionUID = 3943771766084238699L;
 
-	private String tkTimeBlockHistoryId = null;
-	private String actionHistory;
-	private String modifiedByPrincipalId;
-	private Timestamp timestampModified;
-	private transient Person principal;
-	private transient Person userPrincipal;
-	private List<TimeBlockHistoryDetail> timeBlockHistoryDetails = new ArrayList<TimeBlockHistoryDetail>();
-	private TimeBlockBo timeBlock;
-	
-	public TimeBlockHistory() {
-	}
+    @PortableSequenceGenerator(name = "TK_TIME_BLOCK_HIST_S")
+    @GeneratedValue(generator = "TK_TIME_BLOCK_HIST_S")
+    @Id
+    @Column(name = "TK_TIME_BLOCK_HIST_ID", length = 60)
+    private String tkTimeBlockHistoryId = null;
 
-	public TimeBlockHistory(TimeBlockBo tb) {
-		this.setTkTimeBlockId(tb.getTkTimeBlockId());
-		this.setDocumentId(tb.getDocumentId());
+    @Column(name = "ACTION_HISTORY", nullable = false)
+    private String actionHistory;
+
+    @Column(name = "MODIFIED_BY_PRINCIPAL_ID", nullable = false, length = 40)
+    private String modifiedByPrincipalId;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "TIMESTAMP_MODIFIED", nullable = false)
+    private Timestamp timestampModified;
+
+    @Transient
+    private transient Person principal;
+
+    @Transient
+    private transient Person userPrincipal;
+
+    @OneToMany(mappedBy = "timeBlockHistory")
+    @JoinColumn(name = "TK_TIME_BLOCK_HIST_ID", referencedColumnName = "TK_TIME_BLOCK_HIST_ID", insertable = false, updatable = false)
+    private List<TimeBlockHistoryDetail> timeBlockHistoryDetails = new ArrayList<TimeBlockHistoryDetail>();
+
+    @ManyToOne(targetEntity = TimeBlockBo.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "TK_TIME_BLOCK_ID", referencedColumnName = "TK_TIME_BLOCK_ID", insertable = false, updatable = false)
+    private TimeBlockBo timeBlock;
+
+    public TimeBlockHistory() {
+    }
+
+    public TimeBlockHistory(TimeBlockBo tb) {
+        this.setTkTimeBlockId(tb.getTkTimeBlockId());
+        this.setDocumentId(tb.getDocumentId());
         this.setGroupKeyCode(tb.getGroupKeyCode());
-		this.setJobNumber(tb.getJobNumber());
-		this.setWorkArea(tb.getWorkArea());
-		this.setTask(tb.getTask());
-		this.setEarnCode(tb.getEarnCode());
-		this.setBeginTimestamp(tb.getBeginTimestamp());
-		this.setEndTimestamp(tb.getEndTimestamp());
-		this.setClockLogCreated(tb.isClockLogCreated());
-		this.setHours(tb.getHours());
-		this.setUserPrincipalId(tb.getUserPrincipalId());
-		this.setPrincipalId(tb.getPrincipalId());
-		this.setTimestamp(tb.getTimestamp());
-		this.setGroupKeyCode(tb.getGroupKeyCode());
-		// add time block history details for this time block history
-		TkServiceLocator.getTimeBlockHistoryService().addTimeBlockHistoryDetails(this, tb);
-	}
+        this.setJobNumber(tb.getJobNumber());
+        this.setWorkArea(tb.getWorkArea());
+        this.setTask(tb.getTask());
+        this.setEarnCode(tb.getEarnCode());
+        this.setBeginTimestamp(tb.getBeginTimestamp());
+        this.setEndTimestamp(tb.getEndTimestamp());
+        this.setClockLogCreated(tb.isClockLogCreated());
+        this.setHours(tb.getHours());
+        this.setUserPrincipalId(tb.getUserPrincipalId());
+        this.setPrincipalId(tb.getPrincipalId());
+        this.setTimestamp(tb.getTimestamp());
+        this.setGroupKeyCode(tb.getGroupKeyCode());
+        // add time block history details for this time block history  
+        TkServiceLocator.getTimeBlockHistoryService().addTimeBlockHistoryDetails(this, tb);
+    }
 
-	public String getTkTimeBlockHistoryId() {
-		return tkTimeBlockHistoryId;
-	}
-	public void setTkTimeBlockHistoryId(String tkTimeBlockHistoryId) {
-		this.tkTimeBlockHistoryId = tkTimeBlockHistoryId;
-	}
-	public String getActionHistory() {
-		return actionHistory;
-	}
-	public void setActionHistory(String actionHistory) {
-		this.actionHistory = actionHistory;
-	}
-	public String getModifiedByPrincipalId() {
-		return modifiedByPrincipalId;
-	}
-	public void setModifiedByPrincipalId(String modifiedByPrincipalId) {
-		this.modifiedByPrincipalId = modifiedByPrincipalId;
-	}
+    public String getTkTimeBlockHistoryId() {
+        return tkTimeBlockHistoryId;
+    }
 
-	public Timestamp getTimestampModified() {
-		return timestampModified;
-	}
+    public void setTkTimeBlockHistoryId(String tkTimeBlockHistoryId) {
+        this.tkTimeBlockHistoryId = tkTimeBlockHistoryId;
+    }
 
-	public void setTimestampModified(Timestamp timestampModified) {
-		this.timestampModified = timestampModified;
-	}
+    public String getActionHistory() {
+        return actionHistory;
+    }
 
-	public Person getPrincipal() {
-		return principal;
-	}
+    public void setActionHistory(String actionHistory) {
+        this.actionHistory = actionHistory;
+    }
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    public String getModifiedByPrincipalId() {
+        return modifiedByPrincipalId;
+    }
 
-	public Person getUserPrincipal() {
-		return userPrincipal;
-	}
+    public void setModifiedByPrincipalId(String modifiedByPrincipalId) {
+        this.modifiedByPrincipalId = modifiedByPrincipalId;
+    }
 
-	public void setUserPrincipal(Person userPrincipal) {
-		this.userPrincipal = userPrincipal;
-	}
+    public Timestamp getTimestampModified() {
+        return timestampModified;
+    }
 
-	public List<TimeBlockHistoryDetail> getTimeBlockHistoryDetails() {
-		return timeBlockHistoryDetails;
-	}
+    public void setTimestampModified(Timestamp timestampModified) {
+        this.timestampModified = timestampModified;
+    }
 
-	public void setTimeBlockHistoryDetails(List<TimeBlockHistoryDetail> timeBlockHistoryDetails) {
-		this.timeBlockHistoryDetails = timeBlockHistoryDetails;
-	}
-	
-	public TimeBlockBo getTimeBlock(){
-		return this.timeBlock;
-	}
-	
-	public void setTimeBlock(TimeBlockBo timeBlock) {
-		this.timeBlock = timeBlock;
-	}
+    public Person getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
+
+    public Person getUserPrincipal() {
+        return userPrincipal;
+    }
+
+    public void setUserPrincipal(Person userPrincipal) {
+        this.userPrincipal = userPrincipal;
+    }
+
+    public List<TimeBlockHistoryDetail> getTimeBlockHistoryDetails() {
+        return timeBlockHistoryDetails;
+    }
+
+    public void setTimeBlockHistoryDetails(List<TimeBlockHistoryDetail> timeBlockHistoryDetails) {
+        this.timeBlockHistoryDetails = timeBlockHistoryDetails;
+    }
+
+    public TimeBlockBo getTimeBlock() {
+        return this.timeBlock;
+    }
+
+    public void setTimeBlock(TimeBlockBo timeBlock) {
+        this.timeBlock = timeBlock;
+    }
 
     public TimeBlockHistory copy() {
         return new TimeBlockHistory(this);
     }
-    
+
     private TimeBlockHistory(TimeBlockHistory timeBlockHistory) {
-    	super(timeBlockHistory);
-    	
-    	this.setTkTimeBlockHistoryId(timeBlockHistory.getTkTimeBlockHistoryId());
-    	this.setActionHistory(timeBlockHistory.getActionHistory());
-    	this.setModifiedByPrincipalId(timeBlockHistory.getModifiedByPrincipalId());
-    	this.setTimestampModified(timeBlockHistory.getTimestampModified());
-    	
-    	TkServiceLocator.getTimeBlockHistoryService().addTimeBlockHistoryDetails(this, timeBlockHistory);
+        super(timeBlockHistory);
+        this.setTkTimeBlockHistoryId(timeBlockHistory.getTkTimeBlockHistoryId());
+        this.setActionHistory(timeBlockHistory.getActionHistory());
+        this.setModifiedByPrincipalId(timeBlockHistory.getModifiedByPrincipalId());
+        this.setTimestampModified(timeBlockHistory.getTimestampModified());
+        TkServiceLocator.getTimeBlockHistoryService().addTimeBlockHistoryDetails(this, timeBlockHistory);
     }
 }

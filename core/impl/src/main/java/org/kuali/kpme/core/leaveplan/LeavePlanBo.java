@@ -15,8 +15,11 @@
  */
 package org.kuali.kpme.core.leaveplan;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.sql.Time;
 import java.sql.Timestamp;
+import javax.persistence.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalTime;
@@ -25,137 +28,147 @@ import org.kuali.kpme.core.api.leaveplan.LeavePlan;
 import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "LM_LEAVE_PLAN_T")
 public class LeavePlanBo extends HrBusinessObject implements LeavePlanContract {
-	
-	private static final String LEAVE_PLAN = "leavePlan";
-	
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "LeavePlan";
-	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(LEAVE_PLAN)
-	            .build();
 
-	private static final long serialVersionUID = 1L;
-	private String lmLeavePlanId;
-	private String leavePlan;
-	private String descr;
-	private String calendarYearStart;
-	private String planningMonths;
-	private String batchPriorYearCarryOverStartDate;
-	private Time batchPriorYearCarryOverStartTime;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(LEAVE_PLAN, this.getLeavePlan())
-			.build();
-	}
-	
+    private static final String LEAVE_PLAN = "leavePlan";
 
-	public String getBatchPriorYearCarryOverStartDate() {
-		return batchPriorYearCarryOverStartDate;
-	}
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "LeavePlan";
 
-	public void setBatchPriorYearCarryOverStartDate(
-			String batchPriorYearCarryOverStartDate) {
-		this.batchPriorYearCarryOverStartDate = batchPriorYearCarryOverStartDate;
-	}
-	
-	public Time getBatchPriorYearCarryOverStartTime() {
-		return batchPriorYearCarryOverStartTime;
-	}
+    //KPME-2273/1965 Primary Business Keys List.  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(LEAVE_PLAN).build();
+
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "LM_LEAVE_PLAN_S")
+    @GeneratedValue(generator = "LM_LEAVE_PLAN_S")
+    @Id
+    @Column(name = "LM_LEAVE_PLAN_ID", length = 60)
+    private String lmLeavePlanId;
+
+    @Column(name = "LEAVE_PLAN", nullable = false, length = 15)
+    private String leavePlan;
+
+    @Column(name = "DESCR", nullable = false, length = 50)
+    private String descr;
+
+    @Column(name = "CAL_YEAR_START", nullable = false, length = 5)
+    private String calendarYearStart;
+
+    @Column(name = "PLANNING_MONTHS", nullable = false, length = 3)
+    private String planningMonths;
+
+    @Column(name = "BATCH_CARRY_OVER_START_DATE", length = 5)
+    private String batchPriorYearCarryOverStartDate;
+
+    @Temporal(TemporalType.TIME)
+    @Column(name = "BATCH_CARRY_OVER_START_TIME")
+    private Time batchPriorYearCarryOverStartTime;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(LEAVE_PLAN, this.getLeavePlan()).build();
+    }
+
+    public String getBatchPriorYearCarryOverStartDate() {
+        return batchPriorYearCarryOverStartDate;
+    }
+
+    public void setBatchPriorYearCarryOverStartDate(String batchPriorYearCarryOverStartDate) {
+        this.batchPriorYearCarryOverStartDate = batchPriorYearCarryOverStartDate;
+    }
+
+    public Time getBatchPriorYearCarryOverStartTime() {
+        return batchPriorYearCarryOverStartTime;
+    }
 
     public LocalTime getBatchPriorYearCarryOverStartLocalTime() {
         return batchPriorYearCarryOverStartTime == null ? null : LocalTime.fromDateFields(batchPriorYearCarryOverStartTime);
     }
 
-	public void setBatchPriorYearCarryOverStartTime(
-			Time batchPriorYearCarryOverStartTime) {
-		this.batchPriorYearCarryOverStartTime = batchPriorYearCarryOverStartTime;
-	}
+    public void setBatchPriorYearCarryOverStartTime(Time batchPriorYearCarryOverStartTime) {
+        this.batchPriorYearCarryOverStartTime = batchPriorYearCarryOverStartTime;
+    }
 
-	public String getPlanningMonths() {
-		return planningMonths;
-	}
+    public String getPlanningMonths() {
+        return planningMonths;
+    }
 
-	public void setPlanningMonths(String planningMonths) {
-		this.planningMonths = planningMonths;
-	}
+    public void setPlanningMonths(String planningMonths) {
+        this.planningMonths = planningMonths;
+    }
 
-	public String getLmLeavePlanId() {
-		return lmLeavePlanId;
-	}
+    public String getLmLeavePlanId() {
+        return lmLeavePlanId;
+    }
 
-	public void setLmLeavePlanId(String lmLeavePlanId) {
-		this.lmLeavePlanId = lmLeavePlanId;
-	}
+    public void setLmLeavePlanId(String lmLeavePlanId) {
+        this.lmLeavePlanId = lmLeavePlanId;
+    }
 
-	public String getLeavePlan() {
-		return leavePlan;
-	}
+    public String getLeavePlan() {
+        return leavePlan;
+    }
 
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
+    public void setLeavePlan(String leavePlan) {
+        this.leavePlan = leavePlan;
+    }
 
-	public String getDescr() {
-		return descr;
-	}
+    public String getDescr() {
+        return descr;
+    }
 
-	public void setDescr(String descr) {
-		this.descr = descr;
-	}
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
 
-	public String getCalendarYearStart() {
-		return calendarYearStart;
-	}
+    public String getCalendarYearStart() {
+        return calendarYearStart;
+    }
 
-	public void setCalendarYearStart(String calendarYearStart) {
-		this.calendarYearStart = calendarYearStart;
-	}
+    public void setCalendarYearStart(String calendarYearStart) {
+        this.calendarYearStart = calendarYearStart;
+    }
 
-	public String getCalendarYearStartMonth() {
-		if (StringUtils.isEmpty(getCalendarYearStart())) {
-			return "01";
-		}
-		String[] date = getCalendarYearStart().split("/");
-		return date[0];
-	}
+    public String getCalendarYearStartMonth() {
+        if (StringUtils.isEmpty(getCalendarYearStart())) {
+            return "01";
+        }
+        String[] date = getCalendarYearStart().split("/");
+        return date[0];
+    }
 
-	public String getCalendarYearStartDayOfMonth() {
-		if (StringUtils.isEmpty(getCalendarYearStart())) {
-			return "01";
-		}
-		String[] date = getCalendarYearStart().split("/");
-		return date[1];
-	}
+    public String getCalendarYearStartDayOfMonth() {
+        if (StringUtils.isEmpty(getCalendarYearStart())) {
+            return "01";
+        }
+        String[] date = getCalendarYearStart().split("/");
+        return date[1];
+    }
 
+    @Override
+    protected String getUniqueKey() {
+        return leavePlan;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return leavePlan;
-	}
+    @Override
+    public String getId() {
+        return getLmLeavePlanId();
+    }
 
-	@Override
-	public String getId() {
-		return getLmLeavePlanId();
-	}
-
-	@Override
-	public void setId(String id) {
-		setLmLeavePlanId(id);
-	}
+    @Override
+    public void setId(String id) {
+        setLmLeavePlanId(id);
+    }
 
     public static LeavePlanBo from(LeavePlan im) {
         if (im == null) {
             return null;
         }
         LeavePlanBo lp = new LeavePlanBo();
-
         lp.setLmLeavePlanId(im.getLmLeavePlanId());
         lp.setLeavePlan(im.getLeavePlan());
         lp.setDescr(im.getDescr());
@@ -163,7 +176,6 @@ public class LeavePlanBo extends HrBusinessObject implements LeavePlanContract {
         lp.setPlanningMonths(im.getPlanningMonths());
         lp.setBatchPriorYearCarryOverStartDate(im.getBatchPriorYearCarryOverStartDate());
         lp.setBatchPriorYearCarryOverStartTime(im.getBatchPriorYearCarryOverStartLocalTime() == null ? null : new Time(im.getBatchPriorYearCarryOverStartLocalTime().toDateTimeToday().getMillis()));
-
         lp.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         lp.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -172,7 +184,6 @@ public class LeavePlanBo extends HrBusinessObject implements LeavePlanContract {
         lp.setUserPrincipalId(im.getUserPrincipalId());
         lp.setVersionNumber(im.getVersionNumber());
         lp.setObjectId(im.getObjectId());
-
         return lp;
     }
 
@@ -180,7 +191,6 @@ public class LeavePlanBo extends HrBusinessObject implements LeavePlanContract {
         if (bo == null) {
             return null;
         }
-
         return LeavePlan.Builder.create(bo).build();
     }
 }

@@ -15,12 +15,20 @@
  */
 package org.kuali.kpme.core.earncode;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.api.earncode.EarnCode;
@@ -30,268 +38,311 @@ import org.kuali.kpme.core.earncode.security.EarnCodeSecurityBo;
 import org.kuali.kpme.core.leaveplan.LeavePlanBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "HR_EARN_CODE_T")
 public class EarnCodeBo extends HrBusinessObject implements EarnCodeContract {
 
-	private static final String EARN_CODE = "earnCode";
+    private static final String EARN_CODE = "earnCode";
 
-	private static final long serialVersionUID = -1470603919624794932L;
-	
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCode";
-    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
-            .add(EarnCodeSecurityBo.CACHE_NAME)
-            .add(EarnCodeBo.CACHE_NAME)
-            .build();
-    //KPME-2273/1965 Primary Business Keys List.
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(EARN_CODE)
-            .build();
+    private static final long serialVersionUID = -1470603919624794932L;
 
-	
-	private String hrEarnCodeId;
-	private String earnCode;
-	private String description;
-	
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCode";
+
+    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>().add(EarnCodeSecurityBo.CACHE_NAME).add(EarnCodeBo.CACHE_NAME).build();
+
+    //KPME-2273/1965 Primary Business Keys List. 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(EARN_CODE).build();
+
+    @PortableSequenceGenerator(name = "HR_EARN_CODE_S")
+    @GeneratedValue(generator = "HR_EARN_CODE_S")
+    @Id
+    @Column(name = "HR_EARN_CODE_ID", length = 60)
+    private String hrEarnCodeId;
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
+    private String earnCode;
+
+    @Column(name = "DESCR", nullable = false, length = 30)
+    private String description;
+
+    @Column(name = "OVT_EARN_CODE", nullable = false, length = 1)
+    @Convert(converter = BooleanYNConverter.class)
     private boolean ovtEarnCode;
-	private String accrualCategory;
-	private BigDecimal inflateMinHours;
-	private BigDecimal inflateFactor;
 
-	private boolean history;
+    @Column(name = "ACCRUAL_CATEGORY", length = 15)
+    private String accrualCategory;
 
-	private AccrualCategoryBo accrualCategoryObj;
-	private EarnCodeBo rollupToEarnCodeObj;
-	private LeavePlanBo leavePlanObj;
-	
-	private String leavePlan;
-	private String accrualBalanceAction;
-	private String fractionalTimeAllowed;
-	private String roundingOption;
-	private String eligibleForAccrual;
-	private String affectPay;
-	private String allowScheduledLeave;
-	private String fmla;
-	private String workmansComp;
-	private Long defaultAmountofTime;
-	private String allowNegativeAccrualBalance;
-	private String rollupToEarnCode;
-	private String recordMethod;
-	private String usageLimit;
-	private String countsAsRegularPay;
-	
-	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(EARN_CODE, this.getEarnCode())		
-				.build();
-	}
+    @Column(name = "INFLATE_MIN_HOURS", length = 5)
+    private BigDecimal inflateMinHours;
 
-	public String getCountsAsRegularPay() {
-		return countsAsRegularPay;
-	}
+    @Column(name = "INFLATE_FACTOR", length = 5)
+    private BigDecimal inflateFactor;
 
-	public void setCountsAsRegularPay(String countsAsRegularPay) {
-		this.countsAsRegularPay = countsAsRegularPay;
-	}
+    @Transient
+    private boolean history;
 
-	public String getUsageLimit() {
-		return usageLimit;
-	}
+    @Transient
+    private AccrualCategoryBo accrualCategoryObj;
 
-	public void setUsageLimit(String usageLimit) {
-		this.usageLimit = usageLimit;
-	}
+    @Transient
+    private EarnCodeBo rollupToEarnCodeObj;
 
-	public String getRecordMethod() {
-		return recordMethod;
-	}
+    @Transient
+    private LeavePlanBo leavePlanObj;
 
-	public void setRecordMethod(String recordMethod) {
-		this.recordMethod = recordMethod;
-	}
+    @Column(name = "LEAVE_PLAN", length = 15)
+    private String leavePlan;
 
-	public String getRollupToEarnCode() {
-		return rollupToEarnCode;
-	}
+    @Column(name = "ACCRUAL_BAL_ACTION", length = 15)
+    private String accrualBalanceAction;
 
-	public void setRollupToEarnCode(String rollupToEarnCode) {
-		this.rollupToEarnCode = rollupToEarnCode;
-	}
+    @Column(name = "FRACT_TIME_ALLOWD", nullable = false, length = 5)
+    private String fractionalTimeAllowed;
 
-	public EarnCodeBo getRollupToEarnCodeObj() {
-		return rollupToEarnCodeObj;
-	}
+    @Column(name = "ROUND_OPT", nullable = false, length = 5)
+    private String roundingOption;
 
-	public void setRollupToEarnCodeObj(EarnCodeBo rollupToEarnCodeObj) {
-		this.rollupToEarnCodeObj = rollupToEarnCodeObj;
-	}
+    @Column(name = "ELIGIBLE_FOR_ACC", nullable = false, length = 5)
+    private String eligibleForAccrual;
 
-	public String getLeavePlan() {
-//		AccrualCategory myAccrualCategoryObj = new AccrualCategory();
-//		if(this.accrualCategory != null) {
-//			myAccrualCategoryObj =  HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getEffectiveDate());
-//	    }
-//		this.leavePlan =(myAccrualCategoryObj != null) ? myAccrualCategoryObj.getLeavePlan() : ""; 
-	    return leavePlan;
-	}
+    @Column(name = "AFFECT_PAY", nullable = false, length = 5)
+    private String affectPay;
 
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
+    @Column(name = "ALLOW_SCHD_LEAVE", nullable = false, length = 5)
+    private String allowScheduledLeave;
 
-	public String getAccrualBalanceAction() {
-		return accrualBalanceAction;
-	}
+    @Column(name = "FMLA", nullable = false, length = 5)
+    private String fmla;
 
-	public void setAccrualBalanceAction(String accrualBalanceAction) {
-		this.accrualBalanceAction = accrualBalanceAction;
-	}
+    @Column(name = "WORKMANS_COMP", nullable = false, length = 5)
+    private String workmansComp;
 
-	public String getFractionalTimeAllowed() {
-		return fractionalTimeAllowed;
-	}
+    @Column(name = "DEF_TIME", length = 2)
+    private Long defaultAmountofTime;
 
-	public void setFractionalTimeAllowed(String fractionalTimeAllowed) {
-		this.fractionalTimeAllowed = fractionalTimeAllowed;
-	}
+    @Column(name = "ALLOW_NEGATIVE_ACC_BALANCE", nullable = false, length = 1)
+    private String allowNegativeAccrualBalance;
 
-	public String getRoundingOption() {
-		return roundingOption;
-	}
+    @Column(name = "ROLLUP_TO_EARNCODE", length = 15)
+    private String rollupToEarnCode;
 
-	public void setRoundingOption(String roundingOption) {
-		this.roundingOption = roundingOption;
-	}
+    @Column(name = "RECORD_METHOD", length = 5)
+    private String recordMethod;
 
-	public String getEligibleForAccrual() {
-		return eligibleForAccrual;
-	}
+    @Column(name = "USAGE_LIMIT", length = 5)
+    private String usageLimit;
 
-	public void setEligibleForAccrual(String eligibleForAccrual) {
-		this.eligibleForAccrual = eligibleForAccrual;
-	}
+    @Column(name = "COUNT_AS_REG_PAY", nullable = false, length = 5)
+    private String countsAsRegularPay;
 
-	public String getAffectPay() {
-		return affectPay;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(EARN_CODE, this.getEarnCode()).build();
+    }
 
-	public void setAffectPay(String affectPay) {
-		this.affectPay = affectPay;
-	}
+    public String getCountsAsRegularPay() {
+        return countsAsRegularPay;
+    }
 
-	public String getAllowScheduledLeave() {
-		return allowScheduledLeave;
-	}
+    public void setCountsAsRegularPay(String countsAsRegularPay) {
+        this.countsAsRegularPay = countsAsRegularPay;
+    }
 
-	public void setAllowScheduledLeave(String allowScheduledLeave) {
-		this.allowScheduledLeave = allowScheduledLeave;
-	}
+    public String getUsageLimit() {
+        return usageLimit;
+    }
 
-	public String getFmla() {
-		return fmla;
-	}
+    public void setUsageLimit(String usageLimit) {
+        this.usageLimit = usageLimit;
+    }
 
-	public void setFmla(String fmla) {
-		this.fmla = fmla;
-	}
+    public String getRecordMethod() {
+        return recordMethod;
+    }
 
-	public String getWorkmansComp() {
-		return workmansComp;
-	}
+    public void setRecordMethod(String recordMethod) {
+        this.recordMethod = recordMethod;
+    }
 
-	public void setWorkmansComp(String workmansComp) {
-		this.workmansComp = workmansComp;
-	}
+    public String getRollupToEarnCode() {
+        return rollupToEarnCode;
+    }
 
-	public Long getDefaultAmountofTime() {
-		return defaultAmountofTime;
-	}
+    public void setRollupToEarnCode(String rollupToEarnCode) {
+        this.rollupToEarnCode = rollupToEarnCode;
+    }
 
-	public void setDefaultAmountofTime(Long defaultAmountofTime) {
-		this.defaultAmountofTime = defaultAmountofTime;
-	}
+    public EarnCodeBo getRollupToEarnCodeObj() {
+        return rollupToEarnCodeObj;
+    }
 
-	public String getAllowNegativeAccrualBalance() {
-		return allowNegativeAccrualBalance;
-	}
+    public void setRollupToEarnCodeObj(EarnCodeBo rollupToEarnCodeObj) {
+        this.rollupToEarnCodeObj = rollupToEarnCodeObj;
+    }
 
-	public void setAllowNegativeAccrualBalance(String allowNegativeAccrualBalance) {
-		this.allowNegativeAccrualBalance = allowNegativeAccrualBalance;
-	}
+    public String getLeavePlan() {
+        //		AccrualCategory myAccrualCategoryObj = new AccrualCategory(); 
+        //		if(this.accrualCategory != null) { 
+        //			myAccrualCategoryObj =  HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, getEffectiveDate()); 
+        //	    } 
+        //		this.leavePlan =(myAccrualCategoryObj != null) ? myAccrualCategoryObj.getLeavePlan() : "";  
+        return leavePlan;
+    }
 
+    public void setLeavePlan(String leavePlan) {
+        this.leavePlan = leavePlan;
+    }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public String getAccrualBalanceAction() {
+        return accrualBalanceAction;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public void setAccrualBalanceAction(String accrualBalanceAction) {
+        this.accrualBalanceAction = accrualBalanceAction;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getFractionalTimeAllowed() {
+        return fractionalTimeAllowed;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setFractionalTimeAllowed(String fractionalTimeAllowed) {
+        this.fractionalTimeAllowed = fractionalTimeAllowed;
+    }
 
-	public boolean isHistory() {
-		return history;
-	}
+    public String getRoundingOption() {
+        return roundingOption;
+    }
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
+    public void setRoundingOption(String roundingOption) {
+        this.roundingOption = roundingOption;
+    }
 
-	public String getHrEarnCodeId() {
-		return hrEarnCodeId;
-	}
+    public String getEligibleForAccrual() {
+        return eligibleForAccrual;
+    }
 
-	public void setHrEarnCodeId(String hrEarnCodeId) {
-		this.hrEarnCodeId = hrEarnCodeId;
-	}
+    public void setEligibleForAccrual(String eligibleForAccrual) {
+        this.eligibleForAccrual = eligibleForAccrual;
+    }
 
-	public String getAccrualCategory() {
-		return accrualCategory;
-	}
+    public String getAffectPay() {
+        return affectPay;
+    }
 
-	public void setAccrualCategory(String accrualCategory) {
-		this.accrualCategory = accrualCategory;
-	}
+    public void setAffectPay(String affectPay) {
+        this.affectPay = affectPay;
+    }
 
-	public AccrualCategoryBo getAccrualCategoryObj() {
-		if(accrualCategoryObj == null && StringUtils.isNotEmpty(this.getAccrualCategory())) {
+    public String getAllowScheduledLeave() {
+        return allowScheduledLeave;
+    }
+
+    public void setAllowScheduledLeave(String allowScheduledLeave) {
+        this.allowScheduledLeave = allowScheduledLeave;
+    }
+
+    public String getFmla() {
+        return fmla;
+    }
+
+    public void setFmla(String fmla) {
+        this.fmla = fmla;
+    }
+
+    public String getWorkmansComp() {
+        return workmansComp;
+    }
+
+    public void setWorkmansComp(String workmansComp) {
+        this.workmansComp = workmansComp;
+    }
+
+    public Long getDefaultAmountofTime() {
+        return defaultAmountofTime;
+    }
+
+    public void setDefaultAmountofTime(Long defaultAmountofTime) {
+        this.defaultAmountofTime = defaultAmountofTime;
+    }
+
+    public String getAllowNegativeAccrualBalance() {
+        return allowNegativeAccrualBalance;
+    }
+
+    public void setAllowNegativeAccrualBalance(String allowNegativeAccrualBalance) {
+        this.allowNegativeAccrualBalance = allowNegativeAccrualBalance;
+    }
+
+    public String getEarnCode() {
+        return earnCode;
+    }
+
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isHistory() {
+        return history;
+    }
+
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
+
+    public String getHrEarnCodeId() {
+        return hrEarnCodeId;
+    }
+
+    public void setHrEarnCodeId(String hrEarnCodeId) {
+        this.hrEarnCodeId = hrEarnCodeId;
+    }
+
+    public String getAccrualCategory() {
+        return accrualCategory;
+    }
+
+    public void setAccrualCategory(String accrualCategory) {
+        this.accrualCategory = accrualCategory;
+    }
+
+    public AccrualCategoryBo getAccrualCategoryObj() {
+        if (accrualCategoryObj == null && StringUtils.isNotEmpty(this.getAccrualCategory())) {
             accrualCategoryObj = AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(getAccrualCategory(), getEffectiveLocalDate()));
-		}
-		return accrualCategoryObj;
-	}
+        }
+        return accrualCategoryObj;
+    }
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
-		this.accrualCategoryObj = accrualCategoryObj;
-	}
+    public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+        this.accrualCategoryObj = accrualCategoryObj;
+    }
 
-	public BigDecimal getInflateMinHours() {
-		return inflateMinHours;
-	}
+    public BigDecimal getInflateMinHours() {
+        return inflateMinHours;
+    }
 
-	public void setInflateMinHours(BigDecimal inflateMinHours) {
-		this.inflateMinHours = inflateMinHours;
-	}
+    public void setInflateMinHours(BigDecimal inflateMinHours) {
+        this.inflateMinHours = inflateMinHours;
+    }
 
-	public BigDecimal getInflateFactor() {
-		return inflateFactor;
-	}
+    public BigDecimal getInflateFactor() {
+        return inflateFactor;
+    }
 
-	public void setInflateFactor(BigDecimal inflateFactor) {
-		this.inflateFactor = inflateFactor;
-	}
+    public void setInflateFactor(BigDecimal inflateFactor) {
+        this.inflateFactor = inflateFactor;
+    }
 
     public boolean isOvtEarnCode() {
         return ovtEarnCode;
@@ -306,79 +357,74 @@ public class EarnCodeBo extends HrBusinessObject implements EarnCodeContract {
 	 * The purpose of this function is to create a string based on the record_* fields which can be used to render hour / begin(end) time input box
 	 * @return String fieldType
 	 */
-	public String getEarnCodeType() {
-//		if(getRecordHours()) {
-//			return HrConstants.EARN_CODE_HOUR;
-//		}
-//		else if(getRecordTime()) {
-//			return HrConstants.EARN_CODE_TIME;
-//		}
-//		else if(getRecordAmount()) {
-//			return HrConstants.EARN_CODE_AMOUNT;
-//		}
-//		else {
-//			return "";
-//		}
-		return this.recordMethod;
-	}
-
-	@Override
-	public String getUniqueKey() {
-		return earnCode;
-	}
-
-	@Override
-	public String getId() {
-		return getHrEarnCodeId();
-	}
-
-	@Override
-	public void setId(String id) {
-		setHrEarnCodeId(id);
-	}
-	
-    public String getEarnCodeKeyForDisplay() {
-//    	String unitTime = null;
-//    	AccrualCategory acObj = null;
-//    	if(this.accrualCategory != null) {
-//    		acObj = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate);
-//    	}
-//    	unitTime = (acObj!= null ? acObj.getUnitOfTime() : this.recordMethod) ;
-//        return hrEarnCodeId + ":" + unitTime;
-    	return hrEarnCodeId;
+    public String getEarnCodeType() {
+        //		if(getRecordHours()) { 
+        //			return HrConstants.EARN_CODE_HOUR; 
+        //		} 
+        //		else if(getRecordTime()) { 
+        //			return HrConstants.EARN_CODE_TIME; 
+        //		} 
+        //		else if(getRecordAmount()) { 
+        //			return HrConstants.EARN_CODE_AMOUNT; 
+        //		} 
+        //		else { 
+        //			return ""; 
+        //		} 
+        return this.recordMethod;
     }
-    
+
+    @Override
+    public String getUniqueKey() {
+        return earnCode;
+    }
+
+    @Override
+    public String getId() {
+        return getHrEarnCodeId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setHrEarnCodeId(id);
+    }
+
+    public String getEarnCodeKeyForDisplay() {
+        //    	String unitTime = null; 
+        //    	AccrualCategory acObj = null; 
+        //    	if(this.accrualCategory != null) { 
+        //    		acObj = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(accrualCategory, this.effectiveDate); 
+        //    	} 
+        //    	unitTime = (acObj!= null ? acObj.getUnitOfTime() : this.recordMethod) ; 
+        //        return hrEarnCodeId + ":" + unitTime; 
+        return hrEarnCodeId;
+    }
+
     public String getEarnCodeValueForDisplay() {
         return earnCode + " : " + description;
     }
 
-	public LeavePlanBo getLeavePlanObj() {
-		return leavePlanObj;
-	}
+    public LeavePlanBo getLeavePlanObj() {
+        return leavePlanObj;
+    }
 
-	public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
-		this.leavePlanObj = leavePlanObj;
-	}
-
+    public void setLeavePlanObj(LeavePlanBo leavePlanObj) {
+        this.leavePlanObj = leavePlanObj;
+    }
 
     public static EarnCodeBo from(EarnCode im) {
         if (im == null) {
             return null;
         }
         EarnCodeBo ec = new EarnCodeBo();
-
         ec.setHrEarnCodeId(im.getHrEarnCodeId());
         ec.setEarnCode(im.getEarnCode());
         ec.setDescription(im.getDescription());
-
         ec.setOvtEarnCode(im.isOvtEarnCode());
         ec.setAccrualCategory(im.getAccrualCategory());
         ec.setInflateMinHours(im.getInflateMinHours());
         ec.setInflateFactor(im.getInflateFactor());
-
         ec.setAccrualCategoryObj(im.getAccrualCategoryObj() == null ? null : AccrualCategoryBo.from(im.getAccrualCategoryObj()));
         ec.setRollupToEarnCodeObj(im.getRollupToEarnCodeObj() == null ? null : EarnCodeBo.from(im.getRollupToEarnCodeObj()));
-
         ec.setLeavePlan(im.getLeavePlan());
         ec.setAccrualBalanceAction(im.getAccrualBalanceAction());
         ec.setFractionalTimeAllowed(im.getFractionalTimeAllowed());
@@ -394,7 +440,6 @@ public class EarnCodeBo extends HrBusinessObject implements EarnCodeContract {
         ec.setRecordMethod(im.getRecordMethod());
         ec.setUsageLimit(im.getUsageLimit());
         ec.setCountsAsRegularPay(im.getCountsAsRegularPay());
-
         ec.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         ec.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -403,7 +448,6 @@ public class EarnCodeBo extends HrBusinessObject implements EarnCodeContract {
         ec.setUserPrincipalId(im.getUserPrincipalId());
         ec.setVersionNumber(im.getVersionNumber());
         ec.setObjectId(im.getObjectId());
-
         return ec;
     }
 
@@ -411,7 +455,6 @@ public class EarnCodeBo extends HrBusinessObject implements EarnCodeContract {
         if (bo == null) {
             return null;
         }
-
         return EarnCode.Builder.create(bo).build();
     }
 }

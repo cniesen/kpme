@@ -15,146 +15,154 @@
  */
 package org.kuali.kpme.pm.positionreportgroup;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrKeyedSetBusinessObject;
 import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroup;
 import org.kuali.kpme.pm.api.positionreportgroup.PositionReportGroupContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_RPT_GRP_T")
 public class PositionReportGroupBo extends HrKeyedSetBusinessObject<PositionReportGroupBo, PositionReportGroupKeyBo> implements PositionReportGroupContract {
 
-	private static final long serialVersionUID = -1562521354198281362L;
+    private static final long serialVersionUID = -1562521354198281362L;
 
-	private static final String POSITION_REPORT_GROUP = "positionReportGroup";
+    private static final String POSITION_REPORT_GROUP = "positionReportGroup";
 
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(POSITION_REPORT_GROUP)
-		    .build();
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(POSITION_REPORT_GROUP).build();
 
-	
-	
-	private String pmPositionReportGroupId;
-	private String positionReportGroup;
-	private String description;
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_GROUP, this.getPositionReportGroup())
-				.build();
-	}
+    @PortableSequenceGenerator(name = "PM_PSTN_RPT_GRP_S")
+    @GeneratedValue(generator = "PM_PSTN_RPT_GRP_S")
+    @Id
+    @Column(name = "PM_PSTN_RPT_GRP_ID", length = 60)
+    private String pmPositionReportGroupId;
 
-	/*
+    @Column(name = "PSTN_RPT_GRP", nullable = false, length = 50)
+    private String positionReportGroup;
+
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(POSITION_REPORT_GROUP, this.getPositionReportGroup()).build();
+    }
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportGroupBo, PositionReportGroupBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionReportGroupBo, PositionReportGroup> toImmutable =
-			new ModelObjectUtils.Transformer<PositionReportGroupBo, PositionReportGroup>() {
-		public PositionReportGroup transform(PositionReportGroupBo input) {
-			return PositionReportGroupBo.to(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionReportGroupBo, PositionReportGroup> toImmutable = new ModelObjectUtils.Transformer<PositionReportGroupBo, PositionReportGroup>() {
 
-	/*
+        public PositionReportGroup transform(PositionReportGroupBo input) {
+            return PositionReportGroupBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportGroup, PositionReportGroupBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionReportGroup, PositionReportGroupBo> toBo =
-			new ModelObjectUtils.Transformer<PositionReportGroup, PositionReportGroupBo>() {
-		public PositionReportGroupBo transform(PositionReportGroup input) {
-			return PositionReportGroupBo.from(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionReportGroup, PositionReportGroupBo> toBo = new ModelObjectUtils.Transformer<PositionReportGroup, PositionReportGroupBo>() {
 
-	@Override
-	public String getId() {
-		return this.getPmPositionReportGroupId();
-	}
+        public PositionReportGroupBo transform(PositionReportGroup input) {
+            return PositionReportGroupBo.from(input);
+        }
 
-	@Override
-	public void setId(String id) {
-		setPmPositionReportGroupId(id);
-	}
+        ;
+    };
 
-	@Override
-	protected String getUniqueKey() {
-		return getPositionReportGroup();
-	}
+    @Override
+    public String getId() {
+        return this.getPmPositionReportGroupId();
+    }
 
-	public String getPmPositionReportGroupId() {
-		return pmPositionReportGroupId;
-	}
+    @Override
+    public void setId(String id) {
+        setPmPositionReportGroupId(id);
+    }
 
-	public void setPmPositionReportGroupId(String pmPositionReportGroupId) {
-		this.pmPositionReportGroupId = pmPositionReportGroupId;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return getPositionReportGroup();
+    }
 
-	public String getPositionReportGroup() {
-		return positionReportGroup;
-	}
+    public String getPmPositionReportGroupId() {
+        return pmPositionReportGroupId;
+    }
 
-	public void setPositionReportGroup(String positionReportGroup) {
-		this.positionReportGroup = positionReportGroup;
-	}
+    public void setPmPositionReportGroupId(String pmPositionReportGroupId) {
+        this.pmPositionReportGroupId = pmPositionReportGroupId;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getPositionReportGroup() {
+        return positionReportGroup;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setPositionReportGroup(String positionReportGroup) {
+        this.positionReportGroup = positionReportGroup;
+    }
 
-	public static PositionReportGroupBo from(PositionReportGroup im) {
-		if (im == null) {
-			return null;
-		}
-		PositionReportGroupBo prg = new PositionReportGroupBo();
-		prg.setPmPositionReportGroupId(im.getPmPositionReportGroupId());
-		prg.setPositionReportGroup(im.getPositionReportGroup());
-		prg.setDescription(im.getDescription());
-		
-		Set<PositionReportGroupKeyBo> effectiveKeyBoSet = ModelObjectUtils.transformSet(im.getEffectiveKeySet(), PositionReportGroupKeyBo.toBo);
-		// set prg as the owner for each of the derived effective key objects in the set
-		PositionReportGroupKeyBo.setOwnerOfDerivedCollection(prg, effectiveKeyBoSet);
-		// set the key list, constructed from the key set
-		if(effectiveKeyBoSet != null) {
-			prg.setEffectiveKeyList(new ArrayList<PositionReportGroupKeyBo>(effectiveKeyBoSet));
-		}
-		
-		// finally copy over the common fields into prg from im
-		copyCommonFields(prg, im);
+    public String getDescription() {
+        return description;
+    }
 
-		return prg;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public static PositionReportGroup to(PositionReportGroupBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionReportGroup.Builder.create(bo).build();
-	}
+    public static PositionReportGroupBo from(PositionReportGroup im) {
+        if (im == null) {
+            return null;
+        }
+        PositionReportGroupBo prg = new PositionReportGroupBo();
+        prg.setPmPositionReportGroupId(im.getPmPositionReportGroupId());
+        prg.setPositionReportGroup(im.getPositionReportGroup());
+        prg.setDescription(im.getDescription());
+        Set<PositionReportGroupKeyBo> effectiveKeyBoSet = ModelObjectUtils.transformSet(im.getEffectiveKeySet(), PositionReportGroupKeyBo.toBo);
+        // set prg as the owner for each of the derived effective key objects in the set  
+        PositionReportGroupKeyBo.setOwnerOfDerivedCollection(prg, effectiveKeyBoSet);
+        // set the key list, constructed from the key set  
+        if (effectiveKeyBoSet != null) {
+            prg.setEffectiveKeyList(new ArrayList<PositionReportGroupKeyBo>(effectiveKeyBoSet));
+        }
+        // finally copy over the common fields into prg from im  
+        copyCommonFields(prg, im);
+        return prg;
+    }
 
-	@Override
-	public List<PositionReportGroupKeyBo> getEffectiveKeyList(){
-		return super.getEffectiveKeyList();	
-	}
+    public static PositionReportGroup to(PositionReportGroupBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionReportGroup.Builder.create(bo).build();
+    }
 
-	public void setEffectiveKeyList(List<PositionReportGroupKeyBo> effectiveKeyList) {
-		super.setEffectiveKeyList(effectiveKeyList);
-	}
+    @Override
+    public List<PositionReportGroupKeyBo> getEffectiveKeyList() {
+        return super.getEffectiveKeyList();
+    }
 
+    public void setEffectiveKeyList(List<PositionReportGroupKeyBo> effectiveKeyList) {
+        super.setEffectiveKeyList(effectiveKeyList);
+    }
 }

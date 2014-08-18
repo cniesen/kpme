@@ -15,53 +15,61 @@
  */
 package org.kuali.kpme.core.paytype;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.mo.EffectiveKey;
 import org.kuali.kpme.core.bo.derived.HrBusinessObjectKey;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+
+@Entity
+@Table(name = "HR_PAYTYPE_KEY_T")
 public class PayTypeKeyBo extends HrBusinessObjectKey<PayTypeBo, PayTypeKeyBo> {
 
-	private static final long serialVersionUID = -7331734503368683324L;
-	
-	/*
+    private static final long serialVersionUID = -7331734503368683324L;
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfPayTypeKey, PayTypeKeyBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<EffectiveKey, PayTypeKeyBo> toBo =
-		new ModelObjectUtils.Transformer<EffectiveKey, PayTypeKeyBo>() {
-			public PayTypeKeyBo transform(EffectiveKey input) {
-				return PayTypeKeyBo.from(input);
-			};
-		};
+    public static final ModelObjectUtils.Transformer<EffectiveKey, PayTypeKeyBo> toBo = new ModelObjectUtils.Transformer<EffectiveKey, PayTypeKeyBo>() {
 
-	/*
+        public PayTypeKeyBo transform(EffectiveKey input) {
+            return PayTypeKeyBo.from(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfPayTypeKeyBo, PayTypeKeyBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PayTypeKeyBo, EffectiveKey> toImmutable =
-		new ModelObjectUtils.Transformer<PayTypeKeyBo, EffectiveKey>() {
-			public EffectiveKey transform(PayTypeKeyBo input) {
-				return PayTypeKeyBo.to(input);
-			};
-		};
+    public static final ModelObjectUtils.Transformer<PayTypeKeyBo, EffectiveKey> toImmutable = new ModelObjectUtils.Transformer<PayTypeKeyBo, EffectiveKey>() {
 
-	@Override
-	public PayTypeBo getOwner() {
-		return super.getOwner();
-	}
-	
-	@Override
-	public void setOwner(PayTypeBo owner) {
-		super.setOwner(owner);
-	}
-	
-	public static PayTypeKeyBo from(EffectiveKey im) {
-		return commonFromLogic(im, new PayTypeKeyBo());
-	}
+        public EffectiveKey transform(PayTypeKeyBo input) {
+            return PayTypeKeyBo.to(input);
+        }
 
+        ;
+    };
+
+    @Override
+    public PayTypeBo getOwner() {
+        return super.getOwner();
+    }
+
+    @Override
+    public void setOwner(PayTypeBo owner) {
+        super.setOwner(owner);
+    }
+
+    public static PayTypeKeyBo from(EffectiveKey im) {
+        return commonFromLogic(im, new PayTypeKeyBo());
+    }
 }

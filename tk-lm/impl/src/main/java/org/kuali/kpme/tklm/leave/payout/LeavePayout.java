@@ -16,6 +16,15 @@
 package org.kuali.kpme.tklm.leave.payout;
 
 import com.google.common.collect.ImmutableMap;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.api.assignment.Assignable;
@@ -29,190 +38,253 @@ import org.kuali.kpme.tklm.api.leave.payout.LeavePayoutContract;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
+@Entity
+@Table(name = "LM_LEAVE_PAYOUT_T")
 public class LeavePayout extends HrBusinessObject implements Assignable, LeavePayoutContract {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String lmLeavePayoutId;
-	private String principalId;
-	private String documentHeaderId;
-	private String fromAccrualCategory;
-	private String earnCode;
-	private String description;
-	private BigDecimal payoutAmount = new BigDecimal("0.0");
+    @PortableSequenceGenerator(name = "LM_LEAVE_PAYOUT_S")
+    @GeneratedValue(generator = "LM_LEAVE_PAYOUT_S")
+    @Id
+    @Column(name = "LM_LEAVE_PAYOUT_ID", length = 60)
+    private String lmLeavePayoutId;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
+
+    @Transient
+    private String documentHeaderId;
+
+    @Column(name = "FROM_ACCRUAL_CATEGORY", nullable = false, length = 15)
+    private String fromAccrualCategory;
+
+    @Column(name = "EARN_CODE", length = 15)
+    private String earnCode;
+
+    @Transient
+    private String description;
+
+    @Column(name = "PAYOUT_AMOUNT", nullable = false, length = 20)
+    private BigDecimal payoutAmount = new BigDecimal("0.0");
+
+    @Column(name = "FORFEITED_AMOUNT", length = 20)
     private BigDecimal forfeitedAmount = new BigDecimal("0.0");
-	private transient Person principal;
-	private transient AccrualCategoryBo fromAccrualCategoryObj;
-	private transient EarnCodeBo earnCodeObj;
-	private transient PrincipalHRAttributesBo principalHRAttrObj;
+
+    @Transient
+    private transient Person principal;
+
+    @Transient
+    private transient AccrualCategoryBo fromAccrualCategoryObj;
+
+    @Transient
+    private transient EarnCodeBo earnCodeObj;
+
+    @Transient
+    private transient PrincipalHRAttributesBo principalHRAttrObj;
+
+    @Transient
     private String leaveCalendarDocumentId;
+
+    @Transient
     private String accrualCategoryRule;
+
+    @Transient
     private String forfeitedLeaveBlockId;
+
+    @Transient
     private String payoutFromLeaveBlockId;
+
+    @Transient
     private String payoutLeaveBlockId;
 
-	private String status;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
+    @Column(name = "STATUS", length = 1)
+    private String status;
 
-	public String getEarnCode() {
-		return earnCode;
-	}
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
-	public EarnCodeBo getEarnCodeObj() {
-		if (earnCodeObj == null) {
+    // TODO returning an empty map for the time-being, until the BK is finalized  
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
+
+    public String getEarnCode() {
+        return earnCode;
+    }
+
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
+
+    public EarnCodeBo getEarnCodeObj() {
+        if (earnCodeObj == null) {
             earnCodeObj = EarnCodeBo.from(HrServiceLocator.getEarnCodeService().getEarnCode(this.earnCode, getEffectiveLocalDate()));
         }
         return earnCodeObj;
-	}
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
-	public String getPrincipalId() {
-		return principalId;
-	}
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    }
+
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
+
+    public String getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
+
     public Person getPrincipal() {
         return principal;
     }
+
     public void setPrincipal(Person principal) {
         this.principal = principal;
     }
-	public String getName() {
-		if (principal == null) {
-        principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
-		}
-		return (principal != null) ? principal.getName() : "";
-	}
-	
-	public String getLeavePlan() {
-		if (!StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate()));
-		}
-		return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
-	}
 
-	public void setLeavePlan(String leavePlan) {
-	}
-	public String getFromAccrualCategory() {
-		return fromAccrualCategory;
-	}
-	public void setFromAccrualCategory(String accrualCategory) {
-		this.fromAccrualCategory = accrualCategory;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public BigDecimal getPayoutAmount() {
-		return payoutAmount;
-	}
-	public void setPayoutAmount(BigDecimal amount) {
-		this.payoutAmount = amount;
-	}
+    public String getName() {
+        if (principal == null) {
+            principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
+        }
+        return (principal != null) ? principal.getName() : "";
+    }
+
+    public String getLeavePlan() {
+        if (!StringUtils.isEmpty(this.principalId)) {
+            principalHRAttrObj = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate()));
+        }
+        return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
+    }
+
+    public void setLeavePlan(String leavePlan) {
+    }
+
+    public String getFromAccrualCategory() {
+        return fromAccrualCategory;
+    }
+
+    public void setFromAccrualCategory(String accrualCategory) {
+        this.fromAccrualCategory = accrualCategory;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getPayoutAmount() {
+        return payoutAmount;
+    }
+
+    public void setPayoutAmount(BigDecimal amount) {
+        this.payoutAmount = amount;
+    }
+
     public BigDecimal getForfeitedAmount() {
         return forfeitedAmount;
     }
+
     public void setForfeitedAmount(BigDecimal amount) {
         this.forfeitedAmount = amount;
     }
-	public AccrualCategoryBo getFromAccrualCategoryObj() {
+
+    public AccrualCategoryBo getFromAccrualCategoryObj() {
         if (fromAccrualCategoryObj == null) {
-            fromAccrualCategoryObj =  AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
+            fromAccrualCategoryObj = AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
         }
         return fromAccrualCategoryObj;
-	}
-	public void setFromAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
-		this.fromAccrualCategoryObj = accrualCategoryObj;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	public String getLmLeavePayoutId() {
-		return lmLeavePayoutId;
-	}
-	public void setLmLeavePayoutId(String id) {
-		this.lmLeavePayoutId = id;
-	}
-	
-	@Override
-	protected String getUniqueKey() {
-		return getLmLeavePayoutId();
-	}
-	
-	@Override
-	public String getId() {
-		return getLmLeavePayoutId();
-	}
+    }
 
-	@Override
-	public void setId(String id) {
-		setLmLeavePayoutId(id);
-	}
+    public void setFromAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+        this.fromAccrualCategoryObj = accrualCategoryObj;
+    }
 
-	public PrincipalHRAttributesBo getPrincipalHRAttrObj() {
-		return principalHRAttrObj;
-	}
-	public void setPrincipalHRAttrObj(PrincipalHRAttributesBo hrObj) {
-		this.principalHRAttrObj = hrObj;
-	}
-	public String getAccrualCategoryRule() {
-		return accrualCategoryRule;
-	}
-	public void setAccrualCategoryRule(String accrualCategoryRule) {
-		this.accrualCategoryRule = accrualCategoryRule;
-	}
-	public String getForfeitedLeaveBlockId() {
-		return forfeitedLeaveBlockId;
-	}
-	public void setForfeitedLeaveBlockId(String forfeitedLeaveBlockId) {
-		this.forfeitedLeaveBlockId = forfeitedLeaveBlockId;
-	}
-	public String getPayoutLeaveBlockId() {
-		return payoutLeaveBlockId;
-	}
-	public void setPayoutLeaveBlockId(String payoutLeaveBlockId) {
-		this.payoutLeaveBlockId = payoutLeaveBlockId;
-	}
-	public String getPayoutFromLeaveBlockId() {
-		return payoutFromLeaveBlockId;
-	}
-	public void setPayoutFromLeaveBlockId(String payoutFromLeaveBlockId) {
-		this.payoutFromLeaveBlockId = payoutFromLeaveBlockId;
-	}
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
 
-	public void setLeaveCalendarDocumentId(String leaveCalendarDocumentId) {
-		this.leaveCalendarDocumentId = leaveCalendarDocumentId;
-	}
+    public String getLmLeavePayoutId() {
+        return lmLeavePayoutId;
+    }
+
+    public void setLmLeavePayoutId(String id) {
+        this.lmLeavePayoutId = id;
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getLmLeavePayoutId();
+    }
+
+    @Override
+    public String getId() {
+        return getLmLeavePayoutId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setLmLeavePayoutId(id);
+    }
+
+    public PrincipalHRAttributesBo getPrincipalHRAttrObj() {
+        return principalHRAttrObj;
+    }
+
+    public void setPrincipalHRAttrObj(PrincipalHRAttributesBo hrObj) {
+        this.principalHRAttrObj = hrObj;
+    }
+
+    public String getAccrualCategoryRule() {
+        return accrualCategoryRule;
+    }
+
+    public void setAccrualCategoryRule(String accrualCategoryRule) {
+        this.accrualCategoryRule = accrualCategoryRule;
+    }
+
+    public String getForfeitedLeaveBlockId() {
+        return forfeitedLeaveBlockId;
+    }
+
+    public void setForfeitedLeaveBlockId(String forfeitedLeaveBlockId) {
+        this.forfeitedLeaveBlockId = forfeitedLeaveBlockId;
+    }
+
+    public String getPayoutLeaveBlockId() {
+        return payoutLeaveBlockId;
+    }
+
+    public void setPayoutLeaveBlockId(String payoutLeaveBlockId) {
+        this.payoutLeaveBlockId = payoutLeaveBlockId;
+    }
+
+    public String getPayoutFromLeaveBlockId() {
+        return payoutFromLeaveBlockId;
+    }
+
+    public void setPayoutFromLeaveBlockId(String payoutFromLeaveBlockId) {
+        this.payoutFromLeaveBlockId = payoutFromLeaveBlockId;
+    }
+
+    public void setLeaveCalendarDocumentId(String leaveCalendarDocumentId) {
+        this.leaveCalendarDocumentId = leaveCalendarDocumentId;
+    }
 
     public List<LeaveBlock> getLeaveBlocks() {
         List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
-
-		if (getForfeitedLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(forfeitedLeaveBlockId));
+        if (getForfeitedLeaveBlockId() != null) {
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(forfeitedLeaveBlockId));
         }
         if (getPayoutFromLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(payoutFromLeaveBlockId));
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(payoutFromLeaveBlockId));
         }
         if (getPayoutLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(payoutLeaveBlockId));
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(payoutLeaveBlockId));
         }
         return leaveBlocks;
     }
@@ -220,51 +292,48 @@ public class LeavePayout extends HrBusinessObject implements Assignable, LeavePa
     public String getLeaveCalendarDocumentId() {
         return leaveCalendarDocumentId;
     }
-	public LeavePayout adjust(BigDecimal payoutAmount) {
-		BigDecimal difference = this.payoutAmount.subtract(payoutAmount);
-		//technically if there is forfeiture, then the transfer amount has already been maximized
-		//via BalanceTransferService::initializeTransfer(...)
-		//i.o.w. transfer amount cannot be increased.
-		//this method is written with the intention of eventually allowing end user to adjust the transfer
-		//amount as many times as they wish before submitting. Currently they cannot.
-		if(difference.signum() < 0) {
-			//transfer amount is being increased.
-			if(forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
-				//transfer amount has already been maximized.
-				if(forfeitedAmount.compareTo(difference.abs()) >= 0)
-					// there is enough leave in the forfeited amount to take out the difference.
-					forfeitedAmount = forfeitedAmount.subtract(difference.abs());
-				else
-					// the difference zero's the forfeited amount.
-					forfeitedAmount = BigDecimal.ZERO;
-			}
-			// a forfeited amount equal to zero with an increase in the transfer amount
-			// does not produce forfeiture.
-			// forfeiture cannot be negative.
-		}
-		else if (difference.signum() > 0) {
-			//transfer amount is being decreased
-			forfeitedAmount = forfeitedAmount.add(difference);
-		}
 
-		this.payoutAmount = payoutAmount;
-		
-		return this;
-	}
-	
-	public String getStatus() {
-		return status;
-	}
-	
-	public void setStatus(String code) {
-		status = code;
-	}
-	public String getDocumentHeaderId() {
-		return documentHeaderId;
-	}
-	public void setDocumentHeaderId(String documentHeaderId) {
-		this.documentHeaderId = documentHeaderId;
-	}
+    public LeavePayout adjust(BigDecimal payoutAmount) {
+        BigDecimal difference = this.payoutAmount.subtract(payoutAmount);
+        //technically if there is forfeiture, then the transfer amount has already been maximized  
+        //via BalanceTransferService::initializeTransfer(...)  
+        //i.o.w. transfer amount cannot be increased.  
+        //this method is written with the intention of eventually allowing end user to adjust the transfer  
+        //amount as many times as they wish before submitting. Currently they cannot.  
+        if (difference.signum() < 0) {
+            //transfer amount is being increased.  
+            if (forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
+                //transfer amount has already been maximized.  
+                if (forfeitedAmount.compareTo(difference.abs()) >= 0)
+                    // there is enough leave in the forfeited amount to take out the difference.  
+                    forfeitedAmount = forfeitedAmount.subtract(difference.abs());
+                else
+                    // the difference zero's the forfeited amount.  
+                    forfeitedAmount = BigDecimal.ZERO;
+            }
+        } else if (difference.signum() > 0) {
+            //transfer amount is being decreased  
+            forfeitedAmount = forfeitedAmount.add(difference);
+        }
+        this.payoutAmount = payoutAmount;
+        return this;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String code) {
+        status = code;
+    }
+
+    public String getDocumentHeaderId() {
+        return documentHeaderId;
+    }
+
+    public void setDocumentHeaderId(String documentHeaderId) {
+        this.documentHeaderId = documentHeaderId;
+    }
 
     @Override
     public List<Assignment> getAssignments() {

@@ -15,10 +15,16 @@
  */
 package org.kuali.kpme.tklm.leave.transfer;
 
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
 import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
@@ -34,136 +40,168 @@ import org.kuali.kpme.tklm.api.leave.transfer.BalanceTransferContract;
 import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.util.ObjectUtils;
 
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "LM_BALANCE_TRANSFER_T")
 public class BalanceTransfer extends HrBusinessObject implements Assignable, BalanceTransferContract {
 
-	private static final long serialVersionUID = 6948695780968441016L;
-	
-	private String balanceTransferId;
-	private String documentHeaderId;
-	private String accrualCategoryRule;
-	private String principalId;
-	private String toAccrualCategory;
-	private String fromAccrualCategory;
-	private BigDecimal transferAmount;
-	private BigDecimal amountTransferred;
-	private BigDecimal forfeitedAmount;
-	private String leaveCalendarDocumentId;
+    private static final long serialVersionUID = 6948695780968441016L;
 
-	private String status;
-	private String forfeitedLeaveBlockId;
-	private String accruedLeaveBlockId;
-	private String debitedLeaveBlockId;
-	private String sstoId;
-	
-	private transient Person principal;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
-	
-	public String getPrincipalId() {
-		return principalId;
-	}
+    @PortableSequenceGenerator(name = "LM_BALANCE_TRANSFER_S")
+    @GeneratedValue(generator = "LM_BALANCE_TRANSFER_S")
+    @Id
+    @Column(name = "LM_BALANCE_TRANSFER_ID", length = 60)
+    private String balanceTransferId;
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    @Transient
+    private String documentHeaderId;
 
-	public String getToAccrualCategory() {
-		return toAccrualCategory;
-	}
+    @Column(name = "LM_ACCRUAL_CATEGORY_RULES_ID", length = 60)
+    private String accrualCategoryRule;
 
-	public void setToAccrualCategory(String toAccrualCategory) {
-		this.toAccrualCategory = toAccrualCategory;
-	}
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
 
-	public String getFromAccrualCategory() {
-		return fromAccrualCategory;
-	}
+    @Column(name = "TO_ACCRUAL_CATEGORY", length = 15)
+    private String toAccrualCategory;
 
-	public void setFromAccrualCategory(String fromAccrualCategory) {
-		this.fromAccrualCategory = fromAccrualCategory;
-	}
+    @Column(name = "FROM_ACCRUAL_CATEGORY", nullable = false, length = 15)
+    private String fromAccrualCategory;
 
-	public BigDecimal getTransferAmount() {
-		return transferAmount;
-	}
+    @Column(name = "TRANSFER_AMOUNT", nullable = false, length = 20)
+    private BigDecimal transferAmount;
 
-	public void setTransferAmount(BigDecimal transferAmount) {
-		this.transferAmount = transferAmount;
-	}
+    @Column(name = "AMOUNT_TRANSFERRED", length = 20)
+    private BigDecimal amountTransferred;
 
-	public BigDecimal getForfeitedAmount() {
-		return forfeitedAmount;
-	}
+    @Column(name = "FORFEITED_AMOUNT", length = 20)
+    private BigDecimal forfeitedAmount;
 
-	public void setForfeitedAmount(BigDecimal forfeitedAmount) {
-		this.forfeitedAmount = forfeitedAmount;
-	}
-	
-	public String getBalanceTransferId() {
-		return balanceTransferId;
-	}
+    @Transient
+    private String leaveCalendarDocumentId;
 
-	public void setBalanceTransferId(String balanceTransferId) {
-		this.balanceTransferId = balanceTransferId;
-	}
-	
-	public String getAccrualCategoryRule() {
-		return accrualCategoryRule;
-	}
+    @Column(name = "STATUS", length = 1)
+    private String status;
 
-	public void setAccrualCategoryRule(String accrualCategoryRule) {
-		this.accrualCategoryRule = accrualCategoryRule;
-	}
+    @Transient
+    private String forfeitedLeaveBlockId;
 
-	@Override
-	protected String getUniqueKey() {
-		return balanceTransferId;
-	}
+    @Transient
+    private String accruedLeaveBlockId;
 
-	@Override
-	public String getId() {
-		return getBalanceTransferId();
-	}
+    @Transient
+    private String debitedLeaveBlockId;
 
-	@Override
-	public void setId(String id) {
-		setBalanceTransferId(id);
-	}
+    @Column(name = "SSTO_ID", length = 60)
+    private String sstoId;
 
-	public Person getPrincipal() {
-		return principal;
-	}
+    @Transient
+    private transient Person principal;
 
-	public void setPrincipal(Person principal) {
-		this.principal = principal;
-	}
+    // TODO returning an empty map for the time-being, until the BK is finalized  
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
 
-	public AccrualCategoryBo getCreditedAccrualCategory() {
-		return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, getEffectiveLocalDate()));
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public AccrualCategoryBo getDebitedAccrualCategory() {
-		return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public String getLeaveCalendarDocumentId() {
-		return leaveCalendarDocumentId;
-	}
+    public String getToAccrualCategory() {
+        return toAccrualCategory;
+    }
 
-	public void setLeaveCalendarDocumentId(String leaveCalendarDocumentId) {
-		this.leaveCalendarDocumentId = leaveCalendarDocumentId;
-	}
+    public void setToAccrualCategory(String toAccrualCategory) {
+        this.toAccrualCategory = toAccrualCategory;
+    }
 
-	/**
+    public String getFromAccrualCategory() {
+        return fromAccrualCategory;
+    }
+
+    public void setFromAccrualCategory(String fromAccrualCategory) {
+        this.fromAccrualCategory = fromAccrualCategory;
+    }
+
+    public BigDecimal getTransferAmount() {
+        return transferAmount;
+    }
+
+    public void setTransferAmount(BigDecimal transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    public BigDecimal getForfeitedAmount() {
+        return forfeitedAmount;
+    }
+
+    public void setForfeitedAmount(BigDecimal forfeitedAmount) {
+        this.forfeitedAmount = forfeitedAmount;
+    }
+
+    public String getBalanceTransferId() {
+        return balanceTransferId;
+    }
+
+    public void setBalanceTransferId(String balanceTransferId) {
+        this.balanceTransferId = balanceTransferId;
+    }
+
+    public String getAccrualCategoryRule() {
+        return accrualCategoryRule;
+    }
+
+    public void setAccrualCategoryRule(String accrualCategoryRule) {
+        this.accrualCategoryRule = accrualCategoryRule;
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return balanceTransferId;
+    }
+
+    @Override
+    public String getId() {
+        return getBalanceTransferId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setBalanceTransferId(id);
+    }
+
+    public Person getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Person principal) {
+        this.principal = principal;
+    }
+
+    public AccrualCategoryBo getCreditedAccrualCategory() {
+        return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(toAccrualCategory, getEffectiveLocalDate()));
+    }
+
+    public AccrualCategoryBo getDebitedAccrualCategory() {
+        return AccrualCategoryBo.from(HrServiceLocator.getAccrualCategoryService().getAccrualCategory(fromAccrualCategory, getEffectiveLocalDate()));
+    }
+
+    public String getLeaveCalendarDocumentId() {
+        return leaveCalendarDocumentId;
+    }
+
+    public void setLeaveCalendarDocumentId(String leaveCalendarDocumentId) {
+        this.leaveCalendarDocumentId = leaveCalendarDocumentId;
+    }
+
+    /**
 	 * Returns a balance transfer object adjusted for the new transfer amount.
 	 * 
 	 * "this" must be a default initialized balance transfer. i.e. transfer amount plus forfeited amount
@@ -174,136 +212,122 @@ public class BalanceTransfer extends HrBusinessObject implements Assignable, Bal
 	 * @param transferAmount The desired transfer amount
 	 * @return A balance transfer object with forfeited and amount transfer amounts adjusted to transferAmount
 	 */
-	public BalanceTransfer adjust(BigDecimal transferAmount) {
-		BigDecimal difference = this.transferAmount.subtract(transferAmount);
-		AccrualCategoryRuleContract aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(accrualCategoryRule);
-		//technically if there is forfeiture, then the transfer amount has already been maximized
-		//via BalanceTransferService::initializeTransfer(...)
-		//i.o.w. transfer amount cannot be increased.
-		//this method is written with the intention of eventually allowing end user to adjust the transfer
-		//amount as many times as they wish before submitting. Currently they cannot.
-		if(difference.signum() < 0) {
-			//transfer amount is being increased.
-			if(forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
-				//transfer amount has already been maximized.
-				if(forfeitedAmount.compareTo(difference.abs()) >= 0)
-					// there is enough leave in the forfeited amount to take out the difference.
-					forfeitedAmount = forfeitedAmount.subtract(difference.abs());
-				else
-					// the difference zero's the forfeited amount.
-					forfeitedAmount = BigDecimal.ZERO;
-			}
-			// a forfeited amount equal to zero with an increase in the transfer amount
-			// does not produce forfeiture.
-			// forfeiture cannot be negative.
-		}
-		else if (difference.signum() > 0) {
-			//transfer amount is being decreased
-			forfeitedAmount = forfeitedAmount.add(difference);
-		}
+    public BalanceTransfer adjust(BigDecimal transferAmount) {
+        BigDecimal difference = this.transferAmount.subtract(transferAmount);
+        AccrualCategoryRuleContract aRule = HrServiceLocator.getAccrualCategoryRuleService().getAccrualCategoryRule(accrualCategoryRule);
+        //technically if there is forfeiture, then the transfer amount has already been maximized  
+        //via BalanceTransferService::initializeTransfer(...)  
+        //i.o.w. transfer amount cannot be increased.  
+        //this method is written with the intention of eventually allowing end user to adjust the transfer  
+        //amount as many times as they wish before submitting. Currently they cannot.  
+        if (difference.signum() < 0) {
+            //transfer amount is being increased.  
+            if (forfeitedAmount.compareTo(BigDecimal.ZERO) > 0) {
+                //transfer amount has already been maximized.  
+                if (forfeitedAmount.compareTo(difference.abs()) >= 0)
+                    // there is enough leave in the forfeited amount to take out the difference.  
+                    forfeitedAmount = forfeitedAmount.subtract(difference.abs());
+                else
+                    // the difference zero's the forfeited amount.  
+                    forfeitedAmount = BigDecimal.ZERO;
+            }
+        } else if (difference.signum() > 0) {
+            //transfer amount is being decreased  
+            forfeitedAmount = forfeitedAmount.add(difference);
+        }
+        this.transferAmount = transferAmount;
+        if (ObjectUtils.isNotNull(aRule.getMaxBalanceTransferConversionFactor()))
+            this.amountTransferred = transferAmount.multiply(aRule.getMaxBalanceTransferConversionFactor()).setScale(2);
+        else
+            this.amountTransferred = transferAmount;
+        return this;
+    }
 
-		this.transferAmount = transferAmount;
-
-		if(ObjectUtils.isNotNull(aRule.getMaxBalanceTransferConversionFactor()))
-			this.amountTransferred = transferAmount.multiply(aRule.getMaxBalanceTransferConversionFactor()).setScale(2);
-		else
-			this.amountTransferred = transferAmount;
-		
-		return this;
-	}
-
-	public List<LeaveBlock> getLeaveBlocks() {
-		List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
-		if (getForfeitedLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(forfeitedLeaveBlockId));
+    public List<LeaveBlock> getLeaveBlocks() {
+        List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
+        if (getForfeitedLeaveBlockId() != null) {
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(forfeitedLeaveBlockId));
         }
         if (getAccruedLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(accruedLeaveBlockId));
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(accruedLeaveBlockId));
         }
         if (getDebitedLeaveBlockId() != null) {
-		    leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(debitedLeaveBlockId));
+            leaveBlocks.add(LmServiceLocator.getLeaveBlockService().getLeaveBlock(debitedLeaveBlockId));
         }
+        return leaveBlocks;
+    }
 
-		return leaveBlocks;
-	}
+    public String getStatus() {
+        return status;
+    }
 
-	public String getStatus() {
-		return status;
-	}
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+    public void disapprove() {
+        LmServiceLocator.getLeaveBlockService().updateLeaveBlock(null, principalId);
+        setStatus(HrConstants.ROUTE_STATUS.DISAPPROVED);
+    }
 
-	public void disapprove() {
-		LmServiceLocator.getLeaveBlockService().updateLeaveBlock(null, principalId);
-		setStatus(HrConstants.ROUTE_STATUS.DISAPPROVED);
-	}
+    public void approve() {
+        setStatus(HrConstants.ROUTE_STATUS.FINAL);
+    }
 
-	public void approve() {
+    public void cancel() {
+        setStatus(HrConstants.ROUTE_STATUS.CANCEL);
+    }
 
-		setStatus(HrConstants.ROUTE_STATUS.FINAL);
-	}
+    public String getAccruedLeaveBlockId() {
+        return accruedLeaveBlockId;
+    }
 
-	public void cancel() {
+    public void setAccruedLeaveBlockId(String accruedLeaveBlockId) {
+        this.accruedLeaveBlockId = accruedLeaveBlockId;
+    }
 
-		setStatus(HrConstants.ROUTE_STATUS.CANCEL);
-	}
+    public String getForfeitedLeaveBlockId() {
+        return forfeitedLeaveBlockId;
+    }
 
-	public String getAccruedLeaveBlockId() {
-		return accruedLeaveBlockId;
-	}
+    public void setForfeitedLeaveBlockId(String forfeitedLeaveBlockId) {
+        this.forfeitedLeaveBlockId = forfeitedLeaveBlockId;
+    }
 
-	public void setAccruedLeaveBlockId(String accruedLeaveBlockId) {
-		this.accruedLeaveBlockId = accruedLeaveBlockId;
-	}
+    public String getDebitedLeaveBlockId() {
+        return debitedLeaveBlockId;
+    }
 
-	public String getForfeitedLeaveBlockId() {
-		return forfeitedLeaveBlockId;
-	}
+    public void setDebitedLeaveBlockId(String debitedLeaveBlockId) {
+        this.debitedLeaveBlockId = debitedLeaveBlockId;
+    }
 
-	public void setForfeitedLeaveBlockId(String forfeitedLeaveBlockId) {
-		this.forfeitedLeaveBlockId = forfeitedLeaveBlockId;
-	}
+    public BigDecimal getAmountTransferred() {
+        return amountTransferred;
+    }
 
-	public String getDebitedLeaveBlockId() {
-		return debitedLeaveBlockId;
-	}
+    public void setAmountTransferred(BigDecimal amountTransferrerd) {
+        this.amountTransferred = amountTransferrerd;
+    }
 
-	public void setDebitedLeaveBlockId(String debitedLeaveBlockId) {
-		this.debitedLeaveBlockId = debitedLeaveBlockId;
-	}
+    public String getSstoId() {
+        return sstoId;
+    }
 
-	public BigDecimal getAmountTransferred() {
-		return amountTransferred;
-	}
+    public void setSstoId(String sstoId) {
+        this.sstoId = sstoId;
+    }
 
-	public void setAmountTransferred(BigDecimal amountTransferrerd) {
-		this.amountTransferred = amountTransferrerd;
-	}
-	
-	public String getSstoId() {
-		return sstoId;
-	}
+    public String getDocumentHeaderId() {
+        return documentHeaderId;
+    }
 
-	public void setSstoId(String sstoId) {
-		this.sstoId = sstoId;
-	}
-
-	public String getDocumentHeaderId() {
-		return documentHeaderId;
-	}
-
-	public void setDocumentHeaderId(String documentHeaderId) {
-		this.documentHeaderId = documentHeaderId;
-	}
+    public void setDocumentHeaderId(String documentHeaderId) {
+        this.documentHeaderId = documentHeaderId;
+    }
 
     @Override
     public List<Assignment> getAssignments() {
         return HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), getEffectiveLocalDate());
     }
-
-    //Comparable for order handling of more than one transfer occurring during the same
-	//action frequency interval?
-
 }

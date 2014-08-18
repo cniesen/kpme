@@ -15,144 +15,171 @@
  */
 package org.kuali.kpme.tklm.time.rules.overtime.weekly;
 
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
-import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleContract;
 import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleContract;
 import org.kuali.kpme.tklm.time.rules.TkRule;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "TK_WEEKLY_OVERTIME_RL_T")
 public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleContract {
 
-	private static final long serialVersionUID = 5229797885418317405L;
+    private static final long serialVersionUID = 5229797885418317405L;
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "WeeklyOvertimeRule";
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "WeeklyOvertimeRule";
 
-	private String tkWeeklyOvertimeRuleId;
-	private String maxHoursEarnGroup;
-	private String convertFromEarnGroup;
-	private String convertToEarnCode;
-	private BigDecimal step;
-	private BigDecimal maxHours;
-	private boolean ovtEarnCode;
-	
-	private Long tkWeeklyOvertimeRuleGroupId = 1L;
-	
-	private EarnCodeGroupBo maxHoursEarnGroupObj;
-	private EarnCodeGroupBo convertFromEarnGroupObj;
-	private EarnCodeBo convertToEarnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
-	
+    @PortableSequenceGenerator(name = "TK_WEEKLY_OVERTIME_RL_S")
+    @GeneratedValue(generator = "TK_WEEKLY_OVERTIME_RL_S")
+    @Id
+    @Column(name = "TK_WEEKLY_OVERTIME_RL_ID", length = 60)
+    private String tkWeeklyOvertimeRuleId;
 
-	public String getTkWeeklyOvertimeRuleId() {
-		return tkWeeklyOvertimeRuleId;
-	}
+    @Column(name = "MAX_HRS_ERN_GROUP", length = 3)
+    private String maxHoursEarnGroup;
 
-	public void setTkWeeklyOvertimeRuleId(String tkWeeklyOvertimeRuleId) {
-		this.tkWeeklyOvertimeRuleId = tkWeeklyOvertimeRuleId;
-	}
+    @Column(name = "CONVERT_FROM_ERN_GROUP", length = 3)
+    private String convertFromEarnGroup;
 
-	public String getMaxHoursEarnGroup() {
-		return maxHoursEarnGroup;
-	}
+    @Column(name = "CONVERT_TO_ERNCD", length = 15)
+    private String convertToEarnCode;
 
-	public void setMaxHoursEarnGroup(String maxHoursEarnGroup) {
-		this.maxHoursEarnGroup = maxHoursEarnGroup;
-	}
+    @Column(name = "STEP")
+    private BigDecimal step;
 
-	public String getConvertFromEarnGroup() {
-		return convertFromEarnGroup;
-	}
+    @Column(name = "MAX_HRS")
+    private BigDecimal maxHours;
 
-	public void setConvertFromEarnGroup(String convertFromEarnGroup) {
-		this.convertFromEarnGroup = convertFromEarnGroup;
-	}
+    @Transient
+    private boolean ovtEarnCode;
 
-	public String getConvertToEarnCode() {
-		return convertToEarnCode;
-	}
+    @Column(name = "TK_WEEKLY_OVT_GROUP_ID")
+    private Long tkWeeklyOvertimeRuleGroupId = 1L;
 
-	public void setConvertToEarnCode(String convertToEarnCode) {
-		this.convertToEarnCode = convertToEarnCode;
-	}
+    @Transient
+    private EarnCodeGroupBo maxHoursEarnGroupObj;
 
-	public BigDecimal getStep() {
-		return step;
-	}
+    @Transient
+    private EarnCodeGroupBo convertFromEarnGroupObj;
 
-	public void setStep(BigDecimal step) {
-		this.step = step;
-	}
+    @Transient
+    private EarnCodeBo convertToEarnCodeObj;
 
-	public BigDecimal getMaxHours() {
-		return maxHours;
-	}
+    // TODO returning an empty map for the time-being, until the BK is finalized  
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
 
-	public void setMaxHours(BigDecimal maxHours) {
-		this.maxHours = maxHours;
-	}
+    public String getTkWeeklyOvertimeRuleId() {
+        return tkWeeklyOvertimeRuleId;
+    }
 
-	public boolean isOvtEarnCode() {
-		return ovtEarnCode;
-	}
+    public void setTkWeeklyOvertimeRuleId(String tkWeeklyOvertimeRuleId) {
+        this.tkWeeklyOvertimeRuleId = tkWeeklyOvertimeRuleId;
+    }
 
-	public void setOvtEarnCode(boolean ovtEarnCode) {
-		this.ovtEarnCode = ovtEarnCode;
-	}
+    public String getMaxHoursEarnGroup() {
+        return maxHoursEarnGroup;
+    }
 
-	public EarnCodeGroupBo getMaxHoursEarnGroupObj() {
-		return maxHoursEarnGroupObj;
-	}
+    public void setMaxHoursEarnGroup(String maxHoursEarnGroup) {
+        this.maxHoursEarnGroup = maxHoursEarnGroup;
+    }
 
-	public void setMaxHoursEarnGroupObj(EarnCodeGroupBo maxHoursEarnGroupObj) {
-		this.maxHoursEarnGroupObj = maxHoursEarnGroupObj;
-	}
+    public String getConvertFromEarnGroup() {
+        return convertFromEarnGroup;
+    }
 
-	public EarnCodeGroupBo getConvertFromEarnGroupObj() {
-		return convertFromEarnGroupObj;
-	}
+    public void setConvertFromEarnGroup(String convertFromEarnGroup) {
+        this.convertFromEarnGroup = convertFromEarnGroup;
+    }
 
-	public void setConvertFromEarnGroupObj(EarnCodeGroupBo convertFromEarnGroupObj) {
-		this.convertFromEarnGroupObj = convertFromEarnGroupObj;
-	}
+    public String getConvertToEarnCode() {
+        return convertToEarnCode;
+    }
 
-	public EarnCodeBo getConvertToEarnCodeObj() {
-		return convertToEarnCodeObj;
-	}
+    public void setConvertToEarnCode(String convertToEarnCode) {
+        this.convertToEarnCode = convertToEarnCode;
+    }
 
-	public void setConvertToEarnCodeObj(EarnCodeBo convertToEarnCodeObj) {
-		this.convertToEarnCodeObj = convertToEarnCodeObj;
-	}
+    public BigDecimal getStep() {
+        return step;
+    }
 
-	public Long getTkWeeklyOvertimeRuleGroupId() {
-		return tkWeeklyOvertimeRuleGroupId;
-	}
+    public void setStep(BigDecimal step) {
+        this.step = step;
+    }
 
-	public void setTkWeeklyOvertimeRuleGroupId(Long tkWeeklyOvertimeRuleGroupId) {
-		this.tkWeeklyOvertimeRuleGroupId = tkWeeklyOvertimeRuleGroupId;
-	}
+    public BigDecimal getMaxHours() {
+        return maxHours;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return convertFromEarnGroup + "_" + maxHoursEarnGroup;
-	}
+    public void setMaxHours(BigDecimal maxHours) {
+        this.maxHours = maxHours;
+    }
 
-	@Override
-	public String getId() {
-		return getTkWeeklyOvertimeRuleId();
-	}
+    public boolean isOvtEarnCode() {
+        return ovtEarnCode;
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkWeeklyOvertimeRuleId(id);
-	}
+    public void setOvtEarnCode(boolean ovtEarnCode) {
+        this.ovtEarnCode = ovtEarnCode;
+    }
+
+    public EarnCodeGroupBo getMaxHoursEarnGroupObj() {
+        return maxHoursEarnGroupObj;
+    }
+
+    public void setMaxHoursEarnGroupObj(EarnCodeGroupBo maxHoursEarnGroupObj) {
+        this.maxHoursEarnGroupObj = maxHoursEarnGroupObj;
+    }
+
+    public EarnCodeGroupBo getConvertFromEarnGroupObj() {
+        return convertFromEarnGroupObj;
+    }
+
+    public void setConvertFromEarnGroupObj(EarnCodeGroupBo convertFromEarnGroupObj) {
+        this.convertFromEarnGroupObj = convertFromEarnGroupObj;
+    }
+
+    public EarnCodeBo getConvertToEarnCodeObj() {
+        return convertToEarnCodeObj;
+    }
+
+    public void setConvertToEarnCodeObj(EarnCodeBo convertToEarnCodeObj) {
+        this.convertToEarnCodeObj = convertToEarnCodeObj;
+    }
+
+    public Long getTkWeeklyOvertimeRuleGroupId() {
+        return tkWeeklyOvertimeRuleGroupId;
+    }
+
+    public void setTkWeeklyOvertimeRuleGroupId(Long tkWeeklyOvertimeRuleGroupId) {
+        this.tkWeeklyOvertimeRuleGroupId = tkWeeklyOvertimeRuleGroupId;
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return convertFromEarnGroup + "_" + maxHoursEarnGroup;
+    }
+
+    @Override
+    public String getId() {
+        return getTkWeeklyOvertimeRuleId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setTkWeeklyOvertimeRuleId(id);
+    }
 }

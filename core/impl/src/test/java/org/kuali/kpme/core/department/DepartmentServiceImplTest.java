@@ -15,26 +15,53 @@
  */
 package org.kuali.kpme.core.department;
 
+import org.joda.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Test;
 import org.kuali.kpme.core.CoreUnitTestCase;
 import org.kuali.kpme.core.IntegrationTest;
 import org.kuali.kpme.core.api.department.Department;
+import org.kuali.kpme.core.api.department.DepartmentService;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
 import java.util.List;
 
+import static org.junit.Assert.*;
+
 @IntegrationTest
 public class DepartmentServiceImplTest extends CoreUnitTestCase {
-	
-	@Test
-	public void testSearchDepartments() throws Exception {
-		// This method is not used anywhere in the code, so comment it out for now
-		//List<Department> allResults = HrServiceLocator.getDepartmentService().getDepartments("admin", null, null, null, "Y", "N", "");
-		//Assert.assertEquals("Search returned the correct number of results.", 11, allResults.size());
-		
-		//List<Department> restrictedResults = HrServiceLocator.getDepartmentService().getDepartments("testuser6", null, null, null, "Y", "N", "");
-		//Assert.assertEquals("Search returned the wrong number of results.", 1, restrictedResults.size());
-	}
+	DepartmentService departmentService;
+
+    @Override
+    public void setUp() throws Exception {
+        super.setUp();
+        departmentService = HrServiceLocator.getDepartmentService();
+    }
+
+    @Test
+    public void testGetDepartment() {
+        Department dept = departmentService.getDepartment("100");
+
+        assertTrue(dept != null);
+        assertEquals("Invalid dept value", "TEST-DEPT", dept.getDept());
+        assertEquals("Invalid description value", "test department", dept.getDescription().trim());
+    }
+
+    @Test
+    public void testGetDepartmentEffective() {
+        Department dept = departmentService.getDepartment("TEST-DEPT5", "IU-IN", new LocalDate(2009, 6, 1));
+
+        assertTrue(dept != null);
+        assertEquals("Invalid dept value", "TEST-DEPT5", dept.getDept());
+        assertTrue(dept.getEffectiveLocalDate().compareTo(new LocalDate(2009, 1, 1)) == 0);
+        assertEquals("Invalid description value", "test department5 - old", dept.getDescription().trim());
+
+        dept = departmentService.getDepartment("TEST-DEPT5", "IU-IN", new LocalDate(2010, 6, 1));
+
+        assertTrue(dept != null);
+        assertEquals("Invalid dept value", "TEST-DEPT5", dept.getDept());
+        assertTrue(dept.getEffectiveLocalDate().compareTo(new LocalDate(2010, 1, 1)) == 0);
+        assertEquals("Invalid description value", "test department5", dept.getDescription().trim());
+    }
 
 }

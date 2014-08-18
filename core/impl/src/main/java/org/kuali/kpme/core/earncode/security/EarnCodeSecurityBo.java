@@ -17,6 +17,13 @@ package org.kuali.kpme.core.earncode.security;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurity;
 import org.kuali.kpme.core.api.earncode.security.EarnCodeSecurityContract;
@@ -29,32 +36,30 @@ import org.kuali.kpme.core.location.LocationBo;
 import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "HR_EARN_CODE_SECURITY_T")
 public class EarnCodeSecurityBo extends HrKeyedBusinessObject implements EarnCodeSecurityContract {
 
-	private static final String EARN_CODE = "earnCode";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String DEPT = "dept";
+    private static final String EARN_CODE = "earnCode";
+
+    private static final String HR_SAL_GROUP = "hrSalGroup";
+
+    private static final String DEPT = "dept";
+
     private static final String GROUP_KEY_CODE = "groupKeyCode";
 
+    private static final long serialVersionUID = -4884673156883588639L;
 
-	private static final long serialVersionUID = -4884673156883588639L;
-	
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCodeSecurity";
-    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
-            .add(EarnCodeSecurityBo.CACHE_NAME)
-            .add(EarnCodeBo.CACHE_NAME)
-            .add(CalendarBlockPermissions.CACHE_NAME)
-            .build();
-	//KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(DEPT)
-            .add(HR_SAL_GROUP)
-            .add(EARN_CODE)
-            .add(GROUP_KEY_CODE)
-            .build();
-    
-    
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "EarnCodeSecurity";
+
+    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>().add(EarnCodeSecurityBo.CACHE_NAME).add(EarnCodeBo.CACHE_NAME).add(CalendarBlockPermissions.CACHE_NAME).build();
+
+    //KPME-2273/1965 Primary Business Keys List. Will be using this from now on instead.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(DEPT).add(HR_SAL_GROUP).add(EARN_CODE).add(GROUP_KEY_CODE).build();
+
     /*
      * convert bo to immutable
      *
@@ -62,12 +67,15 @@ public class EarnCodeSecurityBo extends HrKeyedBusinessObject implements EarnCod
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfEarnCodeSecurityBo, EarnCodeSecurityBo.toImmutable);
      */
-    public static final ModelObjectUtils.Transformer<EarnCodeSecurityBo, EarnCodeSecurity> toImmutable =
-    		new ModelObjectUtils.Transformer<EarnCodeSecurityBo, EarnCodeSecurity>() {
-    	public EarnCodeSecurity transform(EarnCodeSecurityBo input) {
-    		return EarnCodeSecurityBo.to(input);
-    	};
+    public static final ModelObjectUtils.Transformer<EarnCodeSecurityBo, EarnCodeSecurity> toImmutable = new ModelObjectUtils.Transformer<EarnCodeSecurityBo, EarnCodeSecurity>() {
+
+        public EarnCodeSecurity transform(EarnCodeSecurityBo input) {
+            return EarnCodeSecurityBo.to(input);
+        }
+
+        ;
     };
+
     /*
      * convert immutable to bo
      *
@@ -75,182 +83,201 @@ public class EarnCodeSecurityBo extends HrKeyedBusinessObject implements EarnCod
      *
      * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfEarnCodeSecurity, EarnCodeSecurityBo.toBo);
      */
-    public static final ModelObjectUtils.Transformer<EarnCodeSecurity, EarnCodeSecurityBo> toBo =
-    		new ModelObjectUtils.Transformer<EarnCodeSecurity, EarnCodeSecurityBo>() {
-    	public EarnCodeSecurityBo transform(EarnCodeSecurity input) {
-    		return EarnCodeSecurityBo.from(input);
-    	};
+    public static final ModelObjectUtils.Transformer<EarnCodeSecurity, EarnCodeSecurityBo> toBo = new ModelObjectUtils.Transformer<EarnCodeSecurity, EarnCodeSecurityBo>() {
+
+        public EarnCodeSecurityBo transform(EarnCodeSecurity input) {
+            return EarnCodeSecurityBo.from(input);
+        }
+
+        ;
     };
 
-	private String hrEarnCodeSecurityId;
-	private String dept;
-	private String hrSalGroup;
-	private String earnCode;
-	private boolean employee;
-	private boolean approver;
-	private boolean payrollProcessor;  // KPME-2532
-	private String earnCodeType;
-	
-	private SalaryGroupBo salaryGroupObj;
-	private DepartmentBo departmentObj;
-	private EarnCodeBo earnCodeObj;
+    @PortableSequenceGenerator(name = "HR_EARN_CODE_SECURITY_S")
+    @GeneratedValue(generator = "HR_EARN_CODE_SECURITY_S")
+    @Id
+    @Column(name = "HR_EARN_CODE_SECURITY_ID", length = 60)
+    private String hrEarnCodeSecurityId;
+
+    @Column(name = "DEPT", length = 21)
+    private String dept;
+
+    @Column(name = "HR_SAL_GROUP", length = 10)
+    private String hrSalGroup;
+
+    @Column(name = "EARN_CODE", length = 15)
+    private String earnCode;
+
+    @Column(name = "EMPLOYEE", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean employee;
+
+    @Column(name = "APPROVER", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean approver;
+
+    @Column(name = "PAYROLLPROCESSOR", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean payrollProcessor;
+
+    // KPME-2532  
+    @Column(name = "EARN_CODE_TYPE", nullable = false, length = 1)
+    private String earnCodeType;
+
+    @Transient
+    private SalaryGroupBo salaryGroupObj;
+
+    @Transient
+    private DepartmentBo departmentObj;
+
+    @Transient
+    private EarnCodeBo earnCodeObj;
+
+    @Transient
     private JobBo jobObj;
 
-    
     @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(DEPT, this.getDept())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(EARN_CODE, this.getEarnCode())
-            .put(GROUP_KEY_CODE, this.getGroupKeyCode())
-			.build();
-	}
-    
-    
-	public String getHrEarnCodeSecurityId() {
-		return hrEarnCodeSecurityId;
-	}
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(DEPT, this.getDept()).put(HR_SAL_GROUP, this.getHrSalGroup()).put(EARN_CODE, this.getEarnCode()).put(GROUP_KEY_CODE, this.getGroupKeyCode()).build();
+    }
 
-	public void setHrEarnCodeSecurityId(String hrEarnCodeSecurityId) {
-		this.hrEarnCodeSecurityId = hrEarnCodeSecurityId;
-	}
+    public String getHrEarnCodeSecurityId() {
+        return hrEarnCodeSecurityId;
+    }
 
-	public String getEarnCodeType() {
-		return earnCodeType;
-	}
+    public void setHrEarnCodeSecurityId(String hrEarnCodeSecurityId) {
+        this.hrEarnCodeSecurityId = hrEarnCodeSecurityId;
+    }
 
-	public void setEarnCodeType(String earnCodeType) {
-		this.earnCodeType = earnCodeType;
-	}
+    public String getEarnCodeType() {
+        return earnCodeType;
+    }
 
-	public SalaryGroupBo getSalaryGroupObj() {
-		return salaryGroupObj;
-	}
+    public void setEarnCodeType(String earnCodeType) {
+        this.earnCodeType = earnCodeType;
+    }
 
-	public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
-		this.salaryGroupObj = salaryGroupObj;
-	}
+    public SalaryGroupBo getSalaryGroupObj() {
+        return salaryGroupObj;
+    }
 
-	public DepartmentBo getDepartmentObj() {
-		return departmentObj;
-	}
+    public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
+        this.salaryGroupObj = salaryGroupObj;
+    }
 
-	public void setDepartmentObj(DepartmentBo departmentObj) {
-		this.departmentObj = departmentObj;
-	}
-	
-	public boolean isEmployee() {
-		return employee;
-	}
+    public DepartmentBo getDepartmentObj() {
+        return departmentObj;
+    }
 
-	public void setEmployee(boolean employee) {
-		this.employee = employee;
-	}
+    public void setDepartmentObj(DepartmentBo departmentObj) {
+        this.departmentObj = departmentObj;
+    }
 
-	public boolean isApprover() {
-		return approver;
-	}
+    public boolean isEmployee() {
+        return employee;
+    }
 
-	public void setApprover(boolean approver) {
-		this.approver = approver;
-	}
+    public void setEmployee(boolean employee) {
+        this.employee = employee;
+    }
 
-	public boolean isPayrollProcessor() {
-		return payrollProcessor;
-	}
+    public boolean isApprover() {
+        return approver;
+    }
 
-	public void setPayrollProcessor(boolean payrollProcessor) {
-		this.payrollProcessor = payrollProcessor;
-	}
+    public void setApprover(boolean approver) {
+        this.approver = approver;
+    }
 
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    public boolean isPayrollProcessor() {
+        return payrollProcessor;
+    }
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
-	
-	public String getDept() {
-		return dept;
-	}
+    public void setPayrollProcessor(boolean payrollProcessor) {
+        this.payrollProcessor = payrollProcessor;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public String getHrSalGroup() {
-		return hrSalGroup;
-	}
-	
-	public void setHrSalGroup(String hrSalGroup) {
-		this.hrSalGroup = hrSalGroup;
-	}
-	
-	public String getEarnCode() {
-		return earnCode;
-	}
-	
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public JobBo getJobObj() {
-		return jobObj;
-	}
-	
-	public void setJobObj(JobBo jobObj) {
-		this.jobObj = jobObj;
-	}
+    public String getDept() {
+        return dept;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return dept + "_" + hrSalGroup + "_" + earnCode;
-	}
-	
-	@Override
-	public String getId() {
-		return getHrEarnCodeSecurityId();
-	}
-	
-	@Override
-	public void setId(String id) {
-		setHrEarnCodeSecurityId(id);
-	}
-	
-	public static EarnCodeSecurityBo from(EarnCodeSecurity im) {
-	    if (im == null) {
-	        return null;
-	    }
-	    EarnCodeSecurityBo ecs = new EarnCodeSecurityBo();
-	    ecs.setHrEarnCodeSecurityId(im.getHrEarnCodeSecurityId());
-	    ecs.setDept(im.getDept());
-	    ecs.setHrSalGroup(im.getHrSalGroup());
-	    ecs.setEarnCode(im.getEarnCode());
-	    ecs.setEmployee(im.isEmployee());
-		ecs.setApprover(im.isApprover());
-		ecs.setPayrollProcessor(im.isPayrollProcessor());
-		ecs.setEarnCodeType(im.getEarnCodeType());
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
+    public String getHrSalGroup() {
+        return hrSalGroup;
+    }
+
+    public void setHrSalGroup(String hrSalGroup) {
+        this.hrSalGroup = hrSalGroup;
+    }
+
+    public String getEarnCode() {
+        return earnCode;
+    }
+
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
+
+    public JobBo getJobObj() {
+        return jobObj;
+    }
+
+    public void setJobObj(JobBo jobObj) {
+        this.jobObj = jobObj;
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return dept + "_" + hrSalGroup + "_" + earnCode;
+    }
+
+    @Override
+    public String getId() {
+        return getHrEarnCodeSecurityId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setHrEarnCodeSecurityId(id);
+    }
+
+    public static EarnCodeSecurityBo from(EarnCodeSecurity im) {
+        if (im == null) {
+            return null;
+        }
+        EarnCodeSecurityBo ecs = new EarnCodeSecurityBo();
+        ecs.setHrEarnCodeSecurityId(im.getHrEarnCodeSecurityId());
+        ecs.setDept(im.getDept());
+        ecs.setHrSalGroup(im.getHrSalGroup());
+        ecs.setEarnCode(im.getEarnCode());
+        ecs.setEmployee(im.isEmployee());
+        ecs.setApprover(im.isApprover());
+        ecs.setPayrollProcessor(im.isPayrollProcessor());
+        ecs.setEarnCodeType(im.getEarnCodeType());
         ecs.setGroupKeyCode(im.getGroupKeyCode());
         ecs.setGroupKey(im.getGroupKey() == null ? null : HrGroupKeyBo.from(im.getGroupKey()));
+        ecs.setSalaryGroupObj(im.getSalaryGroupObj() == null ? null : SalaryGroupBo.from(im.getSalaryGroupObj()));
+        ecs.setDepartmentObj(im.getDepartmentObj() == null ? null : DepartmentBo.from(im.getDepartmentObj()));
+        ecs.setEarnCodeObj(im.getEarnCodeObj() == null ? null : EarnCodeBo.from(im.getEarnCodeObj()));
+        ecs.setJobObj(im.getJobObj() == null ? null : JobBo.from(im.getJobObj()));
+        copyCommonFields(ecs, im);
+        return ecs;
+    }
 
-		ecs.setSalaryGroupObj(im.getSalaryGroupObj() == null ? null : SalaryGroupBo.from(im.getSalaryGroupObj()));
-		ecs.setDepartmentObj(im.getDepartmentObj() == null ? null : DepartmentBo.from(im.getDepartmentObj()));
-		ecs.setEarnCodeObj(im.getEarnCodeObj() == null ? null : EarnCodeBo.from(im.getEarnCodeObj()));
-		ecs.setJobObj(im.getJobObj() == null ? null : JobBo.from(im.getJobObj()));
-
-	    copyCommonFields(ecs, im);
-
-	    return ecs;
-	}
-	
-	public static EarnCodeSecurity to(EarnCodeSecurityBo bo) {
-	    if (bo == null) {
-	        return null;
-	    }
-	    return EarnCodeSecurity.Builder.create(bo).build();
-	}
-	
+    public static EarnCodeSecurity to(EarnCodeSecurityBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return EarnCodeSecurity.Builder.create(bo).build();
+    }
 }

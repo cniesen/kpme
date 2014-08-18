@@ -17,7 +17,16 @@ package org.kuali.kpme.core.workarea;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.api.workarea.WorkAreaContract;
@@ -32,109 +41,137 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.TaskBo;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import javax.persistence.Transient;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-
-//public class WorkAreaBo extends HrBusinessObject implements WorkAreaContract {
+//public class WorkAreaBo extends HrBusinessObject implements WorkAreaContract { 
+@Entity
+@Table(name = "TK_WORK_AREA_T")
 public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContract {
 
-	private static final String WORK_AREA = "workArea";
+    private static final String WORK_AREA = "workArea";
 
-	private static final long serialVersionUID = 2637145083387914260L;
+    private static final long serialVersionUID = 2637145083387914260L;
 
-	public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "WorkArea";
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-	            .add(WORK_AREA)
-	            .build();
+    public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "WorkArea";
 
-    public static final ModelObjectUtils.Transformer<WorkAreaBo, WorkArea> toWorkArea =
-            new ModelObjectUtils.Transformer<WorkAreaBo, WorkArea>() {
-                public WorkArea transform(WorkAreaBo input) {
-                    return WorkAreaBo.to(input);
-                };
-            };
-    public static final ModelObjectUtils.Transformer<WorkArea, WorkAreaBo> toWorkAreaBo =
-            new ModelObjectUtils.Transformer<WorkArea, WorkAreaBo>() {
-                public WorkAreaBo transform(WorkArea input) {
-                    return WorkAreaBo.from(input);
-                };
-            };
+    //KPME-2273/1965 Primary Business Keys List.	 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(WORK_AREA).build();
 
+    public static final ModelObjectUtils.Transformer<WorkAreaBo, WorkArea> toWorkArea = new ModelObjectUtils.Transformer<WorkAreaBo, WorkArea>() {
+
+        public WorkArea transform(WorkAreaBo input) {
+            return WorkAreaBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<WorkArea, WorkAreaBo> toWorkAreaBo = new ModelObjectUtils.Transformer<WorkArea, WorkAreaBo>() {
+
+        public WorkAreaBo transform(WorkArea input) {
+            return WorkAreaBo.from(input);
+        }
+
+        ;
+    };
+
+    @PortableSequenceGenerator(name = "TK_WORK_AREA_S")
+    @GeneratedValue(generator = "TK_WORK_AREA_S")
+    @Id
+    @Column(name = "TK_WORK_AREA_ID", length = 60)
     private String tkWorkAreaId;
+
+    @PortableSequenceGenerator(name = "TK_WORK_AREA_KEY_S")
+    @GeneratedValue(generator = "TK_WORK_AREA_KEY_S")
+    @Column(name = "WORK_AREA")
     private Long workArea;
+
+    @Column(name = "DESCR", nullable = false, length = 30)
     private String description;
+
+    @Column(name = "OVERTIME_EDIT_ROLE", length = 20)
     private String overtimeEditRole;
+
+    @Column(name = "DEFAULT_OVERTIME_EARNCODE", length = 15)
     private String defaultOvertimeEarnCode;
+
+    @Transient
     private Boolean ovtEarnCode;
+
+    @Column(name = "DEPT", nullable = false, length = 21)
     private String dept;
+
+    @Column(name = "ADMIN_DESCR", nullable = false, length = 30)
     private String adminDescr;
-	private boolean history;
-	private boolean hrsDistributionF;	
-	
+
+    @Transient
+    private boolean history;
+
+    @Column(name = "HRS_DISTRIBUTION_FL", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean hrsDistributionF;
+
+    @Transient
     private EarnCodeBo defaultOvertimeEarnCodeObj;
+
+    @Transient
     private DepartmentBo department;
-    
+
     @Transient
     private List<TaskBo> tasks = new ArrayList<TaskBo>();
 
     @Transient
     private List<WorkAreaPrincipalRoleMemberBo> principalRoleMembers = new ArrayList<WorkAreaPrincipalRoleMemberBo>();
-    
+
     @Transient
     private List<WorkAreaPrincipalRoleMemberBo> inactivePrincipalRoleMembers = new ArrayList<WorkAreaPrincipalRoleMemberBo>();
-    
+
     @Transient
     private List<WorkAreaPositionRoleMemberBo> positionRoleMembers = new ArrayList<WorkAreaPositionRoleMemberBo>();
-    
+
     @Transient
     private List<WorkAreaPositionRoleMemberBo> inactivePositionRoleMembers = new ArrayList<WorkAreaPositionRoleMemberBo>();
-    
+
     @Transient
-    private List<AssignmentBo> workAreaMembers = new ArrayList<AssignmentBo>(); 
-    
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(WORK_AREA, this.getWorkArea())		
-				.build();
-	}
-    
-    
-	@Override
-	public String getUniqueKey() {
-		return workArea != null ? workArea.toString() : "" + "_" + dept;
-	}
-    
-	@Override
-	public String getId() {
-		return getTkWorkAreaId();
-	}
+    private List<AssignmentBo> workAreaMembers = new ArrayList<AssignmentBo>();
 
-	@Override
-	public void setId(String id) {
-		setTkWorkAreaId(id);
-	}
-	
-	public String getTkWorkAreaId() {
-		return tkWorkAreaId;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(WORK_AREA, this.getWorkArea()).build();
+    }
 
-	public void setTkWorkAreaId(String tkWorkAreaId) {
-		this.tkWorkAreaId = tkWorkAreaId;
-	}
-	
-	public Long getWorkArea() {
-		return workArea;
-	}
+    @Override
+    public String getUniqueKey() {
+        return workArea != null ? workArea.toString() : "" + "_" + dept;
+    }
 
-	public void setWorkArea(Long workArea) {
-		this.workArea = workArea;
-	}
-	
+    @Override
+    public String getId() {
+        return getTkWorkAreaId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setTkWorkAreaId(id);
+    }
+
+    public String getTkWorkAreaId() {
+        return tkWorkAreaId;
+    }
+
+    public void setTkWorkAreaId(String tkWorkAreaId) {
+        this.tkWorkAreaId = tkWorkAreaId;
+    }
+
+    public Long getWorkArea() {
+        return workArea;
+    }
+
+    public void setWorkArea(Long workArea) {
+        this.workArea = workArea;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -142,7 +179,7 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     public void setDescription(String description) {
         this.description = description;
     }
-    
+
     public String getOvertimeEditRole() {
         return overtimeEditRole;
     }
@@ -150,7 +187,7 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     public void setOvertimeEditRole(String overtimeEditRole) {
         this.overtimeEditRole = overtimeEditRole;
     }
-    
+
     public String getDefaultOvertimeEarnCode() {
         return defaultOvertimeEarnCode;
     }
@@ -158,25 +195,26 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     public void setDefaultOvertimeEarnCode(String defaultOvertimeEarnCode) {
         this.defaultOvertimeEarnCode = defaultOvertimeEarnCode;
     }
-    
-	public Boolean getOvtEarnCode() {
-		return isOvtEarnCode();
-	}
+
+    public Boolean getOvtEarnCode() {
+        return isOvtEarnCode();
+    }
+
     public Boolean isOvtEarnCode() {
         return ovtEarnCode;
     }
 
-	public void setOvtEarnCode(Boolean ovtEarnCode) {
-		this.ovtEarnCode = ovtEarnCode;
-	}
-	
-	public String getDept() {
-		return dept;
-	}
+    public void setOvtEarnCode(Boolean ovtEarnCode) {
+        this.ovtEarnCode = ovtEarnCode;
+    }
 
-	public void setDept(String dept) {
-		this.dept = dept;
-	}
+    public String getDept() {
+        return dept;
+    }
+
+    public void setDept(String dept) {
+        this.dept = dept;
+    }
 
     public String getAdminDescr() {
         return adminDescr;
@@ -186,13 +224,13 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
         this.adminDescr = adminDescr;
     }
 
-	public boolean isHistory() {
-		return history;
-	}
+    public boolean isHistory() {
+        return history;
+    }
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 
     public EarnCodeBo getDefaultOvertimeEarnCodeObj() {
         return defaultOvertimeEarnCodeObj;
@@ -201,118 +239,115 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     public void setDefaultOvertimeEarnCodeObj(EarnCodeBo defaultOvertimeEarnCodeObj) {
         this.defaultOvertimeEarnCodeObj = defaultOvertimeEarnCodeObj;
     }
-    
-	public DepartmentBo getDepartment() {
-		return department;
-	}
 
-	public void setDepartment(DepartmentBo department) {
-		this.department = department;
-	}
+    public DepartmentBo getDepartment() {
+        return department;
+    }
 
-	public List<TaskBo> getTasks() {
-	    return tasks;
-	}
+    public void setDepartment(DepartmentBo department) {
+        this.department = department;
+    }
 
-	public void setTasks(List<TaskBo> tasks) {
-	    this.tasks = tasks;
-	}
-	
-	public List<WorkAreaPrincipalRoleMemberBo> getPrincipalRoleMembers() {
-		return principalRoleMembers;
-	}
-	
-	public void addPrincipalRoleMember(WorkAreaPrincipalRoleMemberBo principalRoleMember) {
-		principalRoleMembers.add(principalRoleMember);
-	}
-	
-	public void removePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo principalRoleMember) {
-		principalRoleMembers.remove(principalRoleMember);
-	}
-	
-	public void setPrincipalRoleMembers(List<WorkAreaPrincipalRoleMemberBo> principalRoleMembers) {
-		this.principalRoleMembers = principalRoleMembers;
-	}
+    public List<TaskBo> getTasks() {
+        return tasks;
+    }
 
-	public List<WorkAreaPrincipalRoleMemberBo> getInactivePrincipalRoleMembers() {
-		return inactivePrincipalRoleMembers;
-	}
-	
-	public void addInactivePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo inactivePrincipalRoleMember) {
-		inactivePrincipalRoleMembers.add(inactivePrincipalRoleMember);
-	}
-	
-	public void removeInactivePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo inactivePrincipalRoleMember) {
-		inactivePrincipalRoleMembers.remove(inactivePrincipalRoleMember);
-	}
+    public void setTasks(List<TaskBo> tasks) {
+        this.tasks = tasks;
+    }
 
-	public void setInactivePrincipalRoleMembers(List<WorkAreaPrincipalRoleMemberBo> inactivePrincipalRoleMembers) {
-		this.inactivePrincipalRoleMembers = inactivePrincipalRoleMembers;
-	}
+    public List<WorkAreaPrincipalRoleMemberBo> getPrincipalRoleMembers() {
+        return principalRoleMembers;
+    }
 
-	public List<WorkAreaPositionRoleMemberBo> getPositionRoleMembers() {
-		return positionRoleMembers;
-	}
-	
-	public void addPositionRoleMember(WorkAreaPositionRoleMemberBo positionRoleMember) {
-		positionRoleMembers.add(positionRoleMember);
-	}
-	
-	public void removePositionRoleMember(WorkAreaPositionRoleMemberBo positionRoleMember) {
-		positionRoleMembers.remove(positionRoleMember);
-	}
+    public void addPrincipalRoleMember(WorkAreaPrincipalRoleMemberBo principalRoleMember) {
+        principalRoleMembers.add(principalRoleMember);
+    }
 
-	public void setPositionRoleMembers(List<WorkAreaPositionRoleMemberBo> positionRoleMembers) {
-		this.positionRoleMembers = positionRoleMembers;
-	}
+    public void removePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo principalRoleMember) {
+        principalRoleMembers.remove(principalRoleMember);
+    }
 
-	public List<WorkAreaPositionRoleMemberBo> getInactivePositionRoleMembers() {
-		return inactivePositionRoleMembers;
-	}
-	
-	public void addInactivePositionRoleMember(WorkAreaPositionRoleMemberBo inactivePositionRoleMember) {
-		inactivePositionRoleMembers.add(inactivePositionRoleMember);
-	}
-	
-	public void removeInactivePositionRoleMember(WorkAreaPositionRoleMemberBo inactivePositionRoleMember) {
-		inactivePositionRoleMembers.remove(inactivePositionRoleMember);
-	}
+    public void setPrincipalRoleMembers(List<WorkAreaPrincipalRoleMemberBo> principalRoleMembers) {
+        this.principalRoleMembers = principalRoleMembers;
+    }
 
-	public void setInactivePositionRoleMembers(List<WorkAreaPositionRoleMemberBo> inactivePositionRoleMembers) {
-		this.inactivePositionRoleMembers = inactivePositionRoleMembers;
-	}
+    public List<WorkAreaPrincipalRoleMemberBo> getInactivePrincipalRoleMembers() {
+        return inactivePrincipalRoleMembers;
+    }
 
-	public boolean isHrsDistributionF() {
-		return hrsDistributionF;
-	}
+    public void addInactivePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo inactivePrincipalRoleMember) {
+        inactivePrincipalRoleMembers.add(inactivePrincipalRoleMember);
+    }
 
-	public void setHrsDistributionF(boolean hrsDistributionF) {
-		this.hrsDistributionF = hrsDistributionF;
-	}
+    public void removeInactivePrincipalRoleMember(WorkAreaPrincipalRoleMemberBo inactivePrincipalRoleMember) {
+        inactivePrincipalRoleMembers.remove(inactivePrincipalRoleMember);
+    }
 
-	
+    public void setInactivePrincipalRoleMembers(List<WorkAreaPrincipalRoleMemberBo> inactivePrincipalRoleMembers) {
+        this.inactivePrincipalRoleMembers = inactivePrincipalRoleMembers;
+    }
+
+    public List<WorkAreaPositionRoleMemberBo> getPositionRoleMembers() {
+        return positionRoleMembers;
+    }
+
+    public void addPositionRoleMember(WorkAreaPositionRoleMemberBo positionRoleMember) {
+        positionRoleMembers.add(positionRoleMember);
+    }
+
+    public void removePositionRoleMember(WorkAreaPositionRoleMemberBo positionRoleMember) {
+        positionRoleMembers.remove(positionRoleMember);
+    }
+
+    public void setPositionRoleMembers(List<WorkAreaPositionRoleMemberBo> positionRoleMembers) {
+        this.positionRoleMembers = positionRoleMembers;
+    }
+
+    public List<WorkAreaPositionRoleMemberBo> getInactivePositionRoleMembers() {
+        return inactivePositionRoleMembers;
+    }
+
+    public void addInactivePositionRoleMember(WorkAreaPositionRoleMemberBo inactivePositionRoleMember) {
+        inactivePositionRoleMembers.add(inactivePositionRoleMember);
+    }
+
+    public void removeInactivePositionRoleMember(WorkAreaPositionRoleMemberBo inactivePositionRoleMember) {
+        inactivePositionRoleMembers.remove(inactivePositionRoleMember);
+    }
+
+    public void setInactivePositionRoleMembers(List<WorkAreaPositionRoleMemberBo> inactivePositionRoleMembers) {
+        this.inactivePositionRoleMembers = inactivePositionRoleMembers;
+    }
+
+    public boolean isHrsDistributionF() {
+        return hrsDistributionF;
+    }
+
+    public void setHrsDistributionF(boolean hrsDistributionF) {
+        this.hrsDistributionF = hrsDistributionF;
+    }
+
     public List<AssignmentBo> getWorkAreaMembers() {
-    	workAreaMembers =  new ArrayList<>();
-    	if(workArea != null && getEffectiveLocalDate() != null) {
-    		List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea, this.getEffectiveLocalDate());
-    		for (Assignment assignment : workAreaAssignments) {
-    			workAreaMembers.add(AssignmentBo.from(assignment));
+        workAreaMembers = new ArrayList<AssignmentBo>();
+        if (workArea != null && getEffectiveLocalDate() != null) {
+            List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea, this.getEffectiveLocalDate());
+            for (Assignment assignment : workAreaAssignments) {
+                workAreaMembers.add(AssignmentBo.from(assignment));
             }
-    	}
-		return workAreaMembers;
-	}
+        }
+        return workAreaMembers;
+    }
 
-	public void setWorkAreaMembers(List<AssignmentBo> workAreaMemebers) {
-		this.workAreaMembers = workAreaMemebers;
-	}
+    public void setWorkAreaMembers(List<AssignmentBo> workAreaMemebers) {
+        this.workAreaMembers = workAreaMemebers;
+    }
 
-	
-	public static WorkAreaBo from(WorkArea im) {
+    public static WorkAreaBo from(WorkArea im) {
         if (im == null) {
             return null;
         }
         WorkAreaBo wa = new WorkAreaBo();
-
         wa.setTkWorkAreaId(im.getTkWorkAreaId());
         wa.setWorkArea(im.getWorkArea());
         wa.setDescription(im.getDescription());
@@ -322,10 +357,8 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
         wa.setDept(im.getDept());
         wa.setAdminDescr(im.getAdminDescr());
         wa.setHrsDistributionF(im.isHrsDistributionF());
-
         wa.setDefaultOvertimeEarnCodeObj(im.getDefaultOvertimeEarnCodeObj() == null ? null : EarnCodeBo.from(im.getDefaultOvertimeEarnCodeObj()));
         wa.setDepartment(im.getDepartment() == null ? null : DepartmentBo.from(im.getDepartment()));
-
         wa.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         wa.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -334,10 +367,8 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
         wa.setUserPrincipalId(im.getUserPrincipalId());
         wa.setVersionNumber(im.getVersionNumber());
         wa.setObjectId(im.getObjectId());
-
         wa.setGroupKey(im.getGroupKey() == null ? null : HrGroupKeyBo.from(im.getGroupKey()));
         wa.setGroupKeyCode(im.getGroupKeyCode());
-
         copyCommonFields(wa, im);
         return wa;
     }
@@ -346,7 +377,6 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
         if (bo == null) {
             return null;
         }
-
         return WorkArea.Builder.create(bo).build();
     }
 }

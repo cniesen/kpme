@@ -17,37 +17,50 @@ package org.kuali.kpme.tklm.time.rules.overtime.weekly;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleGroupContract;
+import org.kuali.kpme.tklm.time.rules.overtime.weekly.WeeklyOvertimeRule;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
+@Entity
+@Table(name = "TK_WEEKLY_OVT_GROUP_T")
 public class WeeklyOvertimeRuleGroup extends PersistableBusinessObjectBase implements WeeklyOvertimeRuleGroupContract {
-	/**
+
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	@Transient
-	private List<WeeklyOvertimeRule> lstWeeklyOvertimeRules = new ArrayList<WeeklyOvertimeRule>();
-	@Transient
-	private Long tkWeeklyOvertimeRuleGroupId = 1L;
+    private static final long serialVersionUID = 1L;
 
-	public List<WeeklyOvertimeRule> getLstWeeklyOvertimeRules() {
-		return lstWeeklyOvertimeRules;
-	}
+    @Transient
+    @OneToMany(targetEntity = WeeklyOvertimeRule.class, orphanRemoval = true, cascade = { CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST })
+    @JoinColumn(name = "TK_WEEKLY_OVERTIME_GROUP_ID", referencedColumnName = "TK_WEEKLY_OVT_GROUP_ID", insertable = false, updatable = false)
+    private List<WeeklyOvertimeRule> lstWeeklyOvertimeRules = new ArrayList<WeeklyOvertimeRule>();
 
-	public void setLstWeeklyOvertimeRules(
-			List<WeeklyOvertimeRule> lstWeeklyOvertimeRules) {
-		this.lstWeeklyOvertimeRules = lstWeeklyOvertimeRules;
-	}
+    @Transient
+    @Id
+    @Column(name = "TK_WEEKLY_OVERTIME_GROUP_ID")
+    private Long tkWeeklyOvertimeRuleGroupId = 1L;
 
-	public Long getTkWeeklyOvertimeRuleGroupId() {
-		return tkWeeklyOvertimeRuleGroupId;
-	}
+    public List<WeeklyOvertimeRule> getLstWeeklyOvertimeRules() {
+        return lstWeeklyOvertimeRules;
+    }
 
-	public void setTkWeeklyOvertimeRuleGroupId(Long tkWeeklyOvertimeRuleGroupId) {
-		this.tkWeeklyOvertimeRuleGroupId = tkWeeklyOvertimeRuleGroupId;
-	}
+    public void setLstWeeklyOvertimeRules(List<WeeklyOvertimeRule> lstWeeklyOvertimeRules) {
+        this.lstWeeklyOvertimeRules = lstWeeklyOvertimeRules;
+    }
 
+    public Long getTkWeeklyOvertimeRuleGroupId() {
+        return tkWeeklyOvertimeRuleGroupId;
+    }
+
+    public void setTkWeeklyOvertimeRuleGroupId(Long tkWeeklyOvertimeRuleGroupId) {
+        this.tkWeeklyOvertimeRuleGroupId = tkWeeklyOvertimeRuleGroupId;
+    }
 }

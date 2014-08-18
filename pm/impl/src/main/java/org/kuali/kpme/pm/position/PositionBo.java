@@ -15,12 +15,21 @@
  */
 package org.kuali.kpme.pm.position;
 
+import com.google.common.collect.ImmutableList;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
@@ -35,6 +44,9 @@ import org.kuali.kpme.pm.api.position.Position;
 import org.kuali.kpme.pm.api.position.PositionContract;
 import org.kuali.kpme.pm.api.position.funding.PositionFunding;
 import org.kuali.kpme.pm.classification.qual.ClassificationQualificationBo;
+import org.kuali.kpme.pm.position.PositionDutyBo;
+import org.kuali.kpme.pm.position.PositionQualificationBo;
+import org.kuali.kpme.pm.position.PstnFlagBo;
 import org.kuali.kpme.pm.position.funding.PositionFundingBo;
 import org.kuali.kpme.pm.positiondepartment.PositionDepartmentBo;
 import org.kuali.kpme.pm.positionresponsibility.PositionResponsibilityBo;
@@ -43,146 +55,217 @@ import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.core.api.util.Truth;
 
-import com.google.common.collect.ImmutableList;
-
+@Entity
+@Table(name = "HR_POSITION_T")
 public class PositionBo extends PositionBaseBo implements PositionContract {
-	private static final long serialVersionUID = 1L;
-	
-    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>()
-            .add(PositionBaseContract.CACHE_NAME)
-            .add(PositionContract.CACHE_NAME)
-            .build();
 
-    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.POSITION_NUMBER)
-            .build();
+    private static final long serialVersionUID = 1L;
 
-	private List<PositionQualificationBo> qualificationList = new LinkedList<PositionQualificationBo>();
+    public static final ImmutableList<String> CACHE_FLUSH = new ImmutableList.Builder<String>().add(PositionBaseContract.CACHE_NAME).add(PositionContract.CACHE_NAME).build();
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.POSITION_NUMBER).build();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
+    private List<PositionQualificationBo> qualificationList = new LinkedList<PositionQualificationBo>();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
     private List<PositionDutyBo> dutyList = new LinkedList<PositionDutyBo>();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
     private List<PstnFlagBo> flagList = new LinkedList<PstnFlagBo>();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
     private List<PositionResponsibilityBo> positionResponsibilityList = new LinkedList<PositionResponsibilityBo>();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
     private List<PositionFundingBo> fundingList = new ArrayList<PositionFundingBo>();
+
+    @OneToMany(mappedBy = "owner")
+    @JoinColumn(name = "HR_POSITION_ID", referencedColumnName = "HR_PSTN_ID", insertable = false, updatable = false)
     private List<PositionDepartmentBo> departmentList = new ArrayList<PositionDepartmentBo>();
 
+    @Column(name = "SAL_GROUP", nullable = false, length = 50)
     private String salaryGroup;
+
+    @Column(name = "PM_PSTN_CL_ID", length = 60)
     private String pmPositionClassId;
+
+    @Transient
     private transient String positionClass;
+
+    @Column(name = "CL_TTL", nullable = false, length = 100)
     private String classificationTitle;
 
+    @Column(name = "PRCT_TM", nullable = false, length = 10)
     private BigDecimal percentTime;
+
+    @Column(name = "WK_MONTHS")
     private int workMonths;
+
+    @Column(name = "BNFT_ELIG", nullable = false, length = 1)
     private String benefitsEligible;
+
+    @Column(name = "LV_ELIG", nullable = false, length = 1)
     private String leaveEligible;
+
+    @Column(name = "LV_PLN", length = 50)
     private String leavePlan;
+
+    @Column(name = "PSTN_RPT_GRP", nullable = false, length = 50)
     private String positionReportGroup;
+
+    @Column(name = "PSTN_TYP", nullable = false, length = 50)
     private String positionType;
+
+    @Column(name = "POOL_ELIG", nullable = false, length = 1)
     private String poolEligible;
+
+    @Column(name = "MAX_POOL")
     private int maxPoolHeadCount;
+
+    @Column(name = "TNR_ELIG", nullable = false, length = 1)
     private String tenureEligible;
-     
+
+    @Transient
     private String process;
+
+    @Column(name = "PSTN_STATUS", nullable = false, length = 20)
     private String positionStatus;
+
+    @Transient
     private String primaryDepartment;
+
+    @Column(name = "APPT_TYP", nullable = false, length = 15)
     private String appointmentType;
+
+    @Column(name = "RPT_POS_ID", length = 40)
     private String reportsToPositionId;
+
+    @Column(name = "RPT_PRN_ID", length = 40)
     private String reportsToPrincipalId;
+
+    @Column(name = "EXP_ENDDT", length = 20)
+    @Temporal(TemporalType.DATE)
     private Date expectedEndDate;
+
+    @Column(name = "RENEW_ELIG", length = 1)
     private String renewEligible;
+
+    @Column(name = "TEMPORARY", nullable = false, length = 1)
     private String temporary;
+
+    @Column(name = "CONT", nullable = false, length = 1)
     private String contract;
+
+    @Column(name = "CONT_TYP", length = 10)
     private String contractType;
+
+    @Column(name = "PAY_GRADE", length = 20)
     private String payGrade;
+
+    @Transient
     private String payStep;
-    
-    private String category;		// used to determine what fields should show when editing an existing maint doc
-    
-    private String reportsToWorkingTitle; // KPME-3269
-    
-    private List<ClassificationQualificationBo> requiredQualList = new ArrayList<ClassificationQualificationBo>(); 	// read only required qualifications that comes from assiciated Classification
+
+    @Transient
+    private String category;
+
+    // used to determine what fields should show when editing an existing maint doc 
+    @Transient
+    private String reportsToWorkingTitle;
+
+    // KPME-3269 
+    @Transient
+    private List<ClassificationQualificationBo> requiredQualList = new ArrayList<ClassificationQualificationBo>();
+
+    // read only required qualifications that comes from assiciated Classification 
     /*private transient boolean displayQualifications;
     private transient boolean displayDuties;
     private transient boolean displayFlags;
     private transient boolean displayResponsibility;
     private transient boolean displayFunding;
     private transient boolean displayAdHocRecipients;*/
-
     @Override
     public List<PositionDutyBo> getDutyList() {
-    	if(CollectionUtils.isEmpty(dutyList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
-    		List<? extends ClassificationDutyContract> aList = PmServiceLocator.getClassificationDutyService().getDutyListForClassification(this.getPmPositionClassId());
-    		if(CollectionUtils.isNotEmpty(aList)) {
-    			List<PositionDutyBo> pDutyList = new ArrayList<PositionDutyBo>();
-    			// copy basic information from classificaton duty list
-    			for(ClassificationDutyContract aDuty : aList) {
-    				PositionDutyBo pDuty = new PositionDutyBo();
-    				pDuty.setName(aDuty.getName());
-    				pDuty.setDescription(aDuty.getDescription());
-    				pDuty.setPercentage(aDuty.getPercentage());
-    				pDuty.setPmDutyId(null);
-    				pDuty.setHrPositionId(this.getHrPositionId());
-    				pDutyList.add(pDuty);
-    			}
-    			this.setDutyList(pDutyList);
-    		}
-    	}
-		return dutyList;
-	}
+        if (CollectionUtils.isEmpty(dutyList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
+            List<? extends ClassificationDutyContract> aList = PmServiceLocator.getClassificationDutyService().getDutyListForClassification(this.getPmPositionClassId());
+            if (CollectionUtils.isNotEmpty(aList)) {
+                List<PositionDutyBo> pDutyList = new ArrayList<PositionDutyBo>();
+                // copy basic information from classificaton duty list 
+                for (ClassificationDutyContract aDuty : aList) {
+                    PositionDutyBo pDuty = new PositionDutyBo();
+                    pDuty.setName(aDuty.getName());
+                    pDuty.setDescription(aDuty.getDescription());
+                    pDuty.setPercentage(aDuty.getPercentage());
+                    pDuty.setPmDutyId(null);
+                    pDuty.setHrPositionId(this.getHrPositionId());
+                    pDutyList.add(pDuty);
+                }
+                this.setDutyList(pDutyList);
+            }
+        }
+        return dutyList;
+    }
 
     @Override
-	public List<PositionResponsibilityBo> getPositionResponsibilityList() {
-		return positionResponsibilityList;
-	}
+    public List<PositionResponsibilityBo> getPositionResponsibilityList() {
+        return positionResponsibilityList;
+    }
 
-	public void setPositionResponsibilityList(
-			List<PositionResponsibilityBo> positionResponsibilityList) {
-		this.positionResponsibilityList = positionResponsibilityList;
-	}
-	public void setDutyList(List<PositionDutyBo> dutyList) {
-		this.dutyList = dutyList;
-	}
+    public void setPositionResponsibilityList(List<PositionResponsibilityBo> positionResponsibilityList) {
+        this.positionResponsibilityList = positionResponsibilityList;
+    }
 
-    @Override
-	public List<PositionQualificationBo> getQualificationList() {
-		return qualificationList;
-	}
-
-	public void setQualificationList(List<PositionQualificationBo> qualificationList) {
-		this.qualificationList = qualificationList;
-	}
+    public void setDutyList(List<PositionDutyBo> dutyList) {
+        this.dutyList = dutyList;
+    }
 
     @Override
-	public List<PstnFlagBo> getFlagList() {
-		if(CollectionUtils.isEmpty(flagList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
-    		List<? extends ClassificationFlagContract> aList = PmServiceLocator.getClassificationFlagService().getFlagListForClassification(this.getPmPositionClassId());
-    		if(CollectionUtils.isNotEmpty(aList)) {
-    			List<PstnFlagBo> pFlagList = new ArrayList<PstnFlagBo>();
-    			// copy basic information from classificaton flag list
-    			for(ClassificationFlagContract aFlag : aList) {
-    				PstnFlagBo pFlag = new PstnFlagBo();
-    				pFlag.setCategory(aFlag.getCategory());
-    				pFlag.setNames(aFlag.getNames());
-    				pFlag.setPmFlagId(null);
-    				pFlag.setHrPositionId(this.getHrPositionId());
-    				pFlagList.add(pFlag);
-    			}
-    			this.setFlagList(pFlagList);
-    		}
-		}
-		return flagList;
-	}
+    public List<PositionQualificationBo> getQualificationList() {
+        return qualificationList;
+    }
 
-	public void setFlagList(List<PstnFlagBo> flagList) {
-		this.flagList = flagList;
-	}
+    public void setQualificationList(List<PositionQualificationBo> qualificationList) {
+        this.qualificationList = qualificationList;
+    }
 
     @Override
-	public String getPmPositionClassId() {
-		return pmPositionClassId;
-	}
+    public List<PstnFlagBo> getFlagList() {
+        if (CollectionUtils.isEmpty(flagList) && StringUtils.isNotEmpty(this.getPmPositionClassId())) {
+            List<? extends ClassificationFlagContract> aList = PmServiceLocator.getClassificationFlagService().getFlagListForClassification(this.getPmPositionClassId());
+            if (CollectionUtils.isNotEmpty(aList)) {
+                List<PstnFlagBo> pFlagList = new ArrayList<PstnFlagBo>();
+                // copy basic information from classificaton flag list 
+                for (ClassificationFlagContract aFlag : aList) {
+                    PstnFlagBo pFlag = new PstnFlagBo();
+                    pFlag.setCategory(aFlag.getCategory());
+                    pFlag.setNames(aFlag.getNames());
+                    pFlag.setPmFlagId(null);
+                    pFlag.setHrPositionId(this.getHrPositionId());
+                    pFlagList.add(pFlag);
+                }
+                this.setFlagList(pFlagList);
+            }
+        }
+        return flagList;
+    }
 
-	public void setPmPositionClassId(String id) {
-		this.pmPositionClassId = id;
-	}
+    public void setFlagList(List<PstnFlagBo> flagList) {
+        this.flagList = flagList;
+    }
+
+    @Override
+    public String getPmPositionClassId() {
+        return pmPositionClassId;
+    }
+
+    public void setPmPositionClassId(String id) {
+        this.pmPositionClassId = id;
+    }
 
     @Override
     public String getPositionClass() {
@@ -190,7 +273,6 @@ public class PositionBo extends PositionBaseBo implements PositionContract {
             ClassificationContract classification = PmServiceLocator.getClassificationService().getClassificationById(this.pmPositionClassId);
             positionClass = classification != null ? classification.getPositionClass() : null;
         }
-
         return positionClass;
     }
 
@@ -200,44 +282,40 @@ public class PositionBo extends PositionBaseBo implements PositionContract {
 
     @SuppressWarnings("unchecked")
     @Override
-	public List<ClassificationQualificationBo> getRequiredQualList() {
-		if(StringUtils.isNotEmpty(this.getPmPositionClassId())) {
-			// when Position Classification Id is changed, change the requiredQualList with it
-			if(CollectionUtils.isEmpty(requiredQualList) ||
-					(CollectionUtils.isNotEmpty(requiredQualList) 
-							&& !requiredQualList.get(0).getPmPositionClassId().equals(this.getPmPositionClassId()))) {
-				List<ClassificationQualificationBo> aList = (List<ClassificationQualificationBo>)PmServiceLocator.getClassificationQualService()
-						.getQualListForClassification(this.getPmPositionClassId());
-				if(CollectionUtils.isNotEmpty(aList))
-					this.setRequiredQualList(aList);
-			} else {
-				
-			}
-		}
- 		return requiredQualList;
-	}
-	
-	public void setRequiredQualList(List<ClassificationQualificationBo> aList) {
-			requiredQualList = aList;
-	}
+    public List<ClassificationQualificationBo> getRequiredQualList() {
+        if (StringUtils.isNotEmpty(this.getPmPositionClassId())) {
+            // when Position Classification Id is changed, change the requiredQualList with it 
+            if (CollectionUtils.isEmpty(requiredQualList) || (CollectionUtils.isNotEmpty(requiredQualList) && !requiredQualList.get(0).getPmPositionClassId().equals(this.getPmPositionClassId()))) {
+                List<ClassificationQualificationBo> aList = (List<ClassificationQualificationBo>) PmServiceLocator.getClassificationQualService().getQualListForClassification(this.getPmPositionClassId());
+                if (CollectionUtils.isNotEmpty(aList))
+                    this.setRequiredQualList(aList);
+            } else {
+            }
+        }
+        return requiredQualList;
+    }
+
+    public void setRequiredQualList(List<ClassificationQualificationBo> aList) {
+        requiredQualList = aList;
+    }
 
     @Override
-	public List<PositionFundingBo> getFundingList() {
-		return fundingList;
-	}
+    public List<PositionFundingBo> getFundingList() {
+        return fundingList;
+    }
 
-	public void setFundingList(List<PositionFundingBo> fundingList) {
-		this.fundingList = fundingList;
-	}
+    public void setFundingList(List<PositionFundingBo> fundingList) {
+        this.fundingList = fundingList;
+    }
 
     @Override
-	public String getCategory() {
-		return category;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
     @Override
     public String getSalaryGroup() {
@@ -256,7 +334,6 @@ public class PositionBo extends PositionBaseBo implements PositionContract {
     public void setClassificationTitle(String classificationTitle) {
         this.classificationTitle = classificationTitle;
     }
-
 
     @Override
     public BigDecimal getPercentTime() {
@@ -358,278 +435,263 @@ public class PositionBo extends PositionBaseBo implements PositionContract {
     }
 
     @Override
-	public String getProcess() {
-		return process;
-	}
+    public String getProcess() {
+        return process;
+    }
 
-	public void setProcess(String process) {
-		this.process = process;
-	}
-
-    @Override
-	public String getPositionStatus() {
-		return positionStatus;
-	}
-
-	public void setPositionStatus(String positionStatus) {
-		this.positionStatus = positionStatus;
-	}
+    public void setProcess(String process) {
+        this.process = process;
+    }
 
     @Override
-	public String getPrimaryDepartment() {
+    public String getPositionStatus() {
+        return positionStatus;
+    }
 
-		if (this.primaryDepartment == null && this.departmentList != null && this.departmentList.size() > 0) {
-			for (PositionDepartmentBo department: this.departmentList) {
-				DepartmentAffiliationBo pda = department.getDeptAfflObj();
-				if (pda.isPrimaryIndicator()) {
-					primaryDepartment = department.getDepartment();
-					break;
-				} 
-			}
-		}
-		
-		return primaryDepartment;
-	}
+    public void setPositionStatus(String positionStatus) {
+        this.positionStatus = positionStatus;
+    }
 
-    public void setPrimaryDepartment (String primaryDepartment) {
+    @Override
+    public String getPrimaryDepartment() {
+        if (this.primaryDepartment == null && this.departmentList != null && this.departmentList.size() > 0) {
+            for (PositionDepartmentBo department : this.departmentList) {
+                DepartmentAffiliationBo pda = department.getDeptAfflObj();
+                if (pda.isPrimaryIndicator()) {
+                    primaryDepartment = department.getDepartment();
+                    break;
+                }
+            }
+        }
+        return primaryDepartment;
+    }
+
+    public void setPrimaryDepartment(String primaryDepartment) {
         this.primaryDepartment = primaryDepartment;
     }
 
     @Override
-	public String getReportsToPositionId() {
-		return reportsToPositionId;
-	}
+    public String getReportsToPositionId() {
+        return reportsToPositionId;
+    }
 
-	public void setReportsToPositionId(String reportsToPositionId) {
-		this.reportsToPositionId = reportsToPositionId;
-	}
-
-    @Override
-	public String getReportsToPrincipalId() {
-		return reportsToPrincipalId;
-	}
-
-	public void setReportsToPrincipalId(String reportsToPrincipalId) {
-		this.reportsToPrincipalId = reportsToPrincipalId;
-	}
-
-	public Date getExpectedEndDate() {
-		return expectedEndDate;
-	}
-
-	public void setExpectedEndDate(Date expectedEndDate) {
-		this.expectedEndDate = expectedEndDate;
-	}
+    public void setReportsToPositionId(String reportsToPositionId) {
+        this.reportsToPositionId = reportsToPositionId;
+    }
 
     @Override
-	public String getRenewEligible() {
-		return renewEligible;
-	}
+    public String getReportsToPrincipalId() {
+        return reportsToPrincipalId;
+    }
 
-	public void setRenewEligible(String renewEligible) {
-		this.renewEligible = renewEligible;
-	}
+    public void setReportsToPrincipalId(String reportsToPrincipalId) {
+        this.reportsToPrincipalId = reportsToPrincipalId;
+    }
 
-    @Override
-	public String getTemporary() {
-		return temporary;
-	}
+    public Date getExpectedEndDate() {
+        return expectedEndDate;
+    }
 
-	public void setTemporary(String temporary) {
-		this.temporary = temporary;
-	}
-
-    @Override
-	public String getContract() {
-		return contract;
-	}
-
-	public void setContract(String contract) {
-		this.contract = contract;
-	}
+    public void setExpectedEndDate(Date expectedEndDate) {
+        this.expectedEndDate = expectedEndDate;
+    }
 
     @Override
-	public String getContractType() {
-		return contractType;
-	}
+    public String getRenewEligible() {
+        return renewEligible;
+    }
 
-	public void setContractType(String contractType) {
-		this.contractType = contractType;
-	}
-
-    @Override
-	public String getAppointmentType() {
-		return appointmentType;
-	}
-
-	public void setAppointmentType(String appointmentType) {
-		this.appointmentType = appointmentType;
-	}
+    public void setRenewEligible(String renewEligible) {
+        this.renewEligible = renewEligible;
+    }
 
     @Override
-	public String getPayGrade() {
-		return payGrade;
-	}
+    public String getTemporary() {
+        return temporary;
+    }
 
-	public void setPayGrade(String payGrade) {
-		this.payGrade = payGrade;
-	}
-
-    @Override
-	public String getPayStep() {
-		return payStep;
-	}
-
-	public void setPayStep(String payStep) {
-		this.payStep = payStep;
-	}
+    public void setTemporary(String temporary) {
+        this.temporary = temporary;
+    }
 
     @Override
-	public String getReportsToWorkingTitle() {
-		return reportsToWorkingTitle;
-	}
+    public String getContract() {
+        return contract;
+    }
 
-	public void setReportsToWorkingTitle(String reportsToWorkingTitle) {
-		this.reportsToWorkingTitle = reportsToWorkingTitle;
-	}
+    public void setContract(String contract) {
+        this.contract = contract;
+    }
 
-	public boolean isDisplayQualifications() {
+    @Override
+    public String getContractType() {
+        return contractType;
+    }
+
+    public void setContractType(String contractType) {
+        this.contractType = contractType;
+    }
+
+    @Override
+    public String getAppointmentType() {
+        return appointmentType;
+    }
+
+    public void setAppointmentType(String appointmentType) {
+        this.appointmentType = appointmentType;
+    }
+
+    @Override
+    public String getPayGrade() {
+        return payGrade;
+    }
+
+    public void setPayGrade(String payGrade) {
+        this.payGrade = payGrade;
+    }
+
+    @Override
+    public String getPayStep() {
+        return payStep;
+    }
+
+    public void setPayStep(String payStep) {
+        this.payStep = payStep;
+    }
+
+    @Override
+    public String getReportsToWorkingTitle() {
+        return reportsToWorkingTitle;
+    }
+
+    public void setReportsToWorkingTitle(String reportsToWorkingTitle) {
+        this.reportsToWorkingTitle = reportsToWorkingTitle;
+    }
+
+    public boolean isDisplayQualifications() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.qualifications");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-
-	public boolean isDisplayDuties() {
+    public boolean isDisplayDuties() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.duties");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-	public boolean isDisplayFlags() {
+    public boolean isDisplayFlags() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.flags");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-
-	public boolean isDisplayResponsibility() {
+    public boolean isDisplayResponsibility() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.responsibility");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-	public boolean isDisplayFunding() {
+    public boolean isDisplayFunding() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.funding");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-
-	public boolean isDisplayAdHocRecipients() {
+    public boolean isDisplayAdHocRecipients() {
         String status = ConfigContext.getCurrentContextConfig().getProperty("kpme.pm.position.display.adhocrecipients");
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
-	}
+    }
 
-	@Override
-	public DateTime getExpectedEndDateTime() {
-		DateTime retVal = null;
-		if(getExpectedEndDate() != null) {
-			retVal = new DateTime(getExpectedEndDate());
-		}
-		return retVal;
-	}
-	
-	public static PositionBo from(Position im) {
-				if (im == null) {
-					return null;
-				}
-				PositionBo retVal = new PositionBo();
-		
-				retVal.setHrPositionId(im.getHrPositionId());
-				retVal.setPositionNumber(im.getPositionNumber());
-				retVal.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
-				retVal.setGroupKeyCode(im.getGroupKeyCode());
-				copyCommonFields(retVal, im);
-				
-				retVal.setBenefitsEligible(im.getBenefitsEligible());
-				retVal.setPercentTime(im.getPercentTime());
-				retVal.setClassificationTitle(im.getClassificationTitle());
-				retVal.setSalaryGroup(im.getSalaryGroup());
-				
-				List<PositionQualificationBo> qualifications= ModelObjectUtils.transform(im.getQualificationList(), PositionQualificationBo.toBo);
-				PositionQualificationBo.setOwnerOfDerivedCollection(retVal, qualifications);
-				retVal.setQualificationList(qualifications);
-				
-				retVal.setReportsToPrincipalId(im.getReportsToPrincipalId());
-				retVal.setLeaveEligible(im.getLeaveEligible());
-				retVal.setPositionReportGroup(im.getPositionReportGroup());
-				retVal.setPositionType(im.getPositionType());
-				retVal.setPoolEligible(im.getPoolEligible());
-				retVal.setMaxPoolHeadCount(im.getMaxPoolHeadCount());
-				retVal.setTenureEligible(im.getTenureEligible());
-                retVal.setPositionClass(im.getPositionClass());
-                retVal.setAppointmentType(im.getAppointmentType());
-                retVal.setReportsToWorkingTitle(im.getReportsToWorkingTitle());
-                retVal.setPrimaryDepartment(im.getPrimaryDepartment());
-                retVal.setProcess(im.getProcess());
+    @Override
+    public DateTime getExpectedEndDateTime() {
+        DateTime retVal = null;
+        if (getExpectedEndDate() != null) {
+            retVal = new DateTime(getExpectedEndDate());
+        }
+        return retVal;
+    }
 
-				List<PositionDepartmentBo> departments = ModelObjectUtils.transform(im.getDepartmentList(), PositionDepartmentBo.toBo);
-				PositionDepartmentBo.setOwnerOfDerivedCollection(retVal, departments);
-				retVal.setDepartmentList(departments);
-				
-				retVal.setPositionStatus(im.getPositionStatus());
-				retVal.setContractType(im.getContractType());
-				retVal.setRenewEligible(im.getRenewEligible());
-				retVal.setReportsToPositionId(im.getReportsToPositionId());
-				
-				retVal.setRequiredQualList(ModelObjectUtils.transform(im.getRequiredQualList(), ClassificationQualificationBo.toBo));
-				
-				List<PositionResponsibilityBo> responsibilities = ModelObjectUtils.transform(im.getPositionResponsibilityList(),PositionResponsibilityBo.toBo);
-				PositionResponsibilityBo.setOwnerOfDerivedCollection(retVal, responsibilities);
-				retVal.setPositionResponsibilityList(responsibilities);
-				
-				retVal.setPmPositionClassId(im.getPmPositionClassId());
-				
-				List<PositionFundingBo> fundings = ModelObjectUtils.transform(im.getFundingList(),PositionFundingBo.toBo);
-				PositionFundingBo.setOwnerOfDerivedCollection(retVal, fundings);
-				retVal.setFundingList(fundings);
-				
-				retVal.setWorkMonths(im.getWorkMonths());
-				retVal.setTemporary(im.getTemporary());
-				retVal.setCategory(im.getCategory());
-				retVal.setLeavePlan(im.getLeavePlan());
-				
-				List<PstnFlagBo> flags = ModelObjectUtils.transform(im.getFlagList(), PstnFlagBo.toBo);
-				PstnFlagBo.setOwnerOfDerivedCollection(retVal, flags);
-				retVal.setFlagList(flags);
-				
-				retVal.setPayStep(im.getPayStep());
-				retVal.setPayGrade(im.getPayGrade());
-				
-				List<PositionDutyBo> duties = ModelObjectUtils.transform(im.getDutyList(), PositionDutyBo.toBo);
-				PositionDutyBo.setOwnerOfDerivedCollection(retVal, duties);
-				retVal.setDutyList(duties);
-				
-				retVal.setContract(im.getContract());
-				retVal.setDescription(im.getDescription());
-				retVal.setId(im.getId());
-				retVal.setEffectiveLocalDate(im.getEffectiveLocalDate());
-				return retVal;
-			}
-		
-			public static Position to(PositionBo bo) {
-				if (bo == null) {
-					return null;
-				}
-				return Position.Builder.create(bo).build();
-			}
-		
-			public static final ModelObjectUtils.Transformer<PositionBo, Position> toImmutable = new ModelObjectUtils.Transformer<PositionBo, Position>() {
-				public Position transform(PositionBo input) {
-					return PositionBo.to(input);
-				};
-			};
-		
-			public static final ModelObjectUtils.Transformer<Position, PositionBo> toBo = new ModelObjectUtils.Transformer<Position, PositionBo>() {
-				public PositionBo transform(Position input) {
-					return PositionBo.from(input);
-				};
-			};
-	
+    public static PositionBo from(Position im) {
+        if (im == null) {
+            return null;
+        }
+        PositionBo retVal = new PositionBo();
+        retVal.setHrPositionId(im.getHrPositionId());
+        retVal.setPositionNumber(im.getPositionNumber());
+        retVal.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
+        retVal.setGroupKeyCode(im.getGroupKeyCode());
+        copyCommonFields(retVal, im);
+        retVal.setBenefitsEligible(im.getBenefitsEligible());
+        retVal.setPercentTime(im.getPercentTime());
+        retVal.setClassificationTitle(im.getClassificationTitle());
+        retVal.setSalaryGroup(im.getSalaryGroup());
+        List<PositionQualificationBo> qualifications = ModelObjectUtils.transform(im.getQualificationList(), PositionQualificationBo.toBo);
+        PositionQualificationBo.setOwnerOfDerivedCollection(retVal, qualifications);
+        retVal.setQualificationList(qualifications);
+        retVal.setReportsToPrincipalId(im.getReportsToPrincipalId());
+        retVal.setLeaveEligible(im.getLeaveEligible());
+        retVal.setPositionReportGroup(im.getPositionReportGroup());
+        retVal.setPositionType(im.getPositionType());
+        retVal.setPoolEligible(im.getPoolEligible());
+        retVal.setMaxPoolHeadCount(im.getMaxPoolHeadCount());
+        retVal.setTenureEligible(im.getTenureEligible());
+        retVal.setPositionClass(im.getPositionClass());
+        retVal.setAppointmentType(im.getAppointmentType());
+        retVal.setReportsToWorkingTitle(im.getReportsToWorkingTitle());
+        retVal.setPrimaryDepartment(im.getPrimaryDepartment());
+        retVal.setProcess(im.getProcess());
+        List<PositionDepartmentBo> departments = ModelObjectUtils.transform(im.getDepartmentList(), PositionDepartmentBo.toBo);
+        PositionDepartmentBo.setOwnerOfDerivedCollection(retVal, departments);
+        retVal.setDepartmentList(departments);
+        retVal.setPositionStatus(im.getPositionStatus());
+        retVal.setContractType(im.getContractType());
+        retVal.setRenewEligible(im.getRenewEligible());
+        retVal.setReportsToPositionId(im.getReportsToPositionId());
+        retVal.setRequiredQualList(ModelObjectUtils.transform(im.getRequiredQualList(), ClassificationQualificationBo.toBo));
+        List<PositionResponsibilityBo> responsibilities = ModelObjectUtils.transform(im.getPositionResponsibilityList(), PositionResponsibilityBo.toBo);
+        PositionResponsibilityBo.setOwnerOfDerivedCollection(retVal, responsibilities);
+        retVal.setPositionResponsibilityList(responsibilities);
+        retVal.setPmPositionClassId(im.getPmPositionClassId());
+        List<PositionFundingBo> fundings = ModelObjectUtils.transform(im.getFundingList(), PositionFundingBo.toBo);
+        PositionFundingBo.setOwnerOfDerivedCollection(retVal, fundings);
+        retVal.setFundingList(fundings);
+        retVal.setWorkMonths(im.getWorkMonths());
+        retVal.setTemporary(im.getTemporary());
+        retVal.setCategory(im.getCategory());
+        retVal.setLeavePlan(im.getLeavePlan());
+        List<PstnFlagBo> flags = ModelObjectUtils.transform(im.getFlagList(), PstnFlagBo.toBo);
+        PstnFlagBo.setOwnerOfDerivedCollection(retVal, flags);
+        retVal.setFlagList(flags);
+        retVal.setPayStep(im.getPayStep());
+        retVal.setPayGrade(im.getPayGrade());
+        List<PositionDutyBo> duties = ModelObjectUtils.transform(im.getDutyList(), PositionDutyBo.toBo);
+        PositionDutyBo.setOwnerOfDerivedCollection(retVal, duties);
+        retVal.setDutyList(duties);
+        retVal.setContract(im.getContract());
+        retVal.setDescription(im.getDescription());
+        retVal.setId(im.getId());
+        retVal.setEffectiveLocalDate(im.getEffectiveLocalDate());
+        return retVal;
+    }
+
+    public static Position to(PositionBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return Position.Builder.create(bo).build();
+    }
+
+    public static final ModelObjectUtils.Transformer<PositionBo, Position> toImmutable = new ModelObjectUtils.Transformer<PositionBo, Position>() {
+
+        public Position transform(PositionBo input) {
+            return PositionBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<Position, PositionBo> toBo = new ModelObjectUtils.Transformer<Position, PositionBo>() {
+
+        public PositionBo transform(Position input) {
+            return PositionBo.from(input);
+        }
+
+        ;
+    };
 }

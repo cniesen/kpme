@@ -60,6 +60,8 @@
         <property name="dbPlatform" ref="dbPlatform" />
     </bean>
 
+    <alias name="sharedEntityManager" alias="kpme.entityManager"/>
+
     <bean id="kpme.serviceExporter" abstract="true" class="org.kuali.rice.ksb.api.bus.support.ServiceBusExporter"
           p:serviceBus-ref="rice.ksb.import.serviceBus" />
 
@@ -137,6 +139,20 @@
         <property name="serviceName" value="legacyDataAdapter" />
     </bean>
 
+    <bean id="effectiveDao" class="org.kuali.rice.core.framework.resourceloader.GlobalResourceLoaderServiceFactoryBean">
+        <property name="serviceName" value="effectiveDao" />
+    </bean>
+
+
+
+    <bean id="kradLegacyDataAdapter" class="org.kuali.kpme.core.data.KhrLegacyDataAdapterImpl"
+          p:dataObjectService-ref="dataObjectService"
+          p:effectiveObjectDao-ref="effectiveDao"
+          p:lookupCriteriaGenerator-ref="lookupCriteriaGenerator"
+          p:kualiModuleService-ref="kualiModuleService"
+          p:dataDictionaryService-ref="dataDictionaryService"
+          p:kualiConfigurationService-ref="kualiConfigurationService"
+          p:viewDictionaryService-ref="viewDictionaryService"/>
 
 
     <bean id="kpmeKnsLegacyDataAdapter"  class="org.kuali.rice.krad.service.impl.KNSLegacyDataAdapterImpl"

@@ -15,22 +15,48 @@
  */
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.kfs.coa.businessobject.ProjectCodeContract;
+import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
+import org.kuali.kpme.core.kfs.coa.businessobject.Organization;
 import org.kuali.rice.krad.bo.KualiCodeBase;
 
 /**
  * 
  */
+@Entity
+@Table(name = "CA_PROJECT_T")
 public class ProjectCode extends KualiCodeBase implements ProjectCodeContract {
 
     private static final long serialVersionUID = 4529316062843227897L;
 
+    @Column(name = "PROJECT_DESC")
     private String projectDescription;
-    
+
+    @Column(name = "FIN_COA_CD")
     private String chartOfAccountsCode;
+
+    @Column(name = "ORG_CD")
     private String organizationCode;
 
+    @ManyToOne(targetEntity = Chart.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false)
     private Chart chartOfAccounts;
+
+    @ManyToOne(targetEntity = Organization.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    /*
+FIXME: JPA_CONVERSION
+For compound primary keys, make sure the join columns are in the correct order.
+*/
+    @JoinColumns({ @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false), @JoinColumn(name = "ORG_CD", referencedColumnName = "ORG_CD", insertable = false, updatable = false) })
     private Organization organization;
 
     /**
@@ -120,7 +146,4 @@ public class ProjectCode extends KualiCodeBase implements ProjectCodeContract {
     public void setOrganizationCode(String organizationCode) {
         this.organizationCode = organizationCode;
     }
-
-   
 }
-

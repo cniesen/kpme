@@ -16,40 +16,51 @@
 package org.kuali.kpme.tklm.leave.accrual;
 
 import java.util.Date;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import org.joda.time.DateTime;
 import org.kuali.kpme.tklm.api.leave.accrual.PrincipalAccrualRanContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
-
+@Entity
+@Table(name = "LM_PRIN_ACCR_RAN_T")
 public class PrincipalAccrualRan extends PersistableBusinessObjectBase implements PrincipalAccrualRanContract {
 
-	private static final long serialVersionUID = -8102955197478338957L;
-	
-	private String principalId;
-	private Date lastRanTs;
+    private static final long serialVersionUID = -8102955197478338957L;
 
-	public String getPrincipalId() {
-		return principalId;
-	}
+    @Id
+    @Column(name = "PRINCIPAL_ID", length = 40)
+    private String principalId;
 
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    @Column(name = "LAST_RAN_TS", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date lastRanTs;
 
-	public Date getLastRanTs() {
-		return lastRanTs;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public void setLastRanTs(Date lastRanTs) {
-		this.lastRanTs = lastRanTs;
-	}
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 
-	public DateTime getLastRanDateTime() {
-		return lastRanTs != null ? new DateTime(lastRanTs) : null;
-	}
-	
-	public void setLastRanDateTime(DateTime lastRanDateTime) {
-		lastRanTs = lastRanDateTime != null ? lastRanDateTime.toDate() : null;
-	}
+    public Date getLastRanTs() {
+        return lastRanTs;
+    }
+
+    public void setLastRanTs(Date lastRanTs) {
+        this.lastRanTs = lastRanTs;
+    }
+
+    public DateTime getLastRanDateTime() {
+        return lastRanTs != null ? new DateTime(lastRanTs) : null;
+    }
+
+    public void setLastRanDateTime(DateTime lastRanDateTime) {
+        lastRanTs = lastRanDateTime != null ? lastRanDateTime.toDate() : null;
+    }
 }

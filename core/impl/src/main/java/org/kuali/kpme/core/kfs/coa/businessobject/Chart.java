@@ -16,21 +16,35 @@
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
 import java.util.LinkedHashMap;
-
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.kuali.kpme.core.api.kfs.coa.businessobject.ChartContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
 /**
  *
  */
+@Entity
+@Table(name = "CA_CHART_T")
 public class Chart extends PersistableBusinessObjectBase implements ChartContract {
 
     private static final long serialVersionUID = 4129020803214027609L;
 
+    @Column(name = "FIN_COA_DESC")
     private String finChartOfAccountDescription;
+
+    @Column(name = "FIN_COA_ACTIVE_CD")
+    @Convert(converter = BooleanYNConverter.class)
     private boolean active;
+
+    @Id
+    @Column(name = "FIN_COA_CD")
     private String chartOfAccountsCode;
 
     /**
@@ -93,7 +107,6 @@ public class Chart extends PersistableBusinessObjectBase implements ChartContrac
         this.chartOfAccountsCode = chartOfAccountsCode;
     }
 
-
     /**
      * @return Returns the code and description in format: xx - xxxxxxxxxxxxxxxx
      */
@@ -117,24 +130,20 @@ public class Chart extends PersistableBusinessObjectBase implements ChartContrac
      */
     protected LinkedHashMap toStringMapper() {
         LinkedHashMap m = new LinkedHashMap();
-
         m.put("chartOfAccountsCode", this.chartOfAccountsCode);
-
         return m;
     }
 
-	@Override
-	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
+    @Override
+    public boolean equals(Object obj) {
+        // TODO Auto-generated method stub 
         if (obj == null)
             return false;
         if (obj == this)
             return true;
-/*        if (obj.getClass() != getClass())
+        /*        if (obj.getClass() != getClass())
             return false;*/
-
         Chart rhs = (Chart) obj;
-        return new EqualsBuilder().append(getObjectId(),rhs.getObjectId()).isEquals();
-	}
+        return new EqualsBuilder().append(getObjectId(), rhs.getObjectId()).isEquals();
+    }
 }
-

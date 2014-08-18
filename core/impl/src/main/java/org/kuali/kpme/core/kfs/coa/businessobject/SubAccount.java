@@ -15,27 +15,74 @@
  */
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
+import java.io.Serializable;
 import java.util.LinkedHashMap;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinColumns;
+import javax.persistence.ManyToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
 import org.kuali.kpme.core.api.kfs.coa.businessobject.SubAccountContract;
+import org.kuali.kpme.core.kfs.coa.businessobject.Account;
+import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
 /**
  * 
  */
+@Entity
+@Table(name = "CA_SUB_ACCT_T")
+@IdClass(SubAccount.SubAccountId.class)
 public class SubAccount extends PersistableBusinessObjectBase implements SubAccountContract {
 
     private static final long serialVersionUID = 6853259976912014273L;
 
+    @Id
+    @Column(name = "FIN_COA_CD")
     private String chartOfAccountsCode;
-    private String accountNumber;
-    private String subAccountNumber;
-    private String subAccountName;
-    private boolean active;
-    private Account account;
-    private Chart chart;
-    private Organization org;
 
+    @Id
+    @Column(name = "ACCOUNT_NBR")
+    private String accountNumber;
+
+    @Id
+    @Column(name = "SUB_ACCT_NBR")
+    private String subAccountNumber;
+
+    @Column(name = "SUB_ACCT_NM")
+    private String subAccountName;
+
+    @Column(name = "SUB_ACCT_ACTV_CD")
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean active;
+
+    @ManyToOne(targetEntity = Account.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    /*
+FIXME: JPA_CONVERSION
+For compound primary keys, make sure the join columns are in the correct order.
+*/
+    @JoinColumns({ @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false), @JoinColumn(name = "ACCOUNT_NBR", referencedColumnName = "ACCOUNT_NBR", insertable = false, updatable = false) })
+    private Account account;
+
+    @ManyToOne(targetEntity = Chart.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false)
+    private Chart chart;
+
+    @Transient
+    private Organization org;
 
     /**
      * Default no-arg constructor.
@@ -77,7 +124,6 @@ public class SubAccount extends PersistableBusinessObjectBase implements SubAcco
         this.chartOfAccountsCode = chartOfAccountsCode;
     }
 
- 
     /**
      * Gets the subAccountName attribute.
      * 
@@ -150,8 +196,6 @@ public class SubAccount extends PersistableBusinessObjectBase implements SubAcco
         this.subAccountNumber = subAccountNumber;
     }
 
- 
-
     /**
      * @return Returns the chart.
      */
@@ -166,7 +210,6 @@ public class SubAccount extends PersistableBusinessObjectBase implements SubAcco
     public void setChart(Chart chart) {
         this.chart = chart;
     }
-
 
     /**
      * @return Returns the org.
@@ -194,4 +237,63 @@ public class SubAccount extends PersistableBusinessObjectBase implements SubAcco
         return m;
     }
 
+    public static final class SubAccountId implements Serializable, Comparable<SubAccountId> {
+
+        private String chartOfAccountsCode;
+
+        private String accountNumber;
+
+        private String subAccountNumber;
+
+        public String getChartOfAccountsCode() {
+            return this.chartOfAccountsCode;
+        }
+
+        public void setChartOfAccountsCode(String chartOfAccountsCode) {
+            this.chartOfAccountsCode = chartOfAccountsCode;
+        }
+
+        public String getAccountNumber() {
+            return this.accountNumber;
+        }
+
+        public void setAccountNumber(String accountNumber) {
+            this.accountNumber = accountNumber;
+        }
+
+        public String getSubAccountNumber() {
+            return this.subAccountNumber;
+        }
+
+        public void setSubAccountNumber(String subAccountNumber) {
+            this.subAccountNumber = subAccountNumber;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("chartOfAccountsCode", this.chartOfAccountsCode).append("accountNumber", this.accountNumber).append("subAccountNumber", this.subAccountNumber).toString();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null)
+                return false;
+            if (other == this)
+                return true;
+            if (other.getClass() != this.getClass())
+                return false;
+            final SubAccountId rhs = (SubAccountId) other;
+            return new EqualsBuilder().append(this.chartOfAccountsCode, rhs.chartOfAccountsCode).append(this.accountNumber, rhs.accountNumber).append(this.subAccountNumber, rhs.subAccountNumber).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(this.chartOfAccountsCode).append(this.accountNumber).append(this.subAccountNumber).toHashCode();
+        }
+
+        @Override
+        public int compareTo(SubAccountId other) {
+            return new CompareToBuilder().append(this.chartOfAccountsCode, other.chartOfAccountsCode).append(this.accountNumber, other.accountNumber).append(this.subAccountNumber, other.subAccountNumber).toComparison();
+        }
+    }
 }

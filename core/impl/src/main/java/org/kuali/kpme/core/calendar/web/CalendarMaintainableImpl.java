@@ -56,7 +56,7 @@ public class CalendarMaintainableImpl extends KualiMaintainableImpl {
 	}
 
 	@Override
-	public void saveBusinessObject() {
+	public void saveDataObject() {
 		super.saveBusinessObject();
         CalendarBo calendar = (CalendarBo) this.getBusinessObject();
 		LOG.info("Saved pay calendar: " + calendar.getHrCalendarId());

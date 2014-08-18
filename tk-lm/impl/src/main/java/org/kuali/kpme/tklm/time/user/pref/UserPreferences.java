@@ -15,43 +15,54 @@
  */
 package org.kuali.kpme.tklm.time.user.pref;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.api.time.user.pref.UserPreferencesContract;
 import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.time.user.pref.UserPreferencesContract;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 
+@Entity
+@Table(name = "TK_USER_PREF_T")
 public class UserPreferences extends PersistableBusinessObjectBase implements UserPreferencesContract {
+
     public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "UserPreferences";
 
-	private static final long serialVersionUID = 1L;
-	private String principalId;
-	private String timezone;
+    private static final long serialVersionUID = 1L;
 
-	public UserPreferences(){}
+    @Id
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
 
-	public UserPreferences(String principalId, String timeZone){
-		this.principalId = principalId;
-		this.timezone = timeZone;
-	}
+    @Column(name = "TIME_ZONE", length = 30)
+    private String timezone;
 
-	public void setTimezone(String timezone) {
-		this.timezone = timezone;
-	}
+    public UserPreferences() {
+    }
 
-	public String getTimezone() {
+    public UserPreferences(String principalId, String timeZone) {
+        this.principalId = principalId;
+        this.timezone = timeZone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+
+    public String getTimezone() {
         if (StringUtils.isEmpty(timezone))
             return TKUtils.getSystemTimeZone();
+        return timezone;
+    }
 
-		return timezone;
-	}
+    public String getPrincipalId() {
+        return principalId;
+    }
 
-	public String getPrincipalId() {
-		return principalId;
-	}
-
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
-
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
 }

@@ -15,41 +15,75 @@
  */
 package org.kuali.kpme.core.kfs.coa.businessobject;
 
-import java.util.LinkedHashMap;
-
-import org.kuali.kpme.core.api.kfs.coa.businessobject.ObjectCodeContract;
-import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-
 import com.google.common.collect.ImmutableList;
+import java.io.Serializable;
+import java.util.LinkedHashMap;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import org.apache.commons.lang.builder.CompareToBuilder;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang.builder.ToStringBuilder;
+import org.kuali.kpme.core.api.kfs.coa.businessobject.ObjectCodeContract;
+import org.kuali.kpme.core.kfs.coa.businessobject.Chart;
+import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
 /**
  *
  */
+@Entity
+@Table(name = "CA_OBJECT_CODE_T")
+@IdClass(ObjectCode.ObjectCodeId.class)
 public class ObjectCode extends PersistableBusinessObjectBase implements ObjectCodeContract {
 
-
-/*    static {
+    /*    static {
         PersistenceStructureServiceImpl.referenceConversionMap.put(ObjectCode.class, ObjectCodeCurrent.class);
     }*/
-	// business keys. ( also primary key in db ).
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add("universityFiscalYear")
-            .add("chartOfAccountsCode")
-            .add("financialObjectCode")
-            .build();
-	
+    // business keys. ( also primary key in db ). 
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add("universityFiscalYear").add("chartOfAccountsCode").add("financialObjectCode").build();
+
     private static org.apache.log4j.Logger LOG = org.apache.log4j.Logger.getLogger(ObjectCode.class);
 
     private static final long serialVersionUID = -965833141452795485L;
-    private Integer universityFiscalYear;
-    private String chartOfAccountsCode;
-    private String financialObjectCode;
-    private String financialObjectCodeName;
-    private String financialObjectCodeShortName;
-    private boolean active;
-    private String financialObjectLevelCode;
-    private transient Chart chartOfAccounts;
 
+    @Id
+    @Column(name = "UNIV_FISCAL_YR")
+    private Integer universityFiscalYear;
+
+    @Id
+    @Column(name = "FIN_COA_CD")
+    private String chartOfAccountsCode;
+
+    @Id
+    @Column(name = "FIN_OBJECT_CD")
+    private String financialObjectCode;
+
+    @Column(name = "FIN_OBJ_CD_NM")
+    private String financialObjectCodeName;
+
+    @Column(name = "FIN_OBJ_CD_SHRT_NM")
+    private String financialObjectCodeShortName;
+
+    @Column(name = "FIN_OBJ_ACTIVE_CD")
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean active;
+
+    @Transient
+    private String financialObjectLevelCode;
+
+    @ManyToOne(targetEntity = Chart.class, fetch = FetchType.LAZY, cascade = { CascadeType.REFRESH })
+    @JoinColumn(name = "FIN_COA_CD", referencedColumnName = "FIN_COA_CD", insertable = false, updatable = false)
+    private transient Chart chartOfAccounts;
 
     /**
      * This method is only for use by the framework
@@ -57,7 +91,6 @@ public class ObjectCode extends PersistableBusinessObjectBase implements ObjectC
     public void setUniversityFiscalYear(Integer i) {
         this.universityFiscalYear = i;
     }
-
 
     /**
      * Gets the financialObjectCode attribute.
@@ -138,7 +171,6 @@ public class ObjectCode extends PersistableBusinessObjectBase implements ObjectC
     /*
      * public BudgetAggregationCode getFinancialBudgetAggregation() { return financialBudgetAggregation; }
      */
-
     /**
      * Sets the financialBudgetAggregationCd attribute.
      *
@@ -149,8 +181,6 @@ public class ObjectCode extends PersistableBusinessObjectBase implements ObjectC
      * public void setFinancialBudgetAggregation(BudgetAggregationCode financialBudgetAggregationCd) {
      * this.financialBudgetAggregation = financialBudgetAggregationCd; }
      */
-
-
     /**
      * Gets the chartOfAccounts attribute.
      *
@@ -204,16 +234,13 @@ public class ObjectCode extends PersistableBusinessObjectBase implements ObjectC
         this.financialObjectLevelCode = financialObjectLevelCode;
     }
 
-
     /**
      * @see org.kuali.rice.kns.bo.BusinessObjectBase#toStringMapper()
      */
     protected LinkedHashMap toStringMapper() {
-
         LinkedHashMap m = new LinkedHashMap();
         m.put("chartOfAccountsCode", this.chartOfAccountsCode);
         m.put("financialObjectCode", this.financialObjectCode);
-
         return m;
     }
 
@@ -241,4 +268,63 @@ public class ObjectCode extends PersistableBusinessObjectBase implements ObjectC
         return this.financialObjectCodeName;
     }
 
+    public static final class ObjectCodeId implements Serializable, Comparable<ObjectCodeId> {
+
+        private Integer universityFiscalYear;
+
+        private String chartOfAccountsCode;
+
+        private String financialObjectCode;
+
+        public Integer getUniversityFiscalYear() {
+            return this.universityFiscalYear;
+        }
+
+        public void setUniversityFiscalYear(Integer universityFiscalYear) {
+            this.universityFiscalYear = universityFiscalYear;
+        }
+
+        public String getChartOfAccountsCode() {
+            return this.chartOfAccountsCode;
+        }
+
+        public void setChartOfAccountsCode(String chartOfAccountsCode) {
+            this.chartOfAccountsCode = chartOfAccountsCode;
+        }
+
+        public String getFinancialObjectCode() {
+            return this.financialObjectCode;
+        }
+
+        public void setFinancialObjectCode(String financialObjectCode) {
+            this.financialObjectCode = financialObjectCode;
+        }
+
+        @Override
+        public String toString() {
+            return new ToStringBuilder(this).append("universityFiscalYear", this.universityFiscalYear).append("chartOfAccountsCode", this.chartOfAccountsCode).append("financialObjectCode", this.financialObjectCode).toString();
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other == null)
+                return false;
+            if (other == this)
+                return true;
+            if (other.getClass() != this.getClass())
+                return false;
+            final ObjectCodeId rhs = (ObjectCodeId) other;
+            return new EqualsBuilder().append(this.universityFiscalYear, rhs.universityFiscalYear).append(this.chartOfAccountsCode, rhs.chartOfAccountsCode).append(this.financialObjectCode, rhs.financialObjectCode).isEquals();
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(17, 37).append(this.universityFiscalYear).append(this.chartOfAccountsCode).append(this.financialObjectCode).toHashCode();
+        }
+
+        @Override
+        public int compareTo(ObjectCodeId other) {
+            return new CompareToBuilder().append(this.universityFiscalYear, other.universityFiscalYear).append(this.chartOfAccountsCode, other.chartOfAccountsCode).append(this.financialObjectCode, other.financialObjectCode).toComparison();
+        }
+    }
 }

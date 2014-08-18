@@ -15,141 +15,161 @@
  */
 package org.kuali.kpme.pm.pstnqlfrtype;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.pm.api.pstnqlfrtype.PstnQlfrType;
 import org.kuali.kpme.pm.api.pstnqlfrtype.PstnQlfrTypeContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+@Entity
+@Table(name = "PM_PSTN_QLFR_TYP_T")
+public class PstnQlfrTypeBo extends HrBusinessObject implements PstnQlfrTypeContract {
 
-public class PstnQlfrTypeBo extends HrBusinessObject implements
-		PstnQlfrTypeContract {
+    public static final ModelObjectUtils.Transformer<PstnQlfrTypeBo, PstnQlfrType> toImmutable = new ModelObjectUtils.Transformer<PstnQlfrTypeBo, PstnQlfrType>() {
 
-	public static final ModelObjectUtils.Transformer<PstnQlfrTypeBo, PstnQlfrType> toImmutable = new ModelObjectUtils.Transformer<PstnQlfrTypeBo, PstnQlfrType>() {
-		public PstnQlfrType transform(PstnQlfrTypeBo input) {
-			return PstnQlfrTypeBo.to(input);
-		};
-	};
-	
-	public static final ModelObjectUtils.Transformer<PstnQlfrType, PstnQlfrTypeBo> toBo =
-	        new ModelObjectUtils.Transformer<PstnQlfrType, PstnQlfrTypeBo>() {
-	            public PstnQlfrTypeBo transform(PstnQlfrType input) {
-	                return PstnQlfrTypeBo.from(input);
-            };
+        public PstnQlfrType transform(PstnQlfrTypeBo input) {
+            return PstnQlfrTypeBo.to(input);
+        }
+
+        ;
     };
-	private static final String TYPE_VALUE = "typeValue";
-	private static final String TYPE = "type";
-	private static final String CODE = "code";
 
-	private static final long serialVersionUID = 1L;
+    public static final ModelObjectUtils.Transformer<PstnQlfrType, PstnQlfrTypeBo> toBo = new ModelObjectUtils.Transformer<PstnQlfrType, PstnQlfrTypeBo>() {
 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-			.add(CODE).add(TYPE).add(TYPE_VALUE).build();
+        public PstnQlfrTypeBo transform(PstnQlfrType input) {
+            return PstnQlfrTypeBo.from(input);
+        }
 
-	private String pmPstnQlfrTypeId;
-	private String code;
-	private String type;
-	private String descr;
-	private String typeValue;
-	// private PriorityQueue<String> selectValues;
-	private String selectValues;
+        ;
+    };
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(CODE, this.getCode()).put(TYPE, this.getType())
-				.put(TYPE_VALUE, this.getTypeValue()).build();
-	}
+    private static final String TYPE_VALUE = "typeValue";
 
-	@Override
-	public String getId() {
-		return this.getPmPstnQlfrTypeId();
-	}
+    private static final String TYPE = "type";
 
-	@Override
-	public void setId(String id) {
-		this.setPmPstnQlfrTypeId(id);
-	}
+    private static final String CODE = "code";
 
-	@Override
-	protected String getUniqueKey() {
-		return this.getCode() + "_" + this.getType();
-	}
+    private static final long serialVersionUID = 1L;
 
-	public String getPmPstnQlfrTypeId() {
-		return pmPstnQlfrTypeId;
-	}
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(CODE).add(TYPE).add(TYPE_VALUE).build();
 
-	public void setPmPstnQlfrTypeId(String pmPstnQlfrTypeId) {
-		this.pmPstnQlfrTypeId = pmPstnQlfrTypeId;
-	}
+    @PortableSequenceGenerator(name = "PM_PSTN_QLFR_TYP_S")
+    @GeneratedValue(generator = "PM_PSTN_QLFR_TYP_S")
+    @Id
+    @Column(name = "PM_PSTN_QLFR_TYP_ID", length = 60)
+    private String pmPstnQlfrTypeId;
 
-	public String getCode() {
-		return code;
-	}
+    @Column(name = "CODE", nullable = false, length = 50)
+    private String code;
 
-	public void setCode(String code) {
-		this.code = code;
-	}
+    @Column(name = "TYPE", nullable = false, length = 50)
+    private String type;
 
-	public String getType() {
-		return type;
-	}
+    @Column(name = "DESCR", length = 100)
+    private String descr;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    @Column(name = "TYPE_VL", nullable = false, length = 50)
+    private String typeValue;
 
-	public String getSelectValues() {
-		return selectValues;
-	}
+    // private PriorityQueue<String> selectValues; 
+    @Column(name = "SELECT_VALUES", length = 100)
+    private String selectValues;
 
-	public void setSelectValues(String selectValues) {
-		this.selectValues = selectValues;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(CODE, this.getCode()).put(TYPE, this.getType()).put(TYPE_VALUE, this.getTypeValue()).build();
+    }
 
-	public String getTypeValue() {
-		return typeValue;
-	}
+    @Override
+    public String getId() {
+        return this.getPmPstnQlfrTypeId();
+    }
 
-	public void setTypeValue(String typeValue) {
-		this.typeValue = typeValue;
-	}
+    @Override
+    public void setId(String id) {
+        this.setPmPstnQlfrTypeId(id);
+    }
 
-	public String getDescr() {
-		return descr;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return this.getCode() + "_" + this.getType();
+    }
 
-	public void setDescr(String descr) {
-		this.descr = descr;
-	}
+    public String getPmPstnQlfrTypeId() {
+        return pmPstnQlfrTypeId;
+    }
 
-	public static PstnQlfrTypeBo from(PstnQlfrType im) {
-		if (im == null) {
-			return null;
-		}
-		PstnQlfrTypeBo pstnQlfrTypeBo = new PstnQlfrTypeBo();
+    public void setPmPstnQlfrTypeId(String pmPstnQlfrTypeId) {
+        this.pmPstnQlfrTypeId = pmPstnQlfrTypeId;
+    }
 
-		pstnQlfrTypeBo.setCode(im.getCode());
-		pstnQlfrTypeBo.setDescr(im.getDescr());
-		pstnQlfrTypeBo.setId(im.getId());
-		pstnQlfrTypeBo.setPmPstnQlfrTypeId(im.getPmPstnQlfrTypeId());
-		pstnQlfrTypeBo.setSelectValues(im.getSelectValues());
-		pstnQlfrTypeBo.setType(im.getType());
-		pstnQlfrTypeBo.setTypeValue(im.getTypeValue());
+    public String getCode() {
+        return code;
+    }
 
-		copyCommonFields(pstnQlfrTypeBo, im);
+    public void setCode(String code) {
+        this.code = code;
+    }
 
-		return pstnQlfrTypeBo;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public static PstnQlfrType to(PstnQlfrTypeBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PstnQlfrType.Builder.create(bo).build();
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
 
+    public String getSelectValues() {
+        return selectValues;
+    }
 
+    public void setSelectValues(String selectValues) {
+        this.selectValues = selectValues;
+    }
+
+    public String getTypeValue() {
+        return typeValue;
+    }
+
+    public void setTypeValue(String typeValue) {
+        this.typeValue = typeValue;
+    }
+
+    public String getDescr() {
+        return descr;
+    }
+
+    public void setDescr(String descr) {
+        this.descr = descr;
+    }
+
+    public static PstnQlfrTypeBo from(PstnQlfrType im) {
+        if (im == null) {
+            return null;
+        }
+        PstnQlfrTypeBo pstnQlfrTypeBo = new PstnQlfrTypeBo();
+        pstnQlfrTypeBo.setCode(im.getCode());
+        pstnQlfrTypeBo.setDescr(im.getDescr());
+        pstnQlfrTypeBo.setId(im.getId());
+        pstnQlfrTypeBo.setPmPstnQlfrTypeId(im.getPmPstnQlfrTypeId());
+        pstnQlfrTypeBo.setSelectValues(im.getSelectValues());
+        pstnQlfrTypeBo.setType(im.getType());
+        pstnQlfrTypeBo.setTypeValue(im.getTypeValue());
+        copyCommonFields(pstnQlfrTypeBo, im);
+        return pstnQlfrTypeBo;
+    }
+
+    public static PstnQlfrType to(PstnQlfrTypeBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PstnQlfrType.Builder.create(bo).build();
+    }
 }

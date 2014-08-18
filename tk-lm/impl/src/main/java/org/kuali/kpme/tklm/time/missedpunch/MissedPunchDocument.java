@@ -19,7 +19,13 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.groupkey.HrGroupKey;
 import org.kuali.kpme.core.department.DepartmentBo;
@@ -29,39 +35,54 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.task.TaskBo;
 import org.kuali.kpme.core.workarea.WorkAreaBo;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchDocumentContract;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
 
+@Entity
+@Table(name = "TK_MISSED_PUNCH_DOC_T")
 public class MissedPunchDocument extends TransactionalDocumentBase implements MissedPunchDocumentContract {
 
-	private static final long serialVersionUID = -8759488155644037099L;
-	
-	private String tkMissedPunchId;
-	
-	private MissedPunchBo missedPunch = new MissedPunchBo();
+    private static final long serialVersionUID = -8759488155644037099L;
 
+    @Column(name = "TK_MISSED_PUNCH_ID", nullable = false, length = 60)
+    private String tkMissedPunchId;
+
+    @ManyToOne(targetEntity = MissedPunchBo.class, cascade = { CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST })
+    @JoinColumn(name = "TK_MISSED_PUNCH_ID", referencedColumnName = "TK_MISSED_PUNCH_ID", insertable = false, updatable = false)
+    private MissedPunchBo missedPunch = new MissedPunchBo();
+
+    @Transient
     private transient HrGroupKeyBo groupKey;
+
+    @Transient
     private transient JobBo jobObj;
+
+    @Transient
     private transient WorkAreaBo workAreaObj;
+
+    @Transient
     private transient DepartmentBo departmentObj;
+
+    @Transient
     private transient TaskBo taskObj;
-	public String getTkMissedPunchId() {
-		return tkMissedPunchId;
-	}
 
-	public void setTkMissedPunchId(String tkMissedPunchId) {
-		this.tkMissedPunchId = tkMissedPunchId;
-	}
+    public String getTkMissedPunchId() {
+        return tkMissedPunchId;
+    }
 
-	public MissedPunchBo getMissedPunch() {
-		return missedPunch;
-	}
+    public void setTkMissedPunchId(String tkMissedPunchId) {
+        this.tkMissedPunchId = tkMissedPunchId;
+    }
 
-	public void setMissedPunch(MissedPunchBo missedPunch) {
-		this.missedPunch = missedPunch;
-	}
+    public MissedPunchBo getMissedPunch() {
+        return missedPunch;
+    }
 
+    public void setMissedPunch(MissedPunchBo missedPunch) {
+        this.missedPunch = missedPunch;
+    }
 
-    //helper methods!!!!
+    //helper methods!!!!  
     public String getPrincipalId() {
         return missedPunch.getPrincipalId();
     }
@@ -83,10 +104,8 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
     }
 
     public String getGroupKeyCode() {
-        return  missedPunch.getGroupKeyCode();
+        return missedPunch.getGroupKeyCode();
     }
-
-
 
     public Date getActionDateTime() {
         return null;
@@ -111,10 +130,10 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
     /*public Date getRelativeEffectiveDate() {
         return missedPunch.getRelativeEffectiveDate();
     }*/
-
     public HrGroupKeyBo getGroupKey() {
         return groupKey;
     }
+
     public TaskBo getTaskObj() {
         return taskObj;
     }
@@ -130,14 +149,13 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
     public DepartmentBo getDepartmentObj() {
         return departmentObj;
     }
-    
+
     @Override
     public List<Assignment> getAssignments() {
-    	List<Assignment> assignments = new ArrayList<Assignment>();
-    	if( (getMissedPunch() != null) && (getMissedPunch().getActionFullDateTime() != null) ){
-    		assignments =  HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), 
-    													getMissedPunch().getActionFullDateTime().toLocalDate());
-    	}
-        return assignments; 
+        List<Assignment> assignments = new ArrayList<Assignment>();
+        if ((getMissedPunch() != null) && (getMissedPunch().getActionFullDateTime() != null)) {
+            assignments = HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), getMissedPunch().getActionFullDateTime().toLocalDate());
+        }
+        return assignments;
     }
 }

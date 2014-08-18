@@ -15,109 +15,123 @@
  */
 package org.kuali.kpme.pm.positionflag;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.pm.api.positionflag.PositionFlag;
 import org.kuali.kpme.pm.api.positionflag.PositionFlagContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+@Entity
+@Table(name = "PM_PSTN_FLG_T")
+public class PositionFlagBo extends HrBusinessObject implements PositionFlagContract {
 
-public class PositionFlagBo extends HrBusinessObject implements
-		PositionFlagContract {
+    private static final String POSITION_FLAG_NAME = "positionFlagName";
 
-	private static final String POSITION_FLAG_NAME = "positionFlagName";
-	private static final String CATEGORY = "category";
+    private static final String CATEGORY = "category";
 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-			.add(CATEGORY).add(POSITION_FLAG_NAME).build();
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(CATEGORY).add(POSITION_FLAG_NAME).build();
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private String pmPositionFlagId;
-	private String category;
-	private String positionFlagName;
+    @PortableSequenceGenerator(name = "PM_PSTN_FLG_S")
+    @GeneratedValue(generator = "PM_PSTN_FLG_S")
+    @Id
+    @Column(name = "PM_PSTN_FLG_ID", length = 60)
+    private String pmPositionFlagId;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(CATEGORY, this.getCategory())
-				.put(POSITION_FLAG_NAME, this.getPositionFlagName()).build();
-	}
+    @Column(name = "CTGRY", nullable = false, length = 50)
+    private String category;
 
-	public String getPmPositionFlagId() {
-		return pmPositionFlagId;
-	}
+    @Column(name = "PSTN_FLG_NM", length = 50)
+    private String positionFlagName;
 
-	public void setPmPositionFlagId(String pmPositionFlagId) {
-		this.pmPositionFlagId = pmPositionFlagId;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(CATEGORY, this.getCategory()).put(POSITION_FLAG_NAME, this.getPositionFlagName()).build();
+    }
 
-	public String getCategory() {
-		return category;
-	}
+    public String getPmPositionFlagId() {
+        return pmPositionFlagId;
+    }
 
-	public void setCategory(String category) {
-		this.category = category;
-	}
+    public void setPmPositionFlagId(String pmPositionFlagId) {
+        this.pmPositionFlagId = pmPositionFlagId;
+    }
 
-	public String getPositionFlagName() {
-		return positionFlagName;
-	}
+    public String getCategory() {
+        return category;
+    }
 
-	public void setPositionFlagName(String positionFlagName) {
-		this.positionFlagName = positionFlagName;
-	}
+    public void setCategory(String category) {
+        this.category = category;
+    }
 
-	@Override
-	public String getId() {
-		return this.getPmPositionFlagId();
-	}
+    public String getPositionFlagName() {
+        return positionFlagName;
+    }
 
-	@Override
-	public void setId(String id) {
-		this.setPmPositionFlagId(id);
+    public void setPositionFlagName(String positionFlagName) {
+        this.positionFlagName = positionFlagName;
+    }
 
-	}
+    @Override
+    public String getId() {
+        return this.getPmPositionFlagId();
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return this.getCategory() + "_" + this.getPositionFlagName();
-	}
+    @Override
+    public void setId(String id) {
+        this.setPmPositionFlagId(id);
+    }
 
-	public static PositionFlagBo from(PositionFlag im) {
-		if (im == null) {
-			return null;
-		}
-		PositionFlagBo positionFlagBo = new PositionFlagBo();
+    @Override
+    protected String getUniqueKey() {
+        return this.getCategory() + "_" + this.getPositionFlagName();
+    }
 
-		positionFlagBo.setPositionFlagName(im.getPositionFlagName());
-		positionFlagBo.setCategory(im.getCategory());
-		positionFlagBo.setId(im.getId());
-		positionFlagBo.setObjectId(im.getObjectId());
-		positionFlagBo.setPmPositionFlagId(im.getPmPositionFlagId());
+    public static PositionFlagBo from(PositionFlag im) {
+        if (im == null) {
+            return null;
+        }
+        PositionFlagBo positionFlagBo = new PositionFlagBo();
+        positionFlagBo.setPositionFlagName(im.getPositionFlagName());
+        positionFlagBo.setCategory(im.getCategory());
+        positionFlagBo.setId(im.getId());
+        positionFlagBo.setObjectId(im.getObjectId());
+        positionFlagBo.setPmPositionFlagId(im.getPmPositionFlagId());
+        copyCommonFields(positionFlagBo, im);
+        return positionFlagBo;
+    }
 
-		copyCommonFields(positionFlagBo, im);
+    public static PositionFlag to(PositionFlagBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionFlag.Builder.create(bo).build();
+    }
 
-		return positionFlagBo;
-	}
+    public static final ModelObjectUtils.Transformer<PositionFlagBo, PositionFlag> toImmutable = new ModelObjectUtils.Transformer<PositionFlagBo, PositionFlag>() {
 
-	public static PositionFlag to(PositionFlagBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionFlag.Builder.create(bo).build();
-	}
+        public PositionFlag transform(PositionFlagBo input) {
+            return PositionFlagBo.to(input);
+        }
 
-	public static final ModelObjectUtils.Transformer<PositionFlagBo, PositionFlag> toImmutable = new ModelObjectUtils.Transformer<PositionFlagBo, PositionFlag>() {
-		public PositionFlag transform(PositionFlagBo input) {
-			return PositionFlagBo.to(input);
-		};
-	};
+        ;
+    };
 
-	public static final ModelObjectUtils.Transformer<PositionFlag, PositionFlagBo> toBo = new ModelObjectUtils.Transformer<PositionFlag, PositionFlagBo>() {
-		public PositionFlagBo transform(PositionFlag input) {
-			return PositionFlagBo.from(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionFlag, PositionFlagBo> toBo = new ModelObjectUtils.Transformer<PositionFlag, PositionFlagBo>() {
+
+        public PositionFlagBo transform(PositionFlag input) {
+            return PositionFlagBo.from(input);
+        }
+
+        ;
+    };
 }

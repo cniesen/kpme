@@ -17,46 +17,60 @@ package org.kuali.kpme.edo.dossier;
 
 import java.sql.Timestamp;
 import java.util.Date;
-
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.edo.api.dossier.EdoDossierDocumentContract;
+import org.kuali.kpme.edo.dossier.EdoDossierBo;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
 
+@Entity
+@Table(name = "EDO_DOSSIER_DOCUMENT_T")
 public class EdoDossierDocument extends TransactionalDocumentBase implements EdoDossierDocumentContract {
 
-	private static final long serialVersionUID = -8759488155644037099L;
-	
-	private String edoDossierId;
-	private String documentTypeName;
-	private EdoDossierBo edoDossier = new EdoDossierBo();
+    private static final long serialVersionUID = -8759488155644037099L;
 
-    //private transient HrGroupKeyBo groupKey;
-    //private transient DepartmentBo departmentObj;
-	
-	public EdoDossierBo getEdoDossier() {
-		return edoDossier;
-	}
+    @Column(name = "EDO_DOSSIER_ID", nullable = false)
+    private String edoDossierId;
 
-	public void setEdoDossier(EdoDossierBo edoDossier) {
-		this.edoDossier = edoDossier;
-	}
-	
-	public String getDocumentTypeName() {
-		return documentTypeName;
-	}
+    @Transient
+    private String documentTypeName;
 
-	public void setDocumentTypeName(String documentTypeName) {
-		this.documentTypeName = documentTypeName;
-	}
+    @ManyToOne(targetEntity = EdoDossierBo.class, cascade = { CascadeType.REFRESH, CascadeType.REMOVE, CascadeType.PERSIST })
+    @JoinColumn(name = "edo_dossier_id", referencedColumnName = "edo_dossier_id", insertable = false, updatable = false)
+    private EdoDossierBo edoDossier = new EdoDossierBo();
 
-	public String getEdoDossierId() {
-		return edoDossierId;
-	}
+    //private transient HrGroupKeyBo groupKey;  
+    //private transient DepartmentBo departmentObj;  
+    public EdoDossierBo getEdoDossier() {
+        return edoDossier;
+    }
 
-	public void setEdoDossierId(String edoDossierId) {
-		this.edoDossierId = edoDossierId;
-	}
+    public void setEdoDossier(EdoDossierBo edoDossier) {
+        this.edoDossier = edoDossier;
+    }
 
-    //helper methods!!!!
+    public String getDocumentTypeName() {
+        return documentTypeName;
+    }
+
+    public void setDocumentTypeName(String documentTypeName) {
+        this.documentTypeName = documentTypeName;
+    }
+
+    public String getEdoDossierId() {
+        return edoDossierId;
+    }
+
+    public void setEdoDossierId(String edoDossierId) {
+        this.edoDossierId = edoDossierId;
+    }
+
+    //helper methods!!!!  
     public String getCandidatePrincipalName() {
         return edoDossier.getCandidatePrincipalName();
     }
@@ -64,78 +78,56 @@ public class EdoDossierDocument extends TransactionalDocumentBase implements Edo
     public String getCandidatePrincipalId() {
         return edoDossier.getCandidatePrincipalId();
     }
-    
+
     public String getEdoDossierTypeId() {
-		return edoDossier.getEdoDossierTypeId();
-	}
-    
+        return edoDossier.getEdoDossierTypeId();
+    }
+
     public String getEdoChecklistId() {
-		return edoDossier.getEdoChecklistId();
-	}
-    
+        return edoDossier.getEdoChecklistId();
+    }
+
     public String getAoeCode() {
         return edoDossier.getAoeCode();
     }
-    
+
     public String getDepartmentID() {
         return edoDossier.getDepartmentID();
     }
-    
+
     public String getSecondaryUnit() {
-		return edoDossier.getSecondaryUnit();
-	}
+        return edoDossier.getSecondaryUnit();
+    }
 
     public String getOrganizationCode() {
-		return edoDossier.getOrganizationCode();
-	}
-    
+        return edoDossier.getOrganizationCode();
+    }
+
     public String getCurrentRank() {
         return edoDossier.getCurrentRank();
     }
-    
+
     public String getRankSought() {
         return edoDossier.getRankSought();
     }
-    
+
     public String getDossierStatus() {
         return edoDossier.getDossierStatus();
     }
-    
+
     public String getWorkflowId() {
         return edoDossier.getWorkflowId();
     }
 
-    
-    
-    
     public String getGroupKeyCode() {
-        return  edoDossier.getGroupKeyCode();
+        return edoDossier.getGroupKeyCode();
     }
 
     public Date getActionDateTime() {
         return null;
     }
 
-    public Timestamp getTimestamp() {
+    public Date getTimestamp() {
         return edoDossier.getTimestamp();
     }
-
-    /*public String getDepartment() {
-        return missedPunch.getDepartment();
-    }*/
-
-    /*public Date getRelativeEffectiveDate() {
-        return missedPunch.getRelativeEffectiveDate();
-    }*/
-    /*
-    public HrGroupKeyBo getGroupKey() {
-        return groupKey;
-    }
-   
-    
-    public DepartmentBo getDepartmentObj() {
-        return departmentObj;
-    }*/
-    
-    
 }

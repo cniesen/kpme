@@ -16,28 +16,31 @@
 package org.kuali.kpme.tklm.leave.workflow;
 
 import java.util.Date;
-
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.document.calendar.CalendarDocumentHeader;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.tklm.api.leave.workflow.LeaveCalendarDocumentHeaderContract;
 
+@Entity
+@Table(name = "LM_LEAVE_DOCUMENT_HEADER_T")
 public class LeaveCalendarDocumentHeader extends CalendarDocumentHeader implements LeaveCalendarDocumentHeaderContract {
 
-	private static final long serialVersionUID = 3606595355759211446L;
+    private static final long serialVersionUID = 3606595355759211446L;
 
-	public LeaveCalendarDocumentHeader() {
-    	this.calendarType = HrConstants.LEAVE_CALENDAR_TYPE;
+    public LeaveCalendarDocumentHeader() {
+        this.calendarType = HrConstants.LEAVE_CALENDAR_TYPE;
     }
 
     public LeaveCalendarDocumentHeader(String documentId, String principalId, Date beginDate, Date endDate, String documentStatus) {
-		this.documentId = documentId;
-		this.principalId = principalId;
-		this.beginDate = beginDate;
-		this.endDate = endDate;
-		this.documentStatus = documentStatus;
-		this.calendarType = HrConstants.LEAVE_CALENDAR_TYPE;
-	}
+        this.documentId = documentId;
+        this.principalId = principalId;
+        this.beginDate = beginDate;
+        this.endDate = endDate;
+        this.documentStatus = documentStatus;
+        this.calendarType = HrConstants.LEAVE_CALENDAR_TYPE;
+    }
 
     @Override
     public String getDocumentId() {
@@ -65,15 +68,15 @@ public class LeaveCalendarDocumentHeader extends CalendarDocumentHeader implemen
     public void setBeginDate(Date beginDate) {
         this.beginDate = beginDate;
     }
-    
-	@Override
-	public DateTime getBeginDateTime() {
-		return beginDate != null ? new DateTime(beginDate) : null;
-	}
-	
-	public void setBeginDateTime(DateTime beginDateTime) {
-		this.beginDate = beginDateTime != null ? beginDateTime.toDate() : null;
-	}
+
+    @Override
+    public DateTime getBeginDateTime() {
+        return beginDate != null ? new DateTime(beginDate) : null;
+    }
+
+    public void setBeginDateTime(DateTime beginDateTime) {
+        this.beginDate = beginDateTime != null ? beginDateTime.toDate() : null;
+    }
 
     @Override
     public Date getEndDate() {
@@ -83,15 +86,15 @@ public class LeaveCalendarDocumentHeader extends CalendarDocumentHeader implemen
     public void setEndDate(Date payEndDate) {
         this.endDate = payEndDate;
     }
-    
-	@Override
-	public DateTime getEndDateTime() {
-		return endDate != null ? new DateTime(endDate) : null;
-	}
-	
-	public void setEndDateTime(DateTime endDateTime) {
-		this.endDate = endDateTime != null ? endDateTime.toDate() : null;
-	}
+
+    @Override
+    public DateTime getEndDateTime() {
+        return endDate != null ? new DateTime(endDate) : null;
+    }
+
+    public void setEndDateTime(DateTime endDateTime) {
+        this.endDate = endDateTime != null ? endDateTime.toDate() : null;
+    }
 
     @Override
     public String getPrincipalId() {
@@ -102,8 +105,8 @@ public class LeaveCalendarDocumentHeader extends CalendarDocumentHeader implemen
         this.principalId = principalId;
     }
 
-	@Override
-	public String getCalendarType() {
-		return calendarType;
-	}
+    @Override
+    public String getCalendarType() {
+        return calendarType;
+    }
 }

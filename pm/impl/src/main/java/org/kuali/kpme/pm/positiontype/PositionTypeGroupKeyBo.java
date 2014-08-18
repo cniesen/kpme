@@ -15,6 +15,8 @@
  */
 package org.kuali.kpme.pm.positiontype;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.mo.EffectiveKey;
 import org.kuali.kpme.core.bo.derived.HrBusinessObjectKey;
 import org.kuali.kpme.pm.positiontype.PositionTypeBo;
@@ -23,24 +25,29 @@ import org.kuali.rice.core.api.mo.ModelObjectUtils;
 /**
  * Created by mlemons on 6/3/14.
  */
+@Entity
+@Table(name = "PM_PSTN_TYP_GRP_KEY_T")
 public class PositionTypeGroupKeyBo extends HrBusinessObjectKey<PositionTypeBo, PositionTypeGroupKeyBo> {
 
     private static final long serialVersionUID = 3012823278754079280L;
 
-//    private static final long serialVersionUID = 3035597915412860604L;
+    //    private static final long serialVersionUID = 3035597915412860604L; 
+    public static final ModelObjectUtils.Transformer<EffectiveKey, PositionTypeGroupKeyBo> toBo = new ModelObjectUtils.Transformer<EffectiveKey, PositionTypeGroupKeyBo>() {
 
-    public static final ModelObjectUtils.Transformer<EffectiveKey, PositionTypeGroupKeyBo> toBo =
-            new ModelObjectUtils.Transformer<EffectiveKey, PositionTypeGroupKeyBo>() {
-                public PositionTypeGroupKeyBo transform(EffectiveKey input) {
-                    return PositionTypeGroupKeyBo.from(input);
-                };
-            };
+        public PositionTypeGroupKeyBo transform(EffectiveKey input) {
+            return PositionTypeGroupKeyBo.from(input);
+        }
 
-    public static final ModelObjectUtils.Transformer<PositionTypeGroupKeyBo, EffectiveKey> toImmutable =
-            new ModelObjectUtils.Transformer<PositionTypeGroupKeyBo, EffectiveKey>() {
-                public EffectiveKey transform(PositionTypeGroupKeyBo input) {
-                    return PositionTypeGroupKeyBo.to(input);
-        };
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<PositionTypeGroupKeyBo, EffectiveKey> toImmutable = new ModelObjectUtils.Transformer<PositionTypeGroupKeyBo, EffectiveKey>() {
+
+        public EffectiveKey transform(PositionTypeGroupKeyBo input) {
+            return PositionTypeGroupKeyBo.to(input);
+        }
+
+        ;
     };
 
     @Override
@@ -57,5 +64,3 @@ public class PositionTypeGroupKeyBo extends HrBusinessObjectKey<PositionTypeBo, 
         return commonFromLogic(im, new PositionTypeGroupKeyBo());
     }
 }
-
-

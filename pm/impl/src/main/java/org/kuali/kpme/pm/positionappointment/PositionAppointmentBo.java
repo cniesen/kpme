@@ -15,139 +15,154 @@
  */
 package org.kuali.kpme.pm.positionappointment;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.pm.api.positionappointment.PositionAppointment;
 import org.kuali.kpme.pm.api.positionappointment.PositionAppointmentContract;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_APPOINTMENT_T")
 public class PositionAppointmentBo extends HrKeyedBusinessObject implements PositionAppointmentContract {
 
-	static class KeyFields {
-		private static final String GROUP_KEY_CODE = "groupKeyCode";
-		private static final String POSITION_APPOINTMENT = "positionAppointment";
-	}
+    static class KeyFields {
 
-	/*
+        private static final String GROUP_KEY_CODE = "groupKeyCode";
+
+        private static final String POSITION_APPOINTMENT = "positionAppointment";
+    }
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionAppointmentBo, PositionAppointmentBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionAppointmentBo, PositionAppointment> toImmutable =
-			new ModelObjectUtils.Transformer<PositionAppointmentBo, PositionAppointment>() {
-		public PositionAppointment transform(PositionAppointmentBo input) {
-			return PositionAppointmentBo.to(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionAppointmentBo, PositionAppointment> toImmutable = new ModelObjectUtils.Transformer<PositionAppointmentBo, PositionAppointment>() {
 
-	/*
+        public PositionAppointment transform(PositionAppointmentBo input) {
+            return PositionAppointmentBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionAppointment, PositionAppointmentBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionAppointment, PositionAppointmentBo> toBo =
-			new ModelObjectUtils.Transformer<PositionAppointment, PositionAppointmentBo>() {
-		public PositionAppointmentBo transform(PositionAppointment input) {
-			return PositionAppointmentBo.from(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionAppointment, PositionAppointmentBo> toBo = new ModelObjectUtils.Transformer<PositionAppointment, PositionAppointmentBo>() {
 
-	private static final long serialVersionUID = 1L;
+        public PositionAppointmentBo transform(PositionAppointment input) {
+            return PositionAppointmentBo.from(input);
+        }
 
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-			.add(KeyFields.POSITION_APPOINTMENT)
-			.add(KeyFields.GROUP_KEY_CODE)
-			.build();
+        ;
+    };
 
-	private String pmPositionAppointmentId;
-	private String positionAppointment;
-	private String description;
-	private boolean history;
+    private static final long serialVersionUID = 1L;
 
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return  new ImmutableMap.Builder<String, Object>()
-				.put(KeyFields.POSITION_APPOINTMENT, this.getPositionAppointment())
-				.put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode())
-				.build();
-	}
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.POSITION_APPOINTMENT).add(KeyFields.GROUP_KEY_CODE).build();
 
+    @PortableSequenceGenerator(name = "PM_PSTN_APPOINTMENT_S")
+    @GeneratedValue(generator = "PM_PSTN_APPOINTMENT_S")
+    @Id
+    @Column(name = "PM_PSTN_APPOINTMENT_ID", length = 60)
+    private String pmPositionAppointmentId;
 
-	public boolean isHistory() {
-		return history;
-	}
+    @Column(name = "PSTN_APPOINTMENT", nullable = false, length = 50)
+    private String positionAppointment;
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
 
-	public String getPmPositionAppointmentId() {
-		return pmPositionAppointmentId;
-	}
+    @Transient
+    private boolean history;
 
-	public void setPmPositionAppointmentId(String pmPositionAppointmentId) {
-		this.pmPositionAppointmentId = pmPositionAppointmentId;
-	}
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.POSITION_APPOINTMENT, this.getPositionAppointment()).put(KeyFields.GROUP_KEY_CODE, this.getGroupKeyCode()).build();
+    }
 
-	public String getPositionAppointment() {
-		return positionAppointment;
-	}
+    public boolean isHistory() {
+        return history;
+    }
 
-	public void setPositionAppointment(String positionAppointment) {
-		this.positionAppointment = positionAppointment;
-	}
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getPmPositionAppointmentId() {
+        return pmPositionAppointmentId;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setPmPositionAppointmentId(String pmPositionAppointmentId) {
+        this.pmPositionAppointmentId = pmPositionAppointmentId;
+    }
 
-	@Override
-	public String getId() {
-		return getPmPositionAppointmentId();
-	}
+    public String getPositionAppointment() {
+        return positionAppointment;
+    }
 
-	@Override
-	public void setId(String pmPositionAppointmentId) {
-		setPmPositionAppointmentId(pmPositionAppointmentId);
-	}
+    public void setPositionAppointment(String positionAppointment) {
+        this.positionAppointment = positionAppointment;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return getPositionAppointment() + "_" + this.getGroupKeyCode();
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public static PositionAppointmentBo from(PositionAppointment im) {
-		if (im == null) {
-			return null;
-		}
-		PositionAppointmentBo pa = new PositionAppointmentBo();
-		pa.setPmPositionAppointmentId(im.getPmPositionAppointmentId());
-		pa.setPositionAppointment(im.getPositionAppointment());
-		pa.setDescription(im.getDescription());
-		pa.setGroupKeyCode(im.getGroupKeyCode());        
-		pa.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
-		
-		// finally copy over the common fields into pa from im
-		copyCommonFields(pa, im);
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-		return pa;
-	} 
+    @Override
+    public String getId() {
+        return getPmPositionAppointmentId();
+    }
 
-	public static PositionAppointment to(PositionAppointmentBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionAppointment.Builder.create(bo).build();
-	}
+    @Override
+    public void setId(String pmPositionAppointmentId) {
+        setPmPositionAppointmentId(pmPositionAppointmentId);
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getPositionAppointment() + "_" + this.getGroupKeyCode();
+    }
+
+    public static PositionAppointmentBo from(PositionAppointment im) {
+        if (im == null) {
+            return null;
+        }
+        PositionAppointmentBo pa = new PositionAppointmentBo();
+        pa.setPmPositionAppointmentId(im.getPmPositionAppointmentId());
+        pa.setPositionAppointment(im.getPositionAppointment());
+        pa.setDescription(im.getDescription());
+        pa.setGroupKeyCode(im.getGroupKeyCode());
+        pa.setGroupKey(HrGroupKeyBo.from(im.getGroupKey()));
+        // finally copy over the common fields into pa from im 
+        copyCommonFields(pa, im);
+        return pa;
+    }
+
+    public static PositionAppointment to(PositionAppointmentBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionAppointment.Builder.create(bo).build();
+    }
 }

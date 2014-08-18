@@ -15,230 +15,268 @@
  */
 package org.kuali.kpme.core.accrualcategory.rule;
 
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRule;
 import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
-
-import com.google.common.collect.ImmutableMap;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-
+@Entity
+@Table(name = "LM_ACCRUAL_CATEGORY_RULES_T")
 public class AccrualCategoryRuleBo extends HrBusinessObject implements AccrualCategoryRuleContract {
-   
-	/**
+
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
-	private String lmAccrualCategoryRuleId;
+    private static final long serialVersionUID = 1L;
 
-	private String serviceUnitOfTime;
-	private Long start;
-	private Long end;
-	private BigDecimal accrualRate;
-	private BigDecimal maxBalance;
-	private String maxBalFlag;
-	private String maxBalanceActionFrequency;
-	private String actionAtMaxBalance;
-	private String maxBalanceTransferToAccrualCategory;
-	private BigDecimal maxBalanceTransferConversionFactor;
-	private Long maxTransferAmount;
-	private Long maxPayoutAmount;
-	private String maxPayoutEarnCode;
-	private Long maxUsage;
-	private Long maxCarryOver;
-	private String lmAccrualCategoryId;
-	
-	private EarnCodeBo earnCodeObj;
-	
-	// TODO returning an empty map for the time-being, until the BK is finalized
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.build();
-	}
+    @PortableSequenceGenerator(name = "LM_ACCRUAL_CATEGORY_RULES_S")
+    @GeneratedValue(generator = "LM_ACCRUAL_CATEGORY_RULES_S")
+    @Id
+    @Column(name = "LM_ACCRUAL_CATEGORY_RULES_ID", length = 60)
+    private String lmAccrualCategoryRuleId;
 
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    @Column(name = "SERVICE_UNIT_OF_TIME", length = 15)
+    private String serviceUnitOfTime;
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
-	
-	private AccrualCategoryBo accrualCategoryObj;
-	
-	public AccrualCategoryBo getAccrualCategoryObj() {
-		return accrualCategoryObj;
-	}
+    @Column(name = "START_ACC", nullable = false, length = 5)
+    private Long start;
 
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
-		this.accrualCategoryObj = accrualCategoryObj;
-	}
+    @Column(name = "END_ACC", nullable = false, length = 5)
+    private Long end;
 
-	public String getLmAccrualCategoryRuleId() {
-		return lmAccrualCategoryRuleId;
-	}
+    @Column(name = "ACCRUAL_RATE", nullable = false, length = 12)
+    private BigDecimal accrualRate;
 
-	public void setLmAccrualCategoryRuleId(String lmAccrualCategoryRuleId) {
-		this.lmAccrualCategoryRuleId = lmAccrualCategoryRuleId;
-	}
+    @Column(name = "MAX_BAL", length = 12)
+    private BigDecimal maxBalance;
 
-	public String getServiceUnitOfTime() {
-		return serviceUnitOfTime;
-	}
+    @Column(name = "MAX_BAL_FLAG", nullable = false, length = 1)
+    private String maxBalFlag;
 
-	public void setServiceUnitOfTime(String serviceUnitOfTime) {
-		this.serviceUnitOfTime = serviceUnitOfTime;
-	}
+    @Column(name = "MAX_BAL_ACTION_FREQUENCY", length = 5)
+    private String maxBalanceActionFrequency;
 
-	public Long getStart() {
-		return start;
-	}
+    @Column(name = "ACTION_AT_MAX_BAL", length = 5)
+    private String actionAtMaxBalance;
 
-	public void setStart(Long start) {
-		this.start = start;
-	}
+    @Column(name = "MAX_BAL_TRANS_ACC_CAT", length = 15)
+    private String maxBalanceTransferToAccrualCategory;
 
-	public Long getEnd() {
-		return end;
-	}
+    @Column(name = "MAX_BAL_TRANS_CONV_FACTOR", length = 12)
+    private BigDecimal maxBalanceTransferConversionFactor;
 
-	public void setEnd(Long end) {
-		this.end = end;
-	}
+    @Column(name = "MAX_TRANS_AMOUNT", length = 20)
+    private Long maxTransferAmount;
 
-	public BigDecimal getAccrualRate() {
-		return accrualRate;
-	}
+    @Column(name = "MAX_PAYOUT_AMOUNT", length = 20)
+    private Long maxPayoutAmount;
 
-	public void setAccrualRate(BigDecimal accrualRate) {
-		this.accrualRate = accrualRate;
-	}
+    @Column(name = "MAX_PAYOUT_EARN_CODE", length = 15)
+    private String maxPayoutEarnCode;
 
-	public BigDecimal getMaxBalance() {
-		return maxBalance;
-	}
+    @Column(name = "MAX_USAGE", length = 20)
+    private Long maxUsage;
 
-	public void setMaxBalance(BigDecimal maxBalance) {
-		this.maxBalance = maxBalance;
-	}
+    @Column(name = "MAX_CARRY_OVER", length = 20)
+    private Long maxCarryOver;
 
-	public String getMaxBalFlag() {
-		return maxBalFlag;
-	}
+    @Column(name = "LM_ACCRUAL_CATEGORY_ID", length = 60)
+    private String lmAccrualCategoryId;
 
-	public void setMaxBalFlag(String maxBalFlag) {
-		this.maxBalFlag = maxBalFlag;
-	}
+    @Transient
+    private EarnCodeBo earnCodeObj;
 
-	public String getMaxBalanceActionFrequency() {
-		return maxBalanceActionFrequency;
-	}
+    // TODO returning an empty map for the time-being, until the BK is finalized  
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().build();
+    }
 
-	public void setMaxBalanceActionFrequency(String maxBalanceActionFrequency) {
-		this.maxBalanceActionFrequency = maxBalanceActionFrequency;
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public String getActionAtMaxBalance() {
-		return actionAtMaxBalance;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public void setActionAtMaxBalance(String actionAtMaxBalance) {
-		this.actionAtMaxBalance = actionAtMaxBalance;
-	}
+    @Transient
+    private AccrualCategoryBo accrualCategoryObj;
 
-	public String getMaxBalanceTransferToAccrualCategory() {
-		return maxBalanceTransferToAccrualCategory;
-	}
+    public AccrualCategoryBo getAccrualCategoryObj() {
+        return accrualCategoryObj;
+    }
 
-	public void setMaxBalanceTransferToAccrualCategory(
-			String maxBalanceTransferToAccrualCategory) {
-		this.maxBalanceTransferToAccrualCategory = maxBalanceTransferToAccrualCategory;
-	}
+    public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+        this.accrualCategoryObj = accrualCategoryObj;
+    }
 
-	public BigDecimal getMaxBalanceTransferConversionFactor() {
-		return maxBalanceTransferConversionFactor;
-	}
+    public String getLmAccrualCategoryRuleId() {
+        return lmAccrualCategoryRuleId;
+    }
 
-	public void setMaxBalanceTransferConversionFactor(
-			BigDecimal maxBalanceTransferConversionFactor) {
-		this.maxBalanceTransferConversionFactor = maxBalanceTransferConversionFactor;
-	}
+    public void setLmAccrualCategoryRuleId(String lmAccrualCategoryRuleId) {
+        this.lmAccrualCategoryRuleId = lmAccrualCategoryRuleId;
+    }
 
-	public Long getMaxTransferAmount() {
-		return maxTransferAmount;
-	}
+    public String getServiceUnitOfTime() {
+        return serviceUnitOfTime;
+    }
 
-	public void setMaxTransferAmount(Long maxTransferAmount) {
-		this.maxTransferAmount = maxTransferAmount;
-	}
+    public void setServiceUnitOfTime(String serviceUnitOfTime) {
+        this.serviceUnitOfTime = serviceUnitOfTime;
+    }
 
-	public Long getMaxPayoutAmount() {
-		return maxPayoutAmount;
-	}
+    public Long getStart() {
+        return start;
+    }
 
-	public void setMaxPayoutAmount(Long maxPayoutAmount) {
-		this.maxPayoutAmount = maxPayoutAmount;
-	}
+    public void setStart(Long start) {
+        this.start = start;
+    }
 
-	public String getMaxPayoutEarnCode() {
-		return maxPayoutEarnCode;
-	}
+    public Long getEnd() {
+        return end;
+    }
 
-	public void setMaxPayoutEarnCode(String maxPayoutEarnCode) {
-		this.maxPayoutEarnCode = maxPayoutEarnCode;
-	}
+    public void setEnd(Long end) {
+        this.end = end;
+    }
 
-	public Long getMaxUsage() {
-		return maxUsage;
-	}
+    public BigDecimal getAccrualRate() {
+        return accrualRate;
+    }
 
-	public void setMaxUsage(Long maxUsage) {
-		this.maxUsage = maxUsage;
-	}
+    public void setAccrualRate(BigDecimal accrualRate) {
+        this.accrualRate = accrualRate;
+    }
 
-	public Long getMaxCarryOver() {
-		return maxCarryOver;
-	}
+    public BigDecimal getMaxBalance() {
+        return maxBalance;
+    }
 
-	public void setMaxCarryOver(Long maxCarryOver) {
-		this.maxCarryOver = maxCarryOver;
-	}
+    public void setMaxBalance(BigDecimal maxBalance) {
+        this.maxBalance = maxBalance;
+    }
 
-	public String getLmAccrualCategoryId() {
-		return lmAccrualCategoryId;
-	}
+    public String getMaxBalFlag() {
+        return maxBalFlag;
+    }
 
-	public void setLmAccrualCategoryId(String lmAccrualCategoryId) {
-		this.lmAccrualCategoryId = lmAccrualCategoryId;
-	}
+    public void setMaxBalFlag(String maxBalFlag) {
+        this.maxBalFlag = maxBalFlag;
+    }
 
-	@Override
-	protected String getUniqueKey() {
-		return accrualRate.toString();
-	}
+    public String getMaxBalanceActionFrequency() {
+        return maxBalanceActionFrequency;
+    }
 
-	@Override
-	public String getId() {
-		return getLmAccrualCategoryRuleId();
-	}
+    public void setMaxBalanceActionFrequency(String maxBalanceActionFrequency) {
+        this.maxBalanceActionFrequency = maxBalanceActionFrequency;
+    }
 
-	@Override
-	public void setId(String id) {
-		setLmAccrualCategoryRuleId(id);
-		
-	}
+    public String getActionAtMaxBalance() {
+        return actionAtMaxBalance;
+    }
+
+    public void setActionAtMaxBalance(String actionAtMaxBalance) {
+        this.actionAtMaxBalance = actionAtMaxBalance;
+    }
+
+    public String getMaxBalanceTransferToAccrualCategory() {
+        return maxBalanceTransferToAccrualCategory;
+    }
+
+    public void setMaxBalanceTransferToAccrualCategory(String maxBalanceTransferToAccrualCategory) {
+        this.maxBalanceTransferToAccrualCategory = maxBalanceTransferToAccrualCategory;
+    }
+
+    public BigDecimal getMaxBalanceTransferConversionFactor() {
+        return maxBalanceTransferConversionFactor;
+    }
+
+    public void setMaxBalanceTransferConversionFactor(BigDecimal maxBalanceTransferConversionFactor) {
+        this.maxBalanceTransferConversionFactor = maxBalanceTransferConversionFactor;
+    }
+
+    public Long getMaxTransferAmount() {
+        return maxTransferAmount;
+    }
+
+    public void setMaxTransferAmount(Long maxTransferAmount) {
+        this.maxTransferAmount = maxTransferAmount;
+    }
+
+    public Long getMaxPayoutAmount() {
+        return maxPayoutAmount;
+    }
+
+    public void setMaxPayoutAmount(Long maxPayoutAmount) {
+        this.maxPayoutAmount = maxPayoutAmount;
+    }
+
+    public String getMaxPayoutEarnCode() {
+        return maxPayoutEarnCode;
+    }
+
+    public void setMaxPayoutEarnCode(String maxPayoutEarnCode) {
+        this.maxPayoutEarnCode = maxPayoutEarnCode;
+    }
+
+    public Long getMaxUsage() {
+        return maxUsage;
+    }
+
+    public void setMaxUsage(Long maxUsage) {
+        this.maxUsage = maxUsage;
+    }
+
+    public Long getMaxCarryOver() {
+        return maxCarryOver;
+    }
+
+    public void setMaxCarryOver(Long maxCarryOver) {
+        this.maxCarryOver = maxCarryOver;
+    }
+
+    public String getLmAccrualCategoryId() {
+        return lmAccrualCategoryId;
+    }
+
+    public void setLmAccrualCategoryId(String lmAccrualCategoryId) {
+        this.lmAccrualCategoryId = lmAccrualCategoryId;
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return accrualRate.toString();
+    }
+
+    @Override
+    public String getId() {
+        return getLmAccrualCategoryRuleId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setLmAccrualCategoryRuleId(id);
+    }
 
     public static AccrualCategoryRuleBo from(AccrualCategoryRule im) {
         AccrualCategoryRuleBo ac = new AccrualCategoryRuleBo();
-
         ac.setLmAccrualCategoryRuleId(im.getLmAccrualCategoryRuleId());
-
         ac.setServiceUnitOfTime(im.getServiceUnitOfTime());
         ac.setStart(im.getStart());
         ac.setEnd(im.getEnd());
@@ -255,7 +293,6 @@ public class AccrualCategoryRuleBo extends HrBusinessObject implements AccrualCa
         ac.setMaxUsage(im.getMaxUsage());
         ac.setMaxCarryOver(im.getMaxCarryOver());
         ac.setLmAccrualCategoryId(im.getLmAccrualCategoryId());
-
         ac.setEffectiveDate(im.getEffectiveLocalDate() == null ? null : im.getEffectiveLocalDate().toDate());
         ac.setActive(im.isActive());
         if (im.getCreateTime() != null) {
@@ -264,7 +301,6 @@ public class AccrualCategoryRuleBo extends HrBusinessObject implements AccrualCa
         ac.setUserPrincipalId(im.getUserPrincipalId());
         ac.setVersionNumber(im.getVersionNumber());
         ac.setObjectId(im.getObjectId());
-
         return ac;
     }
 
@@ -272,20 +308,24 @@ public class AccrualCategoryRuleBo extends HrBusinessObject implements AccrualCa
         if (bo == null) {
             return null;
         }
-
         return AccrualCategoryRule.Builder.create(bo).build();
     }
 
     public static final ModelObjectUtils.Transformer<AccrualCategoryRuleBo, AccrualCategoryRule> toImmutable = new ModelObjectUtils.Transformer<AccrualCategoryRuleBo, AccrualCategoryRule>() {
+
         public AccrualCategoryRule transform(AccrualCategoryRuleBo input) {
             return AccrualCategoryRuleBo.to(input);
-        };
+        }
+
+        ;
     };
 
     public static final ModelObjectUtils.Transformer<AccrualCategoryRule, AccrualCategoryRuleBo> toBo = new ModelObjectUtils.Transformer<AccrualCategoryRule, AccrualCategoryRuleBo>() {
+
         public AccrualCategoryRuleBo transform(AccrualCategoryRule input) {
             return AccrualCategoryRuleBo.from(input);
-        };
-    };
+        }
 
+        ;
+    };
 }

@@ -15,8 +15,15 @@
  */
 package org.kuali.kpme.tklm.leave.adjustment;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.accrualcategory.AccrualCategoryBo;
 import org.kuali.kpme.core.bo.HrBusinessObject;
@@ -26,140 +33,177 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.tklm.api.leave.adjustment.LeaveAdjustmentContract;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "LM_LEAVE_ADJUSTMENT_T")
 public class LeaveAdjustment extends HrBusinessObject implements LeaveAdjustmentContract {
-	private static final String EARN_CODE = "earnCode";
-	private static final String ACCRUAL_CATEGORY = "accrualCategory";
-	private static final String PRINCIPAL_ID = "principalId";
-	
-	private static final long serialVersionUID = 1L;
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(PRINCIPAL_ID)
-            .add(ACCRUAL_CATEGORY)
-            .add(EARN_CODE)
-            .build();	
-	private String lmLeaveAdjustmentId;
-	private String principalId;
-	private String leavePlan;
-	private String accrualCategory;
-	private String earnCode;
-	private String description;
-	private BigDecimal adjustmentAmount = new BigDecimal("0.0");
+
+    private static final String EARN_CODE = "earnCode";
+
+    private static final String ACCRUAL_CATEGORY = "accrualCategory";
+
+    private static final String PRINCIPAL_ID = "principalId";
+
+    private static final long serialVersionUID = 1L;
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(PRINCIPAL_ID).add(ACCRUAL_CATEGORY).add(EARN_CODE).build();
+
+    @PortableSequenceGenerator(name = "LM_LEAVE_ADJUSTMENT_S")
+    @GeneratedValue(generator = "LM_LEAVE_ADJUSTMENT_S")
+    @Id
+    @Column(name = "LM_LEAVE_ADJUSTMENT_ID", length = 60)
+    private String lmLeaveAdjustmentId;
+
+    @Column(name = "PRINCIPAL_ID", nullable = false, length = 40)
+    private String principalId;
+
+    @Column(name = "LEAVE_PLAN", nullable = false, length = 15)
+    private String leavePlan;
+
+    @Column(name = "ACCRUAL_CAT", nullable = false, length = 15)
+    private String accrualCategory;
+
+    @Column(name = "EARN_CODE", nullable = false, length = 15)
+    private String earnCode;
+
+    @Column(name = "DESCRIPTION", length = 50)
+    private String description;
+
+    @Column(name = "ADJUSTMENT_AMOUNT", nullable = false)
+    private BigDecimal adjustmentAmount = new BigDecimal("0.0");
+
+    @Transient
     private transient Person principal;
-	private transient AccrualCategoryBo accrualCategoryObj;
-	private transient EarnCodeBo earnCodeObj;
-	private transient PrincipalHRAttributesBo principalHRAttrObj;
-	
-	
+
+    @Transient
+    private transient AccrualCategoryBo accrualCategoryObj;
+
+    @Transient
+    private transient EarnCodeBo earnCodeObj;
+
+    @Transient
+    private transient PrincipalHRAttributesBo principalHRAttrObj;
 
     @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(PRINCIPAL_ID, this.getPrincipalId())
-			.put(ACCRUAL_CATEGORY, this.getAccrualCategory())
-			.put(EARN_CODE, this.getEarnCode())
-			.build();
-	}
-    
-	
-	public String getEarnCode() {
-		return earnCode;
-	}
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
-	public String getPrincipalId() {
-		return principalId;
-	}
-	public void setPrincipalId(String principalId) {
-		this.principalId = principalId;
-	}
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(PRINCIPAL_ID, this.getPrincipalId()).put(ACCRUAL_CATEGORY, this.getAccrualCategory()).put(EARN_CODE, this.getEarnCode()).build();
+    }
+
+    public String getEarnCode() {
+        return earnCode;
+    }
+
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
+
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
+
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
+
+    public String getPrincipalId() {
+        return principalId;
+    }
+
+    public void setPrincipalId(String principalId) {
+        this.principalId = principalId;
+    }
+
     public Person getPrincipal() {
         return principal;
     }
+
     public void setPrincipal(Person principal) {
         this.principal = principal;
     }
+
     public String getName() {
-		if (principal == null) {
-        principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
-		}
-		return (principal != null) ? principal.getName() : "";
-	}
-	
-	public String getLeavePlan() {
-		if (!StringUtils.isEmpty(this.principalId)) {
-			principalHRAttrObj = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate()));
-		}
-		return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
-	}
+        if (principal == null) {
+            principal = KimApiServiceLocator.getPersonService().getPerson(this.principalId);
+        }
+        return (principal != null) ? principal.getName() : "";
+    }
 
-	public void setLeavePlan(String leavePlan) {
-		this.leavePlan = leavePlan;
-	}
-	public String getAccrualCategory() {
-		return accrualCategory;
-	}
-	public void setAccrualCategory(String accrualCategory) {
-		this.accrualCategory = accrualCategory;
-	}
-	
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public BigDecimal getAdjustmentAmount() {
-		return adjustmentAmount;
-	}
-	public void setAdjustmentAmount(BigDecimal adjustmentAmount) {
-		this.adjustmentAmount = adjustmentAmount;
-	}
-	public AccrualCategoryBo getAccrualCategoryObj() {
-		return accrualCategoryObj;
-	}
-	public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
-		this.accrualCategoryObj = accrualCategoryObj;
-	}
-	public static long getSerialversionuid() {
-		return serialVersionUID;
-	}
-	public String getLmLeaveAdjustmentId() {
-		return lmLeaveAdjustmentId;
-	}
-	public void setLmLeaveAdjustmentId(String lmLeaveAdjustmentId) {
-		this.lmLeaveAdjustmentId = lmLeaveAdjustmentId;
-	}
-	
-	@Override
-	protected String getUniqueKey() {
-		return getLmLeaveAdjustmentId();
-	}
-	
-	@Override
-	public String getId() {
-		return getLmLeaveAdjustmentId();
-	}
+    public String getLeavePlan() {
+        if (!StringUtils.isEmpty(this.principalId)) {
+            principalHRAttrObj = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, this.getEffectiveLocalDate()));
+        }
+        return (principalHRAttrObj != null) ? principalHRAttrObj.getLeavePlan() : "";
+    }
 
-	@Override
-	public void setId(String id) {
-		setLmLeaveAdjustmentId(id);
-	}
+    public void setLeavePlan(String leavePlan) {
+        this.leavePlan = leavePlan;
+    }
 
-	public PrincipalHRAttributesBo getPrincipalHRAttrObj() {
-		return principalHRAttrObj;
-	}
-	public void setPrincipalHRAttrObj(PrincipalHRAttributesBo principalHRAttrObj) {
-		this.principalHRAttrObj = principalHRAttrObj;
-	}
+    public String getAccrualCategory() {
+        return accrualCategory;
+    }
+
+    public void setAccrualCategory(String accrualCategory) {
+        this.accrualCategory = accrualCategory;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getAdjustmentAmount() {
+        return adjustmentAmount;
+    }
+
+    public void setAdjustmentAmount(BigDecimal adjustmentAmount) {
+        this.adjustmentAmount = adjustmentAmount;
+    }
+
+    public AccrualCategoryBo getAccrualCategoryObj() {
+        return accrualCategoryObj;
+    }
+
+    public void setAccrualCategoryObj(AccrualCategoryBo accrualCategoryObj) {
+        this.accrualCategoryObj = accrualCategoryObj;
+    }
+
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
+    public String getLmLeaveAdjustmentId() {
+        return lmLeaveAdjustmentId;
+    }
+
+    public void setLmLeaveAdjustmentId(String lmLeaveAdjustmentId) {
+        this.lmLeaveAdjustmentId = lmLeaveAdjustmentId;
+    }
+
+    @Override
+    protected String getUniqueKey() {
+        return getLmLeaveAdjustmentId();
+    }
+
+    @Override
+    public String getId() {
+        return getLmLeaveAdjustmentId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setLmLeaveAdjustmentId(id);
+    }
+
+    public PrincipalHRAttributesBo getPrincipalHRAttrObj() {
+        return principalHRAttrObj;
+    }
+
+    public void setPrincipalHRAttrObj(PrincipalHRAttributesBo principalHRAttrObj) {
+        this.principalHRAttrObj = principalHRAttrObj;
+    }
 }

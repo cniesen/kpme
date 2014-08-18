@@ -67,28 +67,4 @@ public class JobLookupableHelper extends KpmeHrBusinessObjectLookupableHelper {
 		return customActionUrls;
     }
 
-    @Override
-    public List<? extends HrBusinessObjectContract> getSearchResults(Map<String, String> fieldValues) {
-    	/*
-        String principalId = fieldValues.get("principalId");
-        String firstName = fieldValues.get("firstName");
-        String lastName = fieldValues.get("lastName");
-        String jobNumber = fieldValues.get("jobNumber");
-        String dept = fieldValues.get("dept");
-        String positionNumber = fieldValues.get("positionNumber");
-        String hrPayType = fieldValues.get("hrPayType");
-        String fromEffdt = TKUtils.getFromDateString(fieldValues.get("effectiveDate"));
-        String toEffdt = TKUtils.getToDateString(fieldValues.get("effectiveDate"));
-        String active = fieldValues.get("active");
-        String showHist = fieldValues.get("history");
-
-        return ModelObjectUtils.transform(HrServiceLocator.getJobService().getJobs(GlobalVariables.getUserSession().getPrincipalId(), principalId, firstName, lastName, jobNumber, dept, positionNumber, hrPayType,
-                TKUtils.formatDateString(fromEffdt), TKUtils.formatDateString(toEffdt), active, showHist), toJobBo);
-        */
-        
-        // get the unfiltered list from the superclass
-    	List<JobBo> jobObjs = (List<JobBo>) super.getSearchResults(fieldValues);
-    	return jobObjs;
-    }
-
 }

@@ -15,146 +15,161 @@
  */
 package org.kuali.kpme.pm.positionreportcat;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.pm.api.positionreportcat.PositionReportCategory;
 import org.kuali.kpme.pm.api.positionreportcat.PositionReportCategoryContract;
 import org.kuali.kpme.pm.positionreporttype.PositionReportTypeBo;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
+@Entity
+@Table(name = "PM_PSTN_RPT_CAT_T")
 public class PositionReportCategoryBo extends HrKeyedBusinessObject implements PositionReportCategoryContract {
-	
-	private static final String POSITION_REPORT_CAT = "positionReportCat";
-		
-	//KPME-2273/1965 Primary Business Keys List.
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-		    .add(POSITION_REPORT_CAT)
-		    .build();
 
-	private static final long serialVersionUID = 1L;
-	
-	private String pmPositionReportCatId;
-	private String positionReportCat;
-	private String positionReportType;
-	private String description;
-	
-	private PositionReportTypeBo prtObj;	
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-		return new ImmutableMap.Builder<String, Object>()
-				.put(POSITION_REPORT_CAT, this.getPositionReportCat())
-				.build();
-	}
-	
-	/*
+    private static final String POSITION_REPORT_CAT = "positionReportCat";
+
+    //KPME-2273/1965 Primary Business Keys List.  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(POSITION_REPORT_CAT).build();
+
+    private static final long serialVersionUID = 1L;
+
+    @PortableSequenceGenerator(name = "PM_PSTN_RPT_CAT_S")
+    @GeneratedValue(generator = "PM_PSTN_RPT_CAT_S")
+    @Id
+    @Column(name = "PM_PSTN_RPT_CAT_ID", length = 60)
+    private String pmPositionReportCatId;
+
+    @Column(name = "PSTN_RPT_CAT", nullable = false, length = 50)
+    private String positionReportCat;
+
+    @Column(name = "PSTN_RPT_TYPE", nullable = false, length = 50)
+    private String positionReportType;
+
+    @Column(name = "DESCRIPTION", length = 100)
+    private String description;
+
+    @Transient
+    private PositionReportTypeBo prtObj;
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(POSITION_REPORT_CAT, this.getPositionReportCat()).build();
+    }
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportCategoryBo, PositionReportCategoryBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionReportCategoryBo, PositionReportCategory> toImmutable =
-			new ModelObjectUtils.Transformer<PositionReportCategoryBo, PositionReportCategory>() {
-		public PositionReportCategory transform(PositionReportCategoryBo input) {
-			return PositionReportCategoryBo.to(input);
-		};
-	};
+    public static final ModelObjectUtils.Transformer<PositionReportCategoryBo, PositionReportCategory> toImmutable = new ModelObjectUtils.Transformer<PositionReportCategoryBo, PositionReportCategory>() {
 
-	/*
+        public PositionReportCategory transform(PositionReportCategoryBo input) {
+            return PositionReportCategoryBo.to(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transform(listOfPositionReportCategory, PositionReportCategoryBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionReportCategory, PositionReportCategoryBo> toBo =
-			new ModelObjectUtils.Transformer<PositionReportCategory, PositionReportCategoryBo>() {
-		public PositionReportCategoryBo transform(PositionReportCategory input) {
-			return PositionReportCategoryBo.from(input);
-		};
-	};
-	
-	@Override
-	public String getId() {
-		return getPmPositionReportCatId();
-	}
+    public static final ModelObjectUtils.Transformer<PositionReportCategory, PositionReportCategoryBo> toBo = new ModelObjectUtils.Transformer<PositionReportCategory, PositionReportCategoryBo>() {
 
-	@Override
-	public void setId(String id) {
-		setPmPositionReportCatId(id);
-	}
+        public PositionReportCategoryBo transform(PositionReportCategory input) {
+            return PositionReportCategoryBo.from(input);
+        }
 
-	@Override
-	protected String getUniqueKey() {
-		return getPositionReportCat() + "_" + getPositionReportType() + "_" + getGroupKeyCode();
-	}
+        ;
+    };
 
-	public String getPositionReportType() {
-		return positionReportType;
-	}
+    @Override
+    public String getId() {
+        return getPmPositionReportCatId();
+    }
 
-	public void setPositionReportType(String positionReportType) {
-		this.positionReportType = positionReportType;
-	}
+    @Override
+    public void setId(String id) {
+        setPmPositionReportCatId(id);
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    @Override
+    protected String getUniqueKey() {
+        return getPositionReportCat() + "_" + getPositionReportType() + "_" + getGroupKeyCode();
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getPositionReportType() {
+        return positionReportType;
+    }
 
-	public String getPmPositionReportCatId() {
-		return pmPositionReportCatId;
-	}
+    public void setPositionReportType(String positionReportType) {
+        this.positionReportType = positionReportType;
+    }
 
-	public void setPmPositionReportCatId(String pmPositionReportCatId) {
-		this.pmPositionReportCatId = pmPositionReportCatId;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public String getPositionReportCat() {
-		return positionReportCat;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setPositionReportCat(String positionReportCat) {
-		this.positionReportCat = positionReportCat;
-	}
+    public String getPmPositionReportCatId() {
+        return pmPositionReportCatId;
+    }
 
-	public PositionReportTypeBo getPrtObj() {
-		return prtObj;
-	}
+    public void setPmPositionReportCatId(String pmPositionReportCatId) {
+        this.pmPositionReportCatId = pmPositionReportCatId;
+    }
 
-	public void setPrtObj(PositionReportTypeBo prtObj) {
-		this.prtObj = prtObj;
-	}
+    public String getPositionReportCat() {
+        return positionReportCat;
+    }
 
-	public static PositionReportCategoryBo from(PositionReportCategory im) {
-		if (im == null) {
-			return null;
-		}
-		PositionReportCategoryBo prc = new PositionReportCategoryBo();
-		
-		prc.setPmPositionReportCatId(im.getPmPositionReportCatId());
-		prc.setPositionReportCat(im.getPositionReportCat());
-		prc.setPositionReportType(im.getPositionReportType());
-		prc.setDescription(im.getDescription());
-		prc.setPrtObj(PositionReportTypeBo.from(im.getPrtObj()));
-        
-		// finally copy over the common fields into prc from im
-		copyCommonFields(prc, im);
+    public void setPositionReportCat(String positionReportCat) {
+        this.positionReportCat = positionReportCat;
+    }
 
-		return prc;
-	} 
+    public PositionReportTypeBo getPrtObj() {
+        return prtObj;
+    }
 
-	public static PositionReportCategory to(PositionReportCategoryBo bo) {
-		if (bo == null) {
-			return null;
-		}
-		return PositionReportCategory.Builder.create(bo).build();
-	}
-	
+    public void setPrtObj(PositionReportTypeBo prtObj) {
+        this.prtObj = prtObj;
+    }
+
+    public static PositionReportCategoryBo from(PositionReportCategory im) {
+        if (im == null) {
+            return null;
+        }
+        PositionReportCategoryBo prc = new PositionReportCategoryBo();
+        prc.setPmPositionReportCatId(im.getPmPositionReportCatId());
+        prc.setPositionReportCat(im.getPositionReportCat());
+        prc.setPositionReportType(im.getPositionReportType());
+        prc.setDescription(im.getDescription());
+        prc.setPrtObj(PositionReportTypeBo.from(im.getPrtObj()));
+        // finally copy over the common fields into prc from im  
+        copyCommonFields(prc, im);
+        return prc;
+    }
+
+    public static PositionReportCategory to(PositionReportCategoryBo bo) {
+        if (bo == null) {
+            return null;
+        }
+        return PositionReportCategory.Builder.create(bo).build();
+    }
 }

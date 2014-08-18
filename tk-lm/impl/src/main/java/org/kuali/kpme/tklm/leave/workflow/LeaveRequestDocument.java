@@ -15,6 +15,11 @@
  */
 package org.kuali.kpme.tklm.leave.workflow;
 
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.leave.workflow.LeaveRequestDocumentContract;
@@ -22,22 +27,29 @@ import org.kuali.kpme.tklm.leave.block.LeaveBlockBo;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.rice.krad.document.TransactionalDocumentBase;
 
-import java.util.Collections;
-import java.util.List;
-
+@Entity
+@Table(name = "LM_LEAVE_REQ_DOC_T")
 public class LeaveRequestDocument extends TransactionalDocumentBase implements LeaveRequestDocumentContract {
 
-	private static final long serialVersionUID = 6036885548516978879L;
-	public static final String LEAVE_REQUEST_DOCUMENT_TYPE = "LeaveRequestDocument";
+    private static final long serialVersionUID = 6036885548516978879L;
+
+    public static final String LEAVE_REQUEST_DOCUMENT_TYPE = "LeaveRequestDocument";
+
+    @Column(name = "LM_LEAVE_BLOCK_ID", length = 60)
     private String lmLeaveBlockId;
+
+    @Column(name = "ACTION_CD", length = 1)
     private String actionCode;
+
+    @Column(name = "DESCR", length = 255)
     private String description;
 
-    public LeaveRequestDocument() { }
+    public LeaveRequestDocument() {
+    }
 
     public LeaveRequestDocument(String leaveBlockId) {
-		this.lmLeaveBlockId = leaveBlockId;
-	}
+        this.lmLeaveBlockId = leaveBlockId;
+    }
 
     @Override
     public boolean getAllowsCopy() {
@@ -71,7 +83,6 @@ public class LeaveRequestDocument extends TransactionalDocumentBase implements L
     public LeaveBlock getLeaveBlock() {
         return getLmLeaveBlockId() == null ? null : LmServiceLocator.getLeaveBlockService().getLeaveBlock(getLmLeaveBlockId());
     }
-
 
     @Override
     public List<Assignment> getAssignments() {

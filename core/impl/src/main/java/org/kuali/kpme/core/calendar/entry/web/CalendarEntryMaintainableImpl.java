@@ -26,13 +26,13 @@ public class CalendarEntryMaintainableImpl extends KualiMaintainableImpl {
 	private static final long serialVersionUID = -5910605947104384549L;
 
 	@Override
-	public void saveBusinessObject() {
+	public void saveDataObject() {
 		CalendarEntryBo calendarEntry = (CalendarEntryBo) super.getBusinessObject();
 		
 		CalendarContract calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(calendarEntry.getCalendarName());
 		calendarEntry.setHrCalendarId(calendar.getHrCalendarId());
 		
-		super.saveBusinessObject();
+		super.saveDataObject();
 		
         CacheUtils.flushCache(CalendarEntryBo.CACHE_NAME);
 	}

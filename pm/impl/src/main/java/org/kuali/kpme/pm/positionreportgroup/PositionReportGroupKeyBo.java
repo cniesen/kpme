@@ -15,54 +15,61 @@
  */
 package org.kuali.kpme.pm.positionreportgroup;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import org.kuali.kpme.core.api.mo.EffectiveKey;
 import org.kuali.kpme.core.bo.derived.HrBusinessObjectKey;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
+@Entity
+@Table(name = "PM_PSTN_RPT_GRP_KEY_T")
 public class PositionReportGroupKeyBo extends HrBusinessObjectKey<PositionReportGroupBo, PositionReportGroupKeyBo> {
 
     private static final long serialVersionUID = 3035597915412860604L;
 
-	/*
+    /*
 	 * convert immutable to bo
 	 * 
 	 * Can be used with ModelObjectUtils:
 	 * 
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfPositionReportGroupKey, PositionReportGroupKeyBo.toBo);
 	 */
-	public static final ModelObjectUtils.Transformer<EffectiveKey, PositionReportGroupKeyBo> toBo =
-		new ModelObjectUtils.Transformer<EffectiveKey, PositionReportGroupKeyBo>() {
-			public PositionReportGroupKeyBo transform(EffectiveKey input) {
-				return PositionReportGroupKeyBo.from(input);
-			};
-		};
+    public static final ModelObjectUtils.Transformer<EffectiveKey, PositionReportGroupKeyBo> toBo = new ModelObjectUtils.Transformer<EffectiveKey, PositionReportGroupKeyBo>() {
 
-	/*
+        public PositionReportGroupKeyBo transform(EffectiveKey input) {
+            return PositionReportGroupKeyBo.from(input);
+        }
+
+        ;
+    };
+
+    /*
 	 * convert bo to immutable
 	 *
 	 * Can be used with ModelObjectUtils:
 	 *
 	 * org.kuali.rice.core.api.mo.ModelObjectUtils.transformSet(setOfPositionReportGroupKeyBo, PositionReportGroupKeyBo.toImmutable);
 	 */
-	public static final ModelObjectUtils.Transformer<PositionReportGroupKeyBo, EffectiveKey> toImmutable =
-		new ModelObjectUtils.Transformer<PositionReportGroupKeyBo, EffectiveKey>() {
-			public EffectiveKey transform(PositionReportGroupKeyBo input) {
-				return PositionReportGroupKeyBo.to(input);
-			};
-		};
+    public static final ModelObjectUtils.Transformer<PositionReportGroupKeyBo, EffectiveKey> toImmutable = new ModelObjectUtils.Transformer<PositionReportGroupKeyBo, EffectiveKey>() {
 
-	@Override
-	public PositionReportGroupBo getOwner() {
-		return super.getOwner();
-	}
-	
-	@Override
-	public void setOwner(PositionReportGroupBo owner) {
-		super.setOwner(owner);
-	}
-	
-	public static PositionReportGroupKeyBo from(EffectiveKey im) {
-		return commonFromLogic(im, new PositionReportGroupKeyBo());
-	}
+        public EffectiveKey transform(PositionReportGroupKeyBo input) {
+            return PositionReportGroupKeyBo.to(input);
+        }
 
+        ;
+    };
+
+    @Override
+    public PositionReportGroupBo getOwner() {
+        return super.getOwner();
+    }
+
+    @Override
+    public void setOwner(PositionReportGroupBo owner) {
+        super.setOwner(owner);
+    }
+
+    public static PositionReportGroupKeyBo from(EffectiveKey im) {
+        return commonFromLogic(im, new PositionReportGroupKeyBo());
+    }
 }

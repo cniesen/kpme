@@ -15,8 +15,11 @@
  */
 package org.kuali.kpme.tklm.time.rules.shiftdifferential;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
 import java.sql.Time;
+import javax.persistence.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.calendar.CalendarBo;
@@ -25,274 +28,327 @@ import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
 import org.kuali.kpme.core.location.LocationBo;
 import org.kuali.kpme.core.paygrade.PayGradeBo;
 import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
-import org.kuali.kpme.tklm.api.time.rules.shiftdifferential.ShiftDifferentialRuleContract;
 import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.time.rules.shiftdifferential.ShiftDifferentialRuleContract;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 import org.kuali.kpme.tklm.time.rules.shiftdifferential.ruletype.ShiftDifferentialRuleType;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 
+@Entity
+@Table(name = "TK_SHIFT_DIFFERENTIAL_RL_T")
 public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRuleContract {
 
-	private static final String SATURDAY = "saturday";
-	private static final String FRIDAY = "friday";
-	private static final String THURSDAY = "thursday";
-	private static final String WEDNESDAY = "wednesday";
-	private static final String TUESDAY = "tuesday";
-	private static final String MONDAY = "monday";
-	private static final String SUNDAY = "sunday";
-	private static final String END_TIME = "endTime";
-	private static final String BEGIN_TIME = "beginTime";
-	private static final String PY_CALENDAR_GROUP = "pyCalendarGroup";
-	private static final String EARN_CODE = "earnCode";
-	private static final String PAY_GRADE = "payGrade";
-	private static final String HR_SAL_GROUP = "hrSalGroup";
-	private static final String LOCATION = "location";
+    private static final String SATURDAY = "saturday";
 
-	private static final long serialVersionUID = -3990672795815968915L;
+    private static final String FRIDAY = "friday";
 
-	public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ShiftDifferentialRule";
-	//KPME-2273/1965 Primary Business Keys List.	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(LOCATION)
-            .add(HR_SAL_GROUP)
-            .add(PAY_GRADE)
-            .add(EARN_CODE)
-            .add(PY_CALENDAR_GROUP)
-            .add(BEGIN_TIME)
-            .add(END_TIME)
-            .add(SUNDAY)
-            .add(MONDAY)
-            .add(TUESDAY)
-            .add(WEDNESDAY)
-            .add(THURSDAY)
-            .add(FRIDAY)
-            .add(SATURDAY)
-            .build();
-	
-	private String tkShiftDiffRuleId;
-	private String location;
-	private String hrSalGroup;
-	private String payGrade;
-	private String earnCode;
-	private Time beginTime;
-	private Time endTime;
-	private BigDecimal minHours;
-	private boolean sunday;
-	private boolean monday;
-	private boolean tuesday;
-	private boolean wednesday;
-	private boolean thursday;
-	private boolean friday;
-	private boolean saturday;
-	private String fromEarnGroup;
-	private String pyCalendarGroup;
-	private BigDecimal maxGap; // Gap is in HOURS
-	private String ruleType;
+    private static final String THURSDAY = "thursday";
 
-	private String hrSalGroupId;
-	private String hrLocationId;
-	private String hrPayGradeId;	
-	
-	private boolean history;
-	
-	private EarnCodeBo earnCodeObj;
-	private SalaryGroupBo salaryGroupObj;
+    private static final String WEDNESDAY = "wednesday";
+
+    private static final String TUESDAY = "tuesday";
+
+    private static final String MONDAY = "monday";
+
+    private static final String SUNDAY = "sunday";
+
+    private static final String END_TIME = "endTime";
+
+    private static final String BEGIN_TIME = "beginTime";
+
+    private static final String PY_CALENDAR_GROUP = "pyCalendarGroup";
+
+    private static final String EARN_CODE = "earnCode";
+
+    private static final String PAY_GRADE = "payGrade";
+
+    private static final String HR_SAL_GROUP = "hrSalGroup";
+
+    private static final String LOCATION = "location";
+
+    private static final long serialVersionUID = -3990672795815968915L;
+
+    public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "ShiftDifferentialRule";
+
+    //KPME-2273/1965 Primary Business Keys List.	  
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(LOCATION).add(HR_SAL_GROUP).add(PAY_GRADE).add(EARN_CODE).add(PY_CALENDAR_GROUP).add(BEGIN_TIME).add(END_TIME).add(SUNDAY).add(MONDAY).add(TUESDAY).add(WEDNESDAY).add(THURSDAY).add(FRIDAY).add(SATURDAY).build();
+
+    @PortableSequenceGenerator(name = "TK_SHIFT_DIFFERENTIAL_RL_S")
+    @GeneratedValue(generator = "TK_SHIFT_DIFFERENTIAL_RL_S")
+    @Id
+    @Column(name = "TK_SHIFT_DIFF_RL_ID", length = 60)
+    private String tkShiftDiffRuleId;
+
+    @Column(name = "LOCATION", length = 30)
+    private String location;
+
+    @Column(name = "HR_SAL_GROUP", length = 10)
+    private String hrSalGroup;
+
+    @Column(name = "PAY_GRADE", length = 3)
+    private String payGrade;
+
+    @Column(name = "EARN_CODE", length = 15)
+    private String earnCode;
+
+    @Temporal(TemporalType.TIME)
+    @Column(name = "BEGIN_TS")
+    private Time beginTime;
+
+    @Temporal(TemporalType.TIME)
+    @Column(name = "END_TS")
+    private Time endTime;
+
+    @Column(name = "MIN_HRS")
+    private BigDecimal minHours;
+
+    @Column(name = "SUN", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean sunday;
+
+    @Column(name = "MON", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean monday;
+
+    @Column(name = "TUE", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean tuesday;
+
+    @Column(name = "WED", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean wednesday;
+
+    @Column(name = "THU", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean thursday;
+
+    @Column(name = "FRI", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean friday;
+
+    @Column(name = "SAT", length = 1)
+    @Convert(converter = BooleanYNConverter.class)
+    private boolean saturday;
+
+    @Column(name = "FROM_EARN_GROUP", length = 10)
+    private String fromEarnGroup;
+
+    @Column(name = "PY_CALENDAR_GROUP", length = 30)
+    private String pyCalendarGroup;
+
+    @Column(name = "MAX_GAP")
+    private BigDecimal maxGap;
+
+    // Gap is in HOURS  
+    @Column(name = "RULE_TYP_NM", length = 60)
+    private String ruleType;
+
+    @Transient
+    private String hrSalGroupId;
+
+    @Transient
+    private String hrLocationId;
+
+    @Transient
+    private String hrPayGradeId;
+
+    @Transient
+    private boolean history;
+
+    @Transient
+    private EarnCodeBo earnCodeObj;
+
+    @Transient
+    private SalaryGroupBo salaryGroupObj;
+
+    @Transient
     private EarnCodeGroupBo fromEarnGroupObj;
+
+    @Transient
     private CalendarBo payCalendar;
+
+    @Transient
     private LocationBo locationObj;
+
+    @Transient
     private PayGradeBo payGradeObj;
+
+    @Transient
     private ShiftDifferentialRuleType ruleTypeObj;
-    
+
     @Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(LOCATION, this.getLocation())
-			.put(HR_SAL_GROUP, this.getHrSalGroup())
-			.put(LOCATION, this.getLocation())
-			.put(PAY_GRADE, this.getPayGrade())
-            .put(EARN_CODE, this.getEarnCode())
-            .put(PY_CALENDAR_GROUP, this.getPyCalendarGroup())
-            .put(BEGIN_TIME, this.getBeginTime())
-            .put(END_TIME, this.getEndTime())
-            .put(SUNDAY, this.isSunday())
-            .put(MONDAY, this.isMonday())
-            .put(TUESDAY, this.isTuesday())
-            .put(WEDNESDAY, this.isWednesday())
-            .put(THURSDAY, this.isThursday())
-            .put(FRIDAY, this.isFriday())
-            .put(SATURDAY, this.isSaturday())
-			.build();
-	}
-    
-	public String getTkShiftDiffRuleId() {
-		return tkShiftDiffRuleId;
-	}
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(LOCATION, this.getLocation()).put(HR_SAL_GROUP, this.getHrSalGroup()).put(LOCATION, this.getLocation()).put(PAY_GRADE, this.getPayGrade()).put(EARN_CODE, this.getEarnCode()).put(PY_CALENDAR_GROUP, this.getPyCalendarGroup()).put(BEGIN_TIME, this.getBeginTime()).put(END_TIME, this.getEndTime()).put(SUNDAY, this.isSunday()).put(MONDAY, this.isMonday()).put(TUESDAY, this.isTuesday()).put(WEDNESDAY, this.isWednesday()).put(THURSDAY, this.isThursday()).put(FRIDAY, this.isFriday()).put(SATURDAY, this.isSaturday()).build();
+    }
 
-	public void setTkShiftDiffRuleId(String tkShiftDiffRuleId) {
-		this.tkShiftDiffRuleId = tkShiftDiffRuleId;
-	}
+    public String getTkShiftDiffRuleId() {
+        return tkShiftDiffRuleId;
+    }
 
-	public String getLocation() {
-		return location;
-	}
+    public void setTkShiftDiffRuleId(String tkShiftDiffRuleId) {
+        this.tkShiftDiffRuleId = tkShiftDiffRuleId;
+    }
 
-	public void setLocation(String location) {
-		this.location = location;
-	}
+    public String getLocation() {
+        return location;
+    }
 
-	public String getPayGrade() {
-		return payGrade;
-	}
+    public void setLocation(String location) {
+        this.location = location;
+    }
 
-	public void setPayGrade(String payGrade) {
-		this.payGrade = payGrade;
-	}
+    public String getPayGrade() {
+        return payGrade;
+    }
 
-	public String getEarnCode() {
-		return earnCode;
-	}
+    public void setPayGrade(String payGrade) {
+        this.payGrade = payGrade;
+    }
 
-	public void setEarnCode(String earnCode) {
-		this.earnCode = earnCode;
-	}
+    public String getEarnCode() {
+        return earnCode;
+    }
 
-	public BigDecimal getMinHours() {
-		return minHours;
-	}
+    public void setEarnCode(String earnCode) {
+        this.earnCode = earnCode;
+    }
 
-	public void setMinHours(BigDecimal minHours) {
-		this.minHours = minHours;
-	}
+    public BigDecimal getMinHours() {
+        return minHours;
+    }
+
+    public void setMinHours(BigDecimal minHours) {
+        this.minHours = minHours;
+    }
 
     /**
      * @return The maximum gap, in hours.
      */
-	public BigDecimal getMaxGap() {
-		return maxGap;
-	}
+    public BigDecimal getMaxGap() {
+        return maxGap;
+    }
 
     /**
      *
      * @param maxGap The number of hours that can be between one time block and another for the rule to consider it part of the same shift.
      */
-	public void setMaxGap(BigDecimal maxGap) {
-		this.maxGap = maxGap;
-	}
+    public void setMaxGap(BigDecimal maxGap) {
+        this.maxGap = maxGap;
+    }
 
-	public String getHrSalGroup() {
-		return hrSalGroup;
-	}
+    public String getHrSalGroup() {
+        return hrSalGroup;
+    }
 
-	public void setHrSalGroup(String hrSalGroup) {
-		this.hrSalGroup = hrSalGroup;
-	}
+    public void setHrSalGroup(String hrSalGroup) {
+        this.hrSalGroup = hrSalGroup;
+    }
 
-	public String getPyCalendarGroup() {
-		return pyCalendarGroup;
-	}
+    public String getPyCalendarGroup() {
+        return pyCalendarGroup;
+    }
 
-	public void setPyCalendarGroup(String pyCalendarGroup) {
-		this.pyCalendarGroup = pyCalendarGroup;
-	}
+    public void setPyCalendarGroup(String pyCalendarGroup) {
+        this.pyCalendarGroup = pyCalendarGroup;
+    }
 
-	public Time getBeginTime() {
-		return beginTime;
-	}
+    public Time getBeginTime() {
+        return beginTime;
+    }
 
-	public void setBeginTime(Time beginTime) {
-		this.beginTime = beginTime;
-	}
+    public void setBeginTime(Time beginTime) {
+        this.beginTime = beginTime;
+    }
 
-	public Time getEndTime() {
-		return endTime;
-	}
+    public Time getEndTime() {
+        return endTime;
+    }
 
-	public void setEndTime(Time endTime) {
-		this.endTime = endTime;
-	}
+    public void setEndTime(Time endTime) {
+        this.endTime = endTime;
+    }
 
-	public String getFromEarnGroup() {
-		return fromEarnGroup;
-	}
+    public String getFromEarnGroup() {
+        return fromEarnGroup;
+    }
 
-	public void setFromEarnGroup(String fromEarnGroup) {
-		this.fromEarnGroup = fromEarnGroup;
-	}
+    public void setFromEarnGroup(String fromEarnGroup) {
+        this.fromEarnGroup = fromEarnGroup;
+    }
 
-	public boolean isSunday() {
-		return sunday;
-	}
+    public boolean isSunday() {
+        return sunday;
+    }
 
-	public void setSunday(boolean sunday) {
-		this.sunday = sunday;
-	}
+    public void setSunday(boolean sunday) {
+        this.sunday = sunday;
+    }
 
-	public boolean isMonday() {
-		return monday;
-	}
+    public boolean isMonday() {
+        return monday;
+    }
 
-	public void setMonday(boolean monday) {
-		this.monday = monday;
-	}
+    public void setMonday(boolean monday) {
+        this.monday = monday;
+    }
 
-	public boolean isTuesday() {
-		return tuesday;
-	}
+    public boolean isTuesday() {
+        return tuesday;
+    }
 
-	public void setTuesday(boolean tuesday) {
-		this.tuesday = tuesday;
-	}
+    public void setTuesday(boolean tuesday) {
+        this.tuesday = tuesday;
+    }
 
-	public boolean isWednesday() {
-		return wednesday;
-	}
+    public boolean isWednesday() {
+        return wednesday;
+    }
 
-	public void setWednesday(boolean wednesday) {
-		this.wednesday = wednesday;
-	}
+    public void setWednesday(boolean wednesday) {
+        this.wednesday = wednesday;
+    }
 
-	public boolean isThursday() {
-		return thursday;
-	}
+    public boolean isThursday() {
+        return thursday;
+    }
 
-	public void setThursday(boolean thursday) {
-		this.thursday = thursday;
-	}
+    public void setThursday(boolean thursday) {
+        this.thursday = thursday;
+    }
 
-	public boolean isFriday() {
-		return friday;
-	}
+    public boolean isFriday() {
+        return friday;
+    }
 
-	public void setFriday(boolean friday) {
-		this.friday = friday;
-	}
+    public void setFriday(boolean friday) {
+        this.friday = friday;
+    }
 
-	public boolean isSaturday() {
-		return saturday;
-	}
+    public boolean isSaturday() {
+        return saturday;
+    }
 
-	public void setSaturday(boolean saturday) {
-		this.saturday = saturday;
-	}
+    public void setSaturday(boolean saturday) {
+        this.saturday = saturday;
+    }
 
-	public EarnCodeBo getEarnCodeObj() {
-		return earnCodeObj;
-	}
+    public EarnCodeBo getEarnCodeObj() {
+        return earnCodeObj;
+    }
 
-	public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
-		this.earnCodeObj = earnCodeObj;
-	}
+    public void setEarnCodeObj(EarnCodeBo earnCodeObj) {
+        this.earnCodeObj = earnCodeObj;
+    }
 
-	public SalaryGroupBo getSalaryGroupObj() {
-		return salaryGroupObj;
-	}
+    public SalaryGroupBo getSalaryGroupObj() {
+        return salaryGroupObj;
+    }
 
-	public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
-		this.salaryGroupObj = salaryGroupObj;
-	}
+    public void setSalaryGroupObj(SalaryGroupBo salaryGroupObj) {
+        this.salaryGroupObj = salaryGroupObj;
+    }
 
     public EarnCodeGroupBo getFromEarnGroupObj() {
         return fromEarnGroupObj;
@@ -310,142 +366,134 @@ public class ShiftDifferentialRule extends TkRule implements ShiftDifferentialRu
         this.payCalendar = payCalendar;
     }
 
-	public LocationBo getLocationObj() {
-		return locationObj;
-	}
+    public LocationBo getLocationObj() {
+        return locationObj;
+    }
 
-	public void setLocationObj(LocationBo locationObj) {
-		this.locationObj = locationObj;
-	}
+    public void setLocationObj(LocationBo locationObj) {
+        this.locationObj = locationObj;
+    }
 
-	public PayGradeBo getPayGradeObj() {
-		return payGradeObj;
-	}
+    public PayGradeBo getPayGradeObj() {
+        return payGradeObj;
+    }
 
-	public void setPayGradeObj(PayGradeBo payGradeObj) {
-		this.payGradeObj = payGradeObj;
-	}
+    public void setPayGradeObj(PayGradeBo payGradeObj) {
+        this.payGradeObj = payGradeObj;
+    }
 
-	public String getHrSalGroupId() {
-		return hrSalGroupId;
-	}
+    public String getHrSalGroupId() {
+        return hrSalGroupId;
+    }
 
-	public void setHrSalGroupId(String hrSalGroupId) {
-		this.hrSalGroupId = hrSalGroupId;
-	}
+    public void setHrSalGroupId(String hrSalGroupId) {
+        this.hrSalGroupId = hrSalGroupId;
+    }
 
-	public String getHrLocationId() {
-		return hrLocationId;
-	}
+    public String getHrLocationId() {
+        return hrLocationId;
+    }
 
-	public void setHrLocationId(String hrLocationId) {
-		this.hrLocationId = hrLocationId;
-	}
+    public void setHrLocationId(String hrLocationId) {
+        this.hrLocationId = hrLocationId;
+    }
 
-	public String getHrPayGradeId() {
-		return hrPayGradeId;
-	}
+    public String getHrPayGradeId() {
+        return hrPayGradeId;
+    }
 
-	public void setHrPayGradeId(String hrPayGradeId) {
-		this.hrPayGradeId = hrPayGradeId;
-	}
+    public void setHrPayGradeId(String hrPayGradeId) {
+        this.hrPayGradeId = hrPayGradeId;
+    }
 
-	public ShiftDifferentialRuleType getRuleTypeObj() {
-        if (ruleTypeObj == null
-                && StringUtils.isNotEmpty(ruleType)) {
+    public ShiftDifferentialRuleType getRuleTypeObj() {
+        if (ruleTypeObj == null && StringUtils.isNotEmpty(ruleType)) {
             ruleTypeObj = TkServiceLocator.getShiftDifferentialRuleTypeService().getActiveShiftDifferentialRuleType(getRuleType(), getEffectiveLocalDate());
         }
-		return ruleTypeObj;
-	}
+        return ruleTypeObj;
+    }
 
-	public void setRuleTypeObj(ShiftDifferentialRuleType ruleTypeObj) {
-		this.ruleTypeObj = ruleTypeObj;
-	}
+    public void setRuleTypeObj(ShiftDifferentialRuleType ruleTypeObj) {
+        this.ruleTypeObj = ruleTypeObj;
+    }
 
-	@Override
-	public String getUniqueKey() {
-		return location + "_" + hrSalGroup + "_" + payGrade + "_" + earnCode;
-	}
+    @Override
+    public String getUniqueKey() {
+        return location + "_" + hrSalGroup + "_" + payGrade + "_" + earnCode;
+    }
 
-	@Override
-	public String getId() {
-		return getTkShiftDiffRuleId();
-	}
+    @Override
+    public String getId() {
+        return getTkShiftDiffRuleId();
+    }
 
-	@Override
-	public void setId(String id) {
-		setTkShiftDiffRuleId(id);
-	}
+    @Override
+    public void setId(String id) {
+        setTkShiftDiffRuleId(id);
+    }
 
-	public boolean isHistory() {
-		return history;
-	}
+    public boolean isHistory() {
+        return history;
+    }
 
-	public void setHistory(boolean history) {
-		this.history = history;
-	}
-	
-	public String getRuleType() {
-		return ruleType;
-	}
+    public void setHistory(boolean history) {
+        this.history = history;
+    }
 
-	public void setRuleType(String ruleType) {
-		this.ruleType = ruleType;
-	}
+    public String getRuleType() {
+        return ruleType;
+    }
 
-	/* (non-Javadoc)
+    public void setRuleType(String ruleType) {
+        this.ruleType = ruleType;
+    }
+
+    /* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((earnCode == null) ? 0 : earnCode.hashCode());
-		result = prime * result
-				+ ((hrSalGroup == null) ? 0 : hrSalGroup.hashCode());
-		result = prime * result
-				+ ((location == null) ? 0 : location.hashCode());
-		result = prime * result
-				+ ((payGrade == null) ? 0 : payGrade.hashCode());
-		return result;
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((earnCode == null) ? 0 : earnCode.hashCode());
+        result = prime * result + ((hrSalGroup == null) ? 0 : hrSalGroup.hashCode());
+        result = prime * result + ((location == null) ? 0 : location.hashCode());
+        result = prime * result + ((payGrade == null) ? 0 : payGrade.hashCode());
+        return result;
+    }
 
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ShiftDifferentialRule other = (ShiftDifferentialRule) obj;
-		if (earnCode == null) {
-			if (other.earnCode != null)
-				return false;
-		} else if (!earnCode.equals(other.earnCode))
-			return false;
-		if (hrSalGroup == null) {
-			if (other.hrSalGroup != null)
-				return false;
-		} else if (!hrSalGroup.equals(other.hrSalGroup))
-			return false;
-		if (location == null) {
-			if (other.location != null)
-				return false;
-		} else if (!location.equals(other.location))
-			return false;
-		if (payGrade == null) {
-			if (other.payGrade != null)
-				return false;
-		} else if (!payGrade.equals(other.payGrade))
-			return false;
-		return true;
-	}
-	
-	
-
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        ShiftDifferentialRule other = (ShiftDifferentialRule) obj;
+        if (earnCode == null) {
+            if (other.earnCode != null)
+                return false;
+        } else if (!earnCode.equals(other.earnCode))
+            return false;
+        if (hrSalGroup == null) {
+            if (other.hrSalGroup != null)
+                return false;
+        } else if (!hrSalGroup.equals(other.hrSalGroup))
+            return false;
+        if (location == null) {
+            if (other.location != null)
+                return false;
+        } else if (!location.equals(other.location))
+            return false;
+        if (payGrade == null) {
+            if (other.payGrade != null)
+                return false;
+        } else if (!payGrade.equals(other.payGrade))
+            return false;
+        return true;
+    }
 }

@@ -19,7 +19,7 @@ public abstract class EdoBusinessObjectMaintainableImpl extends KualiMaintainabl
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void saveBusinessObject() {
+    public void saveDataObject() {
         EdoBusinessObject edoObj = (EdoBusinessObject) this.getBusinessObject();
 
         Date updateDate = DateTime.now().toDate();

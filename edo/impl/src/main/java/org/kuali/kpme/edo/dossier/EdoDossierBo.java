@@ -1,7 +1,16 @@
 package org.kuali.kpme.edo.dossier;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import java.util.Date;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import org.joda.time.DateTime;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
@@ -13,123 +22,152 @@ import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
 import org.kuali.rice.krad.util.ObjectUtils;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-
-
+@Entity
+@Table(name = "EDO_DOSSIER_T")
 public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierContract {
 
-	static class KeyFields {
-		private static final String CANDIDATE_PRINCIPAL_NAME = "candidatePrincipalName";
-	}
-	
-	private static final long serialVersionUID = 6843318899816055301L;
-	
-	public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>()
-            .add(KeyFields.CANDIDATE_PRINCIPAL_NAME)
-            .build();
-	
-	//public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes";
+    static class KeyFields {
 
-	public static final ModelObjectUtils.Transformer<EdoDossierBo, EdoDossier> toImmutable = new ModelObjectUtils.Transformer<EdoDossierBo, EdoDossier>() {
-		public EdoDossier transform(EdoDossierBo input) {
-			return EdoDossierBo.to(input);
-		};
-	};
+        private static final String CANDIDATE_PRINCIPAL_NAME = "candidatePrincipalName";
+    }
 
-	public static final ModelObjectUtils.Transformer<EdoDossier, EdoDossierBo> toBo = new ModelObjectUtils.Transformer<EdoDossier, EdoDossierBo>() {
-		public EdoDossierBo transform(EdoDossier input) {
-			return EdoDossierBo.from(input);
-		};
-	};
-	
-	@Override
-	public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
-    	return  new ImmutableMap.Builder<String, Object>()
-			.put(KeyFields.CANDIDATE_PRINCIPAL_NAME, this.getCandidatePrincipalName())
-			.build();
-	}
-	
-	@Override
-	public String getId() {
-		return this.getEdoDossierId();
-	}
-	@Override
-	public void setId(String id) {
-		setEdoDossierId(id);
-	}
-		
-	@Override
-	public String getUniqueKey() {
-		
-		return getCandidatePrincipalName();
-	}
-	
+    private static final long serialVersionUID = 6843318899816055301L;
+
+    public static final ImmutableList<String> BUSINESS_KEYS = new ImmutableList.Builder<String>().add(KeyFields.CANDIDATE_PRINCIPAL_NAME).build();
+
+    //public static final String CACHE_NAME = HrConstants.CacheNamespace.NAMESPACE_PREFIX + "PrincipalHRAttributes"; 
+    public static final ModelObjectUtils.Transformer<EdoDossierBo, EdoDossier> toImmutable = new ModelObjectUtils.Transformer<EdoDossierBo, EdoDossier>() {
+
+        public EdoDossier transform(EdoDossierBo input) {
+            return EdoDossierBo.to(input);
+        }
+
+        ;
+    };
+
+    public static final ModelObjectUtils.Transformer<EdoDossier, EdoDossierBo> toBo = new ModelObjectUtils.Transformer<EdoDossier, EdoDossierBo>() {
+
+        public EdoDossierBo transform(EdoDossier input) {
+            return EdoDossierBo.from(input);
+        }
+
+        ;
+    };
+
+    @Override
+    public ImmutableMap<String, Object> getBusinessKeyValuesMap() {
+        return new ImmutableMap.Builder<String, Object>().put(KeyFields.CANDIDATE_PRINCIPAL_NAME, this.getCandidatePrincipalName()).build();
+    }
+
+    @Override
+    public String getId() {
+        return this.getEdoDossierId();
+    }
+
+    @Override
+    public void setId(String id) {
+        setEdoDossierId(id);
+    }
+
+    @Override
+    public String getUniqueKey() {
+        return getCandidatePrincipalName();
+    }
+
+    @PortableSequenceGenerator(name = "EDO_DOSSIER_S")
+    @GeneratedValue(generator = "EDO_DOSSIER_S")
+    @Id
+    @Column(name = "EDO_DOSSIER_ID", nullable = false, length = 60)
     private String edoDossierId;
+
+    @Column(name = "EDO_DOSSIER_TYPE_ID", nullable = false)
     private String edoDossierTypeId;
+
+    @Column(name = "EDO_CHECKLIST_ID", nullable = false)
     private String edoChecklistId;
+
+    @Column(name = "CANDIDATE_PRINCIPALNAME", nullable = false, length = 100)
     private String candidatePrincipalName;
+
+    @Column(name = "AOE_CODE", length = 1)
     private String aoeCode;
+
+    @Column(name = "DEPARTMENT_ID", nullable = false, length = 12)
     private String departmentID;
+
+    @Column(name = "ORG_CD", nullable = false, length = 10)
     private String organizationCode;
+
+    @Column(name = "CURRENT_RANK", nullable = false, length = 32)
     private String currentRank;
+
+    @Column(name = "RANK_SOUGHT", nullable = false, length = 32)
     private String rankSought;
+
+    @Column(name = "DUE_DATE", nullable = false)
+    @Temporal(TemporalType.DATE)
     private Date dueDateVal;
+
+    @Column(name = "DOSSIER_STATUS", nullable = false, length = 12)
     private String dossierStatus;
+
+    @Column(name = "SECONDARY_UNIT", length = 12)
     private String secondaryUnit;
+
+    @Column(name = "WORKFLOW_ID", nullable = false, length = 25)
     private String workflowId;
 
+    @Transient
     private EdoDossierType edoDossierType;
-   
-	
 
-	public String getEdoDossierId() {
-		return edoDossierId;
-	}
+    public String getEdoDossierId() {
+        return edoDossierId;
+    }
 
-	public void setEdoDossierId(String edoDossierId) {
-		this.edoDossierId = edoDossierId;
-	}
+    public void setEdoDossierId(String edoDossierId) {
+        this.edoDossierId = edoDossierId;
+    }
 
-	public String getEdoDossierTypeId() {
-		return edoDossierTypeId;
-	}
+    public String getEdoDossierTypeId() {
+        return edoDossierTypeId;
+    }
 
-	public void setEdoDossierTypeId(String edoDossierTypeId) {
-		this.edoDossierTypeId = edoDossierTypeId;
-	}
+    public void setEdoDossierTypeId(String edoDossierTypeId) {
+        this.edoDossierTypeId = edoDossierTypeId;
+    }
 
-	public String getEdoChecklistId() {
-		return edoChecklistId;
-	}
+    public String getEdoChecklistId() {
+        return edoChecklistId;
+    }
 
-	public void setEdoChecklistId(String edoChecklistId) {
-		this.edoChecklistId = edoChecklistId;
-	}
+    public void setEdoChecklistId(String edoChecklistId) {
+        this.edoChecklistId = edoChecklistId;
+    }
 
-	public String getCandidatePrincipalName() {
-		return candidatePrincipalName;
-	}
+    public String getCandidatePrincipalName() {
+        return candidatePrincipalName;
+    }
 
-	public void setCandidatePrincipalName(String candidatePrincipalName) {
-		this.candidatePrincipalName = candidatePrincipalName;
-	}
+    public void setCandidatePrincipalName(String candidatePrincipalName) {
+        this.candidatePrincipalName = candidatePrincipalName;
+    }
 
-	public String getOrganizationCode() {
-		return organizationCode;
-	}
+    public String getOrganizationCode() {
+        return organizationCode;
+    }
 
-	public void setOrganizationCode(String organizationCode) {
-		this.organizationCode = organizationCode;
-	}
+    public void setOrganizationCode(String organizationCode) {
+        this.organizationCode = organizationCode;
+    }
 
-	public void setEdoDossierType(EdoDossierType edoDossierType) {
-		this.edoDossierType = edoDossierType;
-	}
+    public void setEdoDossierType(EdoDossierType edoDossierType) {
+        this.edoDossierType = edoDossierType;
+    }
 
-	public EdoDossierType getEdoDossierType() {
+    public EdoDossierType getEdoDossierType() {
         if (ObjectUtils.isNull(edoDossierType) && ObjectUtils.isNotNull(edoDossierTypeId)) {
             this.edoDossierType = EdoServiceLocator.getEdoDossierTypeService().getEdoDossierTypeById(edoDossierTypeId.toString());
             return edoDossierType;
@@ -145,7 +183,7 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
     public String getAoeString() {
         return EdoConstants.AREA_OF_EXCELLENCE.get(this.aoeCode);
     }
-    
+
     public void setAoeCode(String aoeCode) {
         this.aoeCode = aoeCode;
     }
@@ -189,16 +227,16 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
     public void setDossierStatus(String dossierStatus) {
         this.dossierStatus = dossierStatus;
     }
-  
+
     public String getSecondaryUnit() {
-		return secondaryUnit;
-	}
+        return secondaryUnit;
+    }
 
-	public void setSecondaryUnit(String secondaryUnit) {
-		this.secondaryUnit = secondaryUnit;
-	}
+    public void setSecondaryUnit(String secondaryUnit) {
+        this.secondaryUnit = secondaryUnit;
+    }
 
-	public String getWorkflowId() {
+    public String getWorkflowId() {
         return workflowId;
     }
 
@@ -207,11 +245,11 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
     }
 
     public String getCandidatePrincipalId() {
-    	Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(this.getCandidatePrincipalName());
-    	if(principal == null) {
-    		throw new IllegalArgumentException("Principal not found in KIM");
-    	}
-    	return principal.getPrincipalId();
+        Principal principal = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(this.getCandidatePrincipalName());
+        if (principal == null) {
+            throw new IllegalArgumentException("Principal not found in KIM");
+        }
+        return principal.getPrincipalId();
     }
 
     public static EdoDossierBo from(EdoDossier edoDossier) {
@@ -219,7 +257,6 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
             return null;
         }
         EdoDossierBo edoDossierBo = new EdoDossierBo();
-        
         edoDossierBo.setEdoDossierId(edoDossier.getEdoDossierId());
         edoDossierBo.setEdoDossierTypeId(edoDossier.getEdoDossierTypeId());
         edoDossierBo.setEdoChecklistId(edoDossier.getEdoChecklistId());
@@ -233,13 +270,10 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
         edoDossierBo.setDueDateVal(edoDossier.getDueDate() == null ? null : edoDossier.getDueDate().toDate());
         edoDossierBo.setDossierStatus(edoDossier.getDossierStatus());
         edoDossierBo.setWorkflowId(edoDossier.getWorkflowId());
-        
         edoDossierBo.setGroupKeyCode(edoDossier.getGroupKeyCode());
         edoDossierBo.setGroupKey(HrGroupKeyBo.from(edoDossier.getGroupKey()));
-        
-        // finally copy over the common fields into edoDossierBo from im
+        // finally copy over the common fields into edoDossierBo from im 
         copyCommonFields(edoDossierBo, edoDossier);
-
         return edoDossierBo;
     }
 
@@ -247,8 +281,6 @@ public class EdoDossierBo extends HrKeyedBusinessObject implements EdoDossierCon
         if (bo == null) {
             return null;
         }
-
         return EdoDossier.Builder.create(bo).build();
     }
-    
 }

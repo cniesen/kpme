@@ -58,7 +58,7 @@ public interface HrBusinessObjectContract extends PersistableBusinessObject, Kpm
 	 * 
 	 * @return timestamp of HrBusinessObject
 	 */
-	public Timestamp getTimestamp();
+	public Date getTimestamp();
 	
 	
 	
