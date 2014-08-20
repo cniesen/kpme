@@ -13,7 +13,8 @@ class ClockTimeentryObject < DataFactory
                    :doc_id,
                    :wait_time,
                    :clock_in_work_sts,
-                   :clock_out_work_sts
+                   :clock_out_work_sts,
+                   :clock_action
 
 
 
@@ -22,7 +23,8 @@ class ClockTimeentryObject < DataFactory
  def initialize (browser,opts={})
    @browser = browser
    defaults ={
-       wait_time: 120
+       wait_time: 120,
+       clock_action: "both"
    }
    set_options(defaults.merge(opts))
  end
@@ -32,16 +34,9 @@ class ClockTimeentryObject < DataFactory
 
    on ClockPage do |page|
 
-     @assignment_name=page.assignment_name.text
+     @assignment_name = page.assignment_name.text
      @initial_work_sts = page.work_status.text
-     #@initial_time = Time.new.strftime('%a, %B %d %Y %H:%M:%S %p, %Z')
-     page.clock_in.click
-     @clock_in_work_sts = page.work_status.text
-     sleep(@wait_time)
-     page.clock_out.click
-     @clock_out_work_sts = page.work_status.text
-
-
+     clock_entry(@clock_action)
 
    end
 
@@ -55,6 +50,38 @@ class ClockTimeentryObject < DataFactory
    end
 
  end
+
+  def clock_entry(action)
+    #puts entry
+
+    on ClockPage do |page|
+
+      case action
+        when "both"
+          page.clock_in.click
+          @clock_in_work_sts = page.work_status.text
+          sleep(@wait_time)
+          page.clock_out.click
+          @clock_out_work_sts = page.work_status.text
+        when "clock_out"
+          sleep(@wait_time)
+          page.clock_out.click
+          @clock_out_work_sts = page.work_status.text
+        when "clock_in"
+          page.clock_in.click
+          @clock_in_work_sts = page.work_status.text
+          sleep(@wait_time)
+      end
+
+     end
+  end
+
+
+  def click_missedpunch
+    on ClockPage do |page|
+    page.missed_punch.click
+    end
+  end
 
 
 end
