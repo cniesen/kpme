@@ -96,7 +96,7 @@
 			        <bean parent="Uif-InputField" p:propertyName="task" >
 						<property name="quickfinder">
 			  	          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
-			                    p:fieldConversions="workArea:workArea,task:task" p:lookupParameters="workArea:workArea"/>
+			                    p:fieldConversions="workArea:workArea,task:task" p:lookupParameters="workArea:workArea,effectiveDate:effectiveDate:effectiveDate:relativeEffectiveDate"/>
 			            </property>        
 			        </bean>
 			       	<bean parent="Uif-InputField" p:propertyName="primaryAssign" p:defaultValue="false" />
