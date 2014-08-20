@@ -1,8 +1,8 @@
 class ClockPage < BasePage
 
   action(:timedetail_tab) { |b| b.li(id: 'timeDetail').link(text: 'Time Detail').click }
-  element(:clock_in) { |b| b.input(id: 'clock-button') }
-  element(:clock_out) { |b| b.input(id: 'clock-button',value: 'Clock Out') }
+  element(:clock_in) { |b| b.input(id: 'clock-button-actualuser',value: 'Clock In') }
+  element(:clock_out) { |b| b.input(id: 'clock-button-actualuser',value: 'Clock Out') }
   element(:work_status) { |b| b.div(id: 'clock').tr(index: 2) }
   element(:assignment_name)  { |b| b.span(id: 'assignment-value') }
   element(:current_time) { |b| b.div(id: 'clock').div(class: 'jClock') }
