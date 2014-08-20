@@ -248,8 +248,8 @@ public class MissedPunchDocumentRule extends TransactionalDocumentRuleBase {
 	            timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
 		        List<TimeBlock> tbList = timesheetDocument.getTimeBlocks();
 		        for(TimeBlock tb : tbList) {
-                    if ( !(StringUtils.equals(tb.getClockLogBeginId(), missedPunch.getTkClockLogId()))
-                            &&  !(StringUtils.equals(tb.getClockLogEndId(), missedPunch.getTkClockLogId())) )
+                    if ( (missedPunch.getTkMissedPunchId() == null ) || ( !(StringUtils.equals(tb.getClockLogBeginId(), missedPunch.getTkClockLogId()))
+                            &&  !(StringUtils.equals(tb.getClockLogEndId(), missedPunch.getTkClockLogId())) ) )
                     {
                         String earnCode = tb.getEarnCode();
                         EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(earnCode, timesheetDocument.getAsOfDate());
