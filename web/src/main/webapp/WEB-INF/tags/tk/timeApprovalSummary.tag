@@ -40,12 +40,8 @@
 	                        <c:forEach items="${timeApprovalSummary.timeSummaryHeader}" var="hour">
 	                        	<c:if test="${weekHours[hour.key] != null and not empty weekHours[hour.key]}">
 	                        		<c:choose>
-	                        			<c:when test="${clockLog[hour.key] != null and not empty clockLog[hour.key] and clockLog[hour.key]}">
-	                        			<c:choose>
-	                        				<c:when test="${fn:contains(clockStatusMessage, 'Clocked in')}">
-	                        					<td style='background-color:#F08080'>${weekHours[hour.key]}</td>
-	                        				</c:when>
-	                        			</c:choose>
+	                        			<c:when test="${clockLog[hour.key] != null and not empty clockLog[hour.key] and clockLog[hour.key] and fn:contains(clockStatusMessage, 'Clocked in')}">
+	                        				<td style='background-color:#F08080'>${weekHours[hour.key]}</td>
 	                        			</c:when>
 	                        			<c:otherwise>
 	                        				<td>${weekHours[hour.key]}</td>
