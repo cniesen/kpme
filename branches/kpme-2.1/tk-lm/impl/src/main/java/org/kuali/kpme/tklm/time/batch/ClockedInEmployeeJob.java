@@ -32,6 +32,7 @@ import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.config.property.ConfigContext;
@@ -120,10 +121,18 @@ public class ClockedInEmployeeJob extends BatchJob {
                                 } */
                                 } else if (jobAction.equals("CLOCK_OUT")) {
                                     //Clock User Out
-                                    ClockLog clockOut = TkServiceLocator.getClockLogService().processClockLog(principalId, timesheetDocumentHeader.getDocumentId(), currentDate, assignment, calendarEntry, TKUtils.getIPNumber(),
-                                            currentDate.toLocalDate(), "CO", true, batchJobPrincipalId);
 
-                                    TkServiceLocator.getClockLogService().saveClockLog(clockOut);
+                                    ClockLog clockOut = null;
+                                    try {
+                                        clockOut = TkServiceLocator.getClockLogService().processClockLog(principalId, timesheetDocumentHeader.getDocumentId(), currentDate, assignment, calendarEntry, TKUtils.getIPNumber(),
+                                                currentDate.toLocalDate(), "CO", true, batchJobPrincipalId);
+
+                                        TkServiceLocator.getClockLogService().saveClockLog(clockOut);
+                                    }
+                                    catch (InvalidClockLogException e)
+                                    {
+                                        throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+                                    }
 
                                     // Notify User
                                     String employeeSubject = "You have been clocked out of " + assignment.getAssignmentDescription();
