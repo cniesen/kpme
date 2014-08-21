@@ -55,6 +55,8 @@ public interface AssignmentDao {
 	 * @return
 	 */
 	public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate asOfDate);
+	
+	public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate beginDate, LocalDate endDate);
 
     public List<AssignmentBo> getActiveAssignmentsInWorkAreas(List<Long> workAreas, LocalDate asOfDate);
 

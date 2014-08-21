@@ -589,6 +589,7 @@
         </property>
         <property name="items">
             <list>
+            	<bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
                 <bean parent="Uif-InputField" p:propertyName="principalId"/>
                 <bean parent="Uif-InputField" p:propertyName="name" p:label="Principal Name"/>
                 <bean parent="Uif-InputField" p:propertyName="jobNumber"/>
