@@ -17,18 +17,15 @@ package org.kuali.kpme.tklm.time.rules.overtime.weekly;
 
 import com.google.common.collect.ImmutableMap;
 import java.math.BigDecimal;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
+
 import org.kuali.kpme.core.earncode.EarnCodeBo;
 import org.kuali.kpme.core.earncode.group.EarnCodeGroupBo;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.rules.overtime.weekly.WeeklyOvertimeRuleContract;
 import org.kuali.kpme.tklm.time.rules.TkRule;
 import org.kuali.rice.krad.data.jpa.PortableSequenceGenerator;
+import org.kuali.rice.krad.data.jpa.converters.BooleanYNConverter;
 
 @Entity
 @Table(name = "TK_WEEKLY_OVERTIME_RL_T")
@@ -53,6 +50,13 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
     @Column(name = "CONVERT_TO_ERNCD", length = 15)
     private String convertToEarnCode;
 
+    @Column(name = "APPLY_TO_ERN_GROUP", length = 10)
+    private String applyToEarnGroup;
+
+    @Convert(converter=BooleanYNConverter.class)
+    @Column(name = "OVERRIDE_WORKAREA_DEFAULT", length = 1)
+    private boolean overrideWorkAreaDefaultOvertime;
+
     @Column(name = "STEP")
     private BigDecimal step;
 
@@ -70,6 +74,9 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
 
     @Transient
     private EarnCodeGroupBo convertFromEarnGroupObj;
+
+    @Transient
+    private EarnCodeGroupBo applyToEarnGroupObj;
 
     @Transient
     private EarnCodeBo convertToEarnCodeObj;
@@ -132,16 +139,23 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
         return ovtEarnCode;
     }
 
-    public void setOvtEarnCode(boolean ovtEarnCode) {
-        this.ovtEarnCode = ovtEarnCode;
+	@Override
+	public void setId(String id) {
+		setTkWeeklyOvertimeRuleId(id);
+	}
+
+    @Override
+    public String getApplyToEarnGroup() {
+        return applyToEarnGroup;
     }
 
-    public EarnCodeGroupBo getMaxHoursEarnGroupObj() {
-        return maxHoursEarnGroupObj;
+    @Override
+    public String getUniqueKey() {
+        return convertFromEarnGroup + "_" + maxHoursEarnGroup;
     }
 
-    public void setMaxHoursEarnGroupObj(EarnCodeGroupBo maxHoursEarnGroupObj) {
-        this.maxHoursEarnGroupObj = maxHoursEarnGroupObj;
+    public void setApplyToEarnGroup(String applyToEarnGroup) {
+        this.applyToEarnGroup = applyToEarnGroup;
     }
 
     public EarnCodeGroupBo getConvertFromEarnGroupObj() {
@@ -152,6 +166,32 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
         this.convertFromEarnGroupObj = convertFromEarnGroupObj;
     }
 
+    public EarnCodeGroupBo getApplyToEarnGroupObj() {
+        return applyToEarnGroupObj;
+    }
+
+    public void setApplyToEarnGroupObj(EarnCodeGroupBo applyToEarnGroupObj) {
+        this.applyToEarnGroupObj = applyToEarnGroupObj;
+    }
+
+    public boolean isOverrideWorkAreaDefaultOvertime() {
+        return overrideWorkAreaDefaultOvertime;
+    }
+
+    public void setOverrideWorkAreaDefaultOvertime(boolean overrideWorkAreaDefaultOvertime) {
+        this.overrideWorkAreaDefaultOvertime = overrideWorkAreaDefaultOvertime;
+    }
+
+    @Override
+    public EarnCodeGroupBo getMaxHoursEarnGroupObj() {
+        return maxHoursEarnGroupObj;
+    }
+
+    public void setMaxHoursEarnGroupObj(EarnCodeGroupBo maxHoursEarnGroupObj) {
+        this.maxHoursEarnGroupObj = maxHoursEarnGroupObj;
+    }
+
+    @Override
     public EarnCodeBo getConvertToEarnCodeObj() {
         return convertToEarnCodeObj;
     }
@@ -160,6 +200,7 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
         this.convertToEarnCodeObj = convertToEarnCodeObj;
     }
 
+    @Override
     public Long getTkWeeklyOvertimeRuleGroupId() {
         return tkWeeklyOvertimeRuleGroupId;
     }
@@ -169,17 +210,8 @@ public class WeeklyOvertimeRule extends TkRule implements WeeklyOvertimeRuleCont
     }
 
     @Override
-    public String getUniqueKey() {
-        return convertFromEarnGroup + "_" + maxHoursEarnGroup;
-    }
-
-    @Override
     public String getId() {
         return getTkWeeklyOvertimeRuleId();
     }
 
-    @Override
-    public void setId(String id) {
-        setTkWeeklyOvertimeRuleId(id);
-    }
 }
