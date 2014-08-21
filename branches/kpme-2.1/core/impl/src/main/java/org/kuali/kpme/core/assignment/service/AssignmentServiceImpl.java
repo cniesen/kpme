@@ -249,6 +249,17 @@ public class AssignmentServiceImpl implements AssignmentService {
         }
         return assigns;
     }
+    
+    @Override
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate beginDate, LocalDate endDate) {
+        List<AssignmentBo> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea, beginDate,endDate);
+        List<Assignment> assigns = new ArrayList<Assignment>(assignments.size());
+        for (AssignmentBo assignment : assignments) {
+            assigns.add(AssignmentBo.to(populateAssignment(assignment, beginDate)));
+        }
+        
+        return assigns;
+    }
 
     @Override
     public List<String> getPrincipalIdsInActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate) {

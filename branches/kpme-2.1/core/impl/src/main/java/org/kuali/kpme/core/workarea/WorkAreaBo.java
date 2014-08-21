@@ -15,9 +15,13 @@
  */
 package org.kuali.kpme.core.workarea;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.persistence.Transient;
+
+import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.api.workarea.WorkAreaContract;
@@ -33,10 +37,8 @@ import org.kuali.kpme.core.task.TaskBo;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
-import javax.persistence.Transient;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 //public class WorkAreaBo extends HrBusinessObject implements WorkAreaContract {
 public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContract {
@@ -294,7 +296,8 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     public List<AssignmentBo> getWorkAreaMembers() {
     	workAreaMembers =  new ArrayList<>();
     	if(workArea != null && getEffectiveLocalDate() != null) {
-    		List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea, this.getEffectiveLocalDate());
+    		LocalDate endDate = new LocalDate();
+    		List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea, this.getEffectiveLocalDate(),endDate);
     		for (Assignment assignment : workAreaAssignments) {
     			workAreaMembers.add(AssignmentBo.from(assignment));
             }

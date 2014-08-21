@@ -62,6 +62,8 @@ public interface AssignmentService {
 	 */
     @Cacheable(value= AssignmentContract.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
+    
+	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate beginDate, LocalDate endDate);
 
     @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getPrincipalIdsInActiveAssigmentsForWorkArea}' + 'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
     public List<String> getPrincipalIdsInActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
