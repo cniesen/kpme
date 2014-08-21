@@ -29,6 +29,7 @@ import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.common.BatchJobService;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.quartz.JobDataMap;
@@ -108,8 +109,17 @@ public class EndPayPeriodJob extends BatchJob {
 	    if (timesheetDocumentHeader != null) {
 	        AssignmentDescriptionKey assignmentKey = new AssignmentDescriptionKey(openClockLog.getGroupKeyCode(), openClockLog.getJobNumber(), openClockLog.getWorkArea(), openClockLog.getTask());
             Assignment assignment = HrServiceLocator.getAssignmentService().getAssignment(principalId, assignmentKey, coLogDateTime.toLocalDate());
-	        ClockLog clockOutLog = TkServiceLocator.getClockLogService().processClockLog(principalId, timesheetDocumentHeader.getDocumentId(), coLogDateTime, assignment, calendarEntry, ipAddress,
-	            		endPeriodDateTime.toLocalDate(), TkConstants.CLOCK_OUT, false, batchUserPrincipalId);
+
+
+            ClockLog clockOutLog = null;
+            try {
+                clockOutLog = TkServiceLocator.getClockLogService().processClockLog(principalId, timesheetDocumentHeader.getDocumentId(), coLogDateTime, assignment, calendarEntry, ipAddress,
+                        endPeriodDateTime.toLocalDate(), TkConstants.CLOCK_OUT, false, batchUserPrincipalId);
+            }
+            catch (InvalidClockLogException e)
+            {
+                throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+            }
 
             TimesheetDocumentHeader nextTdh = TkServiceLocator.getTimesheetDocumentHeaderService()
             		.getDocumentHeader(principalId, nextCalendarEntry.getBeginPeriodFullDateTime(), nextCalendarEntry.getEndPeriodFullDateTime());
@@ -117,13 +127,29 @@ public class EndPayPeriodJob extends BatchJob {
             //if(nextTdh != null) {
             //	nextTimeDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(nextTdh.getDocumentId());
             //}
-            ClockLog clockInLog = TkServiceLocator.getClockLogService().processClockLog(principalId, nextTdh == null ? null : nextTdh.getDocumentId(), ciLogDateTime, assignment, nextCalendarEntry, ipAddress,
-            		beginNextPeriodDateTime.toLocalDate(), TkConstants.CLOCK_IN, false, batchUserPrincipalId);
+
+            ClockLog clockInLog = null;
+            try {
+                clockInLog = TkServiceLocator.getClockLogService().processClockLog(principalId, nextTdh == null ? null : nextTdh.getDocumentId(), ciLogDateTime, assignment, nextCalendarEntry, ipAddress,
+                        beginNextPeriodDateTime.toLocalDate(), TkConstants.CLOCK_IN, false, batchUserPrincipalId);
+            }
+            catch (InvalidClockLogException e)
+            {
+                throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+            }
 
             // add 5 seconds to clock in log's timestamp so it will be found as the latest clock action
             ClockLog.Builder ciBuilder = ClockLog.Builder.create(clockInLog);
             ciBuilder.setCreateTime(clockInLog.getCreateTime().plusSeconds(5));
-            clockInLog = TkServiceLocator.getClockLogService().saveClockLog(ciBuilder.build());
+
+            try {
+                clockInLog = TkServiceLocator.getClockLogService().saveClockLog(ciBuilder.build());
+            }
+            catch (InvalidClockLogException e)
+            {
+                throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+            }
+
             LOG.debug("Clock Out log created is  " + clockOutLog.getTkClockLogId() + ",  Clock In Log created is " + clockInLog.getTkClockLogId());
 	    }
         LOG.debug("EndOfPayPeiodJob is finished for user " + principalId + " and clockLog " + openClockLog.getTkClockLogId());
