@@ -18,7 +18,7 @@
                	<ref bean="Edo-Admin-GroupMembers-Page"/>
                	<ref bean="Edo-Admin-StaffAdmin-Page"/>
                	<ref bean="Edo-Admin-AuditGroups-Page"/>
-
+				<ref bean="Edo-Admin-PTReport-Page"/>
       		</list>
       	</property>
 	</bean>
@@ -30,6 +30,7 @@
 		      <bean parent="Uif-NavigationActionLink" p:actionLabel="Manage Group Memebers" p:navigateToPageId="Edo-Admin-GroupMembers-Page"/>
 		      <bean parent="Uif-NavigationActionLink" p:actionLabel="Manage Staff Administrators" p:navigateToPageId="Edo-Admin-StaffAdmin-Page"/>
 		      <bean parent="Uif-NavigationActionLink" p:actionLabel="Audit Missing Groups" p:navigateToPageId="Edo-Admin-AuditGroups-Page"/>
+		      <bean parent="Uif-NavigationActionLink" p:actionLabel="Promotion and Tenure Report" p:navigateToPageId="Edo-Admin-PTReport-Page"/>
 		    </list>
 		</property>
 	</bean>
@@ -59,6 +60,14 @@
 	</bean>
 	
 	<bean id="Edo-Admin-AuditGroups-Page" parent="Uif-Page">
+	     <property name="items">
+	       <list>
+	         <bean parent="Uif-HorizontalBoxSection"/>
+	       </list>
+	     </property>
+	</bean>
+	
+	<bean id="Edo-Admin-PTReport-Page" parent="Uif-Page">
 	     <property name="items">
 	       <list>
 	         <bean parent="Uif-HorizontalBoxSection"/>
