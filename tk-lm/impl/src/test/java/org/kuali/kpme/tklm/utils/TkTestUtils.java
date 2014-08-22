@@ -105,10 +105,10 @@ public class TkTestUtils {
 
 	public static List<TimeBlock> createUniformTimeBlocks(DateTime start, int days, BigDecimal hours, String earnCode, Long jobNumber, Long workArea, Long task, String groupKeyCode, String documentId) {
 		List<TimeBlock> blocks = new ArrayList<TimeBlock>();
-
+        BigDecimal minutes = hours.multiply(BigDecimal.valueOf(60));
 		for (int i=0; i<days; i++) {
 			DateTime ci = start.plusDays(i);
-			DateTime co = ci.plusHours(hours.intValue());
+			DateTime co = ci.plusMinutes(minutes.intValue());
 			TimeBlockBo block = TkTestUtils.createDummyTimeBlock(ci, co, hours, earnCode, jobNumber, workArea);
 			block.setTask(task);
             block.setGroupKeyCode(groupKeyCode);
