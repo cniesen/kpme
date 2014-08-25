@@ -38,6 +38,9 @@ class KpmeCalendarPage < BasePage
   element(:calendar_text_entry)  { |cal_day,b| b.div(text: "#{cal_day}").parent.text }
   action(:actual_time_inquiry) { |b| b.link(id: 'atiLink').click }
 
+  action(:missed_punch_icon) { |cal_day,b| b.td(id: "day_#{cal_day}").div(id: /doNotShow/).span(class: 'icon-missedpunch').click }
+  value(:missed_punch_entry) { |cal_day,b| b.td(id: "day_#{cal_day}").div(id: /doNotShow/).div(id: 'approvals-missedpunch-details').text }
+
 
 
 

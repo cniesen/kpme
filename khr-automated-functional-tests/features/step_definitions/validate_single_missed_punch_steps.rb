@@ -15,7 +15,7 @@ end
 
 
 When(/^I submit a missed punch$/) do
-
+  @wait_sec=1
   in_date=(Time.now-86400).strftime("%m/%d/%Y")
   in_time=(Time.now-72000).strftime("%H:%M")
 
@@ -48,7 +48,7 @@ end
 
 
 And(/^I clock out hours$/) do
-  @timeentry = create ClockTimeentryObject, :wait_time=>1,
+  @timeentry = create ClockTimeentryObject, :wait_time=>@wait_sec,
                                             :clock_action=>"clock_out"
 end
 
@@ -62,6 +62,7 @@ end
 
 
 Given(/^I have a missed punch$/) do
+  @wait_sec=1
   log_in 'iaclock1'
 
   on ClockPage do |page|
@@ -86,7 +87,7 @@ Given(/^I have a missed punch$/) do
                          :punched_time => in_time
   @missed_punch.close
 
-  @timeentry = create ClockTimeentryObject, :wait_time=>1,
+  @timeentry = create ClockTimeentryObject, :wait_time=>@wait_sec,
                       :clock_action=>"clock_out"
 
   @timeentry.click_missedpunch
