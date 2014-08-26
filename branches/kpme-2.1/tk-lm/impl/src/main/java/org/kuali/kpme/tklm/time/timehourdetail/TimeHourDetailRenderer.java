@@ -38,6 +38,8 @@ import java.util.List;
 public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
     private TimeHourDetail timeHourDetail;
     private boolean overtimeEarnCode;
+    private boolean overtimeEarnCodeEditable;
+
 
     public TimeHourDetailRenderer(TimeHourDetail d) {
         this.timeHourDetail = d;
@@ -120,4 +122,14 @@ public class TimeHourDetailRenderer implements TimeHourDetailRendererContract {
 		this.overtimeEarnCode = overtimeEarnCode;
 	}
 
+    public boolean isOvertimeEarnCodeEditable()
+    {
+        TimeBlock timeBlock = TkServiceLocator.getTimeBlockService().getTimeBlock(timeHourDetail.getTkTimeBlockId());
+
+        return TkServiceLocator.getTKPermissionService().canEditOvertimeEarnCode(HrContext.getPrincipalId(), timeBlock, timeHourDetail.getEarnCode());
+    }
+
+    public void setOvertimeEarnCodeEditable(boolean overtimeEarnCodeEditable) {
+        this.overtimeEarnCodeEditable = overtimeEarnCodeEditable;
+    }
 }
