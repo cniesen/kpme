@@ -95,7 +95,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
                 Set<String> maxHoursEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getMaxHoursEarnGroup(), asOfDate);
                 Set<String> convertFromEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getConvertFromEarnGroup(), asOfDate);
                 Set<String> applyToEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getApplyToEarnGroup(), asOfDate);
-
+/*
                 LOG.info(weeklyOvertimeRule);
                 LOG.info("maxHoursEarnCodes =");
                 LOG.info(maxHoursEarnCodes);
@@ -105,6 +105,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 
                 LOG.info("before applying rule");
                 LOG.info(newFlsaWeeks);
+*/
 
                 /***************/
 
@@ -118,16 +119,14 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
                 //flsaWeekParts.get(0).getFlsaDays().get(0).getAppliedTimeBlocks().get(0).
                 BigDecimal thisRuleConvertableHours = getHours(flsaWeekParts, convertFromEarnCodes);
 
+/*
                 LOG.info("maxEarnCodes");
                 LOG.info(maxHoursEarnCodes);
-
-
                 LOG.info("convertTo");
                 LOG.info(weeklyOvertimeRule.getConvertToEarnCode());
-
                 LOG.info("newOverTimeHours");
                 LOG.info(totalNewOvertimeHours);
-
+*/
 
                 BigDecimal thisRuleOvertimeHoursToApply = BigDecimal.ZERO;
 
@@ -140,13 +139,15 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 
                 Boolean ruleRan = false;
                 if ( ( totalNewOvertimeHours.compareTo(BigDecimal.ZERO) > 0) && (thisRuleOvertimeHoursToApply.compareTo(BigDecimal.ZERO) > 0)) {
+
                     BigDecimal afterOvertimeRuleRanHours = applyOvertimeToFlsaWeeks(flsaWeekParts, weeklyOvertimeRule, asOfDate.plusDays((7 - asOfDate.getDayOfWeek())), applyToEarnCodes, thisRuleOvertimeHoursToApply);
                     totalNewOvertimeHours = totalNewOvertimeHours.subtract(thisRuleOvertimeHoursToApply.subtract(afterOvertimeRuleRanHours));
                 }
-                LOG.info("ruleRan: " + (ruleRan ? "Y" : "N"));
             }
+/*
             LOG.info("after applying rule");
             LOG.info(newFlsaWeeks);
+*/
 		}
 
         //convert weeks to list of timeblocks to push back into aggregate
@@ -345,13 +346,18 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
         String overtimeEarnCode = weeklyOvertimeRule.getConvertToEarnCode();
         LOG.info("weekly overtime rule code is " + overtimeEarnCode);
 
+        if (weeklyOvertimeRule.isOverrideWorkAreaDefaultOvertime())
+        {
+            return overtimeEarnCode;
+        }
+
         // KPME-2554 use time block end date instead of passed in asOfDate
         WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(timeBlock.getWorkArea(), timeBlock.getEndDateTime().toLocalDate());
-		if ( StringUtils.isNotBlank(workArea.getDefaultOvertimeEarnCode()) && (!weeklyOvertimeRule.isOverrideWorkAreaDefaultOvertime()) ) {
+		if ( StringUtils.isNotBlank(workArea.getDefaultOvertimeEarnCode()) ) {
 			overtimeEarnCode = workArea.getDefaultOvertimeEarnCode();
             LOG.info("weekly overtime rule code is from work area -- " + overtimeEarnCode);
 		}
-		
+
         if (StringUtils.isNotEmpty(timeBlock.getOvertimePref())) {
         	overtimeEarnCode = timeBlock.getOvertimePref();
             LOG.info("weekly overtime rule code is from timeblock.getOvertimePref -- " + overtimeEarnCode);
