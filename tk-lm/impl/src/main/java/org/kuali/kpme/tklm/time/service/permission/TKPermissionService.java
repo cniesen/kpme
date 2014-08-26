@@ -154,7 +154,9 @@ public interface TKPermissionService {
     boolean canDeleteTimeBlock(String principalId, TimeBlockContract timeBlock);
 
     boolean canEditOvertimeEarnCode(String principalId, TimeBlockContract timeBlock);
-    
+
+    boolean canEditOvertimeEarnCode(String principalId, TimeBlockContract timeBlock, String earnCode);
+
     /**
      * Checks whether the given {@code principalId} has systemAdmin/TimeSystemAdmin/TimeLocationAdmin roles on given {@code aTimeBlock}
      * @param principalId
