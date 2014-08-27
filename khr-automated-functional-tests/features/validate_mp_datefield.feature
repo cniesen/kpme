@@ -4,7 +4,7 @@
     Feature: Validate date and time during missed punch creation
 
       Background:
-        Given I am logged in as iowa hourly timekeeping employee
+        Given I am logged in as iowa hourly timekeeping employee with no work status
 
       Scenario: Verify date and time cannot be blank in missed punch
         When I provide blank date and time in missed punch
