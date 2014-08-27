@@ -1,13 +1,4 @@
-Given(/^I am logged in as iowa hourly timekeeping employee$/) do
-  log_in 'iaclock1'
-end
-
-
 When(/^I provide blank date and time in missed punch$/) do
-
-  on ClockPage do |page|
-    page.missed_punch.click
-  end
 
   @missed_punch = create MissedPunchEntryObject, :assignment_name => "IA-DEPT HR Work Area : $5.00 Rcd 0 IA-DEPT" ,
                          :note => "creating a missed punch clock action on a timeblock",
@@ -33,9 +24,6 @@ end
 
 When(/^I provide a future date in missed punch$/) do
 
-  on ClockPage do |page|
-    page.missed_punch.click
-  end
 
   in_date=(Time.now+86400).strftime("%m/%d/%Y")
   in_time=(Time.now+72000).strftime("%H:%M")
@@ -59,9 +47,6 @@ Then(/^error message on future date appears$/) do
 end
 
 When(/^I provide a past date in missed punch$/) do
-  on ClockPage do |page|
-    page.missed_punch.click
-  end
 
   in_date=(Time.now-172800).strftime("%m/%d/%Y")
 
@@ -77,16 +62,13 @@ end
 Then(/^error message on past date appears$/) do
   on MissedPunchPage do |page|
     page.validation_message.wait_until_present
-    page.validation_message.text.should include "The date/time is not valid. It cannot be before previous clock action, or 24 hours beyond a clock in.\nThe date/time is not valid. A Clock In Action cannot be 24 hours before the current time."
+    page.validation_message.text.should include "The date/time is not valid. A Clock In Action cannot be 24 hours before the current time."
     page.close
   end
 end
 
 
 When(/^I provide a future time in missed punch$/) do
-  on ClockPage do |page|
-    page.missed_punch.click
-  end
 
   in_date=(Time.now).strftime("%m/%d/%Y")
   in_time=(Time.now+7200).strftime("%H:%M")
