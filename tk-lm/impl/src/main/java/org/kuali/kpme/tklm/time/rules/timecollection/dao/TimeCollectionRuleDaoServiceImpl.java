@@ -43,6 +43,10 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
       * Returns valid TimeCollectionRule based on dept, workArea, payType, groupKeyCode, and asOfDate
       * dept, work area, and payType can be wildcardable values
       */
+    
+    /*
+     * KPME 3748: Rule hierarchy changes.
+     */
     @Override
     public TimeCollectionRule getTimeCollectionRule(String dept, Long workArea, String payType, String groupKeyCode, LocalDate asOfDate) {
 
@@ -54,26 +58,40 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         if (timeCollectionRule != null) {
             return timeCollectionRule;
         }
-        //Try with dept wildcarded *
-        timeCollectionRule = getTimeCollectionRuleWildCarded("%", workArea, payType, groupKeyCode, asOfDate);
-        if (timeCollectionRule != null) {
-            return timeCollectionRule;
-        }
-
-        //Try with work area wildcarded
-        timeCollectionRule = getTimeCollectionRuleWildCarded(dept, -1L, payType, groupKeyCode, asOfDate);
-        if (timeCollectionRule != null) {
-            return timeCollectionRule;
-        }
-
+        
         //Try with payType wildcarded
         timeCollectionRule = getTimeCollectionRuleWildCarded(dept, workArea, "%", groupKeyCode, asOfDate);
         if (timeCollectionRule != null) {
             return timeCollectionRule;
         }
-
+        
+        //Try with work area wildcarded
+        timeCollectionRule = getTimeCollectionRuleWildCarded(dept, -1L, payType, groupKeyCode, asOfDate);
+        if (timeCollectionRule != null) {
+            return timeCollectionRule;
+        }
+        
+        //Try with workArea and payType wildcarded
+        timeCollectionRule = getTimeCollectionRuleWildCarded(dept, -1L, "%", groupKeyCode, asOfDate);
+        if (timeCollectionRule != null) {
+            return timeCollectionRule;
+        }
+        
         //Try with dept and workArea wildcarded
         timeCollectionRule = getTimeCollectionRuleWildCarded("%", -1L, payType, groupKeyCode, asOfDate);
+        if (timeCollectionRule != null) {
+            return timeCollectionRule;
+        }
+
+        //Try with dept, workarea & payType wildcarded
+        timeCollectionRule = getTimeCollectionRuleWildCarded("%", -1L, "%", groupKeyCode, asOfDate);
+        if(timeCollectionRule != null){
+        	return timeCollectionRule;
+        }
+
+        /*        
+        //Try with dept wildcarded
+        timeCollectionRule = getTimeCollectionRuleWildCarded("%", workArea, payType, groupKeyCode, asOfDate);
         if (timeCollectionRule != null) {
             return timeCollectionRule;
         }
@@ -82,16 +100,15 @@ public class TimeCollectionRuleDaoServiceImpl extends PlatformAwareDaoBaseOjb im
         timeCollectionRule = getTimeCollectionRuleWildCarded("%", workArea, "%", groupKeyCode, asOfDate);
         if (timeCollectionRule != null) {
             return timeCollectionRule;
+        }*/
+        
+        //Least specific rule Groupkey, dept and workarea wildcarded
+        timeCollectionRule = getTimeCollectionRuleWildCarded("%", -1L, payType, "%", asOfDate);
+        if(timeCollectionRule != null){
+        	return timeCollectionRule;
         }
-
-        //Try with workArea and payType wildcarded
-        timeCollectionRule = getTimeCollectionRuleWildCarded(dept, -1L, "%", groupKeyCode, asOfDate);
-        if (timeCollectionRule != null) {
-            return timeCollectionRule;
-        }
-
-        //Try with everything wildcarded
-        return getTimeCollectionRuleWildCarded("%", -1L, "%", groupKeyCode, asOfDate);
+        
+        else return getTimeCollectionRuleWildCarded("%", -1L, "%", "%", asOfDate); 
     }
 
     private TimeCollectionRule getTimeCollectionRuleWildCarded(String dept, Long workArea, String payType, String groupKeyCode, LocalDate asOfDate) {
