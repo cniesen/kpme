@@ -148,6 +148,6 @@ public interface CalendarEntryService {
     @Cacheable(value = CalendarEntryContract.CACHE_NAME, key = "'principalId=' + #p0 + '|' + 'currentDate=' + #p1")
     public CalendarEntry getCurrentCalendarDatesForLeaveCalendar(String principalId, DateTime currentDate);
 
-    public List<CalendarEntry> getSearchResults(String calendarName, String calendarTypes, LocalDate fromBeginDate, LocalDate toBeginDate, LocalDate fromendDate, LocalDate toEndDate);
+    //public List<CalendarEntry> getSearchResults(String calendarName, String calendarTypes, LocalDate fromBeginDate, LocalDate toBeginDate, LocalDate fromendDate, LocalDate toEndDate);
 
 }

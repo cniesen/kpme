@@ -20,7 +20,7 @@ import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.calendar.CalendarBo;
 import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
 import org.kuali.rice.kns.document.MaintenanceDocument;
-import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
+import org.kuali.rice.krad.maintenance.MaintainableImpl;
 
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  * @author djunk
  * 
  */
-public class CalendarMaintainableImpl extends KualiMaintainableImpl {
+public class CalendarMaintainableImpl extends MaintainableImpl {
 
 	/**
      * 
@@ -40,25 +40,9 @@ public class CalendarMaintainableImpl extends KualiMaintainableImpl {
 	private static final Logger LOG = Logger.getLogger(CalendarMaintainableImpl.class);
 
 	@Override
-	public void addNewLineToCollection(String collectionName) {
-		super.addNewLineToCollection(collectionName);
-	}
-
-	@Override
-	public Map<String, String> populateNewCollectionLines(Map<String, String> fieldValues, MaintenanceDocument maintenanceDocument, String methodToCall) {
-		return super.populateNewCollectionLines(fieldValues, maintenanceDocument, methodToCall);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public void processAfterAddLine(String colName, Class colClass) {
-		super.processAfterAddLine(colName, colClass);
-	}
-
-	@Override
 	public void saveDataObject() {
-		super.saveBusinessObject();
-        CalendarBo calendar = (CalendarBo) this.getBusinessObject();
+		super.saveDataObject();
+        CalendarBo calendar = (CalendarBo) this.getDataObject();
 		LOG.info("Saved pay calendar: " + calendar.getHrCalendarId());
         CacheUtils.flushCache(CalendarBo.CACHE_NAME);
         CacheUtils.flushCache(CalendarEntryBo.CACHE_NAME);

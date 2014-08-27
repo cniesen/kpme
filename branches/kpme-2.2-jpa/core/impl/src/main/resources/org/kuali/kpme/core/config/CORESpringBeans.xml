@@ -173,12 +173,6 @@
 
     <bean id="payTypeDao" class="org.kuali.kpme.core.paytype.dao.PayTypeDaoOjbImpl" parent="platformAwareDao" />
 
-    <bean id="calendarDao" class="org.kuali.kpme.core.calendar.dao.CalendarDaoOjbImpl" parent="platformAwareDao" />
-
-    <bean id="calendarEntryDao" class="org.kuali.kpme.core.calendar.entry.dao.CalendarEntryDaoOjbImpl" parent="platformAwareDao" />
-
-    <!--<bean id="departmentDao" class="org.kuali.kpme.core.department.dao.DepartmentDaoOjbImpl" parent="platformAwareDao" />-->
-
     <bean id="departmentAffiliationDao" class="org.kuali.kpme.core.departmentaffiliation.dao.DepartmentAffiliationDaoObjImpl" parent="platformAwareDao" />
 
     <bean id="earnCodeSecurityDao" class="org.kuali.kpme.core.earncode.security.dao.EarnCodeSecurityDaoOjbImpl" parent="platformAwareDao" />
@@ -317,12 +311,11 @@
     </bean>
 
     <bean id="calendarService" class="org.kuali.kpme.core.calendar.service.CalendarServiceImpl">
-        <property name="calendarDao" ref="calendarDao"/>
+        <property name="dataObjectService" ref="dataObjectService"/>
     </bean>
 
     <bean id="calendarEntryService" class="org.kuali.kpme.core.calendar.entry.service.CalendarEntryServiceImpl">
-        <property name="calendarEntryDao" ref="calendarEntryDao"/>
-        <property name="calendarDao" ref="calendarDao"/>
+        <property name="dataObjectService" ref="dataObjectService"/>
     </bean>
 
     <bean id="hrGroupKeyService" class="org.kuali.kpme.core.groupkey.HrGroupKeyServiceImpl">

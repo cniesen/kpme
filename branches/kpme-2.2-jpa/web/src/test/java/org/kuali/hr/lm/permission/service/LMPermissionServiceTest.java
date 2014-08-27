@@ -41,7 +41,7 @@ public class LMPermissionServiceTest extends KPMEWebTestCase {
 	    //HrContext.setTargetPrincipalId("eric");
 	    PrincipalHRAttributesBo phra = PrincipalHRAttributesBo.from(HrServiceLocator.getPrincipalHRAttributeService().getPrincipalHRAttributes("2"));
 	    phra.setLeaveCalendar("BWS-LM");
-	    phra.setLeaveCalObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup("BWS-LM")));
+	    phra.setLeaveCalObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByName("BWS-LM")));
 	    KRADServiceLocatorWeb.getLegacyDataAdapter().save(phra);
 	}
 

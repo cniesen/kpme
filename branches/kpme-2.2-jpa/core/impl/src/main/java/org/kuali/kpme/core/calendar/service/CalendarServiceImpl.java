@@ -15,36 +15,32 @@
  */
 package org.kuali.kpme.core.calendar.service;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.bo.dao.EffectiveObjectDao;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.service.CalendarService;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.paytype.PayType;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.calendar.dao.CalendarDao;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
+import org.kuali.rice.core.api.criteria.QueryByCriteria;
+import org.kuali.rice.core.api.criteria.QueryResults;
+import org.kuali.rice.krad.data.DataObjectService;
 
 import java.util.List;
 
 public class CalendarServiceImpl implements CalendarService {
 
 	private static final Logger LOG = Logger.getLogger(CalendarServiceImpl.class);
-	private CalendarDao calendarDao;
+	//private CalendarDao calendarDao;
+    private DataObjectService dataObjectService;
 
 
 	@Override
 	public Calendar getCalendar(String hrCalendarId) {
-		return CalendarBo.to(calendarDao.getCalendar(hrCalendarId));
-	}
-
-	@Override
-	public Calendar getCalendarByGroup(String calendarName) {
-		return CalendarBo.to(calendarDao.getCalendarByGroup(calendarName));
+		return CalendarBo.to(dataObjectService.find(CalendarBo.class, hrCalendarId));
 	}
 
 	@Override
@@ -134,17 +130,28 @@ public class CalendarServiceImpl implements CalendarService {
         return pcal;
 	}
 	
-	@Override
+	/*@Override
     public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime) {
         return ModelObjectUtils.transform(calendarDao.getCalendars(calendarName, calendarTypes, flsaBeginDay, flsaBeginTime), CalendarBo.toCalendar);
-    }
+    }*/
 	
 	@Override
 	public Calendar getCalendarByName(String calendarName){
-		return CalendarBo.to(calendarDao.getCalendarByName(calendarName));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.forAttribute("calendarName", calendarName);
+        criteria.setMaxResults(1);
+        QueryResults<CalendarBo> results = dataObjectService.findMatching(CalendarBo.class, criteria.build());
+
+        if (CollectionUtils.isNotEmpty(results.getResults())) {
+            return CalendarBo.to(results.getResults().get(0));
+        }
+        return null;
 	}
 
-    public void setCalendarDao(CalendarDao calendarDao) {
+    /*public void setCalendarDao(CalendarDao calendarDao) {
         this.calendarDao = calendarDao;
+    }*/
+
+    public void setDataObjectService(DataObjectService dataObjectService) {
+        this.dataObjectService = dataObjectService;
     }
 }

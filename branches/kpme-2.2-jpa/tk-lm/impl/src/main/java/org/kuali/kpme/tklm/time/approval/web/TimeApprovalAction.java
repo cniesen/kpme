@@ -81,7 +81,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         } else if (StringUtils.isNotBlank(timeApprovalActionForm.getSelectedPayPeriod())) {
         	calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(timeApprovalActionForm.getSelectedPayPeriod());
         } else {
-            Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
+            Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(timeApprovalActionForm.getSelectedPayCalendarGroup());
             if (calendar != null) {
                 calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
             }
@@ -142,7 +142,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 	public ActionForward selectNewPayCalendar(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		TimeApprovalActionForm timeApprovalActionForm = (TimeApprovalActionForm) form;
 		CalendarEntry calendarEntry = null;
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(timeApprovalActionForm.getSelectedPayCalendarGroup());
+        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(timeApprovalActionForm.getSelectedPayCalendarGroup());
         
 		if (calendar != null) {
             calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());

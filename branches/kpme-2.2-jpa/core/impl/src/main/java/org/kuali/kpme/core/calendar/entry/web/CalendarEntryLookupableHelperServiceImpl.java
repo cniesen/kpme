@@ -35,7 +35,7 @@ public class CalendarEntryLookupableHelperServiceImpl extends KPMELookupableHelp
 
 	private static final long serialVersionUID = 6008647804840459542L;
 
-	@Override
+	/*@Override
 	@SuppressWarnings("rawtypes")
 	public List<HtmlData> getCustomActionUrls(BusinessObject businessObject, List pkNames) {
 		List<HtmlData> customActionUrls = super.getCustomActionUrls(businessObject, pkNames);
@@ -65,5 +65,5 @@ public class CalendarEntryLookupableHelperServiceImpl extends KPMELookupableHelp
 
         return ModelObjectUtils.transform(HrServiceLocator.getCalendarEntryService().getSearchResults(calendarName, calendarTypes, TKUtils.formatDateString(fromBeginPeriodDateTime),
                 TKUtils.formatDateString(toBeginPeriodDateTime), TKUtils.formatDateString(fromEndPeriodDateTime), TKUtils.formatDateString(toEndPeriodDateTime)), CalendarEntryBo.toCalendarEntryBo);
-    }
+    }*/
 }
