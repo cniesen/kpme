@@ -1,8 +1,12 @@
 package org.kuali.rice.krad.data.jpa;
 
+import org.apache.commons.lang.StringUtils;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jjhanso on 8/15/14.

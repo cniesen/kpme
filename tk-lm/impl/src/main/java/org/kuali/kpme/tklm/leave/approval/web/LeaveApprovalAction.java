@@ -77,7 +77,7 @@ public class LeaveApprovalAction extends CalendarApprovalFormAction {
         } else if (StringUtils.isNotBlank(leaveApprovalActionForm.getSelectedPayPeriod())) {
         	calendarEntry =  HrServiceLocator.getCalendarEntryService().getCalendarEntry(leaveApprovalActionForm.getSelectedPayPeriod());
         } else {
-            Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(leaveApprovalActionForm.getSelectedPayCalendarGroup());
+            Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(leaveApprovalActionForm.getSelectedPayCalendarGroup());
             if (calendar != null) {
                 calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());
             }
@@ -136,7 +136,7 @@ public class LeaveApprovalAction extends CalendarApprovalFormAction {
 		LeaveApprovalActionForm leaveApprovalActionForm = (LeaveApprovalActionForm) form;
 		CalendarEntry calendarEntry = null;
         leaveApprovalActionForm.setLeaveApprovalRows(new ArrayList<ApprovalLeaveSummaryRowContract>());
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(leaveApprovalActionForm.getSelectedPayCalendarGroup());
+        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(leaveApprovalActionForm.getSelectedPayCalendarGroup());
         
 		if (calendar != null) {
             calendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(calendar.getHrCalendarId(), LocalDate.now().toDateTimeAtStartOfDay());

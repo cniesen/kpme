@@ -28,7 +28,7 @@ import java.util.Map;
 
 public class CalendarEntryLookupableImpl extends KPMELookupableImpl {
 
-    @Override
+    /*@Override
     protected Collection<?> executeSearch(Map<String, String> searchCriteria, List<String> wildcardAsLiteralSearchCriteria, boolean bounded, Integer searchResultsLimit) {
         String calendarName = searchCriteria.get("calendarName");
         String calendarTypes = searchCriteria.get("calendarTypes");
@@ -39,5 +39,5 @@ public class CalendarEntryLookupableImpl extends KPMELookupableImpl {
 
         return ModelObjectUtils.transform(HrServiceLocator.getCalendarEntryService().getSearchResults(calendarName, calendarTypes, TKUtils.formatDateString(fromBeginPeriodDateTime),
                 TKUtils.formatDateString(toBeginPeriodDateTime), TKUtils.formatDateString(fromEndPeriodDateTime), TKUtils.formatDateString(toEndPeriodDateTime)), CalendarEntryBo.toCalendarEntryBo);
-    }
+    }*/
 }

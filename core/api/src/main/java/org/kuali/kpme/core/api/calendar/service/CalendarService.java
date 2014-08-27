@@ -36,8 +36,8 @@ public interface CalendarService {
 	 * @param calendarName
 	 * @return
 	 */
-    @Cacheable(value= CalendarContract.CACHE_NAME, key="'calendarName=' + #p0")
-	public Calendar getCalendarByGroup(String calendarName);
+    /*@Cacheable(value= CalendarContract.CACHE_NAME, key="'calendarName=' + #p0")
+	public Calendar getCalendarByGroup(String calendarName);*/
 
 	
 	/**
@@ -57,9 +57,10 @@ public interface CalendarService {
      */
     public Calendar getCalendarByPrincipalIdAndDate(String principalId, LocalDate beginDate, LocalDate endDate, boolean findLeaveCal);
 
+    @Cacheable(value= CalendarContract.CACHE_NAME, key="'calendarName=' + #p0")
     public Calendar getCalendarByName(String calendarName);
 
 
-    public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime);
+    //public List<Calendar> getCalendars(String calendarName, String calendarTypes, String flsaBeginDay, String flsaBeginTime);
 
 }

@@ -138,7 +138,7 @@ public class LeaveCalendarServiceImpl implements LeaveCalendarService {
         documentHeader.setDocumentId(workflowDocument.getDocumentId());
         documentHeader.setDocumentStatus(HrConstants.ROUTE_STATUS.INITIATED);
 
-        KRADServiceLocatorWeb.getLegacyDataAdapter().save(documentHeader);
+        documentHeader = KRADServiceLocatorWeb.getLegacyDataAdapter().save(documentHeader);
         
         leaveCalendarDocument = new LeaveCalendarDocument(documentHeader);
         leaveCalendarDocument.setCalendarEntry(calendarEntry);

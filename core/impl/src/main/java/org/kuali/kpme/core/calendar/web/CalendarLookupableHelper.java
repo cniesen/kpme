@@ -54,7 +54,7 @@ public class CalendarLookupableHelper extends KPMELookupableHelperServiceImpl {
 		return customActionUrls;
 	}
 	
-	@Override
+	/*@Override
 	public List<? extends BusinessObject> getSearchResults(Map<String, String> fieldValues) {
 		String calendarName = fieldValues.get("calendarName");
 		String calendarTypes = fieldValues.get("calendarTypes");
@@ -62,6 +62,6 @@ public class CalendarLookupableHelper extends KPMELookupableHelperServiceImpl {
         String flsaBeginTime = fieldValues.get("flsaBeginTime");
 
         return ModelObjectUtils.transform(HrServiceLocator.getCalendarService().getCalendars(calendarName, calendarTypes, flsaBeginDay, flsaBeginTime), CalendarBo.toCalendarBo);
-	}
+	}*/
 
 }

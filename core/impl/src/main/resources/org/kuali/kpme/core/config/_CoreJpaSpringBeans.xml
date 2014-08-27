@@ -39,10 +39,13 @@
     <util:list id="jpaPackagesToScan">
         <value>org.kuali.kpme.core.api.data.jpa</value>
         <value>org.kuali.kpme.core.bo</value>
+
         <value>org.kuali.kpme.core.department</value>
     </util:list>
 
     <util:list id="managedClassNames">
+        <value>org.kuali.kpme.core.calendar.CalendarBo</value>
+        <value>org.kuali.kpme.core.calendar.entry.CalendarEntryBo</value>
         <!-- If you add an entity to this list, please also remember to add it to META-INF/persistence-weaving.xml -->
     </util:list>
 

@@ -15,21 +15,22 @@
  */
 package org.kuali.kpme.core.calendar.entry.web;
 
-import org.kuali.kpme.core.api.calendar.CalendarContract;
+import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kns.maintenance.KualiMaintainableImpl;
+import org.kuali.rice.krad.maintenance.MaintainableImpl;
 
-public class CalendarEntryMaintainableImpl extends KualiMaintainableImpl {
+public class CalendarEntryMaintainableImpl extends MaintainableImpl {
 
 	private static final long serialVersionUID = -5910605947104384549L;
 
 	@Override
 	public void saveDataObject() {
-		CalendarEntryBo calendarEntry = (CalendarEntryBo) super.getBusinessObject();
+		CalendarEntryBo calendarEntry = (CalendarEntryBo) super.getDataObject();
 		
-		CalendarContract calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(calendarEntry.getCalendarName());
+		Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(calendarEntry.getCalendarName());
 		calendarEntry.setHrCalendarId(calendar.getHrCalendarId());
 		
 		super.saveDataObject();

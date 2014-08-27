@@ -18,72 +18,127 @@ package org.kuali.kpme.core.calendar.entry.service;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntryPeriodType;
 import org.kuali.kpme.core.api.calendar.entry.service.CalendarEntryService;
 import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
-import org.kuali.kpme.core.calendar.dao.CalendarDao;
 import org.kuali.kpme.core.calendar.entry.CalendarEntryBo;
-import org.kuali.kpme.core.calendar.entry.dao.CalendarEntryDao;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.rice.core.api.criteria.OrderByField;
+import org.kuali.rice.core.api.criteria.OrderDirection;
+import org.kuali.rice.core.api.criteria.QueryByCriteria;
+import org.kuali.rice.core.api.criteria.QueryResults;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
+import org.kuali.rice.krad.data.DataObjectService;
 import org.kuali.rice.krad.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.List;
+
+import static org.kuali.rice.core.api.criteria.PredicateFactory.*;
 
 public class CalendarEntryServiceImpl implements CalendarEntryService {
 
-    private CalendarEntryDao calendarEntryDao;
-    private CalendarDao calendarDao;
+    //private CalendarEntryDao calendarEntryDao;
+    private DataObjectService dataObjectService;
 
-	public void setCalendarDao(CalendarDao calendarDao) {
-		this.calendarDao = calendarDao;
-	}
-
-    public void setCalendarEntryDao(CalendarEntryDao calendarEntryDao) {
-        this.calendarEntryDao = calendarEntryDao;
-    }
 
     public CalendarEntry getCalendarEntry(String hrCalendarEntryId) {
-
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntry(hrCalendarEntryId));
+        return CalendarEntryBo.to(dataObjectService.find(CalendarEntryBo.class, hrCalendarEntryId));
     }
 
     @Override
     public CalendarEntry getCalendarEntryByIdAndPeriodEndDate(String hrCalendarId, DateTime endPeriodDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntryByIdAndPeriodEndDate(hrCalendarId, endPeriodDate));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+               and(
+                       equal("hrCalendarId", hrCalendarId),
+                       equal("endPeriodDateTime", endPeriodDate)
+               ));
+        return CalendarEntryBo.to(dataObjectService.findUnique(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
     public CalendarEntry getCalendarEntryByCalendarIdAndDateRange(
             String hrCalendarId, DateTime beginDate, DateTime endDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCalendarEntryByCalendarIdAndDateRange(hrCalendarId, beginDate, endDate));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        lessThanOrEqual("beginPeriodDateTime", beginDate.toDate()),
+                        greaterThan("endPeriodDateTime", endDate.toDate())
+                ));
+        return CalendarEntryBo.to(dataObjectService.findUnique(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
     public CalendarEntry getCurrentCalendarEntryByCalendarId(
             String hrCalendarId, DateTime currentDate) {
-        return CalendarEntryBo.to(calendarEntryDao.getCurrentCalendarEntryByCalendarId(hrCalendarId, currentDate));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        lessThanOrEqual("beginPeriodDateTime", currentDate.toDate()),
+                        greaterThan("endPeriodDateTime", currentDate.toDate())
+                ));
+        criteria.setMaxResults(1);
+        return CalendarEntryBo.to(dataObjectService.findUnique(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
     public CalendarEntry getPreviousCalendarEntryByCalendarId(String hrCalendarId, CalendarEntry pce) {
-        return CalendarEntryBo.to(calendarEntryDao.getPreviousCalendarEntryByCalendarId(hrCalendarId, pce));
+        if (pce == null) {
+            return null;
+        }
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        equal("endPeriodDateTime", pce.getBeginPeriodFullDateTime().toDate())
+                        //lessThan("beginPeriodDateTime", pce.getBeginPeriodFullDateTime().toDate())
+                ));
+        criteria.setMaxResults(1);
+
+        //ORDER BY NOT WORKING WITH RICE 2.4.X
+        //List<OrderByField> orderByFields = Collections.singletonList(OrderByField.Builder.create("beginPeriodDateTime", OrderDirection.DESCENDING).build());
+        //criteria.setOrderByFields(orderByFields);
+        return CalendarEntryBo.to(dataObjectService.findUnique(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
     public CalendarEntry getNextCalendarEntryByCalendarId(String hrCalendarId, CalendarEntry pce) {
-        return CalendarEntryBo.to(calendarEntryDao.getNextCalendarEntryByCalendarId(hrCalendarId, pce));
+        if (pce == null) {
+            return null;
+        }
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        equal("beginPeriodDateTime", pce.getEndPeriodFullDateTime().toDate())
+                        //greaterThan("beginPeriodDateTime", pce.getBeginPeriodFullDateTime().toDate())
+                ));
+        criteria.setMaxResults(1);
+        //ORDER BY NOT WORKING WITH RICE 2.4.X
+        //criteria.setOrderByFields(OrderByField.Builder.create("beginPeriodDateTime", OrderDirection.DESCENDING).build());
+        return CalendarEntryBo.to(dataObjectService.findUnique(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
     public List<CalendarEntry> getCurrentCalendarEntriesNeedsScheduled(int thresholdDays, DateTime asOfDate) {
-        return toImmutable(calendarEntryDao.getCurrentCalendarEntryNeedsScheduled(thresholdDays, asOfDate));
+        DateTime windowStart = asOfDate.minusDays(thresholdDays);
+        DateTime windowEnd = asOfDate.plusDays(thresholdDays);
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        greaterThanOrEqual("beginPeriodDateTime", windowStart.toDate()),
+                        lessThanOrEqual("beginPeriodDateTime", windowEnd.toDate())
+                ));
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
 
     @Override
@@ -123,8 +178,8 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
             newEntry.setBatchEmployeeApprovalFullDateTime(plusSemiMonth(calendarEntry.getBatchEmployeeApprovalFullDateTime()));
             newEntry.setBatchSupervisorApprovalFullDateTime(plusSemiMonth(calendarEntry.getBatchSupervisorApprovalFullDateTime()));
         }
-        KRADServiceLocatorWeb.getLegacyDataAdapter().save(newEntry);
-        return getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
+        return CalendarEntryBo.to(dataObjectService.save(newEntry));
+        //return getNextCalendarEntryByCalendarId(calendarEntry.getHrCalendarId(), calendarEntry);
     }
 
     private DateTime plusSemiMonth(DateTime date) {
@@ -160,22 +215,50 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
 
     @Override
     public List<CalendarEntry> getFutureCalendarEntries(String hrCalendarId, DateTime currentDate, int numberOfEntries) {
-        return toImmutable(calendarEntryDao.getFutureCalendarEntries(hrCalendarId, currentDate, numberOfEntries));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        greaterThan("beginPeriodDateTime", currentDate.toDate())
+                ));
+        criteria.setMaxResults(numberOfEntries);
+        criteria.setOrderByFields(OrderByField.Builder.create("beginPeriodDateTime", OrderDirection.ASCENDING).build());
+
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
     
     @Override
     public List<CalendarEntry> getCalendarEntriesEndingBetweenBeginAndEndDate(String hrCalendarId, DateTime beginDate, DateTime endDate) {
-        return toImmutable(calendarEntryDao.getCalendarEntriesEndingBetweenBeginAndEndDate(hrCalendarId, beginDate, endDate));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        greaterThanOrEqual("endPeriodDateTime", beginDate.toDate()),
+                        lessThanOrEqual("endPeriodDateTime", endDate.toDate())
+                ));
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarId(String hrCalendarId) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarId(hrCalendarId));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.forAttribute("hrCalendarId", hrCalendarId);
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarIdAndYear(String hrCalendarId, String year) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarIdAndYear(hrCalendarId, year));
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy");
+        LocalDate currentYear = formatter.parseLocalDate(year);
+        LocalDate nextYear = currentYear.plusYears(1);
+
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                    equal("hrCalendarId", hrCalendarId),
+                    greaterThanOrEqual("endPeriodDateTime", currentYear.toDate()),
+                    lessThan("endPeriodDateTime", nextYear.toDate())
+                ));
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
     
     @Override
@@ -203,14 +286,24 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
     		cutOffTime = futureCalEntry.getEndPeriodFullDateTime();
     	} else {
 	    	CalendarEntry currentCE = getCurrentCalendarEntryByCalendarId(hrCalendarId, LocalDate.now().toDateTimeAtStartOfDay());
-	    	cutOffTime = currentCE.getEndPeriodFullDateTime();    	
+            if (currentCE != null) {
+                cutOffTime = currentCE.getEndPeriodFullDateTime();
+            } else {
+                cutOffTime = LocalDate.now().toDateTimeAtStartOfDay();
+            }
     	}
     	return getAllCalendarEntriesForCalendarIdUpToCutOffTime(hrCalendarId, cutOffTime);
     }
     
     @Override
     public List<CalendarEntry> getAllCalendarEntriesForCalendarIdUpToCutOffTime(String hrCalendarId, DateTime cutOffTime) {
-    	return toImmutable(calendarEntryDao.getAllCalendarEntriesForCalendarIdUpToCutOffTime(hrCalendarId, cutOffTime));
+        QueryByCriteria.Builder criteria = QueryByCriteria.Builder.create();
+        criteria.setPredicates(
+                and(
+                        equal("hrCalendarId", hrCalendarId),
+                        lessThanOrEqual("endPeriodDateTime", cutOffTime.toDate())
+                ));
+        return toImmutable(dataObjectService.findMatching(CalendarEntryBo.class, criteria.build()));
     }
     
     //******** kpme-2396 ********
@@ -243,9 +336,9 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
         	return null;
         }
         if (StringUtils.equalsIgnoreCase(calendarType, HrConstants.PAY_CALENDAR_TYPE)) {
-        	calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(principalCalendar.getPayCalendar());
+        	calendar = HrServiceLocator.getCalendarService().getCalendarByName(principalCalendar.getPayCalendar());
         } else if (StringUtils.equalsIgnoreCase(calendarType, HrConstants.LEAVE_CALENDAR_TYPE)) {
-        	calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(principalCalendar.getLeaveCalendar());
+        	calendar = HrServiceLocator.getCalendarService().getCalendarByName(principalCalendar.getLeaveCalendar());
         }
         
         if (calendar == null) {
@@ -275,14 +368,23 @@ public class CalendarEntryServiceImpl implements CalendarEntryService {
 		return pcd;
 	}
 
-    @Override
+    /*@Override
     public List<CalendarEntry> getSearchResults(String calendarName, String calendarTypes, LocalDate fromBeginDate, LocalDate toBeginDate, LocalDate fromendDate, LocalDate toEndDate) {
         return toImmutable(calendarEntryDao.getSearchResults(calendarName, calendarTypes, fromBeginDate, toBeginDate, fromendDate, toEndDate));
-    }
+    }*/
 
-    private List<CalendarEntry> toImmutable(List<CalendarEntryBo> bos) {
+    protected List<CalendarEntry> toImmutable(List<CalendarEntryBo> bos) {
         return ModelObjectUtils.transform(bos, CalendarEntryBo.toCalendarEntry);
     }
 
+    protected List<CalendarEntry> toImmutable(QueryResults<CalendarEntryBo> results) {
+        if (results.getResults().isEmpty()) {
+            return Collections.emptyList();
+        }
+        return ModelObjectUtils.transform(results.getResults(), CalendarEntryBo.toCalendarEntry);
+    }
 
+    public void setDataObjectService(DataObjectService dataObjectService) {
+        this.dataObjectService = dataObjectService;
+    }
 }

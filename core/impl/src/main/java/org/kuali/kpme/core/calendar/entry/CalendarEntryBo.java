@@ -113,7 +113,7 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
 
     public String getHrCalendarId() {
         if (StringUtils.isEmpty(hrCalendarId)) {
-            calendarObj = CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName()));
+            calendarObj = CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByName(this.getCalendarName()));
             if (calendarObj != null) {
                 this.setHrCalendarId(calendarObj.getHrCalendarId());
             }
@@ -405,7 +405,7 @@ public class CalendarEntryBo extends PersistableBusinessObjectBase implements Ca
 
     public CalendarBo getCalendarObj() {
         if (calendarObj == null && StringUtils.isNotBlank(this.getCalendarName())) {
-            this.setCalendarObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(this.getCalendarName())));
+            this.setCalendarObj(CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByName(this.getCalendarName())));
         }
         return calendarObj;
     }

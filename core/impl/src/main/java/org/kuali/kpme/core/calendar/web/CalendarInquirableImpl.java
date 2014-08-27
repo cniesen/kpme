@@ -35,7 +35,7 @@ public class CalendarInquirableImpl extends KualiInquirableImpl {
             return CalendarBo.from(HrServiceLocator.getCalendarService().getCalendar((String) fieldValues.get("hrCalendarId")));
         } else if (fieldValues.containsKey("calendarName")) {
         	String calName = (String) fieldValues.get("calendarName");
-            return CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByGroup(calName));
+            return CalendarBo.from(HrServiceLocator.getCalendarService().getCalendarByName(calName));
         } else {
             return (CalendarBo) super.getBusinessObject(fieldValues);
         }

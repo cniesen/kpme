@@ -49,8 +49,8 @@ public class PrincipalHRAttributesServiceImpl implements PrincipalHRAttributesSe
             return null;
         }
         PrincipalHRAttributes.Builder builder = PrincipalHRAttributes.Builder.create(pc);
-        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getPayCalendar());
-        Calendar leaveCalendar = HrServiceLocator.getCalendarService().getCalendarByGroup(pc.getLeaveCalendar());
+        Calendar calendar = HrServiceLocator.getCalendarService().getCalendarByName(pc.getPayCalendar());
+        Calendar leaveCalendar = HrServiceLocator.getCalendarService().getCalendarByName(pc.getLeaveCalendar());
 	    if (calendar != null) {
             builder.setCalendar(Calendar.Builder.create(calendar));
         }

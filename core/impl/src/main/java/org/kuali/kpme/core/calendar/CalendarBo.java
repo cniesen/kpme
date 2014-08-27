@@ -76,7 +76,7 @@ public class CalendarBo extends PersistableBusinessObjectBase implements Calenda
     @Column(name = "FLSA_BEGIN_DAY", length = 9)
     private String flsaBeginDay;
 
-    @Temporal(TemporalType.TIME)
+    //@Temporal(TemporalType.TIME)
     @Column(name = "FLSA_BEGIN_TIME")
     private Time flsaBeginTime;
 
