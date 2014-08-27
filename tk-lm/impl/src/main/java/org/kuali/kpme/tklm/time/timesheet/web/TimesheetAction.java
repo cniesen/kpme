@@ -178,7 +178,11 @@ public class TimesheetAction extends CalendarFormAction {
         
         List<TimesheetDocumentHeader> timesheetDocumentHeaders = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeadersForPrincipalId(HrContext.getTargetPrincipalId());
         for (TimesheetDocumentHeader timesheetDocumentHeader : timesheetDocumentHeaders) {
-        	calendarEntries.add(HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(timesheetDocumentHeader.getPrincipalId(), timesheetDocumentHeader.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE));
+            CalendarEntry ca = HrServiceLocator.getCalendarEntryService().getCalendarDatesByPayEndDate(timesheetDocumentHeader.getPrincipalId(), timesheetDocumentHeader.getEndDateTime(), HrConstants.PAY_CALENDAR_TYPE);
+            if (ca != null)
+            {
+                calendarEntries.add(ca);
+            }
         }
         
         return calendarEntries;
