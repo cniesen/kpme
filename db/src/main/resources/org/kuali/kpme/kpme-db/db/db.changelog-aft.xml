@@ -19,11 +19,10 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
-                      
-    <include file="org/kuali/kpme/kpme-db/db/db.changelog-main.xml" />
-    <include file="org/kuali/kpme/kpme-db/db/db.changelog-test.xml" />
-    <include file="org/kuali/kpme/kpme-db/db/db.changelog-staging.xml" />
-    <include file="org/kuali/kpme/kpme-db/db/db.changelog-testdrive.xml" />
-    <include file="org/kuali/kpme/kpme-db/db/db.changelog-aft.xml" />
 
+    <changeSet id="1" author="jjhanso" context="kpme-client-aft">
+        <loadData tableName="TK_GRACE_PERIOD_RL_T" file="org/kuali/kpme/kpme-db/db/aft/tk_grace_period_rl_t.csv">
+            <column name="EFFDT" header="EFFDT" type="DATE" />
+        </loadData>
+    </changeSet>
 </databaseChangeLog>
