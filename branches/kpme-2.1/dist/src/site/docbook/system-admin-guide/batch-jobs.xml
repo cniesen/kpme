@@ -166,39 +166,40 @@
                         Closes all clock logs belonging to any timesheets associated with this calendar entry.  The clock logs are closed at the end of the pay
                         period and then reopened immediately after (in the next calendar entry) so that clock log times are only calculated for this calendar 
                         entry.  The run time of this job is determined by batchEndPayPeriodDateTime of the calendar entry. That field is typically set to
-                        the end time of this calendar entry.
+                        the end time of this calendar entry.  The Initiate Job should be ran prior to the End Pay Period Job being run. 
                     </para>
                 </listitem>
                 <listitem>
                     <para>Missed Punch Approval Job</para>
                     <para>
-                        Approves all of the missed punch documents attached to any timesheets associated with this calendar entry.  This job is typically run 
-                        right after the end date of this calendar entry.
+                        Approves all of the missed punch documents attached to any timesheets associated with this calendar entry.  This job can be manually run
+                        at anytime during the pay period but typically this job should be ran right after the end date of this calendar entry.  
                     </para>
                 </listitem>
                 <listitem>
                     <para>Employee Approval Job</para>
                     <para>
-                        Submits any timesheets or leave calendars associated with this calendar entry to the supervisors.  This job is typically run a couple 
-                        days after the end date of this calendar entry.
+                        Submits any timesheets associated with this calendar entry to the supervisors.  They job should be schedule to run at a time after
+                        the last day of pay period calendar.   
                     </para>
                 </listitem>
                 <listitem>
                     <para>Supervisor Approval Job</para>
                     <para>
-                        Approves any timesheets or leave calendars associated with this calendar entry if they have been sent to the supervisors for approval.  
-                        If there are any non-approved missed punch documents belonging to these timesheets or if any of these timesheets or leave calendars are 
-                        not in a state to be approved, then the job is rescheduled until these are done. This job is typically run a couple days after the Employee
-                        Approval Job.
+                        Approves any timesheets associated with this calendar entry if they have been sent to the supervisors for approval.  
+                        Prior to this job being run any initiated or saved timesheets will be routed (Employee Approval Job) for supervisor approval.
+                        Missed Punch Approval Job is ran prior to the auto approval of the work area supervisors.  
+                        This job is typically run a couple days after the Employee Approval Job.
+                        If the timesheet does not require a Payroll Processor approval then these timesheets will be final.  
                     </para>
                 </listitem>
                  <listitem>
                     <para>Payroll Approval Job</para>
                     <para>
-                        Approves any timesheets or leave calendars associated with this calendar entry if they have been sent to the Payroll Processors for approval.  
+                        Approves any timesheets associated with this calendar entry if they have been sent to the Payroll Processors for approval.  
                         If there are any non-approved missed punch documents belonging to these timesheets or if any of these timesheets or leave calendars are 
                         not in a state to be approved, then the job is rescheduled until these are done. A FYI notification of the automated approve will be sent
-                        to the payroll processors. This job is typically run a couple days after the Employee Approval Job.
+                        to the payroll processors. This job is typically run a couple days after the Supervisor Approval Job.
                     </para>
                 </listitem>
             </itemizedlist>
