@@ -186,9 +186,20 @@
                             Default Overtime Earn Code (see Work Area Maintenance Document).</entry>
                     </row>
                     <row>
+                        <entry>Apply to Earn Group</entry>
+                        <entry>Defines the earn codes of the timeblocks that can have the Convert to Earn Code overtime hours applied.</entry>
+                    </row>
+                    <row>
+                        <entry>Override Work Area's Default Overtime</entry>
+                        <entry>If this flag is checked, the Convert to Earn Code designated for the step cannot be changed. 
+                            If a Work Area has default overtime earn code defined, a designated Work Area role (employee, 
+                            approver, payroll processor) will have the ability to change that overtime earn code.
+                        </entry>
+                    </row>
+                    <row>
                         <entry>Step</entry>
                         <entry>This enables the definition of multiple steps in the hours conversion
-                            for overtime.</entry>
+                            for overtime.  Max Hours Earn Group and Max Hours should be the same for all weekly overtime steps.</entry>
                     </row>
                     <row>
                         <entry>Max Hours</entry>
@@ -225,8 +236,19 @@
                 </para>
             </step>
             <step>
-                <para>Enter the step number. You can have multiple steps for a weekly overtime rule
-                    and use different earn codes for each step.</para>
+                <para>Another Earn Code Group will be need to be created that includes all the timeblock earn codes that
+                are the "Convert to Earn Code" should appear on.  Earn Codes used for leave should not be included in this
+                Earn Code Group.</para>
+            </step>
+            <step>
+                <para>This flag will override 
+                ability to allows certain work areas to change the overtime earn code.</para>
+            </step>
+            <step>
+                <para>Enter the step number. Multiple steps maybe used to allow specific earn codes to be applied towards overtime.
+                Example:  Overtime for Leave Hours maybe be converted towards overtime in first step with a second step being 
+                qualifying Regular earn code.  Different Convert to Earn Codes can be used to track the steps that earn overtime using 
+                the flag that would prohibit allowing specific work areas from changing the earn code.  </para>
             </step>
             <step>
                 <para>Enter the maximum number of hours you want to allow for overtime calculation
