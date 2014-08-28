@@ -15,9 +15,6 @@
  */
 package org.kuali.kpme.pm.position.web;
 
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
-import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -26,7 +23,6 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.api.department.Department;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrDataObjectMaintainableImpl;
-import org.kuali.kpme.core.bo.derived.HrBusinessObjectDerived;
 import org.kuali.kpme.core.departmentaffiliation.DepartmentAffiliationBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
@@ -45,12 +41,21 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.bo.DocumentHeader;
 import org.kuali.rice.krad.bo.Note;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.service.DataDictionaryService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.view.View;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
+
+import de.danielbechler.diff.Configuration;
+import de.danielbechler.diff.ObjectDiffer;
+import de.danielbechler.diff.ObjectDifferFactory;
+import de.danielbechler.diff.node.CollectionNode;
+import de.danielbechler.diff.node.Node;
+import de.danielbechler.diff.path.PropertyPath;
+import de.danielbechler.diff.visitor.Visit;
 
 public class PositionMaintainableServiceImpl extends HrDataObjectMaintainableImpl {
 
@@ -319,6 +324,9 @@ public class PositionMaintainableServiceImpl extends HrDataObjectMaintainableImp
     //KPME-2624 added logic to save current logged in user to UserPrincipal id for collections
     @Override
     public void prepareForSave() {
+    	
+    	super.prepareForSave();
+    	
     	PositionBo position = (PositionBo)this.getDataObject();
         boolean hasPrimaryDepartment = false;
         for (PositionDepartmentBo positionDepartment : position.getDepartmentList()) {
@@ -326,8 +334,6 @@ public class PositionMaintainableServiceImpl extends HrDataObjectMaintainableImp
                 hasPrimaryDepartment=true;
                 positionDepartment.setDepartment(position.getPrimaryDepartment());
                 positionDepartment.setGroupKeyCode(position.getGroupKeyCode());
-//                positionDepartment.setLocation(position.getLocation());
-//                positionDepartment.setInstitution(position.getInstitution());
                 positionDepartment.setDeptAffl(HrServiceLocator.getDepartmentAffiliationService().getPrimaryAffiliation().getDeptAfflType());
             }
         }
@@ -337,99 +343,225 @@ public class PositionMaintainableServiceImpl extends HrDataObjectMaintainableImp
             PositionDepartmentBo primaryDepartment = new PositionDepartmentBo();
             primaryDepartment.setDepartment(position.getPrimaryDepartment());
             primaryDepartment.setGroupKeyCode(position.getGroupKeyCode());
-            // primaryDepartment.setLocation(position.getLocation());
-            // primaryDepartment.setInstitution(position.getInstitution());
             primaryDepartment.setDeptAffl(HrServiceLocator.getDepartmentAffiliationService().getPrimaryAffiliation().getDeptAfflType());
             position.getDepartmentList().add(primaryDepartment);
         }
 
         //add note if enroute change occurs
-            try {
-                MaintenanceDocument maintenanceDocument = (MaintenanceDocument) KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(this.getDocumentNumber());
-                if (maintenanceDocument != null && maintenanceDocument.getNewMaintainableObject().getDataObject() instanceof PositionBo) {
-                    PositionBo previousPosition = (PositionBo) maintenanceDocument.getNewMaintainableObject().getDataObject();
-                    recordEnrouteChanges(previousPosition,maintenanceDocument.getNoteTarget().getObjectId());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+        try {
+        	
+            MaintenanceDocument maintenanceDocument = (MaintenanceDocument) KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderId(this.getDocumentNumber());
+            if (maintenanceDocument != null && maintenanceDocument.getNewMaintainableObject().getDataObject() instanceof PositionBo) {
+            	PositionBo previousPosition = (PositionBo) maintenanceDocument.getNewMaintainableObject().getDataObject();
+            	recordEnrouteChanges(previousPosition, maintenanceDocument.getNoteTarget().getObjectId());
             }
+        }
+        catch (Exception e) {
+                e.printStackTrace();
+        }
 
-        super.prepareForSave();
+       
 
 
     }
 
-    private void recordEnrouteChanges(PositionBo previousPosition, String noteTarget) {
-        //List of fields on the position class not to compare
-        List<String> noCompareFields = new ArrayList<String>();
-        noCompareFields.add("process");
-        noCompareFields.add("requiredQualList");
+    
+    class ChangedBusinessObjectVisitor implements Node.Visitor {
+    	
+    	private final Object current;
+    	private final Object previous;
+    	
+    	private final String newline = "\n";    	
+    	private String terminalElementMessages = "";  	
+		private String collectionMessages = "";
 
-        List<Note> noteList = new ArrayList<Note>();
+		private DataDictionaryService dataDictionaryService;
+    	
+		
+    	public ChangedBusinessObjectVisitor(Object current, Object previous, DataDictionaryService dataDictionaryService) {
+    		this.current = current;
+    		this.previous = previous;
+    		this.dataDictionaryService = dataDictionaryService;
+    	}
+    	
+    	private String getDisplayLabel(Node node) {
+    		String displayLabel = "";
+        	if(node.getParentNode() != null && node.getPathElement() != null) {
+        		if(!node.isCollectionNode()) {
+        			displayLabel = dataDictionaryService.getAttributeLabel(node.getParentNode().getType(), node.getPathElement().toString());
+        		}
+        		else {
+        			displayLabel = dataDictionaryService.getCollectionLabel(node.getParentNode().getType(), node.getPathElement().toString());
+        		}
+        		
+        		if(displayLabel != null) {
+        			displayLabel = displayLabel.toUpperCase();
+        		}
+        		else {
+        			//this method will never return null
+        			displayLabel = "";
+        		}
+        	}
+        	return displayLabel;
+    	}
+    	
+		public void accept(final Node node, final Visit visit) {
+			if(node.hasChanges()) {
+				// if its a changed collection node, don't go deeper, instead check if the collection is really changed
+				// and if so create an appropriate message
+				if(node.isCollectionNode()) {
+					visit.dontGoDeeper();
+					if(hasCollectionBeenActuallyChanged(node.toCollectionNode(), this.current, this.previous)) { 
+	        			String displayLabel = getDisplayLabel(node);
+	    	        	if(StringUtils.isEmpty(displayLabel)) {
+	    	        		displayLabel = node.getPathElement().toString();
+	    	        	}
+	    	        	// create collection message with the complete path display label
+						displayLabel = getPrefixPathLabel(node) + displayLabel; 
+	    	        	addToCollectionMessages(displayLabel);
+	        		}
+				}
+				else {
+					// we only create messages for changed terminal nodes that have display labels throughout their path 
+					String displayLabel = getDisplayLabel(node);
+					if(StringUtils.isEmpty(displayLabel) && !(node.isRootNode())) {
+						visit.dontGoDeeper();
+					}					
+					else {
+						if(node.getChildren().isEmpty()) {
+							// create terminal element message with the complete path display label
+							displayLabel = getPrefixPathLabel(node) + displayLabel;
+							addToTerminalElementMessages(displayLabel, node);
+						}
+					}
+				}
+			}
+			else {
+				visit.dontGoDeeper();
+			}
+		}    
+
+		protected void addToTerminalElementMessages(String displayLabel, Node changedNode) {
+			terminalElementMessages += " " + displayLabel;
+        	if(changedNode.isRemoved()) {
+        		terminalElementMessages += " was DELETED it had value:<< " + changedNode.canonicalGet(previous) + " >>"; 
+        	}
+        	else if(changedNode.isAdded()) {
+        		terminalElementMessages += " was ADDED with value:<< " + changedNode.canonicalGet(current) + " >>"; 
+        	}
+        	else if(changedNode.isChanged()) {
+        		terminalElementMessages += " was CHANGED from value:<< " + changedNode.canonicalGet(previous) + " >> to value:<< " + changedNode.canonicalGet(current) + " >>"; 
+        	}
+        	terminalElementMessages += newline;
+		}
+		
+		protected void addToCollectionMessages(String displayLabel) {
+			collectionMessages += " " + displayLabel + " (collection) was CHANGED " + newline;
+		}
+		
+		public boolean hasMessages() {
+			return StringUtils.isNotBlank(terminalElementMessages) || StringUtils.isNotBlank(collectionMessages); 
+		}		
+
+		public String getPrefixPathLabel(Node node) {
+			String retVal = "";
+			Node parentNode = node.getParentNode();
+			if(parentNode != null) {
+				while(parentNode.getParentNode() != null) {
+					retVal = getDisplayLabel(parentNode) + "->" + retVal;
+					parentNode = parentNode.getParentNode();
+				}
+			}
+			return retVal;
+		}
+		
+		private boolean hasCollectionBeenActuallyChanged(CollectionNode collectionNode, Object current,	Object previous) {
+			// get both collection objects
+	    	Collection<?> currentCollection = null;
+	    	Collection<?> previousCollection = null;
+	    	
+	    	if(collectionNode.canonicalGet(current) instanceof Collection) {
+	    		currentCollection = (Collection<?>) collectionNode.canonicalGet(current);
+	    	}
+	    	if(collectionNode.canonicalGet(previous) instanceof Collection) {
+	    		previousCollection = (Collection<?>) collectionNode.canonicalGet(previous);
+	    	}
+	    	
+	    	if( (previousCollection == null) && (currentCollection == null) ){
+	    		return false;
+	    	}
+	    	if( ((previousCollection == null) && (currentCollection != null)) || ((previousCollection != null) && (currentCollection == null)) ) { 
+	    		return true;
+	    	}
+	    	// at this point both collections are non-null
+	    	// check sizes are not same -- optimization
+	    	if(previousCollection.size() != currentCollection.size()) {
+	    		return true;
+	    	}
+	    	for(Object previousCollectionItem: previousCollection) {
+	    		boolean foundItemMatch = false;
+	    		for(Object currentCollectionItem: currentCollection) {
+	    			ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance();
+	    	        final Node root = objectDiffer.compare(currentCollectionItem, previousCollectionItem);
+	    	        if(!root.hasChanges()) {
+	    	        	foundItemMatch = true;
+	    	        	break;
+	    	        }
+	    		}
+	    		if(!foundItemMatch) {
+	    			return true;
+	    		}
+	    	}
+	    	return false;
+		}
+
+		public String getCollectionMessages() {
+			return collectionMessages;
+		}
+    	
+    	public String getTerminalElementMessages() {
+			return terminalElementMessages;
+		}
+    }
+    
+    
+    
+    
+    
+    
+    private void recordEnrouteChanges(PositionBo previousPosition, String noteTarget) {
         PositionBo currentPosition = (PositionBo) this.getDataObject();
 
-        EntityNamePrincipalName approver = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(currentPosition.getUserPrincipalId());
-
-        //compare all fields on position
-        try {
-            for (PropertyDescriptor pd : Introspector.getBeanInfo(PositionBo.class).getPropertyDescriptors()) {
-
-                if (pd.getReadMethod() != null && !noCompareFields.contains(pd.getName())) {
-                    try {
-                        Object currentObject = pd.getReadMethod().invoke(currentPosition);
-                        Object previousObject = pd.getReadMethod().invoke(previousPosition);
-                            if (currentObject instanceof Collection) {
-                                if (!compareCollections(currentObject,previousObject)) {
-                                    String noteText = approver.getPrincipalName() + " changed " + pd.getDisplayName() + " from '" + previousObject.toString() + "' to '" + currentObject.toString() + "'";
-                                    noteList.add(createNote(noteText,noteTarget,currentPosition.getUserPrincipalId()));
-                                }
-                            } else {
-                                if (!(currentObject == null ? previousObject == null : currentObject.equals(previousObject))){
-                                        String noteText = approver.getPrincipalName() + " changed " + pd.getDisplayName() + " from '" + previousObject.toString() + "' to '" + currentObject.toString() + "'";
-                                        noteList.add(createNote(noteText,noteTarget,currentPosition.getUserPrincipalId()));
-                                }
-                            }
-
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } catch (IntrospectionException e) {
-            e.printStackTrace();
+        //ignore certain fields on position
+        final Configuration configuration = new Configuration();
+        configuration.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"));
+        configuration.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"));
+        configuration.withoutProperty(PropertyPath.buildWith("effectiveLocalDate"));
+        configuration.withoutProperty(PropertyPath.buildWith("userPrincipalId"));
+        
+        configuration.withoutProperty(PropertyPath.buildWith("groupKey"));
+        configuration.withoutProperty(PropertyPath.buildWith("locationObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("location"));        
+        configuration.withoutProperty(PropertyPath.buildWith("institutionObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("institution"));
+        
+        
+        ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance(configuration);
+        final Node root = objectDiffer.compare(currentPosition, previousPosition);
+        final ChangedBusinessObjectVisitor visitor = new ChangedBusinessObjectVisitor(currentPosition, previousPosition, KRADServiceLocatorWeb.getDataDictionaryService());
+        root.visit(visitor);
+        
+        // finally save the note text associated with the approver if the visitor has any messages
+        if(visitor.hasMessages()) {
+        	EntityNamePrincipalName approver = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(currentPosition.getUserPrincipalId());
+	        String newline = "\n";
+	        String noteText = approver.getPrincipalName() + " modified the following fields:" + newline;
+	        noteText += visitor.getTerminalElementMessages();
+	        noteText += visitor.getCollectionMessages();
+	        // finally create and save the note containing the above note text
+	        KRADServiceLocator.getNoteService().save(createNote(noteText, noteTarget, currentPosition.getUserPrincipalId()));
         }
-
-        KRADServiceLocator.getNoteService().saveNoteList(noteList);
-    }
-
-    @SuppressWarnings("rawtypes")
-	public boolean compareCollections(Object coll1, Object coll2) {
-        if (coll1 == coll2)
-            return true;
-
-        if (coll1 instanceof List && coll2 instanceof List) {
-            ListIterator list1 = ((List) coll1).listIterator();
-            ListIterator list2 = ((List) coll2).listIterator();
-            while (list1.hasNext() && list2.hasNext()) {
-                Object o1 = list1.next();
-                Object o2 = list2.next();
-
-                if (o1 instanceof HrBusinessObjectDerived && o1 instanceof HrBusinessObjectDerived) {
-                    HrBusinessObjectDerived hrObj1 = (HrBusinessObjectDerived) o1;
-                    HrBusinessObjectDerived hrObj2 = (HrBusinessObjectDerived) o2;
-                    if (!(hrObj1 == null ? hrObj2 == null : hrObj1.isEquivalentTo(hrObj2)))
-                        return false;
-                } else {
-                    if (!(o1 == null ? o2 == null : o1.equals(o2)))
-                        return false;
-                }
-            }
-
-            return !(list1.hasNext() || list2.hasNext());
-        } else {
-            //need to add logic if other collection types are added to position
-            return coll1.equals(coll2);
-        }
+        
     }
 
     private Note createNote(String noteText, String noteTarget, String principalId) {

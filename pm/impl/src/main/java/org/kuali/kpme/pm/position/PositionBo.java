@@ -33,7 +33,6 @@ import org.kuali.kpme.pm.api.classification.duty.ClassificationDutyContract;
 import org.kuali.kpme.pm.api.classification.flag.ClassificationFlagContract;
 import org.kuali.kpme.pm.api.position.Position;
 import org.kuali.kpme.pm.api.position.PositionContract;
-import org.kuali.kpme.pm.api.position.funding.PositionFunding;
 import org.kuali.kpme.pm.classification.qual.ClassificationQualificationBo;
 import org.kuali.kpme.pm.position.funding.PositionFundingBo;
 import org.kuali.kpme.pm.positiondepartment.PositionDepartmentBo;
@@ -44,6 +43,8 @@ import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.core.api.util.Truth;
 
 import com.google.common.collect.ImmutableList;
+
+import de.danielbechler.diff.annotation.ObjectDiffProperty;
 
 public class PositionBo extends PositionBaseBo implements PositionContract {
 	private static final long serialVersionUID = 1L;
@@ -526,6 +527,7 @@ public class PositionBo extends PositionBaseBo implements PositionContract {
         return Truth.strToBooleanIgnoreCase(status, Boolean.FALSE);
 	}
 
+	@ObjectDiffProperty(ignore = true)
 	@Override
 	public DateTime getExpectedEndDateTime() {
 		DateTime retVal = null;

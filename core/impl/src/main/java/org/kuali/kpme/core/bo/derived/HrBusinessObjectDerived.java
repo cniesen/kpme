@@ -37,7 +37,7 @@ public abstract class HrBusinessObjectDerived<O extends HrBusinessObject> extend
 	public abstract String getOwnerId();
 	public abstract void setOwnerId(String id);
 	
-	
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public LocalDate getEffectiveLocalDateOfOwner() {
 		LocalDate retVal = null;
@@ -47,6 +47,8 @@ public abstract class HrBusinessObjectDerived<O extends HrBusinessObject> extend
 		return retVal;
 	}
 
+	
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public Date getEffectiveDateOfOwner() {
 		Date retVal = null;
@@ -56,11 +58,13 @@ public abstract class HrBusinessObjectDerived<O extends HrBusinessObject> extend
 		return retVal;
 	}
 
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public boolean isEquivalentTo(HrBusinessObjectDerivedContract obj) {
 		return this.equals(obj);
 	}
 
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public O getOwner() {
 		if((this.owner == null) && (StringUtils.isNotBlank(this.getOwnerId()))) {
