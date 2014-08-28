@@ -40,8 +40,13 @@
 	        </li>
 	        
 	        <li>
-	            <portal:portalLink displayTitle="true" title="Review Layer Defination"															
+	            <portal:portalLink displayTitle="true" title="Review Layer Definition"															
 	                   url="${ConfigProperties.application.url}/kr-krad/lookup?methodToCall=start&dataObjectClassName=org.kuali.kpme.edo.reviewlayerdef.EdoReviewLayerDefinitionBo&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
+	        </li>
+	        
+	        <li>
+	            <portal:portalLink displayTitle="true" title="Group Definition"															
+	                   url="${ConfigProperties.application.url}/kr-krad/lookup?methodToCall=start&dataObjectClassName=org.kuali.kpme.edo.group.EdoGroupDefinitionBo&returnLocation=${ConfigProperties.application.url}/portal.do&showMaintenanceLinks=true&hideReturnLink=true&docFormKey=88888888&active=Y" />
 	        </li>
 		</ul>
 		

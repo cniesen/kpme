@@ -78,7 +78,7 @@
 		</property>
 		<property name="optionsFinder">
 			<bean
-				class="org.kuali.kpme.edo.vote.type.EdoVoteTypeValuesFinder" /><!--  p:addBlankOption="true" -->
+				class="org.kuali.kpme.edo.util.EdoVoteTypeValuesFinder" /><!--  p:addBlankOption="true" -->
 		</property>
         <property name="name" value="voteType" />
         <property name="label" value="Vote Type" />

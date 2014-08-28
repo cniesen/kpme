@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="http://www.springframework.org/schema/beans         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+
+	<bean id="EdoGroupDefinition" parent="EdoGroupDefinition-parentBean" />
+	<bean id="EdoGroupDefinition-parentBean" abstract="true" parent="KPMEHrBusinessObjectParent">
+		<property name="businessObjectClass" value="org.kuali.kpme.edo.group.EdoGroupDefinitionBo" />
+		<property name="objectLabel" value="Group Definition" />
+		<property name="attributes">
+			<list merge="true">
+				<ref bean="EdoGroupDefinition-edoGroupId" />
+				<ref bean="EdoGroupDefinition-edoWorkflowId" />
+				<ref bean="EdoGroupDefinition-workflowLevel" />
+				<ref bean="EdoGroupDefinition-dossierType" />
+				<ref bean="EdoGroupDefinition-workflowType" />
+				<ref bean="EdoGroupDefinition-kimTypeName" />
+				<ref bean="EdoGroupDefinition-kimRoleName" />
+			</list>
+		</property>
+	</bean>
+
+    <!-- Attribute Definitions -->
+
+	<bean id="EdoGroupDefinition-edoGroupId" parent="EdoGroupDefinition-edoGroupId-parentBean" />
+	<bean id="EdoGroupDefinition-edoGroupId-parentBean" abstract="true" parent="AttributeDefinition">
+	    <property name="shortLabel" value="id"/>
+	    <property name="maxLength" value="60" />
+	    <property name="controlField">
+	      <bean parent="Uif-TextControl" p:size="60"/>
+	    </property>
+		<property name="name" value="edoGroupId" />
+		<property name="label" value="Group Definition Id" />
+	</bean>
+	
+	<bean id="EdoGroupDefinition-edoWorkflowId" parent="EdoGroupDefinition-edoWorkflowId-parentBean"/>
+    <bean id="EdoGroupDefinition-edoWorkflowId-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Workflow Id" />
+        <property name="maxLength" value="60" />
+        <property name="controlField">
+			<bean parent="Uif-TextControl" p:size="60" />
+		</property>
+		<property name="control">
+            <bean parent="TextControlDefinition" p:size="60"/>
+        </property>
+        <property name="name" value="edoWorkflowId" />
+        <property name="label" value="Workflow Id" />
+    </bean>
+	
+    <bean id="EdoGroupDefinition-workflowLevel" parent="EdoGroupDefinition-workflowLevel-parentBean"/>
+    <bean id="EdoGroupDefinition-workflowLevel-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Workflow Level"/>
+        <property name="maxLength" value="25"/>
+        <property name="controlField">
+			<bean parent="Uif-TextControl" p:size="25" />
+		</property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="25"/>
+        </property>
+        <property name="validCharactersConstraint">
+			<bean parent="AnyCharacterPatternConstraint" >
+				<property name="allowWhitespace" value="false" />
+            </bean>
+		</property>
+        <property name="name" value="workflowLevel"/>
+        <property name="label" value="Workflow Level"/>
+    </bean>
+
+    <bean id="EdoGroupDefinition-dossierType" parent="EdoGroupDefinition-dossierType-parentBean" />
+    <bean id="EdoGroupDefinition-dossierType-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="Dossier Type" />
+        <property name="maxLength" value="2" />
+        <property name="validCharactersConstraint">
+			<bean parent="AnyCharacterPatternConstraint" >
+				<property name="allowWhitespace" value="false" />
+            </bean>
+		</property>
+       	<property name="controlField">
+			<bean parent="Uif-TextControl" p:size="2" />
+		</property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="2"/>
+        </property>
+        <property name="name" value="dossierType" />
+        <property name="label" value="Dossier Type" />
+    </bean>
+
+    <bean id="EdoGroupDefinition-workflowType" parent="EdoGroupDefinition-workflowType-parentBean"/>
+    <bean id="EdoGroupDefinition-workflowType-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Workflow Type"/>
+        <property name="maxLength" value="125"/>
+        <property name="validCharactersConstraint">
+			<bean parent="AnyCharacterPatternConstraint" >
+				<property name="allowWhitespace" value="true" />
+            </bean>
+		</property>
+        <property name="controlField">
+			<bean parent="Uif-TextControl" p:size="25" />
+		</property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="25" />
+        </property>
+        <property name="name" value="workflowType"/>
+        <property name="label" value="Workflow Type"/>
+    </bean>
+
+    <bean id="EdoGroupDefinition-kimTypeName" parent="EdoGroupDefinition-kimTypeName-parentBean"/>
+    <bean id="EdoGroupDefinition-kimTypeName-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Kim Type Name" />
+        <property name="maxLength" value="25" />
+        <property name="validCharactersConstraint">
+			<bean parent="AnyCharacterPatternConstraint" />
+		</property>
+        <property name="controlField">
+			<bean parent="Uif-TextControl" p:size="25" />
+		</property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="25" />
+        </property>
+        <property name="name" value="kimTypeName" />
+        <property name="label" value="Kim Type Name" />
+    </bean>
+    
+    <bean id="EdoGroupDefinition-kimRoleName" parent="EdoGroupDefinition-kimRoleName-parentBean"/>
+    <bean id="EdoGroupDefinition-kimRoleName-parentBean" abstract="true" parent="AttributeDefinition">
+        <property name="shortLabel" value="Kim Role Name" />
+        <property name="maxLength" value="25" />
+        <property name="validCharactersConstraint">
+			<bean parent="AnyCharacterPatternConstraint" />
+		</property>
+        <property name="controlField">
+			<bean parent="Uif-TextControl" p:size="25" />
+		</property>
+        <property name="control">
+            <bean parent="TextControlDefinition" p:size="25" />
+        </property>
+        <property name="name" value="kimRoleName" />
+        <property name="label" value="Kim Role Name" />
+    </bean>
+	
+	<!--***************************************************************************
+                                   KRAD Views
+        ***************************************************************************-->
+
+	<!-- Lookup view -->
+	<bean id="EdoGroupDefinition-LookupView" parent="KPMEUif-EffectiveDateBOLookupView">
+		<property name="headerText" value="Group Definition Lookup" />
+		<property name="dataObjectClassName" value="org.kuali.kpme.edo.group.EdoGroupDefinitionBo" />
+		<property name="criteriaFields">
+			<list merge="true">
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="edoWorkflowId" >
+					<property name="quickfinder">
+               			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.edo.workflow.EdoWorkflowDefinitionBo"
+                     		p:fieldConversions="edoWorkflowId:edoWorkflowId" />
+            		</property>
+            	</bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="dossierType" >
+		        	<property name="quickfinder">
+		        		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.edo.dossier.type.EdoDossierTypeBo"
+		              		p:fieldConversions="dossierTypeCode:dossierTypeCode" />
+		     		</property>
+		        </bean>
+				<bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
+			</list>
+		</property>
+		<property name="resultFields">
+			<list merge="true">
+				<bean parent="Uif-DataField" p:propertyName="edoWorkflowId" />
+				<bean parent="Uif-DataField" p:propertyName="workflowLevel" />
+				<bean parent="Uif-DataField" p:propertyName="dossierType" />
+				<bean parent="Uif-DataField" p:propertyName="workflowType" />
+				<bean parent="Uif-DataField" p:propertyName="kimTypeName" />
+				<bean parent="Uif-DataField" p:propertyName="kimRoleName" />
+				<bean parent="Uif-DataField" p:propertyName="active"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Inquiry View -->
+	<bean id="EdoGroupDefinition-InquiryView" parent="Uif-InquiryView">
+		<property name="headerText" value="Group Definition Inquiry" />
+		<property name="dataObjectClassName" value="org.kuali.kpme.edo.group.EdoGroupDefinitionBo" />
+		<property name="singlePageView" value="true" />
+		<property name="title" value="Group Definition Inquiry" />
+		<property name="items">
+			<list>
+				<bean parent="Uif-Disclosure-GridSection">
+					<property name="layoutManager.numberOfColumns" value="2" />
+					<property name="items">
+						<list merge="true">
+							<bean parent="Uif-DataField" p:propertyName="edoWorkflowId" />
+							<bean parent="Uif-DataField" p:propertyName="workflowLevel" />
+							<bean parent="Uif-DataField" p:propertyName="dossierType" />
+							<bean parent="Uif-DataField" p:propertyName="workflowType" />
+							<bean parent="Uif-DataField" p:propertyName="kimTypeName" />
+							<bean parent="Uif-DataField" p:propertyName="kimRoleName" />
+							<bean parent="Uif-DataField" p:propertyName="active" />
+							<bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Maintenance View -->
+	<bean id="EdoGroupDefinition-MaintenanceView" parent="EdoGroupDefinition-MaintenanceView-parentBean" />
+	<bean id="EdoGroupDefinition-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+		<property name="headerText" value="Group Definition Maintenance" />
+		<property name="dataObjectClassName" value="org.kuali.kpme.edo.group.EdoGroupDefinitionBo" />
+		<property name="items">
+			<list>
+				<bean parent="Uif-MaintenanceGridSection">
+					<property name="items">
+						<list merge="true">
+							<bean parent="Uif-InputField" p:propertyName="edoWorkflowId" p:required="true" >
+			            		<property name="quickfinder">
+			               			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.edo.workflow.EdoWorkflowDefinitionBo"
+			                     		p:fieldConversions="edoWorkflowId:edoWorkflowId" />
+			            		</property>
+			            	</bean>
+							<bean parent="Uif-InputField" p:propertyName="workflowLevel" p:required="true" />
+							<bean parent="Uif-InputField" p:propertyName="dossierType" p:required="true" >
+			            		<property name="quickfinder">
+			               			<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.edo.dossier.type.EdoDossierTypeBo"
+			                     		p:fieldConversions="dossierTypeCode:dossierTypeCode" />
+			            		</property>
+			            	</bean>
+							<bean parent="Uif-InputField" p:propertyName="workflowType"	p:required="true" />
+							<bean parent="Uif-InputField" p:propertyName="kimTypeName" p:required="true" />
+							<bean parent="Uif-InputField" p:propertyName="kimRoleName" p:required="true" />
+							<bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true" />
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+  
+</beans>

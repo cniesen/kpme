@@ -1,11 +1,8 @@
 package org.kuali.kpme.edo.group;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
-import org.kuali.kpme.edo.api.checklist.EdoChecklist;
 import org.kuali.kpme.edo.api.group.EdoGroupDefinition;
 import org.kuali.kpme.edo.api.group.EdoGroupDefinitionContract;
-import org.kuali.kpme.edo.checklist.EdoChecklistBo;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 
 import com.google.common.collect.ImmutableMap;
@@ -36,6 +33,26 @@ public class EdoGroupDefinitionBo extends HrBusinessObject implements EdoGroupDe
     private String kimTypeName;
     private String kimRoleName;
 
+    @Override
+	public boolean isActive() {
+		return super.isActive();
+	}
+
+	@Override
+	public void setActive(boolean active) {
+		super.setActive(active);
+	}
+
+	@Override
+	public String getObjectId() {
+		return super.getObjectId();
+	}
+
+	@Override
+	public Long getVersionNumber() {
+		return super.getVersionNumber();
+	}
+	
     @Override
 	public String getId() {
 		return  getEdoGroupId();
@@ -120,19 +137,19 @@ public class EdoGroupDefinitionBo extends HrBusinessObject implements EdoGroupDe
         if (im == null) {
             return null;
         }
-        EdoGroupDefinitionBo eclt = new EdoGroupDefinitionBo();
-        eclt.setEdoGroupId(im.getEdoGroupId());
-        eclt.setEdoWorkflowId(im.getEdoWorkflowId());
-        eclt.setWorkflowLevel(im.getWorkflowLevel());
-        eclt.setDossierType(im.getDossierType());
-        eclt.setWorkflowType(im.getWorkflowType());
-        eclt.setKimTypeName(im.getKimTypeName());        
-        eclt.setKimRoleName(im.getKimRoleName());
+        EdoGroupDefinitionBo egd = new EdoGroupDefinitionBo();
+        egd.setEdoGroupId(im.getEdoGroupId());
+        egd.setEdoWorkflowId(im.getEdoWorkflowId());
+        egd.setWorkflowLevel(im.getWorkflowLevel());
+        egd.setDossierType(im.getDossierType());
+        egd.setWorkflowType(im.getWorkflowType());
+        egd.setKimTypeName(im.getKimTypeName());        
+        egd.setKimRoleName(im.getKimRoleName());
 
-        // finally copy over the common fields into phra from im
-        copyCommonFields(eclt, im);
+        // finally copy over the common fields into egd from im
+        copyCommonFields(egd, im);
      
-        return eclt;
+        return egd;
     } 
     
     public static EdoGroupDefinition to(EdoGroupDefinitionBo bo) {
