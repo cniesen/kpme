@@ -18,6 +18,8 @@ package org.kuali.kpme.pm.position;
 import org.kuali.kpme.core.bo.derived.HrBusinessObjectDerived;
 import org.kuali.kpme.pm.api.position.PositionDerivedContract;
 
+import de.danielbechler.diff.annotation.ObjectDiffProperty;
+
 public abstract class PositionDerived extends HrBusinessObjectDerived<PositionBo> implements PositionDerivedContract {
 
 	private static final long serialVersionUID = -4500160649209884023L;
@@ -33,6 +35,7 @@ public abstract class PositionDerived extends HrBusinessObjectDerived<PositionBo
 		this.hrPositionId = hrPositionId;
 	}
 	
+	@ObjectDiffProperty(ignore = true)
 	@Override
 	public PositionBo getOwner() {
 		return super.getOwner();

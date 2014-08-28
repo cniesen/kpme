@@ -39,6 +39,7 @@ public abstract class HrKeyedBusinessObjectDerived<O extends HrBusinessObject> e
 		this.groupKeyCode = groupKeyCode;
 	}
 
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public HrGroupKeyBo getGroupKey() {
 		
@@ -62,6 +63,7 @@ public abstract class HrKeyedBusinessObjectDerived<O extends HrBusinessObject> e
 	/**
 	 * @return the locationObj
 	 */
+	// @ObjectDiffProperty(ignore = true)
 	public LocationBo getLocationObj() {
 		HrGroupKeyBo grpKey = getGroupKey(); 
 		if(grpKey != null) {
@@ -74,6 +76,7 @@ public abstract class HrKeyedBusinessObjectDerived<O extends HrBusinessObject> e
 	/**
 	 * @return the institutionObj
 	 */
+	// @ObjectDiffProperty(ignore = true)
 	public InstitutionBo getInstitutionObj() {
 		HrGroupKeyBo grpKey = getGroupKey(); 
 		if(grpKey != null) {
@@ -85,6 +88,7 @@ public abstract class HrKeyedBusinessObjectDerived<O extends HrBusinessObject> e
 	/**
 	 * @return the institutionCode
 	 */
+	// @ObjectDiffProperty(ignore = true)
 	public String getInstitution() {
 		HrGroupKeyBo grpKey = getGroupKey(); 
 		if(grpKey != null) {
@@ -97,6 +101,7 @@ public abstract class HrKeyedBusinessObjectDerived<O extends HrBusinessObject> e
 	/**
 	 * @return the locationId
 	 */
+	// @ObjectDiffProperty(ignore = true)
 	public String getLocation() {
 		
 		HrGroupKeyBo grpKey = getGroupKey(); 
