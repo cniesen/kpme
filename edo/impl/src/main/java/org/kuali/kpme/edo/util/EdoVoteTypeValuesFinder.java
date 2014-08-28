@@ -1,4 +1,4 @@
-package org.kuali.kpme.edo.vote.type;
+package org.kuali.kpme.edo.util;
 
 import org.kuali.kpme.edo.util.EdoConstants;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
