@@ -28,11 +28,13 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.api.util.KpmeUtils;
+import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.common.LMConstants;
 import org.kuali.kpme.tklm.time.missedpunch.web.MissedPunchForm;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.core.api.config.property.ConfigContext;
@@ -40,6 +42,7 @@ import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
 import org.kuali.rice.krad.uif.view.ViewModel;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase {
 
@@ -64,23 +67,26 @@ public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase
 			if (StringUtils.isNotBlank(timesheetDocumentId)) {
 				TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
 
-				Map<LocalDate, List<Assignment>> assignmentMap = timesheetDocument.getAssignmentMap();
-				List<Assignment> assignments = assignmentMap.get(mpDate);
+                List<Assignment> dayAssignments = KpmeUtils.getUniqueAssignments(HrServiceLocator.getAssignmentService().getAssignmentHistoryBetweenDays(timesheetDocument.getPrincipalId(), mpDate, mpDate));
+                List<Assignment> assignments = new ArrayList<Assignment>();
+                if (CollectionUtils.isNotEmpty(dayAssignments)) {
+                    for (Assignment assignment : dayAssignments) {
 
-                Interval calEntryInterval = new Interval(timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime(), timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime());
-                if (CollectionUtils.isEmpty(assignments)
-                    && !calEntryInterval.contains(mpDate.toDateTimeAtStartOfDay())) {
-                    assignments = KpmeUtils.getUniqueAssignments(HrServiceLocator.getAssignmentService().getAssignmentHistoryBetweenDays(timesheetDocument.getPrincipalId(), mpDate, mpDate));
+                        TimeCollectionRule tcr = null;
+                        if (assignment.getJob() != null) {
+                            tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), mpDate);
+                        }
+                        boolean isSynchronous = tcr == null || tcr.isClockUserFl();
+                        if (isSynchronous) {
+                            assignments.add(assignment);
+                        }
+                    }
                 }
 
                 if (CollectionUtils.isEmpty(assignments)) {
                     assignments = Collections.emptyList();
                 }
 				
-//				if (assignments.size() > 1) {
-//					labels.add(new ConcreteKeyValue("", ""));
-//				}
-
 				if(missedPunchForm.getIpAddress()!=null){
 					String ipAddress = TKUtils.getIPAddressFromRequest(missedPunchForm.getIpAddress());
 
