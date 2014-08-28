@@ -401,12 +401,17 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         leaveBlockHistory.setPrincipalIdDeleted(principalId);
         leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(HrConstants.ACTION.MODIFIED);
-
+        
         KRADServiceLocator.getBusinessObjectService().save(leaveBlockBo);
-        String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
-        addNote(leaveBlockBo.getDocumentId(), leaveBlockBo.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was updated on this Leave Calendar by " + principalName + " on your behalf");
         // creating history
-        KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistory); 
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistory);
+        
+
+        if(leaveBlockBo.getLeaveBlockType().equalsIgnoreCase(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_CALENDAR) || leaveBlockBo.getLeaveBlockType().equalsIgnoreCase(LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR)){
+        	String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
+        	addNote(leaveBlockBo.getDocumentId(), leaveBlockBo.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was updated on this Leave Calendar by " + principalName + " on your behalf");
+        }
+
     }    
 
     //Add a note to timesheet for approver's actions
