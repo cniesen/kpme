@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.kuali.kpme.core.api.assignment.Assignment;
+import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.api.groupkey.HrGroupKey;
 import org.kuali.kpme.core.department.DepartmentBo;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
@@ -130,14 +131,18 @@ public class MissedPunchDocument extends TransactionalDocumentBase implements Mi
     public DepartmentBo getDepartmentObj() {
         return departmentObj;
     }
-    
+
+
+    //This should return the specific assignment that has been selected for a specific MissedPunch for routing purposes.
     @Override
     public List<Assignment> getAssignments() {
     	List<Assignment> assignments = new ArrayList<Assignment>();
     	if( (getMissedPunch() != null) && (getMissedPunch().getActionFullDateTime() != null) ){
-    		assignments =  HrServiceLocator.getAssignmentService().getAssignments(getPrincipalId(), 
-    													getMissedPunch().getActionFullDateTime().toLocalDate());
-    	}
+            Assignment a = HrServiceLocator.getAssignmentService().getAssignment(getPrincipalId(), AssignmentDescriptionKey.get(getMissedPunch().getAssignmentKey()), getMissedPunch().getActionFullDateTime().toLocalDate());
+    	    if (a != null) {
+                assignments.add(a);
+            }
+        }
         return assignments; 
     }
 }
