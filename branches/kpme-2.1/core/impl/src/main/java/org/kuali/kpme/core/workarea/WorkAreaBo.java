@@ -297,7 +297,7 @@ public class WorkAreaBo extends HrKeyedBusinessObject implements WorkAreaContrac
     	workAreaMembers =  new ArrayList<>();
     	if(workArea != null && getEffectiveLocalDate() != null) {
     		LocalDate endDate = new LocalDate();
-            List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea, this.getEffectiveLocalDate());
+            List<Assignment> workAreaAssignments = HrServiceLocator.getAssignmentService().getActiveAssignmentsForWorkArea(this.workArea);
 
     		for (Assignment assignment : workAreaAssignments) {
     			workAreaMembers.add(AssignmentBo.from(assignment));

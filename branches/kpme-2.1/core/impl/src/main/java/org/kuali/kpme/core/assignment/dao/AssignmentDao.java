@@ -48,6 +48,14 @@ public interface AssignmentDao {
 	 */
 	public void delete(AssignmentBo assignment);
 
+    /**
+     * Get list of active assignments in a given work area as of a particular date
+     * @param workArea
+     * @param asOfDate
+     * @return
+     */
+    public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea);
+
 	/**
 	 * Get list of active assignments in a given work area as of a particular date
 	 * @param workArea

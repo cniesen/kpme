@@ -239,6 +239,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         return AssignmentBo.to(assignmentDao.getAssignment(tkAssignmentId));
     }
 
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea)
+    {
+        List<AssignmentBo> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea);
+        List<Assignment> assigns = new ArrayList<Assignment>(assignments.size());
+        for (AssignmentBo assignment : assignments) {
+            assigns.add(AssignmentBo.to(populateAssignment(assignment, assignment.getEffectiveLocalDate())));
+        }
+        return assigns;
+    }
 
     @Override
     public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate) {

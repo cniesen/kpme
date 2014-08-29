@@ -54,6 +54,17 @@ public interface AssignmentService {
      * @return
      */
 	public Map<String,String> getAssignmentDescriptions(Assignment assignment);
+
+
+    /**
+     * Get all active assignments for a work area
+     * @param workArea
+     * @param asOfDate
+     * @return
+     */
+    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'workArea=' + #p0")
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea);
+
 	/**
 	 * Get all active assignments for a work area
 	 * @param workArea
