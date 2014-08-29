@@ -394,15 +394,15 @@
         </property>
         <property name="items">
             <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId">
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:readOnly="@{!#isAddLine}"/>
+                <bean parent="Uif-InputField" p:propertyName="principalId" p:readOnly="@{!#isAddLine}">
                      <property name="quickfinder">
                          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
                             p:fieldConversions="principalId:principalId"/>
                      </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="principalName" p:readOnly="true"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
+                <bean parent="Uif-InputField" p:propertyName="roleName" p:readOnly="@{!#isAddLine}"/>
                 <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
             </list>
         </property>
