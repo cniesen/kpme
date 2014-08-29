@@ -45,11 +45,19 @@
         <property name="dataObjectClassName" value="org.kuali.kpme.core.department.DepartmentBo"/>
         <property name="items">
             <list merge="true">
-                <bean parent="KPMEGroupKeyed-MaintenanceGridSection">
+                <bean parent="Uif-MaintenanceGridSection">
                     <property name="headerText" value="Department Maintenance"/>
                     <property name="items">
                         <list merge="true">
-                            <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
+                            <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
+
+                            <bean parent="KPMEGroupKeyed-MaintenanceGridSection-GroupKey">
+                                <property name="readOnly" value="@{#view.readOnly || (maintenanceAction eq 'Edit')}"/>
+                                <property name="control">
+                                    <bean parent="Uif-DropdownControl" p:required="true"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-InputField" p:propertyName="dept" p:required="true" p:readOnly="@{#view.readOnly || (maintenanceAction eq 'Edit')}">
                                 <property name="inquiry">
                                     <bean parent="Uif-Inquiry" p:render="false"/>
                                 </property>
