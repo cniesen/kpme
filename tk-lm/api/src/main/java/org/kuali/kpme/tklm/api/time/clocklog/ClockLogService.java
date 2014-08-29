@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.tklm.api.time.clocklog;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignment;
@@ -22,15 +23,14 @@ import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
 public interface ClockLogService {
 
-
-
-
+    public void invalidIpCheck(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate) throws InvalidClockLogException;
 	/**
 	 * Save clock log 
 	 * @param clockLog
