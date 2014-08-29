@@ -152,6 +152,25 @@ public class AssignmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Ass
         return assignments;
     }
 
+    public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea)
+    {
+        List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
+        Criteria root = new Criteria();
+
+        root.addEqualTo("workArea", workArea);
+        root.addEqualTo("active", true);
+
+        Query query = QueryFactory.newQuery(AssignmentBo.class, root);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+        if (c != null) {
+            assignments.addAll(c);
+        }
+
+        return assignments;
+    }
+
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate asOfDate) {
         List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
