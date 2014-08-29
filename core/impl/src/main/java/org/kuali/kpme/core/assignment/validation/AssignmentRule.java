@@ -298,6 +298,9 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 	}
 	
 	protected boolean validateActiveFlag(AssignmentBo assign){
+        if (assign.isActive()) {
+            return true;
+        }
         Assignment assignment = AssignmentBo.to(assign);
 		DateTime latestTimeEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assignment,"Time");
 		
@@ -350,7 +353,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 					valid &= this.validateRegPayEarnCode(assignment);
 //					valid &= this.validateAccounts(assignment); // KPME-2780
 					// Validate Assignment Accounts
-					for (ListIterator<? extends AssignmentAccountBo> iterator =  assignment.getAssignmentAccounts().listIterator() ; iterator.hasNext();){
+					for (ListIterator<AssignmentAccountBo> iterator =  assignment.getAssignmentAccounts().listIterator() ; iterator.hasNext();){
 						int index = iterator.nextIndex();
 						AssignmentAccountBo assignmentAccountBo = iterator.next();
 						valid &= this.validateAssignmentAccount(assignmentAccountBo, assignment, index);
