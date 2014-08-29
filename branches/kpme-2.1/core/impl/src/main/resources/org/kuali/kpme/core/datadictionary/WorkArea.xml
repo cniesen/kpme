@@ -347,15 +347,15 @@
         </property>
         <property name="items">
             <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
-                <bean parent="Uif-InputField" p:propertyName="principalId" p:required="true">
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" p:readOnly="@{!#isAddLine}"/>
+                <bean parent="Uif-InputField" p:propertyName="principalId" p:required="true" p:readOnly="@{!#isAddLine}">
                      <property name="quickfinder">
                          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
                             p:fieldConversions="principalId:principalId,principalName:principalName"/>
                      </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="principalName" p:readOnly="true"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName" p:required="true"/>
+                <bean parent="Uif-InputField" p:propertyName="roleName" p:required="true" p:readOnly="@{!#isAddLine}"/>
                 <bean parent="Uif-InputField" p:propertyName="expirationDate" p:required="false"/>
             </list>
         </property>
@@ -395,14 +395,14 @@
         </property>
         <property name="items">
             <list>
-            	<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
-				<bean parent="Uif-InputField" p:propertyName="positionNumber" p:required="true">
+            	<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" p:readOnly="@{!#isAddLine}" />
+				<bean parent="Uif-InputField" p:propertyName="positionNumber" p:required="true" p:readOnly="@{!#isAddLine}">
 				     <property name="quickfinder">
                          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.pm.position.PositionBo"
                             p:fieldConversions="positionNumber:positionNumber"/>
                      </property>
                 </bean>  
-				<bean parent="Uif-InputField" p:propertyName="roleName" p:required="true"/>
+				<bean parent="Uif-InputField" p:propertyName="roleName" p:required="true" p:readOnly="@{!#isAddLine}"/>
 				<bean parent="Uif-InputField" p:propertyName="expirationDate" p:required="false"/>
             </list>
         </property>
