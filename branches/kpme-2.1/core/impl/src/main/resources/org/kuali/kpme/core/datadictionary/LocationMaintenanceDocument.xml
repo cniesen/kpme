@@ -58,7 +58,7 @@
 					<property name="items">
 						<list>
 							<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
-							<bean parent="Uif-InputField" p:propertyName="location" p:required="true" >
+							<bean parent="Uif-InputField" p:propertyName="location" p:required="true" p:readOnly="@{#view.readOnly || (maintenanceAction eq 'Edit')}">
 								<property name="inquiry">
 	                                    <bean parent="Uif-Inquiry" p:render="false"/>
 	                                </property>
