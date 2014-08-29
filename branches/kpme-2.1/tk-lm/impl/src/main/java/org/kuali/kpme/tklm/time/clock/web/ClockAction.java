@@ -59,6 +59,7 @@ import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -139,7 +140,7 @@ public class ClockAction extends TimesheetAction {
 		        		String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
 		        		if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
 		        			boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ipAddress, currentDateTime.toLocalDate());
-		        			if(!isInValid){
+		        			if (!isInValid) {
 		        				assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
 		        			}
 		        		}
@@ -301,7 +302,7 @@ public class ClockAction extends TimesheetAction {
         }
     }
     
-    public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception, InvalidClockLogException {
         ClockActionForm caf = (ClockActionForm) form;
         DateTime currentDateTime = new DateTime();
         // TODO: Validate that clock action is valid for this user
@@ -319,9 +320,21 @@ public class ClockAction extends TimesheetAction {
         String ip = TKUtils.getIPAddressFromRequest(request);
 
         Assignment assignment = caf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(caf.getSelectedAssignment()), LocalDate.now());
-                
+        Long jbNum = assignment.getJobNumber();
+        Long wa = assignment.getWorkArea();
+        String dept= assignment.getDept();
+        String grpKeyCode = assignment.getGroupKeyCode();
+
+        try {
+            TkServiceLocator.getClockLogService().invalidIpCheck(grpKeyCode, dept, wa, pId, jbNum, ip, LocalDate.now());
+        }
+        catch (InvalidClockLogException e)
+        {
+            throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+        }
+
         // check if User takes action from Valid location.
-        if(pId.equalsIgnoreCase(GlobalVariables.getUserSession().getPrincipalId())) {
+        if (pId.equalsIgnoreCase(GlobalVariables.getUserSession().getPrincipalId())) {
 	        String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
 	        if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
 		        boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ip, currentDateTime.toLocalDate());
@@ -539,12 +552,12 @@ public class ClockAction extends TimesheetAction {
 	                }
 	        	}
     		}
-    	} 
+    	}
         // create clock log 
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(pId, caf.getTimesheetDocument().getDocumentId(), new DateTime(), assignment, caf.getCalendarEntry(), ip,
         		beginDate, caf.getCurrentClockAction(), true);
 
-        caf.setClockLog(clockLog);  
+        caf.setClockLog(clockLog);
         return mapping.findForward("basic"); 
         
     }
@@ -633,8 +646,10 @@ public class ClockAction extends TimesheetAction {
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
+
 		TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTbList, Collections.<LeaveBlock>emptyList(), tsDoc.getCalendarEntry(), tsDoc, tsDoc.getPrincipalId());
-		TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
+
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
 		TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
 		TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
 		return mapping.findForward("basic");
