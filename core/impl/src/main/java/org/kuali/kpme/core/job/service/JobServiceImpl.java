@@ -255,6 +255,11 @@ public class JobServiceImpl implements JobService {
         return jobDao.getPrincipalIdsInPosition(positionNumber, asOfDate);
     }
 
+    @Override
+    public Job getNextInactiveJob(Job job) {
+        return JobBo.to(jobDao.getNextInactiveJob(job));
+    }
+
     protected List<Job> toImmutable(List<JobBo> bos) {
         return ModelObjectUtils.transform(bos, toJob);
     }

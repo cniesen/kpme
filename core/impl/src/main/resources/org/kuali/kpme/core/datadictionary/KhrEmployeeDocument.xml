@@ -1,0 +1,452 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+    <bean id="KhrEmployeeDocument" parent="KhrEmployeeDocument-parentBean"/>
+    <bean id="KhrEmployeeDocument-parentBean" abstract="true" parent="BusinessObjectEntry">
+        <property name="dataObjectClass" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"/>
+        <property name="objectLabel" value="KhrEmployeeDocument"/>
+        <property name="attributes">
+            <list>
+                <ref bean="KhrEmployeeDocument-principalId" />
+                <ref bean="KhrEmployeeDocument-name"/>
+                <ref bean="KhrEmployeeDocument-startDate"/>
+                <ref bean="KhrEmployeeDocument-endDate"/>
+                <ref bean="KhrEmployeeDocument-process"/>
+            </list>
+        </property>
+        <property name="collections">
+            <list>
+                <bean parent="CollectionDefinition">
+                    <property name="dataObjectClass" value="org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob"/>
+                    <property name="name" value="jobList"/>
+                    <property name="shortLabel" value="Jobs"/>
+                    <property name="label" value="Jobs"/>
+                </bean>
+            </list>
+        </property>
+        <property name="primaryKeys">
+            <list>
+                <value>principalId</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="KhrEmployeeDocument-principalId" parent="KhrEmployeeDocument-principalId-parentBean"/>
+    <bean id="KhrEmployeeDocument-principalId-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+        <property name="name" value="principalId" />
+        <property name="label" value="Principal Id" />
+    </bean>
+
+    <bean id="KhrEmployeeDocument-name" parent="KhrEmployeeDocument-name-parentBean"/>
+    <bean id="KhrEmployeeDocument-name-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="controlField">
+            <bean parent="Uif-TextControl" p:size="10" />
+        </property>
+        <property name="name" value="name" />
+        <property name="label" value="Name" />
+    </bean>
+
+    <bean id="KhrEmployeeDocument-startDate" parent="KhrEmployeeDocument-startDate-parentBean"/>
+    <bean id="KhrEmployeeDocument-startDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="controlField">
+            <bean parent="Uif-DateControl"/>
+        </property>
+        <property name="name" value="startDate" />
+        <property name="label" value="Start Date" />
+    </bean>
+
+    <bean id="KhrEmployeeDocument-endDate" parent="KhrEmployeeDocument-endDate-parentBean"/>
+    <bean id="KhrEmployeeDocument-endDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="controlField">
+            <bean parent="Uif-DateControl"/>
+        </property>
+        <property name="name" value="endDate" />
+        <property name="label" value="End Date" />
+    </bean>
+
+    <bean id="KhrEmployeeDocument-process" parent="KhrEmployeeDocument-process-parentBean"/>
+    <bean id="KhrEmployeeDocument-process-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="controlField">
+            <bean parent="Uif-DropdownControl" />
+        </property>
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeDocumentProcessKeyValueFinder"/>
+        </property>
+        <property name="name" value="process" />
+        <property name="label" value="Process" />
+    </bean>
+
+    <!--***************************************************************************
+                            Views
+    ***************************************************************************-->
+
+    <bean id="KhrEmployeeDocument-InquiryView" parent="Uif-InquiryView" >
+        <property name="headerText" value="TKM Document"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"/>
+        <property name="singlePageView" value="true"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-Disclosure-GridSection" >
+                    <property name="layoutManager.numberOfColumns" value="2" />
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-DataField" p:propertyName="principalId"/>
+                            <bean parent="Uif-DataField" p:propertyName="name" />
+                            <bean parent="Uif-DataField" p:propertyName="startDate" />
+                            <bean parent="Uif-DataField" p:propertyName="endDate" />
+                        </list>
+                    </property>
+                    <property name="title" value="Person Document" />
+                </bean>
+                <bean parent="KhrEmployeeDocument-jobList-inquiry"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Job List, used by inquiry view -->
+    <bean id="KhrEmployeeDocument-jobList-inquiry" abstract="true" parent="Uif-Disclosure-TableCollectionSection">
+        <property name="collectionObjectClass" value="org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob" />
+        <property name="propertyName" value="jobList" />
+        <property name="headerText" value="Job" />
+        <property name="layoutManager.renderSequenceField" value="false"/>
+        <property name="layoutManager.separateAddLine" value="true"/>
+        <property name="layoutManager.richTable.render" value="false"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+                <bean parent="Uif-DataField" p:propertyName="endDate" />
+                <bean parent="Uif-DataField" p:propertyName="dept" />
+                <bean parent="Uif-DataField" p:propertyName="compRate" />
+                <bean parent="Uif-DataField" p:propertyName="standardHours"/>
+                <bean parent="Uif-DataField" p:propertyName="payGrade" />
+            </list>
+        </property>
+        <property name="layoutManager.rowDetailsGroup">
+            <bean parent="Uif-TableSubCollection-WithinSection">
+                <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
+                <property name="propertyName" value="assignments" />
+                <property name="headerText" value="Assignment" />
+                <property name="layoutManager.renderSequenceField" value="false"/>
+                <property name="layoutManager.separateAddLine" value="true"/>
+                <property name="layoutManager.richTable.render" value="false"/>
+                <property name="items">
+                    <list>
+                        <bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+                        <bean parent="Uif-DataField" p:propertyName="workarea" />
+                        <bean parent="Uif-DataField" p:propertyName="task" />
+                        <bean parent="Uif-DataField" p:propertyName="active" />
+                    </list>
+                </property>
+                <property name="layoutManager.rowDetailsGroup">
+                    <bean parent="Uif-TableSubCollection-WithinSection">
+                        <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo"/>
+                        <property name="propertyName" value="assignmentAccounts" />
+                        <property name="headerText" value="Assignment Accounts" />
+                        <property name="layoutManager.renderSequenceField" value="false"/>
+                        <property name="layoutManager.separateAddLine" value="true"/>
+                        <property name="layoutManager.richTable.render" value="false"/>
+                        <property name="items">
+                            <list>
+                                <bean parent="Uif-DataField" p:propertyName="accountNbr" />
+                                <bean parent="Uif-DataField" p:propertyName="subAcctNbr" />
+                                <bean parent="Uif-DataField" p:propertyName="earnCode" />
+                                <bean parent="Uif-DataField" p:propertyName="percent" />
+                                <bean parent="Uif-DataField" p:propertyName="active" />
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!-- Look up Definitions -->
+    <bean id="KhrEmployeeDocument-LookupView" parent="Uif-LookupView">
+        <property name="headerText" value="TKM Document Lookup" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeDocumentLookupableImpl"/>
+        <property name="criteriaFields">
+            <list>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId" >
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                              p:fieldConversions="principalId:principalId"/>
+                    </property>
+                </bean>
+                <!--<bean parent="Uif-LookupCriteriaInputField" p:propertyName="name" />
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="startDate" />
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="endDate" />-->
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+                <bean parent="Uif-DataField" p:propertyName="principalId" />
+                <bean parent="Uif-DataField" p:propertyName="name" />
+<!--                <bean parent="Uif-DataField" p:propertyName="startDate" />
+                <bean parent="Uif-DataField" p:propertyName="endDate" />-->
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="KhrEmployeeDocumentMaintenanceDocument" parent="KhrEmployeeDocumentMaintenanceDocument-parentBean" />
+    <bean id="KhrEmployeeDocumentMaintenanceDocument-parentBean" abstract="true"
+          parent="uifMaintenanceDocumentEntry" p:dataObjectClass="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"
+          p:documentAuthorizerClass="org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase"
+          p:maintainableClass="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"
+          p:businessRulesClass="org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation">
+        <property name="documentTypeName" value="KhrEmployeeDocumentType" />
+        <property name="lockingKeys">
+            <list>
+                <value>principalId</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="KhrEmployeeDocument-MaintenanceView" parent="KhrEmployeeDocument-MaintenanceView-parentBean" />
+    <bean id="KhrEmployeeDocument-MaintenanceView-parentBean" abstract="true"
+          parent="Uif-MaintenanceView">
+        <property name="headerText" value="KHR Employee Setup" />
+        <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"/>
+        <property name="items">
+            <list merge="true">
+                <bean parent="KhrEmployeeDocument-personSection-maintenance"/>
+                <bean parent="KhrEmployeeDocument-processSection-maintenance"/>
+                <bean parent="KhrEmployeeDocument-jobSection-maintenance"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="KhrEmployeeDocument-personSection-maintenance" parent="Uif-GridSection" p:readOnly="true">
+        <property name="headerText" value="Person" />
+        <property name="layoutManager.numberOfColumns" value="8"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="principalId" />
+                <bean parent="Uif-InputField" p:propertyName="name" />
+                <bean parent="Uif-InputField" p:propertyName="startDate" />
+                <bean parent="Uif-InputField" p:propertyName="endDate" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="KhrEmployeeDocument-processSection-maintenance" parent="Uif-GridSection">
+        <property name="layoutManager.numberOfColumns" value="8"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="process" p:colSpan="2" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- Job List, used by maintenance view -->
+    <bean id="KhrEmployeeDocument-jobSection-maintenance" abstract="true" parent="Uif-TableCollectionSection">
+        <property name="collectionObjectClass" value="org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob" />
+        <property name="propertyName" value="jobList" />
+        <property name="headerText" value="Jobs" />
+        <property name="addLinePlacement" value="TOP"/>
+        <property name="addViaLightBox" value="true"/>
+        <property name="layoutManager.addLineGroup">
+            <bean parent="Uif-CollectionGridItem">
+                <property name="header">
+                    <bean parent="Uif-HeaderOne" p:headerText="Add New Job"/>
+                </property>
+            </bean>
+        </property>
+        <property name="addLineItems">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
+                <bean parent="Uif-InputField" p:propertyName="endDate" />
+                <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                              p:dataObjectClassName="org.kuali.kpme.core.department.DepartmentBo"
+                              p:fieldConversions="dept:dept"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true" />
+                <bean parent="Uif-InputField" p:propertyName="standardHours"/>
+                <bean parent="Uif-InputField" p:propertyName="payGrade" >
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                              p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
+                              p:fieldConversions="payGrade:payGrade"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="layoutManager.renderSequenceField" value="false"/>
+        <property name="layoutManager.richTable.render" value="true"/>
+        <property name="showInactiveLines" value = "true"/>
+        <property name="renderInactiveToggleButton" value="false"/>
+        <property name="lineActions">
+            <list>
+                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" p:render="@{#line.objectId eq null}"/>
+            </list>
+        </property>
+        <property name="items">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="jobNumber" p:readOnly="true"/>
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
+                <bean parent="Uif-InputField" p:propertyName="endDate" />
+                <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                             p:dataObjectClassName="org.kuali.kpme.core.department.DepartmentBo"
+                             p:fieldConversions="dept:dept"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true" />
+                <bean parent="Uif-InputField" p:propertyName="standardHours"/>
+                <bean parent="Uif-InputField" p:propertyName="payGrade" >
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                              p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
+                              p:fieldConversions="payGrade:payGrade"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
+        <property name="layoutManager.rowDetailsGroup">
+            <bean parent="Uif-TableSubCollection-WithinSection">
+                <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
+                <property name="propertyName" value="assignments" />
+                <property name="headerText" value="Assignment" />
+                <property name="addLinePlacement" value="TOP"/>
+                <property name="addViaLightBox" value="true"/>
+                <property name="layoutManager.addLineGroup">
+                    <bean parent="Uif-CollectionGridItem">
+                        <property name="header">
+                            <bean parent="Uif-HeaderOne" p:headerText="Add New Assignment"/>
+                        </property>
+                    </bean>
+                </property>
+                <property name="addLineItems">
+                    <list>
+                        <bean parent="Uif-InputField" p:propertyName="effectiveDate">
+                            <property name="control">
+                                <bean parent="Uif-DateControl"/>
+                            </property>
+                        </bean>
+                        <bean parent="Uif-InputField" p:propertyName="workArea" >
+                        <property name="quickfinder">
+                            <bean parent="Uif-QuickFinderByScript"
+                                  p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+                                  p:fieldConversions="workArea:workArea"/>
+                        </property>
+                        </bean>
+                        <bean parent="Uif-InputField" p:propertyName="task" >
+                            <property name="quickfinder">
+                                <bean parent="Uif-QuickFinderByScript"
+                                      p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
+                                      p:fieldConversions="task:task"
+                                      p:lookupParameters="workArea:workArea"/>
+                            </property>
+                        </bean>
+                        <bean parent="Uif-InputField" p:propertyName="active" >
+                            <property name="control">
+                                <bean parent="Uif-CheckboxControl"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+                <property name="layoutManager.renderSequenceField" value="false"/>
+                <property name="layoutManager.richTable.render" value="true"/>
+                <property name="showInactiveLines" value = "true"/>
+                <property name="renderInactiveToggleButton" value="false"/>
+                <property name="lineActions">
+                    <list>
+                        <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" p:render="@{#line.objectId eq null}"/>
+                    </list>
+                </property>
+                <property name="items">
+                    <list>
+                        <bean parent="Uif-InputField" p:propertyName="effectiveDate">
+                               <property name="control">
+                                   <bean parent="Uif-DateControl"/>
+                               </property>
+                        </bean>
+                        <bean parent="Uif-InputField" p:propertyName="workArea" />
+                        <bean parent="Uif-InputField" p:propertyName="task" />
+                        <bean parent="Uif-InputField" p:propertyName="active" >
+                            <property name="control">
+                                <bean parent="Uif-CheckboxControl"/>
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+                <property name="layoutManager.rowDetailsGroup">
+                    <bean parent="Uif-TableSubCollection-WithinSection">
+                        <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo"/>
+                        <property name="propertyName" value="assignmentAccounts" />
+                        <property name="headerText" value="Assignment Accounts" />
+                        <property name="layoutManager.renderSequenceField" value="false"/>
+                        <property name="layoutManager.richTable.render" value="false"/>
+                        <property name="showInactiveLines" value = "true"/>
+                        <property name="renderInactiveToggleButton" value="false"/>
+                        <property name="addLineActions">
+                            <list>
+                                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="addLine" p:actionLabel="add"/>
+                            </list>
+                        </property>
+                        <property name="lineActions">
+                            <list>
+                                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" p:render="@{#line.objectId eq null}"/>
+                            </list>
+                        </property>
+                        <property name="items">
+                            <list>
+                                <bean parent="Uif-InputField" p:propertyName="accountNbr" />
+                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr" />
+                                <bean parent="Uif-InputField" p:propertyName="earnCode" >
+                                    <property name="quickfinder">
+                                        <bean parent="Uif-QuickFinderByScript"
+                                              p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
+                                              p:fieldConversions="earnCode:earnCode"/>
+                                    </property>
+                                </bean>
+                                <bean parent="Uif-InputField" p:propertyName="percent" >
+                                    <property name="control">
+                                        <bean parent="Uif-SpinnerControl">
+                                            <property name="spinner">
+                                                <bean parent="Uif-Spinner">
+                                                    <property name="templateOptions">
+                                                        <map merge="true">
+                                                            <entry key="start" value="0.01" />
+                                                            <entry key="step" value="0.01" />
+                                                            <entry key="max" value="100" />
+                                                            <entry key="numberFormat" value="n" />
+                                                        </map>
+                                                    </property>
+                                                </bean>
+                                            </property>
+                                        </bean>
+                                    </property>
+                                </bean>
+                                <bean parent="Uif-InputField" p:propertyName="active" >
+                                    <property name="control">
+                                        <bean parent="Uif-CheckboxControl"/>
+                                    </property>
+                                </bean>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+
+
+</beans>
