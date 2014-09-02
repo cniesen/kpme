@@ -27,7 +27,11 @@ import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 public class HrContext {
-	
+
+    public static Boolean userSessionExists() {
+        return GlobalVariables.getUserSession() != null;
+    }
+
 	public static String getPrincipalId() {
 		return GlobalVariables.getUserSession().getPrincipalId();
 	}
