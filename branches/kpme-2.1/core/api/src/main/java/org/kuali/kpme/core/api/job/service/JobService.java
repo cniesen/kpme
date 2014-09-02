@@ -166,5 +166,6 @@ public interface JobService {
 	 */
     @Cacheable(value= JobContract.CACHE_NAME, key="'positionNumber=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<String> getPrincipalIdsInPosition(String positionNumber, LocalDate asOfDate);
-    
+
+    Job getNextInactiveJob(Job job);
 }
