@@ -19,13 +19,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.DateTimeFieldType;
-import org.joda.time.DateTimeZone;
-import org.joda.time.Interval;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
+import org.joda.time.*;
 import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
@@ -39,7 +33,6 @@ import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
-import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
@@ -53,25 +46,11 @@ import org.kuali.kpme.tklm.time.flsa.FlsaDay;
 import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
-import org.kuali.kpme.tklm.time.timesummary.AssignmentColumn;
-import org.kuali.kpme.tklm.time.timesummary.AssignmentRow;
-import org.kuali.kpme.tklm.time.timesummary.EarnCodeSection;
-import org.kuali.kpme.tklm.time.timesummary.EarnGroupSection;
-import org.kuali.kpme.tklm.time.timesummary.TimeSummary;
+import org.kuali.kpme.tklm.time.timesummary.*;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 
 public class TimeSummaryServiceImpl implements TimeSummaryService {
 	private static final String OTHER_EARN_GROUP = "Other";
@@ -441,14 +420,16 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
         Map<String, Integer> weekDateToCalendarDayInt = new HashMap<String, Integer>();
         Map<String, Map<Integer, Boolean>> clockLogMap = new LinkedHashMap<String, Map<Integer, Boolean>>();
-        ClockLog lastClockLog = TkServiceLocator.getClockLogService()
-				.getLastClockLog(principalId);
+        ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(principalId);
         DateTime userClockLogTime = null;
         if(lastClockLog != null) {
-    		String  approverId = HrContext.getPrincipalId();
-    		String timeZoneString = HrServiceLocator.getTimezoneService().getApproverTimezone(approverId);
-    		DateTimeZone approverTimeZone = StringUtils.isNotBlank(timeZoneString) ? DateTimeZone.forID(timeZoneString) : null;
-    		userClockLogTime = lastClockLog.getClockDateTime().withZone(approverTimeZone);
+            userClockLogTime = lastClockLog.getClockDateTime();
+    		String  approverId = HrContext.userSessionExists() ? HrContext.getPrincipalId() : null;
+            if (approverId != null) {
+                String timeZoneString = HrServiceLocator.getTimezoneService().getApproverTimezone(approverId);
+                DateTimeZone approverTimeZone = StringUtils.isNotBlank(timeZoneString) ? DateTimeZone.forID(timeZoneString) : null;
+                userClockLogTime = userClockLogTime.withZone(approverTimeZone);
+            }
         }
 		
         BigDecimal periodTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
