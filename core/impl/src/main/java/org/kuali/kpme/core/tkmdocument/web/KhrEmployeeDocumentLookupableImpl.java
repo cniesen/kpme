@@ -43,5 +43,10 @@ public class KhrEmployeeDocumentLookupableImpl extends KPMELookupableImpl {
         List<Person> results = KimApiServiceLocator.getPersonService().findPeople(criteria);
         return results;
     }
+
+    @Override
+    public boolean allowsMaintenanceNewOrCopyAction() {
+        return false;
+    }
 }
 
