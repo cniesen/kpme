@@ -143,6 +143,16 @@ public class TimeDetailAction extends TimesheetAction {
 		        			timeDetailActionForm.setDocEditable("false");  
 		        		}
 			        }
+		            // reviewers should not be able to edit enroute timesheets
+		            if (DocumentStatus.ENROUTE.equals(documentStatus)) {
+		            	if(HrContext.isReviewer()
+		            			&& !HrContext.isSystemAdmin()
+	                            && !TkContext.isLocationAdmin()
+		            			&& !HrContext.isAnyApprover()
+		            			&& !HrContext.isAnyPayrollProcessor()) {
+		            		timeDetailActionForm.setDocEditable("false");
+		            	}
+		            }
 	            } else if (DocumentStatus.FINAL.equals(documentStatus)) {
 	            	if(HrContext.isSystemAdmin()) {
 	            	  timeDetailActionForm.setNotesEditable(Boolean.TRUE);
