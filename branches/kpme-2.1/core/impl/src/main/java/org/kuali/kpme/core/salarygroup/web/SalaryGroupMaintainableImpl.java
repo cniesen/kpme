@@ -40,7 +40,7 @@ public class SalaryGroupMaintainableImpl extends HrKeyedSetBusinessObjectMaintai
 
 	private static final String EFFECTIVE_KEY_LIST = "effectiveKeyList";
 
-	@Override
+	/*@Override
     protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine, boolean isValidLine) {
         if (addLine instanceof SalaryGroupKeyBo) {
         	SalaryGroupKeyBo inputSalaryGroupKey = (SalaryGroupKeyBo)addLine;
@@ -63,7 +63,7 @@ public class SalaryGroupMaintainableImpl extends HrKeyedSetBusinessObjectMaintai
             }
         }
        super.processAfterAddLine(view, collectionGroup, model, addLine, isValidLine);
-    }
+    }*/
 	
 	@Override
 	public HrBusinessObject getObjectById(String id) {
