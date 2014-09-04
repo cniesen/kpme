@@ -415,6 +415,11 @@
             </list>
         </property>
     </bean>
+    
+    
+    
+    <bean id="KHREmployeeJobMaintenanceDocument" parent="KHREmployeeJobMaintenanceDocument-parentBean"/>
+    <bean id="KHREmployeeJobMaintenanceDocument-parentBean" abstract="true" parent="JobMaintenanceDocument-parentBean" p:dataObjectClass="org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob"/>
 
 </beans>
 

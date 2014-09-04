@@ -31,6 +31,7 @@ import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
+import org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
@@ -190,6 +191,13 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         }
 
     }
+    
+    // set the khr employee job's field values that are not set via the "add job" user interface, but are needed for authorization.
+    protected void processBeforeAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
+    	 if (addLine instanceof KhrEmployeeJob) {
+    		 ((KhrEmployeeJob) addLine).setGroupKeyCode("ISU-IA");
+    	 }
+    }
 
     @Override
     protected void processAfterDeleteLine(View view, CollectionGroup collectionGroup, Object model, int lineIndex) {
@@ -198,14 +206,13 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     }
 
     @Override
-    protected boolean performAddLineValidation(View view, CollectionGroup collectionGroup, Object model,
-                                               Object addLine) {
+    protected boolean performAddLineValidation(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
         boolean isValid = true;
 
         if (addLine instanceof KhrEmployeeJob) {
             KhrEmployeeJob tkmJob = (KhrEmployeeJob) addLine;
-            //validate department
-            if (!HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(HrContext.getTargetPrincipalId(), KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), tkmJob.getDept(), tkmJob.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
+            //check permission reusing the rules class
+            if ( !(((new KhrEmployeeDocumentValidation())).canMaintainJob(tkmJob)) ) {
                 String[] params = new String[1];
                 params[0] = tkmJob.getDept();
                 GlobalVariables.getMessageMap().putError("newCollectionLines['document.newMaintainableObject.dataObject.jobList'].dept","tkmdocument.job.permissions",params);
