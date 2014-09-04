@@ -21,11 +21,14 @@ import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
+import org.kuali.kpme.core.job.authorization.JobAuthorizer;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.rice.kim.api.identity.Person;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
 
@@ -57,7 +60,7 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
                 //validate comp rate
                 valid &= isValidCompRate(tkmJob, index);
                 valid &= isValidEndDate(tkmJob, index);
-                valid &= isValidDepartment(tkmJob);
+                valid &= canMaintainJob(tkmJob, index);
                 valid &= isValidPayGrade(tkmJob, index);
                 valid &= isValidAssignment(tkmJob, index);
 
@@ -197,16 +200,22 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
         }*/
         return true;
     }
-
-    protected boolean isValidDepartment(KhrEmployeeJob tkmJob) {
-        //validate department
-
-        //TODO:  change to permission check
-        if (!HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(HrContext.getTargetPrincipalId(), KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), tkmJob.getDept(), tkmJob.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
-            String[] params = new String[1];
-            params[0] = tkmJob.getDept();
-            this.putFieldError("newCollectionLines['document.newMaintainableObject.dataObject.jobList'].dept", "tkmdocument.job.permissions", params);
+    
+    // check permission re-using the job doc authorizer
+    public boolean canMaintainJob(KhrEmployeeJob tkmJob) {
+    	Person user = KimApiServiceLocator.getPersonService().getPerson(HrContext.getTargetPrincipalId());
+        if( !((new JobAuthorizer()).canMaintain(tkmJob, user)) ) {
             return false;
+        }
+        return true;
+    }
+
+    protected boolean canMaintainJob(KhrEmployeeJob tkmJob, int index) {
+        if(canMaintainJob(tkmJob)) {
+        	String[] params = new String[1];
+            params[0] = tkmJob.getDept();
+            this.putFieldError("dataObject.jobList[" + index + "].dept", "tkmdocument.job.permissions", params);
+        	return false;
         }
         return true;
     }
