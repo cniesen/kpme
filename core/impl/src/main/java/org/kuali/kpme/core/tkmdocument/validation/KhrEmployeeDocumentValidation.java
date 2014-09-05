@@ -178,9 +178,9 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
         //validate assignment effective date
         if(assignment.getEffectiveDate().before(tkmJob.getEffectiveDate())) {
             this.putFieldError("dataObject.jobList["+ index +"].assignmentList[" + assignmentIndex + "].effectiveDate","tkmdocument.assignment.effective.before.job");
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     protected boolean isValidPayGrade(KhrEmployeeJob tkmJob, int index) {
