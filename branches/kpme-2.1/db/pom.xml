@@ -35,11 +35,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.oracle</groupId>
             <artifactId>${oracle.jdbc.artifactId}</artifactId>
             <version>${oracle.jdbc.version}</version>
-            <scope>runtime</scope>
+            <scope>runt-->ime</scope>
         </dependency>
         <dependency>
             <groupId>org.liquibase</groupId>
