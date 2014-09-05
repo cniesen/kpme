@@ -12,6 +12,10 @@ Given(/^I am logged in as iowa hourly timekeeping employee with clock in work st
     @timeentry = create ClockTimeentryObject, :wait_time=>@wait_sec,
                                               :clock_action=>"clock_in"
     sleep(300)
+
+    calendar=@timeentry.clock_in_work_sts.to_s[33,@timeentry.clock_in_work_sts.length]
+    @calendar_date= DateTime.strptime(calendar, '%a, %B %d %Y %H:%M:%S %p, %Z').strftime('%m/%d/%Y')
+    @time=DateTime.strptime(calendar, '%a, %B %d %Y %H:%M:%S %p, %Z').strftime('%I:%M %p')
     page.missed_punch.click
   end
 
@@ -21,13 +25,12 @@ end
 
 When(/^I submit a missed punch for a clock out$/) do
 
-  in_date=(Time.now).strftime("%m/%d/%Y")
-  in_time=(Time.now-3780).strftime("%I:%M %p")
+  @in_time=(DateTime.strptime(@time,"%I:%M %p")+(2/1440.0)).strftime("%I:%M %p")
 
   @missed_punch = create MissedPunchEntryObject, :note => "test for missed clock out action on a timeblock",
                          :missed_action => "Clock Out",
-                         :punched_date => in_date,
-                         :punched_time => in_time
+                         :punched_date => @calendar_date,
+                         :punched_time => @in_time
 
 end
 
