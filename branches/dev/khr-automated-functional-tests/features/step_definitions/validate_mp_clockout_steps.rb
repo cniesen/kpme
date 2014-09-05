@@ -28,6 +28,6 @@ When(/^I submit a missed punch for a clock out$/) do
                          :missed_action => "Clock Out",
                          :punched_date => in_date,
                          :punched_time => in_time
-  #@missed_punch.close
+
 end
 

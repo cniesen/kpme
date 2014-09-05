@@ -14,7 +14,9 @@ class ClockTimeentryObject < DataFactory
                    :wait_time,
                    :clock_in_work_sts,
                    :clock_out_work_sts,
-                   :clock_action
+                   :clock_action,
+                   :current_time_in,
+                   :current_time_out
 
 
 
@@ -59,14 +61,19 @@ class ClockTimeentryObject < DataFactory
       case action
         when "both"
           page.clock_in.click
+          @current_time_in=page.current_time.text
           @clock_in_work_sts = page.work_status.text
           sleep(@wait_time)
           page.clock_out.click
+          @current_time_out=page.current_time.text
           @clock_out_work_sts = page.work_status.text
         when "clock_out"
+          @clock_in_work_sts = page.work_status.text
+          @current_time_in=page.current_time.text
           sleep(@wait_time)
           page.clock_out.click
           @clock_out_work_sts = page.work_status.text
+          @current_time_out=page.current_time.text
         when "clock_in"
           page.clock_in.click
           @clock_in_work_sts = page.work_status.text
