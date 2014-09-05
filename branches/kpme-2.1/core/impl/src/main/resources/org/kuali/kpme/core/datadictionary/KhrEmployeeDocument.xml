@@ -274,12 +274,20 @@
         <property name="headerText" value="Jobs" />
         <property name="addLinePlacement" value="TOP"/>
         <property name="addViaLightBox" value="true"/>
-        <property name="layoutManager.addLineGroup">
-            <bean parent="Uif-CollectionGridItem">
-                <property name="header">
-                    <bean parent="Uif-HeaderOne" p:headerText="Add New Job"/>
-                </property>
-            </bean>
+        <property name="addViaLightBoxAction">
+        	<bean parent="Uif-AddViaLightBoxAction">
+        		<property name="actionLabel" value="Add Job"></property>
+        	</bean>
+        </property>
+        <property name="layoutManager.expandDetailsActionPrototype">
+	      <bean parent="Uif-ExpandDetailsImageAction"/>
+	    </property>
+	    <property name="layoutManager.richTable.templateOptions">
+            <map>
+                <entry key="bPaginate" value="false" />
+                <entry key="bFilter" value="false"/>
+                <entry key="bInfo" value="false"/>
+            </map>
         </property>
         <property name="addLineItems">
             <list>
@@ -304,7 +312,6 @@
             </list>
         </property>
         <property name="layoutManager.renderSequenceField" value="false"/>
-        <property name="layoutManager.richTable.render" value="true"/>
         <property name="showInactiveLines" value = "true"/>
         <property name="renderInactiveToggleButton" value="false"/>
         <property name="lineActions">
@@ -342,6 +349,21 @@
                 <property name="headerText" value="Assignment" />
                 <property name="addLinePlacement" value="TOP"/>
                 <property name="addViaLightBox" value="true"/>
+                <property name="addViaLightBoxAction">
+		        	<bean parent="Uif-AddViaLightBoxAction">
+		        		<property name="actionLabel" value="Add Assignment"></property>
+		        	</bean>
+		        </property>
+		        <property name="layoutManager.expandDetailsActionPrototype">
+			      <bean parent="Uif-ExpandDetailsImageAction"/>
+			    </property>
+			    <property name="layoutManager.richTable.templateOptions">
+		            <map>
+		                <entry key="bPaginate" value="false" />
+		                <entry key="bFilter" value="false"/>
+		                <entry key="bInfo" value="false"/>
+		            </map>
+		        </property>
                 <property name="layoutManager.addLineGroup">
                     <bean parent="Uif-CollectionGridItem">
                         <property name="header">
