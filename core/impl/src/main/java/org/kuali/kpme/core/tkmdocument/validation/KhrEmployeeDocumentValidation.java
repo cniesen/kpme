@@ -211,7 +211,7 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
     }
 
     protected boolean canMaintainJob(KhrEmployeeJob tkmJob, int index) {
-        if(canMaintainJob(tkmJob)) {
+        if(!canMaintainJob(tkmJob)) {
         	String[] params = new String[1];
             params[0] = tkmJob.getDept();
             this.putFieldError("dataObject.jobList[" + index + "].dept", "tkmdocument.job.permissions", params);
