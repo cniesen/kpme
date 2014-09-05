@@ -128,21 +128,26 @@ Then(/^I should see the time entry values$/) do
         expect(page_time).to be_between(time1,time2)
       end
     else
-        calendar=@timeentry.clock_in_work_sts.to_s[33,@timeentry.clock_in_work_sts.length]
-        calendar_date= DateTime.strptime(calendar, '%a, %B %d %Y %H:%M:%S %p, %Z').strftime('%m/%d/%Y')
-        time=DateTime.strptime(calendar, '%a, %B %d %Y %H:%M:%S %p, %Z').strftime('%I:%M %p')
         page.windows[1].use
         @list_no=(page.number_of_items)-2
-        page.timeentry_table(@list_no).should include calendar_date
+        page.timeentry_table(@list_no).should include @calendar_date
         page.timeentry_table(@list_no).should include "IA-DEPT HR Work Area : $5.00 Rcd 0 IA-DEPT"
-        page.timeentry_table(@list_no).should include time
+        page.timeentry_table(@list_no).should include @time
         page.timeentry_table(@list_no).should include DateTime.strptime(@missed_punch.punched_date,"%m/%d/%Y").strftime("%m/%d/%Y")
-        intime_minrange=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(2/1440.0)).strftime("%I:%M %p")
-        intime_maxrange=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(1/1440.0)).strftime("%I:%M %p")
-        [intime_minrange,intime_maxrange].should include(page.timeentry_table(@list_no)[-37,8])
-        outtime_minrange=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(3/1440.0)).strftime("%I:%M %p")
-        outtime_maxrange=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(4/1440.0)).strftime("%I:%M %p")
-        [outtime_minrange,outtime_maxrange].should include(page.timeentry_table(@list_no)[-8,8])
+        intime_minrange5=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(5/1440.0)).strftime("%I:%M %p")
+        intime_minrange4=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(4/1440.0)).strftime("%I:%M %p")
+        intime_minrange3=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(3/1440.0)).strftime("%I:%M %p")
+        intime_minrange2=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(2/1440.0)).strftime("%I:%M %p")
+        intime_maxrange1=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")-(1/1440.0)).strftime("%I:%M %p")
+        intime=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")).strftime("%I:%M %p")
+        [intime_minrange5,intime_minrange4,intime_minrange3,intime_minrange2,intime_maxrange1,intime].should include(page.timeentry_table(@list_no)[-37,8])
+        outtime_minrange1=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(1/1440.0)).strftime("%I:%M %p")
+        outtime_minrange2=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(2/1440.0)).strftime("%I:%M %p")
+        outtime_minrange3=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(3/1440.0)).strftime("%I:%M %p")
+        outtime_minrange4=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(4/1440.0)).strftime("%I:%M %p")
+        outtime_minrange5=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(5/1440.0)).strftime("%I:%M %p")
+        outtime=(DateTime.strptime(@missed_punch.punched_time,"%I:%M %p")+(6/1440.0)).strftime("%I:%M %p")
+        [outtime_minrange1,outtime_minrange2,outtime_minrange3,outtime_minrange4,outtime_minrange5,outtime].should include(page.timeentry_table(@list_no)[-8,8])
         ((page.time_value(@list_no,2)[3,2].to_i)%6).should==0
         ((page.time_value(@list_no,4)[3,2].to_i)%6).should==0
     end
