@@ -33,5 +33,5 @@ public class JobAuthorizer extends KPMEMaintenanceDocumentViewAuthorizer {
 			attributes.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), ((JobBo) dataObject).getDept());
 		}
 	}
-	
+
 }

@@ -673,7 +673,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		
 		int weekCount = 1;
 		for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
-			BigDecimal weekTotal = new BigDecimal(0.00);
+			BigDecimal weekTotal = new BigDecimal(0.00000000000000);
 			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
 				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
 					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {

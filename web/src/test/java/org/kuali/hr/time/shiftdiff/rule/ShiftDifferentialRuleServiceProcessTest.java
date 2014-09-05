@@ -1481,4 +1481,78 @@ public class ShiftDifferentialRuleServiceProcessTest extends KPMEWebTestCase {
                 1);
         HrContext.clearTargetUser();
     }
+
+
+    @Ignore
+    @Test
+    public void minHoursTest() {
+        // Create the Rule
+        // Matches HR Job ID #1 (job # 30)
+        String principalId = "10118";
+
+
+        Long jobNumber = 0L;
+        String groupKey = "IU-IN";
+        Long workArea = 1010L;
+        Long task = 0L;
+        HrContext.setTargetPrincipalId(principalId);
+        DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
+
+
+        // Create Time Blocks (2 days, 2 blocks on each day, 15 minute gap between blocks, 4 hours total each.
+        DateTime start = new DateTime(2010, 3, 21, 0, 0, 0, 0, TKUtils.getSystemDateTimeZone());
+        CalendarEntry payCalendarEntry =  HrServiceLocator.getCalendarEntryService().getCurrentCalendarDates("admin", start);
+
+        TimesheetDocument td = TkTestUtils.populateBlankTimesheetDocument(start, principalId);
+
+        List<TimeBlock> blocks = new ArrayList<TimeBlock>();
+
+        //rgh - sunday 3p - monday 3a - shift: 9 hr SHMH
+        DateTime tbStart1a = new DateTime(2010, 3, 21, 15, 0, 0, 0, zone);
+        blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart1a,   1, new BigDecimal("9"), "RGH", jobNumber, workArea, task, groupKey, td.getDocumentId()));
+        DateTime tbStart1b = new DateTime(2010, 3, 22, 0, 0, 0, 0, zone);
+        blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart1b,   1, new BigDecimal("3"), "RGH", jobNumber, workArea, task, groupKey, td.getDocumentId()));
+
+
+        //rgh - monday 3a-9a - shift: 3 hr SHMH
+        DateTime tbStart2 = new DateTime(2010, 3, 22, 3, 0, 0, 0, zone);
+        blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart2,   1, new BigDecimal("6"), "RGH", jobNumber, workArea, task, groupKey, td.getDocumentId()));
+
+        //rgh - monday 10p - 11:30p - shift: 1.5 hr SHMH (after timeblock added below)
+        DateTime tbStart3 = new DateTime(2010, 3, 22, 22, 0, 0, 0, zone);
+        blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart3,   1, new BigDecimal("1.5"), "RGH", jobNumber, workArea, task, groupKey, td.getDocumentId()));
+
+        //rgh - tues 12a - 7a  - shift: SHTT 6hr
+        DateTime tbStart4 = new DateTime(2010, 3, 23, 0, 0, 0, 0, zone);
+        blocks.addAll(TkTestUtils.createUniformTimeBlocks(tbStart4,   1, new BigDecimal("7"), "RGH", jobNumber, workArea, task, groupKey, td.getDocumentId()));
+
+        TkTimeBlockAggregate aggregate = new TkTimeBlockAggregate(blocks, payCalendarEntry);
+
+        // Verify pre-Rule Run
+        TkTestUtils.verifyAggregateHourSums(principalId, "Pre-Check", new ImmutableMap.Builder<String, BigDecimal>()
+                .put("RGH", BigDecimal.valueOf(26.5)).build(), aggregate, 1);
+
+        // Run Rule
+
+        //td.setTimeBlocks(blocks);
+        List<LeaveBlock> leaveBlocks = TimesheetUtils.getLeaveBlocksForTimesheet(td);
+        List<TimeBlock> initialBlocks = TimesheetUtils.getTimesheetTimeblocksForProcessing(td, true);
+        List<TimeBlock> referenceTimeBlocks = TimesheetUtils.getReferenceTimeBlocks(initialBlocks);
+
+        //reset time block
+        //List<TimeBlock> tbs = TkServiceLocator.getTimesheetService().resetTimeBlock(initialBlocks, td.getAsOfDate());
+        TimesheetUtils.processTimeBlocksWithRuleChange(blocks, referenceTimeBlocks, leaveBlocks, td.getCalendarEntry(), td, HrContext.getPrincipalId());
+
+        //refresh Timesheet
+        td = TkServiceLocator.getTimesheetService().getTimesheetDocument(td.getDocumentId());
+        aggregate = new TkTimeBlockAggregate(td.getTimeBlocks(), payCalendarEntry);
+        // Verify post-Rule Run
+        TkTestUtils.verifyAggregateHourSums(principalId, "Post Rules Check", new ImmutableMap.Builder<String, BigDecimal>()
+                        .put("RGH", BigDecimal.valueOf(26.5))
+                        .put("SHTT", BigDecimal.valueOf(7.5))
+                        .put("SHMH", BigDecimal.valueOf(12)).build(),
+                aggregate,
+                1);
+        HrContext.clearTargetUser();
+    }
 }

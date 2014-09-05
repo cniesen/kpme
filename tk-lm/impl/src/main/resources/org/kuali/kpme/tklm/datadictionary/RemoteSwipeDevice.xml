@@ -1,0 +1,255 @@
+<!--
+
+Copyright 2004-2014 The Kuali Foundation
+
+Licensed under the Educational Community License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.opensource.org/licenses/ecl2.php
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+    <bean id="RemoteSwipeDevice" parent="RemoteSwipeDevice-parentBean" />
+    <bean id="RemoteSwipeDevice-parentBean" abstract="true" parent="BusinessObjectEntry">
+     <property name="dataObjectClass" value="org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice" />
+     <property name="objectLabel" value="RemoteSwipeDevice" />
+     <property name="lookupDefinition">
+<ref bean="RemoteSwipeDevice-lookupDefinition" />
+</property>
+        <property name="inquiryDefinition">
+            <ref bean="RemoteSwipeDevice-inquiryDefinition" />
+        </property>
+    
+        
+        <property name="attributes">
+            <list>
+<ref bean="RemoteSwipeDevice-ipAddress" />
+<ref bean="RemoteSwipeDevice-deviceName" />
+<ref bean="RemoteSwipeDevice-principalId" />
+<ref bean="RemoteSwipeDevice-lastSeenOnline" />
+<ref bean="RemoteSwipeDevice-active" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- Attribute Definitions -->
+
+    <bean id="RemoteSwipeDevice-ipAddress" parent="RemoteSwipeDevice-ipAddress-parentBean" />
+    <bean id="RemoteSwipeDevice-ipAddress-parentBean" abstract="true" parent="AttributeDefinition">
+    <property name="name" value="ipAddress" />
+        <property name="label" value="IP Address" />
+    <property name="shortLabel" value="IP Add" />
+<property name="maxLength" value="20" />
+<property name="validationPattern">
+<bean parent="AnyCharacterValidationPattern">
+<property name="allowWhitespace" value="false" />
+</bean>
+</property>
+<property name="controlField">
+<bean parent="Uif-TextControl" p:size="20" />
+</property>
+    </bean>
+
+    <bean id="RemoteSwipeDevice-deviceName" parent="RemoteSwipeDevice-deviceName-parentBean" />
+    <bean id="RemoteSwipeDevice-deviceName-parentBean" abstract="true" parent="AttributeDefinition">
+<property name="name" value="deviceName" />
+        <property name="label" value="Device Name" />
+        <property name="shortLabel" value="Name" />
+<property name="maxLength" value="60" />
+<property name="validationPattern">
+            <bean parent="AnyCharacterValidationPattern">
+                <property name="allowWhitespace" value="true" />
+            </bean>
+        </property>
+<property name="controlField">
+<bean parent="Uif-TextControl" p:size="60" />
+</property>
+    </bean>
+   
+<bean id="RemoteSwipeDevice-principalId" parent="RemoteSwipeDevice-principalId-parentBean" />
+<bean id="RemoteSwipeDevice-principalId-parentBean" abstract="true"
+parent="AttributeDefinition">
+<property name="name" value="principalId" />
+<property name="label" value="Principal Id" />
+<property name="shortLabel" value="Principal Id" />
+<property name="maxLength" value="40" />
+<property name="validationPattern">
+<bean parent="AnyCharacterValidationPattern">
+<property name="allowWhitespace" value="false" />
+</bean>
+</property>
+<property name="controlField">
+<bean parent="Uif-TextControl" p:size="40" />
+</property>
+</bean>
+  
+  
+    <bean id="RemoteSwipeDevice-lastSeenOnline" parent="RemoteSwipeDevice-lastSeenOnline-parentBean" />
+    <bean id="RemoteSwipeDevice-lastSeenOnline-parentBean" abstract="true" parent="AttributeDefinition">
+<property name="name" value="lastSeenOnline" />
+        <property name="label" value="Last Seen Online" />
+<property name="shortLabel" value="Online" />
+<property name="maxLength" value="50" />
+<property name="controlField">
+<bean parent="Uif-TextControl" p:size="50" />
+</property>
+    </bean>
+    
+    <bean id="RemoteSwipeDevice-active" parent="RemoteSwipeDevice-active-parentBean" />
+    <bean id="RemoteSwipeDevice-active-parentBean" abstract="true" parent="AttributeReferenceDummy-activeIndicator" p:label="Active?">
+        <property name="name" value="active" />
+        <property name="required" value="false" />
+    </bean>
+    
+    
+    
+    <!--***************************************************************************
+Views
+***************************************************************************-->
+    <!-- Lookup View -->
+    <bean id="RemoteSwipeDevice-LookupView" parent="Uif-LookupView">
+        <property name="headerText" value="Remote Swipe Device Lookup"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice"/>
+        <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KPMELookupableImpl" />
+        <property name="criteriaFields">
+            <list>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="ipAddress"/>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="deviceName"/>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                              p:fieldConversions="principalId:principalId"/>
+                    </property>
+                </bean>
+                <bean parent="Uif-LookupCriteriaInputField" p:propertyName="active" p:defaultValue="Y"/>
+            </list>
+        </property>
+        
+        <property name="resultFields">
+            <list>
+             <bean parent="Uif-DataField" p:propertyName="ipAddress"/>
+             <bean parent="Uif-DataField" p:propertyName="deviceName" />
+                <bean parent="Uif-DataField" p:propertyName="principalId">
+                    <property name="inquiry">
+                        <bean parent="Uif-Inquiry" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                              p:inquiryParameters="principalId:principalId"/>
+                    </property>
+                </bean>
+                
+                <bean parent="Uif-DataField" p:propertyName="lastSeenOnline" />
+                <bean parent="Uif-DataField" p:propertyName="active"/>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- KNS Lookup -->
+    <bean id="RemoteSwipeDevice-lookupDefinition" parent="RemoteSwipeDevice-lookupDefinition-parentBean" />
+    <bean id="RemoteSwipeDevice-lookupDefinition-parentBean" abstract="true" parent="LookupDefinition">
+        <property name="title" value="Remote Swipe Device Lookup" />
+        <!-- <property name="lookupableID" value="RemoteSwipeDeviceLookupable" /> -->
+        <property name="defaultSort">
+            <bean parent="SortDefinition" />
+        </property>
+        <property name="lookupFields">
+            <list>
+<bean parent="FieldDefinition" p:attributeName="ipAddress" />
+<bean parent="FieldDefinition" p:attributeName="deviceName" />
+<bean parent="FieldDefinition" p:attributeName="principalId"/>
+<!-- <bean parent="FieldDefinition" p:attributeName="lastSeenOnline" /> -->
+<bean parent="FieldDefinition" p:attributeName="active" />
+
+            </list>
+        </property>
+        <property name="resultFields">
+            <list>
+<bean parent="FieldDefinition" p:attributeName="ipAddress" />
+<bean parent="FieldDefinition" p:attributeName="deviceName" />
+<bean parent="FieldDefinition" p:attributeName="principalId"/>
+<bean parent="FieldDefinition" p:attributeName="lastSeenOnline" />
+<bean parent="FieldDefinition" p:attributeName="active" />
+            </list>
+        </property>
+    </bean>
+    
+    <!-- Business Object Inquiry Definition (KNS!! Remove after everything converted) -->
+    <bean id="RemoteSwipeDevice-inquiryDefinition" parent="RemoteSwipeDevice-inquiryDefinition-parentBean" />
+    <bean id="RemoteSwipeDevice-inquiryDefinition-parentBean" abstract="true" parent="InquiryDefinition" >
+        <property name="title" value="RemoteSwipeDevice Inquiry" />
+        <property name="translateCodes" value="false" />
+        <property name="inquirySections">
+            <list>
+                <bean parent="InquirySectionDefinition" p:title="RemoteSwipeDevice">
+                    <property name="numberOfColumns" value="1" />
+                    <property name="inquiryFields">
+                        <list>
+<bean parent="FieldDefinition" p:attributeName="ipAddress" />
+<bean parent="FieldDefinition" p:attributeName="deviceName" />
+<bean parent="FieldDefinition" p:attributeName="principalId"/>
+<bean parent="FieldDefinition" p:attributeName="lastSeenOnline" />
+<bean parent="FieldDefinition" p:attributeName="active" />
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- Remote Swipe Device View -->
+   <bean id="RemoteSwipeDevice-InquiryView" parent="Uif-InquiryView" >
+          <property name="headerText" value="Remote Swipe Device Inquiry" />
+          <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice"/>
+          <property name="singlePageView" value="true"/>
+          <property name="items">
+              <list>
+                  <bean id="RemoteSwipeDevice-InquiryView-General" parent="Uif-Disclosure-GridSection">
+                      <property name="layoutManager.numberOfColumns" value="2"/>
+                      <property name="items">
+                          <list>
+                              <bean parent="Uif-DataField" p:propertyName="ipAddress"/>
+                              <bean parent="Uif-DataField" p:propertyName="active"/>
+                          </list>
+                      </property>
+                      <property name="title" value="Pay Grade Information" />
+                  </bean>
+              </list>
+          </property>
+   </bean>
+
+    <!-- Remote Swipe Device Maintenance View-->
+    <bean id="RemoteSwipeDevice-MaintenanceView" parent="RemoteSwipeDevice-MaintenanceView-ParentBean"/>
+    <bean id="RemoteSwipeDevice-MaintenanceView-ParentBean" abstract="true" parent="Uif-MaintenanceView">
+        <property name="headerText" value="Remote Swipe Device Maintenance"/>
+        <property name="dataObjectClassName" value="org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice"/>
+        <property name="items">
+            <list merge="true">
+                <bean parent="Uif-MaintenanceGridSection">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-InputField" p:propertyName="ipAddress"/>
+                            <bean parent="Uif-InputField" p:propertyName="deviceName"/>
+                            <bean parent="Uif-InputField" p:propertyName="principalId">
+                                <property name="quickfinder">
+                                    <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+                                          p:fieldConversions="principalId:principalId"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true"/>
+                        </list>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+</beans>

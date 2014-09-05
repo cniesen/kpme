@@ -380,4 +380,12 @@
         <field-descriptor name="versionNumber"      	column="VER_NBR"            		jdbc-type="BIGINT"      locking="true" />
     </class-descriptor>
 
+    <class-descriptor class="org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice" table="tk_remote_swipe_device_t">
+        <field-descriptor name="ipAddress"	column="IP_ADDRESS" jdbc-type="VARCHAR" primarykey="true" index="true" />
+        <field-descriptor name="deviceName"	column="DEVICE_NM" jdbc-type="VARCHAR" index="true" />
+        <field-descriptor name="principalId" column="PRINCIPAL_ID" jdbc-type="VARCHAR" length="40" nullable="true" primarykey="false" />
+        <field-descriptor name="lastSeenOnline" column="LAST_COMMUNICATE_TIME"	jdbc-type="VARCHAR"	nullable="true" />
+        <field-descriptor name="active" column="active" jdbc-type="VARCHAR" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
+    </class-descriptor>
+
 </descriptor-repository>
