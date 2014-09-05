@@ -460,10 +460,27 @@
             </bean>
         </property>
     </bean>
-    
-    
-    
- 	<!-- TK-LM Lookupable Bean Definitions -->
+
+    <!-- Mobile Bean Definitions from Vivantech -->
+    <bean id="mobileClockLogService" name="mobileClockLogService" class="org.kuali.kpme.tklm.time.service.mobile.MobileClockLogServiceImpl"/>
+
+    <bean id="mobileClockLogServiceExporter" class="org.kuali.rice.ksb.api.bus.support.ServiceBusExporter">
+        <property name="serviceDefinition">
+            <bean class="org.kuali.rice.ksb.api.bus.support.RestServiceDefinition">
+                <property name="service" ref="mobileClockLogService"/>
+                <property name="serviceNameSpaceURI" value="mobileClockLogService"/>
+                <property name="localServiceName" value="mobileClockLogService"/>
+                <property name="busSecurity" value="false"/>
+            </bean>
+        </property>
+    </bean>
+
+    <bean id="cryptographicService" name="cryptographicService" class="org.kuali.kpme.tklm.time.service.mobile.CryptographicServiceImpl"/>
+
+
+
+
+    <!-- TK-LM Lookupable Bean Definitions -->
  	<bean id="balanceTransferRuleLookupableHelperService" class="org.kuali.kpme.tklm.leave.transfer.web.BalanceTransferLookupableHelperServiceImpl" scope="prototype"/>
     <bean id="balanceTransferLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
         <property name="lookupableHelperService">

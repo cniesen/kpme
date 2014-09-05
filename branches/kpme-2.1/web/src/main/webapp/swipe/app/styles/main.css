@@ -1,0 +1,109 @@
+html,body {
+	height: 100%;
+}
+
+body {
+	font-size: 100%;
+}
+
+#header {
+    height: 56px;
+    background-color: #aa003e;
+    width: 100%;
+    background-image: url("");
+    padding-left: 80px;
+	/*border-bottom-right-radius: 6px;
+	border-bottom-left-radius: 6px;
+	border-bottom: 1px solid #000;*/
+}
+
+#header h1.headerImage {
+	background-image: url("../images/logo-khr.png");
+    background-repeat: no-repeat;
+	position: relative;
+	left: auto;
+	top: auto;
+	margin-left: 3px
+}
+
+.wrapper {
+	min-height: 100%;
+	height: auto !important;
+	height: 100%;
+	margin: 0 auto -10%;
+	/* the bottom margin is the negative value of the footer's height */
+}
+
+#footer-copyright,.push {
+    background: #383838;
+    clear: both;
+    float: none;
+    height: 60px;
+    padding: 8px 20px 8px 20px;
+    box-shadow: inset 0 1px 0 2px rgba(0,0,0,0.1);
+    margin-bottom: -1.5em;
+    display: block;
+    box-sizing: border-box;
+    position: absolute;
+    overflow: hidden;
+    /* height: 10%;  '.push' must be the same height as 'footer' */
+}
+
+#footer-copyright h1.footerImage
+{
+    background-image:   url("../images/logo-kuali.png");
+    margin: 0px;
+    padding: 0px;
+    height:33px;
+    width: 33px;
+    float:left;
+    left: 0px;
+    top: 0px;
+}
+
+#copyright-text {
+    float: right;
+    text-align: left;
+}
+
+#swipe-developer {
+	margin-top: 20px;
+}
+
+/* Customize container */
+@media ( min-width : 768px) {
+	.container {
+		height: 100%;
+	}
+	.container .jumbotron {
+		min-height: 400px;
+		margin-top: 30px;
+		text-align: center;
+		background-color: #fff;
+		border: 1px solid #000;
+	}
+}
+
+.jumbotron {
+    background-color: #fff;
+    height: 100%;
+    width: 100%;
+}
+
+.multiple-position-proceed {
+	margin-top: 40px;
+}
+
+.please-swipe {
+	padding-top: 100px;
+}
+
+.btn-block+.btn-block {
+	margin-top: 10px;
+}
+
+.btn-block {
+	height: 70px;
+	margin-top: 20px;
+	font-size: 25px;
+}

@@ -329,7 +329,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
     
     //Add a note to timesheet for approver's actions
     public void addNote(TimeBlockBo timeBlock, String actionMessage){
-    	if(!HrContext.getPrincipalId().equals(timeBlock.getPrincipalId())){
+    	if(HrContext.userSessionExists() && !HrContext.getPrincipalId().equals(timeBlock.getPrincipalId())){
     		Note.Builder builder = Note.Builder.create(timeBlock.getDocumentId(), timeBlock.getUserPrincipalId());
     		builder.setCreateDate(new DateTime());
     		String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();

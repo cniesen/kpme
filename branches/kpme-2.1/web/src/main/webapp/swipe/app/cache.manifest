@@ -1,0 +1,37 @@
+CACHE MANIFEST
+# Version 0.2
+
+CACHE:
+# Explicitly cached entries
+# - Fonts
+fonts/glyphicons-halflings-regular.eot
+fonts/glyphicons-halflings-regular.svg
+fonts/glyphicons-halflings-regular.ttf
+fonts/glyphicons-halflings-regular.woff
+
+# - Images
+images/headerback.gif
+images/kpme_logo.png
+images/khr_logo.png
+images/os-guy.gif
+
+# - Javascript
+plugins/com.bentomobility.magtek/www/magtek.js
+scripts/scripts.js
+scripts/vendor.js
+cordova_plugins.js
+
+# - CSS
+styles/main.css
+styles/vendor.css
+
+# - HTML
+views/main.html
+404.html
+index.html
+
+# - Allow all files internet access
+NETWORK:
+*
+http://*
+https://*
