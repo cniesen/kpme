@@ -51,7 +51,14 @@ Then(/^I should see all the exact time values$/) do
     page.windows[1].use
     @list_no=(page.number_of_items)-2
 
-    page.timeentry_table(@list_no).should include (calendar_date+" "+"IN-DEPT HR Work Area : $5.00 Rcd 0 IN-DEPT"+" "+@clock_in+" "+@in_noon+" "+calendar_date+" "+@clock_in+" "+@in_noon+" "+@clock_out+" "+@out_noon+" "+calendar_date+" "+@clock_out+" "+@out_noon)
+    current_time_in=@timeentry.current_time_in.to_s[0,5]
+    current_in_meridian=(@timeentry.current_time_in.to_s[9,2]).upcase
+    current_time_out=@timeentry.current_time_out.to_s[0,5]
+    current_out_meridian=(@timeentry.current_time_out.to_s[9,2]).upcase
+
+    page.timeentry_table(@list_no).should include(calendar_date+" "+"IN-DEPT HR Work Area : $5.00 Rcd 0 IN-DEPT"+" "+@clock_in+" "+@in_noon+" "+calendar_date+" "+current_time_in+" "+current_in_meridian+" "+@clock_out+" "+@out_noon+" "+calendar_date+" "+current_time_out+" "+current_out_meridian)
+    ((page.time_value(@list_no,2)[3,2].to_i)%6).should==0
+    ((page.time_value(@list_no,4)[3,2].to_i)%6).should==0
     page.windows.last.close
 
 
