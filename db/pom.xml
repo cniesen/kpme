@@ -39,8 +39,8 @@
             <groupId>com.oracle</groupId>
             <artifactId>${oracle.jdbc.artifactId}</artifactId>
             <version>${oracle.jdbc.version}</version>
-            <scope>runt-->ime</scope>
-        </dependency>
+            <scope>runtime</scope>
+        </dependency>-->
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
