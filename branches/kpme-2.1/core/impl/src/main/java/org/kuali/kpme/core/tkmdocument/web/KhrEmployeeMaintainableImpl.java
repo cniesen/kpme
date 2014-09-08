@@ -49,7 +49,10 @@ import java.util.List;
 import java.util.Map;
 
 public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
-    protected static Logger LOG = Logger.getLogger(KhrEmployeeMaintainableImpl.class);
+    
+	private static final long serialVersionUID = 1140415771858326498L;
+	
+	protected static Logger LOG = Logger.getLogger(KhrEmployeeMaintainableImpl.class);
     @Override
     public Object retrieveObjectForEditOrCopy(MaintenanceDocument document, Map<String, String> dataObjectKeys) {
         KhrEmployeeDocument tkmDocument = new KhrEmployeeDocument();
@@ -117,6 +120,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             //if end date is present create an inactive job
             if(tkmJob.getEndDate() != null) {
                 KhrEmployeeJob inactiveJob = createTKMJob(tkmJob);
+                inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
                 inactiveJob.setHrJobId(null);
                 inactiveJob.setObjectId(null);
                 inactiveJob.setVersionNumber(null);
@@ -196,6 +200,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     protected void processBeforeAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
     	 if (addLine instanceof KhrEmployeeJob) {
     		 ((KhrEmployeeJob) addLine).setGroupKeyCode("ISU-IA");
+    		 ((KhrEmployeeJob) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
     }
 
@@ -247,6 +252,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         tkmJob.setVersionNumber(job.getVersionNumber());
         tkmJob.setObjectId(job.getObjectId());
         tkmJob.setActive(job.isActive());
+        tkmJob.setUserPrincipalId(job.getUserPrincipalId());
 
         return tkmJob;
     }
