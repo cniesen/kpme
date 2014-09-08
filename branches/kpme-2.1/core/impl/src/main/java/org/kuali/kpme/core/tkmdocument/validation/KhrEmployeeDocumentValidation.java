@@ -176,8 +176,10 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
 
     protected boolean isValidAssignmentEffectiveDate(KhrEmployeeJob tkmJob, AssignmentBo assignment, int assignmentIndex, int index) {
         //validate assignment effective date
-        if(assignment.getEffectiveDate().before(tkmJob.getEffectiveDate())) {
-            this.putFieldError("dataObject.jobList["+ index +"].assignmentList[" + assignmentIndex + "].effectiveDate","tkmdocument.assignment.effective.before.job");
+
+        //assignment.
+        if (assignment.getEffectiveDate().before(tkmJob.getEffectiveDate()) && (assignment.getId() == null) ) {
+            this.putFieldError("dataObject.jobList["+ index +"].assignmentList[" + assignmentIndex + "].effectiveDate", "tkmdocument.assignment.effective.before.job");
             return false;
         }
         return true;
