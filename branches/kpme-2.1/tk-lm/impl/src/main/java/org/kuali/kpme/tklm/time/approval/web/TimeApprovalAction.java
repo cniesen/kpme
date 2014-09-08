@@ -229,7 +229,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
         LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate().minusDays(limit);
       
-        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
+        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);
 	}
     
 	protected void setApprovalTables(TimeApprovalActionForm timeApprovalActionForm, HttpServletRequest request, List<String> principalIds, String docIdSearchTerm) {
@@ -252,7 +252,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(StringUtils.lowerCase(row2.getName()), StringUtils.lowerCase(row1.getName()));
 						}
 					}
-		    	});
+                		    	});
 		    } else if (StringUtils.equals(sortField, "documentID")) {
 		    	final boolean sortDocumentIdAscending = getAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
@@ -264,7 +264,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(NumberUtils.toInt(row2.getDocumentId()), NumberUtils.toInt(row1.getDocumentId()));
 						}
 					}
-		    	});
+                		    	});
 		    } else if (StringUtils.equals(sortField, "status")) {
 		    	final boolean sortStatusIdAscending = getAscending(request);;
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
@@ -276,7 +276,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(StringUtils.lowerCase(row2.getApprovalStatus()), StringUtils.lowerCase(row1.getApprovalStatus()));
 						}
 					}
-		    	});
+                		    	});
 		    }
 		    
 		    String page = request.getParameter((new ParamEncoder(HrConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));
