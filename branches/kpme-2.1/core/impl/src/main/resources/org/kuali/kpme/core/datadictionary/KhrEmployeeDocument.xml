@@ -149,7 +149,7 @@
             </list>
         </property>
         <property name="layoutManager.rowDetailsGroup">
-            <bean parent="Uif-TableSubCollection-WithinSection">
+            <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-AddAssignment">
                 <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
                 <property name="propertyName" value="assignments" />
                 <property name="headerText" value="Assignment" />
@@ -165,7 +165,7 @@
                     </list>
                 </property>
                 <property name="layoutManager.rowDetailsGroup">
-                    <bean parent="Uif-TableSubCollection-WithinSection">
+                    <bean parent="Uif-TableSubCollection-WithinSection"  id = "KhrEmployee-AddAssignmentAccount">
                         <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo"/>
                         <property name="propertyName" value="assignmentAccounts" />
                         <property name="headerText" value="Assignment Accounts" />
@@ -275,7 +275,7 @@
         <property name="addLinePlacement" value="TOP"/>
         <property name="addViaLightBox" value="true"/>
         <property name="addViaLightBoxAction">
-        	<bean parent="Uif-AddViaLightBoxAction">
+        	<bean parent="Uif-AddViaLightBoxAction" id = "KhrEmployee-AddJob">
         		<property name="actionLabel" value="Add Job"></property>
         	</bean>
         </property>
@@ -301,8 +301,8 @@
                     </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true" />
-                <bean parent="Uif-InputField" p:propertyName="standardHours"/>
-                <bean parent="Uif-InputField" p:propertyName="payGrade" >
+                <bean parent="Uif-InputField" p:propertyName="standardHours" p:required="true"/>
+                <bean parent="Uif-InputField" p:propertyName="payGrade" p:required="true">
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
                               p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
@@ -332,8 +332,8 @@
                     </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true" />
-                <bean parent="Uif-InputField" p:propertyName="standardHours"/>
-                <bean parent="Uif-InputField" p:propertyName="payGrade" >
+                <bean parent="Uif-InputField" p:propertyName="standardHours" p:required="true"/>
+                <bean parent="Uif-InputField" p:propertyName="payGrade" p:required="true">
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
                               p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
@@ -373,19 +373,19 @@
                 </property>
                 <property name="addLineItems">
                     <list>
-                        <bean parent="Uif-InputField" p:propertyName="effectiveDate">
+                        <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true">
                             <property name="control">
                                 <bean parent="Uif-DateControl"/>
                             </property>
                         </bean>
-                        <bean parent="Uif-InputField" p:propertyName="workArea" >
+                        <bean parent="Uif-InputField" p:propertyName="workArea" p:required="true">
                         <property name="quickfinder">
                             <bean parent="Uif-QuickFinderByScript"
                                   p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
                                   p:fieldConversions="workArea:workArea"/>
                         </property>
                         </bean>
-                        <bean parent="Uif-InputField" p:propertyName="task" >
+                        <bean parent="Uif-InputField" p:propertyName="task"  p:required="true">
                             <property name="quickfinder">
                                 <bean parent="Uif-QuickFinderByScript"
                                       p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
@@ -393,7 +393,7 @@
                                       p:lookupParameters="workArea:workArea"/>
                             </property>
                         </bean>
-                        <bean parent="Uif-InputField" p:propertyName="active" >
+                        <bean parent="Uif-InputField" p:propertyName="active"  p:required="true">
                             <property name="control">
                                 <bean parent="Uif-CheckboxControl"/>
                             </property>
@@ -446,9 +446,9 @@
                         </property>
                         <property name="items">
                             <list>
-                                <bean parent="Uif-InputField" p:propertyName="accountNbr" />
-                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr" />
-                                <bean parent="Uif-InputField" p:propertyName="earnCode" >
+                                <bean parent="Uif-InputField" p:propertyName="accountNbr" p:required="true" />
+                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr" p:required="false"/>
+                                <bean parent="Uif-InputField" p:propertyName="earnCode" p:required="true" >
                                     <property name="quickfinder">
                                         <bean parent="Uif-QuickFinderByScript"
                                               p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
