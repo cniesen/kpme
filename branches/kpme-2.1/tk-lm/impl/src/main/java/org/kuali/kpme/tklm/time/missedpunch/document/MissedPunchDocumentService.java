@@ -37,6 +37,16 @@ public interface MissedPunchDocumentService {
      */
     public void approveMissedPunchDocument(MissedPunchDocument missedPunchDocument);
 
-	public MissedPunchDocument getMissedPunchDocumentByMissedPunchId(String tkMissedPunchId);
-    
+    /**
+     * Cancel a Missed Punch Document.
+     *
+     * @param missedPunchDocument The Missed Punch Document to approve
+     */
+    public void cancelMissedPunchDocument(MissedPunchDocument missedPunchDocument);
+
+    void cancelMissedPunchDocumentWithDocumentId(String documentId);
+
+    public MissedPunchDocument getMissedPunchDocumentByMissedPunchId(String tkMissedPunchId);
+
+    public MissedPunchDocument getMissedPunchDocumentByDocumentId(String documentId);
 }
