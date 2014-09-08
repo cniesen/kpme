@@ -66,6 +66,7 @@ import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesheet.web.TimesheetAction;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.api.util.Truth;
 import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
 
@@ -137,13 +138,15 @@ public class ClockAction extends TimesheetAction {
 		        	DateTime currentDateTime = new DateTime();
 		        	for (Map.Entry<String, String> entry : assignmentMap.entrySet()) {
 		        		Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(entry.getKey()), LocalDate.now());
-		        		String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
-		        		if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
+		        		String allowActionFromInvalidLocation = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
+		        		if(!Truth.strToBooleanIgnoreCase(allowActionFromInvalidLocation)) {
 		        			boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ipAddress, currentDateTime.toLocalDate());
 		        			if (!isInValid) {
 		        				assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
 		        			}
-		        		}
+		        		} else {
+                            assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
+                        }
 		        	}
 		        	clockActionForm.setAssignmentDescriptions(assignmentDescriptionMap);
 		        }else{
