@@ -86,14 +86,12 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		
 		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(groupKeyCode, dept, workArea, principalId, jobNumber, asOfDate);
 		if(lstClockLocationRules.isEmpty()){
-			isInValid = false;
-			return isInValid;
+			return false;
 		}
 		for(ClockLocationRule clockLocationRule : lstClockLocationRules){
 			List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
-			String ipAddressClock = ipAddress;
-			for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
-				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddressClock)){
+            for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
+				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddress)){
 					isInValid = false;
 					break;
 				}
@@ -171,8 +169,20 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		if(!clockLocationRule.isEmpty()){
 			return clockLocationRule;
 		}
-		
-		//9 : %, -1, % , -1
+
+        // 9 : %, -1, principalId        , job
+        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, principalId, jobNumber, asOfDate);
+        if(!clockLocationRule.isEmpty()){
+            return clockLocationRule;
+        }
+
+        // 10 : %, -1, principalId        , %
+        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, principalId, -1L, asOfDate);
+        if(!clockLocationRule.isEmpty()){
+            return clockLocationRule;
+        }
+
+		//11 : %, -1, % , -1
 		clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, "%", -1L, asOfDate);
 		return clockLocationRule;
 
