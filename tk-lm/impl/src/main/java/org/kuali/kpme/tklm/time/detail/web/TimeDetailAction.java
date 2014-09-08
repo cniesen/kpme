@@ -636,6 +636,10 @@ public class TimeDetailAction extends TimesheetAction {
                 existingBlock.setVersionNumber(tb.getVersionNumber());
                 existingBlock.setObjectId(tb.getObjectId());
                 existingBlock.setOvertimePref(null);
+                existingBlock.setClockedByMissedPunch(tb.isClockedByMissedPunch());
+                existingBlock.setMissedPunchClockIn(tb.isMissedPunchClockIn());
+                existingBlock.setMissedPunchClockOut(tb.isMissedPunchClockOut());
+                existingBlock.setMissedPunchDocId(tb.getMissedPunchDocId());
                 //existingBlock.setTkTimeBlockId(tb.getTkTimeBlockId());
         		finalNewTimeBlocks.add(existingBlock);
         	}

@@ -443,4 +443,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
     String getMissedPunchDocStatus();
     String getAssignmentValue();
     Boolean isClockedByMissedPunch();
+    boolean isMissedPunchClockIn();
+    boolean isMissedPunchClockOut();
+
 }

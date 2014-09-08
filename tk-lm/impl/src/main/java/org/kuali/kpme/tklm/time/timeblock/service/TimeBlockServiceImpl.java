@@ -44,6 +44,7 @@ import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockService;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
 import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlockHistory;
@@ -189,7 +190,22 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         
         List<TimeBlockBo> oldTimeBlockBos = ModelObjectUtils.transform(oldTimeBlocks, toTimeBlockBo);
         List<TimeBlockBo> newTimeBlockBos = ModelObjectUtils.transform(newTimeBlocks, toTimeBlockBo);
+
+        Map<String, Interval> oldTimeBlockIntervals = new HashMap<String, Interval>();
+        Map<String, Interval> newTimeBlockIntervals = new HashMap<String, Interval>();
+        for (TimeBlockBo oldTb : oldTimeBlockBos) {
+            if (StringUtils.isNotEmpty(oldTb.getTkTimeBlockId())
+                    && oldTb.getBeginDateTime() != null
+                    && oldTb.getEndDateTime() != null) {
+                oldTimeBlockIntervals.put(oldTb.getTkTimeBlockId(), new Interval(oldTb.getBeginDateTime(), oldTb.getEndDateTime()));
+            }
+        }
         for (TimeBlockBo tb : newTimeBlockBos) {
+            if (StringUtils.isNotEmpty(tb.getTkTimeBlockId())
+                    && tb.getBeginDateTime() != null
+                    && tb.getEndDateTime() != null) {
+                newTimeBlockIntervals.put(tb.getTkTimeBlockId(), new Interval(tb.getBeginDateTime(), tb.getEndDateTime()));
+            }
             boolean persist = true;
             for (TimeBlockBo tbOld : oldTimeBlockBos) {
                 HrServiceLocator.getHRPermissionService().updateTimeBlockPermissions(CalendarBlockPermissions.newInstance(tbOld.getTkTimeBlockId()));
@@ -224,6 +240,20 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 	            KRADServiceLocator.getBusinessObjectService().save(timeBlock.getTimeBlockHistories());
         	} else {
 	            timeBlock.setTimeBlockHistories(createTimeBlockHistories(timeBlock, TkConstants.ACTIONS.UPDATE_TIME_BLOCK));
+                if (timeBlock.isClockedByMissedPunch()) {
+                    //is a missed punch... Did the mp time change?
+                    Interval oldInterval = oldTimeBlockIntervals.get(timeBlock.getTkTimeBlockId());
+                    Interval newInterval = newTimeBlockIntervals.get(timeBlock.getTkTimeBlockId());
+                    if (timeBlock.isMissedPunchClockIn()) {
+                        if (oldInterval.getStart().compareTo(newInterval.getStart()) != 0) {
+                            TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+                        }
+                    } else if (timeBlock.isMissedPunchClockOut()) {
+                        if (oldInterval.getEnd().compareTo(newInterval.getEnd()) != 0) {
+                            TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+                        }
+                    }
+                }
 	            //Add a note to timesheet if approver has updated the timeblock
 	            addNote(timeBlock, "updated");
 	            KRADServiceLocator.getBusinessObjectService().save(timeBlock.getTimeBlockHistories());
@@ -323,6 +353,9 @@ public class TimeBlockServiceImpl implements TimeBlockService {
     public void deleteTimeBlock(TimeBlock timeBlock) {
     	TimeBlockBo timeBlockBo = TimeBlockBo.from(timeBlock);
     	//Add note to timesheet if approver deleted the timeblock.
+        if (timeBlock.isClockedByMissedPunch()) {
+            TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+        }
     	addNote(timeBlockBo, "deleted");
     	KRADServiceLocator.getBusinessObjectService().delete(timeBlockBo);
     }
