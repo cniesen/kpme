@@ -17,6 +17,7 @@ package org.kuali.kpme.tklm.time.rules.timecollection.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.kpme.tklm.time.rules.validation.TkKeyedBusinessObjectValidation;
+import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
@@ -80,7 +81,7 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
 			this.putFieldError("workArea", "error.wc.wadef");
 			return false;
 		}
-        
+
         if(!validateGroupKeyDeptWildcarding(tcr)){
         	// add error when dept is defined, groupkey is wild carded.
 			this.putFieldError("groupKeyCode", "error.wc.deptdef");
@@ -89,10 +90,18 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
         
 		return true;
     }
-	
-	
 
-	/**
+
+    @Override
+    protected boolean validateGroupKeyCode(HrKeyedBusinessObject keyedBo) {
+        if (StringUtils.equals(keyedBo.getGroupKeyCode(), HrConstants.WILDCARD_CHARACTER))
+        {
+            return true;
+        }
+        return super.validateGroupKeyCode(keyedBo);
+    }
+
+    /**
 	 * It looks like the method that calls this class doesn't actually care
 	 * about the return type.
 	 */
@@ -102,7 +111,6 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
 		boolean valid = false;
 		LOG.debug("entering custom validation for TimeCollectionRule");
 		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
-
 
 
 		if (pbo instanceof TimeCollectionRule) {
