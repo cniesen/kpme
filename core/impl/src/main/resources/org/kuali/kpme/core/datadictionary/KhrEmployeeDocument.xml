@@ -236,11 +236,11 @@
         <property name="headerText" value="KHR Employee Setup" />
         <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"/>
-        <property name="dialogs">
-            <list merge="true">
-                <bean id="ProcessWarning-Dialog" parent="ProcessChangeWarning-Dialog-parentBean"/>
-            </list>
-        </property>
+<!--         <property name="dialogs"> -->
+<!--             <list merge="true"> -->
+<!--                 <bean id="ProcessWarning-Dialog" parent="ProcessChangeWarning-Dialog-parentBean"/> -->
+<!--             </list> -->
+<!--         </property> -->
         <property name="additionalScriptFiles">
 	      <list merge="true">
 	        <value>js/krad-ui.js</value>
