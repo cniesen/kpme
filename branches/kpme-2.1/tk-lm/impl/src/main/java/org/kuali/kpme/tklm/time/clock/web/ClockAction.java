@@ -654,7 +654,7 @@ public class ClockAction extends TimesheetAction {
 
         TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
 		TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
-		TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
+		TkServiceLocator.getTimeBlockService().deleteTimeBlockAndHandleMissedPunch(oldTB, true);
 		return mapping.findForward("basic");
 	}
 	

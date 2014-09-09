@@ -107,6 +107,8 @@ public interface TimeBlockService {
     })
 	public List<TimeBlock> saveTimeBlocks(List<TimeBlock> tbList);
 
+    void deleteTimeBlockAndHandleMissedPunch(TimeBlock timeBlock, boolean ignoreMissedPunch);
+
     /**
 	 * Reset the TimeHourDetail object associated with the TimeBlock object on a List of TimeBlocks
 	 * @param origTimeBlocks

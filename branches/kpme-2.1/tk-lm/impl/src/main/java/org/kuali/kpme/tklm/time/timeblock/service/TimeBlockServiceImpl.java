@@ -351,13 +351,19 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 
     @Override
     public void deleteTimeBlock(TimeBlock timeBlock) {
-    	TimeBlockBo timeBlockBo = TimeBlockBo.from(timeBlock);
-    	//Add note to timesheet if approver deleted the timeblock.
-        if (timeBlock.isClockedByMissedPunch()) {
+    	deleteTimeBlockAndHandleMissedPunch(timeBlock, false);
+    }
+
+    @Override
+    public void deleteTimeBlockAndHandleMissedPunch(TimeBlock timeBlock, boolean ignoreMissedPunch) {
+        TimeBlockBo timeBlockBo = TimeBlockBo.from(timeBlock);
+        //Add note to timesheet if approver deleted the timeblock.
+        if (timeBlock.isClockedByMissedPunch()
+                && !ignoreMissedPunch) {
             TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
         }
-    	addNote(timeBlockBo, "deleted");
-    	KRADServiceLocator.getBusinessObjectService().delete(timeBlockBo);
+        addNote(timeBlockBo, "deleted");
+        KRADServiceLocator.getBusinessObjectService().delete(timeBlockBo);
     }
     
     //Add a note to timesheet for approver's actions

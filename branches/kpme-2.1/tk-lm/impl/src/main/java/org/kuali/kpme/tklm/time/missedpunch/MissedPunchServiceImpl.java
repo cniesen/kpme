@@ -152,7 +152,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         if (CollectionUtils.isNotEmpty(timeBlocks)) {
             for (TimeBlock timeBlock : timeBlocks) {
-                timeBlockService.deleteTimeBlock(timeBlock);
+                timeBlockService.deleteTimeBlockAndHandleMissedPunch(timeBlock, true);
             }
         }
     }
