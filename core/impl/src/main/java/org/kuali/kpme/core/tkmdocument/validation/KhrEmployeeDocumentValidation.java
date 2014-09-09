@@ -17,12 +17,10 @@ package org.kuali.kpme.core.tkmdocument.validation;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
-import org.kuali.kpme.core.job.authorization.JobAuthorizer;
-import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentViewAuthorizer;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
@@ -31,6 +29,7 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -206,7 +205,7 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
     // check permission re-using the job doc authorizer
     public boolean canMaintainJob(KhrEmployeeJob tkmJob) {
     	Person user = KimApiServiceLocator.getPersonService().getPerson(HrContext.getTargetPrincipalId());
-        if( !((new JobAuthorizer()).canMaintain(tkmJob, user)) ) {
+    	if( !(((KPMEMaintenanceDocumentViewAuthorizer)(KRADServiceLocatorWeb.getDocumentDictionaryService().getDocumentAuthorizer("JobMaintenanceDocumentType"))).canMaintain(tkmJob, user)) ) {
             return false;
         }
         return true;
