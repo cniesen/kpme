@@ -244,13 +244,16 @@ public class TimeBlockServiceImpl implements TimeBlockService {
                     //is a missed punch... Did the mp time change?
                     Interval oldInterval = oldTimeBlockIntervals.get(timeBlock.getTkTimeBlockId());
                     Interval newInterval = newTimeBlockIntervals.get(timeBlock.getTkTimeBlockId());
-                    if (timeBlock.isMissedPunchClockIn()) {
-                        if (oldInterval.getStart().compareTo(newInterval.getStart()) != 0) {
-                            TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
-                        }
-                    } else if (timeBlock.isMissedPunchClockOut()) {
-                        if (oldInterval.getEnd().compareTo(newInterval.getEnd()) != 0) {
-                            TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+                    if (oldInterval != null
+                            && newInterval != null) {
+                        if (timeBlock.isMissedPunchClockIn()) {
+                            if (oldInterval.getStart().compareTo(newInterval.getStart()) != 0) {
+                                TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+                            }
+                        } else if (timeBlock.isMissedPunchClockOut()) {
+                            if (oldInterval.getEnd().compareTo(newInterval.getEnd()) != 0) {
+                                TkServiceLocator.getMissedPunchDocumentService().cancelMissedPunchDocumentWithDocumentId(timeBlock.getMissedPunchDocId());
+                            }
                         }
                     }
                 }
