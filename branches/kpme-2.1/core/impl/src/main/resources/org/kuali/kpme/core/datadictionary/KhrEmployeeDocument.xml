@@ -19,6 +19,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+<!--
+    <bean id="KhrEmployeeDocument" parent="KhrEmployeeDocument-parentBean"/>
+    <bean id="KhrEmployeeDocument-parentBean" abstract="true" parent="BusinessObjectEntry">
+-->
 
     <bean id="KhrEmployeeDocument" parent="KhrEmployeeDocument-parentBean"/>
     <bean id="KhrEmployeeDocument-parentBean" abstract="true" parent="BusinessObjectEntry">
@@ -192,6 +196,9 @@
         <property name="headerText" value="TKM Document Lookup" />
         <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeDocumentLookupableImpl"/>
+
+        <!-- <property name="maintenanceUrlMapping" value="kpme/KhrEmployeeJobMaintenance"/> -->
+
         <property name="criteriaFields">
             <list>
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId" >
@@ -215,10 +222,15 @@
         </property>
     </bean>
 
+    <!-- p:documentAuthorizerClass="org.kuali.kpme.core.tkmdocument.authorization.KhrEmployeeDocumentMaintenanceDocumentAuthorizer"
+
+    "org.kuali.kpme.core.tkmdocument.KhrEmployeeMaintenanceDocument"
+    -->
 
     <bean id="KhrEmployeeDocumentMaintenanceDocument" parent="KhrEmployeeDocumentMaintenanceDocument-parentBean" />
     <bean id="KhrEmployeeDocumentMaintenanceDocument-parentBean" abstract="true"
-          parent="uifMaintenanceDocumentEntry" p:dataObjectClass="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"
+          parent="uifMaintenanceDocumentEntry"
+          p:dataObjectClass="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"
           p:documentAuthorizerClass="org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase"
           p:maintainableClass="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"
           p:businessRulesClass="org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation">
@@ -371,7 +383,7 @@
             </list>
         </property>
         <property name="layoutManager.rowDetailsGroup">
-            <bean parent="Uif-TableSubCollection-WithinSection">
+            <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-Assignment-Collection">
                 <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
                 <property name="propertyName" value="assignments" />
                 <property name="headerText" value="Assignment" />
@@ -461,7 +473,7 @@
                     </list>
                 </property>
                 <property name="layoutManager.rowDetailsGroup">
-                    <bean parent="Uif-TableSubCollection-WithinSection">
+                    <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-AssignmentAccount-Collection">
                         <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo"/>
                         <property name="propertyName" value="assignmentAccounts" />
                         <property name="headerText" value="Assignment Accounts" />
