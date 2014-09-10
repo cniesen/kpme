@@ -17,25 +17,39 @@ package org.kuali.kpme.core.tkmdocument.validation;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
-import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentViewAuthorizer;
+import org.kuali.kpme.core.job.authorization.JobAuthorizer;
+import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.rice.core.api.exception.RiceIllegalArgumentException;
+import org.kuali.rice.core.api.util.RiceKeyConstants;
+import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.maintenance.MaintenanceDocumentAuthorizer;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
+import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.RouteToCompletionUtil;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.ListIterator;
 
 public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
+
+    @Override
+    protected boolean processGlobalSaveDocumentBusinessRules(MaintenanceDocument document) {
+        return true;
+    }
+
     @Override
     protected boolean processCustomRouteDocumentBusinessRules(MaintenanceDocument document) {
         boolean valid = false;
