@@ -92,6 +92,7 @@ import java.util.List;
         TimeBlock.Elements.CLOCKED_BY_MISSED_PUNCH,
         TimeBlock.Elements.MISSED_PUNCH_CLOCK_IN,
         TimeBlock.Elements.MISSED_PUNCH_CLOCK_OUT,
+        TimeBlock.Elements.TOTAL_MINUTES,
         CoreConstants.CommonElements.OBJECT_ID,
         CoreConstants.CommonElements.VERSION_NUMBER,
         CoreConstants.CommonElements.FUTURE_ELEMENTS
@@ -206,6 +207,8 @@ public final class TimeBlock
     @XmlElement(name = Elements.MISSED_PUNCH_CLOCK_OUT, required = false)
     private final boolean missedPunchClockOut;
 
+    @XmlElement(name = Elements.TOTAL_MINUTES, required = false)
+    private final BigDecimal totalMinutes;
     @XmlElement(name = CoreConstants.CommonElements.OBJECT_ID, required = false)
     private final String objectId;
     @XmlElement(name = CoreConstants.CommonElements.VERSION_NUMBER, required = false)
@@ -268,6 +271,7 @@ public final class TimeBlock
         this.clockedByMissedPunch = null;
         this.missedPunchClockIn = false;
         this.missedPunchClockOut = false;
+        this.totalMinutes = null;
     }
 
     private TimeBlock(Builder builder) {
@@ -320,6 +324,7 @@ public final class TimeBlock
         this.clockedByMissedPunch = builder.isClockedByMissedPunch();
         this.missedPunchClockIn = builder.isMissedPunchClockIn();
         this.missedPunchClockOut = builder.isMissedPunchClockOut();
+        this.totalMinutes = builder.getTotalMinutes();
     }
 
     @Override
@@ -571,6 +576,11 @@ public final class TimeBlock
         return missedPunchClockOut;
     }
 
+    @Override
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
     public static TimeBlock copy(TimeBlock timeBlock) {
         return TimeBlock.Builder.create(timeBlock).build();
     }
@@ -662,6 +672,7 @@ public final class TimeBlock
         private Boolean clockedByMissedPunch;
         private boolean missedPunchClockIn;
         private boolean missedPunchClockOut;
+        private BigDecimal totalMinutes;
 
         private Builder() {
             // TODO modify this constructor as needed to pass any required values and invoke the appropriate 'setter' methods
@@ -733,6 +744,7 @@ public final class TimeBlock
             builder.setClockedByMissedPunch(contract.isClockedByMissedPunch());
             builder.setMissedPunchClockOut(contract.isMissedPunchClockOut());
             builder.setMissedPunchClockIn(contract.isMissedPunchClockIn());
+            builder.setTotalMinutes(contract.getTotalMinutes());
             return builder;
         }
 
@@ -987,6 +999,15 @@ public final class TimeBlock
         @Override
         public Long getVersionNumber() {
             return this.versionNumber;
+        }
+
+        @Override
+        public BigDecimal getTotalMinutes() {
+            return totalMinutes;
+        }
+
+        public void setTotalMinutes(BigDecimal totalMinutes) {
+            this.totalMinutes = totalMinutes;
         }
 
         public void setHours(BigDecimal hours) {
@@ -1244,6 +1265,7 @@ public final class TimeBlock
      */
     static class Elements {
         final static String HOURS = "hours";
+        final static String TOTAL_MINUTES = "totalMinutes";
         final static String END_DATE_TIME = "endDateTime";
         final static String CLOCK_LOG_CREATED = "clockLogCreated";
         final static String BEGIN_DATE_TIME = "beginDateTime";

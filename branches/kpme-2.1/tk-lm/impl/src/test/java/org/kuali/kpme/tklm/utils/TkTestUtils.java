@@ -129,6 +129,7 @@ public class TkTestUtils {
 		block.setBeginDateTime(clockIn);
 		block.setEndDateTime(clockOut);
 		block.setHours(hours);
+        block.setTotalMinutes(hours.multiply(BigDecimal.valueOf(60)));
         block.setBeginTimeDisplay(clockIn);
         block.setEndTimeDisplay(clockOut);
 
@@ -138,6 +139,7 @@ public class TkTestUtils {
 
 		TimeHourDetailBo thd = new TimeHourDetailBo();
 		thd.setHours(hours);
+        thd.setTotalMinutes(hours.multiply(BigDecimal.valueOf(60)));
 		thd.setEarnCode(earnCode);
 		List<TimeHourDetailBo> timeHourDetails = new ArrayList<TimeHourDetailBo>();
 		timeHourDetails.add(thd);
@@ -166,6 +168,7 @@ public class TkTestUtils {
 		timeBlock.setWorkArea(1234L);
 		timeBlock.setTask(1L);
 		timeBlock.setHours((new BigDecimal(numHours)).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING));
+        timeBlock.setTotalMinutes(BigDecimal.valueOf(numHours*60));
 
 		return TimeBlockBo.to(timeBlock);
 	}

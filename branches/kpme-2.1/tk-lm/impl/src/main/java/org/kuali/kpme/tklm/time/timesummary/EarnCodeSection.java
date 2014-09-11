@@ -33,6 +33,7 @@ public class EarnCodeSection implements Serializable, EarnCodeSectionContract {
 	private Map<String, AssignmentRow> assignKeyToAssignmentRowMap = new HashMap<String, AssignmentRow>();
 	private List<AssignmentRow> assignmentsRows = new ArrayList<AssignmentRow>();
 	private List<BigDecimal> totals = new ArrayList<BigDecimal>();
+    private List<BigDecimal> totalMinutes = new ArrayList<BigDecimal>();
 	private Boolean isAmountEarnCode = Boolean.FALSE;;
 	
 	private EarnGroupSection earnGroupSection;
@@ -89,7 +90,16 @@ public class EarnCodeSection implements Serializable, EarnCodeSectionContract {
 	public void setTotals(List<BigDecimal> totals) {
 		this.totals = totals;
 	}
-	public Map<String, AssignmentRow> getAssignKeyToAssignmentRowMap() {
+
+    public List<BigDecimal> getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(List<BigDecimal> totalMinutes) {
+        this.totalMinutes = totalMinutes;
+    }
+
+    public Map<String, AssignmentRow> getAssignKeyToAssignmentRowMap() {
 		return assignKeyToAssignmentRowMap;
 	}
 	public void setAssignKeyToAssignmentRowMap(
@@ -102,6 +112,12 @@ public class EarnCodeSection implements Serializable, EarnCodeSectionContract {
 		total = total.add(hrs, HrConstants.MATH_CONTEXT);
 		getTotals().set(index, total);
 	}
+
+    public void addToTotalMinutes(int index, BigDecimal minutes){
+        BigDecimal total = getTotalMinutes().get(index);
+        total = total.add(minutes, HrConstants.MATH_CONTEXT);
+        getTotalMinutes().set(index, total);
+    }
 	
 	public void addToAmount(int index, BigDecimal amount){
 		BigDecimal amtTotal = getTotals().get(index);

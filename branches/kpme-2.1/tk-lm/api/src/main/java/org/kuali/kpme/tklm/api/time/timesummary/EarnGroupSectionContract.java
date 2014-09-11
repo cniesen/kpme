@@ -71,4 +71,7 @@ public interface EarnGroupSectionContract {
 	 */
 	public List<? extends EarnCodeSectionContract> getEarnCodeSections();
 
+    BigDecimal getEarnGroupTotalMinutes();
+
+    BigDecimal getEarnGroupTotalConverted();
 }

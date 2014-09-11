@@ -46,8 +46,8 @@
                                 <td id="${idVal}" style="background: rgb(224, 235, 225)">${weekHours[hour.key]}</td>
                             </c:if>
                         </c:forEach>
-                        <td id="${weekString}_total" valign="middle">${timeSummary.weekTotalMap[entry.key]}  </td>
-                        <td id="${weekString}_flsa_total" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeSummary.flsaWeekTotalMap[entry.key]}"/></td>
+                        <td id="${weekString}_total" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeSummary.weekTotalConvertedMap[entry.key]}"/> </td>
+                        <td id="${weekString}_flsa_total" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeSummary.flsaWeekTotalConvertedMap[entry.key]}"/></td>
 
                      </tr>
 	              <tbody id="weekSummary${weekString}" style="display: table-row-group;">
@@ -97,7 +97,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             </c:forEach>
-                                            <td id="${weekString}_${earnCodeSection.earnCode}_${assignmentColumn.cssClass}_total">${assignmentRow.periodTotal}</td>
+                                            <td id="${weekString}_${earnCodeSection.earnCode}_${assignmentColumn.cssClass}_total">${assignmentRow.periodTotalConverted} </td>
                                             <td/>
                                         </tr>
                                     </c:if>
@@ -119,7 +119,7 @@
                                 </c:otherwise>
                              </c:choose>
                         </c:forEach>
-                         <td id="${weekString}_${section.earnGroupCode}_total">${section.earnGroupTotal}</td>
+                         <td id="${weekString}_${section.earnGroupCode}_total"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${section.earnGroupTotalConverted}"/> </td>
                          <td/>
                     </tr>
                 </c:forEach>
@@ -128,7 +128,7 @@
               <tr>
               <td colspan="2" style="color: #993333;font-weight: bold;">Pay Period Total</td>
               <td colspan="7"></td>
-              <td id="payPeriodGrandTotal" colspan="2" style="font-weight: bold;">${timeSummary.grandTotal}</td>
+              <td id="payPeriodGrandTotal" colspan="2" style="font-weight: bold;"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeSummary.grandTotalConverted}"/> </td>
               </tr>
 
             </tbody>

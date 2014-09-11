@@ -60,6 +60,7 @@ public class TimeBlockTest extends TKLMIntegrationTestCase {
 		TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
 		timeHourDetail.setEarnCode("REG");
 		timeHourDetail.setHours(new BigDecimal(2.0));
+        timeHourDetail.setTotalMinutes(BigDecimal.valueOf(120));
 		timeBlock.getTimeHourDetails().add(timeHourDetail);
 		
 		TimeBlockBo timeBlock2 = new TimeBlockBo();
@@ -72,6 +73,7 @@ public class TimeBlockTest extends TKLMIntegrationTestCase {
 		TimeHourDetailBo timeHourDetail2 = new TimeHourDetailBo();
 		timeHourDetail2.setEarnCode("REG");
 		timeHourDetail2.setHours(new BigDecimal(2.0));
+        timeHourDetail2.setTotalMinutes(BigDecimal.valueOf(120));
 		timeBlock2.getTimeHourDetails().add(timeHourDetail);
 		
 		Assert.assertTrue("Timeblock has been equal", timeBlock.equals(timeBlock2));

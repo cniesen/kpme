@@ -152,7 +152,7 @@
         <tr class="hourDetailRow_<@= docId @>">
             <td colspan="3" class="earnGroupTotalRow"><@= section.earnGroup @> Totals</td>
     		<@ var total =  section.totals[section.totals.length - 1] @>
-            <td class="earnGroupTotalRow"><@= total == 0 ? "" : total.toFixed(2) @></td>
+            <td class="earnGroupTotalRow"><@= total == 0 ? "" : total.toFixed(2) @> </td>
         </tr>
         <tr></tr>
     <%--<@ } @>--%>

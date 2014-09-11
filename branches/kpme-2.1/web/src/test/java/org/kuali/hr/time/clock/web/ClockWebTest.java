@@ -101,8 +101,10 @@ public class ClockWebTest extends KPMEWebTestCase {
         TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
         timeHourDetail.setEarnCode("RGN");
         timeHourDetail.setHours(new BigDecimal(2.0));
+        timeHourDetail.setTotalMinutes(BigDecimal.valueOf(120));
         timeBlock.getTimeHourDetails().add(timeHourDetail);
         timeBlock.setHours(new BigDecimal(2.0));
+        timeBlock.setTotalMinutes(BigDecimal.valueOf(120));
         List<TimeBlock> tbList = new ArrayList<TimeBlock>();
         String documentId = this.maxDocumentId().toString();
         timeBlock.setDocumentId(documentId);

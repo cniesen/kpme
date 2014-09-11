@@ -57,6 +57,7 @@ public class TimeHourDetailServiceImpl implements TimeHourDetailService {
 		td.setTkTimeBlockId(tb.getTkTimeBlockId());
 		td.setEarnCode(tb.getEarnCode());
 		td.setHours(tb.getHours());
+        td.setTotalMinutes(tb.getTotalMinutes());
 		td.setAmount(tb.getAmount());
 
 		TimeHourDetailBo timeHourDetailBo = KRADServiceLocator.getBusinessObjectService().save(td);

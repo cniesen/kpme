@@ -40,6 +40,7 @@ import org.w3c.dom.Element;
         TimeHourDetail.Elements.TK_TIME_HOUR_DETAIL_ID,
         TimeHourDetail.Elements.EARN_CODE,
         TimeHourDetail.Elements.AMOUNT,
+        TimeHourDetail.Elements.TOTAL_MINUTES,
         CoreConstants.CommonElements.VERSION_NUMBER,
         CoreConstants.CommonElements.OBJECT_ID,
         CoreConstants.CommonElements.FUTURE_ELEMENTS
@@ -51,12 +52,15 @@ public final class TimeHourDetail
 
     @XmlElement(name = Elements.HOURS, required = false)
     private final BigDecimal hours;
+    @XmlElement(name = Elements.TOTAL_MINUTES, required = false)
+    private final BigDecimal totalMinutes;
     @XmlElement(name = Elements.TK_TIME_BLOCK_ID, required = false)
     private final String tkTimeBlockId;
     @XmlElement(name = Elements.TK_TIME_HOUR_DETAIL_ID, required = false)
     private final String tkTimeHourDetailId;
     @XmlElement(name = Elements.EARN_CODE, required = false)
     private final String earnCode;
+
     @XmlElement(name = Elements.AMOUNT, required = false)
     private final BigDecimal amount;
     @XmlElement(name = CoreConstants.CommonElements.VERSION_NUMBER, required = false)
@@ -73,6 +77,7 @@ public final class TimeHourDetail
      */
     private TimeHourDetail() {
         this.hours = null;
+        this.totalMinutes = null;
         this.tkTimeBlockId = null;
         this.tkTimeHourDetailId = null;
         this.earnCode = null;
@@ -85,6 +90,7 @@ public final class TimeHourDetail
         this.hours = builder.getHours();
         this.tkTimeBlockId = builder.getTkTimeBlockId();
         this.tkTimeHourDetailId = builder.getTkTimeHourDetailId();
+        this.totalMinutes = builder.getTotalMinutes();
         this.earnCode = builder.getEarnCode();
         this.amount = builder.getAmount();
         this.versionNumber = builder.getVersionNumber();
@@ -94,6 +100,11 @@ public final class TimeHourDetail
     @Override
     public BigDecimal getHours() {
         return this.hours;
+    }
+
+    @Override
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
     }
 
     @Override
@@ -142,6 +153,7 @@ public final class TimeHourDetail
                 .append(earnCode, timeHourDetail.getEarnCode())
                 .append(KpmeUtils.nullSafeCompare(amount, timeHourDetail.getAmount()), 0)
                 .append(KpmeUtils.nullSafeCompare(hours, timeHourDetail.getHours()), 0)
+                .append(KpmeUtils.nullSafeCompare(totalMinutes, timeHourDetail.getTotalMinutes()), 0)
                 .isEquals();
     }
 
@@ -154,6 +166,7 @@ public final class TimeHourDetail
     {
 
         private BigDecimal hours;
+        private BigDecimal totalMinutes;
         private String tkTimeBlockId;
         private String tkTimeHourDetailId;
         private String earnCode;
@@ -177,6 +190,7 @@ public final class TimeHourDetail
 
             Builder builder = create();
             builder.setHours(contract.getHours());
+            builder.setTotalMinutes(contract.getTotalMinutes());
             builder.setTkTimeBlockId(contract.getTkTimeBlockId());
             builder.setTkTimeHourDetailId(contract.getTkTimeHourDetailId());
             builder.setEarnCode(contract.getEarnCode());
@@ -223,6 +237,15 @@ public final class TimeHourDetail
         @Override
         public String getObjectId() {
             return this.objectId;
+        }
+
+        @Override
+        public BigDecimal getTotalMinutes() {
+            return totalMinutes;
+        }
+
+        public void setTotalMinutes(BigDecimal totalMinutes) {
+            this.totalMinutes = totalMinutes;
         }
 
         public void setHours(BigDecimal hours) {
@@ -301,6 +324,7 @@ public final class TimeHourDetail
     static class Elements {
 
         final static String HOURS = "hours";
+        final static String TOTAL_MINUTES = "totalMinutes";
         final static String TK_TIME_BLOCK_ID = "tkTimeBlockId";
         final static String TK_TIME_HOUR_DETAIL_ID = "tkTimeHourDetailId";
         final static String EARN_CODE = "earnCode";

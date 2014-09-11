@@ -46,6 +46,7 @@ import org.kuali.rice.krad.util.KRADConstants;
 import org.kuali.rice.krad.util.ObjectUtils;
 import org.kuali.rice.krad.web.form.LookupForm;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableImpl {
@@ -104,6 +105,7 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
 					TimeBlockHistory newTimeBlockHistory = timeBlockHistory.copy();
 					newTimeBlockHistory.setEarnCode(timeBlockHistoryDetail.getEarnCode());
 					newTimeBlockHistory.setHours(timeBlockHistoryDetail.getHours());
+                    newTimeBlockHistory.setTotalMinutes(timeBlockHistoryDetail.getTotalMinutes());
 					newTimeBlockHistory.setAmount(timeBlockHistoryDetail.getAmount());
 					results.add(newTimeBlockHistory);
 				}
@@ -228,6 +230,7 @@ public class TimeBlockHistoryLookupableHelperServiceImpl extends KPMELookupableI
             TimeBlockHistory tBlock = new TimeBlockHistory();
             tBlock.setAmount(history.getLeaveAmount());
             tBlock.setHours(history.getHours());
+            tBlock.setTotalMinutes(history.getHours().multiply(BigDecimal.valueOf(60)));
 
             tBlock.setEarnCode(history.getEarnCode());
             tBlock.setPrincipalId(history.getPrincipalId());

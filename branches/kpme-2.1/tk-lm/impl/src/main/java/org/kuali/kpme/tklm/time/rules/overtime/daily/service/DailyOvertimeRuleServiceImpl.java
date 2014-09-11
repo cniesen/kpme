@@ -250,13 +250,15 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 
 				// 3: Iterate over the timeblocks, apply the rule when necessary.
 				BigDecimal hours = BigDecimal.ZERO;
+                BigDecimal minutes = BigDecimal.ZERO;
 				List<TimeBlockBo> applicationList = new LinkedList<TimeBlockBo>();
 				TimeBlockBo previous = null;
 				for (TimeBlockBo block : blocksForRule) {
 					if (exceedsMaxGap(previous, block, dr.getMaxGap())) {
-						apply(hours, applicationList, dr, fromEarnGroup);
+						apply(hours, minutes, applicationList, dr, fromEarnGroup);
 						applicationList.clear();
 						hours = BigDecimal.ZERO;
+                        minutes = BigDecimal.ZERO;
 						previous = null; // reset our chain
 					} else {
 						previous = block; // build up our chain
@@ -265,11 +267,12 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 					for (TimeHourDetailBo thd : block.getTimeHourDetails()) {
 						if (fromEarnGroup.contains(thd.getEarnCode())) {
 							hours = hours.add(thd.getHours(), HrConstants.MATH_CONTEXT);
+                            minutes = minutes.add(thd.getTotalMinutes());
                         }
                     }
 				}
 				// when we run out of blocks, we may have more to apply.
-				apply(hours, applicationList, dr, fromEarnGroup);
+				apply(hours, minutes, applicationList, dr, fromEarnGroup);
 			}
 		}
         //convert back to TimeBlock
@@ -288,13 +291,14 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 	 * @param rule The rule we are applying.
 	 * @param earnGroup Earn group we've already loaded for this rule.
 	 */
-	private void apply(BigDecimal hours, List<TimeBlockBo> blocks, DailyOvertimeRule rule, Set<String> earnGroup) {
+	private void apply(BigDecimal hours, BigDecimal minutes, List<TimeBlockBo> blocks, DailyOvertimeRule rule, Set<String> earnGroup) {
 		sortTimeBlocksInverse(blocks);
 		if (blocks != null && blocks.size() > 0)
 			if (hours.compareTo(rule.getMinHours()) >= 0) {
                 BigDecimal remaining = hours.subtract(rule.getMinHours(), HrConstants.MATH_CONTEXT);
+                BigDecimal minutesRemaining = minutes.subtract(TKUtils.convertMillisToMinutes(TKUtils.convertHoursToMillis(rule.getMinHours())));
 				for (TimeBlockBo block : blocks) {
-					remaining = applyOvertimeToTimeBlock(block, rule.getEarnCode(), earnGroup, remaining);
+					remaining = applyOvertimeToTimeBlock(block, rule.getEarnCode(), earnGroup, remaining, minutesRemaining);
                 }
                 if (remaining.compareTo(BigDecimal.ZERO) > 0) {
                     LOG.warn("Hours remaining that were unapplied in DailyOvertimeRule.");
@@ -314,11 +318,16 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 	 *
 	 * @return The amount of overtime hours remaining to be applied.  (BigDecimal is immutable)
 	 */
-	private BigDecimal applyOvertimeToTimeBlock(TimeBlockBo block, String otEarnCode, Set<String> convertFromEarnCodes, BigDecimal otHours) {
+	private BigDecimal applyOvertimeToTimeBlock(TimeBlockBo block, String otEarnCode, Set<String> convertFromEarnCodes, BigDecimal otHours, BigDecimal otMinutes) {
 		BigDecimal applied = BigDecimal.ZERO;
+        BigDecimal appliedMinutes = BigDecimal.ZERO;
 
 		if (otHours.compareTo(BigDecimal.ZERO) <= 0) {
 			return BigDecimal.ZERO;
+        }
+
+        if (otMinutes.compareTo(BigDecimal.ZERO) <= 0) {
+            return BigDecimal.ZERO;
         }
 
 		List<TimeHourDetailBo> details = block.getTimeHourDetails();
@@ -327,23 +336,28 @@ public class DailyOvertimeRuleServiceImpl implements DailyOvertimeRuleService {
 			if (convertFromEarnCodes.contains(detail.getEarnCode())) {
 				// n = detailHours - otHours
 				BigDecimal n = detail.getHours().subtract(otHours, HrConstants.MATH_CONTEXT);
+                BigDecimal m = detail.getTotalMinutes().subtract(otMinutes);
 				// n >= 0 (meaning there are greater than or equal amount of Detail hours vs. OT hours, so apply all OT hours here)
 				// n < = (meaning there were more OT hours than Detail hours, so apply only the # of hours in detail and update applied.
 				if (n.compareTo(BigDecimal.ZERO) >= 0) {
 					// if
 					applied = otHours;
+                    appliedMinutes = otMinutes;
 				} else {
 					applied = detail.getHours();
+                    appliedMinutes = detail.getTotalMinutes();
 				}
 
 				// Make a new TimeHourDetail with the otEarnCode with "applied" hours
 				TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
 				timeHourDetail.setHours(applied);
+                timeHourDetail.setTotalMinutes(appliedMinutes);
 				timeHourDetail.setEarnCode(otEarnCode);
 				timeHourDetail.setTkTimeBlockId(block.getTkTimeBlockId());
 
 				// Decrement existing matched FROM earn code.
 				detail.setHours(detail.getHours().subtract(applied, HrConstants.MATH_CONTEXT));
+                detail.setTotalMinutes(detail.getTotalMinutes().subtract(appliedMinutes));
 				addDetails.add(timeHourDetail);
 			}
 		}
