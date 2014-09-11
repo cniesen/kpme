@@ -26,7 +26,10 @@ import java.util.List;
  * Created by jwillia on 4/11/14.
  */
 public class KhrEmployeeJob extends JobBo {
-    private Date endDate;
+	
+	private static final long serialVersionUID = -2015621064979417200L;
+	
+	private Date endDate;
     private List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
 
     public Date getEndDate() {

@@ -20,7 +20,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
+import org.kuali.kpme.core.bo.HrDataObjectMaintainableImpl;
 import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kim.api.identity.name.EntityName;
@@ -33,7 +33,7 @@ import org.kuali.rice.krad.maintenance.MaintenanceDocument;
  * treat our business objects as immutable, the default Rice behavior is to modify
  * existing rows in the database.
  */
-public class JobMaintainableImpl extends HrBusinessObjectMaintainableImpl {
+public class JobMaintainableImpl extends HrDataObjectMaintainableImpl {
 
 	/**
 	 * 
