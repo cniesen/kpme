@@ -18,6 +18,7 @@ package org.kuali.kpme.core.tkmdocument.web;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.job.Job;
@@ -39,11 +40,13 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintainableImpl;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.view.View;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -101,39 +104,74 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 
         List<KhrEmployeeJob> tkmJobList = tkmDocument.getJobList();
 
-        for (KhrEmployeeJob tkmJob : tkmJobList) {
+        // iterate thru the job list versioning those that are not being newly added, and have been changed
+        for (KhrEmployeeJob currentTkmJob : tkmJobList) {
+        	boolean saveCurrentInNewRow = true; // this flag will determine if we actually save this job bo or not
+    		if(currentTkmJob.getId() != null){
+    			// first get the corresponding old job BO to compare
+    			JobBo oldJob = this.getBusinessObjectService().findBySinglePrimaryKey(JobBo.class, currentTkmJob.getId());
+    			if(oldJob!= null) {
+    				if( !(areTheSame(oldJob, currentTkmJob)) ) {
+    					//if the effective dates are the same do not create a new row just inactivate the old one
+    					if(currentTkmJob.getEffectiveDate().equals(oldJob.getEffectiveDate())){
+    						oldJob.setActive(false);
+    						oldJob.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
+    					} 
+    					else {
+	    					//if effective dates not the same, add a new row that inactivates the old entry based on the new effective date
+	    					oldJob.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
+	    					oldJob.setEffectiveDate(currentTkmJob.getEffectiveDate());
+	    					oldJob.setActive(false);
+	    					oldJob.setId(null);
+    					}
+    					// save the older version - will trigger either an UPDATE or an INSERT depending on effective date remaining same or not.
+    					KRADServiceLocator.getBusinessObjectService().save(oldJob);
+    				}
+    				else {
+    					// the old and new are the same, so no need to save as new row
+    					saveCurrentInNewRow = false;
+    				}
+    			}
+    		}
+    		// finally save the new job object as a new row, unless not needed
+    		if(saveCurrentInNewRow) {
+    			currentTkmJob.setTimestamp(new Timestamp(System.currentTimeMillis()));
+    			currentTkmJob.setId(null);
+    			getBusinessObjectService().save(currentTkmJob);
+    			currentTkmJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+    		}
 
-            for(AssignmentBo assignment: tkmJob.getAssignments()) {
-                getBusinessObjectService().linkAndSave(assignment);
+
+            JobBo nextInactiveJob = JobBo.from(HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob)));
+            //if current job end date is blank and there is a future inactive job, delete that future inactive job
+            if (currentTkmJob.getEndDate() == null) {
+            	if(nextInactiveJob != null) {
+            		getBusinessObjectService().delete(nextInactiveJob);
+            	}
             }
-            //save current active version of the job
-            getBusinessObjectService().linkAndSave(tkmJob);
-
-
-            JobBo nextInactiveJob = JobBo.from(HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(tkmJob)));
-
-            //if there is an future inactive job and current job end date is blank delete inactive job
-            if (tkmJob.getEndDate() == null && nextInactiveJob != null) {
-                getBusinessObjectService().delete(nextInactiveJob);
-            }
-
-            //if end date is present create an inactive job
-            if(tkmJob.getEndDate() != null) {
-                KhrEmployeeJob inactiveJob = createTKMJob(tkmJob);
-                inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-                inactiveJob.setHrJobId(null);
-                inactiveJob.setObjectId(null);
-                inactiveJob.setVersionNumber(null);
-                inactiveJob.setActive(false);
-                inactiveJob.setEffectiveDate(tkmJob.getEndDate());
-
-                //if inactive job exists edit else create new
+            //if end date is present create/update an inactive job
+            else {
+            	//if inactive job exists update it 
                 if (nextInactiveJob != null) {
-                    nextInactiveJob.setEffectiveDate(inactiveJob.getEffectiveLocalDate().toDate());
+                    nextInactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
                     getBusinessObjectService().linkAndSave(nextInactiveJob);
-                } else if (nextInactiveJob == null || !nextInactiveJob.equals(inactiveJob)) {
-                    getBusinessObjectService().linkAndSave(inactiveJob);
+                } 
+                // else create new
+                else {
+                	KhrEmployeeJob inactiveJob = createTKMJob(currentTkmJob);
+                    inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+                    inactiveJob.setHrJobId(null);
+                    inactiveJob.setObjectId(null);
+                    inactiveJob.setVersionNumber(null);
+                    inactiveJob.setActive(false);
+                    inactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
+                	getBusinessObjectService().linkAndSave(inactiveJob);
                 }
+            }
+            
+        	
+            for(AssignmentBo assignment: currentTkmJob.getAssignments()) {
+                getBusinessObjectService().linkAndSave(assignment);
             }
         }
 
@@ -154,7 +192,12 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     }
 
 
-    @Override
+    protected boolean areTheSame(JobBo oldJob, KhrEmployeeJob newTkmJob) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
     protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine,
                                        boolean isValidLine) {
         super.processAfterAddLine(view, collectionGroup, model, addLine, isValidLine);

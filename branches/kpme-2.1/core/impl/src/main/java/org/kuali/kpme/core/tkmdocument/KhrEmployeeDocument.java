@@ -27,7 +27,9 @@ import java.util.List;
  */
 public class KhrEmployeeDocument extends PersistableBusinessObjectBase {
 
-    private String principalId;
+	private static final long serialVersionUID = 5006332932081928714L;
+	
+	private String principalId;
     private String name;
     private Date startDate;
     private Date endDate;
