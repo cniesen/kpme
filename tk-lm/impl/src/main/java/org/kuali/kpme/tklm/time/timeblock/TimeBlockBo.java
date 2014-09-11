@@ -79,6 +79,7 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
     private String clockLogEndId;
     private String assignmentKey;
     private String overtimePref;
+    private BigDecimal totalMinutes;
     //userPrincipalId == super.principalIdModified
     private String userPrincipalId;
     @Transient
@@ -871,6 +872,15 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
         this.missedPunchClockOut = missedPunchClockOut;
     }
 
+    @Override
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(BigDecimal totalMinutes) {
+        this.totalMinutes = totalMinutes;
+    }
+
     public static TimeBlockBo from(TimeBlock im) {
         TimeBlockBo tb = new TimeBlockBo();
 
@@ -884,6 +894,7 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
 
         tb.setClockLogCreated(im.isClockLogCreated());
         tb.setHours(im.getHours());
+        tb.setTotalMinutes(im.getTotalMinutes());
         tb.setAmount(im.getAmount());
         tb.setBeginTimeDisplay(im.getBeginTimeDisplay());
         tb.setEndTimeDisplay(im.getEndTimeDisplay());
@@ -926,8 +937,6 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
         tb.setEndTimestamp(im.getEndDateTime() == null ? null : new Timestamp((im.getEndDateTime().getMillis())));
         tb.setTimestamp(im.getCreateTime() == null ? null : new Timestamp(im.getCreateTime().getMillis()));
         tb.setLunchDeleted(im.isLunchDeleted());
-        tb.setHours(im.getHours());
-        tb.setAmount(im.getAmount());
         tb.setOvertimePref(im.getOvertimePref());
         tb.setEarnCode(im.getEarnCode());
         tb.setWorkArea(im.getWorkArea());

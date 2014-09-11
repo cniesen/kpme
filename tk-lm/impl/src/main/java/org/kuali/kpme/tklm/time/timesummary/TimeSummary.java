@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.collections.MapUtils;
 import org.json.simple.JSONValue;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryContract;
 import org.kuali.kpme.tklm.leave.summary.LeaveSummaryRow;
 
@@ -33,13 +36,18 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
 	private static final long serialVersionUID = -1292273625423289154L;
 	private Map<Integer,String> timeSummaryHeader;
 	private BigDecimal grandTotal= BigDecimal.ZERO;
+    private BigDecimal grandTotalMinutes = BigDecimal.ZERO;
 	private List<String> summaryHeader = new ArrayList<String>();
 	private List<EarnGroupSection> sections = new ArrayList<EarnGroupSection>();
 	private Map<String, List<EarnGroupSection>> weeklySections = new LinkedHashMap<String, List<EarnGroupSection>>();
 	private List<LeaveSummaryRow> maxedLeaveRows = new ArrayList<LeaveSummaryRow>();
 	private List<BigDecimal> workedHours = new ArrayList<BigDecimal>();
-	private Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> weekTotalMinutesMap = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> weekTotalConvertedMap = new LinkedHashMap<String, BigDecimal>();
 	private Map<String, BigDecimal> flsaWeekTotalMap = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> flsaWeekTotalMinutesMap = new LinkedHashMap<String, BigDecimal>();
+    private Map<String, BigDecimal> flsaWeekTotalConvertedMap = new LinkedHashMap<String, BigDecimal>();
 	private Map<String, Map<Integer, BigDecimal>> weeklyWorkedHours = new LinkedHashMap<String, Map<Integer, BigDecimal>>();
 	private Map<String, Map<Integer, Boolean>> weeklyClockLogs = new LinkedHashMap<String, Map<Integer, Boolean>>();
 	private Map<String, String> weekDates = new LinkedHashMap<String, String>();
@@ -51,7 +59,22 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
 	public void setGrandTotal(BigDecimal grandTotal) {
 		this.grandTotal = grandTotal;
 	}
-	public List<String> getSummaryHeader() {
+
+    @Override
+    public BigDecimal getGrandTotalMinutes() {
+        return grandTotalMinutes;
+    }
+
+    @Override
+    public BigDecimal getGrandTotalConverted() {
+        return TKUtils.getHoursFromMinutes(getGrandTotalMinutes());
+    }
+
+    public void setGrandTotalMinutes(BigDecimal grandTotalMinutes) {
+        this.grandTotalMinutes = grandTotalMinutes;
+    }
+
+    public List<String> getSummaryHeader() {
 		return summaryHeader;
 	}
 	public void setSummaryHeader(List<String> summaryHeader) {
@@ -90,6 +113,7 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
                 ecs.put("earnCode", earnCodeSection.getEarnCode());
                 ecs.put("desc", earnCodeSection.getDescription());
                 ecs.put("totals", earnCodeSection.getTotals());
+                ecs.put("totalMinutes", earnCodeSection.getTotalMinutes());
                 ecs.put("isAmountEarnCode", earnCodeSection.getIsAmountEarnCode());
                 ecs.put("assignmentSize", earnCodeSection.getAssignmentsRows().size() + 1);
                 ecs.put("earnGroup", earnGroupSection.getEarnGroup());
@@ -123,24 +147,40 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
                 ecs.put("assignmentRows", assignmentRows);
                 
                 List<Map<String, Object>> weekTotalRows = new java.util.LinkedList<Map<String, Object>>();
-                for(String key : this.weekTotalMap.keySet()) {
+                for(Map.Entry<String, BigDecimal> entry : this.weekTotalMap.entrySet()) {
                 	Map<String, Object> wt = new HashMap<String, Object>();
-                	wt.put("weekName", key);
-                	wt.put("weekTotal", weekTotalMap.get(key));
+                	wt.put("weekName", entry.getKey());
+                	wt.put("weekTotal", entry.getValue());
                 	weekTotalRows.add(wt);
                 }
-                
                 ecs.put("weekTotals", weekTotalRows);
+
+                List<Map<String, Object>> weekTotalMinuteRows = new java.util.LinkedList<Map<String, Object>>();
+                for(Map.Entry<String, BigDecimal> entry : this.weekTotalMinutesMap.entrySet()) {
+                    Map<String, Object> wt = new HashMap<String, Object>();
+                    wt.put("weekName", entry.getKey());
+                    wt.put("weekTotal", entry.getValue());
+                    weekTotalMinuteRows.add(wt);
+                }
+                ecs.put("weekTotalMinutes", weekTotalMinuteRows);
                 
                 List<Map<String, Object>> flsaWeekTotalRows = new java.util.LinkedList<Map<String, Object>>();
-                for(String key : this.flsaWeekTotalMap.keySet()) {
+                for(Map.Entry<String, BigDecimal> entry : this.flsaWeekTotalMap.entrySet()) {
                 	Map<String, Object> wt = new HashMap<String, Object>();
-                	wt.put("weekName", key);
-                	wt.put("weekTotal", flsaWeekTotalMap.get(key));
+                	wt.put("weekName", entry.getKey());
+                	wt.put("weekTotal", entry.getValue());
                 	flsaWeekTotalRows.add(wt);
                 }
-                
                 ecs.put("flsaWeekTotals", flsaWeekTotalRows);
+
+                List<Map<String, Object>> flsaWeekTotalMinuteRows = new java.util.LinkedList<Map<String, Object>>();
+                for(Map.Entry<String, BigDecimal> entry : this.flsaWeekTotalMinutesMap.entrySet()) {
+                    Map<String, Object> wt = new HashMap<String, Object>();
+                    wt.put("weekName", entry.getKey());
+                    wt.put("weekTotal", entry.getValue());
+                    flsaWeekTotalMinuteRows.add(wt);
+                }
+                ecs.put("flsaWeekTotalMinutes", flsaWeekTotalMinuteRows);
 
                 earnCodeSections.add(ecs);
             }
@@ -170,16 +210,52 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
 	public void setWeekTotalMap(Map<String, BigDecimal> weekTotalMap) {
 		this.weekTotalMap = weekTotalMap;
 	}
-	
-	public Map<String, BigDecimal> getFlsaWeekTotalMap() {
+
+    public Map<String, BigDecimal> getWeekTotalConvertedMap() {
+        if (MapUtils.isEmpty(weekTotalMinutesMap)) {
+            weekTotalMinutesMap = new LinkedHashMap<String, BigDecimal>();
+            for (Map.Entry<String, BigDecimal> entry : getWeekTotalMinutesMap().entrySet()) {
+                weekTotalMinutesMap.put(entry.getKey(), TKUtils.getHoursFromMinutes(entry.getValue()));
+            }
+        }
+        return weekTotalConvertedMap;
+    }
+
+    public Map<String, BigDecimal> getWeekTotalMinutesMap() {
+        return weekTotalMinutesMap;
+    }
+
+    public void setWeekTotalMinutesMap(Map<String, BigDecimal> weekTotalMinutesMap) {
+        this.weekTotalMinutesMap = weekTotalMinutesMap;
+    }
+
+    public Map<String, BigDecimal> getFlsaWeekTotalMap() {
 		return flsaWeekTotalMap;
 	}
-	
-	public void setFlsaWeekTotalMap(Map<String, BigDecimal> flsaWeekTotalMap) {
+
+    public Map<String, BigDecimal> getFlsaWeekTotalConvertedMap() {
+        if (MapUtils.isEmpty(flsaWeekTotalConvertedMap)) {
+            flsaWeekTotalConvertedMap = new LinkedHashMap<String, BigDecimal>();
+            for (Map.Entry<String, BigDecimal> entry : getFlsaWeekTotalMinutesMap().entrySet()) {
+                flsaWeekTotalConvertedMap.put(entry.getKey(), TKUtils.getHoursFromMinutes(entry.getValue()));
+            }
+        }
+        return flsaWeekTotalConvertedMap;
+    }
+
+    public void setFlsaWeekTotalMap(Map<String, BigDecimal> flsaWeekTotalMap) {
 		this.flsaWeekTotalMap = flsaWeekTotalMap;
 	}
-	
-	public Map<String, String> getWeekDates() {
+
+    public Map<String, BigDecimal> getFlsaWeekTotalMinutesMap() {
+        return flsaWeekTotalMinutesMap;
+    }
+
+    public void setFlsaWeekTotalMinutesMap(Map<String, BigDecimal> flsaWeekTotalMinutesMap) {
+        this.flsaWeekTotalMinutesMap = flsaWeekTotalMinutesMap;
+    }
+
+    public Map<String, String> getWeekDates() {
 		return weekDates;
 	}
 	public void setWeekDates(Map<String, String> weekDates) {

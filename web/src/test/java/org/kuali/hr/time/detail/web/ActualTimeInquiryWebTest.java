@@ -87,8 +87,10 @@ public class ActualTimeInquiryWebTest extends KPMEWebTestCase {
 		TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
 		timeHourDetail.setEarnCode("RGN");
 		timeHourDetail.setHours(new BigDecimal(2.0));
+        timeHourDetail.setTotalMinutes(BigDecimal.valueOf(120));
 		timeBlock.getTimeHourDetails().add(timeHourDetail);
 		timeBlock.setHours(new BigDecimal(2.0));
+        timeBlock.setTotalMinutes(BigDecimal.valueOf(120));
 		timeBlock.setClockLogCreated(Boolean.TRUE);
 		List<TimeBlock> tbList = new ArrayList<TimeBlock>();
 		timeBlock.setDocumentId(documentId);

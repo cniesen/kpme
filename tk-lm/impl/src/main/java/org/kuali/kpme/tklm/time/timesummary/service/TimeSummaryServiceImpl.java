@@ -104,6 +104,8 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		// Set Flsa week total map
 		Map<String, BigDecimal> flsaWeekTotal = getHoursToFlsaWeekMap(tkTimeBlockAggregate, principalId, null, regularEarnCodes, userTimeZone);
 		timeSummary.setFlsaWeekTotalMap(flsaWeekTotal);
+        Map<String, BigDecimal> flsaWeekTotalMinutes = getMinutesToFlsaWeekMap(tkTimeBlockAggregate, principalId, null, regularEarnCodes, userTimeZone);
+        timeSummary.setFlsaWeekTotalMinutesMap(flsaWeekTotalMinutes);
 
         Map<String,List<EarnGroupSection>> earnGroupSections = getEarnGroupSections(principalId, tkTimeBlockAggregate, timeSummary.getTimeSummaryHeader().size()+1, 
         			dayArrangements, calendarEntry.getEndPeriodFullDateTime().toLocalDate(), calendarEntry.getEndPeriodFullDateTime().toLocalDate());
@@ -288,6 +290,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 				 	 	 	 	earnCodeSection.setIsAmountEarnCode(earnCodeObj != null ? HrConstants.EARN_CODE_AMOUNT.equalsIgnoreCase(earnCodeObj.getRecordMethod()) : false);
 								for(int i = 0;i<(numEntries-1);i++){
 									earnCodeSection.getTotals().add(BigDecimal.ZERO);
+                                    earnCodeSection.getTotalMinutes().add(BigDecimal.ZERO);
 								}
 								earnCodeToEarnCodeSection.put(thd.getEarnCode(), earnCodeSection);
 							}
@@ -316,6 +319,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 							}
 							
 							assignRow.addToTotal(td.getDayOfWeek(), thd.getHours());
+                            assignRow.addToTotalMinutes(td.getDayOfWeek(), thd.getTotalMinutes());
 							assignRow.addToAmount(td.getDayOfWeek(), thd.getAmount());
 
 						}
@@ -418,6 +422,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         Map<Integer, BigDecimal> weekHours;
         Map<Integer, Boolean> weekClockLogMap; 
         Map<String, BigDecimal> weekTotalMap = new LinkedHashMap<String, BigDecimal>();
+        Map<String, BigDecimal> weekTotalMinutesMap = new LinkedHashMap<String, BigDecimal>();
         Map<String, Integer> weekDateToCalendarDayInt = new HashMap<String, Integer>();
         Map<String, Map<Integer, Boolean>> clockLogMap = new LinkedHashMap<String, Map<Integer, Boolean>>();
         ClockLog lastClockLog = TkServiceLocator.getClockLogService().getLastClockLog(principalId);
@@ -433,6 +438,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         }
 		
         BigDecimal periodTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+        BigDecimal periodTotalMinutes = BigDecimal.ZERO;
 
         int i=0;
         int dayInt=0;
@@ -440,6 +446,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         	weekHours = new TreeMap<Integer, BigDecimal>();
         	weekClockLogMap = new TreeMap<Integer, Boolean>();
             BigDecimal weeklyTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+            BigDecimal weeklyMinutesTotal = BigDecimal.ZERO;
             for (FlsaDay day : week.getFlsaDays()) {
                 BigDecimal totalForDay = HrConstants.BIG_DECIMAL_SCALED_ZERO;
                 LocalDateTime ld = day.getFlsaDate();
@@ -459,7 +466,9 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
                             || regularEarnCodes.contains(ec.getEarnCode()) || ec.getCountsAsRegularPay().equals("Y"))) {
                         totalForDay = totalForDay.add(block.getHours(), HrConstants.MATH_CONTEXT);
                         weeklyTotal = weeklyTotal.add(block.getHours(), HrConstants.MATH_CONTEXT);
+                        weeklyMinutesTotal = weeklyMinutesTotal.add(block.getTotalMinutes());
                         periodTotal = periodTotal.add(block.getHours(), HrConstants.MATH_CONTEXT);
+                        periodTotalMinutes = periodTotalMinutes.add(block.getTotalMinutes());
                     }
 
                 }
@@ -470,13 +479,16 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
             }
             i++;
             weekTotalMap.put("Week "+i, weeklyTotal);
+            weekTotalMinutesMap.put("Week "+i, weeklyMinutesTotal);
             timeSummary.getWeeklyWorkedHours().put("Week "+i, weekHours);
             clockLogMap.put("Week "+i, weekClockLogMap);
             hours.add(weeklyTotal);
         }
         hours.add(periodTotal);
         timeSummary.setGrandTotal(periodTotal);
+        timeSummary.setGrandTotalMinutes(periodTotalMinutes);
         timeSummary.setWeekTotalMap(weekTotalMap);
+        timeSummary.setWeekTotalMinutesMap(weekTotalMinutesMap);
         timeSummary.setWeeklyClockLogs(clockLogMap);
         timeSummary.setWeekDateToCalendarDayInt(weekDateToCalendarDayInt);
         return hours;
@@ -699,4 +711,39 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		
 		return hoursToFlsaWeekMap;
 	}
+
+    private Map<String, BigDecimal> getMinutesToFlsaWeekMap(TkTimeBlockAggregate tkTimeBlockAggregate, String principalId, Long workArea, Set<String> regularEarnCodes, DateTimeZone timezone) {
+
+        Map<String, BigDecimal> minutesToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
+
+        List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(timezone, principalId);
+
+        int weekCount = 1;
+        for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
+            BigDecimal weekTotal = new BigDecimal(0.00000000000000);
+            for (FlsaWeek flsaWeekPart : flsaWeekParts) {
+                for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
+                    for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
+                        EarnCodeContract ec = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), timeBlock.getEndDateTime().toLocalDate());
+                        if (ec != null
+                                && (ec.isOvtEarnCode()
+                                || regularEarnCodes.contains(ec.getEarnCode()) || ec.getCountsAsRegularPay().equals("Y"))) {
+                            if (workArea != null) {
+                                if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
+                                    weekTotal = weekTotal.add(timeBlock.getTotalMinutes(), HrConstants.MATH_CONTEXT);
+                                } else {
+                                    weekTotal = weekTotal.add(new BigDecimal("0"), HrConstants.MATH_CONTEXT);
+                                }
+                            } else {
+                                weekTotal = weekTotal.add(timeBlock.getTotalMinutes(),HrConstants.MATH_CONTEXT);
+                            }
+                        }
+                    }
+                }
+            }
+            minutesToFlsaWeekMap.put("Week " + weekCount++, weekTotal);
+        }
+
+        return minutesToFlsaWeekMap;
+    }
 }

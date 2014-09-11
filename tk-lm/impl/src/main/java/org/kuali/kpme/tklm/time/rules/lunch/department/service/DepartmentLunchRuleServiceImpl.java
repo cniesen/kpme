@@ -115,8 +115,10 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
             TimeHourDetail.Builder detail = details.get(0);
 
             BigDecimal lunchHours = TKUtils.convertMinutesToHours(rule.getDeductionMins());
-            BigDecimal newHours = detail.getHours().subtract(lunchHours).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
-            detail.setHours(newHours);
+            BigDecimal newMinutes = detail.getTotalMinutes().subtract(rule.getDeductionMins());
+            //BigDecimal newHours = detail.getHours().subtract(lunchHours).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
+            detail.setTotalMinutes(newMinutes);
+            detail.setHours(TKUtils.convertMinutesToHours(newMinutes));
 
             TimeHourDetail.Builder lunchDetail = TimeHourDetail.Builder.create();
             lunchDetail.setHours(lunchHours.multiply(HrConstants.BIG_DECIMAL_NEGATIVE_ONE));
@@ -125,6 +127,7 @@ public class DepartmentLunchRuleServiceImpl implements DepartmentLunchRuleServic
             
             //Deduct from total for worked hours
             tbBuilder.setHours(block.getHours().subtract(lunchHours,HrConstants.MATH_CONTEXT));
+            tbBuilder.setTotalMinutes(block.getTotalMinutes().subtract(rule.getDeductionMins(), HrConstants.MATH_CONTEXT));
             
             details.add(lunchDetail);
             clockIdToTimeBlockMap.put(block.getClockLogEndId(), tbBuilder.build());

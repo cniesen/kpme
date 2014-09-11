@@ -79,6 +79,28 @@ public interface AssignmentRowContract {
 	 */
 	public BigDecimal getPeriodTotal();
 
+    /**
+     * The period total associated with the AssignmentRow
+     *
+     * <p>
+     * periodTotal for an AssignmentRow
+     * <p>
+     *
+     * @return periodTotal for AssignmentRow
+     */
+    public BigDecimal getPeriodTotalMinutes();
+
+    /**
+     * The period total associated with the AssignmentRow
+     *
+     * <p>
+     * periodTotal for an AssignmentRow
+     * <p>
+     *
+     * @return periodTotal for AssignmentRow
+     */
+    public BigDecimal getPeriodTotalConverted();
+
 	/**
 	 * The map of AssignmentColumn objects associated with the AssignmentRow
 	 * 

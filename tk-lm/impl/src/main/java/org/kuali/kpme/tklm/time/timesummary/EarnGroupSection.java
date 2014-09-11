@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.time.timesummary.EarnGroupSectionContract;
 
 public class EarnGroupSection implements Serializable, EarnGroupSectionContract {
@@ -35,6 +36,7 @@ public class EarnGroupSection implements Serializable, EarnGroupSectionContract 
 	private List<EarnCodeSection> earnCodeSections = new ArrayList<EarnCodeSection>();
 	private Map<Integer, BigDecimal> totals = new LinkedHashMap<Integer, BigDecimal>();
 	private BigDecimal earnGroupTotal = BigDecimal.ZERO;
+    private BigDecimal earnGroupTotalMinutes = BigDecimal.ZERO;
 
     public String getEarnGroupCode() {
         return earnGroupCode;
@@ -63,6 +65,8 @@ public class EarnGroupSection implements Serializable, EarnGroupSectionContract 
 				totals.put(i, value.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING));
 				earnGroupTotal = earnGroupTotal.add(assignmentColumn.getTotal());
 				earnGroupTotal.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
+                earnGroupTotalMinutes = earnGroupTotalMinutes.add(assignmentColumn.getTotalMinutes());
+
 			}
 			/**
 			for (AssignmentColumn assignmentColumn : assignRow.getAssignmentColumns().values()) {
@@ -108,6 +112,18 @@ public class EarnGroupSection implements Serializable, EarnGroupSectionContract 
 	public void setEarnGroupTotal(BigDecimal earnGroupTotal) {
 		this.earnGroupTotal = earnGroupTotal;
 	}
-	
-	
+
+    @Override
+    public BigDecimal getEarnGroupTotalMinutes() {
+        return earnGroupTotalMinutes;
+    }
+
+    public void setEarnGroupTotalMinutes(BigDecimal earnGroupTotalMinutes) {
+        this.earnGroupTotalMinutes = earnGroupTotalMinutes;
+    }
+
+    @Override
+    public BigDecimal getEarnGroupTotalConverted() {
+        return TKUtils.getHoursFromMinutes(getEarnGroupTotalMinutes());
+    }
 }

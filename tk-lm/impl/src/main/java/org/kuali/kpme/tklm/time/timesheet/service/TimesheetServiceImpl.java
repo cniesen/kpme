@@ -348,7 +348,7 @@ public class TimesheetServiceImpl implements TimesheetService {
     	EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(timeBlock.getEarnCode(), asOfDate);
         if (timeBlock.getBeginTime() != null && timeBlock.getEndTime() != null && StringUtils.equals(timeBlock.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
             BigDecimal hours = TKUtils.getHoursBetween(timeBlock.getBeginDateTime().getMillis(), timeBlock.getEndDateTime().getMillis());
-
+            BigDecimal minutes = getMinutesBetween(timeBlock.getBeginDateTime(), timeBlock.getEndDateTime());
             //If earn code has an inflate min hours check if it is greater than zero
             //and compare if the hours specified is less than min hours awarded for this
             //earn code
@@ -360,12 +360,18 @@ public class TimesheetServiceImpl implements TimesheetService {
                             (timeBlock.getBeginDateTime().getMillis() - previousTimeBlock.getEndDateTime().getMillis() == 0L)) {
                         BigDecimal prevTimeBlockHours = TKUtils.getHoursBetween(previousTimeBlock.getBeginDateTime().getMillis(), previousTimeBlock.getEndDateTime().getMillis());
                         previousTimeBlock.setHours(prevTimeBlockHours);
+                        previousTimeBlock.setTotalMinutes(getMinutesBetween(previousTimeBlock.getBeginDateTime(), previousTimeBlock.getEndDateTime()));
                     }
                 }
             }
 
             timeBlock.setHours(hours);
+            timeBlock.setTotalMinutes(minutes);
         }
+    }
+
+    protected BigDecimal getMinutesBetween(DateTime begin, DateTime end) {
+        return TKUtils.getMinutesBetween(begin, end);
     }
 
     @Override

@@ -310,8 +310,12 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         tb.setBeginTimeDisplay(tb.getBeginDateTime().withZone(timezone));
         tb.setEndTimeDisplay(tb.getEndDateTime().withZone(timezone));
         // only calculate the hours from the time fields if the passed in hour is zero
+        BigDecimal totalMinutes = null;
         if(hours == null || hours.compareTo(BigDecimal.ZERO) == 0) {
         	hours = TKUtils.getHoursBetween(beginDateTime.getMillis(), endDateTime.getMillis());
+            totalMinutes = getMinutesBetween(beginDateTime, endDateTime);
+        } else {
+            totalMinutes = hours.multiply(BigDecimal.valueOf(60));
         }
         tb.setAmount(amount);
         //If earn code has an inflate min hours check if it is greater than zero
@@ -320,12 +324,13 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 
         tb.setEarnCodeType(earnCodeObj.getEarnCodeType());
         tb.setHours(hours);
+        tb.setTotalMinutes(totalMinutes);
         tb.setClockLogCreated(clockLogCreated);
         tb.setUserPrincipalId(userPrincipalId);
         tb.setTimestamp(TKUtils.getCurrentTimestamp());
         tb.setLunchDeleted(lunchDeleted);
 
-        tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, hours, amount, tb.getTkTimeBlockId(),true));
+        tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, hours, totalMinutes, amount, tb.getTkTimeBlockId(),true));
 
         return TimeBlockBo.to(tb);
     }
@@ -396,7 +401,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         	EarnCode earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(tb.getEarnCode(), tb.getBeginDateTime().toLocalDate());
             if (tb.getBeginTime() != null && tb.getEndTime() != null && StringUtils.equals(tb.getEarnCodeType(), HrConstants.EARN_CODE_TIME)) {
                 BigDecimal hours = TKUtils.getHoursBetween(tb.getBeginDateTime().getMillis(), tb.getEndDateTime().getMillis());
-
+                BigDecimal minutes = getMinutesBetween(tb.getBeginDateTime(), tb.getEndDateTime());
                 //If earn code has an inflate min hours check if it is greater than zero
                 //and compare if the hours specified is less than min hours awarded for this
                 //earn code
@@ -404,10 +409,13 @@ public class TimeBlockServiceImpl implements TimeBlockService {
                 		(tb.getBeginTime().getMillisOfDay() - previousTimeBlock.getEndTime().getMillisOfDay() == 0L)) {
                 	List<TimeHourDetailBo> newDetails = new ArrayList<TimeHourDetailBo>();
         			BigDecimal prevTimeBlockHours = TKUtils.getHoursBetween(previousTimeBlock.getBeginDateTime().getMillis(), previousTimeBlock.getEndDateTime().getMillis());
-        			previousTimeBlock.setHours(prevTimeBlockHours);
+        			BigDecimal prevTimeBlockMinutes = getMinutesBetween(previousTimeBlock.getBeginDateTime(), previousTimeBlock.getEndDateTime());
+                    previousTimeBlock.setHours(prevTimeBlockHours);
+                    previousTimeBlock.setTotalMinutes(prevTimeBlockMinutes);
         			BigDecimal cummulativeHours = prevTimeBlockHours.add(hours, HrConstants.MATH_CONTEXT);
+                    BigDecimal cummulativeMinutes = prevTimeBlockMinutes.add(minutes, HrConstants.MATH_CONTEXT);
         			//remove any inflation done when resetting the previous time block's hours.
-        			previousTimeBlock.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, prevTimeBlockHours, previousTimeBlock.getAmount(), previousTimeBlock.getTkTimeBlockId(),false));
+        			previousTimeBlock.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, prevTimeBlockHours, prevTimeBlockMinutes, previousTimeBlock.getAmount(), previousTimeBlock.getTkTimeBlockId(),false));
                 	
                 	if (earnCodeObj.getInflateMinHours() != null) {
                 		if ((earnCodeObj.getInflateMinHours().compareTo(BigDecimal.ZERO) != 0) &&
@@ -418,7 +426,7 @@ public class TimeBlockServiceImpl implements TimeBlockService {
                 			//create time hour detail with hours equal to the hours needed to reach inflate min plus the hours for this time block.
                 			if(earnCodeObj.getInflateMinHours().compareTo(cummulativeHours) > 0) {
                 				//apply inflations to the cummulative hours
-                				newDetails = this.createTimeHourDetails(earnCodeObj,cummulativeHours,tb.getAmount(),tb.getTkTimeBlockId(),false);
+                				newDetails = this.createTimeHourDetails(earnCodeObj,cummulativeHours, cummulativeMinutes, tb.getAmount(),tb.getTkTimeBlockId(),false);
                 				TimeHourDetailBo detail = newDetails.get(0);
                 				//this detail's hours will be the cummulative inflated hours less the hours in previous time block detail's hours.
                 				detail.setHours(earnCodeObj.getInflateMinHours().subtract(prevTimeBlockHours));
@@ -435,30 +443,34 @@ public class TimeBlockServiceImpl implements TimeBlockService {
                     	TimeHourDetailBo detail = new TimeHourDetailBo();
                     	if(newDetails.isEmpty()) {
                     		//populate some default values...
-                    		newDetails = this.createTimeHourDetails(earnCodeObj,hours,tb.getAmount(),tb.getTkTimeBlockId(),false);
+                    		newDetails = this.createTimeHourDetails(earnCodeObj, hours, minutes, tb.getAmount(),tb.getTkTimeBlockId(),false);
                     	}
                 		detail = newDetails.get(0);
                     	BigDecimal newHours = detail.getHours().multiply(earnCodeObj.getInflateFactor(),HrConstants.MATH_CONTEXT);
+                        BigDecimal newMinutes = detail.getTotalMinutes().multiply(earnCodeObj.getInflateFactor(),HrConstants.MATH_CONTEXT);
                     	detail.setHours(newHours);
+                        detail.setTotalMinutes(newMinutes);
                     	newDetails.clear();
                     	newDetails.add(detail);
                     	tb.setTimeHourDetails(newDetails);
                     	newDetails = previousTimeBlock.getTimeHourDetails();
                     	detail = newDetails.get(0);
                     	detail.setHours(prevTimeBlockHours.multiply(earnCodeObj.getInflateFactor(),HrConstants.MATH_CONTEXT));
+                        detail.setTotalMinutes(prevTimeBlockMinutes.multiply(earnCodeObj.getInflateFactor(), HrConstants.MATH_CONTEXT));
                     	newDetails.clear();
                     	newDetails.add(detail);
                     	previousTimeBlock.setTimeHourDetails(newDetails);
                     }
                 }
                 else {
-                	tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj,tb.getHours(),tb.getAmount(),tb.getTkTimeBlockId(),true));
+                	tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj,tb.getHours(), tb.getTotalMinutes(), tb.getAmount(),tb.getTkTimeBlockId(),true));
                 }
 
                 tb.setHours(hours);
+                tb.setTotalMinutes(minutes);
             } else {
             	// create new time hour details for earn codes of other types
-            	tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj,tb.getHours(),tb.getAmount(),tb.getTkTimeBlockId(),true));
+            	tb.setTimeHourDetails(this.createTimeHourDetails(earnCodeObj, tb.getHours(), tb.getTotalMinutes(), tb.getAmount(), tb.getTkTimeBlockId(),true));
             }
             //reset time block history details
             for(TimeBlockHistory tbh : tb.getTimeBlockHistories()) {
@@ -469,16 +481,18 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         return ModelObjectUtils.transform(originalBos, toTimeBlock);
     }
 
-    private List<TimeHourDetailBo> createTimeHourDetails(EarnCode earnCode, BigDecimal hours, BigDecimal amount, String timeBlockId, boolean inflate) {
+    private List<TimeHourDetailBo> createTimeHourDetails(EarnCode earnCode, BigDecimal hours, BigDecimal totalMinutes, BigDecimal amount, String timeBlockId, boolean inflate) {
         List<TimeHourDetailBo> timeHourDetails = new ArrayList<TimeHourDetailBo>();
 
         TimeHourDetailBo timeHourDetail = new TimeHourDetailBo();
         timeHourDetail.setEarnCode(earnCode.getEarnCode());
         if(inflate) {
         	timeHourDetail.setHours(this.applyInflateMinHoursAndFactor(earnCode, hours));
+            timeHourDetail.setTotalMinutes(this.applyInflateMinMinutesAndFactor(earnCode, totalMinutes));
         }
         else {
         	timeHourDetail.setHours(hours);
+            timeHourDetail.setTotalMinutes(totalMinutes);
         }
         timeHourDetail.setAmount(amount);
         timeHourDetail.setTkTimeBlockId(timeBlockId);
@@ -487,6 +501,9 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         return timeHourDetails;
     }
 
+    protected BigDecimal getMinutesBetween(DateTime begin, DateTime end) {
+        return TKUtils.getMinutesBetween(begin, end);
+    }
     protected List<TimeBlockHistory> createTimeBlockHistories(TimeBlockBo tb, String actionHistory) {
         List<TimeBlockHistory> tbhs = new ArrayList<TimeBlockHistory>();
 
@@ -683,6 +700,29 @@ public class TimeBlockServiceImpl implements TimeBlockService {
         return blockHours;
     }
 
+    private BigDecimal applyInflateMinMinutesAndFactor(EarnCode earnCodeObj, BigDecimal blockMinutes) {
+        if(earnCodeObj != null) {
+            //If earn code has an inflate min hours check if it is greater than zero
+            //and compare if the hours specified is less than min hours awarded for this
+            //earn code
+            if (earnCodeObj.getInflateMinHours() != null) {
+                BigDecimal minInflateMinutes = earnCodeObj.getInflateMinHours().multiply(BigDecimal.valueOf(60), HrConstants.MATH_CONTEXT);
+                if ((earnCodeObj.getInflateMinHours().compareTo(BigDecimal.ZERO) != 0) &&
+                        minInflateMinutes.compareTo(blockMinutes) > 0) {
+                    blockMinutes = minInflateMinutes;
+                }
+            }
+            //If earn code has an inflate factor multiple hours specified by the factor
+            if (earnCodeObj.getInflateFactor() != null) {
+                if ((earnCodeObj.getInflateFactor().compareTo(new BigDecimal(1.0)) != 0)
+                        && (earnCodeObj.getInflateFactor().compareTo(BigDecimal.ZERO)!= 0) ) {
+                    blockMinutes = earnCodeObj.getInflateFactor().multiply(blockMinutes, HrConstants.MATH_CONTEXT);
+                }
+            }
+        }
+        return blockMinutes;
+    }
+
 	/*@Override
 	public List<TimeBlock> getTimeBlocksForLookup(String documentId,
 			String principalId, String userPrincipalId, LocalDate fromDate,
@@ -711,8 +751,8 @@ public class TimeBlockServiceImpl implements TimeBlockService {
 			    			if(sstoHoliday != null && sstoHoliday.getPremiumHoliday().equalsIgnoreCase("Y") && StringUtils.isNotEmpty(sstoHoliday.getPremiumEarnCode())) {
 			    				EarnCode premiumEarnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(sstoHoliday.getPremiumEarnCode(), tb.getBeginDateTime().toLocalDate());
 			    				if(premiumEarnCodeObj != null) {
-			    					timeHourDetails.addAll(this.createTimeHourDetails(earnCodeObj, BigDecimal.ZERO, tb.getAmount(), tb.getTkTimeBlockId(),true));
-			    					timeHourDetails.addAll(this.createTimeHourDetails(premiumEarnCodeObj, tb.getHours(), tb.getAmount(), tb.getTkTimeBlockId(),true));
+			    					timeHourDetails.addAll(this.createTimeHourDetails(earnCodeObj, BigDecimal.ZERO, BigDecimal.ZERO, tb.getAmount(), tb.getTkTimeBlockId(),true));
+			    					timeHourDetails.addAll(this.createTimeHourDetails(premiumEarnCodeObj, tb.getHours(), tb.getTotalMinutes(), tb.getAmount(), tb.getTkTimeBlockId(),true));
 			    					tb.setTimeHourDetails(timeHourDetails);
 			    				}
 			    			}

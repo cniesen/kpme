@@ -51,6 +51,7 @@ public class TimeBlockHistory extends TimeBlockBo implements TimeBlockHistoryCon
 		this.setEndTimestamp(tb.getEndTimestamp());
 		this.setClockLogCreated(tb.isClockLogCreated());
 		this.setHours(tb.getHours());
+        this.setTotalMinutes(tb.getTotalMinutes());
 		this.setUserPrincipalId(tb.getUserPrincipalId());
 		this.setPrincipalId(tb.getPrincipalId());
 		this.setTimestamp(tb.getTimestamp());

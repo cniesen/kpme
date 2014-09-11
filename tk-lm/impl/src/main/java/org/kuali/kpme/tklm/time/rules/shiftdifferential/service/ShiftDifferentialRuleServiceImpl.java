@@ -353,7 +353,8 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
             }
             if (duration > 0) {
                 BigDecimal durationHours = TKUtils.convertMillisToHours(duration);
-                addPremiumTimeHourDetail(timeBlock, durationHours, earnCode);
+                BigDecimal durationMinutes = TKUtils.convertMillisToMinutes(duration);
+                addPremiumTimeHourDetail(timeBlock, durationHours, durationMinutes, earnCode);
                 return true;
             }
         }
@@ -385,11 +386,12 @@ public class ShiftDifferentialRuleServiceImpl implements ShiftDifferentialRuleSe
     	return results;
     }
 
-	protected void addPremiumTimeHourDetail(TimeBlock.Builder block, BigDecimal hours, String earnCode) {
+	protected void addPremiumTimeHourDetail(TimeBlock.Builder block, BigDecimal hours, BigDecimal totalMinutes, String earnCode) {
         List<TimeHourDetail.Builder> details = block.getTimeHourDetails();
         TimeHourDetail.Builder premium = TimeHourDetail.Builder.create();
 		premium.setHours(hours);
 		premium.setEarnCode(earnCode);
+        premium.setTotalMinutes(totalMinutes);
 		premium.setTkTimeBlockId(block.getTkTimeBlockId());
         if (!details.contains(premium)) {
             details.add(premium);

@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.time.timesummary.AssignmentRowContract;
 
 public class AssignmentRow implements Serializable, AssignmentRowContract {
@@ -33,6 +34,7 @@ public class AssignmentRow implements Serializable, AssignmentRowContract {
 
 	private EarnCodeSection earnCodeSection;
 	private BigDecimal periodTotal = BigDecimal.ZERO;
+    private BigDecimal periodTotalMinutes = BigDecimal.ZERO;
 	
 	private Map<Integer,AssignmentColumn> assignmentColumns = new HashMap<Integer, AssignmentColumn>();
 	
@@ -76,7 +78,20 @@ public class AssignmentRow implements Serializable, AssignmentRowContract {
 		this.periodTotal = periodTotal;
 	}
 
-	public Map<Integer, AssignmentColumn> getAssignmentColumns() {
+    public BigDecimal getPeriodTotalMinutes() {
+        return periodTotalMinutes;
+    }
+
+    @Override
+    public BigDecimal getPeriodTotalConverted() {
+        return TKUtils.getHoursFromMinutes(getPeriodTotalMinutes());
+    }
+
+    public void setPeriodTotalMinutes(BigDecimal periodTotalMinutes) {
+        this.periodTotalMinutes = periodTotalMinutes;
+    }
+
+    public Map<Integer, AssignmentColumn> getAssignmentColumns() {
 		return assignmentColumns;
 	}
 
@@ -110,6 +125,18 @@ public class AssignmentRow implements Serializable, AssignmentRowContract {
 			}
 		}
 	}
+
+    public void addToTotalMinutes(int index, BigDecimal totalMinutes) {
+        if (totalMinutes != null) {
+            if (0 <= index && index <= getAssignmentColumns().size()) {
+                AssignmentColumn assignmentColumn = getAssignmentColumns().get(index);
+                BigDecimal newTotal = assignmentColumn.getTotalMinutes().add(totalMinutes, HrConstants.MATH_CONTEXT);
+                assignmentColumn.setTotalMinutes(newTotal);
+                getEarnCodeSection().addToTotalMinutes(index - 1, totalMinutes);
+                periodTotalMinutes = periodTotalMinutes.add(totalMinutes);
+            }
+        }
+    }
 
 	public void addWeeklyTotal(int index, int weekSize) {
 //		BigDecimal weeklyAmount = BigDecimal.ZERO;

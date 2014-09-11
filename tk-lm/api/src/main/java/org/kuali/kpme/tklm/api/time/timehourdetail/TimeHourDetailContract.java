@@ -49,6 +49,17 @@ public interface TimeHourDetailContract extends Versioned, GloballyUnique {
 	 * @return hours for TimeHourDetail
 	 */
 	public BigDecimal getHours();
+
+    /**
+     * The minutes associated with the TimeHourDetail (directly related to hours)
+     *
+     * <p>
+     * total minutes of a TimeHourDetail
+     * <p>
+     *
+     * @return total minutes for TimeHourDetail
+     */
+    public BigDecimal getTotalMinutes();
 	
 	/**
 	 * The amount associated with the TimeHourDetail

@@ -53,12 +53,14 @@ public class TimeBlockHistoryDetail extends TimeHourDetailBo implements TimeBloc
 		this.setEarnCode(thd.getEarnCode());
 		this.setAmount(thd.getAmount());
 		this.setHours(thd.getHours());
+        this.setTotalMinutes(thd.getTotalMinutes());
 	}
 	
     protected TimeBlockHistoryDetail(TimeBlockHistoryDetail t) {
         this.tkTimeBlockHistoryDetailId = t.tkTimeBlockHistoryDetailId;
         this.tkTimeBlockHistoryId = t.tkTimeBlockHistoryId;
         this.setEarnCode(t.getEarnCode());
+        this.setTotalMinutes(t.getTotalMinutes());
         this.setHours(t.getHours());
         this.setAmount(t.getAmount());
     }
