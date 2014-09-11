@@ -46,6 +46,12 @@ import org.kuali.rice.krad.uif.view.View;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
+import de.danielbechler.diff.Configuration;
+import de.danielbechler.diff.ObjectDiffer;
+import de.danielbechler.diff.ObjectDifferFactory;
+import de.danielbechler.diff.node.Node;
+import de.danielbechler.diff.path.PropertyPath;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +62,8 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 	private static final long serialVersionUID = 1140415771858326498L;
 	
 	protected static Logger LOG = Logger.getLogger(KhrEmployeeMaintainableImpl.class);
+	
+	
     @Override
     public Object retrieveObjectForEditOrCopy(MaintenanceDocument document, Map<String, String> dataObjectKeys) {
         KhrEmployeeDocument tkmDocument = new KhrEmployeeDocument();
@@ -111,7 +119,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     			// first get the corresponding old job BO to compare
     			JobBo oldJob = this.getBusinessObjectService().findBySinglePrimaryKey(JobBo.class, currentTkmJob.getId());
     			if(oldJob!= null) {
-    				if( !(areTheSame(oldJob, currentTkmJob)) ) {
+    				if( !(representTheSameJob(oldJob, currentTkmJob)) ) {
     					//if the effective dates are the same do not create a new row just inactivate the old one
     					if(currentTkmJob.getEffectiveDate().equals(oldJob.getEffectiveDate())){
     						oldJob.setActive(false);
@@ -192,10 +200,43 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     }
 
 
-    protected boolean areTheSame(JobBo oldJob, KhrEmployeeJob newTkmJob) {
-		// TODO Auto-generated method stub
-		return false;
+    protected boolean representTheSameJob(JobBo oldJob, KhrEmployeeJob currentTkmJob) {
+    	boolean retVal = true;
+    	KhrEmployeeJob oldTkmJob = createTKMJob(oldJob);
+    	final Configuration configuration = new Configuration();
+    	configuration.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"));
+        configuration.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"));
+        configuration.withoutProperty(PropertyPath.buildWith("effectiveLocalDate"));
+        configuration.withoutProperty(PropertyPath.buildWith("userPrincipalId"));
+        
+        configuration.withoutProperty(PropertyPath.buildWith("groupKey"));
+        configuration.withoutProperty(PropertyPath.buildWith("locationObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("location"));        
+        configuration.withoutProperty(PropertyPath.buildWith("institutionObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("institution"));
+        
+        configuration.withoutProperty(PropertyPath.buildWith("assignments"));
+        configuration.withoutProperty(PropertyPath.buildWith("endDate"));
+        
+        configuration.withoutProperty(PropertyPath.buildWith("fte"));
+        configuration.withoutProperty(PropertyPath.buildWith("deptObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("payGradeObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("salaryGroupObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("positionObj"));
+        configuration.withoutProperty(PropertyPath.buildWith("principalName"));
+        configuration.withoutProperty(PropertyPath.buildWith("name"));
+        
+    	ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance(configuration);
+        final Node root = objectDiffer.compare(currentTkmJob, oldTkmJob);
+        if(root.hasChanges()) {
+        	retVal = false;
+        }
+        return retVal;
 	}
+    
+    
 
 	@Override
     protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine,
