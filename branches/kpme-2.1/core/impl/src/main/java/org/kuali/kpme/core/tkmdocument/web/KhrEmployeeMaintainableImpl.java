@@ -25,6 +25,7 @@ import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.job.JobBo;
@@ -286,6 +287,9 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     	 if (addLine instanceof HrKeyedBusinessObject) {
     		 ((HrKeyedBusinessObject) addLine).setGroupKeyCode("ISU-IA");
     		 ((HrKeyedBusinessObject) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+    	 }
+    	 else if(addLine instanceof AssignmentAccountBo) {
+    		 ((AssignmentAccountBo) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
     }
 
