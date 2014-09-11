@@ -197,8 +197,6 @@
         <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeDocumentLookupableImpl"/>
 
-        <!-- <property name="maintenanceUrlMapping" value="kpme/KhrEmployeeJobMaintenance"/> -->
-
         <property name="criteriaFields">
             <list>
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId" >
@@ -222,18 +220,15 @@
         </property>
     </bean>
 
-    <!-- p:documentAuthorizerClass="org.kuali.kpme.core.tkmdocument.authorization.KhrEmployeeDocumentMaintenanceDocumentAuthorizer"
-
-    "org.kuali.kpme.core.tkmdocument.KhrEmployeeMaintenanceDocument"
-    -->
-
     <bean id="KhrEmployeeDocumentMaintenanceDocument" parent="KhrEmployeeDocumentMaintenanceDocument-parentBean" />
     <bean id="KhrEmployeeDocumentMaintenanceDocument-parentBean" abstract="true"
           parent="uifMaintenanceDocumentEntry"
           p:dataObjectClass="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument"
-          p:documentAuthorizerClass="org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase"
           p:maintainableClass="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"
-          p:businessRulesClass="org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation">
+          p:businessRulesClass="org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation"
+          p:documentAuthorizerClass="org.kuali.kpme.core.tkmdocument.authorization.KhrEmployeeDocumentMaintenanceDocumentAuthorizer" >
+
+
         <property name="documentTypeName" value="KhrEmployeeDocumentType" />
         <property name="lockingKeys">
             <list>
@@ -242,12 +237,14 @@
         </property>
     </bean>
 
+
     <bean id="KhrEmployeeDocument-MaintenanceView" parent="KhrEmployeeDocument-MaintenanceView-parentBean" />
     <bean id="KhrEmployeeDocument-MaintenanceView-parentBean" abstract="true"
           parent="Uif-MaintenanceView">
         <property name="headerText" value="KHR Employee Setup" />
         <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeMaintainableImpl"/>
+
 <!--         <property name="dialogs"> -->
 <!--             <list merge="true"> -->
 <!--                 <bean id="ProcessWarning-Dialog" parent="ProcessChangeWarning-Dialog-parentBean"/> -->
@@ -265,6 +262,9 @@
                 <bean parent="KhrEmployeeDocument-processSection-maintenance"/>
                 <bean parent="KhrEmployeeDocument-jobSection-maintenance"/>
             </list>
+        </property>
+        <property name="page">
+            <bean parent="KPMEUif-MaintenancePage"/>
         </property>
     </bean>
 
