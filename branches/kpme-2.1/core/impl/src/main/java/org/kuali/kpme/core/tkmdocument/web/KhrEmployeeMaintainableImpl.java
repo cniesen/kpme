@@ -25,6 +25,7 @@ import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.assignment.AssignmentBo;
+import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
@@ -282,9 +283,9 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     
     // set the khr employee job's field values that are not set via the "add job" user interface, but are needed for authorization.
     protected void processBeforeAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
-    	 if (addLine instanceof KhrEmployeeJob) {
-    		 ((KhrEmployeeJob) addLine).setGroupKeyCode("ISU-IA");
-    		 ((KhrEmployeeJob) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+    	 if (addLine instanceof HrKeyedBusinessObject) {
+    		 ((HrKeyedBusinessObject) addLine).setGroupKeyCode("ISU-IA");
+    		 ((HrKeyedBusinessObject) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
     }
 
