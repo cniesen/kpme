@@ -21,8 +21,8 @@
  */
 angular.module('swipeApp').controller('MainCtrl', function($window, $scope, $interval, $sce, SwipeConstants, swipeService) {
 
-	var multiplePositionsTimeout = null;
-	var interval = null;
+	var multiplePositionsTimeout = undefined;
+	var interval = undefined;
 
 	/**
 	 * UI View States
@@ -37,7 +37,7 @@ angular.module('swipeApp').controller('MainCtrl', function($window, $scope, $int
 	/**
 	 * time counter to select a position
 	 */
-	$scope.counter = undefined;
+	$scope.counter = SwipeConstants.Timer.MULTIPLE_POSITIONS / 1000;
 
 	/**
 	 * Define a safeApply wrapper to stop from causing: '$apply already in progress' errors
@@ -169,18 +169,6 @@ angular.module('swipeApp').controller('MainCtrl', function($window, $scope, $int
 		swipeService.setUiSwipeCallback(processSwipeResponse);
 		swipeService.setUiSwipeErrorCallback(processSwipeError);
 	};
-
-	// main.js
-	/**
-	 * TEMPORARY - START
-	 */
-	window.swipeDev = function() {
-		var data = '{"track_status" : "020002", "track2_encrypted" : "5D9676F0E543F7AF42C0D98501C412C257BFC54C31C2BB43D5BB5CE82A616DA73110BC863142F360", "card_exp_date" : "4912", "ksn" : "9010010B0599C100011E"}';
-		swipeService.swipeDev(data);
-	};
-	/**
-	 * TEMPORARY - END
-	 */
 
 	init();
 });

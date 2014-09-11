@@ -24,18 +24,6 @@ angular.module('swipeApp').service('swipeService', function($window, $http, $q, 
 	var uiCallback = undefined;
 	var uiErrorCallback = undefined;
 
-	// swipeService
-	/**
-	 * TEMPORARY - START  
-	 */
-	self.swipeDev = function(cardData){
-	  swipeHandler(cardData);
-	};
-	/**
-	 * TEMPORARY - END  
-	 */
-
-	
 	/**
 	 * Register successful card swipe callback for UI Controller
 	 */

@@ -191,13 +191,6 @@ public class MobileClockLogServiceImpl implements MobileClockLogService {
 
                 // TODO: RemoteSwipeDevice remoteSwipeDevice should be updated??
                 return JSONValue.toJSONString(returnStrings);
-            } else {
-                // input is from Queue, then build a blank assignment. This will
-                // be fixed by approver.
-            	LOG.info("isFromQueue="+"true");	
-                //Assignment assignment = buildBlankAssignment(remoteClockLog.getPrincipalId());
-                //assignments.add(assignment);
-            	//LOG.info("Assignment Size="+assignments.size());	
             }
         }
 
@@ -357,21 +350,6 @@ public class MobileClockLogServiceImpl implements MobileClockLogService {
             // send FYI to approvers
             sendApproverFyi(td, assignment.getWorkArea());
         }
-    }
-
-    private Assignment buildBlankAssignment(String principalId) {
-
-
-        PayType.Builder payTypeObj = PayType.Builder.create("XH");
-        payTypeObj.setRegEarnCode("REG");
-        Job.Builder job = Job.Builder.create(principalId, 0L);
-        job.setPayTypeObj(payTypeObj);
-
-        Assignment.Builder newAssignment = Assignment.Builder.create(principalId, "", 0L, 0L, 0L);
-        newAssignment.setPrincipalId(principalId);
-        newAssignment.setJob(job);
-
-        return newAssignment.build();
     }
 
     private List<String> buildSuccessfullyUpdatedMessage(RemoteClockLog remoteClockLog, Assignment assignment, String currentClockAction){
