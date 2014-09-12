@@ -64,7 +64,7 @@
 				<property name="primitiveAttributes">
 				<list>
 					<bean parent="PrimitiveAttributeDefinition" p:sourceName="workArea" p:targetName="workArea" />
-					<bean parent="PrimitiveAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate"/>
+					<bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate"/>
 				</list>
 				</property>
 			</bean>
@@ -79,7 +79,7 @@
               <property name="supportAttributes">
                    <list>
                        <bean parent="SupportAttributeDefinition" p:sourceName="groupKeyCode" p:targetName="groupKeyCode" />
-                       <bean parent="SupportAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate" />
+                       <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate" />
                    </list>
                </property>
             </bean>
@@ -90,7 +90,7 @@
                 <list>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="principalId" p:targetName="principalId"/>
                   <bean parent="PrimitiveAttributeDefinition" p:sourceName="jobNumber" p:targetName="jobNumber"/>
-                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate"/>
+                  <bean parent="PrimitiveAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate"/>
                 </list>
               </property>
             </bean> 
