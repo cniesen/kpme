@@ -212,10 +212,10 @@ public class TimeSummary implements Serializable, TimeSummaryContract {
 	}
 
     public Map<String, BigDecimal> getWeekTotalConvertedMap() {
-        if (MapUtils.isEmpty(weekTotalMinutesMap)) {
-            weekTotalMinutesMap = new LinkedHashMap<String, BigDecimal>();
+        if (MapUtils.isEmpty(weekTotalConvertedMap)) {
+            weekTotalConvertedMap = new LinkedHashMap<String, BigDecimal>();
             for (Map.Entry<String, BigDecimal> entry : getWeekTotalMinutesMap().entrySet()) {
-                weekTotalMinutesMap.put(entry.getKey(), TKUtils.getHoursFromMinutes(entry.getValue()));
+                weekTotalConvertedMap.put(entry.getKey(), TKUtils.getHoursFromMinutes(entry.getValue()));
             }
         }
         return weekTotalConvertedMap;
