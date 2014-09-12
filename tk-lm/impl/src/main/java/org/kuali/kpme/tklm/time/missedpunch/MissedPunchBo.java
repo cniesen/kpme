@@ -129,7 +129,7 @@ public class MissedPunchBo extends PersistableBusinessObjectBase implements Miss
 	}
 	
 	public String getAssignmentValue() {
-		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getGroupKeyCode(), getPrincipalId(), getJobNumber(), getWorkArea(), getTask(), getActionFullDateTime().toLocalDate());
+		return HrServiceLocator.getAssignmentService().getAssignmentDescription(getPrincipalId(), getGroupKeyCode(), getJobNumber(), getWorkArea(), getTask(), getActionFullDateTime().toLocalDate());
 	}
 	
     public Date getRelativeEffectiveDate() {
