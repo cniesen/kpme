@@ -34,11 +34,12 @@ public interface ClockLocationRuleService {
 	 * @return
 	 */
     @Cacheable(value= ClockLocationRule.CACHE_NAME,
-            key="'dept=' + #p0" +
-                    "+ '|' + 'workArea=' + #p1" +
-                    "+ '|' + 'principalId=' + #p2" +
-                    "+ '|' + 'jobNumber=' + #p3" +
-                    "+ '|' + 'asOfDate=' + #p4")
+            key="'groupKeyCode=' + #p0" +
+                    "+ '|' + 'dept=' + #p1" +
+                    "+ '|' + 'workArea=' + #p2" +
+                    "+ '|' + 'principalId=' + #p3" +
+                    "+ '|' + 'jobNumber=' + #p4" +
+                    "+ '|' + 'asOfDate=' + #p5")
 	public List<ClockLocationRule> getClockLocationRule(String groupKeyCode, String dept, Long workArea,
 			String principalId, Long jobNumber, LocalDate asOfDate);
 	/**
@@ -58,11 +59,12 @@ public interface ClockLocationRuleService {
 	 * @return
 	 */
     @Cacheable(value= ClockLocationRule.CACHE_NAME,
-            key="'{getNewerVersionClockLocationRule}' + 'dept=' + #p0" +
-                    "+ '|' + 'workArea=' + #p1" +
-                    "+ '|' + 'principalId=' + #p2" +
-                    "+ '|' + 'jobNumber=' + #p3" +
-                    "+ '|' + 'asOfDate=' + #p4")
+            key="'{getNewerVersionClockLocationRule}' + 'groupKeyCode=' + #p0" +
+                    "+ '|' + 'dept=' + #p1" +
+                    "+ '|' + 'workArea=' + #p2" +
+                    "+ '|' + 'principalId=' + #p3" +
+                    "+ '|' + 'jobNumber=' + #p4" +
+                    "+ '|' + 'asOfDate=' + #p5")
 	public List<ClockLocationRule> getNewerVersionClockLocationRule(String groupKeyCode, String dept, Long workArea, String principalId, 
 			Long jobNumber, LocalDate asOfDate);
 	/**

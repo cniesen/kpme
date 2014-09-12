@@ -187,7 +187,7 @@ public interface AssignmentService {
 	
 	public List<Assignment> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
 
-    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescription}' + 'principalId=' + #p0 + '|' + 'jobNumber=' + #p1 + '|' + 'workArea=' + #p2 + '|' + 'task=' + #p3 + '|' + 'asOfDate=' + #p4")
+    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescription}' + 'principalId=' + #p0 + '|' + 'groupKeyCode=' + #p1 + '|' + 'jobNumber=' + #p2 + '|' + 'workArea=' + #p3 + '|' + 'task=' + #p4 + '|' + 'asOfDate=' + #p5")
     public String getAssignmentDescription(String principalId, String groupKeyCode, Long jobNumber, Long workArea, Long task, LocalDate asOfDate);
 
 //    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescriptionForAssignment}' + 'assignmentId=' + #p0.getId() + '|' + 'asOfDate=' + #p4")
