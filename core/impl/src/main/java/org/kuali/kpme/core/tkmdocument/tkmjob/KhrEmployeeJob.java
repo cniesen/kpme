@@ -32,6 +32,9 @@ public class KhrEmployeeJob extends JobBo {
 	private Date endDate;
     private List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
 
+    private String jobNumberDisplay;
+
+
     public Date getEndDate() {
         return endDate;
     }
@@ -46,6 +49,19 @@ public class KhrEmployeeJob extends JobBo {
 
     public void setAssignments(List<AssignmentBo> assignments) {
         this.assignments = assignments;
+    }
+
+
+    public String getJobNumberDisplay() {
+        Long currentJobNumber = this.getJobNumber();
+        if ( (currentJobNumber != null) && (currentJobNumber.compareTo(0L) >= 0 ) )
+        {
+            return currentJobNumber.toString();
+        }
+        else
+        {
+            return " ";
+        }
     }
 }
 

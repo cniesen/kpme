@@ -20,6 +20,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
@@ -117,7 +118,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         // iterate thru the job list versioning those that are not being newly added, and have been changed
         for (KhrEmployeeJob currentTkmJob : tkmJobList) {
         	boolean saveCurrentInNewRow = true; // this flag will determine if we actually save this job bo or not
-    		if(currentTkmJob.getId() != null){
+    		if (currentTkmJob.getId() != null) {
     			// first get the corresponding old job BO to compare
     			JobBo oldJob = this.getBusinessObjectService().findBySinglePrimaryKey(JobBo.class, currentTkmJob.getId());
     			if(oldJob!= null) {
@@ -147,6 +148,17 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     		if(saveCurrentInNewRow) {
     			currentTkmJob.setTimestamp(new Timestamp(System.currentTimeMillis()));
     			currentTkmJob.setId(null);
+
+                if (currentTkmJob.getJobNumber().compareTo(0L) < 0)
+                {
+                    Long newJobNumber = getNextJobNumber(tkmDocument);
+                    currentTkmJob.setJobNumber(newJobNumber);
+                    for (AssignmentBo assignment : currentTkmJob.getAssignments())
+                    {
+                        assignment.setJobNumber(newJobNumber);
+                    }
+                }
+
     			getBusinessObjectService().save(currentTkmJob);
     			currentTkmJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     		}
@@ -240,6 +252,17 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     
     
 
+    protected Long getNextJobNumber(KhrEmployeeDocument tkmDocument)
+    {
+        Job maxJob = HrServiceLocator.getJobService().getMaxJob(tkmDocument.getPrincipalId());
+
+        if(maxJob != null) {
+            return (maxJob.getJobNumber() + 1);
+        } else {
+            return 0L;
+        }
+    }
+
 	@Override
     protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine,
                                        boolean isValidLine) {
@@ -255,11 +278,12 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             addJob.setActive(true);
 
             //set job number
-            Job maxJob = HrServiceLocator.getJobService().getMaxJob(tkmDocument.getPrincipalId());
-            if(maxJob != null) {
-                addJob.setJobNumber(maxJob.getJobNumber() +1);
-            } else {
-                addJob.setJobNumber(0L);
+            addJob.setJobNumber(getNextJobNumber(tkmDocument));
+
+            Integer newJobCount = tkmDocument.getJobList().size();
+            if (newJobCount > 0)
+            {
+                addJob.setJobNumber(-1L);
             }
         }
 
