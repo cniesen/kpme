@@ -478,7 +478,7 @@
 	<bean id="KPMEUif-TimePickerWidget-parentBean" abstract="true" class="org.kuali.kpme.core.web.uif.widget.TimePickerWidget" parent="Uif-WidgetBase">
     	<property name="templateOptions">
         	<map merge="true">
-            	<entry key="step" value="15"/>
+            	<entry key="step" value="6"/>
              	<entry key="timeFormat" value="h:i A"/>
         	</map>
     	</property>
