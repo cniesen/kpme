@@ -104,6 +104,10 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		String[] rulePieces = StringUtils.split(ipAddressRule, ".");
         int ruleMax = rulePieces.length-1;
 
+        //code for testing... localhost brings empty ipAddress
+        /*if (StringUtils.isEmpty(ipAddress)) {
+            ipAddress = "129.200.200.200";
+        }*/
 		String[] ipAddPieces = StringUtils.split(ipAddress,".");
 		boolean match = true;
 		for(int i=0; i<ipAddPieces.length; i++){
