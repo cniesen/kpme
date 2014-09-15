@@ -63,35 +63,32 @@ angular.module('swipeApp').service('clockLogQueueService', function($rootScope, 
 			// deep copy the queue to allow element removal
 			angular.copy(self.clockLogQueue(), queue);
 
-			// for each element in 'clockLogQueue', push it to the server synchronously
+			// for each element in 'clockLogQueue', push it to the server sequentially.
 			// continue until an element fails, then stop pushing elements to server.
 			// if successful, shift out the element from the copied array. When done,
 			// Place the copy into storage as the new queue
-			angular.forEach(self.clockLogQueue(), function(swipeData) {
 
+			// initialize an empty list of sequentially executed promises
+			var promise = $q.all(null);
+
+			// for each swipe, if still valid, execute the promise and wait until it succeeds to proceed
+			angular.forEach(self.clockLogQueue(), function(swipeData){
 				if (valid) {
-					$http.post(SwipeConstants.Endpoints.CLOCK_LOG, swipeData, {
-						timeout : SwipeConstants.Connection.MAX_TIMEOUT,
-						async : false
-					}).success(function(data) {
-						if (data.status === 'success' && valid) {
-							queue.shift();
-							localStorageService.set(SwipeConstants.Storage.QUEUE, queue);
-						} else if (data.status === 'failure' && valid) {
-							// TODO this needs to have some sort of answer as to why we can remove this even
-							// though its a failure. e.g. unrecognized user
-							queue.shift();
-							localStorageService.set(SwipeConstants.Storage.QUEUE, queue);
-						} else {
-							valid = false;
-						}
-					}).error(function() {
-						valid = false;
-					});
+				    promise = promise.then(function(){
+				    	return $http.post(SwipeConstants.Endpoints.CLOCK_LOG, swipeData).then(function(res){
+				    		// success
+							if ((res.data.status === 'success' || res.data.status === 'failure') && valid) {
+								queue.shift();
+								localStorageService.set(SwipeConstants.Storage.QUEUE, queue);
+							} else {
+								valid = false;
+							}
+				    	}, function(reason){
+				    	  valid = false;
+				    	});
+				    });
 				}
 			});
-
-			localStorageService.set(SwipeConstants.Storage.QUEUE, queue);
 		}
 	};
 
