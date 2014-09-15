@@ -74,6 +74,9 @@ public class TkConstants {
         LOCATION_TO_TIME_ZONE_MAP.put("NW", "America/Chicago");
     }
 
+    public static final String ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION = "kpme.allow.clockingEmployee.from.invalidLocation";
+    public static final String LIMIT_MP_ASSIGN_FROM_INVALIDLOCATION = "kpme.limit.mp.assignments.from.invalidLocation";
+
     /**
      * The following ROLE_* constants need to match what is in the workflow database.  They will be
      * used internally to obtain a reference to the underlying IDs in the workflow system.

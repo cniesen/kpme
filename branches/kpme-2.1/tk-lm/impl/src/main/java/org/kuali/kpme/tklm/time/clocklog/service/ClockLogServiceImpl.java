@@ -31,7 +31,6 @@ import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLogService;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.common.LMConstants;
 import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
 import org.kuali.kpme.tklm.time.clocklog.dao.ClockLogDao;
 import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
@@ -57,7 +56,7 @@ public class ClockLogServiceImpl implements ClockLogService {
 
     public void invalidIpCheck(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate) throws InvalidClockLogException
     {
-        String allowActionFromInvalidLocation = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
+        String allowActionFromInvalidLocation = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
 
         if ( (StringUtils.equals(allowActionFromInvalidLocation, "false") ) &&
                 (TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(groupKeyCode, dept, workArea, principalId, jobNumber, ipAddress, asOfDate) ) )

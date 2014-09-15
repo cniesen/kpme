@@ -59,9 +59,9 @@ public class LMConstants {
 	 public static final String PAYOUT_FORFEIT_LB_DESCRIPTION = "Forfeited payout amount";
 	 public static final String TRANSFER_FORFEIT_LB_DESCRIPTION = "Forfeited balance transfer amount";
 	 
-	 public static final String RUN_ACCRUAL_FROM_CALENDAR = "run.accrual.from.calendar";   // controls if accrual should be ran from Leave calendar
-	 public static final String ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION = "kpme.allow.clockingEmployee.from.invalidLocation";
-	 public static final String DISPLAY_YTD_FMLA_LEAVESUMMARY ="kpme.display.ytdfmla.on.leavesummary";
+	public static final String RUN_ACCRUAL_FROM_CALENDAR = "run.accrual.from.calendar";   // controls if accrual should be ran from Leave calendar
+
+    public static final String DISPLAY_YTD_FMLA_LEAVESUMMARY ="kpme.display.ytdfmla.on.leavesummary";
 	 
 	 public static final String INITIATE_LEAVE_REQUEST_ACTION = "kpme.lm.leaveCalendar.initiate.leaveRequest.action";
 	 

@@ -59,6 +59,8 @@
          false : If false hard stop to user for action clock in/out. 
     -->
     <param name="kpme.allow.clockingEmployee.from.invalidLocation">false</param>
+
+    <param name="kpme.limit.mp.assignments.from.invalidLocation">false</param>
     
     <!-- Number of records to display on each page on time/leave approval -->
 	<param name="kpme.tklm.approval.page.size">10</param>
