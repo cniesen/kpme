@@ -47,7 +47,6 @@ import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.common.CalendarApprovalFormAction;
 import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.missedpunch.document.MissedPunchDocumentService;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -229,7 +228,8 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
         LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate().minusDays(limit);
       
-        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);
+        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
+
 	}
     
 	protected void setApprovalTables(TimeApprovalActionForm timeApprovalActionForm, HttpServletRequest request, List<String> principalIds, String docIdSearchTerm) {
