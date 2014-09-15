@@ -48,9 +48,7 @@ angular.module('swipeApp').service('swipeService', function($window, $http, $q, 
 		// wrap in function to call itself on error
 		var sendSwipe = function() {
 			// contact server with swipe
-			$http.post(SwipeConstants.Endpoints.CLOCK_LOG, swipeData, {
-				timeout : SwipeConstants.Connection.MAX_TIMEOUT
-			}).success(function(data) {
+			$http.post(SwipeConstants.Endpoints.CLOCK_LOG, swipeData).success(function(data) {
 				// on success resolve the deferred promise
 				swipeResults.resolve(data);
 			}).error(function(data) {
@@ -73,27 +71,30 @@ angular.module('swipeApp').service('swipeService', function($window, $http, $q, 
 	 * User has selected a position to apply to the clock log. Push position to server and wait for response
 	 */
 	self.selectPosition = function(position) {
-
 		var swipeData = clockLogQueueService.getCurrentSwipe();
 		swipeData.position = position;
 
-		if (!heartbeatService.checkHeartbeat() || position === undefined) {
+		if(position === undefined){
 			connectivityIssueHandler(swipeData);
 		} else {
-
-			sendSwipeDeferred(swipeData).then(function(data) {
-				if (data.status === 'success') {
-					swipeData = undefined;
-					clockLogQueueService.removeCurrentSwipe();
-					uiCallback(data);
-				} else {
-					// error recognized on server and returned to service.
-					swipeData = undefined;
-					clockLogQueueService.removeCurrentSwipe();
-					uiErrorCallback(data);
-				}
-			}, function() {
-				connectivityIssueHandler(swipeData);
+			heartbeatService.checkHeartbeat().then(function() {
+				// send the swipe to the server in a deferred promise wrapper
+				sendSwipeDeferred(swipeData).then(function(data) {
+					if (data.status === 'success') {
+						swipeData = undefined;
+						clockLogQueueService.removeCurrentSwipe();
+						uiCallback(data);
+					} else {
+						// error recognized on server and returned to service.
+						swipeData = undefined;
+						clockLogQueueService.removeCurrentSwipe();
+						uiErrorCallback(data);
+					}
+				}, function(reason){
+					connectivityIssueHandler(swipeData);
+				});
+			}, function(reason){
+					connectivityIssueHandler(swipeData);
 			});
 		}
 	};
