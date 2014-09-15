@@ -34,10 +34,8 @@ import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchService;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockService;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
 import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
-import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.missedpunch.dao.MissedPunchDao;
 import org.kuali.kpme.tklm.time.rules.TkRuleControllerService;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -45,7 +43,6 @@ import org.kuali.kpme.tklm.time.timesheet.TimesheetUtils;
 import org.kuali.kpme.tklm.time.timesheet.service.TimesheetService;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.service.BusinessObjectService;
-import org.omg.CORBA.DynAnyPackage.Invalid;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -101,6 +98,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
             throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
         }
         builder.setTkClockLogId(clockLog.getTkClockLogId());
+        builder.setCreateTime(clockLog.getCreateTime());
 
         if (StringUtils.equals(clockLog.getClockAction(), TkConstants.CLOCK_OUT) ||
                 StringUtils.equals(clockLog.getClockAction(), TkConstants.LUNCH_OUT)) {
@@ -189,6 +187,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         builder.setActionFullDateTime(missedPunch.getActionFullDateTime());
         builder.setTkClockLogId(clockLog.getTkClockLogId());
+        builder.setCreateTime(clockLog.getCreateTime());
 
         if (logEndId != null || logBeginId != null) {
             ClockLog endLog;
