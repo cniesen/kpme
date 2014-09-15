@@ -214,6 +214,49 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     }
 
 
+    @Override
+    public void prepareForSave() {
+        super.prepareForSave();
+
+        KhrEmployeeDocument tkmDocument = (KhrEmployeeDocument) this.getDataObject();
+
+        for (KhrEmployeeJob addJob: tkmDocument.getJobList())
+        {
+            if (addJob.getJobNumber() == null)
+            {
+                addJob.setPrincipalId(tkmDocument.getPrincipalId());
+                addJob.setActive(true);
+
+                //set job number
+                addJob.setJobNumber(getNextJobNumber(tkmDocument));
+
+                Integer newJobCount = tkmDocument.getJobList().size();
+                if (newJobCount > 0)
+                {
+                    addJob.setJobNumber(-1L);
+                }
+                addJob.setGroupKeyCode("ISU-IA");
+                addJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+            }
+            for (AssignmentBo addAssignment : addJob.getAssignments())
+            {
+                addAssignment.setJobNumber(addJob.getJobNumber());
+                addAssignment.setPrincipalId(addJob.getPrincipalId());
+                addAssignment.setGroupKeyCode(addJob.getGroupKeyCode());
+
+                addAssignment.setActive(addJob.isActive());
+                addAssignment.setUserPrincipalId(addJob.getUserPrincipalId());
+                for (AssignmentAccountBo addAssignmentAccountBo : addAssignment.getAssignmentAccounts())
+                {
+                    if (addAssignmentAccountBo.getUserPrincipalId() == null)
+                    {
+                        addAssignmentAccountBo.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+                    }
+                }
+            }
+        }
+    }
+
     protected boolean representTheSameJob(JobBo oldJob, KhrEmployeeJob currentTkmJob) {
     	boolean retVal = true;
     	KhrEmployeeJob oldTkmJob = createTKMJob(oldJob);
@@ -263,6 +306,8 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         }
     }
 
+//this logic was moved into prepareForSave
+/*
 	@Override
     protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine,
                                        boolean isValidLine) {
@@ -303,10 +348,13 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             addAssignment.setJobNumber(jobNumber);
             addAssignment.setActive(true);
         }
-
     }
-    
+*/
+
+
+//this logic was moved into prepareForSave
     // set the khr employee job's field values that are not set via the "add job" user interface, but are needed for authorization.
+/*
     protected void processBeforeAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
     	 if (addLine instanceof HrKeyedBusinessObject) {
     		 ((HrKeyedBusinessObject) addLine).setGroupKeyCode("ISU-IA");
@@ -316,6 +364,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     		 ((AssignmentAccountBo) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
     }
+*/
 
     @Override
     protected void processAfterDeleteLine(View view, CollectionGroup collectionGroup, Object model, int lineIndex) {
@@ -323,6 +372,10 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         //which was causing errors in sub collections
     }
 
+
+
+//this logic is now handled by KhrEmployeeDocumentValidation
+/*
     @Override
     protected boolean performAddLineValidation(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
         boolean isValid = true;
@@ -340,6 +393,8 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 
         return isValid;
     }
+*/
+
     private KhrEmployeeJob createTKMJob(JobContract job) {
         KhrEmployeeJob tkmJob = new KhrEmployeeJob();
 
