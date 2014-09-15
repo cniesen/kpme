@@ -295,7 +295,7 @@
         </property>
         
         <property name="controlField">
-        	<bean parent="KPMEUif-TimePickerTextControl" p:watermarkText="6:00 AM" p:currentTimeButtonEnabled="false">
+        	<bean parent="KPMEUif-TimePickerTextControl" p:watermarkText="HH:MM AM" p:currentTimeButtonEnabled="false">
                 <property name="timePickerWidget">
                 	<bean parent="KPMEUif-TimePickerWidget">
                 		<property name="templateOptions">
