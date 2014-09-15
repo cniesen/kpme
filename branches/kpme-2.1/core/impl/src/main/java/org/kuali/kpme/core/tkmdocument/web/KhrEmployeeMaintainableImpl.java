@@ -20,13 +20,13 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
-import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
+import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.job.JobBo;
@@ -109,157 +109,9 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         return tkmDocument;
     }
 
-    @Override
-    public void saveDataObject() {
-        KhrEmployeeDocument tkmDocument = (KhrEmployeeDocument) this.getDataObject();
-
-        List<KhrEmployeeJob> tkmJobList = tkmDocument.getJobList();
-
-        // iterate thru the job list versioning those that are not being newly added, and have been changed
-        for (KhrEmployeeJob currentTkmJob : tkmJobList) {
-        	boolean saveCurrentInNewRow = true; // this flag will determine if we actually save this job bo or not
-    		if (currentTkmJob.getId() != null) {
-    			// first get the corresponding old job BO to compare
-    			JobBo oldJob = this.getBusinessObjectService().findBySinglePrimaryKey(JobBo.class, currentTkmJob.getId());
-    			if(oldJob!= null) {
-    				if( !(representTheSameJob(oldJob, currentTkmJob)) ) {
-    					//if the effective dates are the same do not create a new row just inactivate the old one
-    					if(currentTkmJob.getEffectiveDate().equals(oldJob.getEffectiveDate())){
-    						oldJob.setActive(false);
-    						oldJob.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
-    					} 
-    					else {
-	    					//if effective dates not the same, add a new row that inactivates the old entry based on the new effective date
-	    					oldJob.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
-	    					oldJob.setEffectiveDate(currentTkmJob.getEffectiveDate());
-	    					oldJob.setActive(false);
-	    					oldJob.setId(null);
-    					}
-    					// save the older version - will trigger either an UPDATE or an INSERT depending on effective date remaining same or not.
-    					KRADServiceLocator.getBusinessObjectService().save(oldJob);
-    				}
-    				else {
-    					// the old and new are the same, so no need to save as new row
-    					saveCurrentInNewRow = false;
-    				}
-    			}
-    		}
-    		// finally save the new job object as a new row, unless not needed
-    		if(saveCurrentInNewRow) {
-    			currentTkmJob.setTimestamp(new Timestamp(System.currentTimeMillis()));
-    			currentTkmJob.setId(null);
-
-                if (currentTkmJob.getJobNumber().compareTo(0L) < 0)
-                {
-                    Long newJobNumber = getNextJobNumber(tkmDocument);
-                    currentTkmJob.setJobNumber(newJobNumber);
-                    for (AssignmentBo assignment : currentTkmJob.getAssignments())
-                    {
-                        assignment.setJobNumber(newJobNumber);
-                    }
-                }
-
-    			getBusinessObjectService().save(currentTkmJob);
-    			currentTkmJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-    		}
-
-
-            JobBo nextInactiveJob = JobBo.from(HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob)));
-            //if current job end date is blank and there is a future inactive job, delete that future inactive job
-            if (currentTkmJob.getEndDate() == null) {
-            	if(nextInactiveJob != null) {
-            		getBusinessObjectService().delete(nextInactiveJob);
-            	}
-            }
-            //if end date is present create/update an inactive job
-            else {
-            	//if inactive job exists update it 
-                if (nextInactiveJob != null) {
-                    nextInactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
-                    getBusinessObjectService().linkAndSave(nextInactiveJob);
-                } 
-                // else create new
-                else {
-                	KhrEmployeeJob inactiveJob = createTKMJob(currentTkmJob);
-                    inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-                    inactiveJob.setHrJobId(null);
-                    inactiveJob.setObjectId(null);
-                    inactiveJob.setVersionNumber(null);
-                    inactiveJob.setActive(false);
-                    inactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
-                	getBusinessObjectService().linkAndSave(inactiveJob);
-                }
-            }
-            
-        	
-            for(AssignmentBo assignment: currentTkmJob.getAssignments()) {
-                getBusinessObjectService().linkAndSave(assignment);
-            }
-        }
-
-        //edit hr principal attributes
-        List<PrincipalHRAttributesBo> activeAttributes = ModelObjectUtils.transform(HrServiceLocator.getPrincipalHRAttributeService().getAllActivePrincipalHrAttributesForPrincipalId(tkmDocument.getPrincipalId(), LocalDate.now()), PrincipalHRAttributesBo.toBo);
-
-        if (CollectionUtils.isEmpty(activeAttributes)) {
-            PrincipalHRAttributesBo newAttributes = new PrincipalHRAttributesBo();
-            newAttributes.setEffectiveDate(LocalDate.now().toDate());
-            newAttributes.setPrincipalId(tkmDocument.getPrincipalId());
-            //todo create parameter for default calendar
-            newAttributes.setPayCalendar("ISU-SEMI-MNTHLY");
-            newAttributes.setActive(true);
-
-            getBusinessObjectService().linkAndSave(newAttributes);
-        }
-
-    }
-
-
-    @Override
-    public void prepareForSave() {
-        super.prepareForSave();
-
-        KhrEmployeeDocument tkmDocument = (KhrEmployeeDocument) this.getDataObject();
-
-        for (KhrEmployeeJob addJob: tkmDocument.getJobList())
-        {
-            if (addJob.getJobNumber() == null)
-            {
-                addJob.setPrincipalId(tkmDocument.getPrincipalId());
-                addJob.setActive(true);
-
-                //set job number
-                addJob.setJobNumber(getNextJobNumber(tkmDocument));
-
-                Integer newJobCount = tkmDocument.getJobList().size();
-                if (newJobCount > 0)
-                {
-                    addJob.setJobNumber(-1L);
-                }
-                addJob.setGroupKeyCode("ISU-IA");
-                addJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-            }
-            for (AssignmentBo addAssignment : addJob.getAssignments())
-            {
-                addAssignment.setJobNumber(addJob.getJobNumber());
-                addAssignment.setPrincipalId(addJob.getPrincipalId());
-                addAssignment.setGroupKeyCode(addJob.getGroupKeyCode());
-
-                addAssignment.setActive(addJob.isActive());
-                addAssignment.setUserPrincipalId(addJob.getUserPrincipalId());
-                for (AssignmentAccountBo addAssignmentAccountBo : addAssignment.getAssignmentAccounts())
-                {
-                    if (addAssignmentAccountBo.getUserPrincipalId() == null)
-                    {
-                        addAssignmentAccountBo.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-                    }
-                }
-            }
-        }
-    }
-
-    protected boolean representTheSameJob(JobBo oldJob, KhrEmployeeJob currentTkmJob) {
+    protected boolean isUnchanged(HrBusinessObject oldHrBo, HrBusinessObject currentHrBo) {
     	boolean retVal = true;
-    	KhrEmployeeJob oldTkmJob = createTKMJob(oldJob);
+    	
     	final Configuration configuration = new Configuration();
     	configuration.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"));
         configuration.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"));
@@ -272,21 +124,38 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         configuration.withoutProperty(PropertyPath.buildWith("institutionObj"));
         configuration.withoutProperty(PropertyPath.buildWith("institution"));
         
-        configuration.withoutProperty(PropertyPath.buildWith("assignments"));
-        configuration.withoutProperty(PropertyPath.buildWith("endDate"));
+        if(oldHrBo instanceof JobContract) {
+    		oldHrBo = createTKMJob((JobContract) oldHrBo);
+    		
+    		configuration.withoutProperty(PropertyPath.buildWith("assignments"));
+            configuration.withoutProperty(PropertyPath.buildWith("endDate"));
+            
+            configuration.withoutProperty(PropertyPath.buildWith("fte"));
+            configuration.withoutProperty(PropertyPath.buildWith("deptObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("payGradeObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("salaryGroupObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("positionObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("principalName"));
+            configuration.withoutProperty(PropertyPath.buildWith("name"));
+    	}
         
-        configuration.withoutProperty(PropertyPath.buildWith("fte"));
-        configuration.withoutProperty(PropertyPath.buildWith("deptObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("payGradeObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("salaryGroupObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("positionObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("principalName"));
-        configuration.withoutProperty(PropertyPath.buildWith("name"));
+        if(oldHrBo instanceof AssignmentBo) {
+        	configuration.withoutProperty(PropertyPath.buildWith("job"));
+            configuration.withoutProperty(PropertyPath.buildWith("workAreaObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("taskObj"));
+            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
+            
+            configuration.withoutProperty(PropertyPath.buildWith("dept"));
+            configuration.withoutProperty(PropertyPath.buildWith("assignmentDescription"));
+            
+            configuration.withoutProperty(PropertyPath.buildWith("assignmentAccounts"));
+            
+        }
         
     	ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance(configuration);
-        final Node root = objectDiffer.compare(currentTkmJob, oldTkmJob);
+        final Node root = objectDiffer.compare(currentHrBo, oldHrBo);
         if(root.hasChanges()) {
         	retVal = false;
         }
@@ -294,23 +163,170 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 	}
     
     
+    public void saveAndVersionBusinessObject(HrBusinessObject currentHrBo) {
+    	boolean saveCurrentInNewRow = true; // this flag will determine if we actually save this HR bo or not
+    	// check if this is an existing BO
+		if(currentHrBo.getId() != null) {
+			// get the old HR BO version from DB to compare
+			HrBusinessObject oldHrBO = this.getBusinessObjectService().findBySinglePrimaryKey(currentHrBo.getClass(), currentHrBo.getId());
+			if(oldHrBO != null) {
+				if( !(isUnchanged(oldHrBO, currentHrBo)) ) {
+					//if the effective dates are the same do not create a new row just inactivate the old one
+					if(currentHrBo.getEffectiveDate().equals(oldHrBO.getEffectiveDate())){
+						oldHrBO.setActive(false);
+						oldHrBO.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
+					} 
+					else {
+    					//if effective dates not the same, add a new row that inactivates the old entry based on the new effective date
+    					oldHrBO.setTimestamp(TKUtils.subtractOneSecondFromTimestamp(new Timestamp(DateTime.now().getMillis())));
+    					oldHrBO.setEffectiveDate(currentHrBo.getEffectiveDate());
+    					oldHrBO.setActive(false);
+    					oldHrBO.setId(null);
+    					customInactiveSaveLogicNewEffective(currentHrBo);
+					}
+					// save the older version - will trigger either an UPDATE or an INSERT depending on effective date remaining same or not.
+					KRADServiceLocator.getBusinessObjectService().save(oldHrBO);
+				}
+				else {
+					// the old and new are the same, so no need to save as new row
+					saveCurrentInNewRow = false;
+				}
+			}
+		}
+		// finally save the current BO in a new row, if so indicated
+		if(saveCurrentInNewRow) {
+			currentHrBo.setTimestamp(new Timestamp(System.currentTimeMillis()));
+			currentHrBo.setId(null);
+			currentHrBo.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+			customSaveLogic(currentHrBo);
+			
+			getBusinessObjectService().save(currentHrBo);			
+		}
+    }
+    
+	protected void customInactiveSaveLogicNewEffective(HrBusinessObject currentHrBo) {
+		if(currentHrBo instanceof AssignmentBo) {
+			AssignmentBo bo = (AssignmentBo)currentHrBo;
+	        bo.setAssignmentAccounts(new ArrayList<AssignmentAccountBo>());
+		}
+	}
 
-    protected Long getNextJobNumber(KhrEmployeeDocument tkmDocument)
-    {
+	protected void customSaveLogic(HrBusinessObject currentHrBo) {
+		// set the job number if saving a freshly added job
+		if (currentHrBo instanceof KhrEmployeeJob) {
+			KhrEmployeeJob currentTkmJob = (KhrEmployeeJob) currentHrBo;
+			if (currentTkmJob.getJobNumber() < 0L) {
+				Long newJobNumber = getNextJobNumber();
+				currentTkmJob.setJobNumber(newJobNumber);
+				for (AssignmentBo assignment : currentTkmJob.getAssignments()) {
+					assignment.setJobNumber(newJobNumber);
+				}
+			}
+		}
+		
+		// process the accounts collection elements to be versioned as well
+		if (currentHrBo instanceof AssignmentBo) {
+			AssignmentBo assignment = (AssignmentBo) currentHrBo;
+			for (AssignmentAccountBo assignAcct : assignment.getAssignmentAccounts()) {
+				assignAcct.setTkAssignAcctId(null);
+				assignAcct.setTkAssignmentId(assignment.getTkAssignmentId());
+				assignAcct.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+			}
+		}
+
+	}
+
+	public void processEndDate(KhrEmployeeJob currentTkmJob) {
+    	JobBo nextInactiveJob = JobBo.from(HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob)));
+        //if current job end date is blank and there is a future inactive job, delete that future inactive job
+        if (currentTkmJob.getEndDate() == null) {
+        	if(nextInactiveJob != null) {
+        		getBusinessObjectService().delete(nextInactiveJob);
+        	}
+        }
+        //if end date is present create/update an inactive job
+        else {
+        	//if inactive job exists update it 
+            if (nextInactiveJob != null) {
+                nextInactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
+                getBusinessObjectService().linkAndSave(nextInactiveJob);
+            } 
+            // else create new
+            else {
+            	KhrEmployeeJob inactiveJob = createTKMJob(currentTkmJob);
+                inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
+                inactiveJob.setHrJobId(null);
+                inactiveJob.setObjectId(null);
+                inactiveJob.setVersionNumber(null);
+                inactiveJob.setActive(false);
+                inactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
+            	getBusinessObjectService().linkAndSave(inactiveJob);
+            }
+        }    	
+    }
+    
+    
+    public void processHrPrincipalAttributes(String principalId) {
+    	 List<PrincipalHRAttributesBo> activeAttributes = ModelObjectUtils.transform(HrServiceLocator.getPrincipalHRAttributeService().getAllActivePrincipalHrAttributesForPrincipalId(principalId, LocalDate.now()), PrincipalHRAttributesBo.toBo);
+
+         if (CollectionUtils.isEmpty(activeAttributes)) {
+             PrincipalHRAttributesBo newAttributes = new PrincipalHRAttributesBo();
+             newAttributes.setEffectiveDate(LocalDate.now().toDate());
+             newAttributes.setPrincipalId(principalId);
+             // TODO: create parameter for default calendar
+             newAttributes.setPayCalendar("ISU-SEMI-MNTHLY");
+             newAttributes.setActive(true);
+
+             getBusinessObjectService().linkAndSave(newAttributes);
+         }
+    }
+
+    
+    
+    
+    
+    @Override
+    public void saveDataObject() {
+    	
+        KhrEmployeeDocument tkmDocument = (KhrEmployeeDocument) this.getDataObject();
+        List<KhrEmployeeJob> tkmJobList = tkmDocument.getJobList();
+        
+        // iterate thru the job list and apply the persistence logic to the jobs/end-date and assignments
+        for (KhrEmployeeJob currentTkmJob : tkmJobList) {	
+        	// persist the job Bo if needed
+        	saveAndVersionBusinessObject(currentTkmJob);
+
+        	// create/modify an inactive job if end-date is specified
+            processEndDate(currentTkmJob);
+            
+        	// persist the assignments for this job if needed
+            for(AssignmentBo assignment: currentTkmJob.getAssignments()) {
+            	saveAndVersionBusinessObject(assignment);
+            }
+            
+        }
+
+        //edit hr principal attributes
+        processHrPrincipalAttributes(tkmDocument.getPrincipalId());
+
+    }
+    
+    
+
+    protected Long getNextJobNumber() {
+    	KhrEmployeeDocument tkmDocument  = (KhrEmployeeDocument) this.getDataObject();
         Job maxJob = HrServiceLocator.getJobService().getMaxJob(tkmDocument.getPrincipalId());
 
         if(maxJob != null) {
             return (maxJob.getJobNumber() + 1);
-        } else {
+        } 
+        else {
             return 0L;
         }
     }
 
-//this logic was moved into prepareForSave
-/*
 	@Override
-    protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine,
-                                       boolean isValidLine) {
+    protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine, boolean isValidLine) {
         super.processAfterAddLine(view, collectionGroup, model, addLine, isValidLine);
 
         MaintenanceDocumentForm maintenanceDocument = (MaintenanceDocumentForm) model;
@@ -322,14 +338,8 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             addJob.setPrincipalId(tkmDocument.getPrincipalId());
             addJob.setActive(true);
 
-            //set job number
-            addJob.setJobNumber(getNextJobNumber(tkmDocument));
-
-            Integer newJobCount = tkmDocument.getJobList().size();
-            if (newJobCount > 0)
-            {
-                addJob.setJobNumber(-1L);
-            }
+            //set job number to negative one (represents not yet finalized)
+            addJob.setJobNumber(-1L);
         }
 
         //add additional assignment fields
@@ -348,15 +358,13 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             addAssignment.setJobNumber(jobNumber);
             addAssignment.setActive(true);
         }
+
     }
-*/
-
-
-//this logic was moved into prepareForSave
+    
     // set the khr employee job's field values that are not set via the "add job" user interface, but are needed for authorization.
-/*
     protected void processBeforeAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
     	 if (addLine instanceof HrKeyedBusinessObject) {
+    		 // TODO: create parameter for default group key code
     		 ((HrKeyedBusinessObject) addLine).setGroupKeyCode("ISU-IA");
     		 ((HrKeyedBusinessObject) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
@@ -364,7 +372,6 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     		 ((AssignmentAccountBo) addLine).setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
     	 }
     }
-*/
 
     @Override
     protected void processAfterDeleteLine(View view, CollectionGroup collectionGroup, Object model, int lineIndex) {
@@ -372,10 +379,6 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         //which was causing errors in sub collections
     }
 
-
-
-//this logic is now handled by KhrEmployeeDocumentValidation
-/*
     @Override
     protected boolean performAddLineValidation(View view, CollectionGroup collectionGroup, Object model, Object addLine) {
         boolean isValid = true;
@@ -393,8 +396,6 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 
         return isValid;
     }
-*/
-
     private KhrEmployeeJob createTKMJob(JobContract job) {
         KhrEmployeeJob tkmJob = new KhrEmployeeJob();
 
