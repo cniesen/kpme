@@ -598,13 +598,13 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LocalDateTime actualEndDate = cal.getEndPeriodLocalDateTime();
         
         int daysToMinus = 0;
-        if(DateTimeConstants.SUNDAY != startDate.getDayOfWeek()) {
+        if(startDay != startDate.getDayOfWeek()) {
         	daysToMinus = startDate.getDayOfWeek();
         }
         
         actualStartDate = startDate.minusDays(daysToMinus);
         int daysToAdd = 0;
-        if(endDate.getDayOfWeek() != DateTimeConstants.SUNDAY) {
+        if(endDate.getDayOfWeek() != startDay) {
         	daysToAdd = DateTimeConstants.SATURDAY - endDate.getDayOfWeek();
         } else {
         	daysToAdd = DateTimeConstants.SATURDAY;
@@ -628,7 +628,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
         LocalDateTime weekEnd = actualStartDate;
         for (LocalDateTime currentDate = actualStartDate; currentDate.compareTo(actualEndDate) < 0; currentDate = currentDate.plusDays(1)) {
         	
-            if (currentDate.getDayOfWeek() == DateTimeConstants.SUNDAY && afterFirstDay) {
+            if (currentDate.getDayOfWeek() == startDay && afterFirstDay) {
                 StringBuilder display = new StringBuilder();
                 display.append(weekStart.toString(TkConstants.DT_ABBREV_DATE_FORMAT));
                 display.append(" - ");
