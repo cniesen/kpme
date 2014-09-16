@@ -305,33 +305,44 @@
         </property>
     </bean>
 
-
     <bean id="KhrEmployeeDocument-jobSection-maintenance" abstract="true" parent="Uif-Disclosure-TableCollectionSection">
         <property name="collectionObjectClass" value="org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob" />
         <property name="propertyName" value="jobList" />
         <property name="headerText" value="Jobs" />
 
-        <property name="renderAddBlankLineButton" value="true" />
+        <property name="renderLineActions" value="true" />
+        <property name="renderAddLine" value="@{#dp.process eq 'New Job/Payrate'}" />
 
 
         <property name="addLinePlacement" value="TOP"/>
 
-        <property name="addBlankLineAction">
-            <bean parent="Uif-AddBlankLineAction" id = "KhrEmployee-AddBlankJob">
-                <property name="actionLabel" value="Add Job"></property>
-                <property name="render" value="@{#dp.process eq 'New Job/Payrate'}" />
-                <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
-            </bean>
+        <property name="addLineActions">
+            <list>
+                <bean parent="Uif-AddLineAction" id = "KhrEmployee-AddBlankJob">
+                    <property name="actionLabel" value="Add Job"></property>
+                    <property name="render" value="true" />
+                    <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
+                </bean>
+            </list>
+        </property>
+        <property name="lineActions">
+            <list>
+                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine"
+                      p:actionLabel="delete" p:render="true" />
+            </list>
         </property>
 
         <property name="layoutManager.expandDetailsActionPrototype">
             <bean parent="Uif-ExpandDetailsImageAction"/>
-	    </property>
+        </property>
 
+        <property name="layoutManager.separateAddLine" value="true"/>
         <property name="layoutManager.richTable.render" value="true"/>
         <property name="layoutManager.ajaxDetailsRetrieval" value="true"/>
+        <property name="layoutManager.renderSequenceField" value="false"/>
+        <property name="layoutManager.generateAutoSequence" value="true" />
 
-	    <property name="layoutManager.richTable.templateOptions">
+        <property name="layoutManager.richTable.templateOptions">
             <map>
                 <entry key="bPaginate" value="false" />
                 <entry key="bFilter" value="false"/>
@@ -342,7 +353,7 @@
         <property name="addLineItems">
             <list>
                 <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
-                <bean parent="Uif-InputField" p:propertyName="endDate"/>
+                <bean parent="Uif-InputField" p:propertyName="endDate" p:required="false"/>
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
@@ -362,33 +373,24 @@
             </list>
         </property>
 
-        <property name="layoutManager.renderSequenceField" value="false"/>
-        <property name="layoutManager.generateAutoSequence" value="true" />
 
         <property name="showInactiveLines" value = "true"/>
         <property name="renderInactiveToggleButton" value="false"/>
-        <property name="lineActions">
-            <list>
-                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" 
-                	p:actionLabel="delete" p:render="@{(#line.objectId eq null) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" />
-<!--                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="addLine"
-                      p:actionLabel="add" p:render="true"/> -->
-            </list>
-        </property>
 
         <property name="items">
             <list>
                 <!-- "@{!(#line.objectId eq null)} -->
                 <bean parent="Uif-InputField" p:propertyName="jobNumber" p:readOnly="true" p:readOnlyDisplayReplacementPropertyName="jobNumberDisplay"/>
 
+                <!-- @{ (#dp.process eq '' or #dp.process eq null or #dp.process eq 'Update Job Details' or #dp.process eq 'New Job/Payrate' or #dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job')} -->
                 <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"
-                	p:readOnly="@{ (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job')}"/>
+                	p:readOnly="@{ ! (#dp.process eq 'Change Job Dates')}"/>
 
                 <bean parent="Uif-InputField" p:propertyName="endDate"
-                	p:readOnly="@{(!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details')}" />
+                	p:readOnly="@{ ! (#dp.process eq 'Change Job Dates')}" />
 
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true"
-                	p:readOnly="@{!(#line.objectId eq null)}" >
+                	p:readOnly="true" >
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
                              p:dataObjectClassName="org.kuali.kpme.core.department.DepartmentBo"
@@ -397,13 +399,13 @@
                 </bean>
 
                 <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true"
-                	p:readOnly="@{  (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate')}" />
+                	p:readOnly="@{!  (#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job') }" />
 
                 <bean parent="Uif-InputField" p:propertyName="standardHours"
-                	p:readOnly="@{!(#line.objectId eq null)}" />
+                	p:readOnly="true" />
 
                 <bean parent="Uif-InputField" p:propertyName="payGrade"
-                	p:readOnly="@{!(#line.objectId eq null)}" >
+                	p:readOnly="true" >
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
                               p:dataObjectClassName="org.kuali.kpme.core.paygrade.PayGradeBo"
@@ -413,36 +415,40 @@
             </list>
         </property>
 
-       <!-- <property name="layoutManager.rowDetailsOpen" value="@{(#line.objectId eq null)}"/> -->
+        <!-- <property name="layoutManager.rowDetailsOpen" value="@{(#line.objectId eq null)}"/> -->
 
         <property name="layoutManager.rowDetailsGroup">
             <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-Assignment-Collection">
                 <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
                 <property name="propertyName" value="assignments" />
                 <property name="headerText" value="Assignment" />
-                <property name="addLinePlacement" value="TOP"/>
-                <!-- <property name="renderAddBlankLineButton" value = "true"/> -->
-                <property name="renderAddBlankLineButton" value="true" />
 
-
-                <property name="addBlankLineAction">
-                    <bean parent="Uif-AddBlankLineAction" id = "KhrEmployee-AddBlankAssignment">
+                <property name="addLineActions">
+                    <list>
+                    <bean parent="Uif-AddLineAction" id = "KhrEmployee-AddBlankAssignment">
                         <property name="actionLabel" value="Add Assignment"></property>
-                        <property name="render" value="@{#dp.process eq 'New Job/Payrate'}" />
+                        <property name="render" value="true" />
                         <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
                     </bean>
+                    </list>
+                </property>
+                <property name="lineActions">
+                    <list>
+                        <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine"
+                              p:actionLabel="delete" p:render="true"/>
+                    </list>
                 </property>
 
-		        <property name="layoutManager.expandDetailsActionPrototype">
-			      <bean parent="Uif-ExpandDetailsImageAction"/>
-			    </property>
-			    <property name="layoutManager.richTable.templateOptions">
-		            <map>
-		                <entry key="bPaginate" value="false" />
-		                <entry key="bFilter" value="false"/>
-		                <entry key="bInfo" value="false"/>
-		            </map>
-		        </property>
+                <property name="layoutManager.expandDetailsActionPrototype">
+                    <bean parent="Uif-ExpandDetailsImageAction"/>
+                </property>
+                <property name="layoutManager.richTable.templateOptions">
+                    <map>
+                        <entry key="bPaginate" value="false" />
+                        <entry key="bFilter" value="false"/>
+                        <entry key="bInfo" value="false"/>
+                    </map>
+                </property>
                 <property name="layoutManager.addLineGroup">
                     <bean parent="Uif-CollectionGridItem">
                         <property name="header">
@@ -450,6 +456,19 @@
                         </property>
                     </bean>
                 </property>
+
+                <property name="layoutManager.separateAddLine" value="true"/>
+                <property name="layoutManager.richTable.render" value="true"/>
+                <property name="layoutManager.ajaxDetailsRetrieval" value="true"/>
+                <property name="layoutManager.renderSequenceField" value="false"/>
+                <property name="layoutManager.generateAutoSequence" value="true" />
+
+                <property name="renderLineActions" value="true" />
+                <property name="renderAddLine" value="true" />
+                <property name="showInactiveLines" value = "true"/>
+                <property name="renderInactiveToggleButton" value="false"/>
+
+
                 <property name="addLineItems">
                     <list>
                         <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true">
@@ -458,11 +477,11 @@
                             </property>
                         </bean>
                         <bean parent="Uif-InputField" p:propertyName="workArea" p:required="true">
-                        <property name="quickfinder">
-                            <bean parent="Uif-QuickFinderByScript"
-                                  p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
-                                  p:fieldConversions="workArea:workArea"/>
-                        </property>
+                            <property name="quickfinder">
+                                <bean parent="Uif-QuickFinderByScript"
+                                      p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+                                      p:fieldConversions="workArea:workArea"/>
+                            </property>
                         </bean>
                         <bean parent="Uif-InputField" p:propertyName="task"  p:required="true">
                             <property name="quickfinder">
@@ -479,30 +498,22 @@
                         </bean>
                     </list>
                 </property>
-                <property name="layoutManager.renderSequenceField" value="false"/>
-                <property name="layoutManager.richTable.render" value="true"/>
-                <property name="showInactiveLines" value = "true"/>
-                <property name="renderInactiveToggleButton" value="false"/>
-                <property name="lineActions">
-                    <list>
-                        <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" 
-                        	p:actionLabel="delete" p:render="@{ (#line.objectId eq null) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job') }"/>
-                    </list>
-                </property>
+
+
                 <property name="items">
                     <list>
-                        <bean parent="Uif-InputField" p:propertyName="effectiveDate" 
-                        	p:readOnly="@{  (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" >
-                               <property name="control">
-                                   <bean parent="Uif-DateControl"/>
-                               </property>
+                        <bean parent="Uif-InputField" p:propertyName="effectiveDate"
+                              p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" >
+                            <property name="control">
+                                <bean parent="Uif-DateControl"/>
+                            </property>
                         </bean>
-                        <bean parent="Uif-InputField" p:propertyName="workArea" 
-                        	p:readOnly="@{  (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}"  />
-                        <bean parent="Uif-InputField" p:propertyName="task" 
-                        	p:readOnly="@{  (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" />
-                        <bean parent="Uif-InputField" p:propertyName="active" 
-                        	p:readOnly="@{  (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" >
+                        <bean parent="Uif-InputField" p:propertyName="workArea"
+                              p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}"  />
+                        <bean parent="Uif-InputField" p:propertyName="task"
+                              p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" />
+                        <bean parent="Uif-InputField" p:propertyName="active"
+                              p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" >
                             <property name="control">
                                 <bean parent="Uif-CheckboxControl"/>
                             </property>
@@ -518,35 +529,38 @@
                         <property name="headerText" value="Assignment Accounts" />
                         <property name="layoutManager.renderSequenceField" value="false"/>
                         <property name="layoutManager.richTable.render" value="false"/>
+
+                        <property name="renderLineActions" value="true" />
+                        <property name="renderAddLine" value="true" />
                         <property name="showInactiveLines" value = "true"/>
                         <property name="renderInactiveToggleButton" value="false"/>
+                        <property name="layoutManager.separateAddLine" value="true"/>
 
-                        <property name="renderAddLine" value="@{#dp.process eq 'New Job/Payrate' }" />
-                        <property name="renderAddBlankLineButton" value = "true"/>
-
-                        <property name="addBlankLineAction">
-                            <bean parent="Uif-AddBlankLineAction" id = "KhrEmployee-AddBlankAssignmentAccount">
-                                <property name="actionLabel" value="Add Assignment Account"></property>
-                                <property name="render" value="@{#dp.process eq 'New Job/Payrate'}" />
-                                <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
-                            </bean>
+                        <property name="addLineActions">
+                            <list>
+                                <bean parent="Uif-AddLineAction" id = "KhrEmployee-AddBlankAssignmentAccount">
+                                    <property name="actionLabel" value="Add Assignment Account"></property>
+                                    <property name="render" value="true" />
+                                    <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
+                                </bean>
+                            </list>
                         </property>
 
 
                         <property name="lineActions">
                             <list>
-                                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" 
-                                	p:actionLabel="delete" p:render="@{  ((#line.objectId eq null)) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}"/>
+                                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine"
+                                      p:actionLabel="delete" p:render="@{  (#dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job') }"/>
                             </list>
                         </property>
                         <property name="items">
                             <list>
-                                <bean parent="Uif-InputField" p:propertyName="accountNbr" 
-                                	p:readOnly="@{ (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" />
-                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr" 
-                                	p:readOnly="@{(!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" />
+                                <bean parent="Uif-InputField" p:propertyName="accountNbr"
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" />
+                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr"
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" />
                                 <bean parent="Uif-InputField" p:propertyName="earnCode"
-                                	p:readOnly="@{(!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" >
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" >
                                     <property name="quickfinder">
                                         <bean parent="Uif-QuickFinderByScript"
                                               p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
@@ -554,7 +568,7 @@
                                     </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="percent"
-                                	p:readOnly="@{ (!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" >
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details')}" >
                                     <property name="control">
                                         <bean parent="Uif-SpinnerControl">
                                             <property name="spinner">
@@ -573,21 +587,61 @@
                                     </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="active"
-                                	p:readOnly="@{(!(#line.objectId eq null)) and (#dp.process eq '' or #dp.process eq null or #dp.process eq 'New Job/Payrate' or #dp.process eq 'End Job')}" >
+                                      p:readOnly="false" >
                                     <property name="control">
                                         <bean parent="Uif-CheckboxControl"/>
                                     </property>
                                 </bean>
                             </list>
                         </property>
+
+
+                        <property name="addLineItems">
+                            <list>
+                                <bean parent="Uif-InputField" p:propertyName="accountNbr"
+                                      p:readOnly="false" />
+                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr"
+                                      p:readOnly="false" />
+                                <bean parent="Uif-InputField" p:propertyName="earnCode"
+                                      p:readOnly="false" >
+                                    <property name="quickfinder">
+                                        <bean parent="Uif-QuickFinderByScript"
+                                              p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
+                                              p:fieldConversions="earnCode:earnCode"/>
+                                    </property>
+                                </bean>
+                                <bean parent="Uif-InputField" p:propertyName="percent"
+                                      p:readOnly="false" >
+                                    <property name="control">
+                                        <bean parent="Uif-SpinnerControl">
+                                            <property name="spinner">
+                                                <bean parent="Uif-Spinner">
+                                                    <property name="templateOptions">
+                                                        <map merge="true">
+                                                            <entry key="start" value="0.01" />
+                                                            <entry key="step" value="0.01" />
+                                                            <entry key="max" value="100" />
+                                                            <entry key="numberFormat" value="n" />
+                                                        </map>
+                                                    </property>
+                                                </bean>
+                                            </property>
+                                        </bean>
+                                    </property>
+                                </bean>
+                                <bean parent="Uif-InputField" p:propertyName="active"
+                                      p:readOnly="false" >
+                                    <property name="control">
+                                        <bean parent="Uif-CheckboxControl"/>
+                                    </property>
+                                </bean>
+                            </list>
+                        </property>
+
+
                     </bean>
                 </property>
             </bean>
         </property>
-
-
     </bean>
-
-
-
 </beans>
