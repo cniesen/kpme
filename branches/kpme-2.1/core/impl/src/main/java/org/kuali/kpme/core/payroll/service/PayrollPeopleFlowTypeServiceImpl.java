@@ -100,12 +100,18 @@ public class PayrollPeopleFlowTypeServiceImpl extends DataDictionaryPeopleFlowTy
 
         if (CollectionUtils.isNotEmpty(assignments)
                 && CollectionUtils.isEmpty(deptQualifiers)) {
+            Map<String, Boolean> deptMap = new HashMap<String, Boolean>();
             for (Assignment ac : assignments) {
+
                 Map<String, String> qualifiers = new HashMap<String, String>();
                 qualifiers.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), ac.getDept());
                 qualifiers.put(KPMERoleMemberAttribute.GROUP_KEY_CODE.getRoleMemberAttributeName(), ac.getGroupKeyCode());
+                //don't add if it is already in the list of maps.
+                if (!deptMap.containsKey(ac.getDept() +"|"+ac.getGroupKeyCode())) {
+                    deptQualifiers.add(qualifiers);
+                }
+                deptMap.put(ac.getDept() + "|" + ac.getGroupKeyCode(), Boolean.TRUE);
 
-                deptQualifiers.add(qualifiers);
             }
         }
         return deptQualifiers;

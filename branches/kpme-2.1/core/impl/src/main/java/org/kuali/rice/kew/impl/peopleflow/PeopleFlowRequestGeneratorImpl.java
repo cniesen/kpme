@@ -128,7 +128,15 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
 
             if (request != null) {
                 roleMemberRequests.add(request);
+                if (hasPeopleFlowDelegates) {
+                    for (PeopleFlowDelegate delegate : member.getDelegates()) {
+                        if (MemberType.ROLE.equals(delegate.getMemberType())) {
+                            generateDelegationToRoleRequests(context, request, member, delegate, Collections.<String, String>emptyMap());
+                        }
+                    }
+                }
             }
+
         } else {
             // we may have multiple maps of role qualifiers, so we'll add a request for each map
             for (Map<String, String> roleQualifiers : roleQualifierMaps) {
@@ -136,6 +144,13 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                         hasPeopleFlowDelegates);
                 if (request != null) {
                     roleMemberRequests.add(request);
+                    if (hasPeopleFlowDelegates) {
+                        for (PeopleFlowDelegate delegate : member.getDelegates()) {
+                            if (MemberType.ROLE.equals(delegate.getMemberType())) {
+                                generateDelegationToRoleRequests(context, request, member, delegate, roleQualifiers);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -204,9 +219,7 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                 member.getMemberId()), roleQualifiers);*/
         for (PeopleFlowDelegate delegate : member.getDelegates()) {
             for (ActionRequestValue memberRequest : memberRequests) {
-                if (MemberType.ROLE == delegate.getMemberType()) {
-                    generateDelegationToRoleRequests(context, memberRequest, member, delegate);
-                } else {
+                if (!MemberType.ROLE.equals(delegate.getMemberType()) ){
                     generateDelegationToNonRoleRequest(context, memberRequest, member, delegate);
                 }
             }
@@ -288,6 +301,48 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
         return annotation.toString();
     }
 
+
+    /**
+     * Generates any needed requests for the given {@link PeopleFlowDelegate}.
+     *
+     * <p>It is assumed that the given member has the given delegate configured.</p>
+     *
+     * @param context the context for request generation
+     * @param parentRequest an action request that was generated for the given member
+     * @param member the PeopleFlow member, which should contain the given delegate
+     * @param delegate the delegate, assumed to be of MemberType ROLE, to generate a request to
+     */
+    protected void generateDelegationToRoleRequests(Context context,
+                                                    ActionRequestValue parentRequest, PeopleFlowMember member, PeopleFlowDelegate delegate, Map<String, String> roleQualifiers) {
+
+        //List<Map<String, String>> roleQualifierList = loadRoleQualifiers(context, delegate.getMemberId());
+        Role role = getRoleService().getRole(delegate.getMemberId());
+
+        if (role == null) {
+            throw new IllegalStateException("Failed to locate a role with the given role id of '" +
+                    delegate.getMemberId() + "'");
+        }
+
+        if (roleQualifiers.isEmpty()) {
+            addKimRoleDelegateRequest(context, parentRequest, member, delegate, role,
+                    Collections.<String, String>emptyMap());
+        } else {
+            //for (Map<String, String> roleQualifiers : roleQualifiers) {
+                List<RoleMembership> memberships = getRoleService().getRoleMembers(Collections.singletonList(
+                        member.getMemberId()), roleQualifiers);
+                for (RoleMembership membership : memberships) {
+                    if (membership.getType().equals(MemberType.PRINCIPAL)
+                            && StringUtils.equals(membership.getMemberId(), parentRequest.getPrincipalId())) {
+                        addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
+                    } else if (membership.getType().equals(MemberType.GROUP)
+                            && StringUtils.equals(membership.getMemberId(), parentRequest.getGroupId())) {
+                        addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
+                    }
+                }
+
+            //}
+        }
+    }
 
     /**
      * Generates any needed requests for the given {@link PeopleFlowDelegate}.
