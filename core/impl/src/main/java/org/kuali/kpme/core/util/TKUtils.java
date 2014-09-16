@@ -352,6 +352,13 @@ public class TKUtils {
         return HrConstants.DateTimeFormats.BASIC_DATE_FORMAT_WITH_SEC.print(dateTime);
     }
 
+    public static String formatDateTimeWithTZ(DateTime dateTime){
+        if (dateTime == null) {
+            return StringUtils.EMPTY;
+        }
+        return HrConstants.DateTimeFormats.FULL_DATE_WITH_TZ.print(dateTime);
+    }
+
     public static LocalDate formatDateString(String date){
         if (StringUtils.isEmpty(date)) {
             return null;

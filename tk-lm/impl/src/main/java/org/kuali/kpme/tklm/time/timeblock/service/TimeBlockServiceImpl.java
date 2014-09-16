@@ -23,6 +23,7 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.KPMEConstants;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
@@ -51,6 +52,7 @@ import org.kuali.kpme.tklm.time.timeblock.TimeBlockHistory;
 import org.kuali.kpme.tklm.time.timeblock.dao.TimeBlockDao;
 import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailBo;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.note.Note;
@@ -377,10 +379,15 @@ public class TimeBlockServiceImpl implements TimeBlockService {
     //Add a note to timesheet for approver's actions
     public void addNote(TimeBlockBo timeBlock, String actionMessage){
     	if(HrContext.userSessionExists() && !HrContext.getPrincipalId().equals(timeBlock.getPrincipalId())){
-    		Note.Builder builder = Note.Builder.create(timeBlock.getDocumentId(), timeBlock.getUserPrincipalId());
+            String batchUserName = ConfigContext.getCurrentContextConfig().getProperty(KPMEConstants.BATCH_USER_PRINCIPAL_NAME);
+            if (StringUtils.isEmpty(batchUserName)) {
+                batchUserName = timeBlock.getUserPrincipalId();
+                LOG.error("Note author set to userPrincipalId due to missing batch user.");
+            }
+    		Note.Builder builder = Note.Builder.create(timeBlock.getDocumentId(), batchUserName);
     		builder.setCreateDate(new DateTime());
     		String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
-    		builder.setText("Timeblock on " + timeBlock.getBeginDateTime() + " was " + actionMessage + " on this timesheet by " + principalName + " on your behalf");
+    		builder.setText("Timeblock " + timeBlock.getTkTimeBlockId() + " on " + TKUtils.formatDateTimeShort(timeBlock.getBeginDateTime()) + " was " + actionMessage + " on this timesheet by " + principalName + " on your behalf");
     		KewApiServiceLocator.getNoteService().createNote(builder.build());
     	}
     }
