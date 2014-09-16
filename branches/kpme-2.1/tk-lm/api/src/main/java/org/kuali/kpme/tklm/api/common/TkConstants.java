@@ -76,6 +76,7 @@ public class TkConstants {
 
     public static final String ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION = "kpme.allow.clockingEmployee.from.invalidLocation";
     public static final String LIMIT_MP_ASSIGN_FROM_INVALIDLOCATION = "kpme.limit.mp.assignments.from.invalidLocation";
+    public static final String TIME_SUMMARY_START_DAY_FLSA = "kpme.tklm.timesummary.start.day.flsa";
 
     /**
      * The following ROLE_* constants need to match what is in the workflow database.  They will be
