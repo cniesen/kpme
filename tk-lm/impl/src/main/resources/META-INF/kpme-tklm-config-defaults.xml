@@ -68,6 +68,10 @@
     <!-- Number of records to display on each page on Actual Time Inquiry -->
     <param name="kpme.tklm.actualtime.page.size">25</param>
 
+    <!-- If set to true, AND the calendar period is weekly or biweekly,
+     the time summary will start with the Calendar's specied FLSA start day
+    -->
+    <param name="kpme.tklm.timesummary.start.day.flsa">false</param>
 
     <!-- Specifies the option to display the FMLA YTD Column on Leave Summary.
          Yes : If true it displays FMLA YTD Column on Leave Summary.

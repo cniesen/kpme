@@ -48,6 +48,8 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesummary.*;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
+import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.api.util.Truth;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -246,7 +248,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 		 
 		String userTz =	HrServiceLocator.getTimezoneService().getUserTimezone(principalId);
 		DateTimeZone userTimeZone = DateTimeZone.forID(userTz);
-		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(userTimeZone, DateTimeConstants.SUNDAY, true);
+		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(userTimeZone, tkTimeBlockAggregate.getPayCalendar().getFlsaBeginDayConstant(), true);
 		Map<String, EarnCodeSection> earnCodeToEarnCodeSection = new TreeMap<String, EarnCodeSection>();
 		Map<String, EarnGroupSection> earnGroupToEarnGroupSection = new HashMap<String, EarnGroupSection>();
 		
@@ -442,7 +444,7 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
 
         int i=0;
         int dayInt=0;
-        for (FlsaWeek week : aggregate.getFlsaWeeks(timezone, DateTimeConstants.SUNDAY, true)) {
+        for (FlsaWeek week : aggregate.getFlsaWeeks(timezone, aggregate.getPayCalendar().getFlsaBeginDayConstant(), true)) {
         	weekHours = new TreeMap<Integer, BigDecimal>();
         	weekClockLogMap = new TreeMap<Integer, Boolean>();
             BigDecimal weeklyTotal = HrConstants.BIG_DECIMAL_SCALED_ZERO;
@@ -560,15 +562,35 @@ public class TimeSummaryServiceImpl implements TimeSummaryService {
     public Map<Integer, String> getHeaderForSummary(CalendarEntry cal, TimeSummary timeSummary) {
         Map<Integer, String> header = new LinkedHashMap<Integer,String>();
         Map<String, String> weekDates = new LinkedHashMap<String,String>();
-        
-        header.put(DateTimeConstants.SUNDAY, "Sun");
-        header.put(DateTimeConstants.MONDAY, "Mon");
-        header.put(DateTimeConstants.TUESDAY, "Tue");
-        header.put(DateTimeConstants.WEDNESDAY, "Wed");
-        header.put(DateTimeConstants.THURSDAY, "Thu");
-        header.put(DateTimeConstants.FRIDAY, "Fri");
-        header.put(DateTimeConstants.SATURDAY, "Sat");
-        
+        int startDay = 7;
+        Duration calDuration = new Duration(cal.getBeginPeriodFullDateTime(), cal.getEndPeriodFullDateTime());
+        Boolean startOnFLSADay = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.TIME_SUMMARY_START_DAY_FLSA), Boolean.FALSE);
+        // if weekly or biweekly calendar, and config param set, start summary on flsa day
+        if (startOnFLSADay
+                && (calDuration.getStandardDays() == 7L
+                    || calDuration.getStandardDays() == 14L)) {
+            Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(cal.getHrCalendarId());
+            if (calendar != null) {
+                startDay = calendar.getFlsaBeginDayConstant();
+            }
+        }
+
+        Map<Integer, String> tempMap = new HashMap<Integer, String>(7);
+        tempMap.put(DateTimeConstants.MONDAY, "Mon");
+        tempMap.put(DateTimeConstants.TUESDAY, "Tue");
+        tempMap.put(DateTimeConstants.WEDNESDAY, "Wed");
+        tempMap.put(DateTimeConstants.THURSDAY, "Thu");
+        tempMap.put(DateTimeConstants.FRIDAY, "Fri");
+        tempMap.put(DateTimeConstants.SATURDAY, "Sat");
+        tempMap.put(DateTimeConstants.SUNDAY, "Sun");
+        for (int i=0; i < 7; i++) {
+            Integer keyVal = (startDay + i) % 7;
+            if (keyVal == 0) {
+                keyVal = Integer.valueOf(7);
+            }
+            header.put(keyVal, tempMap.get(keyVal));
+        }
+
         LocalDateTime startDate = cal.getBeginPeriodLocalDateTime();
         LocalDateTime endDate = cal.getEndPeriodLocalDateTime();
 
