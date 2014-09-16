@@ -57,6 +57,7 @@ import de.danielbechler.diff.path.PropertyPath;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +66,65 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 	private static final long serialVersionUID = 1140415771858326498L;
 	
 	protected static Logger LOG = Logger.getLogger(KhrEmployeeMaintainableImpl.class);
+	
+	protected final Configuration jobDiffConfiguration = new Configuration()
+													.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"))
+			     									.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"))
+			     									.withoutProperty(PropertyPath.buildWith("effectiveLocalDate"))
+			     									.withoutProperty(PropertyPath.buildWith("userPrincipalId"))
+			    
+			     									.withoutProperty(PropertyPath.buildWith("groupKey"))
+			     									.withoutProperty(PropertyPath.buildWith("locationObj"))
+			     									.withoutProperty(PropertyPath.buildWith("location"))      
+			     									.withoutProperty(PropertyPath.buildWith("institutionObj"))
+			     									.withoutProperty(PropertyPath.buildWith("institution"))
+
+	 												.withoutProperty(PropertyPath.buildWith("assignments")) 
+	 												.withoutProperty(PropertyPath.buildWith("endDate")) 
+    
+	 												.withoutProperty(PropertyPath.buildWith("fte")) 
+	 												.withoutProperty(PropertyPath.buildWith("deptObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("payTypeObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("payGradeObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("payTypeObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("salaryGroupObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("positionObj")) 
+	 												.withoutProperty(PropertyPath.buildWith("principalName")) 
+	 												.withoutProperty(PropertyPath.buildWith("name")); 
+	
+	protected final Configuration assignmentDiffConfiguration = new Configuration()
+														.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"))
+														.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"))
+														.withoutProperty(PropertyPath.buildWith("effectiveLocalDate"))
+														.withoutProperty(PropertyPath.buildWith("userPrincipalId"))
+												
+														.withoutProperty(PropertyPath.buildWith("groupKey"))
+														.withoutProperty(PropertyPath.buildWith("locationObj"))
+														.withoutProperty(PropertyPath.buildWith("location"))      
+														.withoutProperty(PropertyPath.buildWith("institutionObj"))
+														.withoutProperty(PropertyPath.buildWith("institution"))
+														
+														.withoutProperty(PropertyPath.buildWith("job"))	
+            											.withoutProperty(PropertyPath.buildWith("workAreaObj"))
+            											.withoutProperty(PropertyPath.buildWith("taskObj"))
+            											.withoutProperty(PropertyPath.buildWith("payTypeObj"))
+            
+            											.withoutProperty(PropertyPath.buildWith("dept"))
+            											.withoutProperty(PropertyPath.buildWith("assignmentDescription"))
+            
+            											.withoutProperty(PropertyPath.buildWith("assignmentAccounts"));
+	
+	protected final Configuration assignmentAccountDiffConfiguration = new Configuration()
+																		.withoutProperty(PropertyPath.buildWith("finCoaCd"))
+																		.withoutProperty(PropertyPath.buildWith("accountObj"))
+																		.withoutProperty(PropertyPath.buildWith("subAccountObj"))
+																		.withoutProperty(PropertyPath.buildWith("objectCodeObj"))
+																		.withoutProperty(PropertyPath.buildWith("subObjectCodeObj"))
+																		.withoutProperty(PropertyPath.buildWith("projectCodeObj"))
+																		.withoutProperty(PropertyPath.buildWith("earnCodeObj"))
+	
+																		.withoutProperty(PropertyPath.buildWith("assignmentObj"));
+	
 	
 	
     @Override
@@ -110,48 +170,16 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     }
 
     protected boolean isUnchanged(HrBusinessObject oldHrBo, HrBusinessObject currentHrBo) {
-    	boolean retVal = true;
-    	
-    	final Configuration configuration = new Configuration();
-    	configuration.withoutProperty(PropertyPath.buildWith("businessKeyValuesMap"));
-        configuration.withoutProperty(PropertyPath.buildWith("relativeEffectiveDate"));
-        configuration.withoutProperty(PropertyPath.buildWith("effectiveLocalDate"));
-        configuration.withoutProperty(PropertyPath.buildWith("userPrincipalId"));
-        
-        configuration.withoutProperty(PropertyPath.buildWith("groupKey"));
-        configuration.withoutProperty(PropertyPath.buildWith("locationObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("location"));        
-        configuration.withoutProperty(PropertyPath.buildWith("institutionObj"));
-        configuration.withoutProperty(PropertyPath.buildWith("institution"));
+    	boolean retVal = true;    	
+    	Configuration configuration = new Configuration();
         
         if(oldHrBo instanceof JobContract) {
     		oldHrBo = createTKMJob((JobContract) oldHrBo);
-    		
-    		configuration.withoutProperty(PropertyPath.buildWith("assignments"));
-            configuration.withoutProperty(PropertyPath.buildWith("endDate"));
-            
-            configuration.withoutProperty(PropertyPath.buildWith("fte"));
-            configuration.withoutProperty(PropertyPath.buildWith("deptObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("payGradeObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("salaryGroupObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("positionObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("principalName"));
-            configuration.withoutProperty(PropertyPath.buildWith("name"));
+    		configuration = jobDiffConfiguration;
     	}
         
         if(oldHrBo instanceof AssignmentBo) {
-        	configuration.withoutProperty(PropertyPath.buildWith("job"));
-            configuration.withoutProperty(PropertyPath.buildWith("workAreaObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("taskObj"));
-            configuration.withoutProperty(PropertyPath.buildWith("payTypeObj"));
-            
-            configuration.withoutProperty(PropertyPath.buildWith("dept"));
-            configuration.withoutProperty(PropertyPath.buildWith("assignmentDescription"));
-            
-            configuration.withoutProperty(PropertyPath.buildWith("assignmentAccounts"));
-            
+        	configuration = assignmentDiffConfiguration;
         }
         
     	ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance(configuration);
@@ -159,11 +187,50 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         if(root.hasChanges()) {
         	retVal = false;
         }
+        
+        // check the assignment accounts collections for changes, if no changes detected in parent assignment
+        if( (retVal && (oldHrBo instanceof AssignmentBo)) ) {
+        	Collection<AssignmentAccountBo>  oldAccounts = ((AssignmentBo) oldHrBo).getAssignmentAccounts();
+        	Collection<AssignmentAccountBo>  currentAccounts = ((AssignmentBo) currentHrBo).getAssignmentAccounts();
+        	retVal = !accountsChanged(oldAccounts, currentAccounts);
+        }
         return retVal;
 	}
     
     
-    public void saveAndVersionBusinessObject(HrBusinessObject currentHrBo) {
+    protected boolean accountsChanged(Collection<AssignmentAccountBo> oldAccounts, Collection<AssignmentAccountBo> currentAccounts) {
+    	if( (oldAccounts == null) && (currentAccounts == null) ){
+    		return false;
+    	}
+    	if( ((oldAccounts == null) && (currentAccounts != null)) || ((oldAccounts != null) && (currentAccounts == null)) ) { 
+    		return true;
+    	}
+    	// at this point both Accounts are non-null, check sizes are not same -- optimization
+    	if(oldAccounts.size() != currentAccounts.size()) {
+    		return true;
+    	}
+    	    	
+    	// now we have two non-null collections of the same size, lets check using diff
+    	for(AssignmentAccountBo oldAccount: oldAccounts) {
+    		boolean foundItemMatch = false;
+    		for(AssignmentAccountBo currentAccount: currentAccounts) {
+    	    	
+    	    	ObjectDiffer objectDiffer = ObjectDifferFactory.getInstance(assignmentAccountDiffConfiguration);
+    	        final Node root = objectDiffer.compare(currentAccount, oldAccount);
+    	        if(!root.hasChanges()) {
+    	        	foundItemMatch = true;
+    	        	break;
+    	        }
+    		}
+    		if(!foundItemMatch) {
+    			return true;
+    		}
+    	}
+    	return false;
+	}
+    
+
+	public void saveAndVersionBusinessObject(HrBusinessObject currentHrBo) {
     	boolean saveCurrentInNewRow = true; // this flag will determine if we actually save this HR bo or not
     	// check if this is an existing BO
 		if(currentHrBo.getId() != null) {
