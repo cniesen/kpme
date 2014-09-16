@@ -167,6 +167,7 @@ public class HrConstants {
         public static final DateTimeFormatter BASIC_DATE_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy");
         public static final DateTimeFormatter BASIC_DATE_FORMAT_WITH_SEC = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss");
         public static final DateTimeFormatter FULL_DATE_TIME_FORMAT = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss.SSS");
+        public static final DateTimeFormatter FULL_DATE_WITH_TZ = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm zzz");
     }
 
 	public static final String FLSA_STATUS_NON_EXEMPT ="NE";
