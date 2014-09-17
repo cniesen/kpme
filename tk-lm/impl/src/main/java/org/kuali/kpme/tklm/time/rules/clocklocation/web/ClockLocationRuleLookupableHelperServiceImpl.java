@@ -64,6 +64,7 @@ public class ClockLocationRuleLookupableHelperServiceImpl extends KpmeHrBusiness
 
     public List<? extends HrBusinessObjectContract> getSearchResults( Map<String, String> fieldValues) {
     	List<? extends HrBusinessObjectContract> temp = new ArrayList<HrBusinessObjectContract>();
+        fieldValues.remove("relativeEffectiveDate");
 		temp = super.getSearchResults(fieldValues);
 		
 		if ( temp != null ){
