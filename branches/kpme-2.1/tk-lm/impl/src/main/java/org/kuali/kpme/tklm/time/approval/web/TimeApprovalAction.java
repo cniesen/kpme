@@ -223,11 +223,9 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
             return Collections.emptyList();
         }
 
-        //allows all employees with active assignments in the limit set in the config to be viewable by approver
-        Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
         LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
-        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate().minusDays(limit);
-      
+        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+        
         return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
 
 	}
