@@ -419,7 +419,11 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public List<Assignment> getRecentAssignments(String principalId) {
         //if no dates are specified uses date range of now and now minus limit set in config
-        Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
+    	Integer limit = 0;
+    	String limitString = ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit");
+    	if(StringUtils.isNotBlank(limitString)) {
+    		limit = Integer.parseInt(limitString);
+    	}
         LocalDate startDate = LocalDate.now().minusDays(limit);
         LocalDate endDate = LocalDate.now();
 
