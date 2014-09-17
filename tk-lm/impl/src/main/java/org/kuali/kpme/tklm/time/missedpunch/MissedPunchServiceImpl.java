@@ -90,8 +90,8 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         ClockLog clockLog = null;
         try {
-            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false);
-            clockLog = clockLogService.saveClockLog(clockLog);
+            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false, true);
+            clockLog = clockLogService.saveClockLog(clockLog, true);
         }
         catch (InvalidClockLogException e)
         {
@@ -176,7 +176,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         ClockLog clockLog = null;
         try {
-            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false);
+            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false, true);
 
             clockLogService.saveClockLog(clockLog);
         }

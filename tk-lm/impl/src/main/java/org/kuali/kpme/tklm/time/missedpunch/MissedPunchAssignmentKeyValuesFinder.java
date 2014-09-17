@@ -91,7 +91,7 @@ public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase
 					String principalId = HrContext.getPrincipalId();
 					if(targetPrincipalId.equals(principalId)){
 						DateTime currentDateTime = new DateTime();
-                        //Boolean allowActionFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION), false);
+                        //Boolean allowActionFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION), false);
                         Boolean limitMPAssignmentsFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.LIMIT_MP_ASSIGN_FROM_INVALIDLOCATION), false);
 
                         for (Assignment assignment : assignments) {
