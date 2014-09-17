@@ -131,7 +131,11 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                 if (hasPeopleFlowDelegates) {
                     for (PeopleFlowDelegate delegate : member.getDelegates()) {
                         if (MemberType.ROLE.equals(delegate.getMemberType())) {
-                            generateDelegationToRoleRequests(context, request, member, delegate, Collections.<String, String>emptyMap());
+                            Role delegateRole = getRoleService().getRole(delegate.getMemberId());
+                            if (delegateRole != null) {
+                                //generateDelegationToRoleRequests(context, request, member, delegate, Collections.<String, String>emptyMap());
+                                addKimRoleDelegateRequest(context, request, member, delegate, delegateRole, Collections.<String, String>emptyMap());
+                            }
                         }
                     }
                 }
@@ -147,7 +151,11 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                     if (hasPeopleFlowDelegates) {
                         for (PeopleFlowDelegate delegate : member.getDelegates()) {
                             if (MemberType.ROLE.equals(delegate.getMemberType())) {
-                                generateDelegationToRoleRequests(context, request, member, delegate, roleQualifiers);
+                                Role delegateRole = getRoleService().getRole(delegate.getMemberId());
+                                if (delegateRole != null) {
+                                    //generateDelegationToRoleRequests(context, request, member, delegate, roleQualifiers);
+                                    addKimRoleDelegateRequest(context, request, member, delegate, delegateRole, roleQualifiers);
+                                }
                             }
                         }
                     }
@@ -328,17 +336,17 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                     Collections.<String, String>emptyMap());
         } else {
             //for (Map<String, String> roleQualifiers : roleQualifiers) {
-                List<RoleMembership> memberships = getRoleService().getRoleMembers(Collections.singletonList(
-                        member.getMemberId()), roleQualifiers);
-                for (RoleMembership membership : memberships) {
-                    if (membership.getType().equals(MemberType.PRINCIPAL)
-                            && StringUtils.equals(membership.getMemberId(), parentRequest.getPrincipalId())) {
-                        addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
-                    } else if (membership.getType().equals(MemberType.GROUP)
-                            && StringUtils.equals(membership.getMemberId(), parentRequest.getGroupId())) {
-                        addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
-                    }
+            List<RoleMembership> memberships = getRoleService().getRoleMembers(Collections.singletonList(
+                    member.getMemberId()), roleQualifiers);
+            for (RoleMembership membership : memberships) {
+                if (membership.getType().equals(MemberType.PRINCIPAL)
+                        && StringUtils.equals(membership.getMemberId(), parentRequest.getPrincipalId())) {
+                    addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
+                } else if (membership.getType().equals(MemberType.GROUP)
+                        && StringUtils.equals(membership.getMemberId(), parentRequest.getGroupId())) {
+                    addKimRoleDelegateRequest(context, parentRequest, member, delegate, role, roleQualifiers);
                 }
+            }
 
             //}
         }
@@ -554,7 +562,7 @@ public class PeopleFlowRequestGeneratorImpl implements PeopleFlowRequestGenerato
                     findNonRoleRequests(request.getChildrenRequests(), nonRoleRequests);
                 } else  {
                     // see if we have a principal request
-                    if (RecipientType.ROLE.getCode() != request.getRecipientTypeCd()) {
+                    if (!StringUtils.equals(RecipientType.ROLE.getCode(),request.getRecipientTypeCd())) {
                         nonRoleRequests.add(request);
                     }
                 }
