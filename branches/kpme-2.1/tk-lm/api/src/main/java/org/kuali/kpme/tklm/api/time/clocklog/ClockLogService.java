@@ -30,12 +30,18 @@ import java.util.List;
 
 public interface ClockLogService {
 
-    public void invalidIpCheck(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate) throws InvalidClockLogException;
-	/**
+    public void invalidIpCheck(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate, boolean missedPunch) throws InvalidClockLogException;
+
+    public ClockLog saveClockLog(ClockLog clockLog, boolean missedPunch) throws InvalidClockLogException;
+
+    /**
 	 * Save clock log 
 	 * @param clockLog
 	 */
     public ClockLog saveClockLog(ClockLog clockLog) throws InvalidClockLogException;
+
+    @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, boolean missedPunch) throws InvalidClockLogException;
 
     /**
      * Process clock log created
@@ -52,6 +58,9 @@ public interface ClockLogService {
      */
     @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
     ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules)   throws InvalidClockLogException;
+
+    @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, String userPrincipalId, boolean missedPunch) throws InvalidClockLogException;
 
     @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
     ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, String userPrincipalId)   throws InvalidClockLogException;

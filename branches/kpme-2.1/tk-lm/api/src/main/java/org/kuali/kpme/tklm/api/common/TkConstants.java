@@ -74,7 +74,7 @@ public class TkConstants {
         LOCATION_TO_TIME_ZONE_MAP.put("NW", "America/Chicago");
     }
 
-    public static final String ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION = "kpme.allow.clockingEmployee.from.invalidLocation";
+    public static final String ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION = "kpme.allow.clockingEmployee.from.invalidLocation";
     public static final String LIMIT_MP_ASSIGN_FROM_INVALIDLOCATION = "kpme.limit.mp.assignments.from.invalidLocation";
     public static final String TIME_SUMMARY_START_DAY_FLSA = "kpme.tklm.timesummary.start.day.flsa";
 
