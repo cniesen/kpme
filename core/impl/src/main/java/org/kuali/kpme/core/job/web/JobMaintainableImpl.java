@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrDataObjectMaintainableImpl;
+import org.kuali.kpme.core.cache.CacheUtils;
 import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.kim.api.identity.name.EntityName;
@@ -40,7 +41,14 @@ public class JobMaintainableImpl extends HrDataObjectMaintainableImpl {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	@Override
+    @Override
+    public void saveDataObject() {
+        super.saveDataObject();
+        String cacheName = JobContract.CACHE_NAME;
+        CacheUtils.flushCache(cacheName);
+    }
+
+    @Override
 	public void processAfterCopy(MaintenanceDocument document,
 			Map<String, String[]> parameters) {
 		super.processAfterCopy(document, parameters);
