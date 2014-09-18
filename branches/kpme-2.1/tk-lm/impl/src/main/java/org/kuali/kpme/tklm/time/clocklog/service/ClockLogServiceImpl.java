@@ -81,7 +81,9 @@ public class ClockLogServiceImpl implements ClockLogService {
 
         try
         {
-            invalidIpCheck(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), LocalDate.now(), missedPunch );
+            if (StringUtils.equals(clockLog.getPrincipalId(), clockLog.getUserPrincipalId())) {
+                invalidIpCheck(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), LocalDate.now(), missedPunch);
+            }
         }
         catch (InvalidClockLogException e)
         {
@@ -145,8 +147,9 @@ public class ClockLogServiceImpl implements ClockLogService {
         } else {
             //Save current clock log to get id for timeblock building
 
-            //try {
+            if (StringUtils.equals(clockLog.getUserPrincipalId(), clockLog.getPrincipalId())) {
                 invalidIpCheck(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), LocalDate.now(), missedPunch);
+            }
             //}
             //catch (InvalidClockLogException e)
             //{
@@ -178,7 +181,9 @@ public class ClockLogServiceImpl implements ClockLogService {
             beginClockLogId = lastLog.getTkClockLogId();
         }
 
-        invalidIpCheck(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), LocalDate.now(), missedPunch);
+        if (StringUtils.equals(clockLog.getPrincipalId(), clockLog.getUserPrincipalId())) {
+            invalidIpCheck(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), LocalDate.now(), missedPunch);
+        }
 
         //Save current clock log to get id for timeblock building
         KRADServiceLocator.getBusinessObjectService().save(clockLog);

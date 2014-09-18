@@ -123,7 +123,7 @@ public class ClockAction extends TimesheetAction {
 		        Map<String, String> assignmentMap = timesheetDocument.getAssignmentDescriptions(true, LocalDate.now());
 		        String principalId = HrContext.getPrincipalId();
 		        
-		        if(targetPrincipalId.equals(principalId)){
+		        if(StringUtils.equals(targetPrincipalId, principalId)){
 		        	Map<String, String> assignmentDescriptionMap = new TreeMap<String, String>();
 
 		        	DateTime currentDateTime = new DateTime();
@@ -320,7 +320,9 @@ public class ClockAction extends TimesheetAction {
         String grpKeyCode = assignment.getGroupKeyCode();
 
         try {
-            TkServiceLocator.getClockLogService().invalidIpCheck(grpKeyCode, dept, wa, pId, jbNum, ip, LocalDate.now(), false);
+            if (StringUtils.equals(pId, HrContext.getPrincipalId())) {
+                TkServiceLocator.getClockLogService().invalidIpCheck(grpKeyCode, dept, wa, pId, jbNum, ip, LocalDate.now(), false);
+            }
         }
         catch (InvalidClockLogException e)
         {
@@ -329,7 +331,7 @@ public class ClockAction extends TimesheetAction {
         }
 
         // check if User takes action from Valid location.
-        if (pId.equalsIgnoreCase(GlobalVariables.getUserSession().getPrincipalId())) {
+        if (pId.equalsIgnoreCase(HrContext.getPrincipalId())) {
 	        String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION);
 	        if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
 		        boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ip, currentDateTime.toLocalDate());
