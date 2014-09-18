@@ -293,12 +293,22 @@
         <property name="items">
             <list>
                 <bean parent="Uif-InputField" p:propertyName="process" p:colSpan="2"
-                    p:required="true" id="employee_process">
+                    p:required="true" id="employee_process"
+                    p:refreshWhenChangedPropertyNames="#dp.process">
+                    <property name="propertyReplacers">
+						<list>
+							<bean parent="Uif-ConditionalBeanPropertyReplacer"
+								p:propertyName="control"
+								p:condition="#dp.process ne '' and #dp.process ne null">
+								<property name="replacement">
+									<bean parent="Uif-TextControl" p:readOnly="true" />
+								</property>
+							</bean> 
+						</list>
+					</property> 
+                    
                     <property name="onChangeScript" value="employeeProcessChangeSubmitForm('changeProcess');
-                            highlightEmployeeProcessRequiredChanges();
                             if (jQuery('#employee_process_control').val() == '') {jQuery('.ui-datepicker-trigger').hide();} else {jQuery('.ui-datepicker-trigger').show();}"/>
-<!--                     <property name="onDocumentReadyScript" value="highlightEmployeeProcessRequiredChanges(); -->
-<!--                             jQuery('#employee_process_control').data('oldProcess',jQuery('#employee_process_control').val());"/> -->
                     
                 </bean>
             </list>

@@ -58,33 +58,6 @@ function employeeProcessChangeSubmitForm(methodToCall) {
     ajaxSubmitForm(methodToCall,additionalData);
 }
 
-function highlightEmployeeProcessRequiredChanges() {
-    if (jQuery('#position_process_control').val() == '') {
-        jQuery('.ui-datepicker-trigger').hide();
-    } else {
-        jQuery('.ui-datepicker-trigger').show();
-    }
-
-    if (jQuery("#position_process_control").val() == "Reorganization") {
-        jQuery("input[name='document.newMaintainableObject.dataObject.primaryDepartment']").css("border","2px solid orange");
-        jQuery("input[name='document.newMaintainableObject.dataObject.reportsToPositionId']").css("border","2px solid orange");
-    } else {
-        jQuery("input[name='document.newMaintainableObject.dataObject.primaryDepartment']").css("border","");
-        jQuery("input[name='document.newMaintainableObject.dataObject.reportsToPositionId']").css("border","");
-    }
-
-    if (jQuery("#position_process_control").val() == "Reclassification") {
-        jQuery("input[name='document.newMaintainableObject.dataObject.positionClass']").css("border","2px solid orange");
-    } else {
-        jQuery("input[name='document.newMaintainableObject.dataObject.positionClass']").css("border","");}
-
-    if (jQuery("#position_process_control").val() == "Change Status") {
-        jQuery("select[name='document.newMaintainableObject.dataObject.positionStatus']").css("border","2px solid orange");
-    } else {
-        jQuery("select[name='document.newMaintainableObject.dataObject.positionStatus']").css("border","");
-    }
-}
-
 //jQuery(document).ready(function(){
 jq(document).ready(function () {
     jq('input[name="document.newMaintainableObject.effectiveDate"]').blur(function() {
