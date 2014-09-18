@@ -39,6 +39,7 @@ import java.util.Set;
  */
 
 // MaintenanceDocumentAuthorizer
+    //org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase
 public class KhrEmployeeDocumentMaintenanceDocumentAuthorizer extends MaintenanceDocumentAuthorizerBase implements MaintenanceDocumentAuthorizer {
 
     @Override
@@ -52,5 +53,10 @@ public class KhrEmployeeDocumentMaintenanceDocumentAuthorizer extends Maintenanc
         }
 
         return super.canCancel(document, user);
+    }
+
+    @Override
+    public boolean canClose(Document document, Person user) {
+        return false;
     }
 }
