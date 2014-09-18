@@ -40,6 +40,7 @@ import org.kuali.kpme.tklm.time.clocklog.RemoteSwipeDevice;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.api.util.Truth;
 import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kew.api.WorkflowDocumentFactory;
 import org.kuali.rice.kew.api.exception.WorkflowException;
@@ -143,7 +144,7 @@ public class MobileClockLogServiceImpl implements MobileClockLogService {
 
         String currentClockAction = getCurrentClockAction(lastClockLog);
        	LOG.info("Current Clock Action="+currentClockAction);	
-        assignments = getAssignments(remoteClockLog, currentClockAction, lastClockLog);
+        assignments = getAssignments(remoteClockLog, currentClockAction, lastClockLog, remoteSwipeDevice);
     	LOG.info("Assignment Size="+assignments.size());	
 
         // if there is no assignment for the user, then return error message.
@@ -301,9 +302,11 @@ public class MobileClockLogServiceImpl implements MobileClockLogService {
         return KimApiServiceLocator.getPersonService().getPerson(remoteSwipeData.getUid());
     }
 
-    private List<Assignment> getAssignments(RemoteClockLog remoteClockLog, String currentClockAction, ClockLog lastClockLog) {
+    private List<Assignment> getAssignments(RemoteClockLog remoteClockLog, String currentClockAction, ClockLog lastClockLog, RemoteSwipeDevice remoteSwipeDevice) {
         AssignmentService assignmentService = HrServiceLocator.getAssignmentService();
         List<Assignment> assignments = new ArrayList<Assignment>();
+        Boolean allowActionFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION), Boolean.FALSE);
+        DateTime currentDateTime = DateTime.now();
 
         // NEED To check the last clock log
         // if user already has clock in, then get assignment from last clock log
@@ -325,7 +328,20 @@ public class MobileClockLogServiceImpl implements MobileClockLogService {
                     assignments.add(assignment);
                 }
             } else {
-                assignments = assignmentService.getAssignments(remoteClockLog.getPrincipalId(), new LocalDate(remoteClockLog.getClockLog()));
+                //assignments = assignmentService.getAssignments(remoteClockLog.getPrincipalId(), new LocalDate(remoteClockLog.getClockLog()));
+                List<Assignment> allAssignments = assignmentService.getAssignments(remoteClockLog.getPrincipalId(), new LocalDate(remoteClockLog.getClockLog()));
+                for (Assignment tempAssignment : allAssignments) {
+
+                    if(!allowActionFromInvalidLocation) {
+                        boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(tempAssignment.getGroupKeyCode(), tempAssignment.getDept(), tempAssignment.getWorkArea(), tempAssignment.getPrincipalId(), tempAssignment.getJobNumber(), remoteSwipeDevice.getIpAddress(), currentDateTime.toLocalDate());
+                        if (!isInValid) {
+                            assignments.add(tempAssignment);
+                        }
+                    }
+                    else {
+                        assignments.add(tempAssignment);
+                    }
+                }
             }
         }
 
