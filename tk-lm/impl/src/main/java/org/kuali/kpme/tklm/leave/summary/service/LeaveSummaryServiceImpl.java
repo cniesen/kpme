@@ -32,6 +32,7 @@ import org.kuali.kpme.core.api.leaveplan.LeavePlan;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlockService;
 import org.kuali.kpme.tklm.api.leave.override.EmployeeOverrideContract;
@@ -122,7 +123,7 @@ public class LeaveSummaryServiceImpl implements LeaveSummaryService {
                     (acRule.getMaxBalance()!= null
                             || acRule.getMaxUsage() != null)) {
                 if (acRule.getMaxUsage() != null) {
-                    lsr.setUsageLimit(new BigDecimal(acRule.getMaxUsage()).setScale(2));
+                    lsr.setUsageLimit(new BigDecimal(acRule.getMaxUsage()).setScale(2, HrConstants.BIG_DECIMAL_SCALE_ROUNDING));
                 } else {
                     lsr.setUsageLimit(null);
                 }
@@ -295,7 +296,7 @@ public class LeaveSummaryServiceImpl implements LeaveSummaryService {
 	                            //merge key sets
 	                            if (carryOverBlocks.containsKey(lsr.getAccrualCategory())) {
 	                                carryOver = carryOverBlocks.get(lsr.getAccrualCategory()).getLeaveAmount();
-	                                carryOver = carryOver.setScale(2);
+	                                carryOver = carryOver.setScale(2, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
 	                            }
 	                            Set<String> keyset = new HashSet<String>();
 	                            keyset.addAll(lsr.getPriorYearsUsage().keySet());
