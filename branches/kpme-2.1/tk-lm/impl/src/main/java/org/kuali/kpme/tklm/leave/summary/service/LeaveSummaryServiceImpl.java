@@ -137,7 +137,7 @@ public class LeaveSummaryServiceImpl implements LeaveSummaryService {
             //Fetching leaveblocks for accCat with type CarryOver -- This is logic according to the CO blocks creatLed from scheduler job.
             BigDecimal carryOver = BigDecimal.ZERO.setScale(2);
             lsr.setCarryOver(carryOver);
-
+            lsr.setAccrualCategory(accrualCategory);
             assignApprovedValuesToRow(lsr, ac.getAccrualCategory(), acLeaveBlocks, lp, startDate, endDate);
 
             //merge key sets

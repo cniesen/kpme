@@ -44,7 +44,7 @@ public interface LeaveBlockService {
     @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getLeaveBlocksWithAccrualCategory}' + 'principalId=' + #p0 + '|' + 'beginDate=' + #p1 + '|' + 'endDate=' + #p2 + '|' + 'accrualCategory=' + #p3")
     public List<LeaveBlock> getLeaveBlocksWithAccrualCategory(String principalId, LocalDate beginDate, LocalDate endDate, String accrualCategory);
     
-    @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getLeaveBlocksSinceCarryOver}' + 'principalId=' + #p0 + '|' + 'carryOverBlocks=' + #p1 + '|' + 'endDate=' + #p2 + '|' + 'includeAllAccrualCategories=' + #p3")
+    @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getLeaveBlocksSinceCarryOver}' + 'principalId=' + #p0 + '|' + 'carryOverBlocks=' + T(org.kuali.rice.core.api.cache.CacheKeyUtils).mapKey(#p1) + '|' + 'endDate=' + #p2 + '|' + 'includeAllAccrualCategories=' + #p3")
     public List<LeaveBlock> getLeaveBlocksSinceCarryOver(String principalId, Map<String, LeaveBlock> carryOverBlocks, LocalDate endDate, boolean includeAllAccrualCategories);
     
     @Cacheable(value= LeaveBlock.CACHE_NAME, key="'{getLastCarryOverBlocks}' + 'principalId=' + #p0 + '|' + 'asOfDate=' + #p1")
