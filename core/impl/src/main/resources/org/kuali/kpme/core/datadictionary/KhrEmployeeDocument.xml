@@ -193,6 +193,8 @@
         <property name="dataObjectClassName" value="org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument" />
         <property name="viewHelperServiceClass" value="org.kuali.kpme.core.tkmdocument.web.KhrEmployeeDocumentLookupableImpl"/>
 
+        <property name="maintenanceUrlMapping" value="kpme/KhrEmployeeJobMaintenance"/>
+
         <property name="criteriaFields">
             <list>
                 <bean parent="Uif-LookupCriteriaInputField" p:propertyName="principalId" >
@@ -430,6 +432,7 @@
 
         <property name="layoutManager.rowDetailsGroup">
             <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-Assignment-Collection">
+
                 <property name="header">
                     <bean parent="Uif-SubCollectionHeader">
                         <property name="lowerGroup">
