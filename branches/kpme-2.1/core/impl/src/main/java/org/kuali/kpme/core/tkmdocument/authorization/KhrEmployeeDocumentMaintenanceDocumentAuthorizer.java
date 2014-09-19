@@ -54,9 +54,4 @@ public class KhrEmployeeDocumentMaintenanceDocumentAuthorizer extends Maintenanc
 
         return super.canCancel(document, user);
     }
-
-    @Override
-    public boolean canClose(Document document, Person user) {
-        return false;
-    }
 }
