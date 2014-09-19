@@ -340,6 +340,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
              PrincipalHRAttributesBo newAttributes = new PrincipalHRAttributesBo();
              newAttributes.setEffectiveDate(LocalDate.now().toDate());
              newAttributes.setPrincipalId(principalId);
+             newAttributes.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
              // TODO: create parameter for default calendar
              newAttributes.setPayCalendar("ISU-SEMI-MNTHLY");
              newAttributes.setActive(true);
