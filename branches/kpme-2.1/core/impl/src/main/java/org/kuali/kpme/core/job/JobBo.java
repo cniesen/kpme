@@ -20,9 +20,11 @@ import java.math.RoundingMode;
 import java.sql.Timestamp;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
+import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.position.PositionBase;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
@@ -31,6 +33,7 @@ import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.core.paygrade.PayGradeBo;
 import org.kuali.kpme.core.paytype.PayTypeBo;
 import org.kuali.kpme.core.position.PositionBaseBo;
+import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
@@ -39,6 +42,7 @@ import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -410,5 +414,18 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         }
 
         return Job.Builder.create(bo).build();
+    }
+    
+    public boolean getCanEditJob() {
+    	// only department admin can edit the job
+    	if(StringUtils.isNotBlank(this.getDept()) && StringUtils.isNotBlank(this.getGroupKeyCode()) ) {
+			if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), 
+						KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())
+				|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), 
+						KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
+				return true;
+	    	}
+    	}
+    	return false;
     }
 }

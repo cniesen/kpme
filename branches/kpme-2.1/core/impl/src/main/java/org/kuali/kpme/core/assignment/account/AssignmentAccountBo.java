@@ -21,7 +21,9 @@ import org.kuali.kpme.core.api.assignment.account.AssignmentAccountContract;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.earncode.EarnCodeBo;
+import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.kfs.coa.businessobject.*;
+import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
 import org.kuali.rice.krad.service.KRADServiceLocator;
@@ -71,6 +73,9 @@ public class AssignmentAccountBo extends PersistableBusinessObjectBase implement
 	}*/
 	
 	public AssignmentBo getAssignmentObj() {
+		if(assignmentObj == null && StringUtils.isNotBlank(this.getTkAssignmentId())) {
+			this.setAssignmentObj(AssignmentBo.from(HrServiceLocator.getAssignmentService().getAssignment(this.getTkAssignmentId())));
+		}
 		return assignmentObj;
 	}
 
