@@ -61,6 +61,7 @@ public class ChangeTargetPersonAction extends KPMEAction {
         	
 	        if (targetPerson != null) {	
 	        	LocalDate aDate = LocalDate.now();
+	        	LocalDate endDate = LocalDate.now();
 	        	Integer limit = 0;
 	        	String limitString = ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit");
 	        	if(StringUtils.isNotBlank(limitString)) {
@@ -72,16 +73,36 @@ public class ChangeTargetPersonAction extends KPMEAction {
 	        		TimesheetDocument tDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
 	        		if(tDoc != null) {
 	        			aDate = tDoc.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+	        			endDate = tDoc.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
 	        		}
 	        	}
-	        	aDate = aDate.minusDays(limit);
-	            if (HrServiceLocator.getKPMEGroupService().isMemberOfSystemAdministratorGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
-	                	|| HrServiceLocator.getKPMEGroupService().isMemberOfSystemViewOnlyGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
-	                	|| isReviewerForPerson(targetPerson.getPrincipalId(), aDate)
+	        	boolean resultWithGraceDate = false;
+	        	if(limit != 0) {
+	        		LocalDate graceDate = aDate.minusDays(limit);
+	        		resultWithGraceDate = isReviewerForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isApproverForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), graceDate)
+					                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), graceDate);
+	        	}
+	        	
+	        	boolean resultWithBeginDate = isReviewerForPerson(targetPerson.getPrincipalId(), aDate)
 	                	|| isApproverForPerson(targetPerson.getPrincipalId(), aDate)
 	                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), aDate)
                         || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), aDate)
-	                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), aDate)) {
+	                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), aDate);
+	        	
+	        	boolean resultWithEndDate = isReviewerForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isApproverForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), endDate)
+                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), endDate);
+	        	
+	            if (HrServiceLocator.getKPMEGroupService().isMemberOfSystemAdministratorGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
+	                	|| HrServiceLocator.getKPMEGroupService().isMemberOfSystemViewOnlyGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
+	                	|| resultWithBeginDate
+	                	|| resultWithEndDate
+	                	|| resultWithGraceDate) {
 		                	
 	            	HrContext.setTargetPrincipalId(targetPerson.getPrincipalId());
 	
