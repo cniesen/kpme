@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -226,7 +228,14 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
         LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
         LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
         
-        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
+        List<String> pList1 = TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
+        List<String> pList2 = TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);
+        Set<String> pIdSet = new HashSet<String>();
+        pIdSet.addAll(pList1);
+        pIdSet.addAll(pList2);
+        List<String> finalList = new ArrayList<String>(pIdSet);
+        return finalList;
+//        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
 
 	}
     
