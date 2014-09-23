@@ -23,46 +23,46 @@
 
 	
     <changeSet id="1" author="neerajsk" context="kpme-server-bootstrap">
-        <comment>Create the KPME HR Core Context in the KPME-HR namespace and set the (pre-defined) rule and action types as valid for this context </comment>
+        <comment>Create the KPME Employee Setup Context in the KPME-HR namespace and set the (pre-defined) rule and action types as valid for this context </comment>
 
         <insert tableName="KRMS_CNTXT_T">
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT" />
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT" />
             <column name="NMSPC_CD" value="KPME-HR"/>
-            <column name="NM" value="KPME HR Core Context"/>
+            <column name="NM" value="KPME Employee Setup Context"/>
             <column name="TYP_ID" value="KPME0001" />
             <column name="ACTV" value="Y" />
             <column name="VER_NBR" value="0" />
-            <column name="DESC_TXT" value="KPME context for Human Resources Core" />
+            <column name="DESC_TXT" value="KPME context for Employee Setup" />
         </insert>
         
          <insert tableName="KRMS_CNTXT_VLD_RULE_TYP_T">
             <column name="CNTXT_VLD_RULE_ID" value="KPME0006"/>
-            <column name="CNTXT_ID" value="KPME-TIMESHEET-CONTEXT"/>
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT"/>
             <column name="RULE_TYP_ID" valueComputed="(select TYP_ID from KRMS_TYP_T where NM='Validation Rule' and NMSPC_CD='KR-RULE')" />
         </insert>
         
         <insert tableName="KRMS_CNTXT_VLD_ACTN_TYP_T">
             <column name="CNTXT_VLD_ACTN_ID" value="KPME0019"/>
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT"/>
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT"/>
             <column name="ACTN_TYP_ID" valueComputed="(select TYP_ID from KRMS_TYP_T where NM='Validation Action' and NMSPC_CD='KR-RULE')" />
         </insert>
         
         <insert tableName="KRMS_CNTXT_VLD_ACTN_TYP_T">
             <column name="CNTXT_VLD_ACTN_ID" value="KPME0020"/>
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT"/>
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT"/>
             <column name="ACTN_TYP_ID" valueComputed="(select TYP_ID from KRMS_TYP_T where NM='Notify PeopleFlow' and NMSPC_CD='KR-RULE')" />
         </insert>
         
         <insert tableName="KRMS_CNTXT_VLD_ACTN_TYP_T">
             <column name="CNTXT_VLD_ACTN_ID" value="KPME0021"/>
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT"/>
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT"/>
             <column name="ACTN_TYP_ID" valueComputed="(select TYP_ID from KRMS_TYP_T where NM='Route to PeopleFlow' and NMSPC_CD='KR-RULE')" />
         </insert>
     </changeSet>
     
     
     <changeSet id="2" author="neerajsk" context="kpme-server-bootstrap">
-        <comment>Set the term specification for the employee setup process </comment>
+        <comment>Create the term specification for the employee setup process </comment>
 
         <insert tableName="KRMS_TERM_SPEC_T">
             <column name="TERM_SPEC_ID" value="KPME0014" />
@@ -76,7 +76,7 @@
     </changeSet>
     
     <changeSet id="3" author="neerajsk" context="kpme-server-bootstrap">
-        <comment>Set the actual term for the setup process, based on the above specification, so it can be used as a parameter in some proposition for some agenda rule</comment>
+        <comment>Create the actual term for the setup process, based on the above specification, so it can be used as a parameter in propositions for agenda rules</comment>
         
         <insert tableName="KRMS_TERM_T">
             <column name="TERM_ID" value="KPME0006" />
@@ -87,15 +87,16 @@
     </changeSet>
     
     <changeSet id="4" author="neerajsk" context="kpme-server-bootstrap">
-        <comment>Set the above process term specification as valid for the HR Core context, so it can be used in agendas for that context</comment>
+        <comment>Set the above process term specification as valid for the employee setup context, so it can be used in agendas for that context</comment>
 
         <insert tableName="KRMS_CNTXT_VLD_TERM_SPEC_T">
             <column name="CNTXT_TERM_SPEC_PREREQ_ID" value="KPME0024" />
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT"/>
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT"/>
             <column name="TERM_SPEC_ID" value="KPME0014"/>
             <column name="PREREQ" value="N" />
         </insert>
     </changeSet>
+        
         
     <changeSet id="5" author="neerajsk" context="kpme-server-bootstrap">
         <comment>Create a proposition that checks if the value of the setup process is 'New job/Payrate', and use that proposition in a new rule. </comment>
@@ -139,7 +140,7 @@
             <column name="RULE_ID" value="KPME0024"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="NM" value="Routing for new job or pay rate"/>
-            <column name="DESC_TXT" value="Process selected in KHR setup doc was New Job/Payrate"/>
+            <column name="DESC_TXT" value="Process selected in employee setup doc was New Job/Payrate"/>
             <column name="PROP_ID" value="KPME0007"/>
             <column name="ACTV" value="Y"/>
             <column name="VER_NBR" value="0"/>
@@ -148,12 +149,12 @@
     
     
     <changeSet id="6" author="neerajsk" context="kpme-server-bootstrap">
-        <comment>Create an initial agenda item (pointing to the rule created above) and an agenda for the employee setup (pointing to the initial item). </comment>
+        <comment>Create an agenda for the employee setup, and its initial agenda item (pointing to the rule created above). </comment>
       
         <insert tableName="KRMS_AGENDA_T">
             <column name="AGENDA_ID" value="KPME0007" />
-            <column name="NM" value="KHR Employee Setup Agenda" />
-            <column name="CNTXT_ID" value="KPME-HR-CONTEXT" />
+            <column name="NM" value="KPME Employee Setup Agenda" />
+            <column name="CNTXT_ID" value="KPME-EMP-SETUP-CONTEXT" />
             <column name="INIT_AGENDA_ITM_ID" value="KPME0024"/>
             <column name="ACTV" value="Y" />
         </insert>
@@ -166,6 +167,7 @@
         </insert>
         
     </changeSet>
+   
    
     <changeSet id="7" author="neerajsk" context="kpme-server-bootstrap">
         <comment>Create a proposition that checks if the value of the setup process is 'Change Job Dates', and use that proposition in a new rule. </comment>
@@ -209,7 +211,7 @@
             <column name="RULE_ID" value="KPME0025"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="NM" value="Routing for changing job dates"/>
-            <column name="DESC_TXT" value="Process selected in KHR setup doc was Change Job Dates"/>
+            <column name="DESC_TXT" value="Process selected in employee setup doc was Change Job Dates"/>
             <column name="PROP_ID" value="KPME0008"/>
             <column name="ACTV" value="Y"/>
             <column name="VER_NBR" value="0"/>
@@ -275,7 +277,7 @@
             <column name="RULE_ID" value="KPME0026"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="NM" value="Routing for updating job details"/>
-            <column name="DESC_TXT" value="Process selected in KHR setup doc was Update Job Details"/>
+            <column name="DESC_TXT" value="Process selected in employee setup doc was Update Job Details"/>
             <column name="PROP_ID" value="KPME0009"/>
             <column name="ACTV" value="Y"/>
             <column name="VER_NBR" value="0"/>
@@ -341,7 +343,7 @@
             <column name="RULE_ID" value="KPME0027"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="NM" value="Routing for ending job"/>
-            <column name="DESC_TXT" value="Process selected in KHR setup doc was End Job"/>
+            <column name="DESC_TXT" value="Process selected in employee setup doc was End Job"/>
             <column name="PROP_ID" value="KPME0010"/>
             <column name="ACTV" value="Y"/>
             <column name="VER_NBR" value="0"/>
@@ -365,10 +367,6 @@
     </changeSet>
     
     
-    
-    
-    
-    
     <changeSet id="13" author="neerajsk" context="kpme-server-bootstrap">
     	<comment>Create a maintain KPME-HR agenda permission, and assign it to three sys-admin roles: position, leave and time. </comment>
 
@@ -377,7 +375,7 @@
             <column name="PERM_TMPL_ID" valueComputed="(SELECT PERM_TMPL_ID FROM KRIM_PERM_TMPL_T WHERE NMSPC_CD = 'KR-RULE' AND NM = 'KRMS Agenda Permission')" />
             <column name="NMSPC_CD" value="KPME-HR" />
             <column name="NM" value="Maintain KRMS Agenda" />
-            <column name="DESC_TXT" value="Maintain HR Core KRMS Agenda" />
+            <column name="DESC_TXT" value="Allows users to maintain any KPME-HR namespace agendas." />
             <column name="ACTV_IND" value="Y" />
             <column name="OBJ_ID" valueComputed="SYS_GUID()" />
             <column name="VER_NBR" value="1" />
