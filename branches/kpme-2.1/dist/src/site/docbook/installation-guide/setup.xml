@@ -717,23 +717,27 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
 	                        <listitem>
 	                            <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/oracle/kpme-2.1.0-oracle-client-install.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/oracle/kpme-2.1.1-oracle-client-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
 	                        <listitem>
 	                            <para>Oracle Server</para>
 	                            <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/oracle/kpme-2.1.0-oracle-server-install.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/oracle/kpme-2.1.1-oracle-server-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
 	                        <listitem>
 	                            <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/mysql/kpme-2.1.0-mysql-client-install.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/mysql/kpme-2.1.1-mysql-client-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
 	                        <listitem>
 	                            <para>MySQL Server</para>
 	                            <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/mysql/kpme-2.1.0-mysql-server-install.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/mysql/kpme-2.1.1-mysql-server-upgrade.sql</emphasis></listitem>
 	                            </orderedlist>
 	                        </listitem>
 	                    </itemizedlist>
@@ -745,24 +749,28 @@ OS name: "mac os x", version: "10.7.2", arch: "x86_64", family: "mac"</programli
                                 <para>Oracle Client</para>
                                 <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/oracle/kpme-2.1.0-oracle-client-upgrade.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/oracle/kpme-2.1.1-oracle-client-upgrade.sql</emphasis></listitem>
                                 </orderedlist>
                             </listitem>
                             <listitem>
                                 <para>Oracle Server</para>
                                 <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/oracle/kpme-2.1.0-server-client-upgrade.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/oracle/kpme-2.1.1-oracle-client-upgrade.sql</emphasis></listitem>
                                 </orderedlist>
                             </listitem>
                             <listitem>
                                 <para>MySQL Client</para>
                                 <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/mysql/kpme-2.1.0-mysql-client-upgrade.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/mysql/kpme-2.1.1-mysql-client-upgrade.sql</emphasis></listitem>
                                 </orderedlist>
                             </listitem>
                             <listitem>
                                 <para>MySQL Server</para>
                                 <orderedlist>
                                     <listitem><emphasis role="bold">2.1.0/mysql/kpme-2.1.0-mysql-server-upgrade.sql</emphasis></listitem>
+                                    <listitem><emphasis role="bold">2.1.1/mysql/kpme-2.1.1-mysql-server-upgrade.sql</emphasis></listitem>
                                 </orderedlist>
                             </listitem>
                         </itemizedlist>
