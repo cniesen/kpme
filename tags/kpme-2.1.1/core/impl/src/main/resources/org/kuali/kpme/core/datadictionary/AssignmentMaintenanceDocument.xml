@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:dd="http://rice.kuali.org/dd"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://rice.kuali.org/dd
+                           http://rice.kuali.org/dd/dd.xsd">
+
+	<bean id="AssignmentMaintenanceDocument" parent="AssignmentMaintenanceDocument-parentBean" />
+
+	<bean id="AssignmentMaintenanceDocument-parentBean" abstract="true"
+		parent="uifMaintenanceDocumentEntry" 
+		p:dataObjectClass="org.kuali.kpme.core.assignment.AssignmentBo"
+		p:businessRulesClass="org.kuali.kpme.core.assignment.validation.AssignmentRule"
+		p:maintainableClass="org.kuali.kpme.core.assignment.web.AssignmentMaintainableServiceImpl"
+		p:documentAuthorizerClass="org.kuali.kpme.core.assignment.authorization.AssignmentAuthorizer">
+        <property name="lockingKeys">
+            <list>
+                <value>principalId</value>
+                <value>groupKeyCode</value>
+                <value>workArea</value>
+                <value>task</value>
+                <value>jobNumber</value>
+            </list>
+        </property>
+		<!-- <property name="webScriptFiles">
+     		<list>
+        		<value>../js/core.js</value>
+      		</list>
+    	</property> -->
+		<property name="documentTypeName" value="AssignmentDocumentType" />
+	</bean>
+
+	<!-- Maintenance View  -->
+	
+	  <bean id="Assignment-MaintenanceView" parent="Assignment-MaintenanceView-parentBean"/>
+	  <bean id="Assignment-MaintenanceView-parentBean" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView">
+	  	<property name="viewHelperServiceClass" value="org.kuali.kpme.core.assignment.web.AssignmentMaintainableServiceImpl" />
+	    <property name="headerText" value="Assignment Maintenance"/>
+	    <property name="dataObjectClassName" value="org.kuali.kpme.core.assignment.AssignmentBo"/>
+	    <property name="items">
+	      <list>
+	        <bean parent="Uif-MaintenanceGridSection">
+	          <property name="items">
+	            <list>
+		            <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
+			        <bean parent="Uif-InputField" p:propertyName="principalId" p:required="true" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
+			                            p:fieldConversions="principalId:principalId,name:name"/>
+			            </property>        
+			        </bean>
+			        <bean parent="Uif-InputField" p:propertyName="name" p:widgetInputOnly="true"/>
+
+                    <bean parent="KPMEHrGroupKeyInputField" p:propertyName="groupKeyCode" p:required="true">
+                        <property name="quickfinder">
+                            <bean parent="Uif-QuickFinderByScript"
+                            	p:viewName="quickFinderView"  
+                            	p:dataObjectClassName="org.kuali.kpme.core.groupkey.HrGroupKeyBo"
+                                p:fieldConversions="groupKeyCode:groupKeyCode" 
+                                p:lookupParameters="relativeEffectiveDate:effectiveDate"/>
+                        </property>
+                    </bean>
+			        <bean parent="Uif-InputField" p:propertyName="jobNumber" p:required="true">
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.job.JobBo"
+			                            p:fieldConversions="principalId:principalId,jobNumber:jobNumber,dept:dept" p:lookupParameters="relativeEffectiveDate:effectiveDate,principalId:principalId"/>
+			            </property>        
+			        </bean>
+			        <bean parent="Uif-InputField" p:propertyName="dept" p:widgetInputOnly="true">
+			        </bean>
+			        <bean parent="Uif-InputField" p:propertyName="workArea">
+						<property name="quickfinder">
+			  	          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.workarea.WorkAreaBo"
+			                    p:fieldConversions="workArea:workArea,effectiveDate:relativeEffectiveDate" p:lookupParameters="dept:dept"/>
+			            </property>        
+			        </bean>
+			        <bean parent="Uif-InputField" p:propertyName="task" >
+						<property name="quickfinder">
+			  	          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.task.TaskBo"
+			                    p:fieldConversions="workArea:workArea,task:task" p:lookupParameters="workArea:workArea,effectiveDate:effectiveDate:effectiveDate:relativeEffectiveDate"/>
+			            </property>        
+			        </bean>
+			       	<bean parent="Uif-InputField" p:propertyName="primaryAssign" p:defaultValue="false" />
+			        <bean parent="Uif-InputField" p:propertyName="active" p:defaultValue="true" />
+	            </list>
+	          </property>
+	        </bean>
+	        
+	        <bean parent="Uif-MaintenanceStackedCollectionSection">
+			  <property name="headerText" value="Assignment Accounts"/>
+			  <property name="collectionObjectClass" value="org.kuali.kpme.core.assignment.account.AssignmentAccountBo" />
+			  <property name="propertyName" value="assignmentAccounts" />
+		      <property name="renderInactiveToggleButton" value="false"/>
+			  <property name="lineActions">
+		            <list>
+		              <bean parent="Uif-DeleteLineAction" p:render="@{isAddedCollectionItem(#line)}"/>
+		            </list>
+		      </property>	  
+			  <property name="items">
+			    <list>
+		           	<bean parent="Uif-InputField" p:propertyName="finCoaCd" p:widgetInputOnly="true"/>
+				 	<bean parent="Uif-InputField" p:propertyName="accountNbr" p:required="true">
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.Account"
+			                            p:fieldConversions="chartOfAccountsCode:finCoaCd,accountNumber:accountNbr"/>
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="earnCode" p:required="true" p:uppercaseValue="true" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
+			                            p:fieldConversions="earnCode:earnCode" />
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="subAcctNbr" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.SubAccount"
+			                            p:fieldConversions="subAccountNumber:subAcctNbr" />
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="finObjectCd" p:required="true" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.ObjectCode"
+			                            p:fieldConversions="financialObjectCode:finObjectCd"/>
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="finSubObjCd" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.SubObjectCode"
+			                            p:fieldConversions="financialSubObjectCode:finSubObjCd" />
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="projectCd" >
+						<property name="quickfinder">
+			            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.ProjectCode"
+			                            p:fieldConversions="code:projectCd" />
+			            </property>        
+				 	</bean>
+				 	<bean parent="Uif-InputField" p:propertyName="orgRefId" />
+				 	<bean parent="Uif-InputField" p:propertyName="percent" p:exclusiveMin="0" p:inclusiveMax="100"
+					        	 p:constraintText="Must be a number between 0 and 100." p:required="true">
+					        	<property name="validCharactersConstraint">
+						        	<bean parent="FixedPointPatternConstraint" p:allowNegative="false" p:precision="5" p:scale="2" />
+								</property>
+				    </bean>            		
+		           	<bean parent="Uif-InputField" p:propertyName="active" />           
+			    </list>
+        	  </property>
+		      <property name="layoutManager.summaryTitle" value="Assignment Account"/>
+		      <property name="layoutManager.summaryFields">
+		        <list>
+		          <value>accountNbr</value>
+		        </list>
+     		  </property>	  
+        	  
+	        </bean>
+	      </list>
+	    </property>
+	  </bean> 
+
+	<bean id="AssignmentMaintenanceDocument-AssignmentMaintenance"
+		parent="AssignmentMaintenanceDocument-AssignmentMaintenance-parentBean" />
+
+	<bean id="AssignmentMaintenanceDocument-AssignmentMaintenance-parentBean"
+		abstract="true" parent="MaintainableSectionDefinition">
+		<property name="title" value="Assignment Maintenance" />
+		<property name="maintainableItems">
+			<list>
+				<bean parent="MaintainableFieldDefinition" p:name="effectiveDate"
+					p:required="true" p:noLookup="true"/>
+
+				<bean parent="MaintainableFieldDefinition" p:name="principalId"
+					p:required="true" />
+				<bean parent="MaintainableFieldDefinition" p:name="name" 
+					p:noLookup="true"/>
+				<bean parent="MaintainableFieldDefinition" p:name="jobNumber"
+					p:required="true" />
+				<bean parent="MaintainableFieldDefinition" p:name="dept" p:lookupReadOnly="true"
+					p:noLookup="true"/>
+				<bean parent="MaintainableFieldDefinition" p:name="workArea"
+					p:required="true" />
+				<bean parent="MaintainableFieldDefinition" p:name="task"
+					p:required="false" />
+				<bean parent="MaintainableFieldDefinition" p:name="primaryAssign"
+					p:defaultValue="false"/>
+				<bean parent="MaintainableFieldDefinition" p:name="active"
+					p:required="true" p:defaultValue="true"/>
+
+			</list>
+		</property>
+	</bean>
+
+    <bean id="AssignmentMaintenanceDocument-HiddenFields"
+          parent="MaintDoc-HiddenFields-parentBean" />
+
+	<!-- AssignmentAccounts maintenance section -->
+
+	<bean id="AssignmentMaintenanceDocument-AssignmentAccountMaintenance"
+		parent="AssignmentMaintenanceDocument-AssignmentAccountMaintenance-parentBean" />
+	<bean
+		id="AssignmentMaintenanceDocument-AssignmentAccountMaintenance-parentBean"
+		abstract="true" parent="MaintainableSectionDefinition">
+		<property name="id" value="assignmentAccounts" />
+		<property name="title" value="Assignment Accounts" />
+		<property name="defaultOpen" value="true" />
+		<property name="maintainableItems">
+			<list>
+				<bean parent="MaintainableCollectionDefinition">
+					<property name="name" value="assignmentAccounts" />
+					<property name="businessObjectClass"
+						value="org.kuali.kpme.core.assignment.account.AssignmentAccount" />
+					<property name="alwaysAllowCollectionDeletion" value="true" />
+					<property name="maintainableFields">
+						<list>
+							<bean parent="MaintainableFieldDefinition" p:name="finCoaCd" p:noLookup="true" />
+							<bean parent="MaintainableFieldDefinition" p:name="accountNbr" p:required="true"/>
+							<bean parent="MaintainableFieldDefinition" p:name="earnCode" p:required="true"/>
+							<bean parent="MaintainableFieldDefinition" p:name="subAcctNbr" />
+							<bean parent="MaintainableFieldDefinition" p:name="finObjectCd" p:required="true" />
+							<bean parent="MaintainableFieldDefinition" p:name="finSubObjCd"/>
+							<bean parent="MaintainableFieldDefinition" p:name="projectCd" />
+							<bean parent="MaintainableFieldDefinition" p:name="orgRefId" />
+							<bean parent="MaintainableFieldDefinition" p:name="percent" p:required="true"/>	
+							<bean parent="MaintainableFieldDefinition" p:name="active"/>						
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+</beans>

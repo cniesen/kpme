@@ -1,0 +1,487 @@
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<!-- lookup view for maint docs that have page size of 25. Used by maint docs that do not need the view link  -->
+    <bean id="KPME-ChangedPageSizeLookupView" parent="Uif-LookupView" abstract="true">
+        <property name="resultsGroup.layoutManager.richTable">
+	      <bean parent="Uif-PagedRichTable">
+	        <property name="templateOptions">
+	          <map merge="true">
+	            <entry key="iDisplayLength" value ="25"/>
+	          </map>
+	        </property>
+	      </bean>
+        </property>
+    </bean>    
+    	
+    <!-- lookup view for maint docs that have View action link. The page size is changed to 25 in the super view  -->
+    <bean id="KPMEUif-ViewLinkLookupView" parent="KPME-ChangedPageSizeLookupView" abstract="true">
+        <property name="resultsGroup">
+        	<bean parent="KPMEAttributes-LookupView-ViewLink"/>
+        </property>
+    </bean>
+    
+    <bean id="KPMEAttributes-LookupView-ViewLink" parent="Uif-LookupResultsCollectionSection">
+		<property name="lineActions">
+			<list merge="true">
+		    	<bean parent="Uif-ActionLink" p:order="10" p:render="@{#view.showMaintenanceLinks}">
+		        	<property name="actionLabel" value="view" />
+		            <property name="finalizeMethodToCall" value="getMaintenanceActionLink"/>
+		            <property name="finalizeMethodAdditionalArguments">
+		            	<list>
+		                	<value>maintenanceView</value>
+		                </list>
+		            </property>
+		         </bean>
+		    </list>
+		</property>
+	</bean>
+
+    <bean id="KPMEUif-NonEffectiveBoViewLinkLookupView" parent="KPMEUif-ViewLinkLookupView">
+        <property name="maintenanceUrlMapping" value="kpme/nonEffectiveMaintenance"/>
+    </bean>
+
+     <!-- lookup view for BO's that use effective date (but no view link from lookup); maintainance for such BOs is performed via a special controller specified by the overriden property. -->
+    <bean id="KPMEUif-EffectiveDateBONoViewLinkLookupView" parent="KPME-ChangedPageSizeLookupView" abstract="true">
+    	 <property name="maintenanceUrlMapping" value="kpme/effectiveDateMaintenance"/>
+    	 <property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KpmeHrBusinessObjectLookupableImpl" /> 
+    	 <property name="criteriaFields">
+		      <list>
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="effectiveDate" p:ranged="true" />
+		      </list>
+    	 </property>
+    </bean>
+    
+    
+    <!-- lookup view for BOs that use effective date (and a view link from lookup); maintainance for such BOs is performed via a special controller specified by the overriden property. -->
+    <bean id="KPMEUif-EffectiveDateBOLookupView" parent="KPMEUif-EffectiveDateBONoViewLinkLookupView" abstract="true">
+    	<property name="resultsGroup">
+        	<bean parent="KPMEAttributes-LookupView-ViewLink"/>
+   		</property>       
+    </bean>
+    
+    <!-- lookup view for group-keyed effective dated BOs (that have a view link from lookup); the criteria fields list provides the common lookup fields of grp key, institution and location codes. -->
+    <bean id="KPMEUif-GroupKeyedEffectiveDateBOLookupView" parent="KPMEUif-GroupKeyedEffectiveDateBOLookupView-parentBean" abstract="true" />
+    <bean id="KPMEUif-GroupKeyedEffectiveDateBOLookupView-parentBean" parent="KPMEUif-EffectiveDateBOLookupView" abstract="true">
+    	<property name="viewHelperServiceClass" value="org.kuali.kpme.core.lookup.KpmeHrGroupKeyedBusinessObjectLookupableImpl" />
+    	<property name="criteriaFields">
+		      <list merge="true">
+		      	<bean parent="KPMEGroupKeyLookupCriteriaInputField" p:propertyName="groupKeyCode" >
+              		<property name="quickfinder">
+                  		<bean parent="Uif-QuickFinderByScript"
+                  			p:viewName="quickFinderView"  
+                  			p:dataObjectClassName="org.kuali.kpme.core.groupkey.HrGroupKeyBo" 
+                  			p:fieldConversions="groupKeyCode:groupKeyCode" 
+                  			p:lookupParameters="relativeEffectiveDate:effectiveDate"/>
+              		</property>
+          		</bean>
+          		<bean parent="Uif-LookupCriteriaInputField" p:propertyName="institutionCode">
+			         <property name="quickfinder">
+			       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo" p:fieldConversions="institutionCode:institutionCode"/>
+			   		 </property>
+		        </bean>
+		        <bean parent="Uif-LookupCriteriaInputField" p:propertyName="locationId">
+		       		<property name="quickfinder">
+			       		<bean parent="Uif-QuickFinderByScript"
+			       			p:viewName="quickFinderView" 
+			       			p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo" 
+			       			p:fieldConversions="location:locationId" />
+			   		 </property>
+		        </bean>		          
+		      </list>
+    	</property>
+    	<property name="resultFields">
+    	 	  <list merge="true">
+    	 	  	<bean parent="Uif-DataField" p:propertyName="groupKeyCode" />    	  		
+    	  	  </list>
+    	</property>
+    </bean>
+    <bean id = "KPMEGroupKeyLookupCriteriaInputField" class = "org.kuali.kpme.core.util.GroupKeyLookupInputField" parent = "Uif-LookupCriteriaInputField"/>
+    <bean id = "KPMEGroupKeyDataFieldLookup" class = "org.kuali.kpme.core.util.GroupKeyDataField" parent = "Uif-DataField"/>
+
+    <bean id="KPMEGroupKeyed-InquiryGridSection" parent="Uif-Disclosure-GridSection">
+    	<property name="items">
+        	<list merge="true">
+        		<bean parent="Uif-DataField" p:propertyName="groupKeyCode" />
+        		<bean parent="Uif-DataField" p:propertyName="effectiveDate" />
+       		</list>
+    	</property>
+    </bean>
+    
+    
+    
+    <!-- lookup defination for group-keyed effective dated *Rule BO (that have a view link from lookup); the criteria fields list provides the common lookup fields of grp key, institution and location codes. -->
+    <bean id="KPMEUif-GroupKeyedEffectiveDateBO-LookupDefinition" parent="KPMEUif-GroupKeyedEffectiveDateBOLookupDefinition-parentBean" abstract="true" />
+    <bean id="KPMEUif-GroupKeyedEffectiveDateBOLookupDefinition-parentBean" parent="LookupDefinition" abstract="true">
+    	<!--property name="lookupableID" value="kpmeTkGroupKeyedBusinessObjectLookupHelperService" /-->
+    	<property name="lookupFields">
+		      <list merge="true">
+		      	<bean parent="FieldDefinition" p:attributeName="effectiveDate" p:noLookup="true"/>
+		      	<!-- <bean parent="FieldDefinition" p:attributeName="groupKeyCode" > -->
+                <bean parent="KPMEGroupKeyFieldDefinition" p:attributeName="groupKeyCode" >
+
+              		<!-- property name="quickfinder">
+                  		<bean parent="QuickFinder" p:dataObjectClassName="org.kuali.kpme.core.groupkey.HrGroupKeyBo" p:fieldConversions="groupKeyCode:groupKeyCode" p:lookupParameters="relativeEffectiveDate:effectiveDate"/>
+              		</property-->
+          		</bean>
+          		<bean parent="FieldDefinition" p:attributeName="institutionCode">
+			         <!-- property name="quickfinder">
+			       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.institution.InstitutionBo" p:fieldConversions="institutionCode:institutionCode"/>
+			   		 </property-->
+		        </bean>
+		        <bean parent="FieldDefinition" p:attributeName="locationId">
+		       		<!-- property name="quickfinder">
+			       		<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.location.LocationBo" p:fieldConversions="location:locationId" />
+			   		 </property-->
+		        </bean>		          
+		      </list>
+    	</property>
+    	<property name="resultFields">
+    	 	  <list merge="true">
+    	 	  	<bean parent="FieldDefinition" p:attributeName="effectiveDate" /> 
+    	 	  	<bean parent="FieldDefinition" p:attributeName="groupKeyCode" />    	  		
+    	  	  </list>
+    	</property>
+    </bean>
+    <bean id = "KPMEGroupKeyFieldDefinition" parent = "FieldDefinition" class = "org.kuali.kpme.core.util.GroupKeyFieldDefinition"/>
+    
+    <!-- Inquiry defination for group-keyed effective dated *Rule BO-->
+    <bean id="KPMEGroupKeyed-InquirySectionDefinition" parent="InquirySectionDefinition">
+    	<property name="inquiryFields">
+        	<list merge="true">
+        		<bean parent="FieldDefinition" p:attributeName="effectiveDate" />
+            	<bean parent="FieldDefinition" p:attributeName="groupKeyCode" />
+       		</list>
+    	</property>
+    </bean>
+
+    <!-- MaintainableSectionDefinition for group-keyed effective dated *Rule BO-->
+    <bean id="KPMEEffectiveDateGroupKeyed-MaintainableSectionDefinition" abstract="true" parent="MaintainableSectionDefinition"  >
+        <property name="maintainableItems">
+            <list merge="true">
+                <bean parent="MaintainableFieldDefinition" p:name="effectiveDate" p:required="true" p:noLookup="true" />
+                <bean parent="MaintainableFieldDefinition" p:name="groupKeyCode" p:required="true"/>
+                <!-- bean parent="MaintainableFieldDefinition" p:name="groupKeyCode" 
+                	p:required="true"
+            	    p:refreshWhenChangedPropertyNames="#dp.effectiveDate">
+                	<property name="control">
+                    	<bean parent="SelectControlDefinition" />
+               		</property>
+               		<property name="optionsFinder">
+                    	<bean class="org.kuali.kpme.core.util.GroupKeyValueFinder" />
+               		</property>
+           		</bean-->
+            </list>
+        </property>
+    </bean>
+
+	<bean id="MaintDoc-HiddenFields-parentBean"
+          abstract="true" parent="MaintainableSectionDefinition"  >
+        <property name="hidden" value="true" />
+        <property name="title" value="Hidden Fields" />
+        <property name="maintainableItems">
+            <list>
+                <bean parent="MaintainableFieldDefinition" p:name="relativeEffectiveDate" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- maintenance view to hide cancel button upon submit -->
+    <bean id="KPMEUif-MaintenanceView" parent="Uif-MaintenanceView">
+		<property name="presentationControllerClass" value="org.kuali.rice.krad.kpme.controller.KPMEMaintenanceViewPresentationControllerBase" />
+		<property name="formClass" value="org.kuali.rice.krad.kpme.controller.KPMEMaintenanceDocumentForm" />
+		<property name="dialogs">
+			<list>
+				<bean id="KPMEDisapprovalNote-Dialog" parent="KPMEDisapprovalNote-Dialog-parentBean" />
+			</list>
+		</property>
+		<property name="additionalScriptFiles">
+	     	<list merge="true">
+	        	<value>js/maintview.js</value>
+	      	</list>
+	    </property>
+	    <property name="page">
+            <bean parent="KPMEUif-MaintenancePage"/>
+        </property>
+	</bean>
+
+<!-- The readOnly property for the dailog below has been expliclitly set to false to overcome a KRAD feature  -->
+<!-- where the dialog seems to inherit the user's edit permission for the underlying maintenance document. -->
+<!-- This would make the dialog un-editable for users that can disapprove the doc but could not edit it.  -->
+	<bean id="KPMEDisapprovalNote-Dialog-parentBean" parent="Uif-OK-Cancel-DialogGroup" p:readOnly="false">
+		<property name="headerText" value="Disapproval Reason" />
+		<property name="promptText" value="Please enter a reason for the disapproval, or cancel to return." />
+		<property name="displayExplanation" value="true" />
+		<property name="explanation">
+      		<bean parent="Uif-DialogExplanation" p:propertyName="disapprovalNoteText" />
+    	</property>
+	</bean>
+	
+	
+	<bean id="KPMEEffectiveDateBO-MaintenanceView" abstract="true" parent="KPMEEffectiveDateBO-MaintenanceView-parentBean"/>
+  	<bean id="KPMEEffectiveDateBO-MaintenanceView-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
+  		<property name="dialogs">
+    		<list  merge="true">
+        		<bean id="KPMEEffectiveDateWarning-Dialog" parent="KPMEEffectiveDateWarning-Dialog-parentBean"/>
+    		</list>
+  		</property>
+  	</bean>
+
+    <bean id = "KPMEGroupKeyed-MaintenanceGridSection-GroupKey" parent="KPMEHrGroupKeyInputField" p:propertyName="groupKeyCode" p:required="true" p:refreshWhenChangedPropertyNames="#dp.effectiveDate">
+        <property name="optionsFinder">
+            <bean class="org.kuali.kpme.core.util.GroupKeyValueFinder" />
+        </property>
+    </bean>
+
+  	<!-- KPME-3403 per Jerry Neal's suggestion -->
+  	<bean id="KPMEWildcardGroupKeyed-MaintenanceGridSection" parent="Uif-MaintenanceGridSection">
+    	<property name="items">
+        	<list merge="true">
+        		<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
+
+                <bean parent = "KPMEGroupKeyed-MaintenanceGridSection-GroupKey">
+                    <property name="quickfinder">
+                        <bean parent="Uif-QuickFinderByScript"
+                        	p:viewName="quickFinderView"  
+                        	p:dataObjectClassName="org.kuali.kpme.core.groupkey.HrGroupKeyBo" 
+                        	p:fieldConversions="groupKeyCode:groupKeyCode" 
+                        	p:lookupParameters="relativeEffectiveDate:effectiveDate"/>
+                    </property>
+                </bean>
+       		</list>
+    	</property>
+    </bean>
+
+    <!-- KPME-3403 per Jerry Neal's suggestion -->
+    <bean id="KPMEGroupKeyed-MaintenanceGridSection" parent="Uif-MaintenanceGridSection">
+        <property name="items">
+            <list merge="true">
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
+
+                <bean parent = "KPMEGroupKeyed-MaintenanceGridSection-GroupKey">
+                    <property name="control">
+                        <bean parent="Uif-DropdownControl" p:required="true"/>
+                    </property>
+                </bean>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id = "KPMEHrGroupKeyInputField" parent = "Uif-InputField" class = "org.kuali.kpme.core.util.GroupKeyInputField"/>
+
+  	<bean id="KPMEEffectiveDateWarning-Dialog-parentBean" parent="Uif-Yes-No-DialogGroup">
+  		<property name="headerText" value="Effective date warning!"/>
+		<property name="promptText" value="A record for this object exists with a later effective date, if you continue with submission, this record will be overwritten when the future effective date takes effect.  Are you sure you want to continue?"/>
+	</bean>
+
+    <!--maintenance page with KPME document footer-->
+    <bean id="KPMEUif-MaintenancePage" abstract="true" parent="Uif-MaintenancePage">
+        <property name="footer">
+            <bean parent="KPMEUif-DocumentPageFooter"/>
+        </property>
+    </bean>
+
+    <!--maintenance page footer with close button added-->
+    <bean id="KPMEUif-DocumentPageFooter" parent="Uif-DocumentPageFooter">
+        <property name="items">
+            <list>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="performRouteReport" p:actionLabel="route report"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_PERFORM_ROUTE_REPORT]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="sendAdHocRequests" p:actionLabel="send adhoc"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_SEND_ADHOC_REQUESTS]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="route" p:actionLabel="submit" p:performClientSideValidation="true"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_ROUTE]}"/>
+                <bean parent="Uif-SaveAction" p:ajaxSubmit="false" p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_SAVE]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="reload" p:actionLabel="reload"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_RELOAD]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="blanketApprove" p:actionLabel="blanket approve" p:performClientSideValidation="true"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_BLANKET_APPROVE]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="approve" p:actionLabel="approve"  p:performClientSideValidation="true"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_APPROVE]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="disapprove" p:actionLabel="disapprove"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_DISAPPROVE]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="fyi" p:actionLabel="fyi"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_FYI]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="acknowledge" p:actionLabel="acknowledge"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_ACKNOWLEDGE]}"/>
+                <bean parent="Uif-CancelAction" p:ajaxSubmit="false" p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_CANCEL]}"/>
+                <bean parent="Uif-ActionLink" p:ajaxSubmit="false" p:methodToCall="copy" p:actionLabel="copy"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_COPY]}"/>
+                <bean parent="Uif-PrimaryActionButton" p:ajaxSubmit="false" p:methodToCall="close" p:actionLabel="close"
+                      p:render="@{#actionFlags[#Constants.KUALI_ACTION_CAN_CLOSE]}"/>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="KPMEUif-DocumentNotesSection" parent="Uif-DocumentNotesSection"
+          p:layoutManager.suppressLineWrapping="true">
+        <property name="layoutManager.renderSequenceField" value="false"/>
+        <property name="items">
+            <list>
+                <bean parent="Uif-VerticalFieldGroup" p:label="Principal Name">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-DataField" p:propertyName="authorUniversal.principalName" p:readOnly="true" p:fieldLabel.render="false"/>
+                            <bean parent="Uif-DataField" p:propertyName="notePostedTimestamp" p:readOnly="true" p:fieldLabel.render="false"/>
+                        </list>
+                    </property>
+                </bean>
+                <bean parent="Uif-InputField" p:propertyName="noteTopicText" p:render="@{#DocumentEntry.displayTopicFieldInNotes}"/>
+                <bean parent="Uif-InputField" p:propertyName="noteText" p:required="true" p:readOnly="@{#line.noteText != ''}"/>
+                <bean parent="Uif-VerticalFieldGroup" p:label="Attached File" p:render="@{#DocumentEntry.allowsNoteAttachments}">
+                    <property name="items">
+                        <list>
+                            <bean parent="Uif-InputField" p:propertyName="attachmentFile"
+                                  p:bindingInfo.bindingPath="attachmentFile" p:fieldLabel.render="false">
+                                <property name="control">
+                                    <bean parent="Uif-FileControl" p:size="15"/>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-PrimaryActionButton-Small" p:methodToCall="cancelAttachment"
+                                  p:actionLabel="cancel" p:title="Cancel Attachment"/>
+                        </list>
+                    </property>
+                    <property name="propertyReplacers">
+                        <list>
+                            <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="items"
+                                  p:condition="@{!#isAddLine and #line.attachment != null and #line.attachment.complete}">
+                                <property name="replacement">
+                                    <list>
+                                        <bean parent="Uif-PrimaryActionButton-Small" p:methodToCall="downloadAttachment"
+                                              p:ajaxSubmit="false"
+                                              p:actionLabel="download attachment" p:title="download attachment"
+                                              p:disableBlocking="true"
+                                              p:onClickScript="writeHiddenToForm(&quot;ajaxReturnType&quot;, &quot;update-none&quot;);">
+                                            <property name="actionParameters">
+                                                <map>
+                                                    <entry key="selectedLineIndex" value="@{#index}"/>
+                                                </map>
+                                            </property>
+                                        </bean>
+
+                                        <bean parent="Uif-Message" p:messageText="@{#line.attachment?.attachmentFileName}"/>
+                                        <bean parent="Uif-Message"
+                                              p:messageText="(@{#line.attachment?.attachmentFileSizeWithUnits}, @{#line.attachment?.attachmentMimeTypeCode})"/>
+
+                                    </list>
+                                </property>
+                            </bean>
+                            <bean parent="Uif-ConditionalBeanPropertyReplacer" p:propertyName="items"
+                                  p:condition="@{!#isAddLine and (#line.attachment == null or !#line.attachment.complete)}">
+                                <property name="replacement">
+                                    <list>
+                                        <bean parent="Uif-SpaceField"/>
+                                    </list>
+                                </property>
+                            </bean>
+                        </list>
+                    </property>
+                </bean>
+                <!-- TODO: field needs translation to options label when read-only -->
+                <bean parent="Uif-InputField" p:propertyName="attachment.attachmentTypeCode"
+                      p:render="@{#DocumentEntry.allowsNoteAttachments and #DocumentEntry.attachmentTypesValuesFinderClass != null}"/>
+                <bean parent="Uif-InputField" p:propertyName="adHocRouteRecipient.id" p:readOnly="@{!#isAddLine}"
+                      p:render="@{#DocumentEntry.allowsNoteFYI and #actionFlags[#Constants.KUALI_ACTION_CAN_SEND_NOTE_FYI]}"/>
+            </list>
+        </property>
+    </bean>
+    
+    <!-- Group key add/delete/list section that can be plugged into a multi-group keyed BO's maintainenance screen -->
+    <bean id="KPMEKeyedSetBO-EffectiveKeyListSection" parent="Uif-Disclosure-TableCollectionSection">
+        <property name="headerText" value="List of Group Keys"/>
+        <property name="propertyName" value="effectiveKeyList"/>
+        <property name="layoutManager.richTable.render" value="false"/>
+        <property name="showInactiveLines" value = "true"/>
+        <property name="renderInactiveToggleButton" value="false"/>
+        <property name="lineActions">
+        	<list>
+	    		<bean parent="Uif-DeleteLineAction"/>
+           	</list>
+      	</property>
+        <property name="addLineActions">
+            <list>
+                <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="addLine" p:actionLabel="add"/>
+            </list>
+        </property>
+        <property name="items">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="groupKeyCode" p:refreshWhenChangedPropertyNames="#dp.effectiveDate" p:readOnly="@{!#isAddLine}">
+                	<property name="control">
+                    	<bean parent="Uif-DropdownControl" />
+               		</property>
+               		<property name="optionsFinder">
+                    	<bean class="org.kuali.kpme.core.util.GroupKeyValueFinder" />
+               		</property>
+           		</bean>
+            </list>
+        </property>
+    </bean>
+
+
+    <bean id="KPMEKeyedSetBo-InquiryViewSection" parent="Uif-Disclosure-TableCollectionSection" abstract="true">
+        <property name="headerText" value="Group Keys"/>
+        <property name="propertyName" value="effectiveKeyList"/>
+        <property name="layoutManager.richTable.render" value="false"/>
+        <property name="header"> <!-- Without this, active/inactive button shows up -->
+            <bean parent="Uif-SectionHeader" />
+        </property>
+        <property name="items">
+            <list>
+                <bean parent="Uif-InputField" p:propertyName="groupKeyCode"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="KPMEUif-TimePickerTextControl" parent="KPMEUif-TimePickerTextControl-parentBean" />
+	<bean id="KPMEUif-TimePickerTextControl-parentBean" abstract="true" class="org.kuali.kpme.core.web.uif.control.TimePickerTextControl" parent="Uif-TextControl">
+		<property name="size" value="10" />
+		<property name="watermarkText" value="8:00 AM" />
+		
+    	<property name="template" value="/WEB-INF/ftl/components/control/KhrTimePickerTextControl.ftl" />
+    	<property name="templateName" value="kpme_uif_timePickerTextControl" />
+    	<property name="currentTimeButtonEnabled" value="true" />
+    	<property name="timePickerWidget">
+        	<bean parent="KPMEUif-TimePickerWidget" />
+    	</property>
+    	<property name="cssClasses">
+        	<list merge="true">
+            	<value>
+                	KpmeUif-timePickerTextControl
+            	</value>
+        	</list>
+    	</property>
+    	
+	</bean>
+    
+    <bean id="KPMEUif-TimePickerWidget" parent="KPMEUif-TimePickerWidget-parentBean" />
+	<bean id="KPMEUif-TimePickerWidget-parentBean" abstract="true" class="org.kuali.kpme.core.web.uif.widget.TimePickerWidget" parent="Uif-WidgetBase">
+    	<property name="templateOptions">
+        	<map merge="true">
+            	<entry key="step" value="6"/>
+             	<entry key="timeFormat" value="h:i A"/>
+        	</map>
+    	</property>
+	</bean>
+
+</beans>

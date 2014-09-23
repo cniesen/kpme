@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet id="1" author="schoo" context="kpme-client-bootstrap">
+        <createTable tableName="tk_remote_swipe_device_t">
+            <column name="IP_ADDRESS" type="VARCHAR(20)" defaultValue="">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEVICE_NM" type="VARCHAR(100)" defaultValue="">
+                <constraints nullable="false" />
+            </column>
+            <column name="PRINCIPAL_ID" type="VARCHAR(40)" defaultValue="">
+                <constraints nullable="false" />
+            </column>
+            <column name="LAST_COMMUNICATE_TIME" type="VARCHAR(50)" defaultValue="">
+                <constraints nullable="true" />
+            </column>
+            <column name="active" type="VARCHAR(50)" defaultValue="N">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <modifySql dbms="mysql">
+            <append value=" ENGINE INNODB" />
+        </modifySql>
+    </changeSet>
+</databaseChangeLog>

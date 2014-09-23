@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8'?> 
+<chapter xml:id="loggingIn" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns="http://docbook.org/ns/docbook" version="5.0">
+    <title>Logging In</title>
+    <para>To access the system, you will log in via a central portal, with your username and passphrase.</para>
+    <para>In KPME you are assigned a user role that determines which system tabs you will see after you 
+        log in.</para>
+    <para>The illustration below demonstrates all of the navigational tabs that are available in the system. 
+        An Employee will see tabs, depending on their assignment, to clock in or to add work hours, or to 
+        verify benefit leave hours. An Approver will see a tab that allows them to approve timesheets. 
+        An Administrator will see tabs related to department or system administrative functions.</para>
+    <section>
+        <title>KPME User Roles</title>
+        <para>Below is a description of each User Role and the tabs that are visible once that user logs 
+            into the system.</para>
+        <para><emphasis role="bold">Employee</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Clock</emphasis>: Clock-Entry employees use this tab to
+                    clock in and out. </para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: All employees (with a valid Time
+                    Assignment) can see this tab. Clock entry employees use this tab to review their
+                    daily, weekly or total hours for the pay period and to add benefit leave time
+                    blocks. Manual Entry employees use this tab to add all of their work hours and
+                    benefit leave time blocks. </para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: Employees can use this tab to
+                    view an employee’s leave balances, plan and request leave. Exempt employees will
+                    use this tab to report and submit leave usage. </para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for each of the employee’s job records. </para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system. </para>
+            </listitem>            
+        </itemizedlist>
+        <para><emphasis role="bold">View-Only</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: View-Only users use this tab to
+                    view timesheets but do not have any editing capabilities.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: View-Only users use this tab
+                    to view leave calendars but do not have any editing capabilities.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Department Admin</emphasis>: View-Only users can view
+                    only global, location, or departmental rules depending on their level of
+                    access.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for the selected employee.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system. </para>
+            </listitem>            
+        </itemizedlist>
+        <para><emphasis role="bold">Approver</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Clock</emphasis>: Approvers can use this tab to clock an
+                    employee out if they missed their last clock out.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: Approvers can use this tab to
+                    enter time block adjustments to an employee’s timesheet.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: Approvers and administrators
+                    can use this tab to approve an employee’s leave calendar usage and view leave
+                    balances.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Approval</emphasis>: Approvers use this tab to
+                    review and approve all timesheets for their employees.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Approval</emphasis>: Approvers use this tab to
+                    review and approve all leave calendars for their employees and also access leave
+                    requests waiting for their approval.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Department Admin</emphasis>: Approvers are only allowed
+                    to “view” the rules or maintenance pages that impact their department.</para>
+            </listitem>       
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for each of the employee’s job
+                    records.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system.</para>
+            </listitem>                               
+        </itemizedlist>
+        <para><emphasis role="bold">Reviewer</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Clock</emphasis>: Reviewers can use this tab to clock an
+                    employee out if they missed their last clock out.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: Reviewers can use this tab to
+                    enter time block adjustments to an employee’s timesheet.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: Reviewers can use this tab to
+                    verify an employee’s leave balances and ensure usage is correct.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for each of the employee’s job
+                    records.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system. </para>
+            </listitem>            
+        </itemizedlist>
+        <para><emphasis role="bold">Department Administrator</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Clock</emphasis>: Department Admins can use this tab to
+                    clock an employee out if they missed their last clock out.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: Department Admins can use this
+                    tab to enter time block adjustments to an employee’s timesheet.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: Department Admins can use
+                    this tab to verify an employee’s leave balances and ensure usage is
+                    correct.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Department Admin</emphasis>: Department Admins can
+                    access departmental maintenance and rules pages so they can define attributes
+                    associated with their departments, work areas, and employees.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for each of the employee’s job records. </para>
+            </listitem>            
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system.</para>
+            </listitem>            
+        </itemizedlist>
+        <para><emphasis role="bold">System Administrator</emphasis> tabs include: </para>
+        <itemizedlist>
+            <listitem>
+                <para><emphasis role="bold">Clock</emphasis>: Administrators can use this tab to
+                    clock an employee out if they missed their last clock out.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Time Detail</emphasis>: Administrators can use this tab
+                    to enter time block adjustments to an employee’s timesheet.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Leave Calendar</emphasis>: Administrators can use this
+                    tab to verify an employee’s leave balances and ensure usage is correct.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Department Admin</emphasis>: Administrators can access
+                    all the system maintenance and rules pages to define attributes associated with
+                    employees, work areas, departments and system-level settings.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Batch Job</emphasis>: Administrators use this tab to run
+                    various batch jobs.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Person Info</emphasis>: Available to all users. Displays
+                    job, assignment and role information for each of the employee’s job
+                    records.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">Help</emphasis>: Displays information to help employees,
+                    approvers and reviewers use the system.</para>
+            </listitem>
+            <listitem>
+                <para><emphasis role="bold">KPME Home</emphasis>: System administrations can use the
+                    Rice Portal’s Maintenance tab to access all the system maintenance and rules
+                    pages.</para>
+            </listitem>            
+        </itemizedlist>
+        <para>If you have more than one role in KPME, you will see all the appropriate tabs for each role.</para>
+    </section>
+</chapter>

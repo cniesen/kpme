@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:dd="http://rice.kuali.org/dd"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+                           http://rice.kuali.org/dd
+                           http://rice.kuali.org/dd/dd.xsd">
+
+  <bean id="CalendarMaintenanceDocument" parent="CalendarMaintenanceDocument-parentBean"/>
+
+  <bean id="CalendarMaintenanceDocument-parentBean" abstract="true" parent="uifMaintenanceDocumentEntry"
+  		p:dataObjectClass="org.kuali.kpme.core.calendar.CalendarBo"
+  		p:businessRulesClass="org.kuali.kpme.core.calendar.validation.CalendarRule"
+   		p:maintainableClass="org.kuali.kpme.core.calendar.web.CalendarMaintainableImpl"
+   		p:documentAuthorizerClass="org.kuali.kpme.core.calendar.authorization.CalendarAuthorizer">
+    <property name="documentTypeName" value="PayCalendarDocumentType"/>
+  </bean>
+
+  <!-- Maintenance Section Definitions -->
+
+  <bean id="CalendarMaintenanceDocument-CalendarMaintenance" parent="CalendarMaintenanceDocument-CalendarMaintenance-parentBean"/>
+  <bean id="CalendarMaintenanceDocument-CalendarMaintenance-parentBean" abstract="true" parent="KPMEUif-MaintenanceView">
+      <property name="headerText" value="Calendar Maintenance"/>
+      <property name="dataObjectClassName" value="org.kuali.kpme.core.calendar.CalendarBo"/>
+      <property name="title" value="Calendar Maintenance"/>
+      <property name="items">
+        <list>
+            <bean parent="Uif-MaintenanceGridSection">
+                <property name="items">
+                    <list>
+
+                        <bean parent="Uif-InputField" p:propertyName="calendarName" p:required="true"/>
+                        <bean parent="Uif-InputField" p:propertyName="calendarDescriptions" p:required="true"/>
+                        <bean parent="Uif-InputField" p:propertyName="calendarTypes" p:required="true"/>
+                        <bean parent="Uif-InputField" p:propertyName="flsaBeginDay" />
+                        <bean parent="Uif-InputField" p:propertyName="flsaBeginTime">
+
+                        </bean>
+                    </list>
+                 </property>
+             </bean>
+        </list>
+      </property>
+    </bean>
+
+</beans>

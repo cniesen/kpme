@@ -1,0 +1,546 @@
+/**
+ * Copyright 2004-2014 The Kuali Foundation
+ *
+ * Licensed under the Educational Community License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.opensource.org/licenses/ecl2.php
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.kuali.kpme.tklm.time.approval.service;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.Hours;
+import org.joda.time.Interval;
+import org.joda.time.LocalDate;
+import org.json.simple.JSONValue;
+import org.kuali.kpme.core.api.accrualcategory.AccrualCategory;
+import org.kuali.kpme.core.api.accrualcategory.rule.AccrualCategoryRuleContract;
+import org.kuali.kpme.core.api.assignment.Assignment;
+import org.kuali.kpme.core.api.calendar.Calendar;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
+import org.kuali.kpme.core.calendar.web.CalendarDay;
+import org.kuali.kpme.core.calendar.web.CalendarWeek;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrConstants;
+import org.kuali.kpme.core.util.HrContext;
+import org.kuali.kpme.core.util.TKUtils;
+import org.kuali.kpme.tklm.api.common.TkConstants;
+import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
+import org.kuali.kpme.tklm.api.leave.block.LeaveBlockContract;
+import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
+import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetail;
+import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryContract;
+import org.kuali.kpme.tklm.leave.block.LeaveBlockAggregate;
+import org.kuali.kpme.tklm.leave.calendar.validation.LeaveCalendarValidationUtil;
+import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
+import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
+import org.kuali.kpme.tklm.time.calendar.TkCalendar;
+import org.kuali.kpme.tklm.time.calendar.TkCalendarDay;
+import org.kuali.kpme.tklm.time.flsa.FlsaDay;
+import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timeblock.web.TimeBlockRenderer;
+import org.kuali.kpme.tklm.time.timehourdetail.TimeHourDetailRenderer;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.kew.api.KewApiServiceLocator;
+import org.kuali.rice.kew.api.note.Note;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
+import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+public class TimeApproveServiceImpl implements TimeApproveService {
+
+	@Override
+	public List<ApprovalTimeSummaryRow> getApprovalSummaryRows(String calGroup, List<String> principalIds, List<String> payCalendarLabels, CalendarEntry payCalendarEntry, String docIdSearchTerm) {
+		DateTime payBeginDate = payCalendarEntry.getBeginPeriodFullDateTime();
+		DateTime payEndDate = payCalendarEntry.getEndPeriodFullDateTime();
+		
+		List<Map<String, Object>> timeBlockJsonMap = new ArrayList<Map<String,Object>>();
+		List<ApprovalTimeSummaryRow> rows = new LinkedList<ApprovalTimeSummaryRow>();
+		Map<String, TimesheetDocumentHeader> principalDocumentHeader = getPrincipalDocumentHeader(
+                principalIds, payBeginDate, payEndDate, docIdSearchTerm);
+
+		Calendar payCalendar = HrServiceLocator.getCalendarService()
+				.getCalendar(payCalendarEntry.getHrCalendarId());
+		DateTimeZone dateTimeZone = HrServiceLocator.getTimezoneService()
+				.getUserTimezoneWithFallback();
+		List<Interval> dayIntervals = TKUtils
+				.getDaySpanForCalendarEntry(payCalendarEntry);
+
+		
+		String color = null;
+		
+		Map<String, String> userColorMap = new HashMap<String, String>();
+		Set<String> randomColors = new HashSet<String>();
+		
+		String  approverId = HrContext.getPrincipalId();
+		String timeZoneString = HrServiceLocator.getTimezoneService().getApproverTimezone(approverId);
+		DateTimeZone approverTimeZone = StringUtils.isNotBlank(timeZoneString) ? DateTimeZone.forID(timeZoneString) : null;
+		
+		for (String principalId : principalIds) {
+			TimesheetDocumentHeader tdh = new TimesheetDocumentHeader();
+			String documentId = "";
+			if (principalDocumentHeader.containsKey(principalId)) {
+				tdh = principalDocumentHeader.get(principalId);
+				documentId = principalDocumentHeader.get(principalId).getDocumentId();
+			} else if(StringUtils.isNotBlank(docIdSearchTerm)){
+				continue;	// if there's a search term for document id, only build the rows for principalIds from principalDocumentHeader
+			}
+			List<TimeBlock> timeBlocks = new ArrayList<TimeBlock>();
+			List<LeaveBlock> leaveBlocks = new ArrayList<LeaveBlock>();
+			List<Note> notes = new ArrayList<Note>();
+			List<String> warnings = new ArrayList<String>();
+			List<String> clockLogWarnings = new ArrayList<String>();
+
+			ApprovalTimeSummaryRow approvalSummaryRow = new ApprovalTimeSummaryRow();
+
+			if (principalDocumentHeader.containsKey(principalId)) {
+				approvalSummaryRow
+						.setApprovalStatus(HrConstants.DOC_ROUTE_STATUS.get(tdh
+								.getDocumentStatus()));
+			}
+			TimesheetDocument td = null;
+			if (StringUtils.isNotBlank(documentId)) {
+                 td = TkServiceLocator.getTimesheetService().getTimesheetDocument(documentId);
+                timeBlocks = td.getTimeBlocks();
+                clockLogWarnings =  TkServiceLocator.getClockLogService().getUnapprovedIPWarning(timeBlocks);
+                //timeBlocks = TkServiceLocator.getTimeBlockService()
+                //              .getTimeBlocks(documentId);
+                List<String> assignKeys = new ArrayList<String>();
+                for(Assignment a : td.getAllAssignments()) {
+                	assignKeys.add(a.getAssignmentKey());
+                }
+                leaveBlocks.addAll(LmServiceLocator.getLeaveBlockService().getLeaveBlocksForTimeCalendar(principalId,
+                        payBeginDate.toLocalDate(), payEndDate.toLocalDate(), assignKeys));
+                notes = getNotesForDocument(documentId);
+                Map<String, List<LocalDate>> earnCodeMap = new HashMap<String, List<LocalDate>>();
+                for(TimeBlock tb : td.getTimeBlocks()) {
+                	if(!earnCodeMap.containsKey(tb.getEarnCode())) {
+                		List<LocalDate> lst = new ArrayList<LocalDate>();
+                		lst.add(tb.getBeginDateTime().toLocalDate());
+                		earnCodeMap.put(tb.getEarnCode(), lst);
+                	}
+                	else
+                		earnCodeMap.get(tb.getEarnCode()).add(tb.getBeginDateTime().toLocalDate());
+                }
+                warnings = HrServiceLocator.getEarnCodeGroupService().getWarningTextFromEarnCodeGroups(earnCodeMap);
+                
+                // Get Timesheet blocks
+                
+    	       
+                List<Interval> intervals = TKUtils.getFullWeekDaySpanForCalendarEntry(payCalendarEntry);
+                TkTimeBlockAggregate tbAggregate = buildAndMergeAggregates(timeBlocks, leaveBlocks, payCalendarEntry, payCalendar, dayIntervals);
+//                TkTimeBlockAggregate tbAggregate = new TkTimeBlockAggregate(timeBlocks, payCalendarEntry, payCalendar, true,intervals);
+                // use both time aggregate to populate the calendar
+                TkCalendar cal = TkCalendar.getCalendar(tbAggregate);
+                
+                
+                for (CalendarWeek week : cal.getWeeks()) {
+                	for(CalendarDay day : week.getDays()) {
+                		TkCalendarDay tkDay = (TkCalendarDay) day;
+                		for (TimeBlockRenderer renderer : tkDay.getBlockRenderers()) {
+                			Map<String, Object> timeBlockMap = new HashMap<String, Object>();
+                			
+                			// set title..
+                			StringBuffer title = new StringBuffer();
+                			if(!renderer.getEarnCodeType().equalsIgnoreCase(HrConstants.EARN_CODE_AMOUNT)) {
+	                			if(renderer.getDetailRenderers() != null && !renderer.getDetailRenderers().isEmpty()) {
+	                				for(TimeHourDetailRenderer thdr : renderer.getDetailRenderers()) {
+	                					title.append("\n");
+	                					title = new StringBuffer(thdr.getTitle());
+	                					title.append(" - "+thdr.getHours());
+	                				}
+	                			}
+                			}
+                			
+                			timeBlockMap.put("start", tkDay.getDateString());
+                			StringBuffer titleString = new StringBuffer();
+                			titleString.append(renderer.getTitle());
+                			if(renderer.getTimeRange() != null && !renderer.getTimeRange().isEmpty()) {
+                				titleString.append("\n" +renderer.getTimeRange());
+                			}
+                			titleString.append("\n"+title.toString());
+                			timeBlockMap.put("title",  titleString.toString());
+                			timeBlockMap.put("id", tkDay.getDayNumberString());
+                			if(!userColorMap.containsKey(principalId)) {
+		    	        		color = TKUtils.getRandomColor(randomColors);
+		    	        		randomColors.add(color);
+		    	        		userColorMap.put(principalId, color);
+		    	        	}
+		    	        	color = userColorMap.get(principalId);
+		    	        	timeBlockMap.put("color", userColorMap.get(principalId));
+		    	        	timeBlockMap.put("className", "event-approval");
+                			timeBlockJsonMap.add(timeBlockMap);
+                		}
+                	}
+                }
+                
+				warnings = HrServiceLocator.getEarnCodeGroupService().getWarningTextFromEarnCodeGroups(td.getEarnCodeMap());
+			}
+			
+			Map<String, Set<String>> transactionalWarnings = LeaveCalendarValidationUtil.validatePendingTransactions(principalId, payCalendarEntry.getBeginPeriodFullDateTime().toLocalDate(), payCalendarEntry.getEndPeriodFullDateTime().toLocalDate());
+			
+			warnings.addAll(transactionalWarnings.get("infoMessages"));
+			warnings.addAll(transactionalWarnings.get("warningMessages"));
+			warnings.addAll(transactionalWarnings.get("actionMessages"));
+			
+			Map<String, Set<String>> eligibleTransfers = findWarnings(principalId, payCalendarEntry);
+			warnings.addAll(eligibleTransfers.get("warningMessages"));
+			
+			warnings.addAll(clockLogWarnings);			
+			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
+					principalId, payEndDate, payCalendarLabels,
+					timeBlocks, leaveBlocks, null, payCalendarEntry, payCalendar,
+					dateTimeZone, dayIntervals);
+			
+			Map<String, BigDecimal> hoursToFlsaPayLabelMap = getHoursToFlsaWeekMap(
+					principalId, payEndDate, payCalendarLabels,
+					timeBlocks, leaveBlocks, null, payCalendarEntry, payCalendar,
+					dateTimeZone, dayIntervals);
+
+            EntityNamePrincipalName name = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+            approvalSummaryRow.setName(name != null
+                                         && name.getDefaultName() != null
+                                         && name.getDefaultName().getCompositeName() != null ? name.getDefaultName().getCompositeName() : principalId);
+			approvalSummaryRow.setPrincipalId(principalId);
+			approvalSummaryRow.setColor(userColorMap.get(principalId));
+			approvalSummaryRow.setPayCalendarGroup(calGroup);
+			approvalSummaryRow.setDocumentId(documentId);
+
+            
+			approvalSummaryRow.setHoursToPayLabelMap(hoursToPayLabelMap);
+			approvalSummaryRow.setHoursToFlsaPayLabelMap(hoursToFlsaPayLabelMap);
+			approvalSummaryRow.setPeriodTotal(hoursToPayLabelMap
+					.get("Period Total"));
+			approvalSummaryRow.setLstTimeBlocks(timeBlocks);
+			approvalSummaryRow.setNotes(notes);
+			approvalSummaryRow.setWarnings(warnings);
+
+			// Compare last clock log versus now and if > threshold
+			// highlight entry
+			ClockLog lastClockLog = TkServiceLocator.getClockLogService()
+					.getLastClockLog(principalId);
+			if (isSynchronousUser(principalId)) {
+                approvalSummaryRow.setClockStatusMessage(createLabelForLastClockLog(lastClockLog, approverTimeZone));
+            }
+			if (lastClockLog != null
+					&& (StringUtils.equals(lastClockLog.getClockAction(),
+							TkConstants.CLOCK_IN) || StringUtils
+							.equals(lastClockLog.getClockAction(),
+									TkConstants.LUNCH_IN))) {
+				DateTime startTime = lastClockLog.getClockDateTime();
+				DateTime endTime = new DateTime();
+
+				Hours hour = Hours.hoursBetween(startTime, endTime);
+				if (hour != null) {
+					int elapsedHours = hour.getHours();
+					if (elapsedHours >= TkConstants.NUMBER_OF_HOURS_CLOCKED_IN_APPROVE_TAB_HIGHLIGHT && isSynchronousUser(principalId)) {
+						approvalSummaryRow.setClockedInOverThreshold(true);
+					}
+				}
+
+			}
+			//KPME-2563
+			try{
+				if(td != null) {
+					TimeSummaryContract ts = TkServiceLocator.getTimeSummaryService()
+                            .getTimeSummary(td.getPrincipalId(), td.getTimeBlocks(), td.getCalendarEntry(), td.getAssignmentMap());
+					approvalSummaryRow.setTimeSummary(ts);					
+				}				
+			} catch (Exception ex){
+				ex.printStackTrace();
+			}						
+			rows.add(approvalSummaryRow);
+		}
+		
+		String outputString = JSONValue.toJSONString(timeBlockJsonMap);
+		if(rows != null && !rows.isEmpty()) {
+			rows.get(0).setOutputString(outputString);
+		}
+		return rows;
+	}
+
+    private boolean isSynchronousUser(String principalId) {
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, LocalDate.now());
+        boolean isSynchronousUser = false;
+        if (CollectionUtils.isNotEmpty(assignments)) {
+            for (Assignment assignment : assignments) {
+            	if(assignment.getJob() != null) {
+		            TimeCollectionRule tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), LocalDate.now());
+		            isSynchronousUser |= (tcr == null || tcr.isClockUserFl());
+            	}
+            }
+        }
+        return isSynchronousUser;
+    }
+
+	private Map<String, Set<String>> findWarnings(String principalId, CalendarEntry calendarEntry) {
+		Map<String, Set<String>> allMessages = new HashMap<String,Set<String>>();
+		allMessages.put("warningMessages", new HashSet<String>());
+
+        Map<String, Set<LeaveBlock>> eligibilities = LmServiceLocator.getAccrualCategoryMaxBalanceService().getMaxBalanceViolations(calendarEntry, principalId);
+	
+		if (eligibilities != null) {
+			for (Entry<String,Set<LeaveBlock>> entry : eligibilities.entrySet()) {
+				for(LeaveBlockContract lb : entry.getValue()) {
+					AccrualCategoryRuleContract rule = lb.getAccrualCategoryRule();
+					if (rule != null) {
+						AccrualCategory accrualCategory = HrServiceLocator.getAccrualCategoryService().getAccrualCategory(rule.getLmAccrualCategoryId());
+						if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.TRANSFER)) {
+							//Todo: add link to balance transfer
+							allMessages.get("warningMessages").add("Accrual Category '" + accrualCategory.getAccrualCategory() + "' is over max balance.");   //warningMessages
+						} else if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.LOSE)) {
+							//Todo: compute and display amount of time lost.
+							allMessages.get("warningMessages").add("Accrual Category '" + accrualCategory.getAccrualCategory() + "' is over max balance.");      //warningMessages
+						} else if (rule.getActionAtMaxBalance().equals(HrConstants.ACTION_AT_MAX_BALANCE.PAYOUT)) {
+							//Todo: display payout details.
+							allMessages.get("warningMessages").add("Accrual Category '" + accrualCategory.getAccrualCategory() + "' is over max balance.");      //warningMessages            				  
+						}
+					}
+				}
+			}
+		}
+	      
+		return allMessages;
+	}
+
+	/**
+	 * Create label for the last clock log
+	 * 
+	 * @param cl
+	 * @return
+	 */
+	private String createLabelForLastClockLog(ClockLog cl, DateTimeZone approverTimeZone) {
+		if (cl == null) {
+			return "No previous clock information";
+		}
+		
+		String zoneString = "";
+		DateTime clockTimeWithZone = cl.getClockDateTime();
+		if(approverTimeZone != null) {
+			clockTimeWithZone = clockTimeWithZone.withZone(approverTimeZone);
+			zoneString = DateTime.now(approverTimeZone).toString("z");;
+		}
+		String dateTime = clockTimeWithZone.toString(TkConstants.DT_FULL_DATE_TIME_FORMAT);
+		dateTime += " " + zoneString;
+				
+		if (StringUtils.equals(cl.getClockAction(), TkConstants.CLOCK_IN)) {
+			return "Clocked in since: " + dateTime;
+		} else if (StringUtils.equals(cl.getClockAction(),
+				TkConstants.LUNCH_OUT)) {
+			return "At Lunch since: " + dateTime;
+		} else if (StringUtils
+				.equals(cl.getClockAction(), TkConstants.LUNCH_IN)) {
+			return "Returned from Lunch : " + dateTime;
+		} else if (StringUtils.equals(cl.getClockAction(),
+				TkConstants.CLOCK_OUT)) {
+			return "Clocked out since: " + dateTime;
+		} else {
+			return "No previous clock information";
+		}
+	}
+
+	/**
+	 * Aggregate TimeBlocks to hours per day and sum for week
+	 */
+	@Override
+	public Map<String, BigDecimal> getHoursToPayDayMap(String principalId,
+			DateTime payEndDate, List<String> payCalendarLabels,
+			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks, Long workArea,
+			CalendarEntry payCalendarEntry, Calendar payCalendar,
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
+		Map<String, BigDecimal> hoursToPayLabelMap = new LinkedHashMap<String, BigDecimal>();
+		List<BigDecimal> dayTotals = new ArrayList<BigDecimal>();
+
+        TkTimeBlockAggregate tkTimeBlockAggregate = buildAndMergeAggregates(lstTimeBlocks, leaveBlocks, payCalendarEntry, payCalendar, dayIntervals);
+
+		List<FlsaWeek> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone,0, false);
+		for (FlsaWeek week : flsaWeeks) {
+			for (FlsaDay day : week.getFlsaDays()) {
+				BigDecimal total = new BigDecimal(0.00);
+				for (TimeBlock tb : day.getAppliedTimeBlocks()) {
+                    for (TimeHourDetail thd : tb.getTimeHourDetails()) {
+                        if (workArea != null) {
+                            if (tb.getWorkArea().compareTo(workArea) == 0) {
+                                    total = total.add(thd.getHours(),
+                                            HrConstants.MATH_CONTEXT);
+                            } else {
+                                total = total.add(new BigDecimal("0"),
+                                        HrConstants.MATH_CONTEXT);
+                            }
+                        } else {
+                                total = total.add(thd.getHours(),
+                                    HrConstants.MATH_CONTEXT);
+                        }
+				    }
+				}
+				dayTotals.add(total);
+			}
+		}
+
+		int dayCount = 0;
+		BigDecimal weekTotal = new BigDecimal(0.00);
+		BigDecimal periodTotal = new BigDecimal(0.00);
+		for (String payCalendarLabel : payCalendarLabels) {
+			if (StringUtils.contains(payCalendarLabel, "Week")) {
+				hoursToPayLabelMap.put(payCalendarLabel, weekTotal);
+				weekTotal = new BigDecimal(0.00);
+			} else if (StringUtils.contains(payCalendarLabel, "Period Total")) {
+				hoursToPayLabelMap.put(payCalendarLabel, periodTotal);
+			} else {
+				if(dayCount < dayTotals.size()) {
+					hoursToPayLabelMap.put(payCalendarLabel,
+							dayTotals.get(dayCount));
+					weekTotal = weekTotal.add(dayTotals.get(dayCount),
+							HrConstants.MATH_CONTEXT);
+					periodTotal = periodTotal.add(dayTotals.get(dayCount));
+					dayCount++;
+				}
+
+			}
+
+		}
+		return hoursToPayLabelMap;
+	}
+	
+    private TkTimeBlockAggregate buildAndMergeAggregates(List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks,
+                                                         CalendarEntry calendarEntries, Calendar calendar, List<Interval> dayIntervals) {
+        TkTimeBlockAggregate tkTimeBlockAggregate = new TkTimeBlockAggregate(timeBlocks, calendarEntries, calendar, true, dayIntervals);
+        LeaveBlockAggregate leaveBlockAggregate = new LeaveBlockAggregate(leaveBlocks, calendarEntries);
+        return TkTimeBlockAggregate.combineTimeAndLeaveAggregates(tkTimeBlockAggregate, leaveBlockAggregate);
+    }
+
+	/**
+	 * Aggregate TimeBlocks to hours per day and sum for flsa week (including previous/next weeks)
+	 */
+	@Override
+	public Map<String, BigDecimal> getHoursToFlsaWeekMap(String principalId, 
+			DateTime payEndDate, List<String> payCalendarLabels, 
+			List<TimeBlock> lstTimeBlocks, List<LeaveBlock> leaveBlocks,
+            Long workArea, CalendarEntry payCalendarEntry, Calendar payCalendar,
+			DateTimeZone dateTimeZone, List<Interval> dayIntervals) {
+		
+		Map<String, BigDecimal> hoursToFlsaWeekMap = new LinkedHashMap<String, BigDecimal>();
+
+        TkTimeBlockAggregate tkTimeBlockAggregate = buildAndMergeAggregates(lstTimeBlocks, leaveBlocks, payCalendarEntry, payCalendar, dayIntervals);
+		List<List<FlsaWeek>> flsaWeeks = tkTimeBlockAggregate.getFlsaWeeks(dateTimeZone, principalId);
+		
+		int weekCount = 1;
+		for (List<FlsaWeek> flsaWeekParts : flsaWeeks) {
+			BigDecimal weekTotal = new BigDecimal(0.00);
+			for (FlsaWeek flsaWeekPart : flsaWeekParts) {
+				for (FlsaDay flsaDay : flsaWeekPart.getFlsaDays()) {
+					for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
+                        for (TimeHourDetail thd : timeBlock.getTimeHourDetails()) {
+                            if (workArea != null) {
+                                if (timeBlock.getWorkArea().compareTo(workArea) == 0) {
+                                        weekTotal = weekTotal.add(thd.getHours(), HrConstants.MATH_CONTEXT);
+                                } else {
+                                    weekTotal = weekTotal.add(new BigDecimal("0"), HrConstants.MATH_CONTEXT);
+                                }
+                            } else {
+                                    weekTotal = weekTotal.add(thd.getHours(),HrConstants.MATH_CONTEXT);
+                            }
+					    }
+                    }
+			    }
+			}
+			hoursToFlsaWeekMap.put("Week " + weekCount++, weekTotal);
+		}
+		
+		return hoursToFlsaWeekMap;
+	}
+
+    @Override
+	public List<Note> getNotesForDocument(String documentNumber) {
+        return KewApiServiceLocator.getNoteService().getNotes(documentNumber);
+	}
+
+    @Override
+    public List<String> getTimePrincipalIdsWithSearchCriteria(List<String> workAreaList, String calendarGroup, LocalDate effdt, LocalDate beginDate, LocalDate endDate) {
+    	if (CollectionUtils.isEmpty(workAreaList)) {
+    		return new ArrayList<String>();
+  	    }
+  		List<Assignment> assignmentList = HrServiceLocator.getAssignmentService().getAssignments(workAreaList, effdt, beginDate, endDate);
+  		List<Assignment> tempList = this.removeNoTimeAssignment(assignmentList);
+  		Set<String> pids = new HashSet<String>();
+        for(Assignment anAssignment : tempList) {
+        	if(anAssignment != null) {
+        		pids.add(anAssignment.getPrincipalId());
+         	}
+        }
+        List<String> ids = new ArrayList<String>();
+        ids.addAll(pids);
+  		
+  		if(CollectionUtils.isEmpty(ids)) {
+  			return new ArrayList<String>();
+  		}
+  		// use unique principalIds and selected calendarGroup to get unique ids from principalHRAttributes table
+  		List<String> idList = HrServiceLocator.getPrincipalHRAttributeService()
+  				.getActiveEmployeesIdForTimeCalendarAndIdList(calendarGroup, ids, endDate); 
+  		if(CollectionUtils.isEmpty(idList)) {
+  			return new ArrayList<String>();
+  		}
+  		return idList;
+    }
+    
+    private List<Assignment> removeNoTimeAssignment(List<Assignment> assignmentList) {
+    	List<Assignment> results = new ArrayList<Assignment>();
+		if(CollectionUtils.isNotEmpty(assignmentList)) {
+	     	for(Assignment anAssignment: assignmentList) {
+     			if(anAssignment != null 
+		    			&& anAssignment.getJob() != null 
+		    			&& anAssignment.getJob().getFlsaStatus() != null 
+		    			&& anAssignment.getJob().getFlsaStatus().equalsIgnoreCase(HrConstants.FLSA_STATUS_NON_EXEMPT)) {
+     				results.add(anAssignment);	
+     			}
+	        }
+	    }
+		return results;
+	}
+    
+	@Override
+	public Map<String, TimesheetDocumentHeader> getPrincipalDocumentHeader(
+			List<String> principalIds, DateTime payBeginDate, DateTime payEndDate, String docIdSearchTerm) {
+		Map<String, TimesheetDocumentHeader> principalDocumentHeader = new LinkedHashMap<String, TimesheetDocumentHeader>();
+		for (String principalId : principalIds) {
+			
+			TimesheetDocumentHeader tdh = TkServiceLocator.getTimesheetDocumentHeaderService().getDocumentHeader(principalId, payBeginDate, payEndDate.plusMillis(1));
+			if(tdh != null) {
+				if(StringUtils.isNotBlank(docIdSearchTerm)) {
+					if(tdh.getDocumentId().contains(docIdSearchTerm)) {
+						principalDocumentHeader.put(principalId, tdh);	
+					}
+				} else {
+					principalDocumentHeader.put(principalId, tdh);
+				}
+			}
+		}
+		return principalDocumentHeader;
+	}
+	
+}
