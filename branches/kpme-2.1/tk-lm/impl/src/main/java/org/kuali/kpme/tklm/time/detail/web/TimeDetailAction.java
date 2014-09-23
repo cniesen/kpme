@@ -915,7 +915,7 @@ public class TimeDetailAction extends TimesheetAction {
       return mapping.findForward("basic");
 	}
   
-	private void generateTimesheetChangedNotification(String principalId, String targetPrincipalId, String documentId) {
+	protected void generateTimesheetChangedNotification(String principalId, String targetPrincipalId, String documentId) {
 		if (!StringUtils.equals(principalId, targetPrincipalId)) {
 			EntityNamePrincipalName person = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
 			if (person != null && person.getDefaultName() != null) {
