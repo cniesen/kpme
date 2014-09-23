@@ -464,7 +464,7 @@
                 <property name="lineActions">
                     <list>
                         <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine"
-                              p:actionLabel="delete" p:render="@{ (  (#line.id eq null) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') and #line.job.canEditJob ) }"/>
+                              p:actionLabel="delete" p:render="@{ (  (#line.id eq null) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') and (#line.job eq null or #line.job.canEditJob) ) }"/>
                     </list>
                 </property>
 

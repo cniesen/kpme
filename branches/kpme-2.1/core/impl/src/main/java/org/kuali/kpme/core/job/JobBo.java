@@ -416,16 +416,5 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         return Job.Builder.create(bo).build();
     }
     
-    public boolean getCanEditJob() {
-    	// only department admin can edit the job
-    	if(StringUtils.isNotBlank(this.getDept()) && StringUtils.isNotBlank(this.getGroupKeyCode()) ) {
-			if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), 
-						KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())
-				|| HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), 
-						KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
-				return true;
-	    	}
-    	}
-    	return false;
-    }
+
 }

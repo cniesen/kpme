@@ -15,8 +15,14 @@
  */
 package org.kuali.kpme.core.tkmdocument.tkmjob;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.job.JobBo;
+import org.kuali.kpme.core.role.KPMERole;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,6 +68,19 @@ public class KhrEmployeeJob extends JobBo {
         {
             return " ";
         }
+    }
+
+    public boolean getCanEditJob() {
+        // only department admin can edit the job
+        if(StringUtils.isNotBlank(this.getDept()) && StringUtils.isNotBlank(this.getGroupKeyCode()) ) {
+            if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(),
+                    KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())
+                    || HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(),
+                    KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
