@@ -54,6 +54,17 @@ public interface AssignmentService {
      * @return
      */
 	public Map<String,String> getAssignmentDescriptions(Assignment assignment);
+
+
+    /**
+     * Get all active assignments for a work area
+     * @param workArea
+     * @param asOfDate
+     * @return
+     */
+    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'workArea=' + #p0")
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea);
+
 	/**
 	 * Get all active assignments for a work area
 	 * @param workArea
@@ -62,6 +73,8 @@ public interface AssignmentService {
 	 */
     @Cacheable(value= AssignmentContract.CACHE_NAME, key="'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
 	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
+    
+	public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate beginDate, LocalDate endDate);
 
     @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getPrincipalIdsInActiveAssigmentsForWorkArea}' + 'workArea=' + #p0 + '|' + 'asOfDate=' + #p1")
     public List<String> getPrincipalIdsInActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate);
@@ -174,7 +187,7 @@ public interface AssignmentService {
 	
 	public List<Assignment> getAssignments(List<String> workAreaList, LocalDate effdt, LocalDate startDate, LocalDate endDate);
 
-    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescription}' + 'principalId=' + #p0 + '|' + 'jobNumber=' + #p1 + '|' + 'workArea=' + #p2 + '|' + 'task=' + #p3 + '|' + 'asOfDate=' + #p4")
+    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescription}' + 'principalId=' + #p0 + '|' + 'groupKeyCode=' + #p1 + '|' + 'jobNumber=' + #p2 + '|' + 'workArea=' + #p3 + '|' + 'task=' + #p4 + '|' + 'asOfDate=' + #p5")
     public String getAssignmentDescription(String principalId, String groupKeyCode, Long jobNumber, Long workArea, Long task, LocalDate asOfDate);
 
 //    @Cacheable(value= AssignmentContract.CACHE_NAME, key="'{getAssignmentDescriptionForAssignment}' + 'assignmentId=' + #p0.getId() + '|' + 'asOfDate=' + #p4")

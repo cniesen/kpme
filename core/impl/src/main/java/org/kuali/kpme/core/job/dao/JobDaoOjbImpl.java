@@ -29,6 +29,7 @@ import org.apache.ojb.broker.query.Query;
 import org.apache.ojb.broker.query.QueryFactory;
 import org.apache.ojb.broker.query.ReportQueryByCriteria;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.util.OjbSubQueryUtil;
 import org.kuali.rice.core.framework.persistence.ojb.dao.PlatformAwareDaoBaseOjb;
@@ -347,5 +348,19 @@ public class JobDaoOjbImpl extends PlatformAwareDaoBaseOjb implements JobDao {
         
         return new ArrayList<String>(principalIdsInPosition);
     }
-    
+
+    @Override
+    public JobBo getNextInactiveJob(JobContract job) {
+        Criteria root = new Criteria();
+
+        root.addEqualTo("jobNumber",job.getJobNumber());
+        root.addEqualTo("principalId",job.getPrincipalId());
+        root.addGreaterThan("effectiveDate",job.getEffectiveLocalDate().toDate());
+        root.addEqualTo("active",false);
+
+        Query query = QueryFactory.newQuery(JobBo.class, root);
+
+        return (JobBo) this.getPersistenceBrokerTemplate().getObjectByQuery(query);
+    }
+
 }

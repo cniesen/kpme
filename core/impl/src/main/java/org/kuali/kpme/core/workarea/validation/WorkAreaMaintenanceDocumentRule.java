@@ -65,11 +65,11 @@ public class WorkAreaMaintenanceDocumentRule extends MaintenanceDocumentRuleBase
 	}
 
 	@Override
-	protected boolean processCustomAddCollectionLineBusinessRules(MaintenanceDocument document, String collectionName, Object line) {
+	public boolean processCustomAddCollectionLineBusinessRules(MaintenanceDocument document, String collectionName, PersistableBusinessObject line) {
 		boolean valid = true;
 
 		PersistableBusinessObject pboWorkArea = (WorkAreaBo)document.getDocumentDataObject();
-		Object pboTask = line;
+		PersistableBusinessObject pboTask = line;
 
 		if (pboWorkArea instanceof WorkAreaBo && pboTask instanceof TaskBo) {
 			WorkAreaBo workArea = (WorkAreaBo) pboWorkArea;

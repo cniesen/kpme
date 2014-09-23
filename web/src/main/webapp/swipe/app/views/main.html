@@ -1,0 +1,65 @@
+<!--
+
+    Copyright 2004-2014 The Kuali Foundation
+
+    Licensed under the Educational Community License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+    http://www.opensource.org/licenses/ecl2.php
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<div class="wrapper">
+	<div id="header">
+		<h1 class="headerImage"></h1>
+	</div>
+	<div class="jumbotron">
+		<div ng-switch="viewMode">
+			<h1 class="please-swipe" ng-switch-when="waiting">Please swipe
+				your card
+				<!--<span > <img
+						src="images/cardlogo.gif" style="width: 4em;" />
+ 						</span>-->
+				</h1><br />
+            <!--<button ng-switch-when="waiting" class="btn btn-lg"
+                    ng-click="swipeDev()">
+                Simulate card swipe
+            </button>-->
+			<div ng-switch-when="selectPosition">
+				<div ng-repeat="message in statusMessage">
+					<h1>{{message}}</h1>
+				</div>
+				<button class="btn btn-default btn-lg btn-block"
+					ng-repeat="(key,value) in positions" ng-click="selectPosition(key)">{{value}}</button>
+				<button class="btn btn-danger btn-lg multiple-position-proceed"
+					ng-click="selectPosition()">
+					Clock swipe will proceed without selecting a position in <strong>{{counter}}</strong>
+					seconds.
+				</button>
+			</div>
+			<div ng-switch-when="success">
+				<div ng-repeat="message in statusMessage">
+					<h1 ng-bind-html="message" />
+				</div>
+			</div>
+			<div ng-switch-when="error">
+				<div ng-repeat="message in statusMessage">
+					<h1 ng-bind-html="message" />
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--<div class="push"></div>-->
+</div>
+<div id="footer-copyright">
+    <h1 class="footerImage"></h1>
+    <!--<div<img src="images/logo-kuali.png" alt="Kuali Logo" class="uif-image uif-boxLayoutHorizontalItem">-->
+	<span id="copyright-text">Copyright 2005-2014 The Kuali Foundation. All rights reserved.<br />Portions
+	of Kuali Rice are copyrighted by other parties</span>
+</div>

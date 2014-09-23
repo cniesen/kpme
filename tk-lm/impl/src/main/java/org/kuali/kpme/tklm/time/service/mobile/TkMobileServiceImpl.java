@@ -32,6 +32,7 @@ import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.mobile.TkMobileService;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -84,8 +85,14 @@ public class TkMobileServiceImpl implements TkMobileService {
         
         // processClockLog is the correct method to use. It creates and persists a clock log and a time block if necessary.
         // buildClockLog just creates a clock log object.
-        TkServiceLocator.getClockLogService().processClockLog(principalId, td.getDocumentId(), new DateTime(), assignment, td.getCalendarEntry(), ipAddress,
-                LocalDate.now(), getCurrentClockAction(), true);
+        try {
+            TkServiceLocator.getClockLogService().processClockLog(principalId, td.getDocumentId(), new DateTime(), assignment, td.getCalendarEntry(), ipAddress,
+                    LocalDate.now(), getCurrentClockAction(), true);
+        }
+        catch (InvalidClockLogException e)
+        {
+            throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+        }
 
         // TODO: not sure what we want to return for the errorWarningMap
 

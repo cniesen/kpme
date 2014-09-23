@@ -46,54 +46,68 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		this.clockLocationDao = clockLocationDao;
 	}
 
-	public void processClockLocationRule(ClockLogBo clockLog, LocalDate asOfDate){
-		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(clockLog.getGroupKeyCode(), clockLog.getDept(),
-										clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), asOfDate);
-		if(lstClockLocationRules.isEmpty()){
-			return;
-		}
-		for(ClockLocationRule clockLocationRule : lstClockLocationRules){
-			List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
-			String ipAddressClock = clockLog.getIpAddress();
-			for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
-				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddressClock)){
-					clockLog.setUnapprovedIP(false);
-					return;
-				}
-			}
-		}
-		clockLog.setUnapprovedIP(true);
-		
-		GlobalVariables.getMessageMap().putWarning("property", "ipaddress.invalid.format", clockLog.getIpAddress());
 
+/*  public boolean ipViolatesClockLocationRules(String ipAddress, String groupKeyCode, String dept, Long workArea, String principalId, Long jobNum, LocalDate asOfDate) {
+
+        List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(groupKeyCode, dept,
+                workArea, principalId, jobNum, asOfDate);
+
+        if(lstClockLocationRules.isEmpty()){
+            return false;
+        }
+
+        for(ClockLocationRule clockLocationRule : lstClockLocationRules){
+            List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
+
+            for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
+                if(!compareIpAddresses(ruleIp.getIpAddress(), ipAddress)){
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+*/
+
+
+	public void processClockLocationRule(ClockLogBo clockLog, LocalDate asOfDate) {
+        //if (ipViolatesClockLocationRules(clockLog.getIpAddress(), clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), asOfDate))
+        if (isInvalidIPClockLocation(clockLog.getGroupKeyCode(), clockLog.getDept(), clockLog.getWorkArea(), clockLog.getPrincipalId(), clockLog.getJobNumber(), clockLog.getIpAddress(), asOfDate))
+        {
+            clockLog.setUnapprovedIP(true);
+            GlobalVariables.getMessageMap().putWarning("property", "ipaddress.invalid.format", clockLog.getIpAddress());
+        }
+        clockLog.setUnapprovedIP(false);
 	}
 	
-	public boolean isInvalidIPClockLocation(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate){
+	public boolean isInvalidIPClockLocation(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate) {
 		Boolean isInValid = true;
 		
 		List<ClockLocationRule> lstClockLocationRules = getClockLocationRule(groupKeyCode, dept, workArea, principalId, jobNumber, asOfDate);
 		if(lstClockLocationRules.isEmpty()){
-			isInValid = false;
-			return isInValid;
+			return false;
 		}
 		for(ClockLocationRule clockLocationRule : lstClockLocationRules){
 			List<ClockLocationRuleIpAddress> ruleIpAddresses = clockLocationRule.getIpAddresses();
-			String ipAddressClock = ipAddress;
-			for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
-				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddressClock)){
+            for(ClockLocationRuleIpAddress ruleIp : ruleIpAddresses) {
+				if(compareIpAddresses(ruleIp.getIpAddress(), ipAddress)){
 					isInValid = false;
 					break;
 				}
 			}
 		}
 		return isInValid;
-
 	}
 
-	private boolean compareIpAddresses(String ipAddressRule, String ipAddress){
+	public boolean compareIpAddresses(String ipAddressRule, String ipAddress) {
 		String[] rulePieces = StringUtils.split(ipAddressRule, ".");
         int ruleMax = rulePieces.length-1;
 
+        //code for testing... localhost brings empty ipAddress
+        /*if (StringUtils.isEmpty(ipAddress)) {
+            ipAddress = "129.200.200.200";
+        }*/
 		String[] ipAddPieces = StringUtils.split(ipAddress,".");
 		boolean match = true;
 		for(int i=0; i<ipAddPieces.length; i++){
@@ -159,8 +173,20 @@ public class ClockLocationRuleServiceImpl implements ClockLocationRuleService {
 		if(!clockLocationRule.isEmpty()){
 			return clockLocationRule;
 		}
-		
-		//9 : %, -1, % , -1
+
+        // 9 : %, -1, principalId        , job
+        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, principalId, jobNumber, asOfDate);
+        if(!clockLocationRule.isEmpty()){
+            return clockLocationRule;
+        }
+
+        // 10 : %, -1, principalId        , %
+        clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, principalId, -1L, asOfDate);
+        if(!clockLocationRule.isEmpty()){
+            return clockLocationRule;
+        }
+
+		//11 : %, -1, % , -1
 		clockLocationRule = clockLocationDao.getClockLocationRule(groupKeyCode, "%", -1L, "%", -1L, asOfDate);
 		return clockLocationRule;
 

@@ -43,7 +43,7 @@
 
 <tk:tkHeader tabId="clock">
 
-    <script type="text/javascript" src="themes/kboot/scripts/kboot.2.4.2.min.js"></script>
+    <script type="text/javascript" src="themes/kboot/scripts/kboot.2.3.6.min.js"></script>
     <script src="${ConfigProperties.js.dir}/underscore-1.3.1.min.js"></script>
     <script src="${ConfigProperties.js.dir}/backbone-0.9.1.min.js"></script>
     <script src="${ConfigProperties.js.dir}/clock.js"></script>

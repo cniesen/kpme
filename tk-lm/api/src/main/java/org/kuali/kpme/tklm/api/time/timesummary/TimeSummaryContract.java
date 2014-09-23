@@ -29,7 +29,11 @@ import org.kuali.kpme.tklm.api.leave.summary.LeaveSummaryRowContract;
  */
 public interface TimeSummaryContract {
 
-	/**
+    BigDecimal getGrandTotalMinutes();
+
+    BigDecimal getGrandTotalConverted();
+
+    /**
 	 * The summaryHeader associated with the TimeSummaryContract
 	 * 
 	 * <p>

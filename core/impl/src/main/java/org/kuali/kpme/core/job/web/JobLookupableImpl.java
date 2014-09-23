@@ -16,29 +16,25 @@
 package org.kuali.kpme.core.job.web;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.core.job.JobBo;
-import org.kuali.kpme.core.lookup.KPMELookupableImpl;
+import org.kuali.kpme.core.lookup.KpmeHrGroupKeyedBusinessObjectLookupableImpl;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
-import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.MessageMap;
+import org.kuali.rice.krad.web.form.LookupForm;
 
 import java.util.*;
 
-public class JobLookupableImpl extends KPMELookupableImpl{
-    private static final ModelObjectUtils.Transformer<Job, JobBo> toJobBo =
-            new ModelObjectUtils.Transformer<Job, JobBo>() {
-                public JobBo transform(Job input) {
-                    return JobBo.from(input);
-                };
-            };
-
+public class JobLookupableImpl extends KpmeHrGroupKeyedBusinessObjectLookupableImpl {
+   
+	private static final long serialVersionUID = 7167634961509244966L;
+	
     protected List<JobBo> filterLookupJobs(List<JobBo> rawResults, String userPrincipalId)
     {
         List<JobBo> results = new ArrayList<JobBo>();
@@ -48,12 +44,12 @@ public class JobLookupableImpl extends KPMELookupableImpl{
             roleQualification.put(KimConstants.AttributeConstants.PRINCIPAL_ID, userPrincipalId);
             roleQualification.put(KPMERoleMemberAttribute.DEPARTMENT.getRoleMemberAttributeName(), jobObj.getDept());
             roleQualification.put(KPMERoleMemberAttribute.GROUP_KEY_CODE.getRoleMemberAttributeName(), jobObj.getGroupKeyCode());
-
+            
             HrGroupKeyBo groupKey = jobObj.getGroupKey();
-            if(groupKey != null) {
-                roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), groupKey.getLocationId());
-                roleQualification.put(KPMERoleMemberAttribute.INSTITUION.getRoleMemberAttributeName(), groupKey.getInstitutionCode());
-            }
+			if(groupKey != null) {
+				roleQualification.put(KPMERoleMemberAttribute.LOCATION.getRoleMemberAttributeName(), groupKey.getLocationId());
+				roleQualification.put(KPMERoleMemberAttribute.INSTITUION.getRoleMemberAttributeName(), groupKey.getInstitutionCode());
+			}
 
             if (!KimApiServiceLocator.getPermissionService().isPermissionDefinedByTemplate(KPMENamespace.KPME_WKFLW.getNamespaceCode(),
                     KPMEPermissionTemplate.VIEW_KPME_RECORD.getPermissionTemplateName(), new HashMap<String, String>())
@@ -65,8 +61,10 @@ public class JobLookupableImpl extends KPMELookupableImpl{
         return results;
     }
 
+
+    @SuppressWarnings("unchecked")
     @Override
-    protected Collection<?> executeSearch(Map<String, String> searchCriteria, List<String> wildcardAsLiteralSearchCriteria, boolean bounded, Integer searchResultsLimit) {
+    public List<?> getSearchResults(LookupForm form, Map<String, String> searchCriteria, boolean unbounded) {
         String userPrincipalId = GlobalVariables.getUserSession().getPrincipalId();
         List<JobBo> rawSearchResults = new ArrayList<JobBo>();
         
@@ -82,17 +80,19 @@ public class JobLookupableImpl extends KPMELookupableImpl{
                 personSearch.remove("firstName");
                 personSearch.remove("lastName");
 
-                List<JobBo> res = (List<JobBo>)super.executeSearch(personSearch, wildcardAsLiteralSearchCriteria, bounded, searchResultsLimit);
+                List<JobBo> res = (List<JobBo>)super.getSearchResults(form, personSearch, unbounded);
                 rawSearchResults.addAll(res);
             }
         } else {
             searchCriteria.remove("firstName");
             searchCriteria.remove("lastName");
             
-            rawSearchResults = (List<JobBo>)super.executeSearch(searchCriteria, wildcardAsLiteralSearchCriteria, bounded, searchResultsLimit);
+            rawSearchResults = (List<JobBo>)super.getSearchResults(form, searchCriteria, unbounded);
         }
 
         List<JobBo> filteredResults = filterLookupJobs(rawSearchResults, userPrincipalId);
+        GlobalVariables.setMessageMap(new MessageMap());
+        generateLookupResultsMessages(form, searchCriteria, filteredResults, unbounded);
         return filteredResults;
     }
 

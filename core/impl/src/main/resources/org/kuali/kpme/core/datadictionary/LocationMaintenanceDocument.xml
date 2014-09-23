@@ -58,7 +58,7 @@
 					<property name="items">
 						<list>
 							<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
-							<bean parent="Uif-InputField" p:propertyName="location" p:required="true" >
+							<bean parent="Uif-InputField" p:propertyName="location" p:required="true" p:readOnly="@{#view.readOnly || (maintenanceAction eq 'Edit')}">
 								<property name="inquiry">
 	                                    <bean parent="Uif-Inquiry" p:render="false"/>
 	                                </property>
@@ -104,15 +104,15 @@
         </property>
         <property name="items">
             <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" />
-                <bean parent="Uif-InputField" p:propertyName="principalId" p:required="true" >
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" p:readOnly="@{!#isAddLine}"/>
+                <bean parent="Uif-InputField" p:propertyName="principalId" p:required="true" p:readOnly="@{!#isAddLine}">
                      <property name="quickfinder">
                          <bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.rice.kim.api.identity.Person"
                             p:fieldConversions="principalId:principalId"/>
                      </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="principalName" p:readOnly="true"/>
-                <bean parent="Uif-InputField" p:propertyName="roleName"/>
+                <bean parent="Uif-InputField" p:propertyName="roleName" p:readOnly="@{!#isAddLine}"/>
                 <bean parent="Uif-InputField" p:propertyName="expirationDate"/>
             </list>
         </property>

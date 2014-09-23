@@ -15,20 +15,6 @@
  */
 package org.kuali.kpme.tklm.time.clock.web;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts.action.ActionForm;
@@ -58,15 +44,22 @@ import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLog;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
-import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.rules.lunch.department.DeptLunchRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.timesheet.web.TimesheetAction;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.config.property.ConfigContext;
+import org.kuali.rice.core.api.util.Truth;
 import org.kuali.rice.krad.exception.AuthorizationException;
 import org.kuali.rice.krad.util.GlobalVariables;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ClockAction extends TimesheetAction {
 
@@ -130,19 +123,21 @@ public class ClockAction extends TimesheetAction {
 		        Map<String, String> assignmentMap = timesheetDocument.getAssignmentDescriptions(true, LocalDate.now());
 		        String principalId = HrContext.getPrincipalId();
 		        
-		        if(targetPrincipalId.equals(principalId)){
+		        if(StringUtils.equals(targetPrincipalId, principalId)){
 		        	Map<String, String> assignmentDescriptionMap = new TreeMap<String, String>();
 
 		        	DateTime currentDateTime = new DateTime();
 		        	for (Map.Entry<String, String> entry : assignmentMap.entrySet()) {
 		        		Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(entry.getKey()), LocalDate.now());
-		        		String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
-		        		if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
+		        		String allowActionFromInvalidLocation = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION);
+		        		if(!Truth.strToBooleanIgnoreCase(allowActionFromInvalidLocation)) {
 		        			boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ipAddress, currentDateTime.toLocalDate());
-		        			if(!isInValid){
+		        			if (!isInValid) {
 		        				assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
 		        			}
-		        		}
+		        		} else {
+                            assignmentDescriptionMap.put(entry.getKey(), entry.getValue());
+                        }
 		        	}
 		        	clockActionForm.setAssignmentDescriptions(assignmentDescriptionMap);
 		        }else{
@@ -301,7 +296,7 @@ public class ClockAction extends TimesheetAction {
         }
     }
     
-    public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ActionForward clockAction(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception, InvalidClockLogException {
         ClockActionForm caf = (ClockActionForm) form;
         DateTime currentDateTime = new DateTime();
         // TODO: Validate that clock action is valid for this user
@@ -319,10 +314,25 @@ public class ClockAction extends TimesheetAction {
         String ip = TKUtils.getIPAddressFromRequest(request);
 
         Assignment assignment = caf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(caf.getSelectedAssignment()), LocalDate.now());
-                
+        Long jbNum = assignment.getJobNumber();
+        Long wa = assignment.getWorkArea();
+        String dept= assignment.getDept();
+        String grpKeyCode = assignment.getGroupKeyCode();
+
+        try {
+            if (StringUtils.equals(pId, HrContext.getPrincipalId())) {
+                TkServiceLocator.getClockLogService().invalidIpCheck(grpKeyCode, dept, wa, pId, jbNum, ip, LocalDate.now(), false);
+            }
+        }
+        catch (InvalidClockLogException e)
+        {
+            caf.setErrorMessage("Could not take the action as Action taken from  "+ ip + ",  is not a valid IP address.");
+            return mapping.findForward("basic");
+        }
+
         // check if User takes action from Valid location.
-        if(pId.equalsIgnoreCase(GlobalVariables.getUserSession().getPrincipalId())) {
-	        String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
+        if (pId.equalsIgnoreCase(HrContext.getPrincipalId())) {
+	        String allowActionFromInvalidLocaiton = ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION);
 	        if(StringUtils.equals(allowActionFromInvalidLocaiton, "false")) {
 		        boolean isInValid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ip, currentDateTime.toLocalDate());
 		        if(isInValid){
@@ -539,12 +549,12 @@ public class ClockAction extends TimesheetAction {
 	                }
 	        	}
     		}
-    	} 
+    	}
         // create clock log 
         ClockLog clockLog = TkServiceLocator.getClockLogService().processClockLog(pId, caf.getTimesheetDocument().getDocumentId(), new DateTime(), assignment, caf.getCalendarEntry(), ip,
         		beginDate, caf.getCurrentClockAction(), true);
 
-        caf.setClockLog(clockLog);  
+        caf.setClockLog(clockLog);
         return mapping.findForward("basic"); 
         
     }
@@ -633,10 +643,12 @@ public class ClockAction extends TimesheetAction {
 			newTbList.add(tb);
 		}
 		TkServiceLocator.getTimeBlockService().resetTimeHourDetail(newTbList);
+
 		TkServiceLocator.getTkRuleControllerService().applyRules(TkConstants.ACTIONS.ADD_TIME_BLOCK, newTbList, Collections.<LeaveBlock>emptyList(), tsDoc.getCalendarEntry(), tsDoc, tsDoc.getPrincipalId());
-		TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
+
+        TkServiceLocator.getTimeBlockService().saveTimeBlocks(newTbList);
 		TimeBlock oldTB = TkServiceLocator.getTimeBlockService().getTimeBlock(tbId);
-		TkServiceLocator.getTimeBlockService().deleteTimeBlock(oldTB);
+		TkServiceLocator.getTimeBlockService().deleteTimeBlockAndHandleMissedPunch(oldTB, true);
 		return mapping.findForward("basic");
 	}
 	

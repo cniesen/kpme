@@ -35,6 +35,7 @@ public abstract class HrBusinessObjectKey <O extends HrKeyedSetBusinessObject<O,
 	// the PK for the table corresponding to this BO
 	private String id;
 
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public O getOwner() {
 		return super.getOwner();
@@ -54,6 +55,7 @@ public abstract class HrBusinessObjectKey <O extends HrKeyedSetBusinessObject<O,
 		this.groupKeyCode = groupKeyCode;
 	}
 	
+	// @ObjectDiffProperty(ignore = true)
 	@Override
 	public HrGroupKeyBo getGroupKey() {
 		if (groupKey == null) {

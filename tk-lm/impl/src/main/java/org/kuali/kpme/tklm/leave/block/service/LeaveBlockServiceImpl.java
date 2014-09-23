@@ -40,12 +40,11 @@ import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timeblock.TimeBlockBo;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
 import org.kuali.rice.kew.api.note.Note;
+import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -140,7 +139,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     protected List<LeaveBlockBo> saveLeaveBlockBos(List<LeaveBlockBo> leaveBlocks) {
         List<LeaveBlockBo> savedLeaveBlocks = new ArrayList<LeaveBlockBo>();
 
-        Collection<LeaveBlockBo> savedObjects = (Collection<LeaveBlockBo>) KNSServiceLocator.getBusinessObjectService().save(leaveBlocks);
+        Collection<LeaveBlockBo> savedObjects = (Collection<LeaveBlockBo>) KRADServiceLocator.getBusinessObjectService().save(leaveBlocks);
 
         List<LeaveBlockHistory> leaveBlockHistories = new ArrayList<LeaveBlockHistory>();
         for (LeaveBlockBo leaveBlock : leaveBlocks) {
@@ -150,7 +149,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
             HrServiceLocator.getHRPermissionService().updateLeaveBlockPermissions(CalendarBlockPermissions.newInstance(leaveBlock.getLmLeaveBlockId()));
         }
 
-        KNSServiceLocator.getBusinessObjectService().save(leaveBlockHistories);
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistories);
 
         savedLeaveBlocks.addAll(savedObjects);
 
@@ -171,13 +170,13 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(HrConstants.ACTION.DELETE);
         
-        String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
-        addNote(leaveBlock.getDocumentId(), leaveBlock.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was deleted on this Leave Calendar by " + principalName + " on your behalf");
+        String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId).getDefaultName().getCompositeName();
+        addNote(leaveBlock.getDocumentId(), leaveBlock.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was deleted on this Leave Calendar by " + principalName + " on your behalf", principalId);
         // deleting leaveblock
-        KNSServiceLocator.getBusinessObjectService().delete(leaveBlock);
+        KRADServiceLocator.getBusinessObjectService().delete(leaveBlock);
         
         // creating history
-        KNSServiceLocator.getBusinessObjectService().save(leaveBlockHistory);
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistory);
         
         
     }
@@ -187,13 +186,13 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
     	LeaveBlockBo savedLeaveBlock = null;
         LeaveBlockBo existingLB = LeaveBlockBo.from(leaveBlock);
     	// first delete and create new entry in the database
-    	KNSServiceLocator.getBusinessObjectService().delete(existingLB);
+    	KRADServiceLocator.getBusinessObjectService().delete(existingLB);
     	
     	// create new 
         existingLB.setLmLeaveBlockId(null);
         existingLB.setTimestamp(TKUtils.getCurrentTimestamp());
         existingLB.setPrincipalIdModified(principalId);
-    	savedLeaveBlock = KNSServiceLocator.getBusinessObjectService().save(existingLB);
+    	savedLeaveBlock = KRADServiceLocator.getBusinessObjectService().save(existingLB);
 
         // save history
         LeaveBlockHistory lbh = new LeaveBlockHistory(existingLB);
@@ -204,7 +203,7 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
 
     @Override
     public List<LeaveBlock> addLeaveBlocks(DateTime beginDate, DateTime endDate, CalendarEntry ce, String selectedEarnCode,
-    		BigDecimal hours, String description, Assignment selectedAssignment, String spanningWeeks, String leaveBlockType, String principalId) {
+    		BigDecimal hours, String description, Assignment selectedAssignment, String spanningWeeks, String leaveBlockType, String principalId, String userPrincipalId) {
 
     	List<LeaveBlockBo> newlyAddedLeaveBlocks = new ArrayList<LeaveBlockBo>();
     	DateTimeZone timezone = HrServiceLocator.getTimezoneService().getUserTimezoneWithFallback();
@@ -352,8 +351,15 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         		if(leaveblockbo.getDocumentId()==null){
         			leaveblockbo.setDocumentId(docId);
         		}
-        		String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
-        		addNote(docId, principalId, "LeaveBlock on " + leaveblockbo.getLeaveLocalDate() + " was added on this Leave Calendar by " + principalName + " on your behalf");
+                String userCompositName = "";
+                if (StringUtils.isNotEmpty(userPrincipalId)) {
+                    EntityNamePrincipalName entName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(userPrincipalId);
+                    if (entName != null
+                            && entName.getDefaultName() != null) {
+                        userCompositName = entName.getDefaultName().getCompositeName();
+                    }
+                }
+        		addNote(docId, principalId, "LeaveBlock on " + leaveblockbo.getLeaveLocalDate() + " was added on this Leave Calendar by " + userCompositName + " on your behalf", userPrincipalId);
         	}
 		}
 
@@ -403,19 +409,30 @@ public class LeaveBlockServiceImpl implements LeaveBlockService {
         leaveBlockHistory.setPrincipalIdDeleted(principalId);
         leaveBlockHistory.setTimestampDeleted(TKUtils.getCurrentTimestamp());
         leaveBlockHistory.setAction(HrConstants.ACTION.MODIFIED);
-
-        KNSServiceLocator.getBusinessObjectService().save(leaveBlockBo);
-        String principalName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(HrContext.getPrincipalId()).getDefaultName().getCompositeName();
-        addNote(leaveBlockBo.getDocumentId(), leaveBlockBo.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was updated on this Leave Calendar by " + principalName + " on your behalf");
         
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlockBo);
         // creating history
-        KNSServiceLocator.getBusinessObjectService().save(leaveBlockHistory);
+        KRADServiceLocator.getBusinessObjectService().save(leaveBlockHistory);
+        
+
+        if(leaveBlockBo.getLeaveBlockType().equalsIgnoreCase(LMConstants.LEAVE_BLOCK_TYPE.LEAVE_CALENDAR) || leaveBlockBo.getLeaveBlockType().equalsIgnoreCase(LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR)){
+            String userCompositName = "";
+            if (StringUtils.isNotEmpty(principalId)) {
+                EntityNamePrincipalName entName = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
+                if (entName != null
+                        && entName.getDefaultName() != null) {
+                    userCompositName = entName.getDefaultName().getCompositeName();
+                }
+            }
+        	addNote(leaveBlockBo.getDocumentId(), leaveBlockBo.getPrincipalId(), "LeaveBlock on " + leaveBlock.getLeaveLocalDate() + " was updated on this Leave Calendar by " + userCompositName + " on your behalf", principalId);
+        }
+
     }    
 
     //Add a note to timesheet for approver's actions
-    public void addNote(String documentId,String principalId, String note){
+    public void addNote(String documentId, String principalId, String note, String userPrincipalId){
     	if(documentId!=null && !documentId.isEmpty() && principalId!=null && !principalId.isEmpty()){
-    		if(!HrContext.getPrincipalId().equals(principalId)){
+    		if(!userPrincipalId.equals(principalId)){
 
     			Note.Builder builder = Note.Builder.create(documentId,principalId);
     			builder.setCreateDate(new DateTime());	

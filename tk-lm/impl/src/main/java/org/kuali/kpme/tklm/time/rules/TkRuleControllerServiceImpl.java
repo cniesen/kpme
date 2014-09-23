@@ -21,6 +21,7 @@ import org.joda.time.Interval;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
@@ -37,12 +38,13 @@ import java.util.List;
 public class TkRuleControllerServiceImpl implements TkRuleControllerService {
 
     // TODO : Filter actions to reduce computation for rule runs: Clock IN for example does not need to execute rule running.
-	public List<TimeBlock> applyRules(String action, List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntry payEntry, TimesheetDocument timesheetDocument, String principalId){
+	public List<TimeBlock> applyRules(String action, List<TimeBlock> timeBlocks, List<LeaveBlock> leaveBlocks, CalendarEntry payEntry, TimesheetDocument timesheetDocument, String principalId) {
+
 		//foreach action run the rules that apply
-		if(StringUtils.equals(action, TkConstants.ACTIONS.ADD_TIME_BLOCK) || StringUtils.equals(action, TkConstants.ACTIONS.CLOCK_OUT)){
+		if ( StringUtils.equals(action, TkConstants.ACTIONS.ADD_TIME_BLOCK) || StringUtils.equals(action, TkConstants.ACTIONS.CLOCK_OUT) ) {
             List<TimeBlock> updatedTimeBlocks = new ArrayList<TimeBlock>();
             Calendar calendar = HrServiceLocator.getCalendarService().getCalendar(payEntry.getHrCalendarId());
-            
+
             DateTimeZone userTimeZone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(timesheetDocument.getPrincipalId()));
             if(userTimeZone == null)
             	userTimeZone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
@@ -57,7 +59,8 @@ public class TkRuleControllerServiceImpl implements TkRuleControllerService {
             // anyone who records time through the time entry form (async users) should not be affected by the lunch rule
             // Noted that the date field in the buildTkUser method is not currently used.
             List<TimeBlock> lunchBlocks = new ArrayList<TimeBlock>();
-            if (GlobalVariables.getUserSession() != null && TkContext.isTargetSynchronous()) {
+            if ( GlobalVariables.getUserSession() != null && (TkContext.isTargetSynchronous() ||
+                    (HrContext.isSystemAdmin() && TkContext.isUserSynchronous(timesheetDocument.getPrincipalId())) ) ) {
 			    lunchBlocks = TkServiceLocator.getDepartmentLunchRuleService().applyDepartmentLunchRule(timeBlockAggregate.getFlattenedTimeBlockList());
                 //update aggregate with lunch blocks :(   ---- HACK!!! until we can stop passing everything through this aggregate!!!!
                 TkTimeBlockAggregate tempAggregate = new TkTimeBlockAggregate(lunchBlocks, timeBlockAggregate.getPayCalendarEntry(), timeBlockAggregate.getPayCalendar(),true);

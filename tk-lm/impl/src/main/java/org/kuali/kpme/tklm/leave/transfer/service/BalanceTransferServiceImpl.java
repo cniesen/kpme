@@ -41,7 +41,6 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.leave.transfer.BalanceTransfer;
 import org.kuali.kpme.tklm.leave.transfer.dao.BalanceTransferDao;
 import org.kuali.rice.kew.api.exception.WorkflowException;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
@@ -408,7 +407,7 @@ public class BalanceTransferServiceImpl implements BalanceTransferService {
 
 	@Override
 	public void saveOrUpdate(BalanceTransfer balanceTransfer) {
-        KNSServiceLocator.getBusinessObjectService().save(balanceTransfer);
+        KRADServiceLocator.getBusinessObjectService().save(balanceTransfer);
 	}
 	
     public List<BalanceTransfer> getBalanceTransfers(String principalId, String fromAccrualCategory, String transferAmount, String toAccrualCategory, String amountTransferred, String forfeitedAmount, LocalDate fromEffdt, LocalDate toEffdt) {

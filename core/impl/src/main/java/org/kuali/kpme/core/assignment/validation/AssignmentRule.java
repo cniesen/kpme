@@ -298,6 +298,9 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 	}
 	
 	protected boolean validateActiveFlag(AssignmentBo assign){
+        if (assign.isActive()) {
+            return true;
+        }
         Assignment assignment = AssignmentBo.to(assign);
 		DateTime latestTimeEndTimestamp =  HrServiceLocator.getCalendarBlockService().getLatestEndTimestampForAssignment(assignment,"Time");
 		
@@ -350,7 +353,7 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 					valid &= this.validateRegPayEarnCode(assignment);
 //					valid &= this.validateAccounts(assignment); // KPME-2780
 					// Validate Assignment Accounts
-					for (ListIterator<? extends AssignmentAccountBo> iterator =  assignment.getAssignmentAccounts().listIterator() ; iterator.hasNext();){
+					for (ListIterator<AssignmentAccountBo> iterator =  assignment.getAssignmentAccounts().listIterator() ; iterator.hasNext();){
 						int index = iterator.nextIndex();
 						AssignmentAccountBo assignmentAccountBo = iterator.next();
 						valid &= this.validateAssignmentAccount(assignmentAccountBo, assignment, index);
@@ -370,11 +373,11 @@ public class AssignmentRule extends MaintenanceDocumentRuleBase {
 	@Override
 	public boolean processCustomAddCollectionLineBusinessRules(
 			MaintenanceDocument document, String collectionName,
-			Object line) {
+			PersistableBusinessObject line) {
 		boolean valid = false;
 		LOG.debug("entering custom add assignment account business rules");
 		PersistableBusinessObject assignmentPbo = (PersistableBusinessObject) this.getNewDataObject();
-		Object pbo = line;
+		PersistableBusinessObject pbo = line;
 		if (pbo instanceof AssignmentAccountBo) {
 			AssignmentAccountBo assignmentAccount = (AssignmentAccountBo) pbo;
 			if (assignmentAccount != null) {

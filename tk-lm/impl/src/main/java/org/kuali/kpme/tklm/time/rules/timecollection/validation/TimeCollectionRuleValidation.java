@@ -17,6 +17,7 @@ package org.kuali.kpme.tklm.time.rules.timecollection.validation;
 
 import org.apache.commons.lang.StringUtils;
 import org.kuali.hr.kpme.tklm.time.rules.validation.TkKeyedBusinessObjectValidation;
+import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.ValidationUtils;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
@@ -57,20 +58,31 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
 		}
 	}
 
-	public static boolean validateWorkAreaDeptWildcarding(TimeCollectionRule tcr) {
-        return StringUtils.equals(tcr.getDept(), HrConstants.WILDCARD_CHARACTER)
-                && HrConstants.WILDCARD_LONG.equals(tcr.getWorkArea());
+	// Department may not be wildcarded when Work Area is defined 
+	private boolean validateWorkAreaDeptWildcarding(TimeCollectionRule tcr) {		
+		if(!HrConstants.WILDCARD_LONG.equals(tcr.getWorkArea())) {
+			return !(StringUtils.equals(tcr.getDept(), HrConstants.WILDCARD_CHARACTER));
+		}		
+		return true;
     }
 	
-	boolean validateWildcards(TimeCollectionRule tcr) {
+	// Allow a wildcard to be submitted for Group Key on the Time Collection Rule's maintenance document only if department is a wildcard. 
+	private boolean validateGroupKeyDeptWildcarding(TimeCollectionRule tcr) {
+		if(StringUtils.equals(tcr.getGroupKeyCode(), HrConstants.WILDCARD_CHARACTER)) {
+			return StringUtils.equals(tcr.getDept(), HrConstants.WILDCARD_CHARACTER);
+		}		
+		return true;
+    }
+	
+	public boolean validateWildcards(TimeCollectionRule tcr) {
 
-        if(validateWorkAreaDeptWildcarding(tcr)){
+        if(!validateWorkAreaDeptWildcarding(tcr)){
 			// add error when work area defined, department is wild carded.
 			this.putFieldError("workArea", "error.wc.wadef");
 			return false;
 		}
-        
-        if(validateGroupKeyDeptWildcarding(tcr)){
+
+        if(!validateGroupKeyDeptWildcarding(tcr)){
         	// add error when dept is defined, groupkey is wild carded.
 			this.putFieldError("groupKeyCode", "error.wc.deptdef");
 			return false;
@@ -78,13 +90,18 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
         
 		return true;
     }
-	
-	private boolean validateGroupKeyDeptWildcarding(TimeCollectionRule tcr) {
-        return StringUtils.equals(tcr.getGroupKeyCode(), HrConstants.WILDCARD_CHARACTER)
-                && StringUtils.equals(tcr.getDept(), HrConstants.WILDCARD_CHARACTER);
+
+
+    @Override
+    protected boolean validateGroupKeyCode(HrKeyedBusinessObject keyedBo) {
+        if (StringUtils.equals(keyedBo.getGroupKeyCode(), HrConstants.WILDCARD_CHARACTER))
+        {
+            return true;
+        }
+        return super.validateGroupKeyCode(keyedBo);
     }
 
-	/**
+    /**
 	 * It looks like the method that calls this class doesn't actually care
 	 * about the return type.
 	 */
@@ -94,7 +111,6 @@ public class TimeCollectionRuleValidation extends TkKeyedBusinessObjectValidatio
 		boolean valid = false;
 		LOG.debug("entering custom validation for TimeCollectionRule");
 		PersistableBusinessObject pbo = (PersistableBusinessObject) this.getNewBo();
-
 
 
 		if (pbo instanceof TimeCollectionRule) {

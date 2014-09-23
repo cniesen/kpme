@@ -42,7 +42,6 @@
                            http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
     <import resource="classpath:org/kuali/kpme/core/config/KPMECommonSpringBeans.xml"/>
-    <import resource="classpath:org/kuali/kpme/core/config/_CoreJpaSpringBeans.xml"/>
 
     <!--<aop:aspectj-autoproxy/>-->
 
@@ -539,11 +538,11 @@
         </property>
     </bean>
  -->    
- 	<bean id="locationLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
+ 	<!--<bean id="locationLookupable" class="org.kuali.rice.kns.lookup.KualiLookupableImpl" scope="singleton">
         <property name="lookupableHelperService">
             <bean class="org.kuali.kpme.core.location.web.LocationLookupableHelper"/>
         </property>
-    </bean>
+    </bean>-->
     
     <bean id="calendarEntryLookupableHelperService" class="org.kuali.kpme.core.calendar.entry.web.CalendarEntryLookupableHelperServiceImpl" scope="prototype"/>
     <bean id="calendarEntryLookupable" class="org.kuali.kpme.core.lookup.DepartmentAdminLookupableImpl" scope="prototype">
@@ -616,6 +615,8 @@
     		<bean class="org.kuali.kpme.core.institution.web.InstitutionLookupableHelper"/>
     	</property>    
     </bean>
+    
+     <bean id="khrEmployeeSetupFactBuilderService" class="org.kuali.kpme.core.tkmdocument.workflow.krms.KhrEmployeeSetupFactBuilderServiceImpl"/>
 
     <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
         <property name="interceptorNames">
@@ -651,6 +652,7 @@
                 <idref local="assignmentService"/>
                 <idref local="calendarBlockService"/>
                 <idref local="positionBaseService"/>
+                <idref local="khrEmployeeSetupFactBuilderService"/>
                 <!--<idref local="kpmeNotificationService"/>-->
                 <!--<idref local="calendarDocumentFactBuilderService"/>-->
                 <!--<idref local="kpmeGroupService"/>-->

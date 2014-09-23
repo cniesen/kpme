@@ -34,9 +34,8 @@ import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchService;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockService;
-import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.clocklog.ClockLogBo;
-import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
 import org.kuali.kpme.tklm.time.missedpunch.dao.MissedPunchDao;
 import org.kuali.kpme.tklm.time.rules.TkRuleControllerService;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -88,10 +87,18 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         String clockAction = missedPunch.getClockAction();
         String principalId = timesheetDocument.getPrincipalId();
 
-        ClockLog clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false);
 
-        clockLog = clockLogService.saveClockLog(clockLog);
+        ClockLog clockLog = null;
+        try {
+            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false, true);
+            clockLog = clockLogService.saveClockLog(clockLog, true);
+        }
+        catch (InvalidClockLogException e)
+        {
+            throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+        }
         builder.setTkClockLogId(clockLog.getTkClockLogId());
+        builder.setCreateTime(clockLog.getCreateTime());
 
         if (StringUtils.equals(clockLog.getClockAction(), TkConstants.CLOCK_OUT) ||
                 StringUtils.equals(clockLog.getClockAction(), TkConstants.LUNCH_OUT)) {
@@ -143,7 +150,7 @@ public class MissedPunchServiceImpl implements MissedPunchService {
 
         if (CollectionUtils.isNotEmpty(timeBlocks)) {
             for (TimeBlock timeBlock : timeBlocks) {
-                timeBlockService.deleteTimeBlock(timeBlock);
+                timeBlockService.deleteTimeBlockAndHandleMissedPunch(timeBlock, true);
             }
         }
     }
@@ -167,11 +174,20 @@ public class MissedPunchServiceImpl implements MissedPunchService {
         String clockAction = missedPunch.getClockAction();
         String principalId = timesheetDocument.getPrincipalId();
 
-        ClockLog clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false);
+        ClockLog clockLog = null;
+        try {
+            clockLog = clockLogService.processClockLog(principalId, timesheetDocument.getDocumentId(), actionDateTime, assignment, calendarEntry, ipAddress, LocalDate.now(), clockAction, false, true);
 
-        clockLogService.saveClockLog(clockLog);
+            clockLogService.saveClockLog(clockLog);
+        }
+        catch (InvalidClockLogException e)
+        {
+            throw new RuntimeException("Could not take the action as Action taken from an invalid IP address.");
+        }
+
         builder.setActionFullDateTime(missedPunch.getActionFullDateTime());
         builder.setTkClockLogId(clockLog.getTkClockLogId());
+        builder.setCreateTime(clockLog.getCreateTime());
 
         if (logEndId != null || logBeginId != null) {
             ClockLog endLog;

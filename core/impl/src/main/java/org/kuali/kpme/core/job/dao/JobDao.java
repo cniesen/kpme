@@ -18,6 +18,7 @@ package org.kuali.kpme.core.job.dao;
 import java.util.List;
 
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.job.JobBo;
 
 public interface JobDao {
@@ -111,5 +112,6 @@ public interface JobDao {
 	 * @return
 	 */
 	public List<String> getPrincipalIdsInPosition(String positionNumber, LocalDate asOfDate);
-	
+
+    public JobBo getNextInactiveJob(JobContract job);
 }

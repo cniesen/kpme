@@ -39,12 +39,11 @@
 					<property name="primitiveAttributes">
 						<list>
 							<bean parent="PrimitiveAttributeDefinition" p:sourceName="groupKeyCode" p:targetName="groupKeyCode" />
-							<!-- bean parent="PrimitiveAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate"/-->
 						</list>
 					</property>
 					<property name="supportAttributes">
                         <list>
-                            <bean parent="SupportAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate" />
+                            <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate" />
                         </list>
                     </property>
 				</bean>
@@ -57,7 +56,7 @@
 					</property>
 					<property name="supportAttributes">
                         <list>
-                            <bean parent="SupportAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate" />
+                            <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate" />
                         </list>
                     </property>
 				</bean> 
@@ -70,7 +69,7 @@
 					</property>
 					<property name="supportAttributes">
                         <list>
-                            <bean parent="SupportAttributeDefinition" p:sourceName="effectiveDate" p:targetName="effectiveDate" />
+                            <bean parent="SupportAttributeDefinition" p:sourceName="relativeEffectiveDate" p:targetName="effectiveDate" />
                         </list>
                     </property>
 				</bean>

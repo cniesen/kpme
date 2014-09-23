@@ -69,8 +69,6 @@ import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.kew.api.KewApiServiceLocator;
-import org.kuali.rice.kew.api.action.ActionTaken;
-import org.kuali.rice.kew.api.action.ActionType;
 import org.kuali.rice.kew.api.document.DocumentStatus;
 import org.kuali.rice.kew.service.KEWServiceLocator;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
@@ -140,15 +138,21 @@ public class TimeDetailAction extends TimesheetAction {
 		            //if the timesheet has been approved by at least one of the approvers, the employee should not be able to edit it
 		            if (StringUtils.equals(timesheetDocument.getPrincipalId(), GlobalVariables.getUserSession().getPrincipalId())
 		            		&& timesheetDocument.getDocumentHeader().getDocumentStatus().equals(HrConstants.ROUTE_STATUS.ENROUTE)) {
-                        List<ActionTaken> actionsTaken = KewApiServiceLocator.getWorkflowDocumentService().getAllActionsTaken(timesheetDocument.getDocumentId());
-
-                        for (ActionTaken at : actionsTaken) {
-                            if (ActionType.APPROVE.equals(at.getActionTaken())) {
-                                timeDetailActionForm.setDocEditable("false");
-                                break;
-                            }
-                        }
+			        	Collection actions = KEWServiceLocator.getActionTakenService().findByDocIdAndAction(timesheetDocument.getDocumentHeader().getDocumentId(), HrConstants.DOCUMENT_ACTIONS.APPROVE);
+		        		if (!actions.isEmpty()) {
+		        			timeDetailActionForm.setDocEditable("false");  
+		        		}
 			        }
+		            // reviewers should not be able to edit enroute timesheets
+		            if (DocumentStatus.ENROUTE.equals(documentStatus)) {
+		            	if(HrContext.isReviewer()
+		            			&& !HrContext.isSystemAdmin()
+	                            && !TkContext.isLocationAdmin()
+		            			&& !HrContext.isAnyApprover()
+		            			&& !HrContext.isAnyPayrollProcessor()) {
+		            		timeDetailActionForm.setDocEditable("false");
+		            	}
+		            }
 	            } else if (DocumentStatus.FINAL.equals(documentStatus)) {
 	            	if(HrContext.isSystemAdmin()) {
 	            	  timeDetailActionForm.setNotesEditable(Boolean.TRUE);
@@ -503,7 +507,7 @@ public class TimeDetailAction extends TimesheetAction {
         Assignment currentAssignment = tdaf.getTimesheetDocument().getAssignment(AssignmentDescriptionKey.get(tdaf.getSelectedAssignment()), beginDate.toLocalDate());
 
         LmServiceLocator.getLeaveBlockService().addLeaveBlocks(beginDate, endDate, tdaf.getCalendarEntry(), selectedEarnCode, leaveAmount, desc, currentAssignment,
-                spanningWeeks, LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR, HrContext.getTargetPrincipalId());
+                spanningWeeks, LMConstants.LEAVE_BLOCK_TYPE.TIME_CALENDAR, HrContext.getTargetPrincipalId(), HrContext.getPrincipalId());
 
         List<LeaveBlock> leaveBlocks = TimesheetUtils.getLeaveBlocksForTimesheet(tdaf.getTimesheetDocument());
 
@@ -632,6 +636,10 @@ public class TimeDetailAction extends TimesheetAction {
                 existingBlock.setVersionNumber(tb.getVersionNumber());
                 existingBlock.setObjectId(tb.getObjectId());
                 existingBlock.setOvertimePref(null);
+                existingBlock.setClockedByMissedPunch(tb.isClockedByMissedPunch());
+                existingBlock.setMissedPunchClockIn(tb.isMissedPunchClockIn());
+                existingBlock.setMissedPunchClockOut(tb.isMissedPunchClockOut());
+                existingBlock.setMissedPunchDocId(tb.getMissedPunchDocId());
                 //existingBlock.setTkTimeBlockId(tb.getTkTimeBlockId());
         		finalNewTimeBlocks.add(existingBlock);
         	}
@@ -907,7 +915,7 @@ public class TimeDetailAction extends TimesheetAction {
       return mapping.findForward("basic");
 	}
   
-	private void generateTimesheetChangedNotification(String principalId, String targetPrincipalId, String documentId) {
+	protected void generateTimesheetChangedNotification(String principalId, String targetPrincipalId, String documentId) {
 		if (!StringUtils.equals(principalId, targetPrincipalId)) {
 			EntityNamePrincipalName person = KimApiServiceLocator.getIdentityService().getDefaultNamesForPrincipalId(principalId);
 			if (person != null && person.getDefaultName() != null) {

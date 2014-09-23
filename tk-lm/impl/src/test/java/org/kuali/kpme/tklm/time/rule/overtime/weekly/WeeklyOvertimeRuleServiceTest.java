@@ -33,7 +33,6 @@ import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.kpme.tklm.utils.TkTestUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -315,7 +314,7 @@ public class WeeklyOvertimeRuleServiceTest extends TKLMIntegrationTestCase {
 
 	@Override
 	public void tearDown() throws Exception {
-		KRADServiceLocatorWeb.getLegacyDataAdapter().deleteMatching(WeeklyOvertimeRule.class, Collections.<String, String>emptyMap());
+		KRADServiceLocator.getBusinessObjectService().deleteMatching(WeeklyOvertimeRule.class, Collections.<String, String>emptyMap());
 		super.tearDown();
 	}
 		

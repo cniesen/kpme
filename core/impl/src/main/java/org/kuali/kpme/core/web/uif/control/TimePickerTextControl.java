@@ -22,14 +22,13 @@ import org.kuali.rice.krad.datadictionary.parse.BeanTag;
 import org.kuali.rice.krad.datadictionary.parse.BeanTagAttribute;
 import org.kuali.rice.krad.uif.component.Component;
 import org.kuali.rice.krad.uif.control.TextControl;
-import org.kuali.rice.krad.uif.control.TextControlBase;
 
 /**
  * Text control that is decorated with a time picker widget (allowing the control value to be modified using the picker)
  *
  */
 @BeanTag(name="timePickerTextControl-bean", parent="KPMEUif-TimePickerTextControl")
-public class TimePickerTextControl extends TextControlBase {
+public class TimePickerTextControl extends TextControl {
 	
 	private static final long serialVersionUID = 3028008594161590816L;
 
@@ -57,9 +56,9 @@ public class TimePickerTextControl extends TextControlBase {
         this.currentTimeButtonEnabled = currentTimeButtonEnabled;
     }
     
-/*    *//**
+    /**
      * @see org.kuali.rice.krad.uif.component.ComponentBase#getComponentsForLifecycle()
-     *//*
+     */
     @Override
     public List<Component> getComponentsForLifecycle() {
         List<Component> components = super.getComponentsForLifecycle();
@@ -67,9 +66,9 @@ public class TimePickerTextControl extends TextControlBase {
         return components;
     }
     
-    *//**
+    /**
      * @see org.kuali.rice.krad.uif.component.ComponentBase#copy()
-     *//*
+     */
     @Override
     protected <T> void copyProperties(T component) {
         super.copyProperties(component);
@@ -78,6 +77,6 @@ public class TimePickerTextControl extends TextControlBase {
         if(this.timePickerWidget != null) {
         	timePickerControlCopy.setTimePickerWidget((TimePickerWidget)this.timePickerWidget.copy());
         }
-    }*/
+    }
     
 }

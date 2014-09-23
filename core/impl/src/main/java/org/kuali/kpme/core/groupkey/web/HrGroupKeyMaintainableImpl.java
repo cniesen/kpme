@@ -17,6 +17,7 @@ package org.kuali.kpme.core.groupkey.web;
 
 import org.kuali.kpme.core.bo.HrBusinessObject;
 import org.kuali.kpme.core.bo.HrBusinessObjectMaintainableImpl;
+import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.core.institution.InstitutionBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 
@@ -29,7 +30,7 @@ public class HrGroupKeyMaintainableImpl extends HrBusinessObjectMaintainableImpl
 
 	@Override
 	public HrBusinessObject getObjectById(String id) {
-		return InstitutionBo.from(HrServiceLocator.getInstitutionService().getInstitutionById(id));
+		return HrGroupKeyBo.from(HrServiceLocator.getHrGroupKeyService().getHrGroupKeyById(id));
 	}
 	
 }

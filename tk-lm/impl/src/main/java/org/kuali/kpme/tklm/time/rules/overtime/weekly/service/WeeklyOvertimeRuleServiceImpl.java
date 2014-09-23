@@ -29,7 +29,6 @@ import org.kuali.kpme.core.api.earncode.EarnCodeContract;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
-import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.kpme.tklm.api.leave.block.LeaveBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockContract;
@@ -48,7 +47,6 @@ import org.kuali.kpme.tklm.time.util.TkTimeBlockAggregate;
 import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
 import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -91,64 +89,79 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
         for (List<FlsaWeek> flsaWeekParts : newFlsaWeeks)
         {
             BigDecimal totalNewOvertimeHours = null;
+            BigDecimal totalNewOvertimeMinutes = null;
             BigDecimal hoursTowardsMaxEarnCodes = null;
+            BigDecimal minutesTowardsMaxEarnCodes = null;
             for (WeeklyOvertimeRule weeklyOvertimeRule : weeklyOvertimeRules)
             {
                 Set<String> maxHoursEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getMaxHoursEarnGroup(), asOfDate);
                 Set<String> convertFromEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getConvertFromEarnGroup(), asOfDate);
                 Set<String> applyToEarnCodes = HrServiceLocator.getEarnCodeGroupService().getEarnCodeListForEarnCodeGroup(weeklyOvertimeRule.getApplyToEarnGroup(), asOfDate);
-
+/*
                 LOG.info(weeklyOvertimeRule);
                 LOG.info("maxHoursEarnCodes =");
                 LOG.info(maxHoursEarnCodes);
 
-                LOG.info("convertFromEarnCodes =");
+                LOG.info("applyToEarnCodes =");
                 LOG.info(convertFromEarnCodes);
 
                 LOG.info("before applying rule");
                 LOG.info(newFlsaWeeks);
+*/
 
                 /***************/
 
                 if (hoursTowardsMaxEarnCodes == null) {
                     hoursTowardsMaxEarnCodes = getHours(flsaWeekParts, maxHoursEarnCodes);
                 }
+                if (minutesTowardsMaxEarnCodes == null) {
+                    minutesTowardsMaxEarnCodes = getMinutes(flsaWeekParts, maxHoursEarnCodes);
+                }
                 if (totalNewOvertimeHours == null) {
                     totalNewOvertimeHours = hoursTowardsMaxEarnCodes.subtract(weeklyOvertimeRule.getMaxHours(), HrConstants.MATH_CONTEXT);
+                }
+                if (totalNewOvertimeMinutes == null) {
+                    BigDecimal weeklyOverTimeMaxHours = weeklyOvertimeRule.getMaxHours().multiply(BigDecimal.valueOf(60), HrConstants.MATH_CONTEXT);
+                    totalNewOvertimeMinutes = minutesTowardsMaxEarnCodes.subtract(weeklyOverTimeMaxHours, HrConstants.MATH_CONTEXT);
                 }
 
                 //flsaWeekParts.get(0).getFlsaDays().get(0).getAppliedTimeBlocks().get(0).
                 BigDecimal thisRuleConvertableHours = getHours(flsaWeekParts, convertFromEarnCodes);
+                BigDecimal thisRuleConvertableMinutes = getMinutes(flsaWeekParts, convertFromEarnCodes);
 
+/*
                 LOG.info("maxEarnCodes");
                 LOG.info(maxHoursEarnCodes);
-
-
                 LOG.info("convertTo");
                 LOG.info(weeklyOvertimeRule.getConvertToEarnCode());
-
                 LOG.info("newOverTimeHours");
                 LOG.info(totalNewOvertimeHours);
-
+*/
 
                 BigDecimal thisRuleOvertimeHoursToApply = BigDecimal.ZERO;
+                BigDecimal thisRuleOvertimeMinutesToApply = BigDecimal.ZERO;
 
                 if (thisRuleConvertableHours.compareTo(BigDecimal.ZERO) > 0) {
                     thisRuleOvertimeHoursToApply = totalNewOvertimeHours;
+                    thisRuleOvertimeMinutesToApply = totalNewOvertimeMinutes;
                     if (thisRuleConvertableHours.compareTo(totalNewOvertimeHours) < 0) {
                         thisRuleOvertimeHoursToApply = thisRuleConvertableHours;
+                        thisRuleOvertimeMinutesToApply = thisRuleConvertableMinutes;
                     }
                 }
 
                 Boolean ruleRan = false;
                 if ( ( totalNewOvertimeHours.compareTo(BigDecimal.ZERO) > 0) && (thisRuleOvertimeHoursToApply.compareTo(BigDecimal.ZERO) > 0)) {
-                    BigDecimal afterOvertimeRuleRanHours = applyOvertimeToFlsaWeeks(flsaWeekParts, weeklyOvertimeRule, asOfDate.plusDays((7 - asOfDate.getDayOfWeek())), applyToEarnCodes, thisRuleOvertimeHoursToApply);
-                    totalNewOvertimeHours = totalNewOvertimeHours.subtract(thisRuleOvertimeHoursToApply.subtract(afterOvertimeRuleRanHours));
+
+                    BigDecimal afterOvertimeRuleRanMinutes = applyOvertimeToFlsaWeeks(flsaWeekParts, weeklyOvertimeRule, asOfDate.plusDays((7 - asOfDate.getDayOfWeek())), applyToEarnCodes, thisRuleOvertimeHoursToApply, thisRuleOvertimeMinutesToApply);
+                    //totalNewOvertimeHours = totalNewOvertimeHours.subtract(thisRuleOvertimeHoursToApply.subtract(afterOvertimeRuleRanHours));
+                    totalNewOvertimeMinutes = totalNewOvertimeMinutes.subtract(thisRuleOvertimeMinutesToApply.subtract(afterOvertimeRuleRanMinutes));
                 }
-                LOG.info("ruleRan: " + (ruleRan ? "Y" : "N"));
             }
+/*
             LOG.info("after applying rule");
             LOG.info(newFlsaWeeks);
+*/
 		}
 
         //convert weeks to list of timeblocks to push back into aggregate
@@ -205,7 +218,8 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 	protected List<List<FlsaWeek>> getFlsaWeeks(String principalId, DateTime beginDate, DateTime endDate, TkTimeBlockAggregate aggregate) {
 		List<List<FlsaWeek>> flsaWeeks = new ArrayList<List<FlsaWeek>>();
 		
-        DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
+//        DateTimeZone zone = HrServiceLocator.getTimezoneService().getTargetUserTimezoneWithFallback();
+        DateTimeZone zone = DateTimeZone.forID(HrServiceLocator.getTimezoneService().getUserTimezone(principalId));
 		List<FlsaWeek> currentWeeks = aggregate.getFlsaWeeks(zone, 0, false);
 		
 		for (ListIterator<FlsaWeek> weekIterator = currentWeeks.listIterator(); weekIterator.hasNext(); ) {
@@ -314,10 +328,8 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		for (FlsaWeek flsaWeek : flsaWeeks) {
 			for (FlsaDay flsaDay : flsaWeek.getFlsaDays()) {
 				for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
-                    Boolean validTimeBlock = false;
 					for (TimeHourDetail timeHourDetail : timeBlock.getTimeHourDetails()) {
-						if (maxHoursEarnCodes.contains(timeHourDetail.getEarnCode()) || validTimeBlock) {
-                            validTimeBlock = true;
+						if (maxHoursEarnCodes.contains(timeHourDetail.getEarnCode())) {
 							maxHours = maxHours.add(timeHourDetail.getHours(), HrConstants.MATH_CONTEXT);
 						}
 
@@ -333,6 +345,38 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		
 		return maxHours;
 	}
+
+    /**
+     * Get the hours worked for the given FlsaWeeks with EarnCodes within maxHoursEarnCodes.
+     *
+     * @param flsaWeeks The FlsaWeeks to get the hours from
+     * @param maxHoursEarnCodes The EarnCodes used to determine what is applicable as a max hour
+     *
+     * @return the maximum worked hours for the given FlsaWeeks
+     */
+    protected BigDecimal getMinutes(List<FlsaWeek> flsaWeeks, Set<String> maxHoursEarnCodes) {
+        BigDecimal maxMinutes = BigDecimal.ZERO;
+
+        for (FlsaWeek flsaWeek : flsaWeeks) {
+            for (FlsaDay flsaDay : flsaWeek.getFlsaDays()) {
+                for (TimeBlock timeBlock : flsaDay.getAppliedTimeBlocks()) {
+                    for (TimeHourDetail timeHourDetail : timeBlock.getTimeHourDetails()) {
+                        if (maxHoursEarnCodes.contains(timeHourDetail.getEarnCode())) {
+                            maxMinutes = maxMinutes.add(timeHourDetail.getTotalMinutes(), HrConstants.MATH_CONTEXT);
+                        }
+
+                    }
+                }
+                for (LeaveBlock leaveBlock : flsaDay.getAppliedLeaveBlocks()) {
+                    if (maxHoursEarnCodes.contains(leaveBlock.getEarnCode())) {
+                        maxMinutes = maxMinutes.add(leaveBlock.getLeaveAmount().multiply(BigDecimal.valueOf(60), HrConstants.MATH_CONTEXT).negate());
+                    }
+                }
+            }
+        }
+
+        return maxMinutes;
+    }
 	
 	/**
 	 * Returns the overtime EarnCode.  Defaults to the EarnCode on the WeeklyOvertimeRule but overrides with the WorkArea default overtime EarnCode and 
@@ -349,13 +393,18 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
         String overtimeEarnCode = weeklyOvertimeRule.getConvertToEarnCode();
         LOG.info("weekly overtime rule code is " + overtimeEarnCode);
 
+        if (weeklyOvertimeRule.isOverrideWorkAreaDefaultOvertime())
+        {
+            return overtimeEarnCode;
+        }
+
         // KPME-2554 use time block end date instead of passed in asOfDate
         WorkArea workArea = HrServiceLocator.getWorkAreaService().getWorkArea(timeBlock.getWorkArea(), timeBlock.getEndDateTime().toLocalDate());
-		if ( StringUtils.isNotBlank(workArea.getDefaultOvertimeEarnCode()) && (!weeklyOvertimeRule.isOverrideWorkAreaDefaultOvertime()) ) {
+		if ( StringUtils.isNotBlank(workArea.getDefaultOvertimeEarnCode()) ) {
 			overtimeEarnCode = workArea.getDefaultOvertimeEarnCode();
             LOG.info("weekly overtime rule code is from work area -- " + overtimeEarnCode);
 		}
-		
+
         if (StringUtils.isNotEmpty(timeBlock.getOvertimePref())) {
         	overtimeEarnCode = timeBlock.getOvertimePref();
             LOG.info("weekly overtime rule code is from timeblock.getOvertimePref -- " + overtimeEarnCode);
@@ -373,27 +422,14 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 	 * @param convertFromEarnCodes The EarnCodes to convert to overtime
 	 * @param overtimeHours The number of overtime hours to apply
 	 */
-	protected BigDecimal applyOvertimeToFlsaWeeks(List<FlsaWeek> flsaWeeks, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
+	protected BigDecimal applyOvertimeToFlsaWeeks(List<FlsaWeek> flsaWeeks, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate, Set<String> convertFromEarnCodes, BigDecimal overtimeHours, BigDecimal overtimeMinutes) {
 		List<FlsaDay> flsaDays = getFlsaDays(flsaWeeks);
 
 
-        BigDecimal otHoursLeft = applyPositiveOvertimeToFlsaWeek(flsaDays, weeklyOvertimeRule, asOfDate, convertFromEarnCodes, overtimeHours);
-/*
-		if (overtimeHours.compareTo(BigDecimal.ZERO) > 0) {
-            LOG.info("applying positive" + overtimeHours);
-			applyPositiveOvertimeToFlsaWeek(flsaDays, weeklyOvertimeRule, asOfDate, convertFromEarnCodes, overtimeHours);
-		} else if (overtimeHours.compareTo(BigDecimal.ZERO) < 0) {
-            LOG.info("applying negative" + overtimeHours);
-            applyPositiveOvertimeToFlsaWeek(flsaDays, weeklyOvertimeRule, asOfDate, convertFromEarnCodes, overtimeHours);
+        BigDecimal otMinutesLeft = applyOvertimeToFlsaWeek(flsaDays, weeklyOvertimeRule, asOfDate, convertFromEarnCodes, overtimeHours, overtimeMinutes);
 
-		}
-        else if (false)
-        {
-            applyNegativeOvertimeToFlsaWeek(flsaDays, weeklyOvertimeRule, asOfDate, convertFromEarnCodes, overtimeHours);
-        }
-        */
 		removeEmptyOvertime(flsaDays, weeklyOvertimeRule, asOfDate);
-        return otHoursLeft;
+        return otMinutesLeft;
 	}
 	
 	/**
@@ -422,7 +458,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 	 * @param convertFromEarnCodes The EarnCodes to convert to overtime
 	 * @param overtimeHours The number of overtime hours to apply
 	 */
-	protected BigDecimal applyPositiveOvertimeToFlsaWeek(List<FlsaDay> flsaDays, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
+	protected BigDecimal applyOvertimeToFlsaWeek(List<FlsaDay> flsaDays, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate, Set<String> convertFromEarnCodes, BigDecimal overtimeHours, BigDecimal overtimeMinutes) {
 		for (ListIterator<FlsaDay> dayIterator = flsaDays.listIterator(flsaDays.size()); dayIterator.hasPrevious(); ) {
 			FlsaDay flsaDay = dayIterator.previous();
 			
@@ -443,45 +479,16 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
                 LOG.info("applying " + overtimeHours + "hours FROM earnCodes : " + convertFromEarnCodes + " to overTime earnCode " + overtimeEarnCode);
 
 
-				overtimeHours = applyPositiveOvertimeOnTimeBlock(timeBlock, overtimeEarnCode, convertFromEarnCodes, overtimeHours);
-                LOG.info("after this run, OT hours = " + overtimeHours);
+				overtimeMinutes = applyOvertimeOnTimeBlock(timeBlock, overtimeEarnCode, convertFromEarnCodes, overtimeHours, overtimeMinutes);
+                LOG.info("after this run, OT minutes = " + overtimeMinutes);
 			}
 			flsaDay.setAppliedTimeBlocks(ModelObjectUtils.transform(bos, toTimeBlock));
 			flsaDay.remapTimeHourDetails();
 		}
-        return overtimeHours;
+        return overtimeMinutes;
 	}
-	
-	/**
-	 * Applies negative overtime to the given FlsaDays.
-	 * 
-	 * @param flsaDays The FlsaDays to apply the overtime to
-	 * @param weeklyOvertimeRule The WeeklyOvertimeRule in effective
-	 * @param asOfDate The effectiveDate of the WorkArea
-	 * @param convertFromEarnCodes The EarnCodes to convert to overtime
-	 * @param overtimeHours The number of overtime hours to apply
-	 */
-	protected void applyNegativeOvertimeToFlsaWeek(List<FlsaDay> flsaDays, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
-		for (ListIterator<FlsaDay> dayIterator = flsaDays.listIterator(); dayIterator.hasNext(); ) {
-			FlsaDay flsaDay = dayIterator.next();
-			
-			List<TimeBlock> timeBlocks = new ArrayList(flsaDay.getAppliedTimeBlocks());
-			Collections.sort(timeBlocks, new Comparator<TimeBlock>() {
-				public int compare(TimeBlock timeBlock1, TimeBlock timeBlock2) {
-					return ObjectUtils.compare(timeBlock1.getBeginDateTime(), timeBlock2.getBeginDateTime());
-				}
-			});
-            List<TimeBlockBo> bos = ModelObjectUtils.transform(timeBlocks, toTimeBlockBo);
-			for (ListIterator<TimeBlockBo> timeBlockIterator = bos.listIterator(); timeBlockIterator.hasNext(); ) {
-				TimeBlockBo timeBlock = timeBlockIterator.next();
-				String overtimeEarnCode = getOvertimeEarnCode(weeklyOvertimeRule, timeBlock, asOfDate);
-				overtimeHours = applyNegativeOvertimeOnTimeBlock(timeBlock, overtimeEarnCode, convertFromEarnCodes, overtimeHours);
-			}
-            flsaDay.setAppliedTimeBlocks(ModelObjectUtils.transform(bos, toTimeBlock));
-			flsaDay.remapTimeHourDetails();
-		}
-	}
-	
+
+
 	protected void removeEmptyOvertime(List<FlsaDay> flsaDays, WeeklyOvertimeRule weeklyOvertimeRule, LocalDate asOfDate) {
 		for (FlsaDay flsaDay : flsaDays ) {
 			List<TimeBlockBo> timeBlocks = ModelObjectUtils.transform(flsaDay.getAppliedTimeBlocks(), toTimeBlockBo);
@@ -505,415 +512,143 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 		}
 	}
 
-    protected BigDecimal applyPositiveOvertimeOnTimeBlockOld(TimeBlockBo timeBlock, String overtimeEarnCode, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
-        BigDecimal applied = BigDecimal.ZERO;
-        List<TimeHourDetailBo> timeHourDetails = timeBlock.getTimeHourDetails();
-        List<TimeHourDetailBo> newTimeHourDetails = new ArrayList<TimeHourDetailBo>();
-
-        LOG.info(  "INITIAL block; " + timeBlock.getTkTimeBlockId() + "overtimeHours = " + overtimeHours +  " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode()
-                + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes  + " startDate = " + timeBlock.getBeginDateTime() );
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes);
-        }
-
-        //LOG.info("before timeBlock hours = " + timeBlock.getHours() + "OT Hours = " + overtimeHours + " timeHourDetail Size = " + timeHourDetails.size());
-
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            if (convertFromEarnCodes.contains(timeHourDetail.getEarnCode())) {
-                if (timeHourDetail.getHours().compareTo(overtimeHours) >= 0) {
-                    applied = overtimeHours;
-                } else {
-                    applied = timeHourDetail.getHours();
-                }
-
-                EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(overtimeEarnCode, timeBlock.getEndDateTime().toLocalDate());
-                BigDecimal hours = earnCodeObj.getInflateFactor().multiply(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
-
-                TimeHourDetailBo overtimeTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, Collections.singletonList(overtimeEarnCode));
-                if (overtimeTimeHourDetail != null) {
-                    overtimeTimeHourDetail.setHours(overtimeTimeHourDetail.getHours().add(hours, HrConstants.MATH_CONTEXT));
-                    //overtimeTimeHourDetail.setHours(hours);
-                } else {
-                    TimeHourDetailBo newTimeHourDetail = new TimeHourDetailBo();
-                    newTimeHourDetail.setTkTimeBlockId(timeBlock.getTkTimeBlockId());
-                    newTimeHourDetail.setEarnCode(overtimeEarnCode);
-                    newTimeHourDetail.setHours(hours);
-
-                    newTimeHourDetails.add(newTimeHourDetail);
-                }
-
-                timeHourDetail.setHours(timeHourDetail.getHours().subtract(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
-            }
-        }
-
-        for (TimeHourDetailBo newTimeHourDetail : newTimeHourDetails) {
-            timeBlock.addTimeHourDetail(newTimeHourDetail);
-        }
-
-        LOG.info("END block; " + timeBlock.getTkTimeBlockId() + " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode());
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes);
-        }
-
-        return overtimeHours.subtract(applied);
-    }
-
-
 	/**
 	 * Applies overtime additions to the indicated TimeBlock.
 	 *
 	 * @param timeBlock The time block to apply the overtime on.
 	 * @param overtimeEarnCode The overtime earn code to apply overtime to.
-	 * @param convertFromEarnCodes The other earn codes on the time block.
+	 * @param applyToEarnCodes The earn codes on the time block that can potentially be converted to overtime
 	 * @param overtimeHours The overtime hours to apply.
 	 *
 	 * @return the amount of overtime hours remaining to be applied.
 	 */
-    protected BigDecimal applyPositiveOvertimeOnTimeBlock(TimeBlockBo timeBlock, String overtimeEarnCode, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
-        BigDecimal applied = BigDecimal.ZERO;
+    protected BigDecimal applyOvertimeOnTimeBlock(TimeBlockBo timeBlock, String overtimeEarnCode, Set<String> applyToEarnCodes, BigDecimal overtimeHours, BigDecimal overtimeMinutes) {
         List<TimeHourDetailBo> timeHourDetails = timeBlock.getTimeHourDetails();
-        List<TimeHourDetailBo> newTimeHourDetails = new ArrayList<TimeHourDetailBo>();
-
-        LOG.info(  "INITIAL block; " + timeBlock.getTkTimeBlockId() + "overtimeHours = " + overtimeHours +  " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode()
-                + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes  + " startDate = " + timeBlock.getBeginDateTime() );
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() );
-        }
-
 
         EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(overtimeEarnCode, timeBlock.getEndDateTime().toLocalDate());
 
-        BigDecimal toApply = BigDecimal.ZERO;
-        toApply = toApply.add(timeBlock.getHours());
-
-
-        BigDecimal otApplied = BigDecimal.ZERO;
-
         BigDecimal newOtActual = BigDecimal.ZERO;
+        BigDecimal newOtActualMinutes = BigDecimal.ZERO;
 
         BigDecimal maxOtToConvert = BigDecimal.ZERO;
         BigDecimal existingOtActualHours = BigDecimal.ZERO;
+        BigDecimal existingOtActualMinutes = BigDecimal.ZERO;
         BigDecimal newOt = BigDecimal.ZERO;
+        BigDecimal newOtMinutes = BigDecimal.ZERO;
 
         TimeHourDetailBo overtimeTimeHourDetail = null;
 
         List<TimeHourDetailBo> toConvert = new ArrayList<TimeHourDetailBo>();
 
         BigDecimal regularHours = BigDecimal.ZERO;
+        BigDecimal regularMinutes = BigDecimal.ZERO;
+
+        TimeHourDetailBo regularHoursTimeHourDetail = null;
         for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            if (convertFromEarnCodes.contains(timeHourDetail.getEarnCode())) {
-                maxOtToConvert = maxOtToConvert.add(timeHourDetail.getHours());
+            if ( ( timeHourDetail.getEarnCode().equals(timeBlock.getEarnCode()) )
+                && (applyToEarnCodes.contains(timeHourDetail.getEarnCode()) ) )
+            {
+                regularHours = timeHourDetail.getHours();
+                regularMinutes = timeHourDetail.getTotalMinutes();
+                regularHoursTimeHourDetail = timeHourDetail;
                 toConvert.add(timeHourDetail);
-                regularHours = regularHours.add(timeHourDetail.getHours());
             }
             else if (timeHourDetail.getEarnCode().equals(overtimeEarnCode))
             {
                 overtimeTimeHourDetail = timeHourDetail;
             }
-            else
-            {
-                regularHours = regularHours.add(timeHourDetail.getHours());
-            }
         }
 
-        LOG.info("regularHours = " + regularHours + " maxOtToConvert = " + maxOtToConvert + " overtimeHours = " + overtimeHours);
-
+        if (regularHoursTimeHourDetail == null)
+        {
+            //throw new RuntimeException("No TimeHourDetailBo exists for TimeBlock's BO");
+            return overtimeMinutes;
+        }
 
         //this is the actual hours of overtime worked before any multiplying factor.
         existingOtActualHours = timeBlock.getHours().subtract(regularHours);
+        existingOtActualMinutes = timeBlock.getTotalMinutes().subtract(regularMinutes);
 
-        LOG.info("actual OT Hours =  " + existingOtActualHours);
-        if (overtimeHours.compareTo(BigDecimal.ZERO) <= 0)
+        if (overtimeMinutes.compareTo(BigDecimal.ZERO) <= 0)                  //new overtime is less than or equal to zero
         {
-/*
-            if (existingOtActualHours.compareTo(BigDecimal.ZERO) == 0) {
-                return  BigDecimal.ZERO;
-            }
-            else
-            {
-            */
-            LOG.info("actual OT hours neq zero");
-
-            if (existingOtActualHours.compareTo(BigDecimal.ZERO) != 0) {
+            if (existingOtActualMinutes.compareTo(BigDecimal.ZERO) != 0) {
                 //handle this case Friday morning
-                if (toConvert.size() > 0)
-                {
-                    toConvert.get(0).setHours(toConvert.get(0).getHours().add(existingOtActualHours));
-                }
-                else
-                {
-                    TimeHourDetailBo newTimeHourDetail = new TimeHourDetailBo();
-                    newTimeHourDetail.setTkTimeBlockId(timeBlock.getTkTimeBlockId());
-                    newTimeHourDetail.setEarnCode(convertFromEarnCodes.iterator().next());
-                    newTimeHourDetail.setHours(existingOtActualHours);
-                    timeBlock.addTimeHourDetail(newTimeHourDetail);
-
-                    //Friday
-                    //timeHourDetails.get(0).setHours(existingOtActualHours);
-                }
+                regularHoursTimeHourDetail.setHours(regularHoursTimeHourDetail.getHours().add(existingOtActualHours));
+                regularHoursTimeHourDetail.setTotalMinutes(regularHoursTimeHourDetail.getTotalMinutes().add(existingOtActualMinutes));
             }
             newOtActual = BigDecimal.ZERO;       //could this be a problem??
+            newOtActualMinutes = BigDecimal.ZERO;
             newOt = BigDecimal.ZERO;
+            newOtMinutes = BigDecimal.ZERO;
         }
-        else if (overtimeHours.compareTo(existingOtActualHours) <= 0) // new overtime is less than old overtime
+        else if (overtimeMinutes.compareTo(existingOtActualMinutes) <= 0)       //new overtime is less than old overtime
         {
             //subtract from existing OT until existing OT is zero, if necessary add to toConvert List until the difference is ZERO
-            //newOtToAdd = existingOt
             BigDecimal newOtToRemove = existingOtActualHours.subtract(overtimeHours);
+            BigDecimal newOtMinToRemove = existingOtActualMinutes.subtract(overtimeMinutes);
 
             newOtActual = overtimeHours;
+            newOtActualMinutes = overtimeMinutes;
             newOt = earnCodeObj.getInflateFactor().multiply(overtimeHours, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
-
-            if (toConvert.size() > 0)
-            {
-                toConvert.get(0).setHours(toConvert.get(0).getHours().add(newOtToRemove));
-            }
-            else
-            {
-//                LOG.debug("hitting problem case");
-//                timeHourDetails.get(0).setHours(timeHourDetails.get(0).getHours().add(newOtToRemove));
-
-                TimeHourDetailBo newTimeHourDetail = new TimeHourDetailBo();
-                newTimeHourDetail.setTkTimeBlockId(timeBlock.getTkTimeBlockId());
-//                newTimeHourDetail.setEarnCode(timeBlock.getEarnCode());
-                newTimeHourDetail.setEarnCode(convertFromEarnCodes.iterator().next());
-                newTimeHourDetail.setHours(newOtToRemove);
-                timeBlock.addTimeHourDetail(newTimeHourDetail);
-            }
-
-
-            LOG.info("overtimeHours <= existingOtActualHours: " + overtimeHours + " vs " + existingOtActualHours + "newOtActual = " + newOtActual + " newOt = " + newOt);
+            newOtMinutes = earnCodeObj.getInflateFactor().multiply(overtimeMinutes, HrConstants.MATH_CONTEXT);
+            regularHoursTimeHourDetail.setHours(regularHoursTimeHourDetail.getHours().add(newOtToRemove));
+            regularHoursTimeHourDetail.setTotalMinutes(regularHoursTimeHourDetail.getTotalMinutes().add(newOtMinToRemove));
         }
-        else if (overtimeHours.compareTo(existingOtActualHours) > 0) //new overtime is greater than old overtime
+        else if (overtimeMinutes.compareTo(existingOtActualMinutes) > 0)        //new overtime is greater than old overtime
         {
             //add difference to OT, up to maxOtToConvert.  remove from toConvert as necessary
             BigDecimal newOtToAdd = overtimeHours.subtract(existingOtActualHours);
-            BigDecimal toReduce = newOtToAdd;
-            if (newOtToAdd.compareTo(maxOtToConvert) >= 0) {
-                newOtToAdd = maxOtToConvert;
+            BigDecimal newOtMinToAdd = overtimeMinutes.subtract(existingOtActualMinutes);
+            if (newOtToAdd.compareTo(overtimeHours) >= 0) {
+                newOtToAdd = overtimeHours;
+                newOtMinToAdd = overtimeMinutes;
             }
 
-            LOG.info("newOtToAdd: " + newOtToAdd );
+            if (newOtToAdd.compareTo(timeBlock.getHours()) > 0)
+            {
+                newOtToAdd = timeBlock.getHours();
+                newOtMinToAdd = timeBlock.getTotalMinutes();
+            }
 
-            for (TimeHourDetailBo timeHourDetailBo : toConvert) {
-                BigDecimal existingHours = timeHourDetailBo.getHours();
-                if (toReduce.compareTo(existingHours) >= 0)
-                {
-                    timeHourDetailBo.setHours(BigDecimal.ZERO);
-                    toReduce = toReduce.subtract(existingHours);
-                }
-                else if (toReduce.compareTo(BigDecimal.ZERO) > 0)
-                {
-                    timeHourDetailBo.setHours(timeHourDetailBo.getHours().subtract(toReduce));
-                    toReduce = toReduce.subtract(toReduce);
-                }
+
+            BigDecimal toReduce = newOtToAdd;
+            BigDecimal toReduceMin = newOtMinToAdd;
+
+            BigDecimal existingHours = regularHoursTimeHourDetail.getHours();
+            BigDecimal existingMinutes = regularHoursTimeHourDetail.getTotalMinutes();
+            if (toReduceMin.compareTo(existingMinutes) >= 0)
+            {
+                regularHoursTimeHourDetail.setHours(BigDecimal.ZERO);
+                regularHoursTimeHourDetail.setTotalMinutes(BigDecimal.ZERO);
+            }
+            else if (toReduceMin.compareTo(BigDecimal.ZERO) > 0)
+            {
+                regularHoursTimeHourDetail.setHours(regularHoursTimeHourDetail.getHours().subtract(toReduce));
+                regularHoursTimeHourDetail.setTotalMinutes(regularHoursTimeHourDetail.getTotalMinutes().subtract(toReduceMin));
             }
 
             newOtActual = existingOtActualHours.add(newOtToAdd);
+            newOtActualMinutes = existingOtActualMinutes.add(newOtMinToAdd);
             newOt = earnCodeObj.getInflateFactor().multiply(newOtActual, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
-
-            LOG.info("overtimeHours > existingOtActualHours: " + overtimeHours + " vs " + existingOtActualHours + "newOtActual = " + newOtActual + " newOt = " + newOt);
+            newOtMinutes = earnCodeObj.getInflateFactor().multiply(newOtActualMinutes, HrConstants.MATH_CONTEXT);
         }
 
 
         if (overtimeTimeHourDetail != null) {
             overtimeTimeHourDetail.setHours(newOt);
+            overtimeTimeHourDetail.setTotalMinutes(newOtMinutes);
         } else {
             TimeHourDetailBo newTimeHourDetail = new TimeHourDetailBo();
             newTimeHourDetail.setTkTimeBlockId(timeBlock.getTkTimeBlockId());
             newTimeHourDetail.setEarnCode(overtimeEarnCode);
             newTimeHourDetail.setHours(newOt);
+            newTimeHourDetail.setTotalMinutes(newOtMinutes);
             timeBlock.addTimeHourDetail(newTimeHourDetail);
         }
 
-        LOG.info("COMPLETE block; " + timeBlock.getTkTimeBlockId() + " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode() + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes );
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() );
-        }
-
-        LOG.info("returning   " + overtimeHours.subtract(newOtActual));
-
-        return overtimeHours.subtract(newOtActual);
-/*
-        if (changeMade)
-        {
-        }
-        else
-        {
-            return overtimeHours;
-        }
-        */
+        return overtimeMinutes.subtract(newOtActualMinutes);
     }
 
-
-
-
-	protected BigDecimal applyPositiveOvertimeOnTimeBlockNew(TimeBlockBo timeBlock, String overtimeEarnCode, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
-		BigDecimal applied = BigDecimal.ZERO;
-		List<TimeHourDetailBo> timeHourDetails = timeBlock.getTimeHourDetails();
-		List<TimeHourDetailBo> newTimeHourDetails = new ArrayList<TimeHourDetailBo>();
-
-        LOG.info(  "INITIAL block; " + timeBlock.getTkTimeBlockId() + "overtimeHours = " + overtimeHours +  " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode()
-                    + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes  + " startDate = " + timeBlock.getBeginDateTime() );
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() );
-        }
-
-
-        Boolean timeBlockHasOt = false;
-        for (TimeHourDetailBo tmpDetail : timeBlock.getTimeHourDetails() )
-        {
-            if (tmpDetail.getEarnCode().equals(overtimeEarnCode))
-            {
-                timeBlockHasOt = true;
-            }
-        }
-
-
-
-
-        Boolean changeMade = false;
-
-        BigDecimal toApply = BigDecimal.ZERO;
-        toApply = toApply.add(timeBlock.getHours());
-
-
-        BigDecimal otApplied = BigDecimal.ZERO;
-
-		for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-			if (convertFromEarnCodes.contains(timeHourDetail.getEarnCode())) {
-
-                changeMade = true;
-                if (overtimeHours.compareTo(timeHourDetail.getHours()) >= 0)
-                {
-                    applied = timeHourDetail.getHours();
-                }
-                else {
-                    applied = overtimeHours;
-                }
-
-
-				EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(overtimeEarnCode, timeBlock.getEndDateTime().toLocalDate());
-				BigDecimal hours = earnCodeObj.getInflateFactor().multiply(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
-
-				TimeHourDetailBo overtimeTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, Collections.singletonList(overtimeEarnCode));
-				if (overtimeTimeHourDetail != null) {
-                    overtimeTimeHourDetail.setHours(hours);
-                    toApply = toApply.subtract(hours);
-                    otApplied = otApplied.add(hours);
-				} else {
-					TimeHourDetailBo newTimeHourDetail = new TimeHourDetailBo();
-					newTimeHourDetail.setTkTimeBlockId(timeBlock.getTkTimeBlockId());
-					newTimeHourDetail.setEarnCode(overtimeEarnCode);
-					newTimeHourDetail.setHours(hours);
-
-					newTimeHourDetails.add(newTimeHourDetail);
-                    toApply = toApply.subtract(hours);
-
-                    otApplied = otApplied.add(hours);
-				}
-
-//                timeHourDetail.setHours(timeBlock.getHours().subtract(hours));
-/*
-                BigDecimal newHours = null;
-                if (toApply.compareTo(timeHourDetail.getHours()) >= 0 )
-                {
-                }
-                else {
-                    newHours = toApply.setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP);
-                }
-*/
-                BigDecimal newHours = toApply;
-                if (newHours.compareTo(timeHourDetail.getHours()) >= 0)
-                {
-                    newHours = timeHourDetail.getHours();
-                }
-                timeHourDetail.setHours(newHours);
-                toApply = toApply.subtract(newHours);
-
-
-                //timeHourDetail.setHours(timeHourDetail.getHours().subtract(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP)   );
-
-                /*
-                if (timeBlockHasOt)
-                {
-                    timeHourDetail.setHours(applied.setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
-                }
-                else
-                {
-                    timeHourDetail.setHours(timeHourDetail.getHours().subtract(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
-                }
-                */
-			}
-            else if (!timeHourDetail.getEarnCode().equals(overtimeEarnCode))
-            {
-                toApply = toApply.subtract(timeHourDetail.getHours());
-            }
-		}
-
-		for (TimeHourDetailBo newTimeHourDetail : newTimeHourDetails) {
-			timeBlock.addTimeHourDetail(newTimeHourDetail);
-		}
-        LOG.info("COMPLETE block; " + timeBlock.getTkTimeBlockId() + " overall timeblock hours = " + timeBlock.getHours() + " earnCode = " + timeBlock.getEarnCode() + " OT = " + overtimeEarnCode + " convertFrom = " + convertFromEarnCodes );
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            LOG.info("EC = " + timeHourDetail.getEarnCode() + " hours = " + timeHourDetail.getHours() );
-        }
-
-        LOG.info("OT applied = " + otApplied);
-        return overtimeHours.subtract(otApplied);
-/*
-        if (changeMade)
-        {
-        }
-        else
-        {
-            return overtimeHours;
-        }
-        */
-	}
-	
-	/**
-	 * Applies overtime subtractions on the indicated TimeBlock.
-	 *
-	 * @param timeBlock The time block to reset the overtime on.
-	 * @param overtimeEarnCode The overtime earn code to apply overtime to.
-	 * @param convertFromEarnCodes The other earn codes on the time block.
-	 * @param overtimeHours The overtime hours to apply.
-	 *
-	 * @return the amount of overtime hours remaining to be applied.
-	 */
-    protected BigDecimal applyNegativeOvertimeOnTimeBlock(TimeBlockBo timeBlock, String overtimeEarnCode, Set<String> convertFromEarnCodes, BigDecimal overtimeHours) {
-        BigDecimal applied = BigDecimal.ZERO;
-        List<TimeHourDetailBo> timeHourDetails = timeBlock.getTimeHourDetails();
-        List<TimeHourDetailBo> newTimeHourDetails = new ArrayList<TimeHourDetailBo>();
-
-        for (TimeHourDetailBo timeHourDetail : timeHourDetails) {
-            if (convertFromEarnCodes.contains(timeHourDetail.getEarnCode())) {
-                TimeHourDetailBo overtimeTimeHourDetail = getTimeHourDetailByEarnCode(timeHourDetails, Collections.singletonList(overtimeEarnCode));
-
-                if (overtimeTimeHourDetail != null) { //if overtime already exists
-                    TimeHourDetail.Builder overtimeTimeHourDetailBuilder = TimeHourDetail.Builder.create(overtimeTimeHourDetail);
-                    applied = overtimeTimeHourDetail.getHours().add(overtimeHours, HrConstants.MATH_CONTEXT); // add the negative number of hours of overtime to the existing OT hours
-                    if (applied.compareTo(BigDecimal.ZERO) >= 0) {  //if the OT hours is still greater than or equal to zero, set 'applied' to this new negative number
-                        applied = overtimeHours;
-                    } else {
-                        //new OT value is now less than zero
-                        applied = overtimeTimeHourDetail.getHours().negate(); //OT is now less than zer
-                    }
-
-                    EarnCodeContract earnCodeObj = HrServiceLocator.getEarnCodeService().getEarnCode(overtimeEarnCode, timeBlock.getEndDateTime().toLocalDate());
-                    BigDecimal hours = earnCodeObj.getInflateFactor().multiply(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_DOWN);
-
-                    overtimeTimeHourDetailBuilder.setHours(overtimeTimeHourDetail.getHours().add(hours, HrConstants.MATH_CONTEXT));
-
-                    timeHourDetail.setHours(timeHourDetail.getHours().subtract(applied, HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, BigDecimal.ROUND_HALF_UP));
-                }
-            }
-            newTimeHourDetails.add(timeHourDetail);
-        }
-        return overtimeHours.subtract(applied);
-    }
-	
 	protected <T extends TimeHourDetailContract> T getTimeHourDetailByEarnCode(List<T> timeHourDetails, Collection<String> earnCodes) {
 		T result = null;
 		
@@ -940,7 +675,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 			if (index == 0 && currentWeekParts.size() > 1) {
 				FlsaWeek previousFlsaWeek = currentWeekParts.get(0);
 				for (FlsaDay flsaDay : previousFlsaWeek.getFlsaDays()) {
-					KRADServiceLocatorWeb.getLegacyDataAdapter().save(ModelObjectUtils.transform(flsaDay.getAppliedTimeBlocks(), toTimeBlockBo));
+					KRADServiceLocator.getBusinessObjectService().save(ModelObjectUtils.transform(flsaDay.getAppliedTimeBlocks(), toTimeBlockBo));
                     //TkServiceLocator.getTimeBlockService().saveOrUpdateTimeBlocks(flsaDay.getAppliedTimeBlocks());
 				}
 			}
@@ -948,7 +683,7 @@ public class WeeklyOvertimeRuleServiceImpl implements WeeklyOvertimeRuleService 
 			if (index == flsaWeeks.size() - 1 && currentWeekParts.size() > 1) {
 				FlsaWeek nextFlsaWeek = currentWeekParts.get(currentWeekParts.size() - 1);
 				for (FlsaDay flsaDay : nextFlsaWeek.getFlsaDays()) {
-					KRADServiceLocatorWeb.getLegacyDataAdapter().save(ModelObjectUtils.transform(flsaDay.getAppliedTimeBlocks(), toTimeBlockBo));
+					KRADServiceLocator.getBusinessObjectService().save(ModelObjectUtils.transform(flsaDay.getAppliedTimeBlocks(), toTimeBlockBo));
                     //TkServiceLocator.getTimeBlockService().saveOrUpdateTimeBlocks(flsaDay.getAppliedTimeBlocks());
 				}
 			}

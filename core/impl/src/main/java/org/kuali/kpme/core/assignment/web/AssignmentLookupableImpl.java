@@ -17,15 +17,18 @@ package org.kuali.kpme.core.assignment.web;
 
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
-import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.groupkey.HrGroupKeyBo;
 import org.kuali.kpme.core.lookup.KpmeHrGroupKeyedBusinessObjectLookupableImpl;
 import org.kuali.kpme.core.role.KPMERoleMemberAttribute;
 import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
-
-import java.util.*;
+import org.kuali.rice.krad.web.form.LookupForm;
+import org.kuali.kpme.core.assignment.AssignmentBo;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AssignmentLookupableImpl extends KpmeHrGroupKeyedBusinessObjectLookupableImpl {
     private static final long serialVersionUID = 774015772672806415L;
@@ -57,14 +60,13 @@ public class AssignmentLookupableImpl extends KpmeHrGroupKeyedBusinessObjectLook
         return results;
     }
 
+	@SuppressWarnings("unchecked")
 	@Override
-    protected Collection<?> executeSearch(Map<String, String> searchCriteria, List<String> wildcardAsLiteralSearchCriteria, boolean bounded, Integer searchResultsLimit) {
-
+	protected List<?> getSearchResults(LookupForm form, Map<String, String> searchCriteria, boolean unbounded) {
         String userPrincipalId = GlobalVariables.getUserSession().getPrincipalId();
-
-        List<AssignmentBo> results = (List<AssignmentBo>) super.executeSearch(searchCriteria, wildcardAsLiteralSearchCriteria, bounded, searchResultsLimit);
+        List<AssignmentBo> results = (List<AssignmentBo>) super.getSearchResults(form, searchCriteria, unbounded);
         List<AssignmentBo> filteredResults = filterLookupAssignments(results, userPrincipalId);
-
+        generateLookupResultsMessages(form, searchCriteria, filteredResults, unbounded);
         return filteredResults;
 	}
 }

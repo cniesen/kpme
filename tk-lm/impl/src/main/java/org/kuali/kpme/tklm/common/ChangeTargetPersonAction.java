@@ -39,6 +39,10 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.web.KPMEAction;
+import org.kuali.kpme.tklm.time.service.TkServiceLocator;
+import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
+import org.kuali.kpme.tklm.time.workflow.TimesheetDocumentHeader;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.kim.api.identity.principal.Principal;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.util.GlobalVariables;
@@ -50,18 +54,55 @@ public class ChangeTargetPersonAction extends KPMEAction {
     public ActionForward changeTargetPerson(ActionMapping mapping, ActionForm form, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ActionForward forward = mapping.findForward("basic");
     	ChangeTargetPersonForm changeTargetPersonForm = (ChangeTargetPersonForm) form;
-    	changeTargetPersonForm.setMessage(null);
+    	changeTargetPersonForm.setMessage(null);    	
+    	
         if (StringUtils.isNotBlank(changeTargetPersonForm.getPrincipalName())) {
         	Principal targetPerson = KimApiServiceLocator.getIdentityService().getPrincipalByPrincipalName(changeTargetPersonForm.getPrincipalName());
         	
-	        if (targetPerson != null) {
+	        if (targetPerson != null) {	
+	        	LocalDate aDate = LocalDate.now();
+	        	LocalDate endDate = LocalDate.now();
+	        	Integer limit = 0;
+	        	String limitString = ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit");
+	        	if(StringUtils.isNotBlank(limitString)) {
+	        		limit = Integer.parseInt(limitString);
+	        	}	        	
+	        	String docId = request.getParameter("documentId");
+	        	if(StringUtils.isNotBlank(docId)) {
+	        		// use the timesheet document user wants to acces to determine the permission date
+	        		TimesheetDocument tDoc = TkServiceLocator.getTimesheetService().getTimesheetDocument(docId);
+	        		if(tDoc != null) {
+	        			aDate = tDoc.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+	        			endDate = tDoc.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
+	        		}
+	        	}
+	        	boolean resultWithGraceDate = false;
+	        	if(limit != 0) {
+	        		LocalDate graceDate = aDate.minusDays(limit);
+	        		resultWithGraceDate = isReviewerForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isApproverForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), graceDate)
+					                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), graceDate)
+						                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), graceDate);
+	        	}
+	        	
+	        	boolean resultWithBeginDate = isReviewerForPerson(targetPerson.getPrincipalId(), aDate)
+	                	|| isApproverForPerson(targetPerson.getPrincipalId(), aDate)
+	                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), aDate)
+                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), aDate)
+	                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), aDate);
+	        	
+	        	boolean resultWithEndDate = isReviewerForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isApproverForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isViewOnlyForPerson(targetPerson.getPrincipalId(), endDate)
+                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId(), endDate)
+	                	|| isAdministratorForPerson(targetPerson.getPrincipalId(), endDate);
+	        	
 	            if (HrServiceLocator.getKPMEGroupService().isMemberOfSystemAdministratorGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
 	                	|| HrServiceLocator.getKPMEGroupService().isMemberOfSystemViewOnlyGroup(GlobalVariables.getUserSession().getPrincipalId(), LocalDate.now().toDateTimeAtStartOfDay())
-	                	|| isReviewerForPerson(targetPerson.getPrincipalId())
-	                	|| isApproverForPerson(targetPerson.getPrincipalId())
-	                	|| isViewOnlyForPerson(targetPerson.getPrincipalId())
-                        || isPayrollProcessorForPerson(targetPerson.getPrincipalId())
-	                	|| isAdministratorForPerson(targetPerson.getPrincipalId())) {
+	                	|| resultWithBeginDate
+	                	|| resultWithEndDate
+	                	|| resultWithGraceDate) {
 		                	
 	            	HrContext.setTargetPrincipalId(targetPerson.getPrincipalId());
 	
@@ -97,8 +138,8 @@ public class ChangeTargetPersonAction extends KPMEAction {
         return forward;
     }
     
-    private boolean isReviewerForPerson(String principalId) {
-        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, LocalDate.now());
+    private boolean isReviewerForPerson(String principalId, LocalDate aDate) {
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, aDate);
 
         for (Assignment assignment : assignments) {
             if (HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.REVIEWER.getRoleName(), assignment.getWorkArea(), LocalDate.now().toDateTimeAtStartOfDay())) {
@@ -108,8 +149,8 @@ public class ChangeTargetPersonAction extends KPMEAction {
         return false;
     }
 
-    private boolean isApproverForPerson(String principalId) {
-        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, LocalDate.now());
+    private boolean isApproverForPerson(String principalId, LocalDate aDate) {
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, aDate);
 
         for (Assignment assignment : assignments) {
         	if (HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), assignment.getWorkArea(), LocalDate.now().toDateTimeAtStartOfDay())
@@ -119,10 +160,10 @@ public class ChangeTargetPersonAction extends KPMEAction {
         }
 
         return false;
-    }
+    }    
 
-    private boolean isPayrollProcessorForPerson(String principalId) {
-        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, LocalDate.now());
+    private boolean isPayrollProcessorForPerson(String principalId, LocalDate aDate) {
+        List<Assignment> assignments = HrServiceLocator.getAssignmentService().getAssignments(principalId, aDate);
 
         for (Assignment assignment : assignments) {
             if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(), KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), assignment.getDept(), assignment.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())
@@ -134,8 +175,8 @@ public class ChangeTargetPersonAction extends KPMEAction {
         return false;
     }
 
-    private boolean isViewOnlyForPerson(String principalId) {
-        List<Job> jobs = HrServiceLocator.getJobService().getJobs(principalId, LocalDate.now());
+    private boolean isViewOnlyForPerson(String principalId, LocalDate aDate) {
+        List<Job> jobs = HrServiceLocator.getJobService().getJobs(principalId, aDate);
         
         for (Job job : jobs) {
         	String department = job != null ? job.getDept() : null;
@@ -164,8 +205,8 @@ public class ChangeTargetPersonAction extends KPMEAction {
         return false;
     }
     
-    private boolean isAdministratorForPerson(String principalId) {
-        List<Job> jobs = HrServiceLocator.getJobService().getJobs(principalId, LocalDate.now());
+    private boolean isAdministratorForPerson(String principalId, LocalDate aDate) {
+        List<Job> jobs = HrServiceLocator.getJobService().getJobs(principalId, aDate);
         
         for (Job job : jobs) {
 			String department = job != null ? job.getDept() : null;

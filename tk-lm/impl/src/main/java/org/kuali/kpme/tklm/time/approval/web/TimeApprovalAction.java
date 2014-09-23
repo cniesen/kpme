@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,6 +36,7 @@ import org.apache.struts.action.ActionMapping;
 import org.apache.struts.action.ActionRedirect;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
+import org.hsqldb.lib.StringUtil;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
@@ -46,7 +49,6 @@ import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunch;
 import org.kuali.kpme.tklm.common.CalendarApprovalFormAction;
 import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
-import org.kuali.kpme.tklm.time.missedpunch.MissedPunchBo;
 import org.kuali.kpme.tklm.time.missedpunch.MissedPunchDocument;
 import org.kuali.kpme.tklm.time.missedpunch.document.MissedPunchDocumentService;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
@@ -211,7 +213,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 	
     private List<String> getPrincipalIds(TimeApprovalActionForm timeApprovalActionForm) {
         List<String> workAreas = new ArrayList<String>();
-        if (StringUtils.isEmpty(timeApprovalActionForm.getSelectedWorkArea())) {
+        if (StringUtil.isEmpty(timeApprovalActionForm.getSelectedWorkArea())) {
         	for (Long workAreaKey : timeApprovalActionForm.getWorkAreaDescr().keySet()) {
         		workAreas.add(workAreaKey.toString());
         	}
@@ -223,12 +225,18 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
             return Collections.emptyList();
         }
 
-        //allows all employees with active assignments in the limit set in the config to be viewable by approver
-        Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
         LocalDate endDate = timeApprovalActionForm.getCalendarEntry().getEndPeriodFullDateTime().toLocalDate();
-        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate().minusDays(limit);
+        LocalDate beginDate = timeApprovalActionForm.getCalendarEntry().getBeginPeriodFullDateTime().toLocalDate();
+        
+        List<String> pList1 = TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
+        List<String> pList2 = TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);
+        Set<String> pIdSet = new HashSet<String>();
+        pIdSet.addAll(pList1);
+        pIdSet.addAll(pList2);
+        List<String> finalList = new ArrayList<String>(pIdSet);
+        return finalList;
+//        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, beginDate, beginDate, endDate);
 
-        return TkServiceLocator.getTimeApproveService().getTimePrincipalIdsWithSearchCriteria(workAreas, calendar, endDate, beginDate, endDate);      
 	}
     
 	protected void setApprovalTables(TimeApprovalActionForm timeApprovalActionForm, HttpServletRequest request, List<String> principalIds, String docIdSearchTerm) {
@@ -251,7 +259,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(StringUtils.lowerCase(row2.getName()), StringUtils.lowerCase(row1.getName()));
 						}
 					}
-		    	});
+                		    	});
 		    } else if (StringUtils.equals(sortField, "documentID")) {
 		    	final boolean sortDocumentIdAscending = getAscending(request);
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
@@ -263,7 +271,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(NumberUtils.toInt(row2.getDocumentId()), NumberUtils.toInt(row1.getDocumentId()));
 						}
 					}
-		    	});
+                		    	});
 		    } else if (StringUtils.equals(sortField, "status")) {
 		    	final boolean sortStatusIdAscending = getAscending(request);;
 		    	Collections.sort(approvalRows, new Comparator<ApprovalTimeSummaryRow>() {
@@ -275,7 +283,7 @@ public class TimeApprovalAction extends CalendarApprovalFormAction {
 							return ObjectUtils.compare(StringUtils.lowerCase(row2.getApprovalStatus()), StringUtils.lowerCase(row1.getApprovalStatus()));
 						}
 					}
-		    	});
+                		    	});
 		    }
 		    
 		    String page = request.getParameter((new ParamEncoder(HrConstants.APPROVAL_TABLE_ID).encodeParameterName(TableTagParameters.PARAMETER_PAGE)));

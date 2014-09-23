@@ -15,31 +15,30 @@
  */
 package org.kuali.kpme.tklm.time.missedpunch;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
-import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignment;
-import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.api.util.KpmeUtils;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
-import org.kuali.kpme.tklm.common.LMConstants;
+import org.kuali.kpme.tklm.api.common.TkConstants;
 import org.kuali.kpme.tklm.time.missedpunch.web.MissedPunchForm;
+import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
 import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
+import org.kuali.rice.core.api.util.Truth;
 import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
 import org.kuali.rice.krad.uif.view.ViewModel;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase {
 
@@ -64,23 +63,26 @@ public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase
 			if (StringUtils.isNotBlank(timesheetDocumentId)) {
 				TimesheetDocument timesheetDocument = TkServiceLocator.getTimesheetService().getTimesheetDocument(timesheetDocumentId);
 
-				Map<LocalDate, List<Assignment>> assignmentMap = timesheetDocument.getAssignmentMap();
-				List<Assignment> assignments = assignmentMap.get(mpDate);
+                List<Assignment> dayAssignments = KpmeUtils.getUniqueAssignments(HrServiceLocator.getAssignmentService().getAssignmentHistoryBetweenDays(timesheetDocument.getPrincipalId(), mpDate, mpDate));
+                List<Assignment> assignments = new ArrayList<Assignment>();
+                if (CollectionUtils.isNotEmpty(dayAssignments)) {
+                    for (Assignment assignment : dayAssignments) {
 
-                Interval calEntryInterval = new Interval(timesheetDocument.getCalendarEntry().getBeginPeriodFullDateTime(), timesheetDocument.getCalendarEntry().getEndPeriodFullDateTime());
-                if (CollectionUtils.isEmpty(assignments)
-                    && !calEntryInterval.contains(mpDate.toDateTimeAtStartOfDay())) {
-                    assignments = KpmeUtils.getUniqueAssignments(HrServiceLocator.getAssignmentService().getAssignmentHistoryBetweenDays(timesheetDocument.getPrincipalId(), mpDate, mpDate));
+                        TimeCollectionRule tcr = null;
+                        if (assignment.getJob() != null) {
+                            tcr = TkServiceLocator.getTimeCollectionRuleService().getTimeCollectionRule(assignment.getJob().getDept(), assignment.getWorkArea(), assignment.getJob().getHrPayType(), assignment.getGroupKeyCode(), mpDate);
+                        }
+                        boolean isSynchronous = tcr == null || tcr.isClockUserFl();
+                        if (isSynchronous) {
+                            assignments.add(assignment);
+                        }
+                    }
                 }
 
                 if (CollectionUtils.isEmpty(assignments)) {
                     assignments = Collections.emptyList();
                 }
 				
-//				if (assignments.size() > 1) {
-//					labels.add(new ConcreteKeyValue("", ""));
-//				}
-
 				if(missedPunchForm.getIpAddress()!=null){
 					String ipAddress = TKUtils.getIPAddressFromRequest(missedPunchForm.getIpAddress());
 
@@ -89,15 +91,20 @@ public class MissedPunchAssignmentKeyValuesFinder extends UifKeyValuesFinderBase
 					String principalId = HrContext.getPrincipalId();
 					if(targetPrincipalId.equals(principalId)){
 						DateTime currentDateTime = new DateTime();
-						for (Assignment assignment : assignments) {
+                        //Boolean allowActionFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.ALLOW_CLOCKING_EMPLOYEE_FROM_INVALID_LOCATION), false);
+                        Boolean limitMPAssignmentsFromInvalidLocation = Truth.strToBooleanIgnoreCase(ConfigContext.getCurrentContextConfig().getProperty(TkConstants.LIMIT_MP_ASSIGN_FROM_INVALIDLOCATION), false);
+
+                        for (Assignment assignment : assignments) {
 							//Assignment assignment = timesheetDocument.getAssignment(AssignmentDescriptionKey.get(entry.getKey()), LocalDate.now());
-							String allowActionFromInvalidLocation = ConfigContext.getCurrentContextConfig().getProperty(LMConstants.ALLOW_CLOCKINGEMPLOYYE_FROM_INVALIDLOCATION);
-							if(StringUtils.equals(allowActionFromInvalidLocation, "false")) {
+
+							if(limitMPAssignmentsFromInvalidLocation) {
 								boolean isInvalid = TkServiceLocator.getClockLocationRuleService().isInvalidIPClockLocation(assignment.getGroupKeyCode(), assignment.getDept(), assignment.getWorkArea(), assignment.getPrincipalId(), assignment.getJobNumber(), ipAddress, currentDateTime.toLocalDate());
 								if(!isInvalid){
 									labels.add(new ConcreteKeyValue(assignment.getAssignmentKey(),assignment.getAssignmentDescription()));
 								}
-							}
+							} else {
+                                labels.add(new ConcreteKeyValue(assignment.getAssignmentKey(),assignment.getAssignmentDescription()));
+                            }
 						}
 					}else{
 						for (Assignment assignment : assignments) {

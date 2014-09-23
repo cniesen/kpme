@@ -27,6 +27,7 @@ public class AssignmentColumn implements Serializable, AssignmentColumnContract 
 	private String cssClass;
 	private BigDecimal amount = BigDecimal.ZERO;
 	private BigDecimal total = BigDecimal.ZERO;
+    private BigDecimal totalMinutes = BigDecimal.ZERO;
 	private boolean weeklyTotal;
 	
 	public String getCssClass() {
@@ -53,7 +54,15 @@ public class AssignmentColumn implements Serializable, AssignmentColumnContract 
 		this.total = total;
 	}
 
-	public boolean isWeeklyTotal() {
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(BigDecimal totalMinutes) {
+        this.totalMinutes = totalMinutes;
+    }
+
+    public boolean isWeeklyTotal() {
 		return weeklyTotal;
 	}
 

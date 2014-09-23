@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.tklm.common;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 

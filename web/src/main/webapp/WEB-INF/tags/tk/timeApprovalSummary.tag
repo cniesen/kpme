@@ -27,9 +27,9 @@
 	                     <tr style="font-weight: bold;">
 	                        <td style="border-right-style: none">
 	                        	<c:if test="${fn:length(timeApprovalSummary.weeklySections[entry.key]) > 0}">
-		                        <div class="ui-state-default " style="width:15px;vertical-align: middle;" >
-		                			<span id="weekSummary_${weekString}_${principalId}" class="ui-icon ui-icon-plus rowInfo"></span>
-		            			</div>
+                                    <div class="ui-state-default " style="width:15px;vertical-align: middle;" >
+                                        <span id="weekSummary_${weekString}_${principalId}" class="ui-icon ui-icon-plus rowInfo"></span>
+                                    </div>
 		            			
 		            			</c:if>
 		            		
@@ -40,12 +40,8 @@
 	                        <c:forEach items="${timeApprovalSummary.timeSummaryHeader}" var="hour">
 	                        	<c:if test="${weekHours[hour.key] != null and not empty weekHours[hour.key]}">
 	                        		<c:choose>
-	                        			<c:when test="${clockLog[hour.key] != null and not empty clockLog[hour.key] and clockLog[hour.key]}">
-	                        			<c:choose>
-	                        				<c:when test="${fn:contains(clockStatusMessage, 'Clocked in')}">
-	                        					<td style='background-color:#F08080'>${weekHours[hour.key]}</td>
-	                        				</c:when>
-	                        			</c:choose>
+	                        			<c:when test="${clockLog[hour.key] != null and not empty clockLog[hour.key] and clockLog[hour.key] and fn:contains(clockStatusMessage, 'Clocked in')}">
+	                        				<td style='background-color:#F08080'>${weekHours[hour.key]}</td>
 	                        			</c:when>
 	                        			<c:otherwise>
 	                        				<td>${weekHours[hour.key]}</td>
@@ -57,8 +53,8 @@
 	                        		<td style="background: rgb(224, 235, 225)">${weekHours[hour.key]}</td>
 	                        	</c:if>
 	                        </c:forEach>
-	                        <td style="border-left: 2px double #666666;" valign="middle">${timeApprovalSummary.weekTotalMap[entry.key]}</td>
-	                        <td style="border-left: 2px double #666666;" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeApprovalSummary.flsaWeekTotalMap[entry.key]}"/></td>
+	                        <td style="border-left: 2px double #666666;" valign="middle">${timeApprovalSummary.weekTotalConvertedMap[entry.key]}</td>
+	                        <td style="border-left: 2px double #666666;" valign="middle"><fmt:formatNumber type="number" minFractionDigits="2" maxFractionDigits="2" value = "${timeApprovalSummary.flsaWeekTotalConvertedMap[entry.key]}"/></td>
 
 	                     </tr>
 	              <tbody id="weekSummary${weekString}_${principalId}" style="display: none;">
@@ -71,7 +67,7 @@
                             <td style="border-left: 2px double #666666;"></td>
 						</tr>
 						<c:forEach items="${earnCodeSection.assignmentsRows}" var="assignmentRow">
-							<c:set var="periodTotal" value="${assignmentRow.periodTotal}"/>
+							<c:set var="periodTotal" value="${assignmentRow.periodTotalConverted}"/>
                             <c:choose>
                                 <c:when test="${earnCodeSection.isAmountEarnCode}">
                                     <tr>
@@ -121,7 +117,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                             </c:forEach>
-                                            <td style="border-left: 2px double #666666;">${assignmentRow.periodTotal}</td>
+                                            <td style="border-left: 2px double #666666;">${assignmentRow.periodTotalConverted}</td>
                                             <td style="border: 1px solid #ccc;border-left: 2px double #666666;"></td>
                                         </tr>
                                     </c:if>
@@ -149,7 +145,7 @@
                              </c:choose>
                               
                         </c:forEach>
-                         <td style="border-left: 2px double #666666;">${section.earnGroupTotal}</td>
+                         <td style="border-left: 2px double #666666;">${section.earnGroupTotalConverted}</td>
                          <td style="border: 1px solid #ccc;border-left: 2px double #666666;"></td>
                     </tr>
                 </c:forEach>
@@ -160,7 +156,7 @@
               		  <td style="border-style: none"></td>
               		  <td style="border-left: none"></td>
                       <td colspan="7" style="border-left: none; text-align:right">Pay Period Total</td>
-                      <td style="border-left: 2px double #666666;">${timeApprovalSummary.grandTotal}</td>
+                      <td style="border-left: 2px double #666666;">${timeApprovalSummary.grandTotalConverted}</td>
                       <td style="border-left: 2px double #666666;"></td>
               	</tr>	 
               </c:if>

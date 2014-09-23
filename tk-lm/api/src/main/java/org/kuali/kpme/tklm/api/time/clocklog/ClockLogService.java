@@ -15,22 +15,33 @@
  */
 package org.kuali.kpme.tklm.api.time.clocklog;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.assignment.Assignment;
 import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlock;
+import org.kuali.kpme.tklm.time.clocklog.exception.InvalidClockLogException;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.springframework.cache.annotation.CacheEvict;
 
 import java.util.List;
 
 public interface ClockLogService {
-	/**
+
+    public void invalidIpCheck(String groupKeyCode, String dept, Long workArea, String principalId, Long jobNumber, String ipAddress, LocalDate asOfDate, boolean missedPunch) throws InvalidClockLogException;
+
+    public ClockLog saveClockLog(ClockLog clockLog, boolean missedPunch) throws InvalidClockLogException;
+
+    /**
 	 * Save clock log 
 	 * @param clockLog
 	 */
-    public ClockLog saveClockLog(ClockLog clockLog);
+    public ClockLog saveClockLog(ClockLog clockLog) throws InvalidClockLogException;
+
+    @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, boolean missedPunch) throws InvalidClockLogException;
 
     /**
      * Process clock log created
@@ -46,10 +57,13 @@ public interface ClockLogService {
      * @return
      */
     @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
-    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules);
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules)   throws InvalidClockLogException;
 
     @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
-    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, String userPrincipalId);
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, String userPrincipalId, boolean missedPunch) throws InvalidClockLogException;
+
+    @CacheEvict(value={AssignmentContract.CACHE_NAME}, allEntries = true)
+    ClockLog processClockLog(String principalId, String documentId, DateTime clockDateTime, Assignment assignment, CalendarEntry pe, String ip, LocalDate asOfDate, String clockAction, boolean runRules, String userPrincipalId)   throws InvalidClockLogException;
 
     /**
      * Fetch last clock log for principal id

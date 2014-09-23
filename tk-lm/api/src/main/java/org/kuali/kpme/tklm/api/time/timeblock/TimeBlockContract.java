@@ -32,17 +32,7 @@ import java.util.List;
  */
 public interface TimeBlockContract extends CalendarBlockContract, UserModified, Comparable<TimeBlockContract> {
 	
-	/**
-	 * The beginTimestamp (Date) associated with the TimeBlock
-	 * 
-	 * <p>
-	 * beginTimestamp wrapped in Date object of a TimeBlock
-	 * <p>
-	 * 
-	 * @return new Date(beginTimestamp.getTime()) 
-	 */
-    //public Date getBeginDate();
-    
+
     /**
 	 * The beginTimestamp (Time) associated with the TimeBlock
 	 * 
@@ -65,27 +55,6 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
 	 */
     public DateTime getBeginDateTime();
 
-    /**
-	 * The endTimestamp associated with the TimeBlock
-	 * 
-	 * <p>
-	 * endTimestamp of a TimeBlock
-	 * <p>
-	 * 
-	 * @return endTimestamp for TimeBlock
-	 */
-    //public Timestamp getEndDate();
-    
-    /**
-	 * The endTimestamp (Date) associated with the TimeBlock
-	 * 
-	 * <p>
-	 * endTimestamp wrapped in Date object of a TimeBlock
-	 * <p>
-	 * 
-	 * @return new Date(endTimestamp.getTime())
-	 */
-    //public Date getEndDate();
 
     /**
 	 * The endTimestamp (Time) associated with the TimeBlock
@@ -110,11 +79,10 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
     public DateTime getEndDateTime();
    
     /**
-     * TODO: Make sure this comment is right
-	 * The flag that indicates if a clock log has been created or not.
+     * Flag the shows if the timeblock has been created by a clock log
 	 * 
 	 * <p>
-	 * clockLogCreated flag of a ShiftDifferentialRule
+	 * clockLogCreated flag of a Timeblock
 	 * </p>
 	 * 
 	 * @return Y if created, N if not
@@ -131,6 +99,17 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
    	 * @return hours for TimeBlock
    	 */
     public BigDecimal getHours();
+
+    /**
+     * The minutes associated with the TimeBlock (directly related to hours)
+     *
+     * <p>
+     * total minutes of a TimeBlock
+     * <p>
+     *
+     * @return total minutes for TimeBlock
+     */
+    public BigDecimal getTotalMinutes();
    
     /**
    	 * The amount associated with the TimeBlock
@@ -443,4 +422,7 @@ public interface TimeBlockContract extends CalendarBlockContract, UserModified, 
     String getMissedPunchDocStatus();
     String getAssignmentValue();
     Boolean isClockedByMissedPunch();
+    boolean isMissedPunchClockIn();
+    boolean isMissedPunchClockOut();
+
 }

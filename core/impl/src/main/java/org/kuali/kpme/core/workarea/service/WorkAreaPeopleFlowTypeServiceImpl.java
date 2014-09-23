@@ -44,10 +44,7 @@ import javax.jws.WebParam;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class WorkAreaPeopleFlowTypeServiceImpl extends DataDictionaryPeopleFlowTypeServiceImpl {
     private static final Logger LOG = Logger.getLogger(WorkAreaPeopleFlowTypeServiceImpl.class);
@@ -116,9 +113,15 @@ public class WorkAreaPeopleFlowTypeServiceImpl extends DataDictionaryPeopleFlowT
 
         if (CollectionUtils.isNotEmpty(assignments)
                 && CollectionUtils.isEmpty(workAreaQualifiers)) {
+            Set<Long> workAreas = new HashSet<Long>();
+            //filter out duplicates
             for (Assignment ac : assignments) {
+                workAreas.add(ac.getWorkArea());
+
+            }
+            for (Long wa : workAreas) {
                 workAreaQualifiers.add(
-                        Collections.singletonMap(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), String.valueOf(ac.getWorkArea()))
+                        Collections.singletonMap(KPMERoleMemberAttribute.WORK_AREA.getRoleMemberAttributeName(), String.valueOf(wa))
                 );
             }
         }

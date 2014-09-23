@@ -59,14 +59,14 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
 
     private String tkTimeBlockId;
 
-    @Transient
+    /*@Transient
     private Date beginDate;
     @Transient
     private Date endDate;
     @Transient
     private Time beginTime;
     @Transient
-    private Time endTime;
+    private Time endTime;*/
 
     private String earnCodeType;
 
@@ -79,6 +79,7 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
     private String clockLogEndId;
     private String assignmentKey;
     private String overtimePref;
+    private BigDecimal totalMinutes;
     //userPrincipalId == super.principalIdModified
     private String userPrincipalId;
     @Transient
@@ -97,6 +98,8 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
     private String assignmentValue;
     
     private transient String missedPunchDocId;
+    private transient boolean missedPunchClockIn = false;
+    private transient boolean missedPunchClockOut = false;
     private transient String missedPunchDocStatus;
 
     // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
@@ -166,11 +169,13 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
   			MissedPunch missedPunchClockIn = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(this.getClockLogBeginId());
 
   			if(missedPunchClockIn!=null){
+                this.missedPunchClockIn = true;
   				generateMissedPunchDetails(missedPunchClockIn);
   				return;
             } else {
                 MissedPunch missedPunchClockOut = TkServiceLocator.getMissedPunchService().getMissedPunchByClockLogId(this.getClockLogEndId());
   			    if(missedPunchClockOut!=null){
+                    this.missedPunchClockOut = true;
   				    generateMissedPunchDetails(missedPunchClockOut);
   				    return;
                 }
@@ -849,6 +854,33 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
 		this.missedPunchDocStatus = missedPunchDocStatus;
 	}
 
+    @Override
+    public boolean isMissedPunchClockIn() {
+        return missedPunchClockIn;
+    }
+
+    public void setMissedPunchClockIn(boolean missedPunchClockIn) {
+        this.missedPunchClockIn = missedPunchClockIn;
+    }
+
+    @Override
+    public boolean isMissedPunchClockOut() {
+        return missedPunchClockOut;
+    }
+
+    public void setMissedPunchClockOut(boolean missedPunchClockOut) {
+        this.missedPunchClockOut = missedPunchClockOut;
+    }
+
+    @Override
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(BigDecimal totalMinutes) {
+        this.totalMinutes = totalMinutes;
+    }
+
     public static TimeBlockBo from(TimeBlock im) {
         TimeBlockBo tb = new TimeBlockBo();
 
@@ -862,6 +894,7 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
 
         tb.setClockLogCreated(im.isClockLogCreated());
         tb.setHours(im.getHours());
+        tb.setTotalMinutes(im.getTotalMinutes());
         tb.setAmount(im.getAmount());
         tb.setBeginTimeDisplay(im.getBeginTimeDisplay());
         tb.setEndTimeDisplay(im.getEndTimeDisplay());
@@ -878,6 +911,8 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
         tb.setAssignmentValue(im.getAssignmentValue());
         tb.setMissedPunchDocId(im.getMissedPunchDocId());
         tb.setMissedPunchDocStatus(im.getMissedPunchDocStatus());
+        tb.setMissedPunchClockIn(im.isMissedPunchClockIn());
+        tb.setMissedPunchClockOut(im.isMissedPunchClockOut());
 
         // the two variables below are used to determine if a time block needs to be visually pushed forward / backward
         tb.setPushBackward(im.isPushBackward());
@@ -902,8 +937,6 @@ public class TimeBlockBo extends CalendarBlock implements TimeBlockContract {
         tb.setEndTimestamp(im.getEndDateTime() == null ? null : new Timestamp((im.getEndDateTime().getMillis())));
         tb.setTimestamp(im.getCreateTime() == null ? null : new Timestamp(im.getCreateTime().getMillis()));
         tb.setLunchDeleted(im.isLunchDeleted());
-        tb.setHours(im.getHours());
-        tb.setAmount(im.getAmount());
         tb.setOvertimePref(im.getOvertimePref());
         tb.setEarnCode(im.getEarnCode());
         tb.setWorkArea(im.getWorkArea());

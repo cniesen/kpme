@@ -239,6 +239,15 @@ public class AssignmentServiceImpl implements AssignmentService {
         return AssignmentBo.to(assignmentDao.getAssignment(tkAssignmentId));
     }
 
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea)
+    {
+        List<AssignmentBo> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea);
+        List<Assignment> assigns = new ArrayList<Assignment>(assignments.size());
+        for (AssignmentBo assignment : assignments) {
+            assigns.add(AssignmentBo.to(populateAssignment(assignment, assignment.getEffectiveLocalDate())));
+        }
+        return assigns;
+    }
 
     @Override
     public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate asOfDate) {
@@ -247,6 +256,17 @@ public class AssignmentServiceImpl implements AssignmentService {
         for (AssignmentBo assignment : assignments) {
             assigns.add(AssignmentBo.to(populateAssignment(assignment, asOfDate)));
         }
+        return assigns;
+    }
+    
+    @Override
+    public List<Assignment> getActiveAssignmentsForWorkArea(Long workArea, LocalDate beginDate, LocalDate endDate) {
+        List<AssignmentBo> assignments = assignmentDao.getActiveAssignmentsInWorkArea(workArea, beginDate,endDate);
+        List<Assignment> assigns = new ArrayList<Assignment>(assignments.size());
+        for (AssignmentBo assignment : assignments) {
+            assigns.add(AssignmentBo.to(populateAssignment(assignment, beginDate)));
+        }
+        
         return assigns;
     }
 
@@ -399,7 +419,11 @@ public class AssignmentServiceImpl implements AssignmentService {
     @Override
     public List<Assignment> getRecentAssignments(String principalId) {
         //if no dates are specified uses date range of now and now minus limit set in config
-        Integer limit = Integer.parseInt(ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit"));
+    	Integer limit = 0;
+    	String limitString = ConfigContext.getCurrentContextConfig().getProperty("kpme.tklm.target.employee.time.limit");
+    	if(StringUtils.isNotBlank(limitString)) {
+    		limit = Integer.parseInt(limitString);
+    	}
         LocalDate startDate = LocalDate.now().minusDays(limit);
         LocalDate endDate = LocalDate.now();
 

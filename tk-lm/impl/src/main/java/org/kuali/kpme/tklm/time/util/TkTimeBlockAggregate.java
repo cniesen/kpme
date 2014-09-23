@@ -559,6 +559,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
 						//conveniently, we only really need the hours amount
 						TimeBlock.Builder timeBlock = TimeBlock.Builder.create();
 						timeBlock.setHours(lb.getLeaveAmount().negate());
+                        timeBlock.setTotalMinutes(lb.getLeaveAmount().multiply(BigDecimal.valueOf(60)).negate());
                         if (lb.getBeginDateTime() != null) {
                             timeBlock.setBeginDateTime(lb.getBeginDateTime());
                             timeBlock.setEndDateTime(lb.getBeginDateTime().plusHours(timeBlock.getHours().intValue()));
@@ -582,6 +583,7 @@ public class TkTimeBlockAggregate implements TkTimeBlockAggregateContract {
                         TimeHourDetail.Builder timeHourDetail = TimeHourDetail.Builder.create();
 						timeHourDetail.setEarnCode(timeBlock.getEarnCode());
 						timeHourDetail.setHours(timeBlock.getHours());
+                        timeHourDetail.setTotalMinutes(timeBlock.getTotalMinutes());
 						timeHourDetail.setAmount(BigDecimal.ZERO);
 						timeBlock.setTimeHourDetails(Collections.singletonList(timeHourDetail));
 						tbAggregate.getDayTimeBlockList().get(i).add(timeBlock.build());

@@ -127,6 +127,24 @@ public class TKUtils {
         return hrsReminder.setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
     }
 
+    public static BigDecimal getMinutesBetween(DateTime start, DateTime end) {
+        long diff = end.getMillis() - start.getMillis();
+        BigDecimal hrsReminder = new BigDecimal((diff / 3600000.0) % 24);
+        // if the hours is exact duplicate of 24 hours
+        if (hrsReminder.compareTo(BigDecimal.ZERO) == 0 && diff > 0) {
+            return new BigDecimal(diff / 60000.0).setScale(0, HrConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
+        }
+        BigDecimal min = new BigDecimal((diff / 60000.0));
+        return min.setScale(0, HrConstants.BIG_DECIMAL_SCALE_ROUNDING).abs();
+    }
+
+    public static BigDecimal getHoursFromMinutes(BigDecimal minutes) {
+        if (minutes == null) {
+            return null;
+        }
+        return minutes.divide(BigDecimal.valueOf(60), HrConstants.MATH_CONTEXT).setScale(HrConstants.BIG_DECIMAL_SCALE, HrConstants.BIG_DECIMAL_SCALE_ROUNDING);
+    }
+
 
     public static Map<String, String> formatAssignmentDescription(Assignment assignment) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
@@ -332,6 +350,13 @@ public class TKUtils {
             return StringUtils.EMPTY;
         }
         return HrConstants.DateTimeFormats.BASIC_DATE_FORMAT_WITH_SEC.print(dateTime);
+    }
+
+    public static String formatDateTimeWithTZ(DateTime dateTime){
+        if (dateTime == null) {
+            return StringUtils.EMPTY;
+        }
+        return HrConstants.DateTimeFormats.FULL_DATE_WITH_TZ.print(dateTime);
     }
 
     public static LocalDate formatDateString(String date){

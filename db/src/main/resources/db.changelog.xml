@@ -24,5 +24,6 @@
     <include file="org/kuali/kpme/kpme-db/db/db.changelog-test.xml" />
     <include file="org/kuali/kpme/kpme-db/db/db.changelog-staging.xml" />
     <include file="org/kuali/kpme/kpme-db/db/db.changelog-testdrive.xml" />
+    <include file="org/kuali/kpme/kpme-db/db/db.changelog-aft.xml" />
 
 </databaseChangeLog>

@@ -33,6 +33,7 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.service.permission.HrPermissionServiceBase;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockContract;
+import org.kuali.kpme.tklm.time.rules.overtime.weekly.WeeklyOvertimeRule;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
 import org.kuali.kpme.tklm.time.service.TkServiceLocator;
 import org.kuali.kpme.tklm.time.timesheet.TimesheetDocument;
@@ -394,9 +395,29 @@ public class TKPermissionServiceImpl extends HrPermissionServiceBase implements 
 	            }
             }
         }
+
         return false;
     }
-    
+
+    @Override
+    public boolean canEditOvertimeEarnCode(String principalId, TimeBlockContract timeBlock, String earnCode) {
+        if (!canEditOvertimeEarnCode(principalId, timeBlock))
+        {
+            return false;
+        }
+
+        List<WeeklyOvertimeRule> otRules = TkServiceLocator.getWeeklyOvertimeRuleService().getWeeklyOvertimeRules(timeBlock.getBeginDateTime().toLocalDate());
+        for (WeeklyOvertimeRule r : otRules)
+        {
+            if (r.isOverrideWorkAreaDefaultOvertime() && r.getConvertToEarnCode().equals(earnCode))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     @Override
     public boolean isPayrollProcessorForDepartment(String principalId, String dept, String groupKeyCode, DateTime asOfDate) {
     	return HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.PAYROLL_PROCESSOR.getRoleName(), dept, groupKeyCode, asOfDate)

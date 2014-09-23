@@ -105,7 +105,7 @@
                                     <c:when test="${thdr.hours ne ''}">
                                         <c:set var="title" value="${thdr.title}"/>
                                         <c:choose>
-                                            <c:when test="${thdr.overtimeEarnCode && Form.docEditable && block.overtimeEditable && !(thdr.title eq 'DOT')}">
+                                            <c:when test="${thdr.overtimeEarnCode && thdr.overtimeEarnCodeEditable && Form.docEditable && block.overtimeEditable && !(thdr.title eq 'DOT')}">
                                                 <c:set var="title"
                                                        value="<span id='overtime_${block.timeBlock.tkTimeBlockId}' class='overtime'>${thdr.title}</span>"/>
                                             </c:when>
@@ -119,7 +119,7 @@
                                             <div><a id="holidayNameHelp"
                                                     title="${thdr.holidayName}"
                                                     style="color:white; cursor:pointer;">${title}
-                                                - ${thdr.hours} hours</a></div>
+                                                - ${thdr.hours} hours-</a></div>
                                         </c:if>
                                         <c:if test="${thdr.title ne HrConstants.HOLIDAY_EARN_CODE}">
                                         

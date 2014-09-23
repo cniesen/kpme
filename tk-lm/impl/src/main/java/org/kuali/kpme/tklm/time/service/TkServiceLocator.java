@@ -19,6 +19,7 @@ package org.kuali.kpme.tklm.time.service;
 import org.apache.commons.lang.StringUtils;
 import org.kuali.kpme.tklm.api.time.clocklog.ClockLogService;
 import org.kuali.kpme.tklm.api.time.missedpunch.MissedPunchService;
+import org.kuali.kpme.tklm.api.time.mobile.CryptographicService;
 import org.kuali.kpme.tklm.api.time.timeblock.TimeBlockService;
 import org.kuali.kpme.tklm.api.time.timehourdetail.TimeHourDetailService;
 import org.kuali.kpme.tklm.api.time.timesummary.TimeSummaryService;
@@ -79,6 +80,9 @@ public class TkServiceLocator implements ApplicationContextAware {
     public static final String TK_SHIFT_TYPE_SERVICE_BASE = "shiftTypeServiceBase";
 
     public static final String TK_PERMISSION_SERVICE = "tkPermissionService";
+    public static final String TK_CRYPTOGRAPHIC_SERVICE = "cryptographicService";
+
+
 
     public static MissedPunchService getMissedPunchService() {
         return (MissedPunchService) CONTEXT.getBean(TK_MISSED_PUNCH_SERVICE);
@@ -183,6 +187,10 @@ public class TkServiceLocator implements ApplicationContextAware {
 	public static ShiftDifferentialRuleTypeService getShiftDifferentialRuleTypeService() {
 		return (ShiftDifferentialRuleTypeService) CONTEXT.getBean(TK_SHIFT_DIFFERENTIAL_RULE_TYPE_SERVICE);
 	}
+
+    public static CryptographicService getCryptographicService() {
+        return (CryptographicService) CONTEXT.getBean(TK_CRYPTOGRAPHIC_SERVICE);
+    }
 
 	@Override
 	public void setApplicationContext(ApplicationContext arg0) throws BeansException {

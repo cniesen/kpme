@@ -152,6 +152,25 @@ public class AssignmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Ass
         return assignments;
     }
 
+    public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea)
+    {
+        List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
+        Criteria root = new Criteria();
+
+        root.addEqualTo("workArea", workArea);
+        root.addEqualTo("active", true);
+
+        Query query = QueryFactory.newQuery(AssignmentBo.class, root);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+        if (c != null) {
+            assignments.addAll(c);
+        }
+
+        return assignments;
+    }
+
+
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate asOfDate) {
         List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
@@ -162,6 +181,29 @@ public class AssignmentDaoOjbImpl extends PlatformAwareDaoBaseOjb implements Ass
         root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AssignmentBo.class, AssignmentBo.BUSINESS_KEYS, true));
         root.addEqualTo("active", true);
 
+        Criteria activeFilter = new Criteria(); // Inner Join For Activity
+        activeFilter.addEqualTo("active", true);
+        root.addAndCriteria(activeFilter);
+
+        Query query = QueryFactory.newQuery(AssignmentBo.class, root);
+        Collection c = this.getPersistenceBrokerTemplate().getCollectionByQuery(query);
+
+        if (c != null) {
+            assignments.addAll(c);
+        }
+
+        return assignments;
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public List<AssignmentBo> getActiveAssignmentsInWorkArea(Long workArea, LocalDate beginDate,LocalDate endDate) {
+        List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
+        Criteria root = new Criteria();
+        root.addEqualTo("workArea", workArea);
+        root.addGreaterOrEqualThan("effectiveDate", beginDate.toDate());
+        root.addLessOrEqualThan("effectiveDate", endDate.toDate());
+        root.addEqualTo("timestamp", OjbSubQueryUtil.getTimestampSubQuery(AssignmentBo.class, AssignmentBo.BUSINESS_KEYS, true));
+        root.addEqualTo("active", true);
         Criteria activeFilter = new Criteria(); // Inner Join For Activity
         activeFilter.addEqualTo("active", true);
         root.addAndCriteria(activeFilter);

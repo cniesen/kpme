@@ -28,7 +28,6 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.ValidationUtils;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.view.View;
-import org.kuali.rice.krad.uif.view.ViewModel;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.KRADConstants;
 
@@ -41,10 +40,10 @@ public class SalaryGroupMaintainableImpl extends HrKeyedSetBusinessObjectMaintai
 
 	private static final String EFFECTIVE_KEY_LIST = "effectiveKeyList";
 
-	@Override
-    protected boolean performAddLineValidation(ViewModel viewModel, Object newLine, String collectionId, String collectionPath) {
-        if (newLine instanceof SalaryGroupKeyBo) {
-        	SalaryGroupKeyBo inputSalaryGroupKey = (SalaryGroupKeyBo)newLine;
+	/*@Override
+    protected void processAfterAddLine(View view, CollectionGroup collectionGroup, Object model, Object addLine, boolean isValidLine) {
+        if (addLine instanceof SalaryGroupKeyBo) {
+        	SalaryGroupKeyBo inputSalaryGroupKey = (SalaryGroupKeyBo)addLine;
             if ( inputSalaryGroupKey != null ) {
             	SalaryGroupBo salaryGroup = (SalaryGroupBo)this.getDataObject();
             	Set<String> groupKeyCodes = new HashSet<String>();
@@ -54,17 +53,17 @@ public class SalaryGroupMaintainableImpl extends HrKeyedSetBusinessObjectMaintai
             	if(groupKeyCodes.contains(inputSalaryGroupKey.getGroupKeyCode())){
             		GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"effectiveKeyList", 
             				"keyedSet.duplicate.groupKeyCode", inputSalaryGroupKey.getGroupKeyCode());
-            		return false;
+            		return;
     			} 
             	if (!ValidationUtils.validateGroupKey(inputSalaryGroupKey.getGroupKeyCode(), salaryGroup.getEffectiveLocalDate())) {
     				GlobalVariables.getMessageMap().putErrorWithoutFullErrorPath(KRADConstants.MAINTENANCE_NEW_MAINTAINABLE +"earnCodeGroups", 
     							"error.existence", "Group key code: '" + inputSalaryGroupKey.getGroupKeyCode() + "'");
-    				return false;
+    				return;
     			}
             }
         }
-        return super.performAddLineValidation(viewModel, newLine, collectionId, collectionPath);
-    }
+       super.processAfterAddLine(view, collectionGroup, model, addLine, isValidLine);
+    }*/
 	
 	@Override
 	public HrBusinessObject getObjectById(String id) {

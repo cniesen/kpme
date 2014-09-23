@@ -33,6 +33,7 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
 	private String tkTimeBlockId;
 	private String earnCode;
 	private BigDecimal hours = HrConstants.BIG_DECIMAL_SCALED_ZERO;
+    private BigDecimal totalMinutes = BigDecimal.ZERO;
 	private BigDecimal amount = HrConstants.BIG_DECIMAL_SCALED_ZERO;
 
     public TimeHourDetailBo() {
@@ -45,6 +46,7 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
         this.tkTimeBlockId = t.tkTimeBlockId;
         this.earnCode = t.earnCode;
         this.hours = t.hours;
+        this.totalMinutes = t.totalMinutes;
         this.amount = t.amount;
     }
 
@@ -98,8 +100,16 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
 	public String getTkTimeHourDetailId() {
 		return tkTimeHourDetailId;
 	}
-	
-	@Override
+
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
+    public void setTotalMinutes(BigDecimal totalMinutes) {
+        this.totalMinutes = totalMinutes;
+    }
+
+    @Override
 	public boolean equals(Object obj) {
 		if (obj == null) { 
 			return false;
@@ -115,6 +125,7 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
 			.append(earnCode, timeHourDetail.earnCode)
 			.append(KpmeUtils.nullSafeCompare(amount, timeHourDetail.amount), 0)
 			.append(KpmeUtils.nullSafeCompare(hours, timeHourDetail.hours), 0)
+            .append(KpmeUtils.nullSafeCompare(totalMinutes, timeHourDetail.getTotalMinutes()), 0)
 			.isEquals();
 	}
 
@@ -124,6 +135,7 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
 			.append(earnCode)
 			.append(amount)
 			.append(hours)
+            .append(totalMinutes)
 			.toHashCode();
 	}
 
@@ -132,6 +144,7 @@ public class TimeHourDetailBo extends PersistableBusinessObjectBase implements T
         tb.setTkTimeBlockId(im.getTkTimeBlockId());
         tb.setTkTimeHourDetailId(im.getTkTimeHourDetailId());
         tb.setHours(im.getHours());
+        tb.setTotalMinutes(im.getTotalMinutes());
         tb.setAmount(im.getAmount());
         tb.setEarnCode(im.getEarnCode());
         tb.setObjectId(im.getObjectId());

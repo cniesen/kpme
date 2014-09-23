@@ -61,7 +61,7 @@ public class TkWorkflowMissedPunchAttribute extends AbstractRoleAttribute {
 
 		try {
 			String documentId = routeContext.getDocument().getDocumentId();
-			Document document = (MissedPunchDocument) KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderIdSessionless(documentId);
+			Document document = KRADServiceLocatorWeb.getDocumentService().getByDocumentHeaderIdSessionless(documentId);
 	        MissedPunchDocument missedPunchDocument = (MissedPunchDocument) document;
 	        MissedPunchBo missedPunch = missedPunchDocument.getMissedPunch();
 	

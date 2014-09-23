@@ -34,9 +34,9 @@ public class TimePickerWidget extends WidgetBase {
         super();
     }
 	
-	/*@Override
+	@Override
     public void performFinalize(View view, Object model, Component parent) {
         super.performFinalize(view, model, parent);
-    }*/
+    }
 
 }

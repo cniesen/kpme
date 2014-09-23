@@ -355,24 +355,27 @@
 	</bean>
 
 	<bean id="Job-principalName" parent="Job-principalName-parentBean" />
-	<bean id="Job-principalName-parentBean" abstract="true"	parent="KpmeAttributeReference-principalName">
+	<bean id="Job-principalName-parentBean" abstract="true"	parent="AttributeDefinition">
         <property name="validCharactersConstraint">
             <bean parent="AnyCharacterPatternConstraint">
                 <property name="allowWhitespace" value="true" />
             </bean>
         </property>
         <property name="controlField">
-            <bean parent="Uif-TextControl" p:size="30" />
+            <bean parent="Uif-TextControl" p:size="40" />
         </property>
 		<property name="control">
-			<bean parent="LookupReadonlyControlDefinition" p:size="30" />
+			<bean parent="LookupReadonlyControlDefinition" p:size="40" />
 		</property>
+        <property name="maxLength" value="120" />
+        <property name="name" value="principalName" />
+        <property name="label" value="Name" />
 	</bean>
 
 	<bean id="Job-name" parent="Job-name-parentBean" />
 	<bean id="Job-name-parentBean" abstract="true" parent="AttributeDefinition">
 		<property name="shortLabel" value="Name" />
-		<property name="maxLength" value="30" />
+		<property name="maxLength" value="120" />
         <property name="controlField">
             <bean parent="Uif-TextControl" p:size="30" />
         </property>

@@ -49,6 +49,15 @@ function refreshPage(object) {
 	frm.submit();
 }
 
+// used by KhrEmployeeDocument
+function employeeProcessChangeSubmitForm(methodToCall) {
+    var additionalData = {};
+    additionalData["oldProcess"] = jQuery('#employee_process_control').data("oldProcess");
+    additionalData["newProcess"] = jQuery('#employee_process_control').val();
+    closeLightbox();
+    ajaxSubmitForm(methodToCall,additionalData);
+}
+
 //jQuery(document).ready(function(){
 jq(document).ready(function () {
     jq('input[name="document.newMaintainableObject.effectiveDate"]').blur(function() {

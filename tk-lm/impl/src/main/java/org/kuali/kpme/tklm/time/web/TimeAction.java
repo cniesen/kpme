@@ -71,15 +71,8 @@ public class TimeAction extends KPMEAction {
     public ActionForward execute(ActionMapping mapping, ActionForm form,
                                  HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        //boolean synch = TKUser.isSynchronous();
         String principalId = HrContext.getTargetPrincipalId();
-        if (HrContext.isSystemAdmin()) {
-            return new ActionRedirect("/portal.do");
-        }
-        PrincipalHRAttributes phra = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(principalId, LocalDate.now());
-        if (phra == null) {
-            return new ActionRedirect("/PersonInfo.do");
-        }
+
         JobContract job = HrServiceLocator.getJobService().getPrimaryJob(principalId, LocalDate.now());
 
         if (job != null) {
@@ -104,6 +97,6 @@ public class TimeAction extends KPMEAction {
             }
         }
 
-        return new ActionRedirect("/PersonInfo.do");
+        return new ActionRedirect("/portal.do");
     }
 }

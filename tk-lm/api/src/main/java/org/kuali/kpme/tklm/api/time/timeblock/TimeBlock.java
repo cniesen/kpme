@@ -90,6 +90,9 @@ import java.util.List;
         TimeBlock.Elements.MISSED_PUNCH_DOC_STATUS,
         TimeBlock.Elements.ASSIGNMENT_VALUE,
         TimeBlock.Elements.CLOCKED_BY_MISSED_PUNCH,
+        TimeBlock.Elements.MISSED_PUNCH_CLOCK_IN,
+        TimeBlock.Elements.MISSED_PUNCH_CLOCK_OUT,
+        TimeBlock.Elements.TOTAL_MINUTES,
         CoreConstants.CommonElements.OBJECT_ID,
         CoreConstants.CommonElements.VERSION_NUMBER,
         CoreConstants.CommonElements.FUTURE_ELEMENTS
@@ -199,6 +202,13 @@ public final class TimeBlock
     private final String assignmentValue;
     @XmlElement(name = Elements.CLOCKED_BY_MISSED_PUNCH, required = false)
     private final Boolean clockedByMissedPunch;
+    @XmlElement(name = Elements.MISSED_PUNCH_CLOCK_IN, required = false)
+    private final boolean missedPunchClockIn;
+    @XmlElement(name = Elements.MISSED_PUNCH_CLOCK_OUT, required = false)
+    private final boolean missedPunchClockOut;
+
+    @XmlElement(name = Elements.TOTAL_MINUTES, required = false)
+    private final BigDecimal totalMinutes;
     @XmlElement(name = CoreConstants.CommonElements.OBJECT_ID, required = false)
     private final String objectId;
     @XmlElement(name = CoreConstants.CommonElements.VERSION_NUMBER, required = false)
@@ -259,6 +269,9 @@ public final class TimeBlock
         this.missedPunchDocStatus = null;
         this.assignmentValue = null;
         this.clockedByMissedPunch = null;
+        this.missedPunchClockIn = false;
+        this.missedPunchClockOut = false;
+        this.totalMinutes = null;
     }
 
     private TimeBlock(Builder builder) {
@@ -309,6 +322,9 @@ public final class TimeBlock
         this.missedPunchDocStatus = builder.getMissedPunchDocStatus();
         this.assignmentValue = builder.getAssignmentValue();
         this.clockedByMissedPunch = builder.isClockedByMissedPunch();
+        this.missedPunchClockIn = builder.isMissedPunchClockIn();
+        this.missedPunchClockOut = builder.isMissedPunchClockOut();
+        this.totalMinutes = builder.getTotalMinutes();
     }
 
     @Override
@@ -550,6 +566,21 @@ public final class TimeBlock
         return actionDateTime;
     }
 
+    @Override
+    public boolean isMissedPunchClockIn() {
+        return missedPunchClockIn;
+    }
+
+    @Override
+    public boolean isMissedPunchClockOut() {
+        return missedPunchClockOut;
+    }
+
+    @Override
+    public BigDecimal getTotalMinutes() {
+        return totalMinutes;
+    }
+
     public static TimeBlock copy(TimeBlock timeBlock) {
         return TimeBlock.Builder.create(timeBlock).build();
     }
@@ -639,6 +670,9 @@ public final class TimeBlock
         private String missedPunchDocStatus;
         private String assignmentValue;
         private Boolean clockedByMissedPunch;
+        private boolean missedPunchClockIn;
+        private boolean missedPunchClockOut;
+        private BigDecimal totalMinutes;
 
         private Builder() {
             // TODO modify this constructor as needed to pass any required values and invoke the appropriate 'setter' methods
@@ -708,6 +742,9 @@ public final class TimeBlock
             builder.setMissedPunchDocStatus(contract.getMissedPunchDocStatus());
             builder.setAssignmentValue(contract.getAssignmentValue());
             builder.setClockedByMissedPunch(contract.isClockedByMissedPunch());
+            builder.setMissedPunchClockOut(contract.isMissedPunchClockOut());
+            builder.setMissedPunchClockIn(contract.isMissedPunchClockIn());
+            builder.setTotalMinutes(contract.getTotalMinutes());
             return builder;
         }
 
@@ -930,6 +967,16 @@ public final class TimeBlock
         }
 
         @Override
+        public boolean isMissedPunchClockIn() {
+            return missedPunchClockIn;
+        }
+
+        @Override
+        public boolean isMissedPunchClockOut() {
+            return missedPunchClockOut;
+        }
+
+        @Override
         public String getAssignmentValue() {
             return assignmentValue;
         }
@@ -952,6 +999,15 @@ public final class TimeBlock
         @Override
         public Long getVersionNumber() {
             return this.versionNumber;
+        }
+
+        @Override
+        public BigDecimal getTotalMinutes() {
+            return totalMinutes;
+        }
+
+        public void setTotalMinutes(BigDecimal totalMinutes) {
+            this.totalMinutes = totalMinutes;
         }
 
         public void setHours(BigDecimal hours) {
@@ -1173,6 +1229,14 @@ public final class TimeBlock
             this.missedPunchDocId = missedPunchDocId;
         }
 
+        public void setMissedPunchClockIn(boolean missedPunchClockIn) {
+            this.missedPunchClockIn = missedPunchClockIn;
+        }
+
+        public void setMissedPunchClockOut(boolean missedPunchClockOut) {
+            this.missedPunchClockOut = missedPunchClockOut;
+        }
+
         public void setClockAction(String clockAction) {
             this.clockAction = clockAction;
         }
@@ -1200,8 +1264,8 @@ public final class TimeBlock
      *
      */
     static class Elements {
-
         final static String HOURS = "hours";
+        final static String TOTAL_MINUTES = "totalMinutes";
         final static String END_DATE_TIME = "endDateTime";
         final static String CLOCK_LOG_CREATED = "clockLogCreated";
         final static String BEGIN_DATE_TIME = "beginDateTime";
@@ -1247,8 +1311,8 @@ public final class TimeBlock
         final static String MISSED_PUNCH_DOC_STATUS = "missedPunchDocStatus";
         final static String ASSIGNMENT_VALUE = "assignmentValue";
         final static String CLOCKED_BY_MISSED_PUNCH = "clockedByMissedPunch";
-
-
+        final static String MISSED_PUNCH_CLOCK_IN = "missedPunchClockIn";
+        final static String MISSED_PUNCH_CLOCK_OUT = "missedPunchClockOut";
     }
 
     public static final String CACHE_NAME = TkConstants.Namespace.NAMESPACE_PREFIX + "TimeBlock";

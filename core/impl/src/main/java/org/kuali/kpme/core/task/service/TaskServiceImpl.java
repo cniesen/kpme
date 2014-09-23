@@ -24,11 +24,9 @@ import org.kuali.kpme.core.task.TaskBo;
 import org.kuali.kpme.core.task.dao.TaskDao;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
-import org.kuali.rice.kns.service.KNSServiceLocator;
 import org.kuali.rice.krad.service.BusinessObjectService;
 import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.SequenceAccessorService;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 
 import java.util.Collections;
 import java.util.List;
@@ -116,7 +114,7 @@ public class TaskServiceImpl implements TaskService {
 
 	public SequenceAccessorService getSequenceAccessorService() {
 		if(this.sequenceAccessorService == null) {
-			this.setSequenceAccessorService(KNSServiceLocator.getSequenceAccessorService());
+			this.setSequenceAccessorService(KRADServiceLocator.getSequenceAccessorService());		
 		}
 		return sequenceAccessorService;
 	}
@@ -129,7 +127,7 @@ public class TaskServiceImpl implements TaskService {
 
 	public BusinessObjectService getBusinessObjectService() {
 		if(this.businessObjectService == null) {
-			this.setBusinessObjectService(KNSServiceLocator.getBusinessObjectService());
+			this.setBusinessObjectService(KRADServiceLocator.getBusinessObjectService());
 		}
 		return businessObjectService;
 	}
