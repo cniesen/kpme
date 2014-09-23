@@ -615,6 +615,8 @@
     		<bean class="org.kuali.kpme.core.institution.web.InstitutionLookupableHelper"/>
     	</property>    
     </bean>
+    
+     <bean id="khrEmployeeSetupFactBuilderService" class="org.kuali.kpme.core.tkmdocument.workflow.krms.KhrEmployeeSetupFactBuilderServiceImpl"/>
 
     <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
         <property name="interceptorNames">
@@ -650,6 +652,7 @@
                 <idref local="assignmentService"/>
                 <idref local="calendarBlockService"/>
                 <idref local="positionBaseService"/>
+                <idref local="khrEmployeeSetupFactBuilderService"/>
                 <!--<idref local="kpmeNotificationService"/>-->
                 <!--<idref local="calendarDocumentFactBuilderService"/>-->
                 <!--<idref local="kpmeGroupService"/>-->

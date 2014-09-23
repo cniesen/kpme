@@ -16,19 +16,7 @@
 package org.kuali.kpme.core.tkmdocument;
 
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
-import org.kuali.rice.core.api.util.RiceKeyConstants;
-import org.kuali.rice.krad.bo.PersistableBusinessObject;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
-import org.kuali.rice.krad.exception.ValidationException;
-import org.kuali.rice.krad.maintenance.MaintenanceDocumentBase;
-import org.kuali.rice.krad.rules.rule.event.KualiDocumentEvent;
-import org.kuali.rice.krad.rules.rule.event.SaveDocumentEvent;
-import org.kuali.rice.krad.service.KRADServiceLocator;
-import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
-import org.kuali.rice.krad.util.GlobalVariables;
-import org.kuali.rice.krad.util.KRADConstants;
-import org.kuali.rice.krad.util.ObjectUtils;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -87,6 +75,10 @@ public class KhrEmployeeDocument extends PersistableBusinessObjectBase {
 
     public String getProcess() {
         return process;
+    }
+    
+    public String getEmployeeSetupProcess() {
+        return getProcess();
     }
 
     public void setProcess(String process) {
