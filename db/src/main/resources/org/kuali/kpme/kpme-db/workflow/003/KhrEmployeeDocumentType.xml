@@ -26,6 +26,27 @@
             <parent>KpmeDocument</parent>
             <docHandler>${kuali.docHandler.url.prefix}/kr-krad/kpme/KhrEmployeeJobMaintenance?methodToCall=docHandler</docHandler>
             <label>KHR Employee Document Maintenance</label>
+            
+            <applicationId>KPME</applicationId>
+            <routingVersion>1</routingVersion>
+            <routePaths>
+                <routePath>
+                    <start name="Initiated" nextNode="PeopleFlows"/>
+                    <requests name="PeopleFlows"/>
+                </routePath>
+            </routePaths>
+            <routeNodes>
+                <start name="Initiated">
+                    <activationType>P</activationType>
+                    <mandatoryRoute>false</mandatoryRoute>
+                    <finalApproval>false</finalApproval>
+                </start>
+                <requests name="PeopleFlows">
+                    <activationType>R</activationType>
+                    <rulesEngine executorClass="org.kuali.kpme.core.tkmdocument.workflow.krms.KhrEmployeeMaintDocRulesEngineExecutor"/>
+                </requests>
+            </routeNodes>
+            
         </documentType>
     </documentTypes>
 </data>
