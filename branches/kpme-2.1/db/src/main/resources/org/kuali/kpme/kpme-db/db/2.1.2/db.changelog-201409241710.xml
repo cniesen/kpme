@@ -26,7 +26,7 @@
     
         <comment>set up a 'property' category in the KPME-HR namespace</comment>
         <insert tableName="KRMS_CTGRY_T">
-            <column name="CTGRY_ID" value="KPME0001"/>
+            <column name="CTGRY_ID" value="KPME0007"/>
             <column name="NM" value="Property"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="VER_NBR" value="1"/>
