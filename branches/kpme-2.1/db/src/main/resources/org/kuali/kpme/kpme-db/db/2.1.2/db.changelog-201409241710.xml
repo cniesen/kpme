@@ -24,12 +24,17 @@
 	
     <changeSet id="1" author="neerajsk" context="kpme-server-bootstrap">
     
-        <comment>set up a 'property' category in the KPME-HR namespace</comment>
+        <comment>set up a 'property' category in the KPME-HR namespace and associate it with the term spec for employee-setup process.</comment>
         <insert tableName="KRMS_CTGRY_T">
             <column name="CTGRY_ID" value="KPME0007"/>
             <column name="NM" value="Property"/>
             <column name="NMSPC_CD" value="KPME-HR"/>
             <column name="VER_NBR" value="1"/>
+        </insert>
+        
+        <insert tableName="KRMS_TERM_SPEC_CTGRY_T">
+            <column name="TERM_SPEC_ID" valueComputed="(select TERM_SPEC_ID from KRMS_TERM_SPEC_T where NMSPC_CD='KPME-HR' and NM='employeeSetupProcess')"/>
+            <column name="CTGRY_ID" valueComputed="(select CTGRY_ID from KRMS_CTGRY_T where NMSPC_CD='KPME-HR' and NM='Property')"/>
         </insert>
         
     </changeSet>

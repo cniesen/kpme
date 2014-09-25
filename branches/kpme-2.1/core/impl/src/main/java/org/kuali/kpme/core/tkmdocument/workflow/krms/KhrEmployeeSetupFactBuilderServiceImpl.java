@@ -37,13 +37,13 @@ public class KhrEmployeeSetupFactBuilderServiceImpl extends KpmeKrmsFactBuilderS
 
     @Override
     public void addFacts(Facts.Builder factsBuilder, Object factObject, String contextId, String namespace) {
-        addObjectMembersAsFacts(factsBuilder, factObject, contextId, namespace);
         if (factObject != null && factObject instanceof MaintenanceDocument) {
             MaintenanceDocument document = (MaintenanceDocument) factObject;
 
             if (document.getNewMaintainableObject().getDataObject() != null && document.getNewMaintainableObject().getDataObject() instanceof KhrEmployeeDocument) {
             	KhrEmployeeDocument employeeSetup = (KhrEmployeeDocument) document.getNewMaintainableObject().getDataObject();
-            	factsBuilder.addFact(new Term("employeeSetupProcess"), employeeSetup.getEmployeeSetupProcess());
+            	addObjectMembersAsFacts(factsBuilder, employeeSetup, contextId, namespace);
+            	//factsBuilder.addFact(new Term("employeeSetupProcess"), employeeSetup.getEmployeeSetupProcess());
             }
         }
         
