@@ -28,6 +28,7 @@ import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.job.service.JobService;
 import org.kuali.kpme.core.api.paytype.PayType;
+import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentViewAuthorizer;
 import org.kuali.kpme.core.job.JobBo;
 import org.kuali.kpme.core.job.dao.JobDao;
 import org.kuali.kpme.core.paytype.PayTypeBo;
@@ -39,6 +40,8 @@ import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
+import org.kuali.rice.krad.util.GlobalVariables;
 
 /**
  * Represents an implementation of {@link JobService}.
@@ -263,5 +266,27 @@ public class JobServiceImpl implements JobService {
     protected List<Job> toImmutable(List<JobBo> bos) {
         return ModelObjectUtils.transform(bos, toJob);
     }
-    
+
+    public boolean canUserEditJob(JobContract job, String principalId)
+    {
+    	Person user = KimApiServiceLocator.getPersonService().getPerson(principalId);
+    	if ( !(((KPMEMaintenanceDocumentViewAuthorizer)(KRADServiceLocatorWeb.getDocumentDictionaryService().getDocumentAuthorizer("JobMaintenanceDocumentType"))).canMaintain(job, user)) ) {
+            return false;
+        }
+        return true;
+
+/*
+        Map<String, String> permissionDetails = new HashMap<String, String>();
+        permissionDetails.put(KimConstants.AttributeConstants.DOCUMENT_TYPE_NAME, KRADServiceLocatorWeb.getDocumentDictionaryService().getMaintenanceDocumentTypeName(JobBo.class));
+
+        Map<String, String> qualifiers = new HashMap<String, String>();
+        qualifiers.put("location", job.getGroupKey().getLocationId());
+        qualifiers.put("department", job.getDept());
+
+        return HrServiceLocator.getHRPermissionService().isAuthorizedByTemplate(principalId,
+                KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+                KPMEPermissionTemplate.EDIT_KPME_MAINTENANCE_DOCUMENT.getPermissionTemplateName(),
+                permissionDetails, qualifiers, LocalDate.now().toDateTimeAtStartOfDay());
+    */
+    }
 }

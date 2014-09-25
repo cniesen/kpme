@@ -168,4 +168,6 @@ public interface JobService {
 	public List<String> getPrincipalIdsInPosition(String positionNumber, LocalDate asOfDate);
 
     Job getNextInactiveJob(Job job);
+
+    public boolean canUserEditJob(JobContract job, String principalId);
 }

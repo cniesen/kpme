@@ -333,7 +333,7 @@
         <property name="lineActions">
             <list>
                 <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" 
-                	p:render="@{ isAddedCollectionItem(#line) and #line.id eq null and #dp.process eq 'New Job/Payrate' and #line.canEditJob }" />
+                	p:render="@{ isAddedCollectionItem(#line) and #line.id eq null and #dp.process eq 'New Job/Payrate'}" />
             </list>
         </property>
         
@@ -496,7 +496,7 @@
                 </property>
 
                 <property name="layoutManager.separateAddLine" value="true"/>
-                <property name="renderAddLine" value="@{#dp.process eq 'New Job/Payrate' and #lp.canEditJob }" />
+                <property name="renderAddLine" value="@{#dp.process eq 'New Job/Payrate' and #line.canEditJob }" />
 
                 <property name="layoutManager.richTable.render" value="true"/>
                 <property name="layoutManager.ajaxDetailsRetrieval" value="true"/>
