@@ -18,6 +18,8 @@ package org.kuali.kpme.core.job;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
@@ -25,6 +27,7 @@ import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.api.permission.KPMEPermissionTemplate;
 import org.kuali.kpme.core.api.position.PositionBase;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.bo.HrKeyedBusinessObject;
@@ -38,10 +41,12 @@ import org.kuali.kpme.core.salarygroup.SalaryGroupBo;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.util.type.KualiDecimal;
+import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.identity.principal.EntityNamePrincipalName;
 import org.kuali.rice.kim.api.role.RoleMember;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
+import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
 
 import com.google.common.collect.ImmutableList;
@@ -415,6 +420,33 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 
         return Job.Builder.create(bo).build();
     }
-    
 
+    public boolean getCanEditJob() {
+
+        String principalId = GlobalVariables.getUserSession().getPrincipalId();
+        return HrServiceLocator.getJobService().canUserEditJob(this, principalId);
+
+        // only department admin can edit the job
+/*
+        if ( StringUtils.isNotBlank(this.getDept()) && StringUtils.isNotBlank(this.getGroupKeyCode()) ) {
+            Map<String, String> permissionDetails = new HashMap<String, String>();
+            permissionDetails.put(KimConstants.AttributeConstants.DOCUMENT_TYPE_NAME, KRADServiceLocatorWeb.getDocumentDictionaryService().getMaintenanceDocumentTypeName(JobBo.class));
+
+            return HrServiceLocator.getHRPermissionService().isAuthorizedByTemplate(GlobalVariables.getUserSession().getPrincipalId(),
+                                                                                    KPMENamespace.KPME_WKFLW.getNamespaceCode(),
+                                                                                    KPMEPermissionTemplate.EDIT_KPME_MAINTENANCE_DOCUMENT.getPermissionTemplateName(),
+                                                                                    permissionDetails,  LocalDate.now().toDateTimeAtStartOfDay());
+
+//
+            if (HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(),
+                    KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())
+                    || HrServiceLocator.getKPMERoleService().principalHasRoleInDepartment(GlobalVariables.getUserSession().getPrincipalId(),
+                    KPMENamespace.KPME_LM.getNamespaceCode(), KPMERole.LEAVE_DEPARTMENT_ADMINISTRATOR.getRoleName(), this.getDept(), this.getGroupKeyCode(), LocalDate.now().toDateTimeAtStartOfDay())) {
+                return true;
+            }
+//
+        }
+        return false;
+*/
+    }
 }
