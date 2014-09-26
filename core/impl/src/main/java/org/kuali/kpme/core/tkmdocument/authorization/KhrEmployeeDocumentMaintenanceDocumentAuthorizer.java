@@ -16,33 +16,20 @@
 package org.kuali.kpme.core.tkmdocument.authorization;
 
 import org.apache.commons.lang.StringUtils;
-import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentAuthorizerBase;
 import org.kuali.rice.kew.api.document.DocumentStatus;
-import org.kuali.rice.kim.api.KimConstants;
 import org.kuali.rice.kim.api.identity.Person;
-import org.kuali.rice.kns.document.MaintenanceDocument;
-import org.kuali.rice.kns.document.authorization.DocumentAuthorizerBase;
-import org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizer;
-import org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase;
 import org.kuali.rice.krad.document.Document;
-import org.kuali.rice.krad.maintenance.MaintenanceViewAuthorizerBase;
-import org.kuali.rice.krad.uif.view.View;
-import org.kuali.rice.krad.uif.view.ViewModel;
-import org.kuali.rice.krad.util.KRADConstants;
-import org.kuali.rice.krad.util.KRADUtils;
-
-import java.util.Map;
-import java.util.Set;
+import org.kuali.rice.krad.maintenance.MaintenanceDocumentAuthorizerBase;
 
 /**
  * Created by mlemons on 9/10/14.
  */
 
-// MaintenanceDocumentAuthorizer
-    //org.kuali.rice.kns.document.authorization.MaintenanceDocumentAuthorizerBase
-public class KhrEmployeeDocumentMaintenanceDocumentAuthorizer extends MaintenanceDocumentAuthorizerBase implements MaintenanceDocumentAuthorizer {
+public class KhrEmployeeDocumentMaintenanceDocumentAuthorizer extends MaintenanceDocumentAuthorizerBase {
 
-    @Override
+	private static final long serialVersionUID = 4641364720543081082L;
+
+	@Override
     public boolean canCancel(Document document, Person user) {
         DocumentStatus status = document.getDocumentHeader().getWorkflowDocument().getStatus();
 
