@@ -382,11 +382,9 @@
             <list>
                 <bean parent="Uif-InputField" p:propertyName="jobNumber" p:readOnly="true" p:readOnlyDisplayReplacementPropertyName="jobNumberDisplay"/>
 				<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"
-                	p:readOnly="@{ !isAddedCollectionItem(#line) and ( !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.canEditJob) }"/>
-
+                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') }"/>
                 <bean parent="Uif-InputField" p:propertyName="endDate"
-                	p:readOnly="@{ !isAddedCollectionItem(#line) and (!(#dp.process eq 'Change Job Dates' or #dp.process eq 'End Job') or !#line.canEditJob) }" />
-
+                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Change Job Dates' or #dp.process eq 'End Job') }" />
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true"
                 	p:readOnly="true" >
                     <property name="quickfinder">
@@ -395,13 +393,9 @@
                              p:fieldConversions="dept:dept"/>
                     </property>
                 </bean>
-
                 <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true"
-                	p:readOnly="@{ !isAddedCollectionItem(#line) and (!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job') or !#line.canEditJob) }" />
-
-                <bean parent="Uif-InputField" p:propertyName="standardHours"
-                	p:readOnly="true" />
-
+                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job') }" />
+                <bean parent="Uif-InputField" p:propertyName="standardHours" p:readOnly="true" />
                 <bean parent="Uif-InputField" p:propertyName="payGrade"
                 	p:readOnly="true" >
                     <property name="quickfinder">
@@ -433,7 +427,7 @@
                                                {
                                                    jQuery('#@{#collectionGroup.layoutManager.addLineGroup.id}').show();
                                                }return false;">
-                                            <property name="hidden" value = "@{ (!(#dp.process eq 'New Job/Payrate'))}"/>
+                                            <property name="hidden" value = "@{ (!(#dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates'))}"/>
                                         </bean>
                                     </list>
                                 </property>
@@ -542,17 +536,17 @@
                 <property name="items">
                     <list>
                         <bean parent="Uif-InputField" p:propertyName="effectiveDate"
-                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.job.canEditJob }" >
+                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#lp.job.canEditJob }" >
                             <property name="control">
                                 <bean parent="Uif-DateControl"/>
                             </property>
                         </bean>
                         <bean parent="Uif-InputField" p:propertyName="workArea"
-                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.job.canEditJob }"  />
+                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#lp.job.canEditJob }"  />
                         <bean parent="Uif-InputField" p:propertyName="task"
-                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.job.canEditJob }" />
+                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#lp.job.canEditJob }" />
                         <bean parent="Uif-InputField" p:propertyName="active"
-                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.job.canEditJob }" >
+                              p:readOnly="@{ !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#lp.job.canEditJob }" >
                             <property name="control">
                                 <bean parent="Uif-CheckboxControl"/>
                             </property>
@@ -583,7 +577,7 @@
                             <list>
                                 <bean parent="Uif-AddLineAction" id = "KhrEmployee-AddBlankAssignmentAccount">
                                     <property name="actionLabel" value="Add Assignment Account"></property>
-                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate' }" />
+                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates'}" />
                                     <property name="refreshWhenChangedPropertyNames" value="#dp.process" />
                                 </bean>
                             </list>
@@ -600,11 +594,11 @@
                         <property name="items">
                             <list>
                                 <bean parent="Uif-InputField" p:propertyName="accountNbr"
-                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.assignmentObj.job.canEditJob }" />
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#line.assignmentObj.job.canEditJob }" />
                                 <bean parent="Uif-InputField" p:propertyName="subAcctNbr"
-                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.assignmentObj.job.canEditJob }" />
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#line.assignmentObj.job.canEditJob }" />
                                 <bean parent="Uif-InputField" p:propertyName="earnCode"
-                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.assignmentObj.job.canEditJob }" >
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#line.assignmentObj.job.canEditJob }" >
                                     <property name="quickfinder">
                                         <bean parent="Uif-QuickFinderByScript"
                                               p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
@@ -612,7 +606,7 @@
                                     </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="percent"
-                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.assignmentObj.job.canEditJob }" >
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#line.assignmentObj.job.canEditJob }" >
                                     <property name="control">
                                         <bean parent="Uif-SpinnerControl">
                                             <property name="spinner">
@@ -631,7 +625,7 @@
                                     </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="active"
-                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') or !#line.assignmentObj.job.canEditJob}" >
+                                      p:readOnly="@{!(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates') or !#line.assignmentObj.job.canEditJob}" >
                                     <property name="control">
                                         <bean parent="Uif-CheckboxControl"/>
                                     </property>
@@ -641,26 +635,22 @@
 
                         <property name="addLineItems">
                             <list>
-                                <bean parent="Uif-InputField" p:propertyName="accountNbr"
-                                      p:readOnly="@{ #dp.process ne 'New Job/Payrate' }" >
-                                      <property name="render" value="@{ #dp.process eq 'New Job/Payrate' }" />
+                                <bean parent="Uif-InputField" p:propertyName="accountNbr" >
+                                      <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates' }" />
                                 </bean>
-                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr"
-                                      p:readOnly="@{ #dp.process ne 'New Job/Payrate' }" >
-                                      <property name="render" value="@{ #dp.process eq 'New Job/Payrate'  }" />
+                                <bean parent="Uif-InputField" p:propertyName="subAcctNbr" >
+                                      <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details'  or #dp.process eq 'Change Job Dates'}" />
                                 </bean>
-                                <bean parent="Uif-InputField" p:propertyName="earnCode"
-                                      p:readOnly= "@{ #dp.process ne 'New Job/Payrate' }" >
-                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate'  }" />
+                                <bean parent="Uif-InputField" p:propertyName="earnCode" >
+                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details'  or #dp.process eq 'Change Job Dates'}" />
                                     <property name="quickfinder">
                                         <bean parent="Uif-QuickFinderByScript"
                                               p:dataObjectClassName="org.kuali.kpme.core.earncode.EarnCodeBo"
                                               p:fieldConversions="earnCode:earnCode"/>
                                     </property>
                                 </bean>
-                                <bean parent="Uif-InputField" p:propertyName="percent"
-                                      p:readOnly= "@{ #dp.process ne 'New Job/Payrate' }" >
-                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate' }" />
+                                <bean parent="Uif-InputField" p:propertyName="percent">
+                                    <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates'}" />
                                     <property name="control">
                                         <bean parent="Uif-SpinnerControl">
                                             <property name="spinner">
@@ -679,8 +669,7 @@
                                     </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="active" >
-                                	<property name="render" value="@{ #dp.process eq 'New Job/Payrate' }" />
-                                    <property name="readOnly" value="@{ #dp.process ne 'New Job/Payrate' }" />
+                                	<property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details'  or #dp.process eq 'Change Job Dates'}" />
                                     <property name="control">
                                         <bean parent="Uif-CheckboxControl"/>
                                     </property>
