@@ -282,6 +282,13 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 		// set the job number if saving a freshly added job
 		if (currentHrBo instanceof KhrEmployeeJob) {
 			KhrEmployeeJob currentTkmJob = (KhrEmployeeJob) currentHrBo;
+			// set default value for some of the fields
+			currentTkmJob.setPositionNumber("1");
+			currentTkmJob.setHrPayType("XH");
+			currentTkmJob.setHrSalGroup("XH");
+			currentTkmJob.setPrimaryIndicator(false);
+			currentTkmJob.setFlsaStatus("NE");
+			
 			if (currentTkmJob.getJobNumber() < 0L) {
 				Long newJobNumber = getNextJobNumber();
 				currentTkmJob.setJobNumber(newJobNumber);
