@@ -164,7 +164,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             canEditJob.put(tkmJob.getId(), tkmJob.getCanEditJob());
         }
 
-        tkmDocument.setCanEditJob(canEditJob);
+        //tkmDocument.setCanEditJob(canEditJob);
         tkmDocument.setJobList(tkmJobs);
         return tkmDocument;
     }
@@ -339,6 +339,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 
                 if (endDateExtended)
                 {
+/*
                     KhrEmployeeJob newInactiveJob = createTKMJob(currentTkmJob);
                     newInactiveJob.setActive(false);
                     newInactiveJob.setHrJobId(null);
@@ -346,7 +347,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
                     newInactiveJob.setVersionNumber(null);
                     newInactiveJob.setEffectiveDate(new Date());
                     getBusinessObjectService().linkAndSave(newInactiveJob);
-
+*/
                     KhrEmployeeJob newActiveJob = createTKMJob(currentTkmJob);
                     newActiveJob.setEffectiveDate(nextInactiveJobBo.getEffectiveDate());
                     newActiveJob.setActive(true);
