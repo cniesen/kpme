@@ -102,7 +102,6 @@ public interface JobService {
 	 * @param principalId
 	 * @return
 	 */
-    @Cacheable(value= JobContract.CACHE_NAME, key="'principalId=' + #p0")
 	public Job getMaxJob(String principalId);
 
     List<Job> getJobs(String userPrincipalId, String principalId, String firstName, String lastName, String jobNumber,
