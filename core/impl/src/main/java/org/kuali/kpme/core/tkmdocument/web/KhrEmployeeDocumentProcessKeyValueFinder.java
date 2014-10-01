@@ -16,12 +16,20 @@
 package org.kuali.kpme.core.tkmdocument.web;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.job.Job;
+import org.kuali.kpme.core.service.HrServiceLocator;
+import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.kuali.rice.krad.uif.view.ViewModel;
+import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
 /**
  * Created by jwillia on 4/16/14.
@@ -40,4 +48,24 @@ public class KhrEmployeeDocumentProcessKeyValueFinder extends UifKeyValuesFinder
 
         return keyValues;
     }
+    
+	@Override
+	public List<KeyValue> getKeyValues(ViewModel model) {
+		List<KeyValue> keyValues = new ArrayList<KeyValue>();
+        if (model instanceof MaintenanceDocumentForm) {
+		    MaintenanceDocumentForm docForm = (MaintenanceDocumentForm) model;
+		    KhrEmployeeDocument anEmployeeDoc = (KhrEmployeeDocument) docForm.getDocument().getNewMaintainableObject().getDataObject();
+		    String pId = anEmployeeDoc.getPrincipalId();
+		    if(StringUtils.isNotBlank(pId)) {
+		    	List<Job> jobList = HrServiceLocator.getJobService().getJobs(pId, LocalDate.now());
+		    	if(CollectionUtils.isEmpty(jobList)) {
+		    		 keyValues.add(new ConcreteKeyValue("New Job/Payrate","New Job/Payrate"));
+		    		 return keyValues;
+		    	} else {
+		    		return this.getKeyValues();
+		    	}
+		    }
+        }
+        return keyValues;
+	}
 }
