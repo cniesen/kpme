@@ -17,6 +17,8 @@ package org.kuali.kpme.core.tkmdocument;
 
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.rice.krad.bo.PersistableBusinessObjectBase;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,11 +27,11 @@ import java.util.List;
  * Created by jwillia on 4/11/14.
  */
 
-//public class KhrEmployeeDocument extends MaintenanceDocumentBase {
-public class KhrEmployeeDocument extends PersistableBusinessObjectBase {
+public class KhrEmployeeDocument implements Serializable {
 
-	private static final long serialVersionUID = 5006332932081928714L;
 	
+	private static final long serialVersionUID = -1849294911066862535L;
+
 	private String principalId;
 
     private String name;
@@ -101,14 +103,14 @@ public class KhrEmployeeDocument extends PersistableBusinessObjectBase {
         this.editableDepartmentList = editableDepartmentList;
     }
 
-    @Override
-    public void refreshNonUpdateableReferences() {
-        //do nothing
-    }
-
-    @Override
-    public void refresh() {
-        //do nothing
-    }
+//    @Override
+//    public void refreshNonUpdateableReferences() {
+//        //do nothing
+//    }
+//
+//    @Override
+//    public void refresh() {
+//        //do nothing
+//    }
 }
 

@@ -21,7 +21,6 @@ import org.kuali.kpme.core.krms.KpmeKrmsFactBuilderServiceHelper;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krms.api.engine.Facts;
-import org.kuali.rice.krms.api.engine.Term;
 
 public class KhrEmployeeSetupFactBuilderServiceImpl extends KpmeKrmsFactBuilderServiceHelper {
 	
