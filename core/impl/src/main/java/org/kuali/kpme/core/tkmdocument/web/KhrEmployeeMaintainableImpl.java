@@ -56,10 +56,7 @@ import de.danielbechler.diff.node.Node;
 import de.danielbechler.diff.path.PropertyPath;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     
@@ -122,7 +119,6 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 																		.withoutProperty(PropertyPath.buildWith("subObjectCodeObj"))
 																		.withoutProperty(PropertyPath.buildWith("projectCodeObj"))
 																		.withoutProperty(PropertyPath.buildWith("earnCodeObj"))
-	
 																		.withoutProperty(PropertyPath.buildWith("assignmentObj"));
 	
 	
@@ -149,6 +145,8 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         List<Job> jobList = HrServiceLocator.getJobService().getJobs(principalId, LocalDate.now());
 
         List<KhrEmployeeJob> tkmJobs = new ArrayList<KhrEmployeeJob>();
+
+        Map<String, Boolean> canEditJob = new HashMap<String, Boolean>();
         for (Job job : jobList) {
             KhrEmployeeJob tkmJob = createTKMJob(job);
             //TODO set end date
@@ -163,8 +161,10 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             tkmJob.setAssignments(ModelObjectUtils.transform(HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, tkmJob.getJobNumber(), LocalDate.now()), AssignmentBo.toAssignmentBo));
             tkmJobs.add(tkmJob);
 
+            canEditJob.put(tkmJob.getId(), tkmJob.getCanEditJob());
         }
 
+        tkmDocument.setCanEditJob(canEditJob);
         tkmDocument.setJobList(tkmJobs);
         return tkmDocument;
     }
@@ -251,6 +251,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
     					oldHrBO.setId(null);
     					customInactiveSaveLogicNewEffective(currentHrBo);
 					}
+
 					// save the older version - will trigger either an UPDATE or an INSERT depending on effective date remaining same or not.
 					KRADServiceLocator.getBusinessObjectService().save(oldHrBO);
 				}
@@ -311,20 +312,52 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 	}
 
 	public void processEndDate(KhrEmployeeJob currentTkmJob) {
-    	JobBo nextInactiveJob = JobBo.from(HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob)));
+
+        JobBo nextInactiveJobBo = null;
+        Job nextInactiveJob = HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob));
+
+        if (nextInactiveJob != null)
+        {
+            nextInactiveJobBo = JobBo.from(nextInactiveJob);
+        }
+
         //if current job end date is blank and there is a future inactive job, delete that future inactive job
         if (currentTkmJob.getEndDate() == null) {
-        	if(nextInactiveJob != null) {
-        		getBusinessObjectService().delete(nextInactiveJob);
+        	if(nextInactiveJobBo != null) {
+        		getBusinessObjectService().delete(nextInactiveJobBo);
         	}
         }
         //if end date is present create/update an inactive job
         else {
         	//if inactive job exists update it 
-            if (nextInactiveJob != null) {
-                nextInactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
-                getBusinessObjectService().linkAndSave(nextInactiveJob);
-            } 
+            if (nextInactiveJobBo != null) {
+                boolean endDateExtended = false;
+                if (currentTkmJob.getEndDate().after(nextInactiveJobBo.getEffectiveDate()))
+                {
+                    endDateExtended = true;
+                }
+
+                if (endDateExtended)
+                {
+                    KhrEmployeeJob newInactiveJob = createTKMJob(currentTkmJob);
+                    newInactiveJob.setActive(false);
+                    newInactiveJob.setHrJobId(null);
+                    newInactiveJob.setObjectId(null);
+                    newInactiveJob.setVersionNumber(null);
+                    newInactiveJob.setEffectiveDate(new Date());
+                    getBusinessObjectService().linkAndSave(newInactiveJob);
+
+                    KhrEmployeeJob newActiveJob = createTKMJob(currentTkmJob);
+                    newActiveJob.setEffectiveDate(nextInactiveJobBo.getEffectiveDate());
+                    newActiveJob.setActive(true);
+                    newActiveJob.setHrJobId(null);
+                    newActiveJob.setObjectId(null);
+                    newActiveJob.setVersionNumber(null);
+                    getBusinessObjectService().linkAndSave(newActiveJob);
+                }
+                nextInactiveJobBo.setEffectiveDate(currentTkmJob.getEndDate());
+                getBusinessObjectService().linkAndSave(nextInactiveJobBo);
+            }
             // else create new
             else {
             	KhrEmployeeJob inactiveJob = createTKMJob(currentTkmJob);
@@ -336,7 +369,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
                 inactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
             	getBusinessObjectService().linkAndSave(inactiveJob);
             }
-        }    	
+        }
     }
     
     
