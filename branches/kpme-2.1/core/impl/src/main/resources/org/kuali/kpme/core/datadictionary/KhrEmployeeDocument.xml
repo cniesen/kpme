@@ -394,7 +394,7 @@
                     </property>
                 </bean>
                 <bean parent="Uif-InputField" p:propertyName="compRate" p:required="true"
-                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details' or #dp.process eq 'End Job') }" />
+                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Change Job Dates' or #dp.process eq 'Update Job Details') }" />
                 <bean parent="Uif-InputField" p:propertyName="standardHours" p:readOnly="true" />
                 <bean parent="Uif-InputField" p:propertyName="payGrade"
                 	p:readOnly="true" >
@@ -426,8 +426,8 @@
                                                else
                                                {
                                                    jQuery('#@{#collectionGroup.layoutManager.addLineGroup.id}').show();
-                                               }return false;">
-                                            <property name="hidden" value = "@{ (!(#dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates'))}"/>
+                                               }return false;">                                               
+                                            <property name="hidden" value = "@{ #dp.process eq null or #dp.process eq '' or #dp.process eq 'End Job' or (#dp.process eq 'New Job/Payrate' and !isAddedCollectionItem(#line))}"/>                                        
                                         </bean>
                                     </list>
                                 </property>
@@ -564,6 +564,10 @@
                         <property name="layoutManager.richTable.render" value="false"/>
 
                         <property name="renderAddLine" value="true" />
+                        <property name="addLineLabel">
+					      <bean parent="Uif-Message" p:messageText=""/>
+					    </property>
+                        
                         <property name="showInactiveLines" value = "false"/>
                         <property name="renderInactiveToggleButton" value="false"/>
                         <property name="layoutManager.separateAddLine" value="true"/>
