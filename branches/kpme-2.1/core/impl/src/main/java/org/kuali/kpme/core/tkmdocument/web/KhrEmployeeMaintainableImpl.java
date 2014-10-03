@@ -24,6 +24,8 @@ import org.kuali.kpme.core.api.assignment.AssignmentContract;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.job.JobContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
+import org.kuali.kpme.core.api.principal.PrincipalHRAttributesContract;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
 import org.kuali.kpme.core.bo.HrBusinessObject;
@@ -141,7 +143,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         tkmDocument.setEditableDepartmentList(HrServiceLocator.getKPMERoleService().getDepartmentsForPrincipalInRole(HrContext.getTargetPrincipalId(), KPMENamespace.KPME_TK.getNamespaceCode(), KPMERole.TIME_DEPARTMENT_ADMINISTRATOR.getRoleName(), LocalDate.now().toDateTimeAtStartOfDay(), true));
 
         //set job section
-        CacheUtils.flushCache(JobContract.CACHE_NAME);
+        //CacheUtils.flushCaches(JobBo.CACHE_FLUSH);
         List<Job> jobList = HrServiceLocator.getJobService().getJobs(principalId, LocalDate.now());
 
         List<KhrEmployeeJob> tkmJobs = new ArrayList<KhrEmployeeJob>();
@@ -157,7 +159,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             }
 
             //add assignment list to job
-            CacheUtils.flushCache(AssignmentContract.CACHE_NAME);
+            //CacheUtils.flushCaches(AssignmentBo.CACHE_FLUSH);
             tkmJob.setAssignments(ModelObjectUtils.transform(HrServiceLocator.getAssignmentService().getActiveAssignmentsForJob(principalId, tkmJob.getJobNumber(), LocalDate.now()), AssignmentBo.toAssignmentBo));
             tkmJobs.add(tkmJob);
 
@@ -270,6 +272,9 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 			
 			getBusinessObjectService().save(currentHrBo);			
 		}
+        CacheUtils.flushCache(PrincipalHRAttributesBo.CACHE_NAME);
+        //JobBo list contains Assignment, and everything in the Assignment list, so we should be covered.
+        CacheUtils.flushCaches(JobBo.CACHE_FLUSH);
     }
     
 	protected void customInactiveSaveLogicNewEffective(HrBusinessObject currentHrBo) {
@@ -371,6 +376,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             	getBusinessObjectService().linkAndSave(inactiveJob);
             }
         }
+        CacheUtils.flushCaches(JobBo.CACHE_FLUSH);
     }
     
     
@@ -387,6 +393,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
              newAttributes.setActive(true);
 
              getBusinessObjectService().linkAndSave(newAttributes);
+             CacheUtils.flushCache(PrincipalHRAttributesContract.CACHE_NAME);
          }
     }
 
