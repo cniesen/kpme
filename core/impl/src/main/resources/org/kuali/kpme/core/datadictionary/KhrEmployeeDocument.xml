@@ -646,9 +646,17 @@
                             <list>
                                 <bean parent="Uif-InputField" p:propertyName="accountNbr" >
                                       <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details' or #dp.process eq 'Change Job Dates' }" />
+                                      <property name="quickfinder">
+							            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.Account"
+							                            p:fieldConversions="chartOfAccountsCode:finCoaCd,accountNumber:accountNbr"/>
+							           </property> 
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="subAcctNbr" >
                                       <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details'  or #dp.process eq 'Change Job Dates'}" />
+                                      <property name="quickfinder">
+							            	<bean parent="Uif-QuickFinderByScript" p:dataObjectClassName="org.kuali.kpme.core.kfs.coa.businessobject.SubAccount"
+							                            p:fieldConversions="subAccountNumber:subAcctNbr" />
+							           </property>
                                 </bean>
                                 <bean parent="Uif-InputField" p:propertyName="earnCode" >
                                     <property name="render" value="@{ #dp.process eq 'New Job/Payrate' or #dp.process eq 'Update Job Details'  or #dp.process eq 'Change Job Dates'}" />
