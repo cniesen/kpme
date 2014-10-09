@@ -190,5 +190,8 @@
     <param name="server.datasource.ojb.sequenceManager.className" override="false">${server.datasource.ojb.sequenceManager.className.${server.datasource.ojb.platform}}</param>
     <param name="server.datasource.pool.validationQuery" override="false">${server.datasource.pool.validationQuery.${server.datasource.ojb.platform}}</param>
     <param name="server.datasource.pool.class" override="false">${server.datasource.pool.class.${server.datasource.ojb.platform}}</param>
+    
+    <!-- minimum wage -->
+    <param name="minimum.wage" override="false">7.25</param>
 
 </config>

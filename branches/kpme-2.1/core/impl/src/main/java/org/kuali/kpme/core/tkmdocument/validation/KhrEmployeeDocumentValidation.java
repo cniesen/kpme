@@ -16,7 +16,9 @@
 package org.kuali.kpme.core.tkmdocument.validation;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
+import org.kuali.kpme.core.api.KPMEConstants;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
@@ -28,6 +30,7 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.kpme.core.util.HrContext;
+import org.kuali.rice.core.api.config.property.ConfigContext;
 import org.kuali.rice.core.api.exception.RiceIllegalArgumentException;
 import org.kuali.rice.core.api.util.RiceKeyConstants;
 import org.kuali.rice.kew.api.WorkflowDocument;
@@ -247,8 +250,15 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
     }
 
     protected boolean isValidCompRate(KhrEmployeeJob tkmJob, int index) {
-        if (tkmJob.getCompRate().bigDecimalValue().compareTo(new BigDecimal(7.25)) < 0) {
-            this.putFieldError("dataObject.jobList["+ index +"].compRate","tkmjob.minimum.wage");
+    	BigDecimal miniWage = new BigDecimal(7.25);
+    	String miniWageString = ConfigContext.getCurrentContextConfig().getProperty(KPMEConstants.MINIMUM_WAGE);
+    	if(StringUtils.isNotBlank(miniWageString)) {    	
+    		miniWage = new BigDecimal(miniWageString);
+    	}
+        if (tkmJob.getCompRate().bigDecimalValue().compareTo(miniWage) < 0) {
+        	String[] params = new String[1];
+            params[0] = miniWage.toString();
+            this.putFieldError("dataObject.jobList["+ index +"].compRate","tkmjob.minimum.wage", params);
             return false;
         }
         return true;

@@ -50,4 +50,6 @@ public final class KPMEConstants {
     private KPMEConstants() {
         throw new UnsupportedOperationException("do not call");
     }
+    
+    public static final String MINIMUM_WAGE = "minimum.wage";
 }
