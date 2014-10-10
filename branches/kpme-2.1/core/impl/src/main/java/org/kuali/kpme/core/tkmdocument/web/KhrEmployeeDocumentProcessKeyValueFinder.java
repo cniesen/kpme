@@ -42,9 +42,8 @@ public class KhrEmployeeDocumentProcessKeyValueFinder extends UifKeyValuesFinder
     public List<KeyValue> getKeyValues() {
         List<KeyValue> keyValues = new ArrayList<KeyValue>();
         keyValues.add(new ConcreteKeyValue("New Job/Payrate","New Job/Payrate"));
-        keyValues.add(new ConcreteKeyValue("Change Job Dates","Change Job Dates"));
-        keyValues.add(new ConcreteKeyValue("Update Job Details","Update Job Details"));
-        keyValues.add(new ConcreteKeyValue("End Job","End Job"));
+        keyValues.add(new ConcreteKeyValue("Maintain Job/Assignment Details","Maintain Job/Assignment Details"));
+        keyValues.add(new ConcreteKeyValue("Terminate Job","Terminate Job"));
 
         return keyValues;
     }
