@@ -279,7 +279,7 @@
                 <bean parent="Uif-InputField" p:propertyName="principalId" />
                 <bean parent="Uif-InputField" p:propertyName="name" />
                 <bean parent="Uif-InputField" p:propertyName="startDate" />
-                <bean parent="Uif-InputField" p:propertyName="endDate" />
+                <bean parent="Uif-InputField" p:propertyName="endDate" p:label="Term Date" />
             </list>
         </property>
     </bean>
@@ -338,7 +338,7 @@
         </property>
         
         <property name="layoutManager.expandDetailsActionPrototype">
-            <bean parent="Uif-ExpandDetailsImageAction"/>
+            <bean parent="Uif-ExpandDetailsAction" p:actionLabel="View Assignments" />
         </property>
 
         <property name="layoutManager.separateAddLine" value="true"/>
@@ -357,8 +357,8 @@
 
         <property name="addLineItems">
             <list>
-                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"/>
-                <bean parent="Uif-InputField" p:propertyName="endDate" p:required="false"/>
+                <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:label="Job Effective Date" p:required="true"/>
+                <bean parent="Uif-InputField" p:propertyName="endDate" p:label="Job End Date" p:required="false"/>
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
@@ -381,9 +381,9 @@
         <property name="items">
             <list>
                 <bean parent="Uif-InputField" p:propertyName="jobNumber" p:readOnly="true" p:readOnlyDisplayReplacementPropertyName="jobNumberDisplay"/>
-				<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true"
+				<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" p:label="Job Effective Date"
                 	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Maintain Job/Assignment Details') }"/>
-                <bean parent="Uif-InputField" p:propertyName="endDate"
+                <bean parent="Uif-InputField" p:propertyName="endDate" p:label="Job End Date"
                 	p:readOnly="@{ !isAddedCollectionItem(#line) and !( #dp.process eq 'Terminate Job' or #dp.process eq 'Maintain Job/Assignment Details') }" />
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true"
                 	p:readOnly="true" >
@@ -408,7 +408,6 @@
         </property>
 
         <property name="layoutManager.rowDetailsGroup">
-  
             <bean parent="Uif-TableSubCollection-WithinSection" id = "KhrEmployee-Assignment-Collection">
 
                 <property name="header">
@@ -462,10 +461,8 @@
                               p:actionLabel="delete" p:render="@{ (  (#line.id eq null) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'Maintain Job/Assignment Details' ) and (#line.job eq null or #line.job.canEditJob) ) }"/>
                     </list>
                 </property>
-                
-				<property name="layoutManager.rowDetailsOpen" value="true"/>
-                <property name="layoutManager.expandDetailsActionPrototype">
-                    <bean parent="Uif-ExpandDetailsImageAction"/>
+				<property name="layoutManager.expandDetailsActionPrototype">
+                    <bean parent="Uif-ExpandDetailsAction" p:actionLabel="View Accounts" />
                 </property>
                 <property name="layoutManager.richTable.templateOptions">
                     <map>
@@ -569,12 +566,7 @@
                         <property name="renderInactiveToggleButton" value="false"/>
                         <property name="layoutManager.separateAddLine" value="true"/>
                         <property name="renderLineActions" value="true" />
-						
-						<property name="layoutManager.rowDetailsOpen" value="true"/>
-						<property name="layoutManager.expandDetailsActionPrototype">
-		                    <bean parent="Uif-ExpandDetailsImageAction"/>
-		                </property>
-		                
+
                         <property name="addLineActions">
                             <list>
                                 <bean parent="Uif-AddLineAction" id = "KhrEmployee-AddBlankAssignmentAccount">
