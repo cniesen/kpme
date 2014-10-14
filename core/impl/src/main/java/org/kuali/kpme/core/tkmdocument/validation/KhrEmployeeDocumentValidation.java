@@ -19,12 +19,18 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.KPMEConstants;
+import org.kuali.kpme.core.api.calendar.Calendar;
+import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentViewAuthorizer;
+import org.kuali.kpme.core.bo.HrBusinessObject;
+import org.kuali.kpme.core.calendar.CalendarBo;
 import org.kuali.kpme.core.job.authorization.JobAuthorizer;
+import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
 import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
@@ -40,6 +46,7 @@ import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
 import org.kuali.rice.krad.maintenance.MaintenanceDocumentAuthorizer;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
+import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
 import org.kuali.rice.krad.util.GlobalVariables;
 import org.kuali.rice.krad.util.RouteToCompletionUtil;
@@ -265,11 +272,46 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
     }
 
     protected boolean isValidEffectiveDate(KhrEmployeeDocument tkmDocument, KhrEmployeeJob tkmJob, int index) {
-        //validate job effective date
+        //validate job effective date against document start date
         if (tkmJob.getEffectiveDate().before(tkmDocument.getStartDate())) {
             this.putFieldError("dataObject.jobList["+ index +"].effectiveDate","tkmjob.effective.before.start");
             return false;
         }
+        
+       //validate job effective date against job end date
+        if (tkmJob.getEndDate() != null && tkmJob.getEffectiveDate().after(tkmJob.getEndDate())) {
+            this.putFieldError("dataObject.jobList["+ index +"].effectiveDate","tkmjob.effective.before.end");
+            return false;
+        }
+        
+        // use the job's effective date to find the calendar entry it's for, then check if the current time is 
+        // after the final approval time of the calendar entry. If it is, we should not allow the effective date to be used
+        boolean effectiveDateChanged = false;
+        if(StringUtils.isNotBlank(tkmJob.getHrJobId())) {
+        	HrBusinessObject existingJob = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(KhrEmployeeJob.class, tkmJob.getId());
+        	if(existingJob != null && !existingJob.getEffectiveDate().equals(tkmJob.getEffectiveDate())) {
+        		effectiveDateChanged = true;
+        	}
+        } else {
+        	effectiveDateChanged = true;
+        }
+		if(effectiveDateChanged) {        
+	        PrincipalHRAttributes ph = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(tkmDocument.getPrincipalId(), LocalDate.now()) ;
+	        if(ph != null) {
+	        	Calendar aCal = ph.getCalendar();
+	        	if(aCal != null) {
+	        		CalendarEntry aCalEntry = HrServiceLocator.getCalendarEntryService().getCurrentCalendarEntryByCalendarId(aCal.getHrCalendarId(), tkmJob.getEffectiveLocalDate().toDateTimeAtStartOfDay());
+	        		if(aCalEntry != null && aCalEntry.getBatchPayrollApprovalLocalTime() != null) {
+	        			if(LocalDate.now().toDateTimeAtStartOfDay().isAfter(aCalEntry.getBatchPayrollApprovalFullDateTime())) {
+	        				this.putFieldError("dataObject.jobList["+ index +"].effectiveDate","tkmjob.calendar.entry.approved");
+	        				return false;
+	        			}
+	        		}
+	        	}        			
+	        }
+		}
+     
+        
         return true;
     }
 
