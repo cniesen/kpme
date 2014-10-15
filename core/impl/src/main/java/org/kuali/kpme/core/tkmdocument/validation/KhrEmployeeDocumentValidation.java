@@ -175,7 +175,7 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
 
     protected boolean isValidWorkareaDepartment(KhrEmployeeJob tkmJob, AssignmentBo assignment, int assignmentIndex, int index) {
         //validate workarea department
-        List<Long> validWorkAreasforDepartment = HrServiceLocator.getWorkAreaService().getWorkAreasForDepartment(tkmJob.getDept(),tkmJob.getEffectiveLocalDate());
+        List<Long> validWorkAreasforDepartment = HrServiceLocator.getWorkAreaService().getWorkAreasForDepartment(tkmJob.getDept(),assignment.getEffectiveLocalDate());
         if(!validWorkAreasforDepartment.contains(assignment.getWorkArea())){
             String[] params = new String[2];
             params[0] = assignment.getWorkArea().toString();
