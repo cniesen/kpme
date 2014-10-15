@@ -15,45 +15,32 @@
  */
 package org.kuali.kpme.core.tkmdocument.validation;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.ListIterator;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.KPMEConstants;
 import org.kuali.kpme.core.api.calendar.Calendar;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
-import org.kuali.kpme.core.api.namespace.KPMENamespace;
+import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
 import org.kuali.kpme.core.api.workarea.WorkArea;
 import org.kuali.kpme.core.assignment.AssignmentBo;
 import org.kuali.kpme.core.assignment.account.AssignmentAccountBo;
 import org.kuali.kpme.core.authorization.KPMEMaintenanceDocumentViewAuthorizer;
-import org.kuali.kpme.core.bo.HrBusinessObject;
-import org.kuali.kpme.core.calendar.CalendarBo;
-import org.kuali.kpme.core.job.authorization.JobAuthorizer;
-import org.kuali.kpme.core.principal.PrincipalHRAttributesBo;
-import org.kuali.kpme.core.role.KPMERole;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.rice.core.api.config.property.ConfigContext;
-import org.kuali.rice.core.api.exception.RiceIllegalArgumentException;
-import org.kuali.rice.core.api.util.RiceKeyConstants;
-import org.kuali.rice.kew.api.WorkflowDocument;
 import org.kuali.rice.kim.api.identity.Person;
 import org.kuali.rice.kim.api.services.KimApiServiceLocator;
-import org.kuali.rice.krad.document.Document;
 import org.kuali.rice.krad.maintenance.MaintenanceDocument;
-import org.kuali.rice.krad.maintenance.MaintenanceDocumentAuthorizer;
 import org.kuali.rice.krad.rules.MaintenanceDocumentRuleBase;
-import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.service.KRADServiceLocatorWeb;
-import org.kuali.rice.krad.util.GlobalVariables;
-import org.kuali.rice.krad.util.RouteToCompletionUtil;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.ListIterator;
 
 public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
 
@@ -284,18 +271,18 @@ public class KhrEmployeeDocumentValidation extends MaintenanceDocumentRuleBase {
             return false;
         }
         
-        // use the job's effective date to find the calendar entry it's for, then check if the current time is 
-        // after the final approval time of the calendar entry. If it is, we should not allow the effective date to be used
-        boolean effectiveDateChanged = false;
+        // If the compensation rate is changed for an existing job, use the job's effective date to find the calendar entry it's for, 
+        // then check if the current time is after the final approval time of the calendar entry. If it is, we should not allow the effective date to be used
+        boolean rateChanged = false;
         if(StringUtils.isNotBlank(tkmJob.getHrJobId())) {
-        	HrBusinessObject existingJob = KRADServiceLocator.getBusinessObjectService().findBySinglePrimaryKey(KhrEmployeeJob.class, tkmJob.getId());
-        	if(existingJob != null && !existingJob.getEffectiveDate().equals(tkmJob.getEffectiveDate())) {
-        		effectiveDateChanged = true;
+        	Job aJob = HrServiceLocator.getJobService().getJob(tkmJob.getHrJobId());
+        	if(aJob != null && !aJob.getCompRate().equals(tkmJob.getCompRate())) {
+        		rateChanged = true;
         	}
         } else {
-        	effectiveDateChanged = true;
+        	rateChanged = true;
         }
-		if(effectiveDateChanged) {        
+		if(rateChanged) {        
 	        PrincipalHRAttributes ph = HrServiceLocator.getPrincipalHRAttributeService().getPrincipalCalendar(tkmDocument.getPrincipalId(), LocalDate.now()) ;
 	        if(ph != null) {
 	        	Calendar aCal = ph.getCalendar();
