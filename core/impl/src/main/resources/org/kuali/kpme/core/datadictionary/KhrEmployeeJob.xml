@@ -35,7 +35,6 @@
                 <ref bean="TKMJob-jobNumber"/>
                 <ref bean="TKMJob-effectiveDate"/>
                 <ref bean="TKMJob-relativeEffectiveDate"/>
-                <ref bean="TKMJob-endDate"/>
                 <ref bean="TKMJob-dept"/>
                 <ref bean="TKMJob-hrSalGroup"/>
                 <ref bean="TKMJob-timestamp"/>
@@ -98,18 +97,6 @@
         </property>
         <property name="name" value="effectiveDate" />
         <property name="label" value="Effective Date" />
-    </bean>
-
-    <bean id="TKMJob-endDate" parent="TKMJob-endDate-parentBean" />
-    <bean id="TKMJob-endDate-parentBean" abstract="true"
-          parent="AttributeDefinition">
-        <property name="shortLabel" value="End Date" />
-        <property name="maxLength" value="10" />
-        <property name="controlField">
-            <bean parent="Uif-DateControl" />
-        </property>
-        <property name="name" value="endDate" />
-        <property name="label" value="End Date" />
     </bean>
 
     <!-- The validation type and length on this may be wrong -->

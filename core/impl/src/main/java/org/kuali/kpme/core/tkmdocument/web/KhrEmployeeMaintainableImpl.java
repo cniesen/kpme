@@ -153,10 +153,10 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
             KhrEmployeeJob tkmJob = createTKMJob(job);
             //TODO set end date
 
-            Job nextInactiveJob = HrServiceLocator.getJobService().getNextInactiveJob(job);
-            if (nextInactiveJob != null) {
-                tkmJob.setEndDate(nextInactiveJob.getEffectiveLocalDate().toDate());
-            }
+//            Job nextInactiveJob = HrServiceLocator.getJobService().getNextInactiveJob(job);
+//            if (nextInactiveJob != null) {
+//                tkmJob.setEndDate(nextInactiveJob.getEffectiveLocalDate().toDate());
+//            }
 
             //add assignment list to job
             //CacheUtils.flushCaches(AssignmentBo.CACHE_FLUSH);
@@ -413,7 +413,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         	saveAndVersionBusinessObject(currentTkmJob);
 
         	// create/modify an inactive job if end-date is specified
-            processEndDate(currentTkmJob);
+//            processEndDate(currentTkmJob);
             
         	// persist the assignments for this job if needed
             for(AssignmentBo assignment: currentTkmJob.getAssignments()) {
@@ -538,6 +538,7 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         tkmJob.setObjectId(job.getObjectId());
         tkmJob.setActive(job.isActive());
         tkmJob.setUserPrincipalId(job.getUserPrincipalId());
+        tkmJob.setEndDate(job.getEndDateTime() == null ? null: job.getEndDateTime().toDate());
 
         return tkmJob;
     }

@@ -49,6 +49,7 @@
 				<ref bean="Job-eligibleForLeave" />
 				<ref bean="Job-positionNbr" />
 				<ref bean="Job-flsaStatus"/>
+				<ref bean="Job-endDate" />
 			</list>
 		</property>
 
@@ -444,6 +445,19 @@
 		<property name="name" value="flsaStatus" />
 		<property name="label" value="FLSA Status" />
 	</bean>
+	
+	
+	<bean id="Job-endDate" parent="Job-endDate-parentBean" /> 
+    <bean id="Job-endDate-parentBean" abstract="true"
+          parent="AttributeDefinition">
+        <property name="shortLabel" value="End Date" />
+        <property name="maxLength" value="10" />
+        <property name="controlField">
+            <bean parent="Uif-DateControl" />
+        </property>
+        <property name="name" value="endDate" />
+        <property name="label" value="End Date" />
+    </bean>
 
     <!--***************************************************************************
                                    Views

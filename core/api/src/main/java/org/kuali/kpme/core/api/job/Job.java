@@ -18,6 +18,7 @@ package org.kuali.kpme.core.api.job;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
+import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -71,6 +72,7 @@ import org.w3c.dom.Element;
         Job.Elements.EFFECTIVE_LOCAL_DATE,
         Job.Elements.CREATE_TIME,
         Job.Elements.USER_PRINCIPAL_ID,
+        Job.Elements.END_DT_TIME,
         CoreConstants.CommonElements.VERSION_NUMBER,
         CoreConstants.CommonElements.OBJECT_ID,
         CoreConstants.CommonElements.FUTURE_ELEMENTS
@@ -143,6 +145,9 @@ public final class Job
     private final DateTime createTime;
     @XmlElement(name = Elements.USER_PRINCIPAL_ID, required = false)
     private final String userPrincipalId;
+    @XmlElement(name = Elements.END_DT_TIME, required = false)
+    private final DateTime endDateTime;
+    
     @SuppressWarnings("unused")
     @XmlAnyElement
     private final Collection<Element> _futureElements = null;
@@ -184,6 +189,7 @@ public final class Job
         this.effectiveLocalDate = null;
         this.createTime = null;
         this.userPrincipalId = null;
+        this.endDateTime = null;
     }
 
     private Job(Builder builder) {
@@ -219,6 +225,7 @@ public final class Job
         this.effectiveLocalDate = builder.getEffectiveLocalDate();
         this.createTime = builder.getCreateTime();
         this.userPrincipalId = builder.getUserPrincipalId();
+        this.endDateTime = builder.getEndDateTime();
     }
 
     @Override
@@ -371,8 +378,7 @@ public final class Job
     public String getUserPrincipalId() {
         return this.userPrincipalId;
     }
-
-
+    
     /**
      * A builder which can be used to construct {@link Job} instances.  Enforces the constraints of the {@link JobContract}.
      *
@@ -414,13 +420,14 @@ public final class Job
         private LocalDate effectiveLocalDate;
         private DateTime createTime;
         private String userPrincipalId;
+        private DateTime endDateTime;
 
         private Builder(String principalId, Long jobNumber) {
             setPrincipalId(principalId);
             setJobNumber(jobNumber);
         }
 
-        public static Builder create(String principalId, Long jobNumber) {
+		public static Builder create(String principalId, Long jobNumber) {
             return new Builder(principalId, jobNumber);
         }
 
@@ -459,6 +466,7 @@ public final class Job
             builder.setEffectiveLocalDate(contract.getEffectiveLocalDate());
             builder.setCreateTime(contract.getCreateTime());
             builder.setUserPrincipalId(contract.getUserPrincipalId());
+            builder.setEndDateTime(contract.getEndDateTime());
             return builder;
         }
 
@@ -605,11 +613,17 @@ public final class Job
         public String getUserPrincipalId() {
             return this.userPrincipalId;
         }
-        
+      
         @Override
         public String getGroupKeyCode() {
             return groupKeyCode;
-        }
+        }   
+        
+        @Override
+        public DateTime getEndDateTime() {
+			return this.endDateTime;
+		}
+
 
         @Override
         public HrGroupKey.Builder getGroupKey() {
@@ -742,6 +756,10 @@ public final class Job
         public void setUserPrincipalId(String userPrincipalId) {
             this.userPrincipalId = userPrincipalId;
         }
+        
+        public void setEndDateTime(DateTime endDateTime) {
+        	this.endDateTime = endDateTime;
+        }
 
     }
 
@@ -793,7 +811,14 @@ public final class Job
         final static String EFFECTIVE_LOCAL_DATE = "effectiveLocalDate";
         final static String CREATE_TIME = "createTime";
         final static String USER_PRINCIPAL_ID = "userPrincipalId";
+        final static String END_DT_TIME="endDateTime";
 
     }
+
+
+	@Override
+	public DateTime getEndDateTime() {
+		return this.endDateTime;
+	}
 
 }

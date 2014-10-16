@@ -15,6 +15,7 @@
  */
 package org.kuali.kpme.core.api.job;
 
+import org.joda.time.DateTime;
 import org.kuali.kpme.core.api.mo.KpmeEffectiveKeyedDataTransferObject;
 import org.kuali.kpme.core.api.paytype.PayTypeContract;
 import org.kuali.kpme.core.api.util.HrApiConstants;
@@ -327,5 +328,16 @@ public interface JobContract extends KpmeEffectiveKeyedDataTransferObject {
 	 * @return true if yes, false if not
 	 */
 	public boolean isEligibleForLeave();
+	
+	/**
+	 * End date of the job. 
+	 * 
+	 * <p>
+	 * end date of a Job
+	 * <p>
+	 * 
+	 * @return endDate for Job
+	 */
+	public DateTime getEndDateTime();
 	
 }
