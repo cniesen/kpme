@@ -18,10 +18,12 @@ package org.kuali.kpme.core.job;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.block.CalendarBlockPermissions;
 import org.kuali.kpme.core.api.job.Job;
@@ -92,7 +94,8 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 	private String positionNumber;
     private BigDecimal fte = new BigDecimal(0); //kpme1465, chen
     private String flsaStatus;
-	
+    private Date endDate;
+
 	private boolean eligibleForLeave;
 	
 	private transient Person principal;
@@ -362,6 +365,14 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 		this.eligibleForLeave = eligibleForLeave;
 	}
 
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+	
     public static JobBo from(Job im) {
         if (im == null) {
             return null;
@@ -407,6 +418,7 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
             job.setTimestamp(new Timestamp(im.getCreateTime().getMillis()));
         }
         job.setUserPrincipalId(im.getUserPrincipalId());
+        job.setEndDate(im.getEndDateTime() == null ? null : im.getEndDateTime().toDate());
         job.setVersionNumber(im.getVersionNumber());
         job.setObjectId(im.getObjectId());
 
@@ -449,4 +461,10 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
         return false;
 */
     }
+
+
+	@Override
+	public DateTime getEndDateTime() {
+	     return endDate != null ? new DateTime(endDate) : null;
+	}
 }

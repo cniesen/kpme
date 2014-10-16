@@ -221,6 +221,7 @@
         <field-descriptor name="active"             column="ACTIVE"             jdbc-type="VARCHAR"     length="1" nullable="false" conversion="org.kuali.rice.core.framework.persistence.ojb.conversion.OjbCharBooleanConversion" />
         <field-descriptor name="flsaStatus"         column="FLSA_STATUS"        jdbc-type="VARCHAR"     nullable="true" length="15" />
         <field-descriptor name="userPrincipalId"    column="USER_PRINCIPAL_ID"  jdbc-type="VARCHAR"     length="40" nullable="false" />
+        <field-descriptor name="endDate"      		column="END_DT"             jdbc-type="DATE"        nullable="true" primarykey="false" conversion="org.apache.ojb.broker.accesslayer.conversions.JavaDate2SqlTimestampFieldConversion" />
     </class-descriptor>
     <!-- EarnCode -->
     <!-- Business Keys - [earnCode : effectiveDate : timestamp] -->

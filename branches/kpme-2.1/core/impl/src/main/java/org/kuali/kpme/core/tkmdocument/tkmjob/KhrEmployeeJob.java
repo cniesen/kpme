@@ -34,20 +34,10 @@ import java.util.List;
 public class KhrEmployeeJob extends JobBo {
 	
 	private static final long serialVersionUID = -2015621064979417200L;
-	
-	private Date endDate;
+
     private List<AssignmentBo> assignments = new ArrayList<AssignmentBo>();
 
     private String jobNumberDisplay;
-
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
 
     public List<AssignmentBo> getAssignments() {
         return assignments;
