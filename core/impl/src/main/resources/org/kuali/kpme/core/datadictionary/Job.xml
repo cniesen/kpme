@@ -452,6 +452,10 @@
           parent="AttributeDefinition">
         <property name="shortLabel" value="End Date" />
         <property name="maxLength" value="10" />
+        <property name="validationPattern">
+            <bean parent="DateValidationPattern" />
+        </property>
+        <property name="formatterClass" value="org.kuali.rice.core.web.format.DateFormatter" />
         <property name="controlField">
             <bean parent="Uif-DateControl" />
         </property>
@@ -489,6 +493,7 @@
 							<bean parent="Uif-DataField" p:propertyName="primaryIndicator" />
 							<bean parent="Uif-DataField" p:propertyName="eligibleForLeave" />
 							<bean parent="Uif-DataField" p:propertyName="flsaStatus" />
+							<bean parent="Uif-DataField" p:propertyName="endDate" />
 							<bean parent="Uif-DataField" p:propertyName="active" />
 							<bean parent="Uif-DataField" p:propertyName="userPrincipalId" />
 						</list>
@@ -610,6 +615,7 @@
                 </bean>
                 <bean parent="Uif-DataField" p:propertyName="eligibleForLeave"/>
                 <bean parent="Uif-DataField" p:propertyName="effectiveDate"/>
+                <bean parent="Uif-DataField" p:propertyName="endDate"/>
                 <bean parent="Uif-DataField" p:propertyName="timestamp"/>
                 <bean parent="Uif-DataField" p:propertyName="primaryIndicator"/>
                 <bean parent="Uif-DataField" p:propertyName="active"/>
