@@ -358,7 +358,7 @@
         <property name="addLineItems">
             <list>
                 <bean parent="Uif-InputField" p:propertyName="effectiveDate" p:label="Job Effective Date" p:required="true"/>
-                <bean parent="Uif-InputField" p:propertyName="endDate" p:label="Job End Date" p:required="@{#dp.process eq 'New Job/Payrate'}"/>
+                <bean parent="Uif-InputField" p:propertyName="endDate" p:required="@{#dp.process eq 'New Job/Payrate'}" />	
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true">
                     <property name="quickfinder">
                         <bean parent="Uif-QuickFinderByScript"
