@@ -308,6 +308,9 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 	}*/
 
 	public PayGradeBo getPayGradeObj() {
+		if(payGradeObj == null && StringUtils.isNotBlank(payGrade) && StringUtils.isNotBlank(hrSalGroup)) {
+			this.setPayGradeObj(PayGradeBo.from(HrServiceLocator.getPayGradeService().getPayGrade(this.getPayGrade(), this.getHrSalGroup(), this.getEffectiveLocalDate())));
+		}		
 		return payGradeObj;
 	}
 
@@ -316,6 +319,9 @@ public class JobBo extends HrKeyedBusinessObject implements JobContract {
 	}
 
 	public SalaryGroupBo getSalaryGroupObj() {
+		if(salaryGroupObj == null && StringUtils.isNotBlank(hrSalGroup)) {
+			this.setSalaryGroupObj(SalaryGroupBo.from(HrServiceLocator.getSalaryGroupService().getSalaryGroup(this.getHrSalGroup(), this.getEffectiveLocalDate())));
+		}
 		return salaryGroupObj;
 	}
 
