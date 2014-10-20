@@ -384,7 +384,7 @@
 				<bean parent="Uif-InputField" p:propertyName="effectiveDate" p:required="true" p:label="Job Effective Date"
                 	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Maintain Job/Assignment Details') }"/>
                 <bean parent="Uif-InputField" p:propertyName="endDate" p:label="Job End Date"
-                	p:readOnly="@{ !isAddedCollectionItem(#line) and !( #dp.process eq 'Terminate Job' or #dp.process eq 'Maintain Job/Assignment Details') }" />
+                	p:readOnly="@{ !isAddedCollectionItem(#line) and !(#dp.process eq 'Maintain Job/Assignment Details') }" />
                 <bean parent="Uif-InputField" p:propertyName="dept" p:required="true"
                 	p:readOnly="true" >
                     <property name="quickfinder">
@@ -427,7 +427,7 @@
                                                {
                                                    jQuery('#@{#collectionGroup.layoutManager.addLineGroup.id}').show();
                                                }return false;">                                               
-                                            <property name="hidden" value = "@{ #dp.process eq null or #dp.process eq '' or #dp.process eq 'Terminate Job' or (#dp.process eq 'New Job/Payrate' and !isAddedCollectionItem(#line))}"/>                                        
+                                            <property name="hidden" value = "@{ #dp.process eq null or #dp.process eq '' or (#dp.process eq 'New Job/Payrate' and !isAddedCollectionItem(#line))}"/>                                        
                                         </bean>
                                     </list>
                                 </property>
@@ -580,7 +580,7 @@
                         <property name="lineActions">
                             <list>
                                 <bean parent="Uif-SecondaryActionButton-Small" p:methodToCall="deleteLine" p:actionLabel="delete" 
-                                	p:render="@{ isAddedCollectionItem(#line) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'Terminate Job' or #dp.process eq 'Maintain Job/Assignment Details') }"/>
+                                	p:render="@{ isAddedCollectionItem(#line) and (#dp.process eq 'New Job/Payrate' or #dp.process eq 'Maintain Job/Assignment Details') }"/>
                                 	
                             </list>
                         </property>

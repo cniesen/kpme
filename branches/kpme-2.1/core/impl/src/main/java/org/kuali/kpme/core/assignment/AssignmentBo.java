@@ -256,6 +256,9 @@ public class AssignmentBo extends HrKeyedBusinessObject implements AssignmentCon
 	}
 
 	public TaskBo getTaskObj() {
+		if(taskObj == null && this.getTask() != null) {
+			this.setTaskObj(TaskBo.from(HrServiceLocator.getTaskService().getTask(this.getTask(), this.getEffectiveLocalDate())));
+		}
 		return taskObj;
 	}
 

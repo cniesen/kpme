@@ -345,4 +345,9 @@ public class HrConstants {
                 + MODULE_NAME + "/";
         public static final String KPME_GLOBAL_CACHE_NAME = NAMESPACE_PREFIX + "Global";
     }
+    
+    public static final class KhrEmployeeDocProcess {
+        public static final String NEW_JOB = "New Job/Payrate";
+        public static final String MAINTAIN_JOB = "Maintain Job/Assignment Details";
+    }
 }
