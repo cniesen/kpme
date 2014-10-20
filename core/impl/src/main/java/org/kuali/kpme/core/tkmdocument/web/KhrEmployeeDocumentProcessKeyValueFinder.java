@@ -25,6 +25,7 @@ import org.joda.time.LocalDate;
 import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
+import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.rice.core.api.util.ConcreteKeyValue;
 import org.kuali.rice.core.api.util.KeyValue;
 import org.kuali.rice.krad.uif.control.UifKeyValuesFinderBase;
@@ -41,9 +42,8 @@ public class KhrEmployeeDocumentProcessKeyValueFinder extends UifKeyValuesFinder
     @Override
     public List<KeyValue> getKeyValues() {
         List<KeyValue> keyValues = new ArrayList<KeyValue>();
-        keyValues.add(new ConcreteKeyValue("New Job/Payrate","New Job/Payrate"));
-        keyValues.add(new ConcreteKeyValue("Maintain Job/Assignment Details","Maintain Job/Assignment Details"));
-        keyValues.add(new ConcreteKeyValue("Terminate Job","Terminate Job"));
+        keyValues.add(new ConcreteKeyValue(HrConstants.KhrEmployeeDocProcess.NEW_JOB,HrConstants.KhrEmployeeDocProcess.NEW_JOB));
+        keyValues.add(new ConcreteKeyValue(HrConstants.KhrEmployeeDocProcess.MAINTAIN_JOB,HrConstants.KhrEmployeeDocProcess.MAINTAIN_JOB));
 
         return keyValues;
     }
@@ -58,7 +58,7 @@ public class KhrEmployeeDocumentProcessKeyValueFinder extends UifKeyValuesFinder
 		    if(StringUtils.isNotBlank(pId)) {
 		    	List<Job> jobList = HrServiceLocator.getJobService().getJobs(pId, LocalDate.now());
 		    	if(CollectionUtils.isEmpty(jobList)) {
-		    		 keyValues.add(new ConcreteKeyValue("New Job/Payrate","New Job/Payrate"));
+		    		 keyValues.add(new ConcreteKeyValue(HrConstants.KhrEmployeeDocProcess.NEW_JOB,HrConstants.KhrEmployeeDocProcess.NEW_JOB));
 		    		 return keyValues;
 		    	} else {
 		    		return this.getKeyValues();

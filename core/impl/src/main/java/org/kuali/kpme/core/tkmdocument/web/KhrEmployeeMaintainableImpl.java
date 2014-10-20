@@ -38,6 +38,7 @@ import org.kuali.kpme.core.service.HrServiceLocator;
 import org.kuali.kpme.core.tkmdocument.KhrEmployeeDocument;
 import org.kuali.kpme.core.tkmdocument.tkmjob.KhrEmployeeJob;
 import org.kuali.kpme.core.tkmdocument.validation.KhrEmployeeDocumentValidation;
+import org.kuali.kpme.core.util.HrConstants;
 import org.kuali.kpme.core.util.HrContext;
 import org.kuali.kpme.core.util.TKUtils;
 import org.kuali.rice.core.api.mo.ModelObjectUtils;
@@ -49,6 +50,7 @@ import org.kuali.rice.krad.service.KRADServiceLocator;
 import org.kuali.rice.krad.uif.container.CollectionGroup;
 import org.kuali.rice.krad.uif.view.View;
 import org.kuali.rice.krad.util.GlobalVariables;
+import org.kuali.rice.krad.util.ObjectUtils;
 import org.kuali.rice.krad.web.form.MaintenanceDocumentForm;
 
 import de.danielbechler.diff.Configuration;
@@ -316,67 +318,31 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 
 	}
 
-	public void processEndDate(KhrEmployeeJob currentTkmJob) {
+	public void processEndDate(KhrEmployeeJob currentTkmJob, String processString) {
+		if(currentTkmJob.getEndDate() != null) {
+			Date currentDate = LocalDate.now().toDate();
+			if(!currentTkmJob.getEndDate().before(currentDate) && processString.equals(HrConstants.KhrEmployeeDocProcess.MAINTAIN_JOB)) {
+				Date effDateToUse = currentTkmJob.getEndDateTime().plusDays(1).toDate();
+				// create inactive job records
+				KhrEmployeeJob inactiveJob = (KhrEmployeeJob) ObjectUtils.deepCopy(currentTkmJob);
+				inactiveJob.setHrJobId(null);
+				inactiveJob.setActive(false);
+				inactiveJob.setEffectiveDate(effDateToUse);
+				inactiveJob.setEndDate(null);
+				getBusinessObjectService().save(inactiveJob);
+				
+				// create inactive assignment records
+				for(AssignmentBo assignment : currentTkmJob.getAssignments()) {
+					AssignmentBo inactiveAssignment = (AssignmentBo) ObjectUtils.deepCopy(assignment);
+					inactiveAssignment.setTkAssignmentId(null);;
+					inactiveAssignment.setActive(false);
+					inactiveAssignment.setEffectiveDate(effDateToUse);
+					KRADServiceLocator.getBusinessObjectService().save(inactiveAssignment);
+				}				
+			}
+		}
+		CacheUtils.flushCaches(JobBo.CACHE_FLUSH);		
 
-        JobBo nextInactiveJobBo = null;
-        Job nextInactiveJob = HrServiceLocator.getJobService().getNextInactiveJob(JobBo.to(currentTkmJob));
-
-        if (nextInactiveJob != null)
-        {
-            nextInactiveJobBo = JobBo.from(nextInactiveJob);
-        }
-
-        //if current job end date is blank and there is a future inactive job, delete that future inactive job
-        if (currentTkmJob.getEndDate() == null) {
-        	if(nextInactiveJobBo != null) {
-        		getBusinessObjectService().delete(nextInactiveJobBo);
-        	}
-        }
-        //if end date is present create/update an inactive job
-        else {
-        	//if inactive job exists update it 
-            if (nextInactiveJobBo != null) {
-                boolean endDateExtended = false;
-                if (currentTkmJob.getEndDate().after(nextInactiveJobBo.getEffectiveDate()))
-                {
-                    endDateExtended = true;
-                }
-
-                if (endDateExtended)
-                {
-/*
-                    KhrEmployeeJob newInactiveJob = createTKMJob(currentTkmJob);
-                    newInactiveJob.setActive(false);
-                    newInactiveJob.setHrJobId(null);
-                    newInactiveJob.setObjectId(null);
-                    newInactiveJob.setVersionNumber(null);
-                    newInactiveJob.setEffectiveDate(new Date());
-                    getBusinessObjectService().linkAndSave(newInactiveJob);
-*/
-                    KhrEmployeeJob newActiveJob = createTKMJob(currentTkmJob);
-                    newActiveJob.setEffectiveDate(nextInactiveJobBo.getEffectiveDate());
-                    newActiveJob.setActive(true);
-                    newActiveJob.setHrJobId(null);
-                    newActiveJob.setObjectId(null);
-                    newActiveJob.setVersionNumber(null);
-                    getBusinessObjectService().linkAndSave(newActiveJob);
-                }
-                nextInactiveJobBo.setEffectiveDate(currentTkmJob.getEndDate());
-                getBusinessObjectService().linkAndSave(nextInactiveJobBo);
-            }
-            // else create new
-            else {
-            	KhrEmployeeJob inactiveJob = createTKMJob(currentTkmJob);
-                inactiveJob.setUserPrincipalId(GlobalVariables.getUserSession().getPrincipalId());
-                inactiveJob.setHrJobId(null);
-                inactiveJob.setObjectId(null);
-                inactiveJob.setVersionNumber(null);
-                inactiveJob.setActive(false);
-                inactiveJob.setEffectiveDate(currentTkmJob.getEndDate());
-            	getBusinessObjectService().linkAndSave(inactiveJob);
-            }
-        }
-        CacheUtils.flushCaches(JobBo.CACHE_FLUSH);
     }
     
     
@@ -410,10 +376,9 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
         // iterate thru the job list and apply the persistence logic to the jobs/end-date and assignments
         for (KhrEmployeeJob currentTkmJob : tkmJobList) {	
         	// persist the job Bo if needed
-        	saveAndVersionBusinessObject(currentTkmJob);
-
-        	// create/modify an inactive job if end-date is specified
-//            processEndDate(currentTkmJob);
+        	saveAndVersionBusinessObject(currentTkmJob);        	
+        	
+            processEndDate(currentTkmJob, tkmDocument.getProcess());
             
         	// persist the assignments for this job if needed
             for(AssignmentBo assignment: currentTkmJob.getAssignments()) {
