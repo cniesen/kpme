@@ -16,6 +16,7 @@
 package org.kuali.kpme.tklm.time.timesheet;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -69,7 +70,15 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
 	}
 
 	public List<Job> getJobs() {
-		return jobs;
+		if (CollectionUtils.isEmpty(getAllAssignments())) {
+            return Collections.emptyList();
+        }
+        Set<Job> allJobs = new HashSet<Job>();
+        for (Assignment anAssignment : this.getAllAssignments()) {
+        	allJobs.add(anAssignment.getJob());
+        }
+        this.setJobs(new ArrayList<Job>(allJobs));
+        return jobs;
 	}
 
 	public void setJobs(List<Job> jobs) {

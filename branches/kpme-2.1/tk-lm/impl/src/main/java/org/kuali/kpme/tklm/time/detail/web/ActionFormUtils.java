@@ -24,6 +24,7 @@ import org.json.simple.JSONValue;
 import org.kuali.kpme.core.api.assignment.AssignmentDescriptionKey;
 import org.kuali.kpme.core.api.calendar.entry.CalendarEntry;
 import org.kuali.kpme.core.api.earncode.EarnCodeContract;
+import org.kuali.kpme.core.api.job.Job;
 import org.kuali.kpme.core.api.leaveplan.LeavePlanContract;
 import org.kuali.kpme.core.api.namespace.KPMENamespace;
 import org.kuali.kpme.core.api.principal.PrincipalHRAttributes;
@@ -395,6 +396,19 @@ public class ActionFormUtils {
     	return allCalendarEntriesForYear;
     }
 
+    public static List<String> getWarningForEndDate(List<Job> jobs, CalendarEntry aCal) {
+    	 List<String> messageList = new ArrayList<String>();
+    	 for (Job aJob : jobs) {
+         	if(aJob.getEndDateTime() != null && aJob.isActive()
+         			&& !aJob.getEndDateTime().isBefore(aCal.getBeginPeriodFullDateTime())
+         			&& !aJob.getEndDateTime().isAfter(aCal.getEndPeriodFullDateTime())) {
+         		String endDateString = new SimpleDateFormat("MM/dd/yyyy").format(aJob.getEndDateTime().toDate());
+         		String aMessage = "Job " + aJob.getJobNumber().toString() + " is expected to end on " + endDateString + " during this timesheet. Please contact your supervisor with questions.";
+         		messageList.add(aMessage);
+         	}
+         }
+    	 return messageList;
+    }
 
     
 }
