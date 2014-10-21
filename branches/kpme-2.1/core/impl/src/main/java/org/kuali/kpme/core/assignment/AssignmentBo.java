@@ -157,6 +157,9 @@ public class AssignmentBo extends HrKeyedBusinessObject implements AssignmentCon
 	}
 
 	public String getHrJobId() {
+		if(StringUtils.isBlank(hrJobId) && this.getJob() != null) {
+			this.hrJobId = this.getJob().getHrJobId();
+		}
 		return hrJobId;
 	}
 
