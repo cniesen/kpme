@@ -47,6 +47,7 @@ import org.kuali.kpme.tklm.leave.service.LmServiceLocator;
 import org.kuali.kpme.tklm.time.approval.summaryrow.ApprovalTimeSummaryRow;
 import org.kuali.kpme.tklm.time.calendar.TkCalendar;
 import org.kuali.kpme.tklm.time.calendar.TkCalendarDay;
+import org.kuali.kpme.tklm.time.detail.web.ActionFormUtils;
 import org.kuali.kpme.tklm.time.flsa.FlsaDay;
 import org.kuali.kpme.tklm.time.flsa.FlsaWeek;
 import org.kuali.kpme.tklm.time.rules.timecollection.TimeCollectionRule;
@@ -211,7 +212,11 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Map<String, Set<String>> eligibleTransfers = findWarnings(principalId, payCalendarEntry);
 			warnings.addAll(eligibleTransfers.get("warningMessages"));
 			
-			warnings.addAll(clockLogWarnings);			
+			warnings.addAll(clockLogWarnings);		
+			
+			// warnings for job's end date within the current calendar entry
+			warnings.addAll(ActionFormUtils.getWarningForEndDate(td.getJobs(), payCalendarEntry));
+			
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
 					principalId, payEndDate, payCalendarLabels,
 					timeBlocks, leaveBlocks, null, payCalendarEntry, payCalendar,

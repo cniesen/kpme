@@ -332,6 +332,9 @@ public class TimeDetailAction extends TimesheetAction {
 			}
         }
         
+        // if an active job's end date is during this pay period, show warning
+        allMessages.get("warningMessages").addAll(ActionFormUtils.getWarningForEndDate(timesheetDocument.getJobs(), calendarEntry));
+              
         List<String> infoMessages = timeDetailActionForm.getInfoMessages();
         infoMessages.addAll(allMessages.get("infoMessages"));
 
