@@ -138,6 +138,12 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
         List<Assignment> dayAssignments = getAssignmentMap().get(date);
         if (CollectionUtils.isNotEmpty(dayAssignments)) {
             for (Assignment assignment : dayAssignments) {
+            	if(clockOnlyAssignments && assignment.getJob() != null
+            			&& assignment.getJob().getEndDateTime() != null
+            			&& (new LocalDate(assignment.getJob().getEndDateTime())).isBefore(date)) {
+            		// if the assignment's job end date is a past date, do not include this assignment
+            		continue;
+            	}
                 String principalId = GlobalVariables.getUserSession().getPrincipalId();
 
                 if (HrServiceLocator.getHRPermissionService().canViewCalendarDocumentAssignment(principalId, this, assignment)) {
@@ -159,7 +165,15 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
     public Map<String, String> getAssignmentDescriptionsOfApprovals(boolean clockOnlyAssignments) {
         Map<String, String> assignmentDescriptions = new LinkedHashMap<String, String>();
         List<Assignment> allAssignments = getAllAssignments();
+        DateTime startOfToday = LocalDate.now().toDateTimeAtStartOfDay();
         for (Assignment assignment : allAssignments) {
+        	if(clockOnlyAssignments && assignment.getJob() != null
+        			&& assignment.getJob().getEndDateTime() != null
+        			&& assignment.getJob().getEndDateTime().isBefore(startOfToday)) {
+        		// if the assignment's job end date is a past date, do not include this assignment
+        		continue;
+        	}        	
+        	
         	String principalId = GlobalVariables.getUserSession().getPrincipalId();
 
         	if (HrServiceLocator.getHRPermissionService().canViewCalendarDocumentAssignment(principalId, this, assignment)) {
@@ -170,8 +184,7 @@ public class TimesheetDocument extends CalendarDocument implements TimesheetDocu
                 if (!clockOnlyAssignments || isSynchronous) {
     				Long workArea = assignment.getWorkArea();
                     String dept = assignment.getJob() == null ? StringUtils.EMPTY : assignment.getJob().getDept();
-                    String groupKeyCode = assignment.getGroupKeyCode();
-        			DateTime startOfToday = LocalDate.now().toDateTimeAtStartOfDay();
+                    String groupKeyCode = assignment.getGroupKeyCode();        			
                     boolean isApproverOrReviewerForCurrentAssignment =
                             HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER.getRoleName(), workArea, startOfToday)
         					|| HrServiceLocator.getKPMERoleService().principalHasRoleInWorkArea(principalId, KPMENamespace.KPME_HR.getNamespaceCode(), KPMERole.APPROVER_DELEGATE.getRoleName(), workArea, startOfToday)
