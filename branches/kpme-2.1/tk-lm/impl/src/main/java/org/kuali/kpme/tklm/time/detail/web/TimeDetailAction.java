@@ -334,7 +334,8 @@ public class TimeDetailAction extends TimesheetAction {
         
         // if an active job's end date is during this pay period, show warning
         allMessages.get("warningMessages").addAll(ActionFormUtils.getWarningForEndDate(timesheetDocument.getJobs(), calendarEntry));
-              
+        allMessages.get("warningMessages").addAll(this.getCustomizedWarningMessages(timesheetDocument));
+        
         List<String> infoMessages = timeDetailActionForm.getInfoMessages();
         infoMessages.addAll(allMessages.get("infoMessages"));
 
@@ -933,6 +934,11 @@ public class TimeDetailAction extends TimesheetAction {
 				HrServiceLocator.getKPMENotificationService().sendNotification(subject, message.toString(), targetPrincipalId);
 			}
 		}
+	}
+	
+	// a method for implementors to put in customized warning messages
+	protected List<String> getCustomizedWarningMessages(TimesheetDocument timesheetDoc) {
+		return new ArrayList<String>();
 	}
 
 	@SuppressWarnings("deprecation")
