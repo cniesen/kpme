@@ -321,21 +321,21 @@ public class KhrEmployeeMaintainableImpl extends MaintainableImpl {
 	public void processEndDate(KhrEmployeeJob currentTkmJob, String processString) {
 		if(currentTkmJob.getEndDate() != null) {
 			Date currentDate = LocalDate.now().toDate();
-			if(!currentTkmJob.getEndDate().before(currentDate) && processString.equals(HrConstants.KhrEmployeeDocProcess.MAINTAIN_JOB)) {
+			if(!currentTkmJob.getEndDate().after(currentDate) && processString.equals(HrConstants.KhrEmployeeDocProcess.MAINTAIN_JOB)) {
 				Date effDateToUse = currentTkmJob.getEndDateTime().plusDays(1).toDate();
 				// create inactive job records
 				KhrEmployeeJob inactiveJob = (KhrEmployeeJob) ObjectUtils.deepCopy(currentTkmJob);
 				inactiveJob.setHrJobId(null);
 				inactiveJob.setActive(false);
 				inactiveJob.setEffectiveDate(effDateToUse);
-				inactiveJob.setEndDate(null);
 				getBusinessObjectService().save(inactiveJob);
 				
 				// create inactive assignment records
 				for(AssignmentBo assignment : currentTkmJob.getAssignments()) {
 					AssignmentBo inactiveAssignment = (AssignmentBo) ObjectUtils.deepCopy(assignment);
-					inactiveAssignment.setTkAssignmentId(null);;
+					inactiveAssignment.setTkAssignmentId(null);
 					inactiveAssignment.setActive(false);
+					inactiveAssignment.setDept(assignment.getDept());
 					inactiveAssignment.setEffectiveDate(effDateToUse);
 					KRADServiceLocator.getBusinessObjectService().save(inactiveAssignment);
 				}				
