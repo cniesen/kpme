@@ -201,6 +201,8 @@ public class TimeApproveServiceImpl implements TimeApproveService {
                 }
                 
 				warnings = HrServiceLocator.getEarnCodeGroupService().getWarningTextFromEarnCodeGroups(td.getEarnCodeMap());
+				// warnings for job's end date within the current calendar entry
+				warnings.addAll(ActionFormUtils.getWarningForEndDate(td.getJobs(), payCalendarEntry));
 			}
 			
 			Map<String, Set<String>> transactionalWarnings = LeaveCalendarValidationUtil.validatePendingTransactions(principalId, payCalendarEntry.getBeginPeriodFullDateTime().toLocalDate(), payCalendarEntry.getEndPeriodFullDateTime().toLocalDate());
@@ -212,10 +214,7 @@ public class TimeApproveServiceImpl implements TimeApproveService {
 			Map<String, Set<String>> eligibleTransfers = findWarnings(principalId, payCalendarEntry);
 			warnings.addAll(eligibleTransfers.get("warningMessages"));
 			
-			warnings.addAll(clockLogWarnings);		
-			
-			// warnings for job's end date within the current calendar entry
-			warnings.addAll(ActionFormUtils.getWarningForEndDate(td.getJobs(), payCalendarEntry));
+			warnings.addAll(clockLogWarnings);	
 			
 			Map<String, BigDecimal> hoursToPayLabelMap = getHoursToPayDayMap(
 					principalId, payEndDate, payCalendarLabels,
